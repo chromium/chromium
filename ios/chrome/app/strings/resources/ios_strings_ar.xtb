@@ -128,7 +128,6 @@
 <translation id="1657011748321897393">تعذّرت المشاركة بسبب عدم اتصالك بالشبكة.</translation>
 <translation id="1657641691196698092">ملفات تعريف الارتباط المحظورة</translation>
 <translation id="165877110639533037">لا توجد علامات تبويب مفتوحة</translation>
-<translation id="166310177317698233">يمكنك العثور على علامات التبويب المثبَّتة بالنقر على زر "إظهار علامات التبويب".</translation>
 <translation id="1674504678466460478">من <ph name="SOURCE_LANGUAGE" /> إلى <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">طلب عرض الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة</translation>
 <translation id="168715261339224929">للحصول على الإشارات المرجعية على جميع أجهزتك، يُرجى تفعيل المزامنة.</translation>
@@ -237,7 +236,6 @@
 <translation id="2423077901494354337">‏يمكنك الآن الاستفادة بشكل أفضل من Chrome على جهازك.</translation>
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
-<translation id="2451654228769116489">تثبيت علامة تبويب</translation>
 <translation id="2459155039684421202">في شريط العناوين، أدخِل مَهمة مثل "محو السجلّ" أو "تعديل كلمات المرور".</translation>
 <translation id="2461070143328828326">إعدادات كلمات المرور</translation>
 <translation id="2469960372084740698">هل تريد إيقاف "التصفُّح الآمن"؟</translation>
@@ -306,7 +304,6 @@
 <translation id="2800683595868705743">الخروج من أداة تغيير علامات التبويب</translation>
 <translation id="2815198996063984598">2- انقر على تطبيق المتصفِّح التلقائي.</translation>
 <translation id="2818821771744632548">‏تم تسجيل خروج حسابك <ph name="USER_NAME" /> كجزء من عملية إعادة ضبط هاتف iPhone. لإعادة تسجيل الدخول، انقر على "متابعة" أدناه.</translation>
-<translation id="2822917246944009066">تم تثبيت علامة التبويب.</translation>
 <translation id="2830972654601096923">إدارة العناوين...</translation>
 <translation id="2834399722155632105">‏3‏. انقر على Password Options (خيارات كلمات المرور).</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />، <ph name="STATE" />، <ph name="URL" /></translation>
@@ -838,7 +835,6 @@
 <translation id="6059830886158432458">يمكنك التحكُّم بقصصك ونشاطك هنا.</translation>
 <translation id="6064824697233747382">تفرض عليك مؤسستك إيقاف المزامنة.</translation>
 <translation id="6066301408025741299">انقر للإلغاء.</translation>
-<translation id="6071409777669089905">‏Unpin Tab (إزالة تثبيت علامة تبويب)</translation>
 <translation id="6084848228346514841">اختيار علامات التبويب</translation>
 <translation id="6100617279104942061">تم تسجيل الدخول بحساب "<ph name="USER_EMAIL" />". يفتح هذا الزر صفحة الإعدادات.</translation>
 <translation id="6103540626693881831">التشفير على الجهاز فقط</translation>
@@ -1083,7 +1079,6 @@
 <translation id="7431991332293347422">التحكُّم في كيفية استخدامنا لسِجل التصفُّح لتخصيص البحث والمزيد</translation>
 <translation id="7435356471928173109">أوقَف المشرف وضع "التصفُّح الآمن".</translation>
 <translation id="7438481509621345350">ستظهر لك قصص من <ph name="CHANNEL_NAME" /> عند فتح علامة تبويب جديدة</translation>
-<translation id="7446583256109515732">تمت إزالة تثبيت علامة التبويب.</translation>
 <translation id="7451023311965289370">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}".}zero{تم حفظ الإشارات المرجعية في "{title}".}two{تم حفظ الإشارتَين المرجعيتَين في "{title}".}few{تم حفظ الإشارات المرجعية في "{title}".}many{تم حفظ الإشارات المرجعية في "{title}".}other{تم حفظ الإشارات المرجعية في "{title}".}}</translation>
 <translation id="7454057999980797137">الولاية/المقاطعة</translation>
 <translation id="745899714366929493">اليوم كله</translation>
@@ -1110,7 +1105,6 @@
 <translation id="7600965453749440009">عدم الترجمة مطلقًا من اللغة <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">تم حظر النوافذ المنبثقة (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">حذف كلمة المرور</translation>
-<translation id="7611459119367035420">يمكنك العثور على علامات التبويب المثبَّتة هنا.</translation>
 <translation id="7638584964844754484">عبارة مرور غير صحيحة</translation>
 <translation id="7640669552036055091">‏علامات التبويب من Android</translation>
 <translation id="7646263789464975852">القائمة ← الإعدادات ← التحقّق من الأمان</translation>

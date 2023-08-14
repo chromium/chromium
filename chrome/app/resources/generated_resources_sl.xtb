@@ -184,7 +184,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1142713751288681188">Vrsta papirja</translation>
 <translation id="1143142264369994168">Podpisnik potrdila</translation>
 <translation id="1145593918056169051">Tiskalnik se je ustavil</translation>
-<translation id="114571748016232560">Prišlo je do napake. Okna odprite ročno.</translation>
 <translation id="114721135501989771">Prejmite Googlove pametne rešitve v Chromu</translation>
 <translation id="1147322039136785890">Zdaj je na vrsti <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Če želite zahtevati dostop, se obrnite na skrbnika naprave.</translation>
@@ -802,7 +801,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="163072119192489970">Dovoljeno je dokončanje pošiljanja in prejemanja podatkov</translation>
 <translation id="1630768113285622200">Znova zaženi in nadaljuj</translation>
 <translation id="1631503405579357839">Barvna slepota</translation>
-<translation id="1632082166874334883">Geslo je shranjeno v računu Google</translation>
 <translation id="1632756664321977232">Orodje za obrezovanje</translation>
 <translation id="163309982320328737">Prvotna širina znaka je zapolnjena</translation>
 <translation id="1633947793238301227">Izklop Pomočnika Google</translation>
@@ -1043,7 +1041,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="181577467034453336">Še <ph name="NUMBER_OF_VIEWS" /> ...</translation>
 <translation id="1816036116994822943">Hitrost iskanja po tipkovnici</translation>
 <translation id="1817871734039893258">Microsoftova obnovitev datoteke</translation>
-<translation id="1818007989243628752">Izbris gesla za <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Poteka nalaganje dnevnika.</translation>
 <translation id="1819443852740954262">Odpiranje vseh v anonimnem oknu</translation>
 <translation id="1819721979226826163">Dotaknite se »Obvestila aplikacije &gt; Storitve Google Play«.</translation>
@@ -3658,7 +3655,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="3930602610362250897">Če želite predvajati vsebino, zaščiteno z avtorskimi pravicami, morajo spletna mesta morda uporabiti storitev za zaščito vsebine.</translation>
 <translation id="3930737994424905957">Iskanje naprav</translation>
 <translation id="3930968231047618417">Barva ozadja</translation>
-<translation id="3933283459331715412">Obnovitev izbrisanega gesla za <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> deli omrežje Wi-Fi z vami.</translation>
 <translation id="3936390757709632190">&amp;Odpri zvočni posnetek na novem zavihku</translation>
 <translation id="3936925983113350642">Izbrano geslo boste pozneje potrebovali za obnovitev tega potrdila. Zapišite ga na varno mesto.</translation>

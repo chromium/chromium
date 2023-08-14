@@ -126,7 +126,6 @@
 <translation id="1657011748321897393">Η κοινοποίηση απέτυχε επειδή δεν έχετε συνδεθεί στο δίκτυο.</translation>
 <translation id="1657641691196698092">Αποκλεισμένα cookie</translation>
 <translation id="165877110639533037">Δεν υπάρχουν ανοικτές καρτέλες</translation>
-<translation id="166310177317698233">Μπορείτε να βρείτε τις καρφιτσωμένες καρτέλες πατώντας το κουμπί Εμφάνιση καρτελών.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> προς <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Αίτημα ιστοτόπου για κινητά</translation>
 <translation id="168715261339224929">Για να εμφανίζονται οι σελιδοδείκτες σας σε όλες τις συσκευές σας, ενεργοποιήστε τον συγχρονισμό.</translation>
@@ -235,7 +234,6 @@
 <translation id="2423077901494354337">Τώρα θα αξιοποιείτε πλήρως το Chrome στη συσκευή σας.</translation>
 <translation id="2434405374328098816">Έχετε ήδη αποθηκεύσει έναν κωδικό πρόσβασης για τον χρήστη "<ph name="USERNAME" />" στον ιστότοπο <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Εμφάνιση κωδικού πρόσβασης</translation>
-<translation id="2451654228769116489">Καρφίτσωμα καρτέλας</translation>
 <translation id="2459155039684421202">Στη γραμμή διευθύνσεων, καταχωρίστε μια εργασία όπως "διαγραφή ιστορικού" ή "επεξεργασία κωδικών πρόσβασης".</translation>
 <translation id="2461070143328828326">Ρυθμίσεις κωδικού πρόσβασης</translation>
 <translation id="2469960372084740698">Να απενεργοποιηθεί η Ασφαλής περιήγηση;</translation>
@@ -304,7 +302,6 @@
 <translation id="2800683595868705743">Αποχώρηση από την εναλλαγή καρτελών</translation>
 <translation id="2815198996063984598">2. Πατήστε Προεπιλεγμένη εφαρμογή προγράμματος περιήγησης.</translation>
 <translation id="2818821771744632548">Αποσυνδεθήκατε από τον λογαριασμό σας <ph name="USER_NAME" /> στο πλαίσιο της επαναφοράς του iPhone. Για να συνδεθείτε ξανά, πατήστε Συνέχεια παρακάτω.</translation>
-<translation id="2822917246944009066">Η καρτέλα καρφιτσώθηκε</translation>
 <translation id="2830972654601096923">Διαχείριση διευθύνσεων…</translation>
 <translation id="2834399722155632105">3. Πατήστε Επιλογές κωδικών πρόσβασης</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -836,7 +833,6 @@
 <translation id="6059830886158432458">Ελέγξτε τις ειδήσεις και τη δραστηριότητά σας εδώ</translation>
 <translation id="6064824697233747382">Ο οργανισμός σας απαιτεί να απενεργοποιήσετε τον συγχρονισμό.</translation>
 <translation id="6066301408025741299">Πατήστε για ακύρωση.</translation>
-<translation id="6071409777669089905">Ξεκαρφίτσωμα καρτέλας</translation>
 <translation id="6084848228346514841">Επιλογή καρτελών</translation>
 <translation id="6100617279104942061">Έχετε συνδεθεί ως <ph name="USER_EMAIL" />. Ανοίγει τις ρυθμίσεις.</translation>
 <translation id="6103540626693881831">Κρυπτογράφηση στη συσκευή</translation>
@@ -1082,7 +1078,6 @@
 <translation id="7431991332293347422">Ελέγξτε τον τρόπο με τον οποίο χρησιμοποιείται το ιστορικό περιήγησής σας για την εξατομίκευση της Αναζήτησης και άλλων λειτουργιών</translation>
 <translation id="7435356471928173109">Απενεργοποιήθηκε από τον διαχειριστή σας.</translation>
 <translation id="7438481509621345350">Θα βλέπετε πλέον ειδήσεις από τον ιστότοπο <ph name="CHANNEL_NAME" /> όταν ανοίγετε μια νέα καρτέλα.</translation>
-<translation id="7446583256109515732">Η καρτέλα ξεκαρφιτσώθηκε</translation>
 <translation id="7451023311965289370">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στον φάκελο {title}}other{Οι σελιδοδείκτες αποθηκεύτηκαν στον φάκελο {title}}}</translation>
 <translation id="7454057999980797137">Νομός/Επαρχία</translation>
 <translation id="745899714366929493">Όλη την ημέρα</translation>
@@ -1109,7 +1104,6 @@
 <translation id="7600965453749440009">Να μην γίνεται ποτέ μετάφραση από <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Αποκλεισμ. αναδ. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Διαγραφή κωδικού πρόσβασης</translation>
-<translation id="7611459119367035420">Μπορείτε να βρείτε τις καρφιτσωμένες καρτέλες σας εδώ.</translation>
 <translation id="7638584964844754484">Εσφαλμένη φράση πρόσβασης</translation>
 <translation id="7640669552036055091">Καρτέλες από Android</translation>
 <translation id="7646263789464975852">Μενού → Ρυθμίσεις → Έλεγχος ασφαλείας</translation>

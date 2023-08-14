@@ -2024,7 +2024,6 @@
 <translation id="5287456746628258573">このサイトでは古いセキュリティ設定を使用しています。このサイトにパスワードやクレジット カード番号などの情報を送信すると流出する恐れがあります。</translation>
 <translation id="5288108484102287882">ポリシー値の検証で警告が返されました</translation>
 <translation id="5288393065350884210">会計、監査</translation>
-<translation id="5288808348893593856">サイトの接続は保護されます（保護されない場合は通知されます）</translation>
 <translation id="5289384342738547352">複数ドキュメントの処理</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{今日中に更新が必要です}=2{明日までに更新が必要です}other{# 日以内に更新が必要です}}</translation>
 <translation id="5293919335876685914">クーペ</translation>
@@ -2615,7 +2614,6 @@
 <translation id="6569060085658103619">拡張機能のページを表示しています</translation>
 <translation id="6569366777234823130">ドラマ映画</translation>
 <translation id="6573200754375280815">2 穴パンチ（右）</translation>
-<translation id="6576181918031900030">キャストを開始</translation>
 <translation id="6578434528542148658">拡張機能 ID が無効です。</translation>
 <translation id="657902945730878902">お絵かき、塗り絵</translation>
 <translation id="6579630537141957243">MIDI デバイスを使用しますか？</translation>

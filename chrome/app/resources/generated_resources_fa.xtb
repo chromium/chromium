@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">نوع کاغذ</translation>
 <translation id="1143142264369994168">امضا کننده گواهی</translation>
 <translation id="1145593918056169051">چاپگر متوقف شده است</translation>
-<translation id="114571748016232560">مشکلی پیش آمد. درعوض پنجره‌ها را به‌صورت دستی باز کنید.</translation>
 <translation id="114721135501989771">‏هوشمندی‌های Google را در Chrome دریافت کنید</translation>
 <translation id="1147322039136785890">حالا نوبت <ph name="SUPERVISED_USER_NAME" /> است</translation>
 <translation id="1147991416141538220">برای درخواست دسترسی، با سرپرست این دستگاه تماس بگیرید.</translation>
@@ -797,7 +796,6 @@
 <translation id="163072119192489970">اجازه دارد ارسال و دریافت داده را به‌پایان برساند</translation>
 <translation id="1630768113285622200">بازراه‌اندازی و ادامه</translation>
 <translation id="1631503405579357839">کوررنگی</translation>
-<translation id="1632082166874334883">‏گذرواژه در حساب Google شما ذخیره شده است</translation>
 <translation id="1632756664321977232">ابزار برش</translation>
 <translation id="163309982320328737">دامنه نویسه اولیه پر است</translation>
 <translation id="1633947793238301227">‏غیرفعال کردن «دستیار Google»</translation>
@@ -1038,7 +1036,6 @@
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> مورد دیگر…</translation>
 <translation id="1816036116994822943">سرعت اسکن کردن صفحه‌کلید</translation>
 <translation id="1817871734039893258">‏بازیابی فایل Microsoft</translation>
-<translation id="1818007989243628752">گذرواژه مربوط به <ph name="USERNAME" /> حذف شود</translation>
 <translation id="1818913467757368489">بارگذاری گزارش درحال انجام است.</translation>
 <translation id="1819443852740954262">باز کردن همه در «پنجره ناشناس»</translation>
 <translation id="1819721979226826163">‏روی «اعلان‌های برنامه &gt; خدمات Google Play» ضربه بزنید.</translation>
@@ -3652,7 +3649,6 @@
 <translation id="3930602610362250897">برای پخش محتوایی که با حق نسخه‌برداری محافظت می‌شوند، ممکن است لازم باشد سایت‌ها از سرویس محافظت محتوا استفاده کنند</translation>
 <translation id="3930737994424905957">درحال جستجوی دستگاه‌ها</translation>
 <translation id="3930968231047618417">رنگ پس‌زمینه</translation>
-<translation id="3933283459331715412">گذرواژه حذف‌شده مربوط به <ph name="USERNAME" /> بازنشانی شود</translation>
 <translation id="3936260554100916852">‏<ph name="DEVICE_NAME" /> درحال هم‌رسانی شبکه Wi-Fi با شما است</translation>
 <translation id="3936390757709632190">&amp;باز کردن فایل صوتی در برگهٔ جدید</translation>
 <translation id="3936925983113350642">برای بازیابی این گواهی در فرصتی دیگر، گذرواژه انتخابی‌تان لازم است. لطفاً آن را در مکانی امن حفظ کنید.</translation>

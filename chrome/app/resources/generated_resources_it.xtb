@@ -182,7 +182,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1142713751288681188">Tipo di carta</translation>
 <translation id="1143142264369994168">Firmatario del certificato</translation>
 <translation id="1145593918056169051">La stampante si è interrotta</translation>
-<translation id="114571748016232560">Si è verificato un problema. Apri le finestre manualmente.</translation>
 <translation id="114721135501989771">Tutta l'intelligenza Google in Chrome</translation>
 <translation id="1147322039136785890">È il turno di <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Per richiedere l'accesso, contatta l'amministratore del dispositivo.</translation>
@@ -796,7 +795,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="163072119192489970">Possono terminare di inviare e ricevere dati</translation>
 <translation id="1630768113285622200">Riavvia e continua</translation>
 <translation id="1631503405579357839">Daltonismo</translation>
-<translation id="1632082166874334883">Password memorizzate nel tuo Account Google</translation>
 <translation id="1632756664321977232">Strumento Ritaglia</translation>
 <translation id="163309982320328737">La larghezza caratteri iniziale è piena</translation>
 <translation id="1633947793238301227">Disabilitare l'Assistente Google</translation>
@@ -1029,7 +1027,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="181577467034453336">Altre <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">Velocità della scansione della tastiera</translation>
 <translation id="1817871734039893258">Ripristino file Microsoft</translation>
-<translation id="1818007989243628752">Elimina la password di <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Caricamento del log in corso.</translation>
 <translation id="1819443852740954262">Apri tutti gli URL nella finestra di navigazione in incognito</translation>
 <translation id="1819721979226826163">Tocca Notifiche app &gt; Google Play Services.</translation>
@@ -3640,7 +3637,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3930602610362250897">Per riprodurre contenuti protetti da copyright, i siti potrebbero dover usare un servizio di protezione dei contenuti</translation>
 <translation id="3930737994424905957">Ricerca di dispositivi in corso</translation>
 <translation id="3930968231047618417">Colore sfondo</translation>
-<translation id="3933283459331715412">Ripristina la password eliminata di <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> sta condividendo una rete Wi-Fi con te</translation>
 <translation id="3936390757709632190">&amp;Apri audio in nuova scheda</translation>
 <translation id="3936925983113350642">La password scelta sarà necessaria per recuperare il certificato in un secondo momento. Registrala in una posizione sicura.</translation>

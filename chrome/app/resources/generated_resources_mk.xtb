@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">Тип хартија</translation>
 <translation id="1143142264369994168">Потписник на сертификат</translation>
 <translation id="1145593918056169051">Печатачот запре</translation>
-<translation id="114571748016232560">Нешто тргна наопаку. Отворете ги прозорците рачно.</translation>
 <translation id="114721135501989771">Добијте ги паметните опции на Google во Chrome</translation>
 <translation id="1147322039136785890">Сега <ph name="SUPERVISED_USER_NAME" /> е на ред</translation>
 <translation id="1147991416141538220">За да побарате пристап, контактирајте со администраторот на уредов.</translation>
@@ -800,7 +799,6 @@
 <translation id="163072119192489970">Дозволено им е да ги довршуваат испраќањето и примањето податоци</translation>
 <translation id="1630768113285622200">Рестартирај и продолжи</translation>
 <translation id="1631503405579357839">Далтонизам</translation>
-<translation id="1632082166874334883">Лозинката е зачувана во вашата сметка на Google</translation>
 <translation id="1632756664321977232">Алатка за сечење</translation>
 <translation id="163309982320328737">Почетната ширина на знак е Полна</translation>
 <translation id="1633947793238301227">Оневозможување на „Помошникот на Google“</translation>
@@ -1041,7 +1039,6 @@
 <translation id="181577467034453336">Уште <ph name="NUMBER_OF_VIEWS" />…</translation>
 <translation id="1816036116994822943">Брзина на скенирање на тастатурата</translation>
 <translation id="1817871734039893258">Обнова на датотека на Microsoft</translation>
-<translation id="1818007989243628752">Избришете ја лозинката за <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Прикачувањето на евиденцијата е во тек.</translation>
 <translation id="1819443852740954262">Отвори ги сите во прозорец „Инкогнито“</translation>
 <translation id="1819721979226826163">Допрете „Известувања за апликации &gt; Услуги на Google Play“.</translation>
@@ -3656,7 +3653,6 @@
 <translation id="3930602610362250897">За да пуштаат содржини заштитени со авторски права, сајтовите можеби ќе треба да користат услуга за заштита на содржините</translation>
 <translation id="3930737994424905957">Се бараат уреди</translation>
 <translation id="3930968231047618417">Боја на заднина</translation>
-<translation id="3933283459331715412">Вратете ја избришаната лозинка за <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> споделува Wi-Fi мрежа со вас</translation>
 <translation id="3936390757709632190">&amp;Отвори аудио во нова картичка</translation>
 <translation id="3936925983113350642">Лозинката што ја избравте ќе ви биде потребна подоцна за враќање на сертификатов. Запишете ја на безбедно место.</translation>

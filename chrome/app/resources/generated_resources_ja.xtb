@@ -182,7 +182,6 @@
 <translation id="1142713751288681188">用紙の種類</translation>
 <translation id="1143142264369994168">証明書の署名者</translation>
 <translation id="1145593918056169051">プリンタが停止しました</translation>
-<translation id="114571748016232560">エラーが発生しました。代わりに手動でウィンドウを開きます。</translation>
 <translation id="114721135501989771">Chrome で Google の最先端技術を活用</translation>
 <translation id="1147322039136785890">お待たせしました、<ph name="SUPERVISED_USER_NAME" /> さん</translation>
 <translation id="1147991416141538220">アクセスをリクエストするには、このデバイスの管理者にご連絡ください。</translation>
@@ -796,7 +795,6 @@
 <translation id="163072119192489970">データの送受信の完了を許可するサイト</translation>
 <translation id="1630768113285622200">再起動して続行</translation>
 <translation id="1631503405579357839">色覚異常</translation>
-<translation id="1632082166874334883">パスワードは Google アカウントに保存されています</translation>
 <translation id="1632756664321977232">切り抜きツール</translation>
 <translation id="163309982320328737">初期の文字幅を全角にする</translation>
 <translation id="1633947793238301227">Google アシスタントの無効化</translation>
@@ -1028,7 +1026,6 @@
 <translation id="181577467034453336">他 <ph name="NUMBER_OF_VIEWS" /> 件...</translation>
 <translation id="1816036116994822943">キーボードのスキャン速度</translation>
 <translation id="1817871734039893258">Microsoft ファイル回復</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" /> のパスワードを削除します</translation>
 <translation id="1818913467757368489">ログをアップロードしています。</translation>
 <translation id="1819443852740954262">シークレット ウィンドウですべて開く</translation>
 <translation id="1819721979226826163">[アプリの通知] &gt; [Google Play 開発者サービス] の順にタップします。</translation>
@@ -3633,7 +3630,6 @@
 <translation id="3930602610362250897">著作権で保護されたコンテンツを再生するには、サイトでコンテンツ保護サービスの使用が必要となる場合があります</translation>
 <translation id="3930737994424905957">デバイスを検索しています</translation>
 <translation id="3930968231047618417">背景の色</translation>
-<translation id="3933283459331715412"><ph name="USERNAME" /> の削除済みパスワードを復元します</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> から Wi-Fi ネットワークが共有されています</translation>
 <translation id="3936390757709632190">オーディオを新しいタブで開く(&amp;O)</translation>
 <translation id="3936925983113350642">選択したパスワードは、この証明書を後で復元するときに必要です。安全な場所に記録しておいてください。</translation>

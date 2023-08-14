@@ -574,6 +574,7 @@
 <translation id="2166049586286450108">पूर्ण प्रशासक पहुँच</translation>
 <translation id="2166378884831602661">यो साइटले सुरक्षित जडान प्रदान गर्न सक्दैन</translation>
 <translation id="2168151236314517198">एड्मिनले तोक्नुभएको नीतिअनुसार यो सामग्री प्रिन्ट गर्ने सुविधा ब्लक गरिएको छ</translation>
+<translation id="2175630235841878061">१०० एम.बि. भन्दा ठुला फाइल डाउनलोड गर्न मिल्दैन</translation>
 <translation id="2176974405772725904">यो ठेगाना खातामा सेभ गर्नुहोस्</translation>
 <translation id="2178665390943006934">Chrome अपडेट गर्ने बटन, Chrome का सेटिङमा गई Chrome अपडेट गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="2181821976797666341">नीतिहरू</translation>
@@ -2022,7 +2023,6 @@
 <translation id="5287456746628258573">यो साइटले एउटा अद्यावधिक नभएको सुरक्षा कन्फिगुरेसनको प्रयोग गर्छ, जसले तपाईंको जानकारी (उदाहरणका लागि, पासवर्ड वा क्रेडिट कार्ड नम्बर) यस साइटमा पठाइँदा देखाउन सक्छ।</translation>
 <translation id="5288108484102287882">नीतिका मानहरू प्रमाणित गर्ने कार्यले चेतावनी दिएको छ</translation>
 <translation id="5288393065350884210">लेखा तथा लेखापरीक्षण</translation>
-<translation id="5288808348893593856">Chrome ले यो साइटको कनेक्सन सुरक्षित छैन भनेको अवस्थामा बाहेक तपाईंको कनेक्सन सधैँ सुरक्षित हुन्छ।</translation>
 <translation id="5289384342738547352">एकभन्दा बढी कागजातहरूको व्यवस्थापन</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{आजै अपडेट गर्नु पर्ने हुन्छ}=2{भोलिसम्ममा अपडेट गर्नु पर्ने हुन्छ}other{# दिनभित्र अपडेट गर्नु पर्ने हुन्छ}}</translation>
 <translation id="5293919335876685914">कुप कारहरू</translation>
@@ -2402,6 +2402,7 @@
 <translation id="6118782133429281336">मूल सूची खाली छ।</translation>
 <translation id="6120179357481664955">आफ्नो UPI ID सम्झने हो?</translation>
 <translation id="6122181661879998141">आफ्नो कार्डको अगाडिको भाग</translation>
+<translation id="6124058285696691147">एट्याचमेन्ट डाउनलोड गर्नुहोस्</translation>
 <translation id="6124432979022149706">Chrome Enterprise का कनेक्टरहरू</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6127379762771434464">वस्तुलाई हटाइयो</translation>
@@ -2613,7 +2614,6 @@
 <translation id="6569060085658103619">तपाईं एउटा विस्तार सम्बन्धी पृष्ठ हेर्दै हुनुहुन्छ</translation>
 <translation id="6569366777234823130">नाट्य चलचित्रहरू</translation>
 <translation id="6573200754375280815">दायाँपट्टि दुई प्वाल</translation>
-<translation id="6576181918031900030">कास्ट गर्न थाल्नुहोस्</translation>
 <translation id="6578434528542148658">एक्स्टेन्सनको अवैध ID।</translation>
 <translation id="657902945730878902">चित्र कोर्ने तथा रङ भर्ने काम</translation>
 <translation id="6579630537141957243">MIDI डिभाइस कनेक्ट गर्ने हो?</translation>

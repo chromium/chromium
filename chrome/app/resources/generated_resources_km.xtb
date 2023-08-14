@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">ប្រភេទក្រដាស</translation>
 <translation id="1143142264369994168">អ្នកចុះហត្ថលេខាវិញ្ញាបនប័ត្រ</translation>
 <translation id="1145593918056169051">ម៉ាស៊ីនបោះពុម្ព​បានឈប់</translation>
-<translation id="114571748016232560">មានអ្វីមួយខុសប្រក្រតី។ បើក​វិនដូ​ដោយផ្ទាល់ដៃ​ជំនួសវិញ។</translation>
 <translation id="114721135501989771">ទទួលបាន​មុខងារ​ឆ្លាតវៃ​របស់ Google នៅក្នុង Chrome</translation>
 <translation id="1147322039136785890">ឥឡូវនេះ ជាវេន​របស់ <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">ដើម្បី​ស្នើសុំ​សិទ្ធិចូល​ប្រើប្រាស់ សូម​ទាក់ទង​អ្នកគ្រប់គ្រង​ឧបករណ៍​នេះ​។</translation>
@@ -799,7 +798,6 @@
 <translation id="163072119192489970">អនុញ្ញាតឱ្យបញ្ចប់ការផ្ញើ និងការទទួលទិន្នន័យ</translation>
 <translation id="1630768113285622200">ចាប់ផ្ដើម​ឡើងវិញ និងបន្ត</translation>
 <translation id="1631503405579357839">ការមិនអាចបែងចែក​ពណ៌បាន</translation>
-<translation id="1632082166874334883">ពាក្យសម្ងាត់ដែលបានរក្សាទុកនៅក្នុងគណនី Google របស់អ្នក</translation>
 <translation id="1632756664321977232">ឧបករណ៍ច្រឹប</translation>
 <translation id="163309982320328737">ប្រវែងតួអក្សរចាប់ផ្តើមពេញ</translation>
 <translation id="1633947793238301227">បិទ Google ជំនួយការ</translation>
@@ -1040,7 +1038,6 @@
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> ទៀត...</translation>
 <translation id="1816036116994822943">ល្បឿនស្កេន​ក្ដារចុច</translation>
 <translation id="1817871734039893258">ការសង្គ្រោះឯកសារ Microsoft</translation>
-<translation id="1818007989243628752">លុប​ពាក្យ​សម្ងាត់​សម្រាប់ <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">កំពុងបង្ហោះ​កំណត់ហេតុ។</translation>
 <translation id="1819443852740954262">បើកទាំងអស់​នៅក្នុង​ផ្ទាំងឯកជន</translation>
 <translation id="1819721979226826163">ចុច​ការជូន​ដំណឹង​កម្មវិធី &gt; សេវាកម្ម Google Play ។</translation>
@@ -3657,7 +3654,6 @@
 <translation id="3930602610362250897">ដើម្បីចាក់​ខ្លឹមសារ​ដែលត្រូវបាន​ការពារដោយ​ការរក្សាសិទ្ធិ គេហទំព័រ​ប្រហែលជាត្រូវប្រើ​សេវាកម្ម​ការពារខ្លឹមសារ</translation>
 <translation id="3930737994424905957">កំពុង​ស្វែងរក​ឧបករណ៍</translation>
 <translation id="3930968231047618417">ពណ៌ផ្ទៃ​ខាងក្រោយ</translation>
-<translation id="3933283459331715412">ស្តារ​ពាក្យ​សម្ងាត់​ដែល​បាន​លុប​សម្រាប់ <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> កំពុងចែករំលែកបណ្ដាញ Wi-Fi ជាមួយអ្នក</translation>
 <translation id="3936390757709632190">បើកសម្លេងនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="3936925983113350642">តម្រូវឲ្យមានពាក្យសម្ងាត់ដែលអ្នកបានជ្រើសដើម្បីស្តារឯកសារឡើងវិញនៅពេលក្រោយ។ សូមចម្លងវានៅទីតាំងដែលមានសុវត្ថិភាព។</translation>

@@ -126,7 +126,6 @@
 <translation id="1657011748321897393">Абагуліць не ўдалося: няма падключэння да сеткі.</translation>
 <translation id="1657641691196698092">Заблакіраваныя файлы cookie</translation>
 <translation id="165877110639533037">Няма адкрытых укладак</translation>
-<translation id="166310177317698233">Замацаваныя ўкладкі можна знайсці, націснуўшы на кнопку "Паказаць укладкі".</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Запытаць мабільны сайт</translation>
 <translation id="168715261339224929">Уключыце сінхранізацыю, каб бачыць закладкі на ўсіх сваіх прыладах.</translation>
@@ -235,7 +234,6 @@
 <translation id="2423077901494354337">Цяпер вы зможаце карыстацца ўсімі магчымасцямі Chrome на сваёй прыладзе.</translation>
 <translation id="2434405374328098816">Вы ўжо захавалі пароль для карыстальніка <ph name="USERNAME" /> на вэб-сайце <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Паказаць пароль</translation>
-<translation id="2451654228769116489">Замацаваць укладку</translation>
 <translation id="2459155039684421202">Увядзіце задачу ў адрасным радку (напрыклад, "ачысціць гісторыю" або "змяніць паролі").</translation>
 <translation id="2461070143328828326">Налады пароляў</translation>
 <translation id="2469960372084740698">Выключыць Бяспечны прагляд?</translation>
@@ -304,7 +302,6 @@
 <translation id="2800683595868705743">Выйсці з пераключальніка ўкладак</translation>
 <translation id="2815198996063984598">2. Націсніце "Стандартны браўзер".</translation>
 <translation id="2818821771744632548">У выніку скіду налад iPhone адбыўся выхад з уліковага запісу <ph name="USER_NAME" />. Каб увайсці зноў, націсніце "Працягнуць" ніжэй.</translation>
-<translation id="2822917246944009066">Укладка замацавана</translation>
 <translation id="2830972654601096923">Кіраваць адрасамі...</translation>
 <translation id="2834399722155632105">3. Націсніце Password Options ("Налады пароляў").</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -836,7 +833,6 @@
 <translation id="6059830886158432458">Кіруйце паказам артыкулаў і гісторыяй дзеянняў тут</translation>
 <translation id="6064824697233747382">Палітыка вашай арганізацыі патрабуе, каб вы выключылі сінхранізацыю.</translation>
 <translation id="6066301408025741299">Каб скасаваць, націсніце тут.</translation>
-<translation id="6071409777669089905">Адмацаваць укладку</translation>
 <translation id="6084848228346514841">Выбраць укладкі</translation>
 <translation id="6100617279104942061">Вы ўвайшлі як <ph name="USER_EMAIL" />. Адкрывае налады.</translation>
 <translation id="6103540626693881831">Шыфраванне на прыладзе</translation>
@@ -1081,7 +1077,6 @@
 <translation id="7431991332293347422">Кіраванне тым, як ваша гісторыя прагляду сайтаў выкарыстоўваецца для персаналізацыі пошуку і ў іншых мэтах</translation>
 <translation id="7435356471928173109">Выключаны адміністратарам</translation>
 <translation id="7438481509621345350">Цяпер пры адкрыцці новай укладкі вы будзеце бачыць змесціва з сайта "<ph name="CHANNEL_NAME" />".</translation>
-<translation id="7446583256109515732">Укладка адмацавана</translation>
 <translation id="7451023311965289370">{count,plural, =1{Закладка захавана ў "{title}"}one{Закладкі захаваны ў "{title}"}few{Закладкі захаваны ў "{title}"}many{Закладак захавана ў "{title}"}other{Закладак захавана ў "{title}"}}</translation>
 <translation id="7454057999980797137">Штат/акруга</translation>
 <translation id="745899714366929493">Цэлы дзень</translation>
@@ -1108,7 +1103,6 @@
 <translation id="7600965453749440009">Ніколі не перакладаць з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Успл. вокны заблак. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Выдаліць пароль</translation>
-<translation id="7611459119367035420">Замацаваныя ўкладкі можна знайсці тут.</translation>
 <translation id="7638584964844754484">Няправільная фраза-пароль</translation>
 <translation id="7640669552036055091">Укладкі з Android</translation>
 <translation id="7646263789464975852">Меню → Налады → Праверка бяспекі</translation>

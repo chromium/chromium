@@ -2024,7 +2024,6 @@
 <translation id="5287456746628258573">پیکربندی امنیتی این سایت قدیمی است و ممکن است اطلاعاتتان (برای مثال، گذرواژه‌ها یا شماره کارت‌های اعتباری) را هنگام ارسال به این سایت افشا کند.</translation>
 <translation id="5288108484102287882">اعتبارسنجی مقادیر خط‌مشی با چند هشدار به پایان رسید</translation>
 <translation id="5288393065350884210">حسابداری و حسابرسی</translation>
-<translation id="5288808348893593856">‏اتصال به سایت امن است، مگراینکه Chrome چیز دیگری به شما بگوید.</translation>
 <translation id="5289384342738547352">کار با چندین سند</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{باید امروز به‌روز شود}=2{باید تا فردا به‌روز شود}one{باید تا # روز دیگر به‌روز شود}other{باید تا # روز دیگر به‌روز شود}}</translation>
 <translation id="5293919335876685914">کوپه</translation>
@@ -2615,7 +2614,6 @@
 <translation id="6569060085658103619">درحال مشاهده یک صفحه افزونه هستید</translation>
 <translation id="6569366777234823130">فیلم درام</translation>
 <translation id="6573200754375280815">دو سوراخ در راست</translation>
-<translation id="6576181918031900030">شروع پخش محتوا</translation>
 <translation id="6578434528542148658">شناسه افزونه نامعتبر است.</translation>
 <translation id="657902945730878902">طراحی و رنگ‌آمیزی</translation>
 <translation id="6579630537141957243">‏دستگاه MIDI متصل شود؟</translation>

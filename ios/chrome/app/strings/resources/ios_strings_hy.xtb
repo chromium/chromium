@@ -126,7 +126,6 @@
 <translation id="1657011748321897393">Չհաջողվեց համօգտագործել, քանի որ դուք միացած չեք ցանցին:</translation>
 <translation id="1657641691196698092">Արգելափակված քուքիներ</translation>
 <translation id="165877110639533037">Բաց ներդիրներ չկան</translation>
-<translation id="166310177317698233">Դուք կարող եք գտնել ձեր ամրացված ներդիրները՝ հպելով «Ցուցադրել ներդիրները» կոճակին։</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />ից <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Պահանջել կայքի բջջային տարբերակը</translation>
 <translation id="168715261339224929">Ձեր ներդիրները ձեր բոլոր սարքերում օգտագործելու համար միացրեք համաժամացումը</translation>
@@ -235,7 +234,6 @@
 <translation id="2423077901494354337">Այժմ դուք կարող եք օգտվել Chrome-ի բոլոր հնարավորություններից</translation>
 <translation id="2434405374328098816">Դուք <ph name="WEBSITE" /> կայքում «<ph name="USERNAME" />» օգտատիրոջ համար արդեն գաղտնաբառ պահել եք։</translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
-<translation id="2451654228769116489">Ամրացնել ներդիրը</translation>
 <translation id="2459155039684421202">Հասցեագոտում մուտքագրեք որևէ առաջադրանք, օրինակ՝ «մաքրել իմ պատմությունը» կամ «փոփոխել գաղտնաբառերը»։</translation>
 <translation id="2461070143328828326">Գաղտնաբառերի կարգավորումներ</translation>
 <translation id="2469960372084740698">Անջատե՞լ ապահով դիտարկումը</translation>
@@ -304,7 +302,6 @@
 <translation id="2800683595868705743">Փակել ներդիրների փոխանջատիչը</translation>
 <translation id="2815198996063984598">2. Հպեք «Դիտարկիչի կանխադրված հավելված»։</translation>
 <translation id="2818821771744632548">Ձեր iPhone-ը վերակայելիս դուք դուրս եք գրվել ձեր <ph name="USER_NAME" /> հաշվից։ Մուտք գործելու համար ստորև սեղմեք «Շարունակել»։</translation>
-<translation id="2822917246944009066">Ներդիրն ամրացվեց</translation>
 <translation id="2830972654601096923">Կառավարել հասցեները…</translation>
 <translation id="2834399722155632105">3. Հպեք Գաղտնաբառերի կարգավորումներին</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -836,7 +833,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6059830886158432458">Կառավարեք ձեր պատմություններն ու գործողություններն այստեղ</translation>
 <translation id="6064824697233747382">Ձեր կազմակերպությունը պահանջում է, որ անջատեք համաժամացումը։</translation>
 <translation id="6066301408025741299">Հպեք՝ չեղարկելու համար:</translation>
-<translation id="6071409777669089905">Ապամրացնել ներդիրը</translation>
 <translation id="6084848228346514841">Ընտրեք ներդիրներ</translation>
 <translation id="6100617279104942061">Դուք մուտք եք գործել որպես <ph name="USER_EMAIL" />։ Բացում է կարգավորումները։</translation>
 <translation id="6103540626693881831">Գաղտնագրում սարքում</translation>
@@ -1081,7 +1077,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7431991332293347422">Կառավարեք ձեր այցելությունների պատմության օգտագործումը՝ Որոնումը և այլ ծառայություններ անհատականացնելու համար</translation>
 <translation id="7435356471928173109">Անջատվել է ադմինիստրատորի կողմից</translation>
 <translation id="7438481509621345350">Այժմ, երբ նոր ներդիր բացեք, կտեսնեք նորություններ <ph name="CHANNEL_NAME" /> ալիքից։</translation>
-<translation id="7446583256109515732">Ներդիրն ապամրացվեց</translation>
 <translation id="7451023311965289370">{count,plural, =1{Էջանիշը պահվեց այստեղ՝ «{title}»}one{Էջանիշները պահվեցին այստեղ՝ «{title}»}other{Էջանիշները պահվեցին այստեղ՝ «{title}»}}</translation>
 <translation id="7454057999980797137">Նահանգ/շրջան</translation>
 <translation id="745899714366929493">Ամբողջ օրը</translation>
@@ -1108,7 +1103,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7600965453749440009">Երբեք չթարգմանել <ph name="LANGUAGE" /> էջերը</translation>
 <translation id="7603852183842204213">Ելնող պատուհաններն արգելափակվել են (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Ջնջել գաղտնաբառը</translation>
-<translation id="7611459119367035420">Այստեղ ցուցադրվում են ձեր ամրացված ներդիրները։</translation>
 <translation id="7638584964844754484">Սխալ անցաբառ</translation>
 <translation id="7640669552036055091">Android-ում վերջերս օգտագործած ներդիրներ</translation>
 <translation id="7646263789464975852">Ընտրացանկ → Կարգավորումներ → Անվտանգության ստուգում</translation>

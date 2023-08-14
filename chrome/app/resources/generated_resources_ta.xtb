@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">காகித வகை</translation>
 <translation id="1143142264369994168">சான்றிதழ் கையொப்பமிடுநர்</translation>
 <translation id="1145593918056169051">பிரிண்டர் நின்றுவிட்டது</translation>
-<translation id="114571748016232560">ஏதோ தவறாகிவிட்டது. நீங்களே சாளரங்களைத் திறக்கவும்.</translation>
 <translation id="114721135501989771">Chromeமில் Google ஸ்மார்ட்களை பெறுக</translation>
 <translation id="1147322039136785890">சாதனத்தைப் பயன்படுத்துவதற்கான <ph name="SUPERVISED_USER_NAME" /> இன் முறை வந்துவிட்டது</translation>
 <translation id="1147991416141538220">அணுகலைக் கோர இந்தச் சாதனத்தின் நிர்வாகியைத் தொடர்பு கொள்ளவும்.</translation>
@@ -799,7 +798,6 @@
 <translation id="163072119192489970">தரவை அனுப்புவதையும் பெறுவதையும் நிறைவுசெய்ய அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="1630768113285622200">மீண்டும் தொடங்கி தொடர்க</translation>
 <translation id="1631503405579357839">நிறக்குருடு</translation>
-<translation id="1632082166874334883">கடவுச்சொல் உங்கள் Google கணக்கில் சேமிக்கப்பட்டது</translation>
 <translation id="1632756664321977232">செதுக்கும் கருவி</translation>
 <translation id="163309982320328737">முழுமையான தொடக்க எழுத்துக்குறி அகலம்</translation>
 <translation id="1633947793238301227">Google Assistantடை முடக்கு</translation>
@@ -1040,7 +1038,6 @@
 <translation id="181577467034453336">மேலும் <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">கீபோர்டை ஸ்கேன் செய்யும் வேகம்</translation>
 <translation id="1817871734039893258">Microsoft File Recovery</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" /> இன் கடவுச்சொல்லை நீக்கும்</translation>
 <translation id="1818913467757368489">பதிவு ஏற்றப்படுகிறது.</translation>
 <translation id="1819443852740954262">அனைத்தையும் மறைநிலைச் சாளரத்தில் திற</translation>
 <translation id="1819721979226826163">ஆப்ஸ் அறிவிப்புகள் &gt; Google Play சேவைகள் என்பதைத் தட்டவும்.</translation>
@@ -1182,6 +1179,7 @@
 <translation id="1925124445985510535"><ph name="TIME" />க்குப் பாதுகாப்புச் சரிபார்ப்பு மேற்கொள்ளப்பட்டது</translation>
 <translation id="192564025059434655">டிசம்பர் 2022க்குப் பிறகு Windows சாதனங்களில் Chrome ஆப்ஸின் பழைய பதிப்புகள் இயங்காது. புதிய பதிப்பு உள்ளதா என நீங்கள் பார்க்கலாம்.</translation>
 <translation id="1926339101652878330">இந்த அமைப்புகள் நிறுவனக் கொள்கையால் கட்டுப்படுத்தப்படுகின்றன. மேலும் தகவலுக்கு உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
+<translation id="1926887872692564784">கர்சர்</translation>
 <translation id="1927632033341042996">விரல் <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">திரைப் பூட்டின் பின்</translation>
 <translation id="192858925209436740">நீங்கள் சேமித்த ஆவணங்களை Chromebookகில் நிர்வகிக்க, OneDriveவை Files ஆப்ஸுடன் இணைக்கவும். நீங்கள் Microsoft கணக்கின் மூலம் உள்நுழைய வேண்டும்.</translation>
@@ -3286,6 +3284,7 @@
 <translation id="3653887973853407813">இந்த நீட்டிப்பைப் பயன்படுத்த முடியாது. Chromeமில் “தளங்கள், ஆப்ஸ், நீட்டிப்புகள் ஆகியவற்றுக்கான அனுமதிகளை” உங்கள் பெற்றோர் அல்லது காப்பாளர் முடக்கியுள்ளார்.</translation>
 <translation id="3653999333232393305">உங்கள் மைக்ரோஃபோனை அணுக <ph name="HOST" /> ஐத் தொடர்ந்து அனுமதிக்கவும்</translation>
 <translation id="3654045516529121250">உங்கள் அணுகல்தன்மை அமைப்புகளைப் படித்தல்</translation>
+<translation id="3656328935986149999">கர்சர் வேகம்</translation>
 <translation id="3658871634334445293">TrackPoint ஆக்ஸிலரேஷன்</translation>
 <translation id="3659550105763988702"><ph name="APP_NAME" />க்கான உங்கள் கடவுச்சாவியைப் பயன்படுத்துங்கள்</translation>
 <translation id="3659929705630080526">தவறான அணுகல் குறியீட்டைப் பலமுறை டைப் செய்துள்ளீர்கள். பிறகு முயலவும்</translation>
@@ -3655,7 +3654,6 @@
 <translation id="3930602610362250897">பதிப்புரிமை மூலம் பாதுகாக்கப்படும் உள்ளடக்கத்தைப் பிளே செய்ய, உள்ளடக்கப் பாதுகாப்புச் சேவையைத் தளங்கள் பயன்படுத்தக்கூடும்</translation>
 <translation id="3930737994424905957">சாதனங்களைத் தேடுகிறது</translation>
 <translation id="3930968231047618417">பின்புல வண்ணம்</translation>
-<translation id="3933283459331715412"><ph name="USERNAME" /> இன் நீக்கப்பட்ட கடவுச்சொல்லை மீட்டமைக்கும்</translation>
 <translation id="3936260554100916852">உங்களுடன் ஒரு வைஃபை நெட்வொர்க்கை <ph name="DEVICE_NAME" /> பகிர்கிறது</translation>
 <translation id="3936390757709632190">புதிய தாவலில் ஆடியோவை &amp;திற</translation>
 <translation id="3936925983113350642">நீங்கள் தேர்வு செய்யும் கடவுச்சொல்லானது, பின்னர் இந்தச் சான்றிதழை மீட்டெடுப்பதற்குத் தேவைப்படும். இதைப் பாதுகாப்பான இடத்தில் குறித்து வைக்கவும்.</translation>
@@ -3999,6 +3997,7 @@
 <translation id="4232375817808480934">Kerberosஸை உள்ளமைத்தல்</translation>
 <translation id="4233739489690259993">உங்கள் Chromebook இனி பாதுகாப்பு மற்றும் மென்பொருள் புதுப்பிப்புகளைப் பெறாது. சமீபத்திய பாதுகாப்பு மற்றும் புதிய அம்சங்களைப் பெறுவதற்கு உங்கள் சாதனத்தை மேம்படுத்துங்கள். சலுகை விதிமுறைகள் பொருந்தும்.</translation>
 <translation id="4235965441080806197">உள்நுழைவை ரத்துசெய்</translation>
+<translation id="4235976607074422892">ஸ்க்ரோலிங் வேகம்</translation>
 <translation id="4237282663517880406">Google Drive பரிந்துரைகளைக் காட்டு</translation>
 <translation id="4241182343707213132">நிறுவன ஆப்ஸைப் புதுப்பிக்க மீண்டும் தொடங்குங்கள்</translation>
 <translation id="4242145785130247982">பல்வேறு கிளையண்ட் சான்றிதழ்களைப் பயன்படுத்த இயலாது</translation>
@@ -5322,6 +5321,7 @@
 <translation id="5365881113273618889">நீங்கள் தேர்ந்தெடுத்த ஃபோல்டரில் முக்கியமான ஃபைல்கள்  உள்ளன. "<ph name="APP_NAME" />" இந்த ஃபோல்டருக்கான நிரந்தர எழுதும் அணுகலை நிச்சயமாக வழங்க விரும்புகிறீர்களா?</translation>
 <translation id="536638840841140142">மார்ஜின்கள் எதுவுமில்லை</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" /> சாதனத்தில் இருந்து '<ph name="NETWORK_NAME" />' சேமிக்கப்பட்டது</translation>
+<translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> கடவுச்சொல்லை உருவாக்கு</translation>
 <translation id="5368720394188453070">ஃபோன் பூட்டப்பட்டது. நுழைய, அன்லாக் செய்யவும்.</translation>
 <translation id="5368779022775404937"><ph name="REALM" /> இல் உள்நுழையவும்</translation>
 <translation id="536882527576164740">{0,plural, =1{மறைநிலைச் சாளரம்}other{மறைநிலைச் சாளரங்கள் (#)}}</translation>
@@ -8651,6 +8651,7 @@
 <translation id="8137559199583651773">நீட்டிப்புகளை நிர்வகிக்கவும்</translation>
 <translation id="8138217203226449454">உங்கள் தேடல் வழங்குநரை மாற்ற விரும்புகிறீர்களா?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> நிலை</translation>
+<translation id="8139440916039659819">கர்சர் ஆக்ஸிலரேஷன்</translation>
 <translation id="8139447493436036221">Google Drive ஃபைல்கள் </translation>
 <translation id="8139643636835015859">இதைச் செய்வதால் உங்கள் ஆஃப்லைன் ஃபைல்கள் பயன்படுத்தும் <ph name="OFFLINE_STORAGE_SIZE" /> சேமிப்பிடம் அகற்றப்படும். இருப்பினும் சில ஃபைல்கள் ஆஃப்லைனில் கிடைக்கும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8987,6 +8988,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" />, மேலும் <ph name="COUNT" /> அனுமதிகள் வழங்கப்பட்டுள்ளன</translation>
 <translation id="8413956290606243087">ChromeOSஸுக்கான ChromeVox எனும் உள்ளமைந்த ஸ்கிரீன் ரீடரை இயக்க விரும்புகிறீர்களா?</translation>
+<translation id="8414065061814811918">ஸ்க்ரோல் ஆக்ஸிலரேஷன். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">இரண்டு நாட்களுக்கு நினைவுகள் மறைக்கப்பட்டுள்ளன</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இல் உள்நுழையுங்கள்</translation>
 <translation id="8414685983518053656">குறிப்புகள்</translation>
@@ -9113,6 +9115,7 @@
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">ஸ்பீக்கர்கள்</translation>
 <translation id="8527257351549797148">ஆப்ஸ், நீட்டிப்புகள் மற்றும் பலவற்றை அணுக, உங்கள் சாதனத்தை நிறுவனத்தில் பதிவுசெய்ய வேண்டியிருக்கலாம். பாதுகாப்பு மற்றும் சாதன அமைப்புகள் போன்றவற்றை உங்கள் நிறுவனம் நிர்வகிப்பதற்கும் இது அனுமதிக்கும்.</translation>
+<translation id="8527869672961320915"><ph name="VM_NAME" /> ஆப்ஸ்</translation>
 <translation id="8528074251912154910">மொழிகளைச் சேர்</translation>
 <translation id="8528479410903501741">IBANனைச் சேமிக்கும்</translation>
 <translation id="8528962588711550376">உள்நுழைகிறீர்கள்.</translation>
@@ -9369,6 +9372,7 @@
 <translation id="8736288397686080465">இந்தத் தளம் பின்புலத்தில் புதுப்பிக்கப்படும்.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">பக்கத்தை மொழிபெயர்ப்பதற்கான மொழியைத் தேர்வுசெய்யலாம்</translation>
+<translation id="8740086188450289493">Google கணக்கின் கடவுச்சொல்லைப் பயன்படுத்து</translation>
 <translation id="8740247629089392745"><ph name="SUPERVISED_USER_NAME" /> பயன்படுத்துவதற்காக இந்த Chromebook சாதனத்தை அவரிடம் வழங்கலாம். கிட்டத்தட்ட அமைத்துவிட்டீர்கள். இப்போது அவர் பயன்படுத்தத் தொடங்கலாம்.</translation>
 <translation id="8740672167979365981">ChromeOS Flexஸைப் புதுப்பிக்க வேண்டும்</translation>
 <translation id="8741944563400125534">சுவிட்ச் அணுகலை அமைப்பதற்கான வழிகாட்டி</translation>
@@ -9751,6 +9755,7 @@
 <translation id="9045160989383249058">உங்கள் வாசிப்புப் பட்டியல் புதிய பக்கவாட்டுப் பேனலுக்கு நகர்த்தப்பட்டுள்ளது. அதை இங்கே பாருங்கள்.</translation>
 <translation id="9045430190527754450">நீங்கள் செல்ல முயற்சிக்கும் பக்கத்தின் இணைய முகவரியை Googleளுக்கு அனுப்பும்</translation>
 <translation id="9048745018038487540">அனைத்து எழுத்துருக்களையும் தேர்ந்தெடு</translation>
+<translation id="9050135202879860719"><ph name="DEVICE_TYPE" /> இல் உள்நுழைய கடவுச்சொல்லைப் பயன்படுத்தவும்</translation>
 <translation id="9050666287014529139">கடவுச்சொற்றொடர்</translation>
 <translation id="9052404922357793350">தடுப்பதைத் தொடர்</translation>
 <translation id="90528604757378587">பின்னணிச் செயல்பாடுகளும் ஸ்மூத் ஸ்க்ரோலிங் போன்ற சில விஷுவல் எஃபெக்ட்டுகளும் வரம்பிடப்படலாம்.</translation>

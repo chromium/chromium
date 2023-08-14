@@ -184,7 +184,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1142713751288681188">Math o bapur</translation>
 <translation id="1143142264369994168">Llofnodwr Tystysgrifau</translation>
 <translation id="1145593918056169051">Mae'r argraffydd wedi stopio</translation>
-<translation id="114571748016232560">Aeth rhywbeth o'i le. Agorwch y ffenestri yn bwrpasol yn lle hynny.</translation>
 <translation id="114721135501989771">Cael buddion Google yn Chrome</translation>
 <translation id="1147322039136785890">Nawr, tro <ph name="SUPERVISED_USER_NAME" /> yw hi</translation>
 <translation id="1147991416141538220">I ofyn am fynediad, cysylltwch â gweinyddwr y ddyfais hon.</translation>
@@ -802,7 +801,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="163072119192489970">Caniateir gorffen anfon a derbyn data</translation>
 <translation id="1630768113285622200">Ailgychwyn a pharhau</translation>
 <translation id="1631503405579357839">Dallineb lliw</translation>
-<translation id="1632082166874334883">Cyfrinair sydd wedi'i storio yn eich cyfrif Google</translation>
 <translation id="1632756664321977232">Offeryn Tocio</translation>
 <translation id="163309982320328737">Mae lled y nod cychwynnol yn Llawn</translation>
 <translation id="1633947793238301227">Analluogi Google Assistant</translation>
@@ -1043,7 +1041,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> arall...</translation>
 <translation id="1816036116994822943">Cyflymder chwilio am fysellfwrdd</translation>
 <translation id="1817871734039893258">Microsoft File Recovery</translation>
-<translation id="1818007989243628752">Dileu'r cyfrinair ar gyfer <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Wrthi'n uwchlwytho log.</translation>
 <translation id="1819443852740954262">Agor pob un mewn ffenestr Anhysbys</translation>
 <translation id="1819721979226826163">Tapiwch Hysbysiadau Ap &gt; Gwasanaethau Google Play.</translation>
@@ -3658,7 +3655,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="3930602610362250897">I chwarae cynnwys sydd wedi'i warchod gan hawlfraint, efallai y bydd angen i wefannau ddefnyddio gwasanaeth diogelu cynnwys</translation>
 <translation id="3930737994424905957">Yn chwilio am ddyfeisiau</translation>
 <translation id="3930968231047618417">Lliw'r cefndir</translation>
-<translation id="3933283459331715412">Adfer cyfrinair a ddilëwyd ar gyfer <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852">Mae <ph name="DEVICE_NAME" /> yn rhannu rhwydwaith Wi-FI â chi</translation>
 <translation id="3936390757709632190">&amp;Agor sain mewn tab newydd</translation>
 <translation id="3936925983113350642">Bydd angen y cyfrinair a ddewiswch i adfer y dystysgrif hon yn nes ymlaen. Cofnodwch ef mewn lleoliad diogel.</translation>

@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">කඩදාසි වර්ගය</translation>
 <translation id="1143142264369994168">සහතික අත්සන් කරන්නා</translation>
 <translation id="1145593918056169051">මුද්‍රකය නැවතී ඇත</translation>
-<translation id="114571748016232560">යමක් වැරදී ඇත. ඒ වෙනුවට කවුළු හස්තීයව විවෘත කරන්න.</translation>
 <translation id="114721135501989771">Chromeවල Google ස්මාට් ගන්න</translation>
 <translation id="1147322039136785890">දැන් <ph name="SUPERVISED_USER_NAME" />ගේ වාරයයි</translation>
 <translation id="1147991416141538220">ප්‍රවේශය ඉල්ලීමට, මෙම උපාංගයේ පරිපාලකයා සම්බන්ධ කර ගන්න.</translation>
@@ -796,7 +795,6 @@
 <translation id="163072119192489970">දත්ත යැවීම සහ ලැබීම අවසන් කිරීමට ඉඩ දේ</translation>
 <translation id="1630768113285622200">යළි අරඹා ඉදිරියට යන්න</translation>
 <translation id="1631503405579357839">වර්ණ අන්ධතාව</translation>
-<translation id="1632082166874334883">මුරපදය ඔබේ Google ගිණුම තුළ ගබඩා කළා</translation>
 <translation id="1632756664321977232">කප්පාදු කිරීමේ මෙවලම</translation>
 <translation id="163309982320328737">මූලික අනුලකුණු පළල පිරී ඇත</translation>
 <translation id="1633947793238301227">Google සහකරු අබල කරන්න</translation>
@@ -1029,7 +1027,6 @@
 <translation id="181577467034453336">තව <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">යතුරු පුවරු ස්කෑන් කිරීමේ වේගය</translation>
 <translation id="1817871734039893258">Microsoft ගොනු ප්‍රතිසාධනය</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" /> සඳහා මුරපදය මකන්න</translation>
 <translation id="1818913467757368489">ලොගයන් උඩුගත කිරීම සිදුවෙමින් පවතී.</translation>
 <translation id="1819443852740954262">සියල්ල අප්‍රසිද්ධ කවුළුවක විවෘත කරන්න</translation>
 <translation id="1819721979226826163">යෙදුම් දැනුම්දීම් &gt; Google Play සේවා තට්ටු කරන්න.</translation>
@@ -3645,7 +3642,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3930602610362250897">ප්‍රකාශන හිමිකමෙන් ආරක්ෂිත අන්තර්ගතය වාදනය කිරීමට, අඩවිවලට අන්තර්ගත ආරක්ෂක සේවාවක් භාවිත කිරීමට අවශ්‍ය විය හැකිය</translation>
 <translation id="3930737994424905957">උපාංග සඳහා සොයමින්</translation>
 <translation id="3930968231047618417">පසුබිම් වර්ණය</translation>
-<translation id="3933283459331715412"><ph name="USERNAME" /> සඳහා මැකූ මුරපදය ප්‍රතිසාධනය කරන්න</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> ඔබ සමඟ Wi-Fi ජාලයක් බෙදා ගනිමින් සිටී</translation>
 <translation id="3936390757709632190">ශ්‍රව්‍යය නව ටැබයක විවෘත කරන්න (&amp;O)</translation>
 <translation id="3936925983113350642">ඔබ තෝරන මුරපදය පසුව මෙම සහතිකය ප්‍රතිසාධනය කිරීමට අවශ්‍ය වනු ඇත. කරුණාකර එය ආරක්ෂිත ස්ථානයක වාර්තාගත කරන්න.</translation>

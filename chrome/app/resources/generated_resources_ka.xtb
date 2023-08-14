@@ -182,7 +182,6 @@
 <translation id="1142713751288681188">ქაღალდის ტიპი</translation>
 <translation id="1143142264369994168">სერტიფიკატის ხელმომწერი</translation>
 <translation id="1145593918056169051">პრინტერმა შეწყვიტა მუშაობა</translation>
-<translation id="114571748016232560">რაღაც შეცდომა მოხდა. ხელით გახსენით ფანჯრები.</translation>
 <translation id="114721135501989771">ისარგებლეთ Google-ის გონიერი ფუნქციებით Chrome-ში</translation>
 <translation id="1147322039136785890">ახლა <ph name="SUPERVISED_USER_NAME" />-ის ჯერია</translation>
 <translation id="1147991416141538220">წვდომის მოთხოვნით მიმართეთ ამ მოწყობილობის ადმინისტრატორს.</translation>
@@ -796,7 +795,6 @@
 <translation id="163072119192489970">მონაცემთა გაგზავნის/მიღების დასრულება დაშვებულია</translation>
 <translation id="1630768113285622200">გადატვირთვა და გაგრძელება</translation>
 <translation id="1631503405579357839">დალტონიზმი</translation>
-<translation id="1632082166874334883">თქვენს Google ანგარიშში შენახული პაროლი</translation>
 <translation id="1632756664321977232">ჩამოჭრის ხელსაწყო</translation>
 <translation id="163309982320328737">პირველადი სიმბოლოს სიგანე სავსეა</translation>
 <translation id="1633947793238301227">Google ასისტენტის გათიშვა</translation>
@@ -1029,7 +1027,6 @@
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> სხვა…</translation>
 <translation id="1816036116994822943">კლავიატურის სკანირების სიჩქარე</translation>
 <translation id="1817871734039893258">Microsoft ფაილის აღდგენა</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" />-ის პაროლის წაშლა</translation>
 <translation id="1818913467757368489">ამჟამად მიმდინარეობს ჟურნალის ატვირთვა.</translation>
 <translation id="1819443852740954262">ყველას გახსნა ინკოგნიტო ფანჯარაში</translation>
 <translation id="1819721979226826163">შეხებით აირჩიეთ: აპების შეტყობინებები &gt; Google Play services.</translation>
@@ -3642,7 +3639,6 @@
 <translation id="3930602610362250897">საავტორო უფლებებით დაცული კონტენტის დასაკრავად ვებსაიტებს შეიძლება კონტენტის დაცვის სერვისის გამოყენება დასჭირდეს</translation>
 <translation id="3930737994424905957">მიმდინარეობს მოწყობილობების ძიება</translation>
 <translation id="3930968231047618417">ფონის ფერი</translation>
-<translation id="3933283459331715412"><ph name="USERNAME" />-ის წაშლილი პაროლის აღდგენა</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> გიზიარებთ Wi-Fi ქსელს</translation>
 <translation id="3936390757709632190">&amp;აუდიოს გახსნა ახალ ჩანართზე</translation>
 <translation id="3936925983113350642">თქვენ მიერ არჩეული პაროლი ამ სერტიფიკატის მოგვიანებით აღსადგენად დაგჭირდებათ. გთხოვთ, ის უსაფრთხო ადგილას შეინახოთ.</translation>

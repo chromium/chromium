@@ -574,6 +574,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2166049586286450108">Full Admin Access</translation>
 <translation id="2166378884831602661">This site can’t provide a secure connection</translation>
 <translation id="2168151236314517198">Printing this content is blocked by administrator policy</translation>
+<translation id="2175630235841878061">Files over 100MB are not available for download</translation>
 <translation id="2176974405772725904">Save address in Account</translation>
 <translation id="2178665390943006934">Update Chrome button, activate to update Chrome from your Chrome settings</translation>
 <translation id="2181821976797666341">Policies</translation>
@@ -2024,7 +2025,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5287456746628258573">This site uses an outdated security configuration, which may expose your information (for example, passwords or credit card numbers) when it is sent to this site.</translation>
 <translation id="5288108484102287882">Validation of policy values has raised warnings</translation>
 <translation id="5288393065350884210">Accounting and auditing</translation>
-<translation id="5288808348893593856">The site's connection is secure unless Chrome tells you otherwise.</translation>
 <translation id="5289384342738547352">Multiple documents handling</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Update required today}=2{Update required by tomorrow}other{Update required within # days}}</translation>
 <translation id="5293919335876685914">Coupés</translation>
@@ -2404,6 +2404,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6118782133429281336">Origin list is empty.</translation>
 <translation id="6120179357481664955">Remember your UPI ID?</translation>
 <translation id="6122181661879998141">front of your card</translation>
+<translation id="6124058285696691147">Download the attachment</translation>
 <translation id="6124432979022149706">Chrome Enterprise connectors</translation>
 <translation id="6126565365696310362">Envelope Chinese no.2</translation>
 <translation id="6127379762771434464">Item removed</translation>
@@ -2615,7 +2616,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6569060085658103619">You're viewing an extension page</translation>
 <translation id="6569366777234823130">Drama movies</translation>
 <translation id="6573200754375280815">Dual punch right</translation>
-<translation id="6576181918031900030">Start casting</translation>
 <translation id="6578434528542148658">Invalid extension ID.</translation>
 <translation id="657902945730878902">Drawing and colouring</translation>
 <translation id="6579630537141957243">Connect MIDI device?</translation>

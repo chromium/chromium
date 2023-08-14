@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">용지 종류</translation>
 <translation id="1143142264369994168">인증서 서명자</translation>
 <translation id="1145593918056169051">프린터가 중지됨</translation>
-<translation id="114571748016232560">문제가 발생했습니다. 대신 수동으로 창을 여세요.</translation>
 <translation id="114721135501989771">Google로 Chrome을 더욱 스마트하게</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" />님의 차례입니다</translation>
 <translation id="1147991416141538220">액세스 권한을 요청하려면 기기 관리자에게 문의하세요.</translation>
@@ -799,7 +798,6 @@
 <translation id="163072119192489970">데이터 전송 및 수신 완료가 허용됨</translation>
 <translation id="1630768113285622200">다시 시작 및 계속</translation>
 <translation id="1631503405579357839">색맹</translation>
-<translation id="1632082166874334883">Google 계정에 비밀번호가 저장됨</translation>
 <translation id="1632756664321977232">자르기 도구</translation>
 <translation id="163309982320328737">초기 글자 폭을 최대로 설정</translation>
 <translation id="1633947793238301227">Google 어시스턴트 사용 안함</translation>
@@ -1040,7 +1038,6 @@
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" />개 더보기...</translation>
 <translation id="1816036116994822943">키보드 검색 속도</translation>
 <translation id="1817871734039893258">Microsoft File Recovery</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" />님의 비밀번호 삭제</translation>
 <translation id="1818913467757368489">로그 업로드가 진행 중입니다.</translation>
 <translation id="1819443852740954262">시크릿 창에서 모두 열기</translation>
 <translation id="1819721979226826163">앱 알림 &gt; Google Play 서비스를 탭합니다.</translation>
@@ -3657,7 +3654,6 @@
 <translation id="3930602610362250897">저작권으로 보호되는 콘텐츠를 재생하려면 사이트에서 콘텐츠 보호 서비스를 사용해야 할 수 있습니다.</translation>
 <translation id="3930737994424905957">기기 검색 중</translation>
 <translation id="3930968231047618417">배경 색상</translation>
-<translation id="3933283459331715412">삭제된 <ph name="USERNAME" />님의 비밀번호 복원</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" />에서 Wi-Fi 네트워크를 나와 공유 중입니다.</translation>
 <translation id="3936390757709632190">새 탭에서 오디오 열기(&amp;O)</translation>
 <translation id="3936925983113350642">선택한 비밀번호는 나중에 이 인증서를 복원할 때 필요하므로 안전한 위치에 기록해 두세요.</translation>

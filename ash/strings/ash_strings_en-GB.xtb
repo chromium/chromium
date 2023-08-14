@@ -25,6 +25,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="108486256082349153">Mobile: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Good afternoon <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Search your <ph name="CATEGORY" />, files, apps and more. Use the arrow keys to navigate your apps.</translation>
+<translation id="1093645050124056515">ctrl + alt + down arrow</translation>
 <translation id="109942774857561566">I'm bored</translation>
 <translation id="1104084341931202936">Show accessibility settings</translation>
 <translation id="1104621072296271835">Your devices work even better together</translation>
@@ -43,6 +44,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1182225749592316782">This allows access for all apps and websites with the camera and microphone permissions</translation>
+<translation id="1182876754474670069">home</translation>
 <translation id="1183863904939664422">Not interested in this suggestion</translation>
 <translation id="1184126796192815024">This network doesn't support streaming apps from your phone. Try using your phone's hotspot. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Enter password or PIN for more security</translation>
@@ -147,6 +149,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1586324912145647027">Go to desk 1 to 8</translation>
 <translation id="1589090746204042747">Access all your activity in this session</translation>
 <translation id="1592682369233288537">Next Desk: <ph name="NEXT_DESK_NAME" />, use Search+Space to activate.</translation>
+<translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + down arrow</translation>
 <translation id="1604857178818051494">Pause media</translation>
 <translation id="1610778689852195798">'Undo'</translation>
 <translation id="1611993646327628135">On</translation>
@@ -249,6 +252,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2021864487439853900">Click to unlock</translation>
 <translation id="2023558322300866873">You can stop packet capture at any time</translation>
 <translation id="2034971124472263449">Save anyway</translation>
+<translation id="204259843076055848">The <ph name="SIX_PACK_KEY_NAME" /> shortcut is currently off</translation>
 <translation id="2049240716062114887">Desk name was changed to <ph name="DESK_NAME" /></translation>
 <translation id="206377500836174974">Full</translation>
 <translation id="2064048859448024834">Camera preview on</translation>
@@ -381,6 +385,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> and <ph name="UNAVAILABLE_APPS_TWO" /> aren't on this device.</translation>
 <translation id="2673968385134502798">Games</translation>
 <translation id="2678852583403169292">Select to Speak menu</translation>
+<translation id="2687510499067466116">Keyboard shortcut has changed</translation>
 <translation id="2689613560355655046">Desk 8</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Show keyboard settings. <ph name="KEYBOARD_NAME" /> is selected.</translation>
@@ -637,12 +642,14 @@ Connect your device to power.</translation>
 <translation id="3738664582935948253">You can now show clicks and keyboard shortcuts in screen recordings</translation>
 <translation id="3742055079367172538">Screenshot taken</translation>
 <translation id="3756485814916578707">Casting screen</translation>
+<translation id="3765841382945324995">The <ph name="SIX_PACK_KEY_NAME" /> shortcut is updated to <ph name="NEW_SHORTCUT" /> from <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Edited today</translation>
 <translation id="3773700760453577392">An administrator has disallowed multiple sign-in for <ph name="USER_EMAIL" />. All users must sign out to continue.</translation>
 <translation id="3779139509281456663">Connecting <ph name="NAME" /></translation>
 <translation id="3781910048497807059">Move focus to previous pane</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Lock</translation>
+<translation id="3796215473395753611">alt + up arrow</translation>
 <translation id="3796746699333205839">An application is using your camera and microphone</translation>
 <translation id="3798670284305777884">Speaker (internal)</translation>
 <translation id="3799080171973636491">You pressed the keyboard shortcut for the full-screen magnifier. Do you want to turn it on?</translation>
@@ -698,6 +705,7 @@ Connect your device to power.</translation>
 <translation id="4026843240379844265">Move active window between displays</translation>
 <translation id="4028481283645788203">Password required for more security</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + left arrow</translation>
 <translation id="4042660782729322247">You're sharing your screen</translation>
 <translation id="404437169852192935">Updates ended</translation>
 <translation id="4049230407053723315">Quick Settings</translation>
@@ -719,6 +727,7 @@ Connect your device to power.</translation>
 <translation id="4129129681837227511">To see notifications on your lock screen, unlock to change the setting</translation>
 <translation id="4131973331381812765">Temperature: <ph name="TEMPERATURE" />°C – Current speed: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">On until sunrise</translation>
+<translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + right arrow</translation>
 <translation id="4146671046252289537">Move to end of next word</translation>
 <translation id="4146833061457621061">Play music</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -865,6 +874,7 @@ Connect your device to power.</translation>
 <translation id="4747410141429390146">Please unlock to view notifications</translation>
 <translation id="4752784485658729358">Only six saved desks allowed. Remove a desk to save a new one.</translation>
 <translation id="4759238208242260848">Downloads</translation>
+<translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + up arrow</translation>
 <translation id="4762573482154983647">Hide apps</translation>
 <translation id="4763885921995354846">This allows camera access for all apps and websites with the camera permission. You may need to refresh the web page or restart the app.</translation>
 <translation id="4774338217796918551">Come back tomorrow at <ph name="COME_BACK_TIME" />.</translation>
@@ -946,6 +956,7 @@ Connect your device to power.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">You'll get notified if you talk while muted. Audio never leaves your device.</translation>
 <translation id="5078796286268621944">Incorrect PIN</translation>
+<translation id="5083035541015925118">ctrl + alt + up arrow</translation>
 <translation id="5083553833479578423">Unlock more Assistant features.</translation>
 <translation id="5092436659250499817">Turn on/off keyboard backlight</translation>
 <translation id="5094577350232361255">about</translation>
@@ -1067,6 +1078,7 @@ Connect your device to power.</translation>
 <translation id="5590609058453685222">Mute nudge is on. You'll get notified if you talk while muted.</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
+<translation id="5599242528220103262">Keyboard shortcut is off</translation>
 <translation id="5600837773213129531">Press Ctrl + Alt + Z to disable spoken feedback.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">We've switched you to a better network</translation>
@@ -1086,6 +1098,7 @@ Connect your device to power.</translation>
 <translation id="5678564054339031017">Show next week</translation>
 <translation id="5679050765726761783">Low-power adaptor connected</translation>
 <translation id="5682642926269496722">The Google Assistant is not available for current user account.</translation>
+<translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689633613396158040">Night Light makes it easier to look at your screen or read in dim light. Tap to change what time Night Light turns on, or turn it off completely.</translation>
 <translation id="5691772641933328258">Fingerprint not recognised</translation>
 <translation id="5693255400847650006">Microphone in use</translation>
@@ -1247,6 +1260,7 @@ Connect your device to power.</translation>
 <translation id="639644700271529076">CAPS LOCK is off</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Clear all notifications</translation>
 <translation id="643147933154517414">All finished</translation>
@@ -1256,6 +1270,7 @@ Connect your device to power.</translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> event</translation>
 <translation id="6449483711453944360">Linux apps and incognito windows aren’t currently supported</translation>
+<translation id="6450245544201845082">The right-click shortcut is currently off</translation>
 <translation id="6452181791372256707">Reject</translation>
 <translation id="6453179446719226835">Language has been changed</translation>
 <translation id="6459472438155181876">Extending screen to <ph name="DISPLAY_NAME" /></translation>
@@ -1380,6 +1395,7 @@ New install</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Get started</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6980402667292348590">insert</translation>
 <translation id="6981291220124935078">Turn on access</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="698231206551913481">All files and local data associated with this user will be permanently deleted once this user is removed.</translation>
@@ -1431,6 +1447,7 @@ New install</translation>
 <translation id="7258828758145722155">Edited yesterday</translation>
 <translation id="726276584504105859">Drag here to use split screen</translation>
 <translation id="7262906531272962081">Create reminder</translation>
+<translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7297440678881127227"><ph name="START_TIME" /> to
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />,
@@ -1441,6 +1458,7 @@ New install</translation>
 <translation id="7312210124139670355">Your administrator is resetting your eSIM. This may take a few minutes.</translation>
 <translation id="7313193732017069507">Expand camera</translation>
 <translation id="7316261577130609484">Add new task</translation>
+<translation id="7331646370422660166">alt + down arrow</translation>
 <translation id="7340731148882810149">Automatic clicks menu</translation>
 <translation id="7346909386216857016">OK, got it</translation>
 <translation id="7348093485538360975">On-Screen Keyboard</translation>
@@ -1486,6 +1504,7 @@ New install</translation>
 <translation id="7513922695575567867">Calendar, week of <ph name="DATE" />, <ph name="SELECTED_DATE" /> is currently selected.</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">page down</translation>
 <translation id="7519206258459640379">Camera framing is on.</translation>
 <translation id="7519649142417630956">Once shut down, the administrator will be logged out and won't be able to control your device.
 
@@ -1857,6 +1876,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9126339866969410112">Undo last action</translation>
 <translation id="9133335900048457298">Can't record protected content</translation>
 <translation id="9139720510312328767">Delete next letter</translation>
+<translation id="9151906066336345901">end</translation>
 <translation id="9161053988251441839">SUGGESTED APPS</translation>
 <translation id="9168436347345867845">Do it later</translation>
 <translation id="9178475906033259337">Displaying one result for <ph name="QUERY" /></translation>

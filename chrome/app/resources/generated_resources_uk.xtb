@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">Тип паперу</translation>
 <translation id="1143142264369994168">Підписувач сертифіката</translation>
 <translation id="1145593918056169051">Збій у роботі принтера</translation>
-<translation id="114571748016232560">Сталася помилка. Відкрийте вікна вручну.</translation>
 <translation id="114721135501989771">Розумні функції в Chrome</translation>
 <translation id="1147322039136785890">Тепер <ph name="SUPERVISED_USER_NAME" /> може отримати пристрій</translation>
 <translation id="1147991416141538220">Щоб отримати доступ, зверніться до адміністратора цього пристрою.</translation>
@@ -802,7 +801,6 @@
 <translation id="163072119192489970">Дозволено завершувати надсилання й отримання даних</translation>
 <translation id="1630768113285622200">Перезапустити й продовжити</translation>
 <translation id="1631503405579357839">Дальтонізм</translation>
-<translation id="1632082166874334883">Пароль збережено у вашому обліковому записі Google</translation>
 <translation id="1632756664321977232">Інструмент обрізування</translation>
 <translation id="163309982320328737">Початкова ширина символів – повна</translation>
 <translation id="1633947793238301227">Вимкнути Google Асистента</translation>
@@ -1043,7 +1041,6 @@
 <translation id="181577467034453336">Ще <ph name="NUMBER_OF_VIEWS" />…</translation>
 <translation id="1816036116994822943">Швидкість сканування клавіатури</translation>
 <translation id="1817871734039893258">Відновлення файлів Microsoft</translation>
-<translation id="1818007989243628752">Видалити пароль для <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Завантажується журнал.</translation>
 <translation id="1819443852740954262">Відкривати всі у вікні в режимі анонімного перегляду</translation>
 <translation id="1819721979226826163">Торкніться меню "Сповіщення додатків" &gt; "Сервіси Google Play".</translation>
@@ -3658,7 +3655,6 @@
 <translation id="3930602610362250897">Щоб відтворювати контент, захищений авторським правом, сайтам, можливо, буде потрібно використовувати сервіс захисту контенту</translation>
 <translation id="3930737994424905957">Пошук пристроїв</translation>
 <translation id="3930968231047618417">Колір фону</translation>
-<translation id="3933283459331715412">Відновити видалений пароль для <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> надає доступ до мережі Wi-Fi</translation>
 <translation id="3936390757709632190">&amp;Відкрити аудіо в новій вкладці</translation>
 <translation id="3936925983113350642">Вибраний пароль буде потрібен, щоб пізніше відновити цей сертифікат. Зберігайте його в безпечному місці.</translation>

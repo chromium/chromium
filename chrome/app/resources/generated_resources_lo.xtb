@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">ປະເພດເຈ້ຍ</translation>
 <translation id="1143142264369994168">ຜູ້ເຊັນໃບຢັ້ງຢືນ</translation>
 <translation id="1145593918056169051">ເຄື່ອງພິມໄດ້ຢຸດແລ້ວ</translation>
-<translation id="114571748016232560">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ເປີດໜ້າຈໍດ້ວຍຕົນເອງແທນ.</translation>
 <translation id="114721135501989771">ມີ Google ອັດສະລິຍະໃນ Chrome</translation>
 <translation id="1147322039136785890">ດຽວນີ້ມັນເປັນຜຽນຂອງ <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">ເພື່ອຂໍສິດເຂົ້າເຖິງ, ກະລຸນາຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບຂອງອຸປະກອນນີ້.</translation>
@@ -797,7 +796,6 @@
 <translation id="163072119192489970">ໄດ້ຮັບອະນຸຍາດໃຫ້ເຮັດສຳເລັດການສົ່ງ ແລະ ຮັບຂໍ້ມູນ</translation>
 <translation id="1630768113285622200">ຣີສະຕາດ ແລະ ສືບຕໍ່</translation>
 <translation id="1631503405579357839">ຕາບອດສີ</translation>
-<translation id="1632082166874334883">ເກັບລະຫັດຜ່ານໄວ້ໃນບັນຊີ Google ຂອງທ່ານແລ້ວ</translation>
 <translation id="1632756664321977232">ເຄື່ອງມືຕັດ</translation>
 <translation id="163309982320328737">ຄວາມກ້ວາງຕົວອັກສອນເລີ່ມຕົ້ນເຕັມ</translation>
 <translation id="1633947793238301227">ປິດການນຳໃຊ້ຜູ້ຊ່ວຍ Google</translation>
@@ -1038,7 +1036,6 @@
 <translation id="181577467034453336">ອີກ <ph name="NUMBER_OF_VIEWS" /> ອັນ...</translation>
 <translation id="1816036116994822943">ຄວາມໄວການສະແກນແປ້ນພິມ</translation>
 <translation id="1817871734039893258">ການກູ້ໄຟລ໌ Microsoft ຄືນ</translation>
-<translation id="1818007989243628752">ລຶບລະຫັດຜ່ານສຳລັບ <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">ການອັບໂຫຼດບັນທຶກພວມດຳເນີນຢູ່.</translation>
 <translation id="1819443852740954262">ເປີດທັງໝົດໃນໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="1819721979226826163">ແຕະການແຈ້ງເຕືອນແອັບ &gt; ການບໍລິການຂອງ Google Play.</translation>
@@ -3654,7 +3651,6 @@
 <translation id="3930602610362250897">ເພື່ອຫຼິ້ນເນື້ອຫາທີ່ມີການປົກປ້ອງໂດຍລິຂະສິດ, ເວັບໄຊອາດຕ້ອງໃຊ້ບໍລິການການປົກປ້ອງເນື້ອຫາ</translation>
 <translation id="3930737994424905957">ຊອກຫາອຸປະກອນ</translation>
 <translation id="3930968231047618417">ສີພື້ນຫຼັງ</translation>
-<translation id="3933283459331715412">ກູ້ຄືນລະຫັດຜ່ານທີ່ຖືກລຶບສຳລັບ <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> ກຳລັງແບ່ງປັນເຄືອຂ່າຍ Wi-Fi ກັບທ່ານ</translation>
 <translation id="3936390757709632190">ເປີດສຽງຢູ່ໃນແຖບ</translation>
 <translation id="3936925983113350642">ຈະຈຳເປັນຕ້ອງມີລະຫັດຜ່ານທີ່ທ່ານເລືອກໄວ້ເພື່ອກູ້ຄືນໃບຢັ້ງຢືນນີ້ໃນພາຍຫຼັງ. ກະລຸນາບັນທຶກມັນໄວ້ໃນບ່ອນທີ່ປອດໄພ.</translation>

@@ -573,6 +573,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2166049586286450108">Administratorning barcha ma’lumotlarga to‘liq ruxsati</translation>
 <translation id="2166378884831602661">Bu sayt bilan xavfsiz aloqa o‘rnatib bo‘lmaydi</translation>
 <translation id="2168151236314517198">Bu kontentni chop etishni administrator taqiqlagan</translation>
+<translation id="2175630235841878061">100MB dan katta fayllar yuklab olinmaydi</translation>
 <translation id="2176974405772725904">Manzilni hisobda saqlash</translation>
 <translation id="2178665390943006934">Chromeni yangilash tugmasi, Chrome sozlamalari orqali Chromeni yangilash uchun faollashtiring</translation>
 <translation id="2181821976797666341">Qoidalar</translation>
@@ -2019,7 +2020,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5287456746628258573">Bu sayt eskirgan xavfsizlik sozlamasidan foydalanadi. maʼlumotlaringiz (masalan, parol va kredit kartalari nomlari) shu saytga yuborilganda ular xavf ostida qolishi mumkin.</translation>
 <translation id="5288108484102287882">Parametr qiymatlari tekshiruvida ogohlantiruvlar aniqlandi</translation>
 <translation id="5288393065350884210">Buxgalteriya va audit</translation>
-<translation id="5288808348893593856">Saytga ulanish xavfsiz boʻlmasa, Chrome bu haqida xabar qiladi</translation>
 <translation id="5289384342738547352">Bir nechta hujjat qayta ishlanishi</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Bugun yangilanishi kerak}=2{Ertaga yangilanishi kerak}other{# kun ichida yangilanishi kerak}}</translation>
 <translation id="5293919335876685914">Kupe</translation>
@@ -2399,6 +2399,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6118782133429281336">Asl roʻyxat boʻsh.</translation>
 <translation id="6120179357481664955">UPI identifikatori eslab qolinsinmi?</translation>
 <translation id="6122181661879998141">kartangiz old qismidagi</translation>
+<translation id="6124058285696691147">Biriktirmani yuklab olish</translation>
 <translation id="6124432979022149706">Chrome korporativ konnektorlari</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6127379762771434464">Havola olib tashlandi</translation>
@@ -2609,7 +2610,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6569060085658103619">Siz kengaytma sahifasidasiz.</translation>
 <translation id="6569366777234823130">Dramalar</translation>
 <translation id="6573200754375280815">Oʻngdan 2 ta teshik ochish</translation>
-<translation id="6576181918031900030">Translatsiya qilish</translation>
 <translation id="6578434528542148658">Yaroqsiz kengaytma identifikatori.</translation>
 <translation id="657902945730878902">Chizish va boʻyash</translation>
 <translation id="6579630537141957243">MIDI qurilma ulansinmi?</translation>

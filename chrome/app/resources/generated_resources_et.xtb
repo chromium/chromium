@@ -184,7 +184,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1142713751288681188">Paberi tüüp</translation>
 <translation id="1143142264369994168">Sertifikaadi allkirjastaja</translation>
 <translation id="1145593918056169051">Printer on peatunud</translation>
-<translation id="114571748016232560">Midagi läks valesti. Selle asemel avage aknad käsitsi.</translation>
 <translation id="114721135501989771">Google'i nutikus Chrome'is</translation>
 <translation id="1147322039136785890">Nüüd on kasutaja <ph name="SUPERVISED_USER_NAME" /> kord</translation>
 <translation id="1147991416141538220">Juurdepääsu palumiseks võtke ühendust selle seadme administraatoriga.</translation>
@@ -799,7 +798,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="163072119192489970">Lubatud andmete saatmine ja vastuvõtmine lõpule viia</translation>
 <translation id="1630768113285622200">Taaskäivita ja jätka</translation>
 <translation id="1631503405579357839">Värvipimedus</translation>
-<translation id="1632082166874334883">Parool salvestati teie Google'i kontole</translation>
 <translation id="1632756664321977232">Kärpimistööriist</translation>
 <translation id="163309982320328737">Esialgne märgi laius on täislaius</translation>
 <translation id="1633947793238301227">Google'i assistendi keelamine</translation>
@@ -1032,7 +1030,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="181577467034453336">Veel <ph name="NUMBER_OF_VIEWS" /> …</translation>
 <translation id="1816036116994822943">Klaviatuuri skannimiskiirus</translation>
 <translation id="1817871734039893258">Microsofti failitaaste</translation>
-<translation id="1818007989243628752">Kustuta kasutaja <ph name="USERNAME" /> parool</translation>
 <translation id="1818913467757368489">Logi üleslaadimine on pooleli.</translation>
 <translation id="1819443852740954262">Kõik avatakse inkognito aknas</translation>
 <translation id="1819721979226826163">Puudutage valikuid Rakenduse märguanded &gt; Google Play teenused.</translation>
@@ -3646,7 +3643,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="3930602610362250897">Autoriõigustega kaitstud sisu esitamiseks peavad saidid võib-olla kasutama sisukaitseteenust</translation>
 <translation id="3930737994424905957">Seadmete otsimine</translation>
 <translation id="3930968231047618417">Taustavärv</translation>
-<translation id="3933283459331715412">Taasta kasutaja <ph name="USERNAME" /> kustutatud paroolid</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> jagab teiega WiFi-võrku</translation>
 <translation id="3936390757709632190">&amp;Ava heli uuel vahelehel</translation>
 <translation id="3936925983113350642">Teie valitavat parooli on vaja selle sertifikaadi hilisemaks taastamiseks. Salvestage see turvalisse asukohta.</translation>

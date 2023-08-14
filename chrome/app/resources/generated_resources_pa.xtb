@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">ਪੇਪਰ ਦੀ ਕਿਸਮ</translation>
 <translation id="1143142264369994168">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸਾਈਨਰ</translation>
 <translation id="1145593918056169051">ਪ੍ਰਿੰਟਰ ਰੁਕ ਗਿਆ ਹੈ</translation>
-<translation id="114571748016232560">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਇਸਦੀ ਬਜਾਏ ਵਿੰਡੋਆਂ ਨੂੰ ਹੱਥੀਂ ਖੋਲ੍ਹੋ।</translation>
 <translation id="114721135501989771">Chrome ਵਿੱਚ Google ਸਮਾਰਟ ਲਓ</translation>
 <translation id="1147322039136785890">ਹੁਣ <ph name="SUPERVISED_USER_NAME" /> ਦੀ ਵਾਰੀ ਹੈ</translation>
 <translation id="1147991416141538220">ਪਹੁੰਚ ਦੀ ਬੇਨਤੀ ਕਰਨ ਲਈ, ਇਸ ਡੀਵਾਈਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
@@ -800,7 +799,6 @@
 <translation id="163072119192489970">ਡਾਟਾ ਭੇਜਣ ਅਤੇ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਪੂਰਾ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="1630768113285622200">ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ ਅਤੇ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="1631503405579357839">ਰੰਗਾਂ ਦਾ ਅੰਨ੍ਹਾਪਣ</translation>
-<translation id="1632082166874334883">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਸਟੋਰ ਕੀਤਾ ਪਾਸਵਰਡ</translation>
 <translation id="1632756664321977232">ਕਾਂਟ-ਛਾਂਟ ਟੂਲ</translation>
 <translation id="163309982320328737">ਸ਼ੁਰੂਆਤੀ ਅੱਖਰ ਚੁੜਾਈ ਪੂਰੀ ਹੈ</translation>
 <translation id="1633947793238301227">Google Assistant ਬੰਦ ਕਰੋ</translation>
@@ -1041,7 +1039,6 @@
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> ਹੋਰ...</translation>
 <translation id="1816036116994822943">ਕੀ-ਬੋਰਡ ਸਕੈਨ ਕਰਨ ਦੀ ਗਤੀ</translation>
 <translation id="1817871734039893258">Microsoft ਫਾਈਲ ਰਿਕਵਰੀ</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" /> ਦਾ ਪਾਸਵਰਡ ਮਿਟਾਓ</translation>
 <translation id="1818913467757368489">ਲੌਗ ਅੱਪਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="1819443852740954262">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਸਭ ਖੋਲ੍ਹੋ</translation>
 <translation id="1819721979226826163">ਐਪ ਸੂਚਨਾਵਾਂ &gt; Google Play ਸੇਵਾਵਾਂ 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
@@ -3655,7 +3652,6 @@
 <translation id="3930602610362250897">ਕਾਪੀਰਾਈਟ ਵੱਲੋਂ ਸੁਰੱਖਿਅਤ ਕੀਤੀ ਸਮੱਗਰੀ ਨੂੰ ਚਲਾਉਣ ਲਈ, ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਸਾਈਟਾਂ ਨੂੰ 'ਸਮੱਗਰੀ ਦੀ ਸੁਰੱਖਿਆ' ਸੇਵਾ ਵਰਤਣ ਦੀ ਲੋੜ ਪਵੇ</translation>
 <translation id="3930737994424905957">ਡੀਵਾਈਸ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="3930968231047618417">ਬੈਕਗ੍ਰਾਊਂਡ ਦਾ ਰੰਗ</translation>
-<translation id="3933283459331715412"><ph name="USERNAME" /> ਦਾ ਮਿਟਾਇਆ ਗਿਆ ਪਾਸਵਰਡ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> ਵੱਲੋਂ ਤੁਹਾਡੇ ਨਾਲ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3936390757709632190">&amp;ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਆਡੀਓ ਖੋਲ੍ਹੋ</translation>
 <translation id="3936925983113350642">ਬਾਅਦ ਵਿੱਚ ਇਸ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਚੁਣੇ ਪਾਸਵਰਡ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਨੂੰ ਕਿਸੇ ਸੁਰੱਖਿਅਤ ਟਿਕਾਣੇ ਵਿੱਚ ਰਿਕਾਰਡ ਕਰੋ।</translation>

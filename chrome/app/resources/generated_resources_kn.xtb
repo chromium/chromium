@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">ಕಾಗದದ ಪ್ರಕಾರ</translation>
 <translation id="1143142264369994168">ಪ್ರಮಾಣಪತ್ರ ಸಹಿ ಮಾಡುವವರು</translation>
 <translation id="1145593918056169051">ಪ್ರಿಂಟರ್ ನಿಂತುಹೋಗಿದೆ</translation>
-<translation id="114571748016232560">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಬದಲಿಗೆ ಕೈಯಾರೆ ವಿಂಡೋಸ್ ತೆರೆಯಿರಿ.</translation>
 <translation id="114721135501989771">Chrome ನಲ್ಲಿ Google ಸ್ಮಾರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1147322039136785890">ಇದೀಗ <ph name="SUPERVISED_USER_NAME" /> ಅವರ ಸರದಿ</translation>
 <translation id="1147991416141538220">ಪ್ರವೇಶಕ್ಕಾಗಿ ಕೇಳಲು, ಈ ಸಾಧನದ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
@@ -801,7 +800,6 @@
 <translation id="163072119192489970">ಡೇಟಾವನ್ನು ಕಳುಹಿಸುವುದು ಮತ್ತು ಸ್ವೀಕರಿಸುವುದನ್ನು ಮುಗಿಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="1630768113285622200">ಮರುಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಮುಂದುವರಿಸಿ</translation>
 <translation id="1631503405579357839">ಬಣ್ಣದ ಕುರುಡುತನ</translation>
-<translation id="1632082166874334883">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗಿರುತ್ತದೆ</translation>
 <translation id="1632756664321977232">ಕ್ರಾಪ್ ಟೂಲ್</translation>
 <translation id="163309982320328737">ಆರಂಭದ ಅಕ್ಷರದ ಅಗಲವು ಪೂರ್ಣವಾಗಿದೆ</translation>
 <translation id="1633947793238301227">Google Assistant ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -1034,7 +1032,6 @@
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> ಇನ್ನಷ್ಟು...</translation>
 <translation id="1816036116994822943">ಕೀಬೋರ್ಡ್ ಸ್ಕ್ಯಾನಿಂಗ್ ವೇಗ</translation>
 <translation id="1817871734039893258">Microsoft File Recovery</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1818913467757368489">ಲಾಗ್‌ ಅಪ್‌ಲೋಡ್‌ ಪ್ರಗತಿಯಲ್ಲಿದೆ.</translation>
 <translation id="1819443852740954262">ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ</translation>
 <translation id="1819721979226826163">ಅಪ್ಲಿಕೇಶನ್ ಅಧಿಸೂಚನೆಗಳು &gt; Google Play ಸೇವೆಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
@@ -3649,7 +3646,6 @@
 <translation id="3930602610362250897">ಕೃತಿಸ್ವಾಮ್ಯದ ಮೂಲಕ ಸಂರಕ್ಷಿಸಲಾದ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಪ್ಲೇ ಮಾಡಲು, ಸೈಟ್‌ಗಳು ಕಂಟೆಂಟ್‌ ಸಂರಕ್ಷಣಾ ಸೇವೆಯನ್ನು ಬಳಸಬೇಕಾಗಬಹುದು</translation>
 <translation id="3930737994424905957">ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3930968231047618417">ಹಿನ್ನೆಲೆ ಬಣ್ಣ</translation>
-<translation id="3933283459331715412"><ph name="USERNAME" /> ಗಾಗಿ ಅಳಿಸಲಾದ  ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> ನಿಮ್ಮ ಜೊತೆಗೆ ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ</translation>
 <translation id="3936390757709632190">&amp;ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಆಡಿಯೋ ತೆರೆಯಿರಿ</translation>
 <translation id="3936925983113350642">ನಂತರ ಈ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಮರುಸ್ಥಾಪಿಸಲು ನೀವು ಆಯ್ಕೆಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿರುತ್ತದೆ. ದಯವಿಟ್ಟು ಸುರಕ್ಷಿತ ಸ್ಥಳದಲ್ಲಿ ಅದನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಿ.</translation>

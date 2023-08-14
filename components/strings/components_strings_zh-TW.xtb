@@ -2023,7 +2023,6 @@
 <translation id="5287456746628258573">這個網站的安全性設定過舊，因此你傳送給這個網站的的資訊 (例如密碼或信用卡號碼) 可能會外洩。</translation>
 <translation id="5288108484102287882">政策值驗證作業出現警告訊息</translation>
 <translation id="5288393065350884210">會計與稽核</translation>
-<translation id="5288808348893593856">如果 Chrome 未另行通知，表示網站連線安全無虞。</translation>
 <translation id="5289384342738547352">多份文件處理</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{請在今天內更新}=2{最晚請在明天完成更新}other{請在 # 天內更新}}</translation>
 <translation id="5293919335876685914">轎跑車</translation>
@@ -2614,7 +2613,6 @@
 <translation id="6569060085658103619">目前顯示的是擴充功能頁面</translation>
 <translation id="6569366777234823130">劇情片</translation>
 <translation id="6573200754375280815">雙孔 (右側)</translation>
-<translation id="6576181918031900030">開始投放</translation>
 <translation id="6578434528542148658">擴充功能 ID 無效。</translation>
 <translation id="657902945730878902">繪畫與著色</translation>
 <translation id="6579630537141957243">要連接 MIDI 裝置嗎？</translation>

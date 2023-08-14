@@ -574,6 +574,7 @@
 <translation id="2166049586286450108">完全的管理员访问权限</translation>
 <translation id="2166378884831602661">此网站无法提供安全连接</translation>
 <translation id="2168151236314517198">管理员政策禁止打印此内容</translation>
+<translation id="2175630235841878061">无法下载超过 100MB 的文件</translation>
 <translation id="2176974405772725904">将地址保存到帐号</translation>
 <translation id="2178665390943006934">“更新 Chrome”按钮，激活它即可从 Chrome 设置中更新 Chrome</translation>
 <translation id="2181821976797666341">政策</translation>
@@ -2020,7 +2021,6 @@
 <translation id="5287456746628258573">此网站使用的安全性配置已过期，这可能会导致您的信息（例如密码或信用卡卡号）在发送至此网站时出现泄露。</translation>
 <translation id="5288108484102287882">政策值验证引发了警告</translation>
 <translation id="5288393065350884210">会计与审计</translation>
-<translation id="5288808348893593856">您与此类网站之间的连接是安全的，除非 Chrome 另行通知。</translation>
 <translation id="5289384342738547352">多文档处理</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{必须在今天更新}=2{必须在明天更新}other{必须在 # 天内更新}}</translation>
 <translation id="5293919335876685914">轿跑车</translation>
@@ -2400,6 +2400,7 @@
 <translation id="6118782133429281336">源列表为空。</translation>
 <translation id="6120179357481664955">要记住您的 UPI ID 吗？</translation>
 <translation id="6122181661879998141">卡正面</translation>
+<translation id="6124058285696691147">下载该附件</translation>
 <translation id="6124432979022149706">Chrome 企业版连接器</translation>
 <translation id="6126565365696310362">中式 #2 信封</translation>
 <translation id="6127379762771434464">该项已移除</translation>
@@ -2610,7 +2611,6 @@
 <translation id="6569060085658103619">您正在查看扩展程序页面</translation>
 <translation id="6569366777234823130">剧情片</translation>
 <translation id="6573200754375280815">双孔（右侧）</translation>
-<translation id="6576181918031900030">开始投放</translation>
 <translation id="6578434528542148658">扩展程序 ID 无效。</translation>
 <translation id="657902945730878902">绘画与着色</translation>
 <translation id="6579630537141957243">连接 MIDI 设备？</translation>

@@ -182,7 +182,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1142713751288681188">Lloji i letrës</translation>
 <translation id="1143142264369994168">Nënshkruesi i certifikatës</translation>
 <translation id="1145593918056169051">Printeri ka ndaluar</translation>
-<translation id="114571748016232560">Ndodhi një gabim. Hapi dritaret manualisht më mirë.</translation>
 <translation id="114721135501989771">Merr funksionet inteligjente të Google në Chrome</translation>
 <translation id="1147322039136785890">Tani është radha e <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Për të kërkuar qasjen, kontakto me administratorin e kësaj pajisjeje.</translation>
@@ -793,7 +792,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="163072119192489970">Lejohen të përfundojnë dërgimin dhe marrjen e të dhënave</translation>
 <translation id="1630768113285622200">Rinis dhe vazhdo</translation>
 <translation id="1631503405579357839">Daltonizëm</translation>
-<translation id="1632082166874334883">Fjalëkalimi u ruajt në "Llogarinë tënde të Google"</translation>
 <translation id="1632756664321977232">Vegla e prerjes</translation>
 <translation id="163309982320328737">Gjerësia e karakterit të parë është e plotë</translation>
 <translation id="1633947793238301227">Çaktivizo "Asistentin e Google"</translation>
@@ -1026,7 +1024,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> të tjera...</translation>
 <translation id="1816036116994822943">Shpejtësia e skanimit të tastierës</translation>
 <translation id="1817871734039893258">Rikuperimi i skedarëve i Microsoft</translation>
-<translation id="1818007989243628752">Fshi fjalëkalimin për <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Ngarkimi i evidencës në vazhdim.</translation>
 <translation id="1819443852740954262">Hapi të gjitha në dritare "të fshehtë"</translation>
 <translation id="1819721979226826163">Trokit te Njoftimet e aplikacioneve &gt; Shërbimet e Google Play.</translation>
@@ -3638,7 +3635,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="3930602610362250897">Për të luajtur përmbajtjet e mbrojtura nga të drejtat e autorit, sajtet mund të kenë nevojë të përdorin një shërbim të mbrojtjes së përmbajtjeve</translation>
 <translation id="3930737994424905957">Po kërkohet për pajisje</translation>
 <translation id="3930968231047618417">Ngjyra e sfondit</translation>
-<translation id="3933283459331715412">Restauro fjalëkalimin e fshirë për <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> po ndan një rrjet Wi-Fi me ty</translation>
 <translation id="3936390757709632190">&amp;Hape audion në një skedë të re</translation>
 <translation id="3936925983113350642">Fjalëkalimi që zgjedh do të kërkohet për ta restauruar këtë certifikatë më vonë. Regjistroje në një vendndodhje të sigurt.</translation>

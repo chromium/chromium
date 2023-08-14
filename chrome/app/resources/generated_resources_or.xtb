@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">କାଗଜର ପ୍ରକାର</translation>
 <translation id="1143142264369994168">ସାର୍ଟିଫିକେଟ୍‌ ଦସ୍ତଖତକାରୀ</translation>
 <translation id="1145593918056169051">ପ୍ରିଣ୍ଟର୍ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
-<translation id="114571748016232560">କିଛି ତ୍ରୁଟି ହୋଇଛି। ଏହା ପରିବର୍ତ୍ତେ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ମାନୁଆଲୀ ଖୋଲନ୍ତୁ।</translation>
 <translation id="114721135501989771">Chromeରେ Google ସ୍ମାର୍ଟ୍ସ ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="1147322039136785890">ବର୍ତ୍ତମାନ <ph name="SUPERVISED_USER_NAME" />ର ପାଳି</translation>
 <translation id="1147991416141538220">ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ପାଇଁ, ଏହି ଡିଭାଇସ୍‍ର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
@@ -795,7 +794,6 @@
 <translation id="163072119192489970">ଡାଟା ପଠାଇବା କିମ୍ବା ଗ୍ରହଣ କରିବା ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="1630768113285622200">ରିଷ୍ଟାର୍ଟ କରି ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="1631503405579357839">ବର୍ଣ୍ଣାନ୍ଧତା</translation>
-<translation id="1632082166874334883">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ପାସୱାର୍ଡ ଷ୍ଟୋର୍ କରାଯାଇଛି</translation>
 <translation id="1632756664321977232">କ୍ରପ ଟୁଲ</translation>
 <translation id="163309982320328737">ପ୍ରାରମ୍ଭିକ ଅକ୍ଷରର ଚଉଡ଼ା ପୂର୍ଣ୍ଣ ଅଛି</translation>
 <translation id="1633947793238301227">Google Assistant ଅକ୍ଷମ କରନ୍ତୁ</translation>
@@ -1026,7 +1024,6 @@
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> ଅଧିକ...</translation>
 <translation id="1816036116994822943">କୀବୋର୍ଡ ସ୍କାନିଂ ବେଗ</translation>
 <translation id="1817871734039893258">Microsoft ଫାଇଲ୍‌ ପୁନରୁଦ୍ଧାର</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" />ଙ୍କର ପାସ୍‌ୱର୍ଡ ଡିଲିଟ୍‌ କରନ୍ତୁ</translation>
 <translation id="1818913467757368489">ଲଗ୍ ଅପ୍‍‍ଲୋଡ୍ ହେଉଛି।</translation>
 <translation id="1819443852740954262">ସବୁ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="1819721979226826163">ଆପ୍‌ ବିଜ୍ଞପ୍ତି &gt; Google Play ସେବାରେ ଟାପ୍‌ କରନ୍ତୁ।</translation>
@@ -3638,7 +3635,6 @@
 <translation id="3930602610362250897">କପିରାଇଟ୍ ଦ୍ୱାରା ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁକୁ ଚଲାଇବା ପାଇଁ, ସାଇଟଗୁଡ଼ିକୁ ଏକ ବିଷୟବସ୍ତୁ ସୁରକ୍ଷିତ ସେବା ବ୍ୟବହାର କରିବାର ଆବଶ୍ୟକତା ହୋଇପାରେ</translation>
 <translation id="3930737994424905957">ଡିଭାଇସ୍‌କୁ ଖୋଜାଯାଉଛି</translation>
 <translation id="3930968231047618417">ପୃଷ୍ଠପଟ ରଙ୍ଗ</translation>
-<translation id="3933283459331715412"><ph name="USERNAME" /> ପାଇଁ ଡିଲିଟ୍ ହୋଇଯାଇଥିବା ପାସ୍‌ୱାର୍ଡ ପୁନଃସ୍ଥାପନ କରନ୍ତୁ</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> ଆପଣଙ୍କ ସହ ଏକ ୱାଇ-ଫାଇ ନେଟୱାର୍କ ସେୟାର କରୁଛି</translation>
 <translation id="3936390757709632190">ନୂତନ ଟ୍ୟାବରେ ଅଡିଓ &amp;ଖୋଲନ୍ତୁ</translation>
 <translation id="3936925983113350642">ଏହି ସର୍ଟିଫିକେଟ୍‌କୁ ପରେ ପୁନଃସ୍ଥାପନ କରିବା ପାଇଁ, ଆପଣ ବାଛିଥିବା ପାସ୍‌ୱର୍ଡ ଆବଶ୍ୟକ ହେବ। ଏକ ସୁରକ୍ଷିତ ଲୋକେସନ୍‌ରେ ଏହାକୁ ଲେଖି ରଖନ୍ତୁ।</translation>

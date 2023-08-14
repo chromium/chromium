@@ -126,7 +126,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1657011748321897393">Échec du partage, car vous n'êtes pas connecté au réseau.</translation>
 <translation id="1657641691196698092">Cookies bloqués</translation>
 <translation id="165877110639533037">Aucun onglet ouvert</translation>
-<translation id="166310177317698233">Vous pouvez retrouver vos onglets épinglés en appuyant sur le bouton "Afficher les onglets".</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> vers <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Demander le site mobile</translation>
 <translation id="168715261339224929">Activez la synchronisation pour accéder à vos favoris sur tous vos appareils.</translation>
@@ -235,7 +234,6 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2423077901494354337">Vous allez maintenant exploiter tout le potentiel de Chrome sur votre appareil.</translation>
 <translation id="2434405374328098816">Vous avez déjà enregistré un mot de passe pour "<ph name="USERNAME" />" sur <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
-<translation id="2451654228769116489">Épingler l'onglet</translation>
 <translation id="2459155039684421202">Dans la barre d'adresse, saisissez une tâche telle que "Effacer mon historique" ou "Modifier les mots de passe".</translation>
 <translation id="2461070143328828326">Paramètres de mot de passe</translation>
 <translation id="2469960372084740698">Désactiver la navigation sécurisée ?</translation>
@@ -304,7 +302,6 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2800683595868705743">Quitter le sélecteur d'onglets</translation>
 <translation id="2815198996063984598">2. Appuyez sur "Navigateur par défaut"</translation>
 <translation id="2818821771744632548">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPhone. Pour vous reconnecter, appuyez sur "Continuer" ci-dessous.</translation>
-<translation id="2822917246944009066">Onglet épinglé</translation>
 <translation id="2830972654601096923">Gérer les adresses…</translation>
 <translation id="2834399722155632105">3. Appuyez sur "Options de mots de passe"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -836,7 +833,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="6059830886158432458">Contrôlez vos articles et votre activité via ce menu</translation>
 <translation id="6064824697233747382">Votre organisation vous oblige à désactiver la synchronisation.</translation>
 <translation id="6066301408025741299">Appuyez pour annuler.</translation>
-<translation id="6071409777669089905">Retirer l'onglet</translation>
 <translation id="6084848228346514841">Sélectionner des onglets</translation>
 <translation id="6100617279104942061">Connecté en tant que <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
 <translation id="6103540626693881831">Chiffrement sur l'appareil</translation>
@@ -1082,7 +1078,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7431991332293347422">Contrôler la manière dont votre historique de navigation est utilisé pour personnaliser la recherche et plus encore</translation>
 <translation id="7435356471928173109">Mode désactivé par votre administrateur</translation>
 <translation id="7438481509621345350">Vous verrez les stories de <ph name="CHANNEL_NAME" /> quand vous ouvrirez un nouvel onglet.</translation>
-<translation id="7446583256109515732">Onglet retiré</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favori enregistré dans "{title}"}one{Favori enregistré dans "{title}"}other{Favoris enregistrés dans "{title}"}}</translation>
 <translation id="7454057999980797137">État/Comté</translation>
 <translation id="745899714366929493">Toute la journée</translation>
@@ -1109,7 +1104,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /> </translation>
 <translation id="7603852183842204213">Pop-up bloqués (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Supprimer le mot de passe</translation>
-<translation id="7611459119367035420">Vous trouverez vos onglets épinglés ici.</translation>
 <translation id="7638584964844754484">Phrase secrète incorrecte.</translation>
 <translation id="7640669552036055091">Onglets d'Android</translation>
 <translation id="7646263789464975852">Menu → Paramètres → Contrôle de sécurité</translation>

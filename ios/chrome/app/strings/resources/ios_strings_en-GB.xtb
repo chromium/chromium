@@ -126,7 +126,6 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1657011748321897393">Sharing failed because you are not connected to the network.</translation>
 <translation id="1657641691196698092">Blocked cookies</translation>
 <translation id="165877110639533037">No open tabs</translation>
-<translation id="166310177317698233">You can find your pinned tabs by tapping the 'Show tabs' button.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> to <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Request Mobile Site</translation>
 <translation id="168715261339224929">To get your bookmarks on all your devices, turn on sync.</translation>
@@ -235,7 +234,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2423077901494354337">You'll now get the most out of Chrome on your device.</translation>
 <translation id="2434405374328098816">You already saved a password for '<ph name="USERNAME" />' at <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Show password</translation>
-<translation id="2451654228769116489">Pin tab</translation>
 <translation id="2459155039684421202">In the address bar, enter a task like 'clear my history' or 'edit passwords'.</translation>
 <translation id="2461070143328828326">Password settings</translation>
 <translation id="2469960372084740698">Turn off Safe Browsing?</translation>
@@ -304,7 +302,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2800683595868705743">Leave Tab Switcher</translation>
 <translation id="2815198996063984598">2. Tap default browser app</translation>
 <translation id="2818821771744632548">You were signed out of your account, <ph name="USER_NAME" />, as part of your iPhone reset. To sign back in, tap 'Continue' below.</translation>
-<translation id="2822917246944009066">Tab pinned</translation>
 <translation id="2830972654601096923">Manage Addresses…</translation>
 <translation id="2834399722155632105">3. Tap Password options</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -836,7 +833,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="6059830886158432458">Control your stories and activity here</translation>
 <translation id="6064824697233747382">Your organisation requires you to turn off sync.</translation>
 <translation id="6066301408025741299">Tap to cancel.</translation>
-<translation id="6071409777669089905">Unpin tab</translation>
 <translation id="6084848228346514841">Select tabs</translation>
 <translation id="6100617279104942061">Signed in as <ph name="USER_EMAIL" />. Opens settings.</translation>
 <translation id="6103540626693881831">On-device encryption</translation>
@@ -1081,7 +1077,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7431991332293347422">Control how your browsing history is used to personalise Search and more</translation>
 <translation id="7435356471928173109">Turned off by your administrator</translation>
 <translation id="7438481509621345350">You'll now see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
-<translation id="7446583256109515732">Tab unpinned</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bookmark saved to ‘{title}’}other{Bookmarks saved to ‘{title}’}}</translation>
 <translation id="7454057999980797137">State / County</translation>
 <translation id="745899714366929493">All day</translation>
@@ -1108,7 +1103,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-ups blocked (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Delete password</translation>
-<translation id="7611459119367035420">You can find your pinned tabs here.</translation>
 <translation id="7638584964844754484">Incorrect passphrase</translation>
 <translation id="7640669552036055091">Tabs from Android</translation>
 <translation id="7646263789464975852">Menu → Settings → Safety Check</translation>

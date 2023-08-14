@@ -182,7 +182,6 @@
 <translation id="1142713751288681188">Тип бумаги</translation>
 <translation id="1143142264369994168">Подписчик сертификата</translation>
 <translation id="1145593918056169051">Сбой в работе принтера</translation>
-<translation id="114571748016232560">Произошла ошибка. Откройте окна самостоятельно.</translation>
 <translation id="114721135501989771">Интеллектуальные функции Google в Chrome</translation>
 <translation id="1147322039136785890">Передайте устройство пользователю <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Чтобы запросить доступ, обратитесь к администратору устройства.</translation>
@@ -798,7 +797,6 @@
 <translation id="163072119192489970">Разрешить сайтам завершать отправку и получение данных</translation>
 <translation id="1630768113285622200">Перезапустить и продолжить</translation>
 <translation id="1631503405579357839">Дальтонизм</translation>
-<translation id="1632082166874334883">Пароль, сохраненный в вашем аккаунте Google</translation>
 <translation id="1632756664321977232">Инструмент "Кадрирование"</translation>
 <translation id="163309982320328737">Первоначальная ширина символа – полная</translation>
 <translation id="1633947793238301227">Выключить Google Ассистента</translation>
@@ -1031,7 +1029,6 @@
 <translation id="181577467034453336">Ещё <ph name="NUMBER_OF_VIEWS" /></translation>
 <translation id="1816036116994822943">Скорость сканирования клавиатуры</translation>
 <translation id="1817871734039893258">Восстановление файлов Microsoft</translation>
-<translation id="1818007989243628752">Удалить пароль пользователя <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Журнал загружается.</translation>
 <translation id="1819443852740954262">Открыть все URL в режиме инкогнито</translation>
 <translation id="1819721979226826163">Нажмите "Уведомления приложений &gt; Сервисы Google Play".</translation>
@@ -3642,7 +3639,6 @@
 <translation id="3930602610362250897">Чтобы воспроизвести контент, защищенный авторскими правами, сайтам иногда требуется использовать сервис защиты контента.</translation>
 <translation id="3930737994424905957">Поиск устройств…</translation>
 <translation id="3930968231047618417">Цвет фона</translation>
-<translation id="3933283459331715412">Восстановить пароль пользователя <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852">Устройство "<ph name="DEVICE_NAME" />" передает данные для подключения к сети Wi-Fi.</translation>
 <translation id="3936390757709632190">&amp;Открыть аудиозапись на новой вкладке</translation>
 <translation id="3936925983113350642">Выбранный пароль будет необходим для последующего восстановления этого сертификата. Сохраните его в безопасном месте.</translation>

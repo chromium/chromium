@@ -182,7 +182,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1142713751288681188">Type de papier</translation>
 <translation id="1143142264369994168">Signataire du certificat </translation>
 <translation id="1145593918056169051">L'imprimante s'est arrêtée</translation>
-<translation id="114571748016232560">Un problème est survenu. Ouvrez manuellement les fenêtres.</translation>
 <translation id="114721135501989771">Profitez des fonctionnalités intelligentes de Google dans Chrome</translation>
 <translation id="1147322039136785890">C'est au tour de l'utilisateur <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Pour demander l'accès, contactez l'administrateur de cet appareil.</translation>
@@ -797,7 +796,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="163072119192489970">Autorisé à terminer l'envoi et la réception de données</translation>
 <translation id="1630768113285622200">Redémarrer et continuer</translation>
 <translation id="1631503405579357839">Daltonisme</translation>
-<translation id="1632082166874334883">Mot de passe stocké dans votre compte Google</translation>
 <translation id="1632756664321977232">Outil Recadrage</translation>
 <translation id="163309982320328737">La largeur de caractères initiale est Complète</translation>
 <translation id="1633947793238301227">Désactiver l'Assistant Google</translation>
@@ -1030,7 +1028,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> autres…</translation>
 <translation id="1816036116994822943">Vitesse de recherche pour le clavier</translation>
 <translation id="1817871734039893258">Récupération de fichier Microsoft</translation>
-<translation id="1818007989243628752">Supprimer le mot de passe du compte <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Importation du journal en cours.</translation>
 <translation id="1819443852740954262">Tout ouvrir dans une fenêtre de navigation privée</translation>
 <translation id="1819721979226826163">Appuyez sur Notifications des applications &gt; Services Google Play.</translation>
@@ -3641,7 +3638,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="3930602610362250897">Pour lire du contenu protégé par des droits d'auteur, les sites peuvent avoir besoin d'utiliser un service de protection du contenu</translation>
 <translation id="3930737994424905957">Recherche d'appareils</translation>
 <translation id="3930968231047618417">Couleur de l'arrière-plan</translation>
-<translation id="3933283459331715412">Restaurer le mot de passe supprimé du compte <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> partage un réseau Wi-Fi avec vous</translation>
 <translation id="3936390757709632190">&amp;Ouvrir le fichier audio dans un nouvel onglet</translation>
 <translation id="3936925983113350642">Le mot de passe choisi vous sera demandé pour restaurer le certificat ultérieurement. Veillez à le conserver en lieu sûr.</translation>

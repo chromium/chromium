@@ -2025,7 +2025,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5287456746628258573">Ta strona używa nieaktualnej konfiguracji zabezpieczeń, co oznacza, że Twoje dane (np. hasła i numery kart kredytowych) mogą być zagrożone podczas przesyłania na tę stronę.</translation>
 <translation id="5288108484102287882">Weryfikacja wartości zasad zakończyła się z ostrzeżeniami</translation>
 <translation id="5288393065350884210">Księgowość i audyt</translation>
-<translation id="5288808348893593856">Połączenie z witryną jest bezpieczne, chyba że Chrome poinformuje Cię, że jest inaczej.</translation>
 <translation id="5289384342738547352">Obsługa wielu dokumentów</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Wymagana jest aktualizacja dzisiaj}=2{Wymagana jest aktualizacja do jutra}few{Wymagana jest aktualizacja w ciągu # dni}many{Wymagana jest aktualizacja w ciągu # dni}other{Wymagana jest aktualizacja w ciągu # dnia}}</translation>
 <translation id="5293919335876685914">Samochody coupé</translation>
@@ -2617,7 +2616,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6569060085658103619">Przeglądasz stronę rozszerzenia</translation>
 <translation id="6569366777234823130">Dramaty filmowe</translation>
 <translation id="6573200754375280815">Dwa otwory po prawej</translation>
-<translation id="6576181918031900030">Rozpocznij przesyłanie</translation>
 <translation id="6578434528542148658">Nieprawidłowy identyfikator rozszerzenia.</translation>
 <translation id="657902945730878902">Rysowanie i kolorowanie</translation>
 <translation id="6579630537141957243">Podłączyć urządzenie MIDI?</translation>

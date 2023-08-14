@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">စာရွက်အမျိုးအစား</translation>
 <translation id="1143142264369994168">အသိမှတ်ပြုလက်မှတ် ဆိုင်းထိုးသူ</translation>
 <translation id="1145593918056169051">ပရင်တာ ရပ်သွားပါပြီ</translation>
-<translation id="114571748016232560">တစ်ခုခုမှားသွားသည်။ ၎င်းအစား ဝင်းဒိုးများကို လူကိုယ်တိုင်ဖွင့်ပါ။</translation>
 <translation id="114721135501989771">Chrome တွင် Google ကို ပို၍အဆင့်မြင့်လာအောင် ပြုလုပ်ခြင်း</translation>
 <translation id="1147322039136785890">ယခု <ph name="SUPERVISED_USER_NAME" /> ၏ အလှည့်ပါ</translation>
 <translation id="1147991416141538220">ဝင်ကြည့်ခွင့်တောင်းရန် ဤစက်၏ စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
@@ -798,7 +797,6 @@
 <translation id="163072119192489970">ဒေတာပို့ခြင်းနှင့် လက်ခံခြင်းတို့ကို အပြီးသတ်ရန် ခွင့်ပြုထားသည်</translation>
 <translation id="1630768113285622200">ပြန်လည်စတင်ပြီး ရှေ့ဆက်ရန်</translation>
 <translation id="1631503405579357839">အရောင်မမြင်ရခြင်း</translation>
-<translation id="1632082166874334883">စကားဝှက်ကို သင့် Google အကောင့်တွင် သိမ်းလိုက်သည်</translation>
 <translation id="1632756664321977232">ဖြတ်ညှိရန် တူးလ်</translation>
 <translation id="163309982320328737">ကနဦး စာလုံး အကျယ် ပြည့်နေ</translation>
 <translation id="1633947793238301227">Google Assistant ပိတ်ရန်</translation>
@@ -1039,7 +1037,6 @@
 <translation id="181577467034453336">နောက်ထပ် <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">လက်ကွက်ရှာဖွေမှု မြန်နှုန်း</translation>
 <translation id="1817871734039893258">Microsoft ဖိုင်ပြန်လည်ရှာဖွေမှု</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" /> အတွက် စကားဝှက်ကို ဖျက်ရန်</translation>
 <translation id="1818913467757368489">မှတ်တမ်းကို အပ်လုဒ်လုပ်ပါတော့မည်။</translation>
 <translation id="1819443852740954262">အားလုံးကို ရုပ်ဖျက် ဝင်းဒိုးတွင် ဖွင့်ရန်</translation>
 <translation id="1819721979226826163">အက်ပ်အကြောင်းကြားချက်များ &gt; Google Play ဝန်ဆောင်မှုများကို တို့ပါ။</translation>
@@ -1180,6 +1177,7 @@
 <translation id="1925124445985510535"><ph name="TIME" /> ၌ လုံခြုံရေးစစ်ဆေးခဲ့သည်</translation>
 <translation id="192564025059434655">၂၀၂၂ ခုနှစ်၊ ဒီဇင်ဘာလပြီးနောက် Chrome အက်ပ်များ၏ ဗားရှင်းဟောင်းများကို Windows စက်များတွင် ဖွင့်နိုင်မည်မဟုတ်ပါ။ ဗားရှင်းသစ် ရှိ၊ မရှိ ကြည့်နိုင်သည်။</translation>
 <translation id="1926339101652878330">ဤချိန်ညှိချက်များအား လုပ်ငန်းပေါ်လစီမှ ထိန်းချုပ်ပါသည်။ နောက်ထပ်အချက်လက်များ အတွက် သင့်ကြီးကြပ်သူအား ကျေးဇူးပြု၍ ဆက်သွယ်ပါ။</translation>
+<translation id="1926887872692564784">ကာဆာ</translation>
 <translation id="1927632033341042996">လက်ချောင်း <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">ဖုန်းမျက်နှာပြင် လော့ခ်ချရန် ပင်နံပါတ်</translation>
 <translation id="192858925209436740">Chromebook ရှိ သင်သိမ်းထားသော မှတ်တမ်းများကို စီမံရန် OneDrive ကို Files အက်ပ်နှင့် ချိတ်ဆက်ပါ။ သင့် Microsoft အကောင့်သို့ လက်မှတ်ထိုးဝင်ရမည်။</translation>
@@ -3284,6 +3282,7 @@
 <translation id="3653887973853407813">ဤနောက်ဆက်တွဲကို သုံး၍မရပါ။ သင့်မိဘ (သို့) အုပ်ထိန်းသူက Chrome အတွက် “ဝဘ်ဆိုက်၊ အက်ပ်နှင့် နောက်ဆက်တွဲများအတွက် ခွင့်ပြုချက်များ” ကို ပိတ်ထားသည်။</translation>
 <translation id="3653999333232393305"><ph name="HOST" />အား သင်၏ မိုက်ခရိုဖုန်းကို ရယူမှု ဆက်ပြီး ခွင့်ပြုရန်</translation>
 <translation id="3654045516529121250">သင်၏ ရယူသုံးရေး ဆက်တင်များကို ဖတ်ကြည့်ရန်</translation>
+<translation id="3656328935986149999">ကာဆာ မြန်နှုန်း</translation>
 <translation id="3658871634334445293">TrackPoint အရှိန်မြှင့်တင်မှု</translation>
 <translation id="3659550105763988702"><ph name="APP_NAME" /> အတွက် သင့်လျှို့ဝှက်ကီးသုံးခြင်း</translation>
 <translation id="3659929705630080526">သင်သည် မမှန်ကန်သော ဝင်ခွင့်ကုဒ်ကို ကြိမ်ဖန်များစွာ ရိုက်ထည့်ထားပါသည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ</translation>
@@ -3653,7 +3652,6 @@
 <translation id="3930602610362250897">မူပိုင်ခွင့်ဖြင့် ကာကွယ်ထားသည့် အကြောင်းအရာကို ဖွင့်ရန်အတွက် ဝဘ်ဆိုက်များသည် အကြောင်းအရာ ကာကွယ်ရေးဝန်ဆောင်မှု သုံးရန် လိုအပ်နိုင်သည်</translation>
 <translation id="3930737994424905957">စက်ပစ္စည်းများကို ရှာနေသည်</translation>
 <translation id="3930968231047618417">နောက်ခံ အရောင်</translation>
-<translation id="3933283459331715412"><ph name="USERNAME" /> အတွက် ဖျက်ထားသည့် စကားဝှက်ကို ပြရယူရန်</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> က Wi-Fi ကွန်ရက်ကို သင်နှင့် မျှဝေနေသည်</translation>
 <translation id="3936390757709632190">&amp;အသံကို တဘ် အသစ်ထဲမှာ ဖွင့်ရန်</translation>
 <translation id="3936925983113350642">ဤအသိအမှတ်ပြုလက်မှတ်ကို နောက်ပိုင်းတွင် ပြန်ယူရန်အတွက် သင်ရွေးချယ်ထားသည့် စကားဝှက်အား ထည့်သွင်းရပါလိမ့်မည်။ ၎င်းကို လုံခြုံသည့်နေရာတွင် မှတ်သားထားပါ။</translation>
@@ -3996,6 +3994,7 @@
 <translation id="4232375817808480934">Kerberos ကို စီစဉ်သတ်မှတ်ပါ</translation>
 <translation id="4233739489690259993">သင့် Chromebook သည် လုံခြုံရေးနှင့် ဆော့ဖ်ဝဲအပ်ဒိတ်များ မရရှိတော့ပါ။ နောက်ဆုံးထုတ် လုံခြုံရေးနှင့် အင်္ဂါရပ်အသစ်များအတွက် သင့်စက်ကို အဆင့်မြှင့်ပါ။ ကမ်းလှမ်းချက်စည်းမျဉ်းများ ရှိသည်။</translation>
 <translation id="4235965441080806197">လက်မှတ်ထိုးဝင်ခြင်းကို ပယ်ဖျက်ရန်</translation>
+<translation id="4235976607074422892">လှိမ့်ခြင်း မြန်နှုန်း</translation>
 <translation id="4237282663517880406">Google Drive အကြံပြုချက်များ ပြပါ</translation>
 <translation id="4241182343707213132">အဖွဲ့အစည်း၏အက်ပ်များကို အပ်ဒိတ်လုပ်ရန် ပြန်စပါ</translation>
 <translation id="4242145785130247982">ကလိုင်းယင့် အသိအမှတ်ပြုလက်မှတ် အများအပြားကို ပံ့ပိုးမပေးပါ</translation>
@@ -5319,6 +5318,7 @@
 <translation id="5365881113273618889">သင်ရွေးထားသည့် ဖိုင်တွဲတွင် အရေးကြီးဖိုင်များ ပါဝင်သည်။ "<ph name="APP_NAME" />" အား ဤဖိုင်တွဲသို့ အမြဲဝင်ပြင်ခွင့် ပေးလိုသည်မှာ သေချာသလား။</translation>
 <translation id="536638840841140142">မရှိ</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" /> ထံမှ သိမ်းထားသည့် '<ph name="NETWORK_NAME" />'</translation>
+<translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> စကားဝှက် ပြုလုပ်ရန်</translation>
 <translation id="5368720394188453070">သင့်ဖုန်း သော့ပိတ်ထားသည်။ ဝင်ရောက်ရန် ၄င်းအား သော့ဖွင့်ပါ။</translation>
 <translation id="5368779022775404937"><ph name="REALM" /> သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="536882527576164740">{0,plural, =1{ရုပ်ဖျက်}other{ရုပ်ဖျက် (#) ခု}}</translation>
@@ -8643,6 +8643,7 @@
 <translation id="8137559199583651773">တိုးချဲ့လိုင်းများအား စီမံခန့်ခွဲရန်</translation>
 <translation id="8138217203226449454">သင်၏ ရှာဖွေရေး ဝန်ဆောင်မှုစနစ်ကို ပြောင်းလိုသလား။</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> အခြေအနေ</translation>
+<translation id="8139440916039659819">ကာဆာ အရှိန်</translation>
 <translation id="8139447493436036221">Google Drive ဖိုင်များ</translation>
 <translation id="8139643636835015859">၎င်းက သင့်အော့ဖ်လိုင်းဖိုင်များသုံးထားသည့် နေရာ <ph name="OFFLINE_STORAGE_SIZE" /> စာကို ဖယ်ရှားပါမည်။ ဖိုင်အချို့ကို အော့ဖ်လိုင်းအဖြစ် ရနိုင်ပါဦးမည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />၊ <ph name="SECOND_DEVICE" /></translation>
@@ -8979,6 +8980,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> နှင့် နောက်ထပ် <ph name="COUNT" /> ခုကို ခွင့်ပြုထားသည်</translation>
 <translation id="8413956290606243087">ChromeOS ၏ အသင့်ပါ ဖန်သားပြင်ဖတ်အက်ပ် ChromeVox ကို စဖွင့်လိုသလား။</translation>
+<translation id="8414065061814811918">လှိမ့်ခြင်း အရှိန်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">နှစ်ရက်အတွက် မှတ်ဉာဏ်များ ဖျောက်ထားသည်</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> ကို <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="8414685983518053656">မှတ်စုများ</translation>
@@ -9105,6 +9107,7 @@
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">စပီကာများ</translation>
 <translation id="8527257351549797148">အက်ပ်၊ နောက်ဆက်တွဲ စသည်တို့ကို သုံးခွင့်ရရန် သင့်အဖွဲ့အစည်းက စာရင်းသွင်းမှု သတ်မှတ်ထားနိုင်သည်။ ၎င်းသည် သင့်အဖွဲ့အစည်းအား လုံခြုံရေးနှင့် စက်ဆက်တင်များကဲ့သို့ အရာများကို စီမံခွင့်ပြုသည်။</translation>
+<translation id="8527869672961320915">အက်ပ် <ph name="VM_NAME" /> ခု</translation>
 <translation id="8528074251912154910">ဘာသာစကားများ ထည့်ရန်</translation>
 <translation id="8528479410903501741">IBAN သိမ်းရန်</translation>
 <translation id="8528962588711550376">လက်မှတ်ထိုး ဝင်နေသည်။</translation>
@@ -9361,6 +9364,7 @@
 <translation id="8736288397686080465">ဤဆိုဒ်သည် နောက်ခံတွင် အသစ်မွမ်းမံနေခဲ့သည်။</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">စာမျက်နှာကို ပြန်ဆိုရန်အတွက် ဘာသာစကားရွေးပါ</translation>
+<translation id="8740086188450289493">Google Account စကားဝှက် သုံးရန်</translation>
 <translation id="8740247629089392745">ဤ Chromebook ကို <ph name="SUPERVISED_USER_NAME" /> အား ပြန်ပေးနိုင်သည်။ စနစ်ထည့်သွင်းမှု ပြီးလုနီးပြီ။ စူးစမ်းလေ့လာရန် အချိန်ကျပါပြီ။</translation>
 <translation id="8740672167979365981">ChromeOS Flex အပ်ဒိတ် လိုအပ်သည်</translation>
 <translation id="8741944563400125534">‘ခလုတ်သုံးခြင်း’ စနစ်ထည့်သွင်းမှုလမ်းညွှန်</translation>
@@ -9743,6 +9747,7 @@
 <translation id="9045160989383249058">သင့်ဖတ်ရန် စာရင်းကို ဘေးအကန့်အသစ်သို့ ရွှေ့ထားသည်။ ဤနေရာတွင် စမ်းကြည့်ပါ။</translation>
 <translation id="9045430190527754450">သင်က ဝင်ရောက်ရန် ကြိုးစားနေသည့် စာမျက်နှာ၏ ဝဘ်လိပ်စာကို Google သို့ ပို့သည်။</translation>
 <translation id="9048745018038487540">ဖောင့်အားလုံးကို ရွေးရန်</translation>
+<translation id="9050135202879860719">သင့် <ph name="DEVICE_TYPE" /> သို့ လက်မှတ်ထိုးဝင်ရန် စကားဝှက်သုံးပါ</translation>
 <translation id="9050666287014529139">စကားစုဝှက်</translation>
 <translation id="9052404922357793350">ဆက်ပိတ်ထားရန်</translation>
 <translation id="90528604757378587">ချောမွေ့စွာလှိမ့်ခြင်းကဲ့သို့ နောက်ခံလုပ်ဆောင်ချက်နှင့် ပြသမှုဆိုင်ရာ အထူးပြုလုပ်ချက်အချို့ကို ကန့်သတ်နိုင်သည်။</translation>

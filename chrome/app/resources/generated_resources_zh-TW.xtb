@@ -182,7 +182,6 @@
 <translation id="1142713751288681188">紙張類型</translation>
 <translation id="1143142264369994168">憑證簽署者</translation>
 <translation id="1145593918056169051">印表機已停止運作</translation>
-<translation id="114571748016232560">發生錯誤，請改用手動方式開啟視窗。</translation>
 <translation id="114721135501989771">在 Chrome 中體驗 Google 智慧功能</translation>
 <translation id="1147322039136785890">現在可交由「<ph name="SUPERVISED_USER_NAME" />」使用</translation>
 <translation id="1147991416141538220">如需要求存取權限，請與這個裝置的系統管理員聯絡。</translation>
@@ -796,7 +795,6 @@
 <translation id="163072119192489970">可以完成資料的傳送和接收</translation>
 <translation id="1630768113285622200">重新啟動並繼續</translation>
 <translation id="1631503405579357839">色盲</translation>
-<translation id="1632082166874334883">儲存在 Google 帳戶中的密碼</translation>
 <translation id="1632756664321977232">裁剪工具</translation>
 <translation id="163309982320328737">初始字元寬度為全形</translation>
 <translation id="1633947793238301227">停用 Google 助理</translation>
@@ -1029,7 +1027,6 @@
 <translation id="181577467034453336">還有 <ph name="NUMBER_OF_VIEWS" /> 個畫面...</translation>
 <translation id="1816036116994822943">鍵盤掃描速度</translation>
 <translation id="1817871734039893258">Microsoft 檔案復原</translation>
-<translation id="1818007989243628752">刪除 <ph name="USERNAME" /> 的密碼</translation>
 <translation id="1818913467757368489">正在上傳記錄。</translation>
 <translation id="1819443852740954262">在無痕式視窗中開啟所有網址</translation>
 <translation id="1819721979226826163">依序輕觸 [應用程式通知] &gt; [Google Play 服務]。</translation>
@@ -3640,7 +3637,6 @@
 <translation id="3930602610362250897">如要播放受版權保護的內容，網站可能需要使用內容保護服務</translation>
 <translation id="3930737994424905957">正在尋找裝置</translation>
 <translation id="3930968231047618417">背景顏色</translation>
-<translation id="3933283459331715412">還原已刪除的 <ph name="USERNAME" /> 密碼</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> 正在與你共用 Wi-Fi 網路</translation>
 <translation id="3936390757709632190">在新分頁中開啟音效(&amp;O)</translation>
 <translation id="3936925983113350642">日後需要還原這個憑證時會用到您選擇的密碼，請將密碼記錄在安全的位置。</translation>

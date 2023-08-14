@@ -184,7 +184,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1142713751288681188">Loại giấy</translation>
 <translation id="1143142264369994168">Người ký Chứng chỉ</translation>
 <translation id="1145593918056169051">Máy in đã dừng</translation>
-<translation id="114571748016232560">Đã xảy ra lỗi. Hãy mở cửa sổ theo cách thủ công.</translation>
 <translation id="114721135501989771">Trải nghiệm Google thông minh trong Chrome</translation>
 <translation id="1147322039136785890">Bây giờ, <ph name="SUPERVISED_USER_NAME" /> có thể dùng thiết bị</translation>
 <translation id="1147991416141538220">Để yêu cầu quyền truy cập, hãy liên hệ với quản trị viên của thiết bị này.</translation>
@@ -799,7 +798,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="163072119192489970">Được phép kết thúc quá trình gửi và nhận dữ liệu</translation>
 <translation id="1630768113285622200">Khởi động lại và tiếp tục</translation>
 <translation id="1631503405579357839">Mù màu</translation>
-<translation id="1632082166874334883">Mật khẩu đã lưu trữ trong Tài khoản Google của bạn</translation>
 <translation id="1632756664321977232">Công cụ cắt</translation>
 <translation id="163309982320328737">Độ rộng ký tự ban đầu là Đầy đủ</translation>
 <translation id="1633947793238301227">Tắt Trợ lý Google</translation>
@@ -1040,7 +1038,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> lượt xem khác...</translation>
 <translation id="1816036116994822943">Tốc độ quét khi dùng bàn phím</translation>
 <translation id="1817871734039893258">Khôi phục Tệp của Microsoft</translation>
-<translation id="1818007989243628752">Xóa mật khẩu của <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Đang tải nhật ký lên.</translation>
 <translation id="1819443852740954262">Mở tất cả trong cửa sổ Ẩn danh</translation>
 <translation id="1819721979226826163">Nhấn vào Thông báo ứng dụng &gt; Dịch vụ Google Play.</translation>
@@ -3655,7 +3652,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="3930602610362250897">Có thể các trang web cần dùng một dịch vụ bảo vệ nội dung khi phát nội dung được bảo vệ bản quyền</translation>
 <translation id="3930737994424905957">Đang tìm thiết bị</translation>
 <translation id="3930968231047618417">Màu nền</translation>
-<translation id="3933283459331715412">Khôi phục mật khẩu đã xóa cho <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> đang chia sẻ cho bạn một mạng Wi-Fi</translation>
 <translation id="3936390757709632190">&amp;Mở âm thanh trong thẻ mới</translation>
 <translation id="3936925983113350642">Mật khẩu bạn chọn sẽ cần dùng để khôi phục chứng chỉ này về sau. Vui lòng ghi lại mật khẩu này vào một vị trí an toàn.</translation>

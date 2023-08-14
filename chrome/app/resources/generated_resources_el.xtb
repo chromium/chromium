@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">Τύπος χαρτιού</translation>
 <translation id="1143142264369994168">Υπηρεσία υπογραφής πιστοποιητικού</translation>
 <translation id="1145593918056169051">Ο εκτυπωτής σταμάτησε να λειτουργεί</translation>
-<translation id="114571748016232560">Παρουσιάστηκε κάποιο πρόβλημα. Εναλλακτικά, ανοίξτε τα παράθυρα με μη αυτόματο τρόπο.</translation>
 <translation id="114721135501989771">Έξυπνες λειτουργίες Google στο Chrome</translation>
 <translation id="1147322039136785890">Τώρα είναι η σειρά του χρήστη <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Για να ζητήσετε πρόσβαση, επικοινωνήστε με τον διαχειριστή αυτής της συσκευής.</translation>
@@ -799,7 +798,6 @@
 <translation id="163072119192489970">Επιτρέπεται να ολοκληρώνουν την αποστολή και τη λήψη δεδομένων</translation>
 <translation id="1630768113285622200">Επαναφορά και συνέχεια</translation>
 <translation id="1631503405579357839">Αχρωματοψία</translation>
-<translation id="1632082166874334883">Ο κωδικός πρόσβασης αποθηκεύτηκε στον Λογαριασμό σας Google.</translation>
 <translation id="1632756664321977232">Εργαλείο περικοπής</translation>
 <translation id="163309982320328737">Το αρχικό εύρος χαρακτήρων είναι "Πλήρες"</translation>
 <translation id="1633947793238301227">Απενεργοποίηση Βοηθού Google</translation>
@@ -1040,7 +1038,6 @@
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> ακόμη…</translation>
 <translation id="1816036116994822943">Ταχύτητα σάρωσης πληκτρολογίου</translation>
 <translation id="1817871734039893258">Ανάκτηση αρχείων Microsoft</translation>
-<translation id="1818007989243628752">Διαγραφή κωδικού πρόσβασης για τον λογαριασμό <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Η μεταφόρτωση του αρχείου καταγραφής βρίσκεται σε εξέλιξη.</translation>
 <translation id="1819443852740954262">Άνοιγμα όλων σε παράθυρο για ανώνυμη περιήγηση</translation>
 <translation id="1819721979226826163">Πατήστε Ειδοποιήσεις εφαρμογών &gt; Υπηρεσίες Google Play.</translation>
@@ -1182,6 +1179,7 @@
 <translation id="1925124445985510535">Ο έλεγχος ασφάλειας εκτελέστηκε στις <ph name="TIME" />.</translation>
 <translation id="192564025059434655">Οι παλιές εκδόσεις των Εφαρμογών Chrome δεν θα ανοίγουν σε συσκευές Windows μετά τον Δεκέμβριο του 2022. Μπορείτε να ελέγξετε αν υπάρχει διαθέσιμη μια νέα έκδοση.</translation>
 <translation id="1926339101652878330">Αυτές οι ρυθμίσεις ελέγχονται από επιχειρηματική πολιτική. Για περισσότερες πληροφορίες, επικοινωνήστε με το διαχειριστή σας.</translation>
+<translation id="1926887872692564784">Δείκτης</translation>
 <translation id="1927632033341042996">Δάχτυλο <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN κλειδώματος οθόνης</translation>
 <translation id="192858925209436740">Συνδέστε το OneDrive στην εφαρμογή Αρχεία για να διαχειρίζεστε τα αποθηκευμένα έγγραφα από το Chromebook. Θα πρέπει να συνδεθείτε με τον λογαριασμό Microsoft.</translation>
@@ -3286,6 +3284,7 @@
 <translation id="3653887973853407813">Δεν μπορείς να χρησιμοποιήσεις αυτήν την επέκταση. Ο γονέας ή ο κηδεμόνας σου απενεργοποίησε το στοιχείο Άδειες για ιστοτόπους, εφαρμογές και επεκτάσεις για το Chrome.</translation>
 <translation id="3653999333232393305">Να συνεχίσει να επιτρέπεται στο <ph name="HOST" /> η πρόσβαση στο μικρόφωνό σας</translation>
 <translation id="3654045516529121250">Ανάγνωση των ρυθμίσεων προσβασιμότητας</translation>
+<translation id="3656328935986149999">Ταχύτητα δείκτη</translation>
 <translation id="3658871634334445293">Επιτάχυνση TrackPoint</translation>
 <translation id="3659550105763988702">Χρησιμοποιήστε το κλειδί πρόσβαση για το <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Έχετε εισαγάγει εσφαλμένο κωδικό πρόσβασης πάρα πολλές φορές. Δοκιμάστε ξανά αργότερα.</translation>
@@ -3655,7 +3654,6 @@
 <translation id="3930602610362250897">Για την αναπαραγωγή περιεχομένου που προστατεύεται από πνευματικά δικαιώματα, ενδέχεται να απαιτηθεί η χρήση υπηρεσίας προστασίας περιεχομένου από τους ιστοτόπους</translation>
 <translation id="3930737994424905957">Αναζήτηση συσκευών</translation>
 <translation id="3930968231047618417">Χρώμα φόντου</translation>
-<translation id="3933283459331715412">Επαναφορά διαγραμμένου κωδικού πρόσβασης για τον λογαριασμό <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852">Η συσκευή <ph name="DEVICE_NAME" /> κοινοποιεί ένα δίκτυο Wi-Fi σε εσάς</translation>
 <translation id="3936390757709632190">&amp;Άνοιγμα ήχου σε νέα καρτέλα</translation>
 <translation id="3936925983113350642">Ο κωδικός πρόσβασης που επιλέγετε θα χρειαστεί αργότερα για την επαναφορά αυτού του πιστοποιητικού. Καταγράψτε τον σε ασφαλή τοποθεσία.</translation>
@@ -3999,6 +3997,7 @@
 <translation id="4232375817808480934">Διαμόρφωση του Kerberos</translation>
 <translation id="4233739489690259993">Το Chromebook δεν λαμβάνει πλέον ενημερώσεις ασφάλειας και λογισμικού. Αναβαθμίστε τη συσκευή σας για να λάβετε τις πιο πρόσφατες λειτουργίες ασφάλειας καθώς και νέες λειτουργίες. Ισχύουν όροι προσφοράς.</translation>
 <translation id="4235965441080806197">Ακύρωση σύνδεσης</translation>
+<translation id="4235976607074422892">Ταχύτητα κύλισης</translation>
 <translation id="4237282663517880406">Εμφάνιση προτάσεων Google Drive</translation>
 <translation id="4241182343707213132">Κάντε επανεκκίνηση για να ενημερώσετε τις εφαρμογές του οργανισμού σας</translation>
 <translation id="4242145785130247982">Δεν υποστηρίζονται πολλά πιστοποιητικά πελάτη.</translation>
@@ -5322,6 +5321,7 @@
 <translation id="5365881113273618889">Ο φάκελος που επιλέξατε περιέχει ευαίσθητα αρχεία. Είστε βέβαιοι ότι θέλετε να παραχωρήσετε στο "<ph name="APP_NAME" />" μόνιμη πρόσβαση εγγραφής σε αυτόν τον φάκελο;</translation>
 <translation id="536638840841140142">Κανένα</translation>
 <translation id="5368246151595623328">Το δίκτυο <ph name="NETWORK_NAME" /> αποθηκεύτηκε από τη συσκευή <ph name="DEVICE_NAME" /></translation>
+<translation id="5368255566854433132">Δημιουργία κωδικού πρόσβασης <ph name="DEVICE_TYPE" /></translation>
 <translation id="5368720394188453070">Το τηλέφωνό σας είναι κλειδωμένο. Ξεκλειδώστε το για να εισέλθετε.</translation>
 <translation id="5368779022775404937">Συνδεθείτε στο <ph name="REALM" /></translation>
 <translation id="536882527576164740">{0,plural, =1{Ανώνυμη περιήγηση}other{Ανώνυμη περιήγηση (#)}}</translation>
@@ -8651,6 +8651,7 @@
 <translation id="8137559199583651773">Διαχείριση επεκτάσεων</translation>
 <translation id="8138217203226449454">Σκοπεύατε να αλλάξετε τον πάροχο αναζήτησής σας;</translation>
 <translation id="8138997515734480534">Κατάσταση <ph name="VM_NAME" /></translation>
+<translation id="8139440916039659819">Επιτάχυνση δείκτη</translation>
 <translation id="8139447493436036221">Αρχεία Google Drive</translation>
 <translation id="8139643636835015859">Αυτή η ενέργεια θα καταργήσει <ph name="OFFLINE_STORAGE_SIZE" /> αποθηκευτικού χώρου που χρησιμοποιείται από αρχεία εκτός σύνδεσης. Ορισμένα αρχεία θα συνεχίσουν να είναι διαθέσιμα εκτός σύνδεσης. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8987,6 +8988,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Επιτράπηκε η άδεια <ph name="PERMISSION" /> και <ph name="COUNT" /> ακόμη άδειες</translation>
 <translation id="8413956290606243087">Θέλετε να ενεργοποιήσετε το ChromeVox, τον ενσωματωμένο αναγνώστη οθόνης για Chrome OS;</translation>
+<translation id="8414065061814811918">Επιτάχυνση κύλισης. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Έγινε απόκρυψη των αναμνήσεων για δύο ημέρες</translation>
 <translation id="8414396119627470038">Συνδεθείτε στο <ph name="SITE_ETLD_PLUS_ONE" /> με το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Σημειώσεις</translation>
@@ -9113,6 +9115,7 @@
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Ηχεία</translation>
 <translation id="8527257351549797148">Ο οργανισμός σας ενδέχεται να απαιτεί εγγραφή για να έχετε πρόσβαση σε εφαρμογές, επεκτάσεις και άλλα. Αυτό επιτρέπει επίσης στον οργανισμό σας να διαχειρίζεται στοιχεία όπως η ασφάλεια και οι ρυθμίσεις της συσκευής.</translation>
+<translation id="8527869672961320915"><ph name="VM_NAME" /> εφαρμογές</translation>
 <translation id="8528074251912154910">Προσθήκη γλωσσών</translation>
 <translation id="8528479410903501741">Αποθήκευση IBAN</translation>
 <translation id="8528962588711550376">Γίνεται σύνδεση.</translation>
@@ -9369,6 +9372,7 @@
 <translation id="8736288397686080465">Αυτός ο ιστότοπος έχει ενημερωθεί στο παρασκήνιο.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Επιλέξτε τη γλώσσα στην οποία θέλετε να μεταφράσετε τη σελίδα.</translation>
+<translation id="8740086188450289493">Χρήση κωδικού πρόσβασης Λογαριασμού Google</translation>
 <translation id="8740247629089392745">Μπορείτε να δώσετε αυτό το Chromebook στον χρήστη <ph name="SUPERVISED_USER_NAME" />. Η ρύθμιση έχει σχεδόν ολοκληρωθεί, είναι ώρα για εξερεύνηση.</translation>
 <translation id="8740672167979365981">Απαιτείται ενημέρωση ChromeOS Flex</translation>
 <translation id="8741944563400125534">Οδηγός ρύθμισης της πρόσβασης με διακόπτη</translation>
@@ -9749,6 +9753,7 @@
 <translation id="9045160989383249058">Η λίστα ανάγνωσής σας μετακινήθηκε στο νέο πλαϊνό πλαίσιο. Δοκιμάστε το εδώ.</translation>
 <translation id="9045430190527754450">Αποστέλλει στην Google τη διεύθυνση ιστού της σελίδας στην οποία προσπαθείτε να μεταβείτε.</translation>
 <translation id="9048745018038487540">Επιλογή όλων των γραμματοσειρών</translation>
+<translation id="9050135202879860719">Χρησιμοποιήστε έναν κωδικό πρόσβασης για σύνδεση στη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="9050666287014529139">Φράση πρόσβασής σας</translation>
 <translation id="9052404922357793350">Συνέχιση αποκλεισμού</translation>
 <translation id="90528604757378587">Η δραστηριότητα παρασκηνίου και ορισμένα οπτικά εφέ, όπως η ομαλή κύλιση, μπορεί να είναι περιορισμένα.</translation>

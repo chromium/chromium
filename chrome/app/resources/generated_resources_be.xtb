@@ -182,7 +182,6 @@
 <translation id="1142713751288681188">Тып паперы</translation>
 <translation id="1143142264369994168">Сродак подпісу сертыфікатаў</translation>
 <translation id="1145593918056169051">Прынтар спыніў работу</translation>
-<translation id="114571748016232560">Адбылася памылка. Адкрыйце акно ўручную.</translation>
 <translation id="114721135501989771">Разумныя функцыі ў Chrome</translation>
 <translation id="1147322039136785890">Перадайце прыладу карыстальніку <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Каб запытаць доступ, звярніцеся да адміністратара гэтай прылады.</translation>
@@ -799,7 +798,6 @@
 <translation id="163072119192489970">Дазволена завяршаць адпраўку і атрыманне даных</translation>
 <translation id="1630768113285622200">Перазапусціць і працягнуць</translation>
 <translation id="1631503405579357839">Дальтанізм</translation>
-<translation id="1632082166874334883">Пароль, захаваны ва Уліковым запісе Google</translation>
 <translation id="1632756664321977232">Інструмент "Абрэзка"</translation>
 <translation id="163309982320328737">Пачатковая шырыня сімвалаў – поўная</translation>
 <translation id="1633947793238301227">Выключыць Памочніка Google</translation>
@@ -1032,7 +1030,6 @@
 <translation id="181577467034453336">Яшчэ <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">Хуткасць сканіравання клавіятуры</translation>
 <translation id="1817871734039893258">Аднаўленне файлаў Microsoft</translation>
-<translation id="1818007989243628752">Выдаліць пароль карыстальніка <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Ідзе запампоўванне журнала.</translation>
 <translation id="1819443852740954262">Адкрыць усе ў акне ў рэжыме інкогніта</translation>
 <translation id="1819721979226826163">Націсніце "Апавяшчэнні праграм &gt; Сэрвісы Google Play".</translation>
@@ -3641,7 +3638,6 @@
 <translation id="3930602610362250897">Каб прайграваць змесціва, абароненае аўтарскім правам, сайтам можа спатрэбіцца выкарыстаць сэрвіс для абароны змесціва</translation>
 <translation id="3930737994424905957">Ідзе пошук прылад</translation>
 <translation id="3930968231047618417">Колер фону</translation>
-<translation id="3933283459331715412">Аднавіць выдалены пароль для карыстальніка <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> абагульвае з вамі даныя сеткі Wi-Fi</translation>
 <translation id="3936390757709632190">&amp;Адкрыць аўдыя ў новай укладцы</translation>
 <translation id="3936925983113350642">Выбраны вамі пароль можа спатрэбіцца, каб аднавіць гэты сертыфікат пазней. Запішыце яго і захавайце ў бяспечным месцы.</translation>

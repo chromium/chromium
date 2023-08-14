@@ -184,7 +184,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1142713751288681188">Papirtype</translation>
 <translation id="1143142264369994168">Certifikatunderskriver</translation>
 <translation id="1145593918056169051">Printeren er stoppet</translation>
-<translation id="114571748016232560">Noget gik galt. Åbn i stedet vinduet manuelt.</translation>
 <translation id="114721135501989771">Få Googles smarte funktioner i Chrome</translation>
 <translation id="1147322039136785890">Nu er enheden klar til <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Hvis du vil anmode om adgang, skal du kontakte administratoren af denne enhed.</translation>
@@ -800,7 +799,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="163072119192489970">Har tilladelse til at sende og modtage data</translation>
 <translation id="1630768113285622200">Genstart og fortsæt</translation>
 <translation id="1631503405579357839">Farveblindhed</translation>
-<translation id="1632082166874334883">Adgangskoden gemmes på din Google-konto</translation>
 <translation id="1632756664321977232">Beskæringsværktøj</translation>
 <translation id="163309982320328737">Den oprindelige tegnbredde er Fuld</translation>
 <translation id="1633947793238301227">Deaktiver Google Assistent</translation>
@@ -1041,7 +1039,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> mere...</translation>
 <translation id="1816036116994822943">Hastighed for tastaturscanning</translation>
 <translation id="1817871734039893258">Microsoft-filgendannelse</translation>
-<translation id="1818007989243628752">Slet adgangskoden til <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Upload af logfil er i gang.</translation>
 <translation id="1819443852740954262">Åbn alle i et inkognitovindue</translation>
 <translation id="1819721979226826163">Tryk på Appnotifikationer &gt; Google Play-tjenester.</translation>
@@ -3656,7 +3653,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="3930602610362250897">For at afspille ophavsretligt beskyttet indhold kan det være nødvendigt for websites at benytte en tjeneste til beskyttelse af indhold</translation>
 <translation id="3930737994424905957">Søger efter enheder</translation>
 <translation id="3930968231047618417">Baggrundsfarve</translation>
-<translation id="3933283459331715412">Gendan en slettet adgangskode for <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> deler et Wi-Fi-netværk med dig</translation>
 <translation id="3936390757709632190">&amp;Åbn lyd på ny fane</translation>
 <translation id="3936925983113350642">Den valgte adgangskode kræves for at gendanne dette certifikat senere. Gem den et sikkert sted.</translation>

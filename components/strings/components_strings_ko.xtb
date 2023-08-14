@@ -2024,7 +2024,6 @@
 <translation id="5287456746628258573">이 사이트에서는 오래된 보안 구성을 사용하므로 정보(예: 비밀번호나 신용카드 번호)를 이 사이트로 전송할 경우 정보가 유출될 수도 있습니다.</translation>
 <translation id="5288108484102287882">정책 값 유효성 검사 결과 경고가 발생했습니다.</translation>
 <translation id="5288393065350884210">회계 및 감사</translation>
-<translation id="5288808348893593856">Chrome에서 별도의 안내가 없는 한 이 사이트의 연결은 항상 안전하게 유지됩니다.</translation>
 <translation id="5289384342738547352">여러 문서 처리</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{오늘 업데이트 필요}=2{내일까지 업데이트 필요}other{#일 이내로 업데이트 필요}}</translation>
 <translation id="5293919335876685914">쿠페</translation>
@@ -2615,7 +2614,6 @@
 <translation id="6569060085658103619">확장 프로그램 페이지를 보는 중</translation>
 <translation id="6569366777234823130">드라마 영화</translation>
 <translation id="6573200754375280815">오른쪽 2공 펀칭</translation>
-<translation id="6576181918031900030">전송 시작</translation>
 <translation id="6578434528542148658">확장 프로그램 ID가 잘못되었습니다.</translation>
 <translation id="657902945730878902">그리기 및 색칠하기</translation>
 <translation id="6579630537141957243">MIDI 기기에 연결하시겠습니까?</translation>

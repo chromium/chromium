@@ -2025,7 +2025,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5287456746628258573">Tämä sivusto käyttää vanhentunutta tietoturvamääritystä, joka voi paljastaa tietosi (esim. salasanat tai credit-korttien numerot), kun ne lähetetään sivustolle.</translation>
 <translation id="5288108484102287882">Käytäntöarvojen vahvistus aiheutti varoituksia</translation>
 <translation id="5288393065350884210">Kirjanpito ja tilintarkastukset</translation>
-<translation id="5288808348893593856">Sivuston yhteys on suojattu, ellei Chrome ilmoita toisin.</translation>
 <translation id="5289384342738547352">Useiden dokumenttien käsittely</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Päivitettävä tänään}=2{Päivitettävä huomenna}other{Päivitettävä # päivän kuluessa}}</translation>
 <translation id="5293919335876685914">Coupe-autot</translation>
@@ -2616,7 +2615,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6569060085658103619">Tämä on laajennussivu.</translation>
 <translation id="6569366777234823130">Draamaelokuvat</translation>
 <translation id="6573200754375280815">Kaksi reikää oikealla</translation>
-<translation id="6576181918031900030">Aloita striimaus</translation>
 <translation id="6578434528542148658">Virheellinen laajennuksen tunnus.</translation>
 <translation id="657902945730878902">Piirtäminen ja värittäminen</translation>
 <translation id="6579630537141957243">Yhdistetäänkö MIDI-laite?</translation>

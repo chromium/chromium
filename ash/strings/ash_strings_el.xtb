@@ -25,6 +25,7 @@
 <translation id="108486256082349153">Κινητό: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Καλό απόγευμα <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Αναζητήστε <ph name="CATEGORY" />, αρχεία, εφαρμογές και άλλα. Χρησιμοποιήστε πλήκτρα βέλους για να πλοηγηθείτε στις εφαρμογές σας.</translation>
+<translation id="1093645050124056515">ctrl + alt + κάτω βέλος</translation>
 <translation id="109942774857561566">Βαριέμαι</translation>
 <translation id="1104084341931202936">Εμφάνιση ρυθμίσεων προσβασιμότητας</translation>
 <translation id="1104621072296271835">Οι συσκευές σας λειτουργούν ακόμα καλύτερα συνδυαστικά</translation>
@@ -43,6 +44,7 @@
 <translation id="1178581264944972037">Παύση</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1182225749592316782">Αυτό επιτρέπει την πρόσβαση για όλες τις εφαρμογές και τους ιστοτόπους με τις άδειες κάμερας και μικροφώνου.</translation>
+<translation id="1182876754474670069">σπίτι</translation>
 <translation id="1183863904939664422">Δεν ενδιαφέρομαι για αυτήν την πρόταση</translation>
 <translation id="1184126796192815024">Αυτό το δίκτυο δεν υποστηρίζει τη ροή εφαρμογών από το τηλέφωνό σας. Δοκιμάστε να χρησιμοποιήσετε το σημείο πρόσβασης Wi-Fi του τηλεφώνου σας. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Εισαγάγετε κωδικό πρόσβασης ή PIN για περισσότερη ασφάλεια</translation>
@@ -147,6 +149,7 @@
 <translation id="1586324912145647027">Μετάβαση στο γραφείο 1 έως 8</translation>
 <translation id="1589090746204042747">Αποκτήσει πρόσβαση σε όλη τη δραστηριότητά σας από αυτήν την περίοδο λειτουργίας</translation>
 <translation id="1592682369233288537">Επόμενο γραφείο: <ph name="NEXT_DESK_NAME" />, χρησιμοποιήστε τη συντόμευση Αναζήτηση+Πλήκτρο διαστήματος για ενεργοποίηση.</translation>
+<translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + κάτω βέλος</translation>
 <translation id="1604857178818051494">Παύση μέσων</translation>
 <translation id="1610778689852195798">"Αναίρεση"</translation>
 <translation id="1611993646327628135">Ενεργό</translation>
@@ -249,6 +252,7 @@
 <translation id="2021864487439853900">Κάντε κλικ για ξεκλείδωμα</translation>
 <translation id="2023558322300866873">Μπορείτε να διακόψετε τη λήψη πακέτων οποιαδήποτε στιγμή.</translation>
 <translation id="2034971124472263449">Αποθήκευση ούτως ή άλλως</translation>
+<translation id="204259843076055848">Η συντόμευση <ph name="SIX_PACK_KEY_NAME" /> είναι απενεργοποιημένη αυτήν τη στιγμή</translation>
 <translation id="2049240716062114887">Το όνομα γραφείου άλλαξε σε <ph name="DESK_NAME" /></translation>
 <translation id="206377500836174974">Πλήρες</translation>
 <translation id="2064048859448024834">Η προεπισκόπηση κάμερας είναι ενεργή</translation>
@@ -381,6 +385,7 @@
 <translation id="2665788051462227163">Οι εφαρμογές <ph name="UNAVAILABLE_APPS_ONE" /> και <ph name="UNAVAILABLE_APPS_TWO" /> δεν βρίσκονται σε αυτήν τη συσκευή.</translation>
 <translation id="2673968385134502798">Παιχνίδια</translation>
 <translation id="2678852583403169292">Μενού λειτουργίας Επιλέξτε για αυτόματη ανάγνωση</translation>
+<translation id="2687510499067466116">Η συντόμευση πληκτρολογίου έχει αλλάξει</translation>
 <translation id="2689613560355655046">Γραφείο 8</translation>
 <translation id="2695305337569143674">ιστός</translation>
 <translation id="2697697418792422688">Εμφάνιση ρυθμίσεων πληκτρολογίου. Το πληκτρολόγιο <ph name="KEYBOARD_NAME" /> είναι επιλεγμένο.</translation>
@@ -637,12 +642,14 @@
 <translation id="3738664582935948253">Μπορείτε πλέον να εμφανίζετε κλικ και συντομεύσεις πληκτρολογίου στις εγγραφές οθόνης</translation>
 <translation id="3742055079367172538">Το στιγμιότυπο οθόνης έχει ληφθεί</translation>
 <translation id="3756485814916578707">Μετάδοση οθόνης</translation>
+<translation id="3765841382945324995">Η συντόμευση <ph name="SIX_PACK_KEY_NAME" /> ενημερώθηκε σε <ph name="NEW_SHORTCUT" /> από <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Έγινε επεξεργασία σήμερα</translation>
 <translation id="3773700760453577392">Ένας διαχειριστής δεν επιτρέπει τη σύνδεση σε πολλούς λογαριασμούς για τον χρήστη <ph name="USER_EMAIL" />. Όλοι οι χρήστες πρέπει να αποσυνδεθούν για να συνεχίσετε.</translation>
 <translation id="3779139509281456663">Σύνδεση <ph name="NAME" /></translation>
 <translation id="3781910048497807059">Μετατόπιση εστίασης στο προηγούμενο πλαίσιο</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Κλείδωμα</translation>
+<translation id="3796215473395753611">alt + πάνω βέλος</translation>
 <translation id="3796746699333205839">Μια εφαρμογή χρησιμοποιεί την κάμερα και το μικρόφωνό σας.</translation>
 <translation id="3798670284305777884">Ηχείο (εσωτερικό)</translation>
 <translation id="3799080171973636491">Πατήσατε τη συντόμευση πληκτρολογίου για τον μεγεθυντικό φακό πλήρους οθόνης. Θέλετε να τον ενεργοποιήσετε;</translation>
@@ -698,6 +705,7 @@
 <translation id="4026843240379844265">Μετακίνηση ενεργού παραθύρου μεταξύ οθονών</translation>
 <translation id="4028481283645788203">Απαιτείται κωδικός πρόσβασης για περισσότερη ασφάλεια.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + αριστερό βέλος</translation>
 <translation id="4042660782729322247">Μοιράζεστε την οθόνη σας</translation>
 <translation id="404437169852192935">Οι ενημερώσεις σταμάτησαν</translation>
 <translation id="4049230407053723315">Γρήγορες ρυθμίσεις</translation>
@@ -719,6 +727,7 @@
 <translation id="4129129681837227511">Για να βλέπετε ειδοποιήσεις στην οθόνη κλειδώματος, ξεκλειδώστε τη συσκευή για να αλλάξετε τη ρύθμιση</translation>
 <translation id="4131973331381812765">Θερμοκρασία: <ph name="TEMPERATURE" />°C - Τρέχουσα ταχύτητα: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Ενεργό μέχρι την ανατολή του ηλίου</translation>
+<translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + δεξί βέλος</translation>
 <translation id="4146671046252289537">Μετακίνηση στο τέλος της επόμενης λέξης</translation>
 <translation id="4146833061457621061">Αναπαραγωγή μουσικής</translation>
 <translation id="4150201353443180367">Οθόνη</translation>
@@ -865,6 +874,7 @@
 <translation id="4747410141429390146">Ξεκλειδώστε για προβολή των ειδοποιήσεων</translation>
 <translation id="4752784485658729358">Επιτρέπονται μόνο 6 αποθηκευμένα γραφεία. Αφαιρέστε ένα γραφείο για να αποθηκεύσετε ένα νέο.</translation>
 <translation id="4759238208242260848">Λήψεις</translation>
+<translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + πάνω βέλος</translation>
 <translation id="4762573482154983647">Απόκρυψη εφαρμογών</translation>
 <translation id="4763885921995354846">Αυτό επιτρέπει την πρόσβαση στην κάμερα για όλες τις εφαρμογές και τους ιστοτόπους με άδεια κάμερας. Ίσως χρειαστεί να ανανεώσετε την ιστοσελίδα ή να επανεκκινήσετε την εφαρμογή.</translation>
 <translation id="4774338217796918551">Επιστρέψτε ξανά αύριο στις <ph name="COME_BACK_TIME" />.</translation>
@@ -946,6 +956,7 @@
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Θα ειδοποιηθείτε εάν μιλήσετε ενώ είστε σε σίγαση. Ο ήχος παραμένει πάντα στη συσκευή σας.</translation>
 <translation id="5078796286268621944">Εσφαλμένο PIN</translation>
+<translation id="5083035541015925118">ctrl + alt + πάνω βέλος</translation>
 <translation id="5083553833479578423">Ξεκλειδώστε περισσότερες λειτουργίες του Βοηθού.</translation>
 <translation id="5092436659250499817">Ενεργοποίηση/απενεργοποίηση οπίσθιου φωτισμού πληκτρολογίου</translation>
 <translation id="5094577350232361255">σχετικά με</translation>
@@ -1067,6 +1078,7 @@
 <translation id="5590609058453685222">Η υπενθύμιση σίγασης είναι ενεργή. Θα ειδοποιηθείτε εάν μιλήσετε ενώ είστε σε σίγαση.</translation>
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
+<translation id="5599242528220103262">Η συντόμευση πληκτρολογίου είναι απενεργοποιημένη</translation>
 <translation id="5600837773213129531">Πιέστε Ctrl + Alt + Z, για να απενεργοποιήσετε τα εκφωνημένα σχόλια.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Έγινε εναλλαγή της σύνδεσής σας σε ένα καλύτερο δίκτυο</translation>
@@ -1086,6 +1098,7 @@
 <translation id="5678564054339031017">Εμφάνιση επόμενης εβδομάδας</translation>
 <translation id="5679050765726761783">Συνδέθηκε μετασχηματιστής χαμηλής ισχύος</translation>
 <translation id="5682642926269496722">Ο Βοηθός Google δεν είναι διαθέσιμος για τον τρέχοντα λογαριασμό χρήστη.</translation>
+<translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689633613396158040">Ο Νυχτερινός φωτισμός διευκολύνει το θέαση της οθόνης ή την ανάγνωση σε συνθήκες χαμηλού φωτισμού. Πατήστε για να αλλάξετε την ώρα που ενεργοποιείται ο Νυχτερινός φωτισμός ή απενεργοποιήστε τον πλήρως.</translation>
 <translation id="5691772641933328258">Δεν είναι δυνατή η αναγνώριση του δακτυλικού αποτυπώματος</translation>
 <translation id="5693255400847650006">Μικρόφωνο σε χρήση</translation>
@@ -1247,6 +1260,7 @@
 <translation id="639644700271529076">Το CAPS LOCK είναι απενεργοποιημένο</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Βοηθός Google</translation>
+<translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Διαγραφή όλων των ειδοποιήσεων</translation>
 <translation id="643147933154517414">Όλα έτοιμα</translation>
@@ -1256,6 +1270,7 @@
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> συμβάν</translation>
 <translation id="6449483711453944360">Προς το παρόν, δεν υποστηρίζονται οι εφαρμογές Linux και τα παράθυρα για ανώνυμη περιήγηση</translation>
+<translation id="6450245544201845082">Η συντόμευση δεξιού κλικ είναι απενεργοποιημένη αυτήν τη στιγμή</translation>
 <translation id="6452181791372256707">Απόρριψη</translation>
 <translation id="6453179446719226835">Η γλώσσα άλλαξε</translation>
 <translation id="6459472438155181876">Επέκταση οθόνης σε <ph name="DISPLAY_NAME" /></translation>
@@ -1380,6 +1395,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Έναρξη</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6980402667292348590">insert</translation>
 <translation id="6981291220124935078">Ενεργοποίηση πρόσβασης</translation>
 <translation id="6981982820502123353">Προσβασιμότητα</translation>
 <translation id="698231206551913481">Όλα τα αρχεία και τα τοπικά δεδομένα που σχετίζονται με τον χρήστη θα διαγραφούν οριστικά μόλις καταργηθεί ο χρήστης.</translation>
@@ -1431,6 +1447,7 @@
 <translation id="7258828758145722155">Έγινε επεξεργασία χθες</translation>
 <translation id="726276584504105859">Σύρετε εδώ για να χρησιμοποιήσετε τον διαχωρισμό οθόνης</translation>
 <translation id="7262906531272962081">Δημιουργία υπενθύμισης</translation>
+<translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7297440678881127227"><ph name="START_TIME" /> έως
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />,
@@ -1441,6 +1458,7 @@
 <translation id="7312210124139670355">Ο διαχειριστής σας επαναφέρει την eSIM. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
 <translation id="7313193732017069507">Επέκταση κάμερας</translation>
 <translation id="7316261577130609484">Προσθήκη νέας εργασίας</translation>
+<translation id="7331646370422660166">alt + κάτω βέλος</translation>
 <translation id="7340731148882810149">Μενού αυτόματων κλικ</translation>
 <translation id="7346909386216857016">OK, το κατάλαβα</translation>
 <translation id="7348093485538360975">Πληκτρολόγιο οθόνης</translation>
@@ -1486,6 +1504,7 @@
 <translation id="7513922695575567867">Ημερολόγιο, εβδομάδα <ph name="DATE" />, αυτήν τη στιγμή είναι επιλεγμένη η ημερομηνία <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Λήψη</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">page down</translation>
 <translation id="7519206258459640379">Το καδράρισμα της κάμερας είναι ενεργό.</translation>
 <translation id="7519649142417630956">Μετά τον τερματισμό της σύνδεσης, ο διαχειριστής θα αποσυνδεθεί και δεν θα μπορεί να ελέγξει τη συσκευή σας.
 
@@ -1857,6 +1876,7 @@
 <translation id="9126339866969410112">Αναίρεση τελευταίας ενέργειας</translation>
 <translation id="9133335900048457298">Δεν είναι δυνατή η εγγραφή προστατευμένου περιεχομένου</translation>
 <translation id="9139720510312328767">Διαγραφή επόμενου γράμματος</translation>
+<translation id="9151906066336345901">end</translation>
 <translation id="9161053988251441839">ΠΡΟΤΕΙΝΟΜΕΝΕΣ ΕΦΑΡΜΟΓΕΣ</translation>
 <translation id="9168436347345867845">Αργότερα</translation>
 <translation id="9178475906033259337">Προβολή 1 αποτελέσματος για την αναζήτηση <ph name="QUERY" /></translation>

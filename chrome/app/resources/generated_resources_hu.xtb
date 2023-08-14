@@ -184,7 +184,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1142713751288681188">Papírtípus</translation>
 <translation id="1143142264369994168">Tanúsítvány aláírója</translation>
 <translation id="1145593918056169051">A nyomtató leállt</translation>
-<translation id="114571748016232560">Hiba történt. Inkább nyissa meg manuálisan az ablakokat.</translation>
 <translation id="114721135501989771">Google-funkciók a Chrome-ban</translation>
 <translation id="1147322039136785890">Most <ph name="SUPERVISED_USER_NAME" /> jön</translation>
 <translation id="1147991416141538220">Hozzáférés kéréséhez forduljon az eszköz adminisztrátorához.</translation>
@@ -799,7 +798,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="163072119192489970">Befejezhetik az adatok küldését és fogadását</translation>
 <translation id="1630768113285622200">Újraindítás és folytatás</translation>
 <translation id="1631503405579357839">Színvakság</translation>
-<translation id="1632082166874334883">A jelszót tárolja a Google-fiókja</translation>
 <translation id="1632756664321977232">Kivágás eszköz</translation>
 <translation id="163309982320328737">Az alapértelmezett karakterszélesség félkövér</translation>
 <translation id="1633947793238301227">A Google Segéd deaktiválása</translation>
@@ -1040,7 +1038,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> további…</translation>
 <translation id="1816036116994822943">Keresési sebesség a billentyűzeten</translation>
 <translation id="1817871734039893258">Microsoft - fájlhelyreállítás</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" /> jelszavának törlése</translation>
 <translation id="1818913467757368489">A napló feltöltése folyamatban van.</translation>
 <translation id="1819443852740954262">Összes megnyitása inkognitó ablakban</translation>
 <translation id="1819721979226826163">Koppintson az Alkalmazásértesítések &gt; Google Play-szolgáltatások menüpontra.</translation>
@@ -3656,7 +3653,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="3930602610362250897">Lehetséges, hogy a szerzői joggal védett tartalmak lejátszásához a webhelyeknek tartalomvédelmi szolgáltatásokat kell használniuk</translation>
 <translation id="3930737994424905957">Eszközök keresése…</translation>
 <translation id="3930968231047618417">Háttérszín</translation>
-<translation id="3933283459331715412"><ph name="USERNAME" /> törölt jelszavának visszaállítása</translation>
 <translation id="3936260554100916852">A(z) <ph name="DEVICE_NAME" /> Wi-Fi-hálózatot oszt meg Önnel</translation>
 <translation id="3936390757709632190">&amp;Hang megnyitása új lapon</translation>
 <translation id="3936925983113350642">A most választott jelszó ahhoz szükséges, hogy ezt a tanúsítványt később visszaállíthassa. Tárolja biztonságos helyen.</translation>

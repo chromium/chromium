@@ -182,7 +182,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1143142264369994168">Firmante del certificado</translation>
 <translation id="1145593918056169051">Se detuvo la impresora</translation>
-<translation id="114571748016232560">Se produjo un error. Abre las ventanas de forma manual.</translation>
 <translation id="114721135501989771">Obtén las mejores funciones de Google en Chrome</translation>
 <translation id="1147322039136785890">Ahora es el turno de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Para solicitar el acceso, comunícate con el administrador de este dispositivo.</translation>
@@ -793,7 +792,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="163072119192489970">Puede completar el envío y la recepción de datos</translation>
 <translation id="1630768113285622200">Restablecer y continuar</translation>
 <translation id="1631503405579357839">Daltonismo</translation>
-<translation id="1632082166874334883">Contraseñas almacenadas en tu Cuenta de Google</translation>
 <translation id="1632756664321977232">Herramienta de recorte</translation>
 <translation id="163309982320328737">El ancho del carácter inicial está completo</translation>
 <translation id="1633947793238301227">Inhabilitar el Asistente de Google</translation>
@@ -1026,7 +1024,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> más…</translation>
 <translation id="1816036116994822943">Velocidad de análisis del teclado</translation>
 <translation id="1817871734039893258">Recuperación de archivos de Microsoft</translation>
-<translation id="1818007989243628752">Borrar la contraseña para <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">La carga del registro está en curso.</translation>
 <translation id="1819443852740954262">Abrir todo en una ventana de incógnito</translation>
 <translation id="1819721979226826163">Presiona Notificaciones de apps &gt; Servicios de Google Play.</translation>
@@ -3637,7 +3634,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3930602610362250897">Para reproducir contenido protegido por derechos de autor, es posible que los sitios deban usar un servicio de protección de contenido.</translation>
 <translation id="3930737994424905957">Buscando dispositivos</translation>
 <translation id="3930968231047618417">Color del fondo</translation>
-<translation id="3933283459331715412">Restablecer la contraseña eliminada de <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> está compartiendo una red Wi-Fi contigo.</translation>
 <translation id="3936390757709632190">Abrir audio en una nueva pestaña</translation>
 <translation id="3936925983113350642">La contraseña que selecciones se te pedirá para restablecer este certificado más tarde. Guárdala en un lugar seguro.</translation>

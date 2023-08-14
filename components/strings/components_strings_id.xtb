@@ -2023,7 +2023,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5287456746628258573">Situs ini menggunakan konfigurasi keamanan yang telah habis masa berlakunya, yang dapat mengekspos informasi Anda (misalnya, sandi atau nomor kartu kredit) saat dikirimkan ke situs ini.</translation>
 <translation id="5288108484102287882">Validasi nilai kebijakan telah memunculkan peringatan</translation>
 <translation id="5288393065350884210">Akuntansi &amp; pengauditan</translation>
-<translation id="5288808348893593856">Koneksi situs aman kecuali jika Chrome menyatakan sebaliknya.</translation>
 <translation id="5289384342738547352">Penanganan beberapa dokumen</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Perlu diupdate hari ini}=2{Perlu diupdate paling lambat besok}other{Perlu diupdate dalam # hari}}</translation>
 <translation id="5293919335876685914">Coupe</translation>
@@ -2614,7 +2613,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6569060085658103619">Anda melihat halaman ekstensi</translation>
 <translation id="6569366777234823130">Film drama</translation>
 <translation id="6573200754375280815">Dua lubang di kanan</translation>
-<translation id="6576181918031900030">Mulai mentransmisikan</translation>
 <translation id="6578434528542148658">ID ekstensi tidak valid.</translation>
 <translation id="657902945730878902">Menggambar &amp; mewarnai</translation>
 <translation id="6579630537141957243">Hubungkan perangkat MIDI?</translation>

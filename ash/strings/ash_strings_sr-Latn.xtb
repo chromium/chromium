@@ -25,6 +25,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="108486256082349153">Mobilni: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Dobar dan, <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Pretražujte kategoriju <ph name="CATEGORY" />, fajlove, aplikacije i drugo. Koristite tastere sa strelicama da biste se kretali kroz aplikacije.</translation>
+<translation id="1093645050124056515">ctrl + alt + strelica nadole</translation>
 <translation id="109942774857561566">Dosadno mi je</translation>
 <translation id="1104084341931202936">Pregledajte podešavanja pristupačnosti</translation>
 <translation id="1104621072296271835">Uređaji zajedno funkcionišu još bolje</translation>
@@ -43,6 +44,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1182225749592316782">Ovo omogućava pristup svim aplikacijama i veb-sajtovima koji imaju dozvole za kameru i mikrofon</translation>
+<translation id="1182876754474670069">home</translation>
 <translation id="1183863904939664422">Ne zanima me ovaj predlog</translation>
 <translation id="1184126796192815024">Ova mreža ne podržava aplikacije za strimovanje sa telefona. Probajte da koristite hotspot telefona. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Unesite lozinku ili PIN radi dodatne bezbednosti</translation>
@@ -147,6 +149,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1586324912145647027">Idite na radne površine od 1 do 8</translation>
 <translation id="1589090746204042747">Pristupite svim aktivnostima u ovoj sesiji</translation>
 <translation id="1592682369233288537">Sledeća radna površina: <ph name="NEXT_DESK_NAME" />, koristite Pretraga + taster za razmak da biste aktivirali.</translation>
+<translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + strelica nadole</translation>
 <translation id="1604857178818051494">Pauziraj medije</translation>
 <translation id="1610778689852195798">„Opozovi radnju“</translation>
 <translation id="1611993646327628135">Uključeno</translation>
@@ -249,6 +252,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2021864487439853900">Kliknite da biste otključali</translation>
 <translation id="2023558322300866873">Snimanje paketa možete da zaustavite u svakom trenutku</translation>
 <translation id="2034971124472263449">Ipak sačuvaj</translation>
+<translation id="204259843076055848">Prečica <ph name="SIX_PACK_KEY_NAME" /> je trenutno isključena</translation>
 <translation id="2049240716062114887">Ime radne površine je promenjeno u <ph name="DESK_NAME" /></translation>
 <translation id="206377500836174974">Puno</translation>
 <translation id="2064048859448024834">Pregled kamere je uključen</translation>
@@ -381,6 +385,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2665788051462227163">Aplikacije<ph name="UNAVAILABLE_APPS_ONE" /> i <ph name="UNAVAILABLE_APPS_TWO" /> nisu na ovom uređaju.</translation>
 <translation id="2673968385134502798">Igre</translation>
 <translation id="2678852583403169292">Meni funkcije Izaberite za govor</translation>
+<translation id="2687510499067466116">Tasterska prečica je promenjena</translation>
 <translation id="2689613560355655046">Radna površina 8</translation>
 <translation id="2695305337569143674">veb</translation>
 <translation id="2697697418792422688">Pregledajte podešavanja tastature. Izabrali ste <ph name="KEYBOARD_NAME" />.</translation>
@@ -637,12 +642,14 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3738664582935948253">Sada možete da omogućite prikaz klikova i tasterskih prečica na snimcima ekrana</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
 <translation id="3756485814916578707">Prebacuje se ekran</translation>
+<translation id="3765841382945324995">Prečica za <ph name="SIX_PACK_KEY_NAME" /> je sada <ph name="NEW_SHORTCUT" />, a ne više<ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Izmenjeno danas</translation>
 <translation id="3773700760453577392">Administrator je zabranio višestruko prijavljivanje za <ph name="USER_EMAIL" />. Svi korisnici moraju da se odjave da bismo nastavili sa sesijom.</translation>
 <translation id="3779139509281456663">Povezuje se <ph name="NAME" /></translation>
 <translation id="3781910048497807059">Premesti fokus na prethodno okno</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Zaključaj</translation>
+<translation id="3796215473395753611">alt + strelica nagore</translation>
 <translation id="3796746699333205839">Aplikacija koristi kameru i mikrofon</translation>
 <translation id="3798670284305777884">Zvučnik (interni)</translation>
 <translation id="3799080171973636491">Pritisnuli ste tastersku prečicu za lupu za ceo ekran. Želite li da je uključite?</translation>
@@ -698,6 +705,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4026843240379844265">Pomera aktivan prozor na različite ekrane</translation>
 <translation id="4028481283645788203">Treba da unesete lozinku radi dodatne bezbednosti</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + strelica ulevo</translation>
 <translation id="4042660782729322247">Delite ekran</translation>
 <translation id="404437169852192935">Ažuriranja su završena</translation>
 <translation id="4049230407053723315">Brza podešavanja</translation>
@@ -720,6 +728,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4129129681837227511">Da biste videli obaveštenja na zaključanom ekranu, otključajte ga kako biste promenili podešavanje</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" />°C – Trenutna brzina: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Uključeno do svitanja</translation>
+<translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + strelica nadesno</translation>
 <translation id="4146671046252289537">Premestite iza sledeće reči</translation>
 <translation id="4146833061457621061">Pusti muziku</translation>
 <translation id="4150201353443180367">Ekran</translation>
@@ -866,6 +875,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4747410141429390146">Otključajte da biste videli obaveštenja</translation>
 <translation id="4752784485658729358">Dozvoljeno je samo 6 sačuvanih radnih površina. Uklonite neku radnu površinu da biste sačuvali novu.</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
+<translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + strelica nagore</translation>
 <translation id="4762573482154983647">Sakrijte aplikacije</translation>
 <translation id="4763885921995354846">Ovo omogućava pristup kameri za sve aplikacije i veb-sajtove sa dozvolom za kameru. Možda ćete morati da osvežite veb-stranicu ili restartujete aplikaciju.</translation>
 <translation id="4774338217796918551">Vratite se sutra u <ph name="COME_BACK_TIME" />.</translation>
@@ -947,6 +957,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Dobićete obaveštenje ako govorite dok je zvuk isključen. Zvuk ostaje na uređaju.</translation>
 <translation id="5078796286268621944">Netačan PIN</translation>
+<translation id="5083035541015925118">ctrl + alt + strelica nagore</translation>
 <translation id="5083553833479578423">Otključajte još funkcija Pomoćnika.</translation>
 <translation id="5092436659250499817">Uključi/isključi pozadinsko osvetljenje tastature</translation>
 <translation id="5094577350232361255">osnovni podaci</translation>
@@ -1068,6 +1079,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5590609058453685222">Podsetnik za mikrofon je uključen. Dobićete obaveštenje ako govorite dok je zvuk isključen.</translation>
 <translation id="5596627076506792578">Još opcija</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> <ph name="DATE" /></translation>
+<translation id="5599242528220103262">Tasterska prečica je isključena</translation>
 <translation id="5600837773213129531">Pritisnite Ctrl + Alt + Z da biste onemogućili govorne povratne informacije.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Prebacili smo vas na bolju mrežu</translation>
@@ -1087,6 +1099,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5678564054339031017">Prikažite sledeću nedelju</translation>
 <translation id="5679050765726761783">Povezan je adapter male snage</translation>
 <translation id="5682642926269496722">Google nije dostupan za aktuelni korisnički nalog.</translation>
+<translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689633613396158040">Noćno svetlo vam olakšava da pregledate sadržaj ekrana ili da čitate pri prigušenom svetlu. Dodirnite da biste promenili vreme kada se noćno svetlo uključuje ili ga potpuno isključite.</translation>
 <translation id="5691772641933328258">Otisak prsta nije prepoznat</translation>
 <translation id="5693255400847650006">Mikrofon se koristi</translation>
@@ -1248,6 +1261,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="639644700271529076">CAPS LOCK je isključen</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google pomoćnik</translation>
+<translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Obrišite sva obaveštenja</translation>
 <translation id="643147933154517414">Gotovo</translation>
@@ -1257,6 +1271,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="6445915701151710649">procesor</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> događaj</translation>
 <translation id="6449483711453944360">Linux aplikacije i prozori bez arhiviranja trenutno nisu podržani</translation>
+<translation id="6450245544201845082">Prečica za desni klik je trenutno isključena</translation>
 <translation id="6452181791372256707">Odbij</translation>
 <translation id="6453179446719226835">Jezik je promenjen</translation>
 <translation id="6459472438155181876">Proširivanje ekrana u <ph name="DISPLAY_NAME" /></translation>
@@ -1381,6 +1396,7 @@ Novo instaliranje</translation>
 <translation id="6965382102122355670">Potvrdi</translation>
 <translation id="6972754398087986839">Započnimo</translation>
 <translation id="6979158407327259162">Google disk</translation>
+<translation id="6980402667292348590">insert</translation>
 <translation id="6981291220124935078">Uključi pristup</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="698231206551913481">Sve datoteke i lokalni podaci povezani sa ovim korisnikom će biti trajno izbrisani kada uklonite ovog korisnika.</translation>
@@ -1432,6 +1448,7 @@ Novo instaliranje</translation>
 <translation id="7258828758145722155">Izmenjeno juče</translation>
 <translation id="726276584504105859">Prevucite ovde da biste koristili podeljeni ekran</translation>
 <translation id="7262906531272962081">Napravi podsetnik</translation>
+<translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7297440678881127227"><ph name="START_TIME" /> do
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />,
@@ -1442,6 +1459,7 @@ Novo instaliranje</translation>
 <translation id="7312210124139670355">Administrator resetuje eSIM. To može da potraje nekoliko minuta.</translation>
 <translation id="7313193732017069507">Proširite kameru</translation>
 <translation id="7316261577130609484">Dodaj novi zadatak</translation>
+<translation id="7331646370422660166">alt + strelica nadole</translation>
 <translation id="7340731148882810149">Meni za automatske klikove</translation>
 <translation id="7346909386216857016">Važi</translation>
 <translation id="7348093485538360975">Tastatura na ekranu</translation>
@@ -1487,6 +1505,7 @@ Novo instaliranje</translation>
 <translation id="7513922695575567867">Kalendar, sedmica kada je <ph name="DATE" />, <ph name="SELECTED_DATE" /> je trenutno izabran.</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">page down</translation>
 <translation id="7519206258459640379">Uokvirivanje kamere je uključeno.</translation>
 <translation id="7519649142417630956">Kad se zatvori, administrator će se odjaviti i neće moći da kontroliše uređaj.
 
@@ -1858,6 +1877,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="9126339866969410112">Opozovi poslednju radnju</translation>
 <translation id="9133335900048457298">Snimanje zaštićenog sadržaja nije uspelo</translation>
 <translation id="9139720510312328767">Izbriši sledeće slovo</translation>
+<translation id="9151906066336345901">end</translation>
 <translation id="9161053988251441839">PREDLOŽENE APLIKACIJE</translation>
 <translation id="9168436347345867845">Uradiću to kasnije</translation>
 <translation id="9178475906033259337">Prikazuje se jedan rezultat za: <ph name="QUERY" /></translation>

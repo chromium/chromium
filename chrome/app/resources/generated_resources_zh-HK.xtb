@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">紙張類型</translation>
 <translation id="1143142264369994168">憑證簽署者</translation>
 <translation id="1145593918056169051">打印機已停止運作</translation>
-<translation id="114571748016232560">發生問題。請改為手動開啟視窗。</translation>
 <translation id="114721135501989771">在 Chrome 中體驗 Google 的智能功能</translation>
 <translation id="1147322039136785890">現在可交由<ph name="SUPERVISED_USER_NAME" />使用</translation>
 <translation id="1147991416141538220">如要求存取權，請聯絡此裝置的管理員。</translation>
@@ -799,7 +798,6 @@
 <translation id="163072119192489970">已允許完成傳送和接收資料</translation>
 <translation id="1630768113285622200">重新啟動及繼續</translation>
 <translation id="1631503405579357839">色盲</translation>
-<translation id="1632082166874334883">儲存在 Google 帳戶中的密碼</translation>
 <translation id="1632756664321977232">裁剪工具</translation>
 <translation id="163309982320328737">初始字元寬度為全形</translation>
 <translation id="1633947793238301227">停用「Google 助理」</translation>
@@ -1039,7 +1037,6 @@
 <translation id="181577467034453336">還有 <ph name="NUMBER_OF_VIEWS" /> 個畫面…</translation>
 <translation id="1816036116994822943">鍵盤掃瞄速度</translation>
 <translation id="1817871734039893258">Microsoft 檔案復原</translation>
-<translation id="1818007989243628752">刪除 <ph name="USERNAME" /> 的密碼</translation>
 <translation id="1818913467757368489">正在上載記錄。</translation>
 <translation id="1819443852740954262">在無痕式視窗中開啟所有網址</translation>
 <translation id="1819721979226826163">輕按 [應用程式通知] &gt; [Google Play 服務]。</translation>
@@ -1182,6 +1179,7 @@
 <translation id="1925124445985510535">已於 <ph name="TIME" /> 執行安全檢查</translation>
 <translation id="192564025059434655">舊版 Chrome 應用程式在 2022 年 12 月後將無法在 Windows 裝置上開啟。您亦可檢查是否有可用的新版本。</translation>
 <translation id="1926339101652878330">這些設定受到公司政策管控。請聯絡您的管理員，以取得更多資料。</translation>
+<translation id="1926887872692564784">游標</translation>
 <translation id="1927632033341042996">指紋 <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">螢幕鎖定 PIN</translation>
 <translation id="192858925209436740">將 OneDrive 連線至「檔案」應用程式，即可透過 Chromebook 管理已儲存的文件。請使用 Microsoft 帳戶登入。</translation>
@@ -3286,6 +3284,7 @@
 <translation id="3653887973853407813">您無法使用此擴充程式，因為您的家長或監護人已關閉 Chrome 的「網站、應用程式和擴充程式權限」。</translation>
 <translation id="3653999333232393305">繼續允許 <ph name="HOST" /> 存取您的麥克風</translation>
 <translation id="3654045516529121250">讀取您的協助工具設定</translation>
+<translation id="3656328935986149999">游標速度</translation>
 <translation id="3658871634334445293">TrackPoint 加速</translation>
 <translation id="3659550105763988702">將密鑰用於 <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">您輸入不正確存取碼的次數過多。請稍後再試</translation>
@@ -3653,7 +3652,6 @@
 <translation id="3930602610362250897">如要播放受版權保護的內容，網站可能需要使用內容保護服務</translation>
 <translation id="3930737994424905957">正在尋找裝置</translation>
 <translation id="3930968231047618417">背景顏色</translation>
-<translation id="3933283459331715412">還原 <ph name="USERNAME" /> 中已刪除的密碼</translation>
 <translation id="3936260554100916852">「<ph name="DEVICE_NAME" />」正在與您共用 Wi-Fi 網絡</translation>
 <translation id="3936390757709632190">在新分頁中開啟音效檔案(&amp;O)</translation>
 <translation id="3936925983113350642">日後如要還原這個憑證，將需要使用您所選用的密碼，請將這個密碼記錄在安全的位置。</translation>
@@ -3995,6 +3993,7 @@
 <translation id="4232375817808480934">設定 Kerberos</translation>
 <translation id="4233739489690259993">Chromebook 不會再收到安全和軟件更新。請改用新款裝置，以取得最新的安全性和新功能。須遵守優惠條款。</translation>
 <translation id="4235965441080806197">取消登入</translation>
+<translation id="4235976607074422892">捲動速度</translation>
 <translation id="4237282663517880406">顯示「Google 雲端硬碟」建議</translation>
 <translation id="4241182343707213132">重新啟動即可更新機構的應用程式</translation>
 <translation id="4242145785130247982">不支援多個用戶端憑證</translation>
@@ -5318,6 +5317,7 @@
 <translation id="5365881113273618889">您選取的資料夾包含敏感檔案。確定要將此資料夾的寫入權限永久授予「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="536638840841140142">無</translation>
 <translation id="5368246151595623328">透過<ph name="DEVICE_NAME" /> 儲存「<ph name="NETWORK_NAME" />」</translation>
+<translation id="5368255566854433132">建立 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="5368720394188453070">您的手機已被鎖定。請解鎖以進入。</translation>
 <translation id="5368779022775404937">登入 <ph name="REALM" /></translation>
 <translation id="536882527576164740">{0,plural, =1{無痕式視窗}other{無痕式視窗 (#)}}</translation>
@@ -8643,6 +8643,7 @@
 <translation id="8137559199583651773">管理擴充程式</translation>
 <translation id="8138217203226449454">您要變更搜尋服務供應商嗎？</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> 狀態</translation>
+<translation id="8139440916039659819">游標加速</translation>
 <translation id="8139447493436036221">「Google 雲端硬碟」檔案</translation>
 <translation id="8139643636835015859">這麼做會騰出離線檔案使用的 <ph name="OFFLINE_STORAGE_SIZE" /> 空間，但部分檔案仍可在離線時存取。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />、<ph name="SECOND_DEVICE" /></translation>
@@ -8979,6 +8980,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">已允許<ph name="PERMISSION" />和其他 <ph name="COUNT" /> 個項目</translation>
 <translation id="8413956290606243087">要啟用 Chrome OS 內置的螢幕閱讀器 ChromeVox 嗎？</translation>
+<translation id="8414065061814811918">捲動加速。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">回憶將會隱藏 2 天</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">附註</translation>
@@ -9105,6 +9107,7 @@
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">喇叭</translation>
 <translation id="8527257351549797148">機構可能會要求你註冊，才能存取應用程式、擴充程式和其他內容。這亦允許機構管理安全性和裝置設定等項目。</translation>
+<translation id="8527869672961320915">「<ph name="VM_NAME" />」應用程式</translation>
 <translation id="8528074251912154910">新增語言</translation>
 <translation id="8528479410903501741">儲存 IBAN</translation>
 <translation id="8528962588711550376">正在登入。</translation>
@@ -9361,6 +9364,7 @@
 <translation id="8736288397686080465">這個網站已在背景更新。</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">揀要將網頁翻譯成邊種語言</translation>
+<translation id="8740086188450289493">使用 Google 帳戶密碼</translation>
 <translation id="8740247629089392745">您可將此 Chromebook 交還給<ph name="SUPERVISED_USER_NAME" />。設定即將完成，現在可開始探索。</translation>
 <translation id="8740672167979365981">需要更新 ChromeOS Flex</translation>
 <translation id="8741944563400125534">按鈕控制設定指南</translation>
@@ -9743,6 +9747,7 @@
 <translation id="9045160989383249058">閱讀清單已移動至新的側面板。按這裡即可試用。</translation>
 <translation id="9045430190527754450">將您嘗試瀏覽的網頁網址傳送至 Google</translation>
 <translation id="9048745018038487540">選取所有字型</translation>
+<translation id="9050135202879860719">使用密碼登入 <ph name="DEVICE_TYPE" /></translation>
 <translation id="9050666287014529139">複雜密碼</translation>
 <translation id="9052404922357793350">繼續封鎖</translation>
 <translation id="90528604757378587">背景活動及部分視覺效果 (例如平滑捲動) 可能會受到限制。</translation>

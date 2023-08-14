@@ -182,7 +182,6 @@
 <translation id="1142713751288681188">Թղթի տեսակը</translation>
 <translation id="1143142264369994168">Վկայագրի ստորագրող</translation>
 <translation id="1145593918056169051">Տպիչի աշխատանքն ընդհատվեց</translation>
-<translation id="114571748016232560">Սխալ առաջացավ։ Բացեք պատուհանները ձեռքով։</translation>
 <translation id="114721135501989771">Google-ի տեխնոլոգիաներ Chrome-ում</translation>
 <translation id="1147322039136785890">Այժմ <ph name="SUPERVISED_USER_NAME" />-ի հերթն է</translation>
 <translation id="1147991416141538220">Օգտագործելու թույլտվություն խնդրելու համար կապվեք այս սարքի ադմինիստրատորի հետ:</translation>
@@ -798,7 +797,6 @@
 <translation id="163072119192489970">Թույլատրվում է ավարտել տվյալների ուղարկումն ու ստացումը</translation>
 <translation id="1630768113285622200">Վերագործարկել և շարունակել</translation>
 <translation id="1631503405579357839">Դալտոնիզմ</translation>
-<translation id="1632082166874334883">Գաղտնաբառերը պահվում են ձեր Google հաշվում</translation>
 <translation id="1632756664321977232">«Եզրատում» գործիք</translation>
 <translation id="163309982320328737">Գրանշանի սկզբնական լայնությունը՝ լիալայնք</translation>
 <translation id="1633947793238301227">Անջատել Google Օգնականը</translation>
@@ -1031,7 +1029,6 @@
 <translation id="181577467034453336">Եվս <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">Ստեղնաշարի սկանավորման արագությունը</translation>
 <translation id="1817871734039893258">Microsoft ֆայլերի վերականգնում</translation>
-<translation id="1818007989243628752">Ջնջել <ph name="USERNAME" />-ի գաղտնաբառը</translation>
 <translation id="1818913467757368489">Մատյանը վերբեռնվում է:</translation>
 <translation id="1819443852740954262">Բացել բոլորն ինկոգնիտո պատուհանում</translation>
 <translation id="1819721979226826163">Հպեք Հավելվածների ծանուցումներ &gt; Google Play ծառայություններ։</translation>
@@ -3642,7 +3639,6 @@
 <translation id="3930602610362250897">Հեղինակային իրավունքով պաշտպանված բովանդակություն նվագարկելու համար կայքերին երբեմն անհրաժեշտ է լինում օգտագործել բովանդակության պաշտպանության ծառայություն։</translation>
 <translation id="3930737994424905957">Սարքերի որոնում</translation>
 <translation id="3930968231047618417">Ֆոնի գույնը</translation>
-<translation id="3933283459331715412">Վերականգնել <ph name="USERNAME" />-ի ջնջված գաղտնաբառը</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> սարքը ձեզ հետ կիսվում է Wi-Fi ցանցով</translation>
 <translation id="3936390757709632190">&amp;Բացել ձայնանյութը նոր ներդիրով</translation>
 <translation id="3936925983113350642">Ձեր ընտրած գաղտնաբառը կպահանջվի հետագայում այս հավաստագրի վերականգնման համար: Գրանցեք այն ապահով տեղում:</translation>

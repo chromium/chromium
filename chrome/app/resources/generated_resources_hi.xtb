@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">पेपर टाइप</translation>
 <translation id="1143142264369994168">प्रमाणपत्र हस्ताक्षरकर्ता</translation>
 <translation id="1145593918056169051">प्रिंटर बंद हो गया है</translation>
-<translation id="114571748016232560">कोई गड़बड़ी हुई. इसके बजाय, विंडो को मैन्युअल तरीके से खोलें.</translation>
 <translation id="114721135501989771">Chrome में Google स्मार्ट पाएं</translation>
 <translation id="1147322039136785890">अब <ph name="SUPERVISED_USER_NAME" /> इस डिवाइस का इस्तेमाल कर सकते हैं</translation>
 <translation id="1147991416141538220">ऐक्सेस मांगने के लिए, इस डिवाइस के एडमिन से संपर्क करें.</translation>
@@ -800,7 +799,6 @@
 <translation id="163072119192489970">डेटा भेजने और पाने की अनुमति है</translation>
 <translation id="1630768113285622200">रीस्टार्ट करें और जारी रखें</translation>
 <translation id="1631503405579357839">रंगों की पहचान न कर पाने की समस्या</translation>
-<translation id="1632082166874334883">आपके Google खाते में सेव किया गया पासवर्ड</translation>
 <translation id="1632756664321977232">काट-छांट करने का टूल</translation>
 <translation id="163309982320328737">आरंभिक वर्ण चौड़ाई पूर्ण है</translation>
 <translation id="1633947793238301227">Google Assistant बंद करें</translation>
@@ -1041,7 +1039,6 @@
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> और...</translation>
 <translation id="1816036116994822943">कीबोर्ड की स्कैन करने की गति</translation>
 <translation id="1817871734039893258">Microsoft फ़ाइल पुनर्प्राप्ति</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" /> का पासवर्ड मिटाएं</translation>
 <translation id="1818913467757368489">लॉग अपलोड हो रहा है.</translation>
 <translation id="1819443852740954262">सभी यूआरएल गुप्त विंडो में खोलें</translation>
 <translation id="1819721979226826163">ऐप्लिकेशन सूचनाएं &gt; Google Play सेवाएं पर टैप करें.</translation>
@@ -3656,7 +3653,6 @@
 <translation id="3930602610362250897">कॉपीराइट से सुरक्षित कॉन्टेंट दिखाने के लिए, साइटों को कॉन्टेंट सुरक्षा सेवा का इस्तेमाल करना पड़ सकता है</translation>
 <translation id="3930737994424905957">डिवाइस खोजे जा रहे हैं</translation>
 <translation id="3930968231047618417">बैकग्राउंड का रंग</translation>
-<translation id="3933283459331715412"><ph name="USERNAME" /> के लिए मिटाया गया पासवर्ड बहाल करें</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> आपके साथ वाई-फ़ाई नेटवर्क शेयर कर रहा है</translation>
 <translation id="3936390757709632190">ऑडियो नए टैब में &amp;खोलें</translation>
 <translation id="3936925983113350642">  चुने जाने वाले पासवर्ड की आवश्यकता इस प्रमाणपत्र को बाद में फिर से स्थापित करने के लिए होगी. कृपया इसे कहीं पर सुरक्षित रखें.</translation>

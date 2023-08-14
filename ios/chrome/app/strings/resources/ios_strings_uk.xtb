@@ -126,7 +126,6 @@
 <translation id="1657011748321897393">Не вдалося поділитися, оскільки ви не під’єднані до мережі.</translation>
 <translation id="1657641691196698092">Заблоковані файли cookie</translation>
 <translation id="165877110639533037">Немає відкритих вкладок</translation>
-<translation id="166310177317698233">Щоб переглянути закріплені вкладки, натисніть кнопку "Показати вкладки".</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Мобільний сайт</translation>
 <translation id="168715261339224929">Щоб мати доступ до закладок на всіх своїх пристроях, увімкніть синхронізацію.</translation>
@@ -235,7 +234,6 @@
 <translation id="2423077901494354337">Тепер ви можете використовувати всі можливості Chrome на своєму пристрої.</translation>
 <translation id="2434405374328098816">Ви вже зберегли пароль для користувача <ph name="USERNAME" /> на веб-сайті <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Показати пароль</translation>
-<translation id="2451654228769116489">Закріпити вкладку</translation>
 <translation id="2459155039684421202">В адресному рядку введіть завдання, наприклад, "очистити історію" або "змінити паролі".</translation>
 <translation id="2461070143328828326">Налаштування паролю</translation>
 <translation id="2469960372084740698">Вимкнути Безпечний перегляд?</translation>
@@ -304,7 +302,6 @@
 <translation id="2800683595868705743">Закрити перемикач вкладок</translation>
 <translation id="2815198996063984598">2. Натисніть "Веб-переглядач за умовчанням"</translation>
 <translation id="2818821771744632548">Ви вийшли з облікового запису <ph name="USER_NAME" />, коли було скинуто налаштування iPhone. Щоб увійти знову, натисніть "Продовжити" нижче.</translation>
-<translation id="2822917246944009066">Вкладку закріплено</translation>
 <translation id="2830972654601096923">Керувати адресами…</translation>
 <translation id="2834399722155632105">3. Натисніть "Параметри паролів"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -836,7 +833,6 @@
 <translation id="6059830886158432458">Керуйте новинами й діями тут</translation>
 <translation id="6064824697233747382">Адміністратор вашої організації вимагає, щоб ви вимкнули синхронізацію.</translation>
 <translation id="6066301408025741299">Торкніться, щоб скасувати.</translation>
-<translation id="6071409777669089905">Відкріпити вкладку</translation>
 <translation id="6084848228346514841">Виберіть вкладки</translation>
 <translation id="6100617279104942061">Ви ввійшли в обліковий запис <ph name="USER_EMAIL" />. Ця опція відкриває налаштування.</translation>
 <translation id="6103540626693881831">Шифрування на пристрої</translation>
@@ -1081,7 +1077,6 @@
 <translation id="7431991332293347422">Указуйте, як використовувати історію веб-перегляду для персоналізації Пошуку тощо</translation>
 <translation id="7435356471928173109">Вимкнено адміністратором</translation>
 <translation id="7438481509621345350">Тепер, відкривши нову вкладку, ви будете бачити історії із сайту <ph name="CHANNEL_NAME" />.</translation>
-<translation id="7446583256109515732">Вкладку відкріплено</translation>
 <translation id="7451023311965289370">{count,plural, =1{Закладку збережено в папці "{title}"}one{Закладки збережено в папці "{title}"}few{Закладки збережено в папці "{title}"}many{Закладки збережено в папці "{title}"}other{Закладки збережено в папці "{title}"}}</translation>
 <translation id="7454057999980797137">Область</translation>
 <translation id="745899714366929493">Увесь день</translation>
@@ -1108,7 +1103,6 @@
 <translation id="7600965453749440009">Ніколи не перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Сплив.вікна блок. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Видалити пароль</translation>
-<translation id="7611459119367035420">Тут можна переглянути закріплені вкладки.</translation>
 <translation id="7638584964844754484">Неправильна парольна фраза</translation>
 <translation id="7640669552036055091">Вкладки з пристрою Android</translation>
 <translation id="7646263789464975852">Меню → Налаштування → Перевірка безпеки</translation>

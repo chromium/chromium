@@ -574,6 +574,7 @@
 <translation id="2166049586286450108">完整管理存取權</translation>
 <translation id="2166378884831602661">這個網站無法提供安全連線</translation>
 <translation id="2168151236314517198">管理員政策禁止列印此內容</translation>
+<translation id="2175630235841878061">無法下載超過 100 MB 的檔案</translation>
 <translation id="2176974405772725904">將地址儲存在帳戶中</translation>
 <translation id="2178665390943006934">更新 Chrome 按鈕，啟動之後就可以透過 Chrome 設定更新 Chrome</translation>
 <translation id="2181821976797666341">政策</translation>
@@ -2023,7 +2024,6 @@
 <translation id="5287456746628258573">此網站的安全性設定過舊，因此您傳送給此網站的資料 (例如密碼或信用卡號碼) 可能會外洩。</translation>
 <translation id="5288108484102287882">政策值驗證出現警告訊息</translation>
 <translation id="5288393065350884210">會計和核數</translation>
-<translation id="5288808348893593856">如果 Chrome 未另行通知，表示網站連線安全無虞。</translation>
 <translation id="5289384342738547352">多份文件處理</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{請在今天內更新}=2{最遲請在明天完成更新}other{請在 # 天內更新}}</translation>
 <translation id="5293919335876685914">雙門房車</translation>
@@ -2403,6 +2403,7 @@
 <translation id="6118782133429281336">來源清單空白。</translation>
 <translation id="6120179357481664955">要記住您的 UPI ID 嗎？</translation>
 <translation id="6122181661879998141">信用卡正面</translation>
+<translation id="6124058285696691147">下載附件</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Chinese #2 信封</translation>
 <translation id="6127379762771434464">項目已移除</translation>
@@ -2614,7 +2615,6 @@
 <translation id="6569060085658103619">您正在查看擴充程式頁面</translation>
 <translation id="6569366777234823130">劇情電影</translation>
 <translation id="6573200754375280815">雙孔 (右側)</translation>
-<translation id="6576181918031900030">開始投放</translation>
 <translation id="6578434528542148658">無效的擴充程式 ID。</translation>
 <translation id="657902945730878902">繪畫和填色</translation>
 <translation id="6579630537141957243">要連接 MIDI 裝置嗎？</translation>

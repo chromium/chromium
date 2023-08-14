@@ -180,7 +180,6 @@
 <translation id="1142713751288681188">पेपरको प्रकार</translation>
 <translation id="1143142264369994168">प्रमाणपत्र साइनर</translation>
 <translation id="1145593918056169051">प्रिन्टरले काम गरेको छैन</translation>
-<translation id="114571748016232560">कुनै समस्या आयो। बरु विन्डोहरू म्यानुअल तरिकाले खोल्नुहोस्।</translation>
 <translation id="114721135501989771">Chrome मा Google स्मार्ट प्राप्त गर्नुहोस्‌</translation>
 <translation id="1147322039136785890">अब <ph name="SUPERVISED_USER_NAME" /> को पालो</translation>
 <translation id="1147991416141538220">पहुँच माग्न यस डिभाइसका प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
@@ -793,7 +792,6 @@
 <translation id="163072119192489970">डेटा पठाउने तथा प्राप्त गर्ने कार्य पूरा गर्न अनुमति दिइएका साइटहरू</translation>
 <translation id="1630768113285622200">पुनः सुरु गरेर जारी राख्नुहोस्</translation>
 <translation id="1631503405579357839">रङ्ग छुट्याउन नसक्ने अवस्था</translation>
-<translation id="1632082166874334883">तपाईंको Google खातामा भण्डारण गरिएको पासवर्ड</translation>
 <translation id="1632756664321977232">क्रप गर्ने टुल</translation>
 <translation id="163309982320328737">प्रारम्भिक वर्ण चौडाइ पूर्ण छ</translation>
 <translation id="1633947793238301227">Google सहायक असक्षम पार्नुहोस्</translation>
@@ -1026,7 +1024,6 @@
 <translation id="181577467034453336">थप <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">किबोर्ड स्क्यान गर्ने गति</translation>
 <translation id="1817871734039893258">Microsoft फाइल पुनर्प्राप्ति</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" /> को पासवर्ड मेट्नुहोस्</translation>
 <translation id="1818913467757368489">लग अपलोड गर्ने कार्य जारी छ।</translation>
 <translation id="1819443852740954262">सबै URL इन्कोग्निटो विन्डोमा खोलियोस्</translation>
 <translation id="1819721979226826163">एपसम्बन्धी सूचनाहरू &gt; Google Play services मा ट्याप गर्नुहोस्।</translation>
@@ -1167,6 +1164,7 @@
 <translation id="1925124445985510535"><ph name="TIME" /> बजे सुरक्षा जाँच गरिएको थियो</translation>
 <translation id="192564025059434655">Chrome का पुराना संस्करणका एपहरू डिसेम्बर २०२२ पछि Windows डिभाइसहरूमा खुल्ने छैनन्। तपाईं नयाँ संस्करण उपलब्ध छ कि छैन भन्ने कुरा जाँच्न सक्नुहुन्छ।</translation>
 <translation id="1926339101652878330">यी सेटिङहरू व्यवसाय नीतिद्वारा नियन्त्रण गरिन्छन्। कृपया थप जानकारीका लागि तपाईँको प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
+<translation id="1926887872692564784">कर्सर</translation>
 <translation id="1927632033341042996">औंला <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">स्क्रिन लक PIN</translation>
 <translation id="192858925209436740">आफ्नो Chromebook बाट आफ्ना भण्डारण गरिएका डकुमेन्टहरू व्यवस्थापन गर्न Files एपमा OneDrive कनेक्ट गर्नुहोस्। तपईंले आफ्नो Microsoft खातामार्फत साइन इन गर्नु पर्ने हुन्छ।</translation>
@@ -3269,6 +3267,7 @@
 <translation id="3653887973853407813">तपाईं यो एक्स्टेन्सन प्रयोग गर्न सक्नुहुन्न। तपाईंका अभिभावकले Chrome मा "साइट, एप तथा एक्स्टेन्सनहरूलाई अनुमति दिने सुविधा" अफ गर्नुभएको छ।</translation>
 <translation id="3653999333232393305"><ph name="HOST" /> लाई तपाइँको माइक्रोफोन प्रयोग गर्न अनुमति दिन जारी राख्नुहोस्</translation>
 <translation id="3654045516529121250">तपाइँका पहुँच सेटिङहरू पढ्नुहोस्</translation>
+<translation id="3656328935986149999">कर्सरको गति</translation>
 <translation id="3658871634334445293">TrackPoint एक्सिलेरेसन</translation>
 <translation id="3659550105763988702"><ph name="APP_NAME" /> मा साइन इन गर्न आफ्नो पासकी प्रयोग गर्नुहोस्</translation>
 <translation id="3659929705630080526">तपाईंले अत्यन्तै धेरै पटक गलत एक्सेस कोड हाल्नुभएको छ। पछि फेरि प्रयास गर्नुहोस्</translation>
@@ -3638,7 +3637,6 @@
 <translation id="3930602610362250897">कपिराइट लाग्ने सामग्री प्ले गर्न साइटहरूले सामग्री संरक्षण सेवा प्रयोग गर्नु पर्ने हुन सक्छ</translation>
 <translation id="3930737994424905957">यन्त्रहरू खोज्दै</translation>
 <translation id="3930968231047618417">पृष्ठभूमिको रङ्ग</translation>
-<translation id="3933283459331715412"><ph name="USERNAME" /> को मेटाइएको पासवर्ड पुनर्स्थापित गर्नुहोस्</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> ले तपाईंसँग कुनै Wi-Fi नेटवर्क सेयर गर्दै छ</translation>
 <translation id="3936390757709632190">अडियो नयाँ ट्याबमा &amp;खोल्नुहोस्</translation>
 <translation id="3936925983113350642">तपाईँले छान्नुहुने पासवर्ड पछि प्रमाणपत्रलाई पुनर्स्थापना गर्दा चाहिने छ। कृपया यसलाई एउटा सुरक्षित स्थानमा रेकर्ड गर्नुहोस्।</translation>
@@ -3981,6 +3979,7 @@
 <translation id="4232375817808480934">Kerberos कन्फिगर गर्नुहोस्</translation>
 <translation id="4233739489690259993">तपाईंको Chromebook मा सुरक्षा तथा सफ्टवेयरसम्बन्धी अपडेटहरू प्राप्त हुन छाडेको छ। नवीनतम सुरक्षा र नयाँ सुविधाहरू प्राप्त गर्न नयाँ डिभाइस खरिद गर्नुहोस्। अफरका सर्तहरू लागू हुन्छन्।</translation>
 <translation id="4235965441080806197">साइन इन रद्द गर्नुहोस्</translation>
+<translation id="4235976607074422892">स्क्रोलको गति</translation>
 <translation id="4237282663517880406">Google Drive सम्बन्धी सुझावहरू देखाइयोस्</translation>
 <translation id="4241182343707213132">सङ्गठनका एपहरू अपडेट गर्न रिस्टार्ट गर्नुहोस्</translation>
 <translation id="4242145785130247982">एकभन्दा बढी क्लाइन्टका प्रमाणपत्रहरू समर्थित छैनन्</translation>
@@ -5303,6 +5302,7 @@
 <translation id="5365881113273618889">तपाईंले चयन गर्नुभएको फोल्डरमा संवेदनशील फाइलहरू समावेश छन्। तपाईं "<ph name="APP_NAME" />" लाई स्थायी रूपमा यो फोल्डरमा लेख्न सक्ने पहुँच प्रदान गर्ने कुरामा निश्चित हुनुहुन्छ?</translation>
 <translation id="536638840841140142">कुनै पनि होइन</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" /> बाट प्राप्त गरिएको '<ph name="NETWORK_NAME" />' को पासवर्ड सेभ गरियो</translation>
+<translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> को पासवर्ड बनाउनुहोस्</translation>
 <translation id="5368720394188453070">तपाईंको फोन लक गरिएको छ। प्रवेश गर्न यसलाई अनलक गर्नुहोस्।</translation>
 <translation id="5368779022775404937"><ph name="REALM" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="536882527576164740">{0,plural, =1{इन्कोग्निटो}other{इन्कोग्निटो (#)}}</translation>
@@ -8628,6 +8628,7 @@
 <translation id="8137559199583651773">विस्तार व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8138217203226449454">तपाईंले आफ्नो खोज प्रदायक परिवर्तन गर्न खोज्नुभएको हो?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> को स्थिति</translation>
+<translation id="8139440916039659819">कर्सर एक्सिलेरेसन</translation>
 <translation id="8139447493436036221">Google Drive मा भएका फाइलहरू</translation>
 <translation id="8139643636835015859">तपाईंले यसो गर्नुभयो भने तपाईंका अफलाइन फाइलहरूले ओगटेका <ph name="OFFLINE_STORAGE_SIZE" /> ठाउँ खाली गरिने छ। केही फाइलहरू भने अझै पनि अफलाइन उपलब्ध हुने छन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8964,6 +8965,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">तपाईंले हालसालै <ph name="PERMISSION" /> सम्बन्धी अनुमति र अन्य <ph name="COUNT" /> वटा अनुमति दिनुभएको छ</translation>
 <translation id="8413956290606243087">तपाईं ChromeOS मा पहिले नै इन्स्टल गरिएको ChromeVox नामक स्क्रिन रिडर एक्टिभेट गर्न चाहनुहुन्छ?</translation>
+<translation id="8414065061814811918">स्क्रोल एक्सिलेरेसन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">"स्मरणीय क्षणहरू" दुई दिनका लागि लुकाइएका छन्</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मार्फत <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="8414685983518053656">टिपोटहरू</translation>
@@ -9090,6 +9092,7 @@
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">स्पिकरहरू</translation>
 <translation id="8527257351549797148">तपाईं एप र एक्स्टेन्सनलगायतका कुराहरू एक्सेस गर्न सक्नुहोस् भन्नाका लागि तपाईंको सङ्गठन दर्ता गर्नु पर्ने हुन सक्छ। तपाईंले यसो गर्नुभयो भने तपाईंको सङ्गठनलाई सुरक्षा तथा डिभाइससम्बन्धी सेटिङ जस्ता कुराहरू व्यवस्थापन गर्ने अनुमति पनि प्राप्त हुन्छ।</translation>
+<translation id="8527869672961320915"><ph name="VM_NAME" /> एपहरू</translation>
 <translation id="8528074251912154910">भाषाहरू थप्नुहोस्</translation>
 <translation id="8528479410903501741">IBAN सेभ गर्नुहोस्</translation>
 <translation id="8528962588711550376">साइन इन गर्दै।</translation>
@@ -9346,6 +9349,7 @@
 <translation id="8736288397686080465">यो साइट पृष्ठभूमिमा अद्यावधिक गरिएको छ।</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">यो पृष्ठ जुन भाषामा अनुवाद गर्न चाहनुहुन्छ सो भाषा छान्नुहोस्</translation>
+<translation id="8740086188450289493">Google खाताको पासवर्ड प्रयोग गरियोस्</translation>
 <translation id="8740247629089392745">तपाईं यो Chromebook <ph name="SUPERVISED_USER_NAME" /> लाई दिन सक्नुहुन्छ। सेटअप गर्ने काम लगभग सकियो, अब उनी यो डिभाइस चलाउन थाल्न सक्छन्।</translation>
 <translation id="8740672167979365981">ChromeOS Flex अपडेट गर्नु पर्ने हुन्छ</translation>
 <translation id="8741944563400125534">स्विचमार्फत पहुँच गर्ने सुविधा सेटअप गर्ने गाइड</translation>
@@ -9728,6 +9732,7 @@
 <translation id="9045160989383249058">पछि पढ्न सेभ गरिएका वेबपेजको तपाईंको सूची सारेर नयाँ साइड प्यानलमा लगिएको छ। यहाँ प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="9045430190527754450">तपाईंले पहुँच राख्न खोजिरहनुभएको पृष्ठको वेब ठेगाना Google मा पठाउँछ</translation>
 <translation id="9048745018038487540">सबै फन्ट चयन गर्नुहोस्</translation>
+<translation id="9050135202879860719">आफ्नो <ph name="DEVICE_TYPE" /> मा साइन इन गर्न पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="9050666287014529139">पासफ्रेज</translation>
 <translation id="9052404922357793350">रोक लगाइराख्नुहोस्</translation>
 <translation id="90528604757378587">निर्वाध रूपमा स्क्रोल गर्ने सुविधालगायतका ब्याकग्राउन्डमा हुने गतिविधि र केही भिजुअल इफेक्टहरू सीमित हुन सक्छ।</translation>

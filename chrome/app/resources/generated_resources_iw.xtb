@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">סוג הנייר</translation>
 <translation id="1143142264369994168">חותם על אישור </translation>
 <translation id="1145593918056169051">המדפסת הפסיקה לפעול</translation>
-<translation id="114571748016232560">משהו השתבש. צריך לפתוח את החלונות באופן ידני.</translation>
 <translation id="114721135501989771">‏תכונות חכמות של Google</translation>
 <translation id="1147322039136785890">עכשיו התור של <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">כדי לבקש גישה, צריך לפנות למנהל של המכשיר הזה.</translation>
@@ -798,7 +797,6 @@
 <translation id="163072119192489970">מורשים לסיים שליחה או קבלה של נתונים</translation>
 <translation id="1630768113285622200">הפעלה מחדש והמשכת התהליך</translation>
 <translation id="1631503405579357839">עיוורון צבעים</translation>
-<translation id="1632082166874334883">‏הסיסמה מאוחסנת בחשבון Google שלך</translation>
 <translation id="1632756664321977232">כלי החיתוך</translation>
 <translation id="163309982320328737">רוחב התו הראשוני הוא מלא</translation>
 <translation id="1633947793238301227">‏השבתה של Google Assistant</translation>
@@ -1039,7 +1037,6 @@
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> נוספות...</translation>
 <translation id="1816036116994822943">מהירות הסריקה של המקלדת</translation>
 <translation id="1817871734039893258">‏שחזור קבצים של Microsoft</translation>
-<translation id="1818007989243628752">מחיקת הסיסמה של <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">העלאת היומן מתבצעת.</translation>
 <translation id="1819443852740954262">פתיחת כל החלונות בחלון אנונימי</translation>
 <translation id="1819721979226826163">‏מקישים על 'הודעות אפליקציה' &gt; 'שירותי Google Play'.</translation>
@@ -3655,7 +3652,6 @@
 <translation id="3930602610362250897">כדי להפעיל תוכן שמוגן בזכויות יוצרים, ייתכן שבאתרים יהיה צורך להשתמש בשירות להגנת תוכן</translation>
 <translation id="3930737994424905957">חיפוש מכשירים</translation>
 <translation id="3930968231047618417">צבע רקע</translation>
-<translation id="3933283459331715412">שחזור הסיסמה של <ph name="USERNAME" /> שנמחקה</translation>
 <translation id="3936260554100916852">‏המכשיר <ph name="DEVICE_NAME" /> משתף איתך רשת Wi-Fi</translation>
 <translation id="3936390757709632190">&amp;פתיחת אודיו בכרטיסייה חדשה</translation>
 <translation id="3936925983113350642">הסיסמה שבחרת תידרש כדי לשחזר את האישור הזה מאוחר יותר. יש לתעד אותה במקום בטוח.</translation>

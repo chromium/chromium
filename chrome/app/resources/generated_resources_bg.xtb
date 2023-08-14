@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">Тип хартия</translation>
 <translation id="1143142264369994168">Подписващ сертификата</translation>
 <translation id="1145593918056169051">Принтерът спря</translation>
-<translation id="114571748016232560">Нещо се обърка. Вместо това отворете прозорците ръчно.</translation>
 <translation id="114721135501989771">Chrome с интелекта на Google</translation>
 <translation id="1147322039136785890">Сега е ред на <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">За да поискате достъп, обърнете се към администратора на това устройство.</translation>
@@ -796,7 +795,6 @@
 <translation id="163072119192489970">Сайтове с разрешение за завършване на изпращането и получаването на данни</translation>
 <translation id="1630768113285622200">Рестартиране и продължаване</translation>
 <translation id="1631503405579357839">Цветна слепота</translation>
-<translation id="1632082166874334883">Парола, съхранена в профила ви в Google</translation>
 <translation id="1632756664321977232">Инструмент за подрязване</translation>
 <translation id="163309982320328737">Първоначалната ширина на знаците да бъде цяла</translation>
 <translation id="1633947793238301227">Деактивиране на Google Асистент</translation>
@@ -1036,7 +1034,6 @@
 <translation id="181577467034453336">Още <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">Скорост на сканиране за клавиатурата</translation>
 <translation id="1817871734039893258">Възстановяване на файл от Microsoft</translation>
-<translation id="1818007989243628752">Изтриване на паролата за <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Качването на регистрационния файл е в ход.</translation>
 <translation id="1819443852740954262">Отваряне на всички в прозорец в режим „инкогнито“</translation>
 <translation id="1819721979226826163">Докоснете „Известия за прилож.“ &gt; Услуги за Google Play.</translation>
@@ -1178,6 +1175,7 @@
 <translation id="1925124445985510535">Проверката на безопасността бе изпълнена в <ph name="TIME" /></translation>
 <translation id="192564025059434655">Старите версии на приложенията за Chrome няма да се отварят на устройства с Windows след декември 2022 г. Можете да проверите дали е налице нова версия.</translation>
 <translation id="1926339101652878330">Тези настройки се контролират от корпоративно правило. За още информация, моля, свържете се с администратора си.</translation>
+<translation id="1926887872692564784">Курсор</translation>
 <translation id="1927632033341042996">Пръст <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">ПИН за заключване на екрана</translation>
 <translation id="192858925209436740">Свържете OneDrive с приложението „Файлове“, за да управлявате съхраняваните от вас документи от своя Chromebook. Ще трябва да влезете с профила си в Microsoft.</translation>
@@ -3282,6 +3280,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3653887973853407813">Не можете да използвате това разширение. Родителят или настойникът ви е изключил настройката „Разрешения за сайтове, приложения и разширения“ за Chrome.</translation>
 <translation id="3653999333232393305">Достъпът на <ph name="HOST" /> до микрофона ви да продължава да е разрешен</translation>
 <translation id="3654045516529121250">Четене на настройките ви за достъпност</translation>
+<translation id="3656328935986149999">Скорост на курсора</translation>
 <translation id="3658871634334445293">Ускоряване на TrackPoint</translation>
 <translation id="3659550105763988702">Използвайте кода си за достъп за <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Въведохте неправилен код за достъп твърде много пъти. Опитайте отново по-късно</translation>
@@ -3652,7 +3651,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3930602610362250897">За да възпроизвеждат съдържание, защитено с авторски права, може да се наложи сайтовете да използват услуга за защита на съдържание</translation>
 <translation id="3930737994424905957">Търсят се устройства</translation>
 <translation id="3930968231047618417">Цвят на фона</translation>
-<translation id="3933283459331715412">Възстановяване на изтритата парола за <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852">„<ph name="DEVICE_NAME" />“ споделя с вас данните за Wi-Fi мрежа.</translation>
 <translation id="3936390757709632190">&amp;Отваряне на аудиоклипа в нов раздел</translation>
 <translation id="3936925983113350642">Паролата, която изберете, ще се изисква по-късно за възстановяване на този сертификат. Моля, запишете я на сигурно място.</translation>
@@ -3996,6 +3994,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4232375817808480934">Конфигуриране на Kerberos</translation>
 <translation id="4233739489690259993">Вашият Chromebook вече не получава актуализации за сигурност и софтуерни актуализации. Надстройте устройството си за достъп до най-новите функции за сигурност и софтуер. В сила са условията за офертата.</translation>
 <translation id="4235965441080806197">Анулиране на влизането</translation>
+<translation id="4235976607074422892">Скорост на превъртане</translation>
 <translation id="4237282663517880406">Показване на предложения от Google Диск</translation>
 <translation id="4241182343707213132">Рестартирайте, за да актуализирате приложенията на организацията си</translation>
 <translation id="4242145785130247982">Не се поддържа използването на няколко клиентски сертификата</translation>
@@ -5319,6 +5318,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5365881113273618889">Избраната от вас папка съдържа поверителни файлове. Наистина ли искате да предоставите на <ph name="APP_NAME" /> постоянен достъп за записване в тази папка?</translation>
 <translation id="536638840841140142">Няма</translation>
 <translation id="5368246151595623328">Идентификационните данни за „<ph name="NETWORK_NAME" />“ са запазени от <ph name="DEVICE_NAME" /></translation>
+<translation id="5368255566854433132">Създаване на парола за <ph name="DEVICE_TYPE" /></translation>
 <translation id="5368720394188453070">Телефонът ви е заключен. Отключете го, за да влезете.</translation>
 <translation id="5368779022775404937">Влизане в домейна <ph name="REALM" /></translation>
 <translation id="536882527576164740">{0,plural, =1{„Инкогнито“}other{„Инкогнито“ (#)}}</translation>
@@ -8648,6 +8648,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8137559199583651773">Управление на разширенията</translation>
 <translation id="8138217203226449454">Може би искахте да промените търсещата машина?</translation>
 <translation id="8138997515734480534">Състояние на <ph name="VM_NAME" /></translation>
+<translation id="8139440916039659819">Ускоряване на курсора</translation>
 <translation id="8139447493436036221">Файлове в Google Диск</translation>
 <translation id="8139643636835015859">Така ще освободите <ph name="OFFLINE_STORAGE_SIZE" /> място, заемано от офлайн файловете ви. Някои файлове ще продължат да са налице офлайн. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8984,6 +8985,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Разрешени са „<ph name="PERMISSION" />“ и още <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Искате ли да активирате ChromeVox – вградения екранен четец на Chrome OS?</translation>
+<translation id="8414065061814811918">Ускоряване на превъртането. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Спомените ще бъдат скрити за два дни</translation>
 <translation id="8414396119627470038">Вход в(ъв) <ph name="SITE_ETLD_PLUS_ONE" /> с(ъс) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Бележки</translation>
@@ -9110,6 +9112,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Високоговорители</translation>
 <translation id="8527257351549797148">Организацията ви може да изисква регистрация, за да имате достъп до приложения, разширения и др. Тя ще има възможност и да управлява различни неща, като например настройките за сигурност и тези на устройството.</translation>
+<translation id="8527869672961320915">Приложения за <ph name="VM_NAME" /></translation>
 <translation id="8528074251912154910">Добавяне на езици</translation>
 <translation id="8528479410903501741">Запазване на IBAN</translation>
 <translation id="8528962588711550376">Влиза се.</translation>
@@ -9366,6 +9369,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8736288397686080465">Този сайт бе актуализиран на заден план.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Изберете езика, на който да се преведе страницата</translation>
+<translation id="8740086188450289493">Използване на паролата за профила в Google</translation>
 <translation id="8740247629089392745">Можете да дадете този Chromebook на <ph name="SUPERVISED_USER_NAME" />. Настройването почти завърши и устройството скоро ще е готово за използване.</translation>
 <translation id="8740672167979365981">Изисква се актуализация на ChromeOS Flex</translation>
 <translation id="8741944563400125534">Ръководство за настройване на „Достъп с превключване“</translation>
@@ -9748,6 +9752,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9045160989383249058">Списъкът ви за четене е преместен в новия страничен панел. Изпробвайте го тук.</translation>
 <translation id="9045430190527754450">Изпраща до Google уеб адреса на страницата, която искате да посетите</translation>
 <translation id="9048745018038487540">Избиране на всички шрифтове</translation>
+<translation id="9050135202879860719">Използвайте парола, за да влизате във вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="9050666287014529139">Парола</translation>
 <translation id="9052404922357793350">Продължаване на блокирането</translation>
 <translation id="90528604757378587">Активността на заден план и някои визуални ефекти, като гладкото превъртане, може да са ограничени.</translation>

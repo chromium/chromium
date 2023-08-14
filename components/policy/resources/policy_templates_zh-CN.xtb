@@ -96,6 +96,7 @@
 <translation id="1065175969514496951">通过设置此政策，您可允许用户在验证身份期间（例如在登录界面中和锁定的屏幕中）访问所列网址，以便将这些网址作为 <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> 的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，将 <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> 设置为“<ph name="WILDCARD_VALUE" />”会屏蔽所有请求，但您可以通过此政策来允许访问您所列出的部分网址。您可借助此政策为某些 scheme、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format）。系统是会屏蔽还是会允许某个网址取决于最具体的过滤条件。<ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于 <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />。此政策最多只能包含 1,000 个条目。
 
 如果您未设置此政策，<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> 将不会有任何例外情况。</translation>
+<translation id="1068801725746725727">允许接收“安全浏览”功能调查问卷</translation>
 <translation id="1069489575852947981">如果此政策已启用或未设置，系统将设置设备本地帐号以实现零延迟的自动登录。<ph name="PRODUCT_OS_NAME" />支持利用键盘快捷键 Ctrl + Alt + S 绕过自动登录并显示登录屏幕。
 
       如果此政策已停用，用户则无法绕过零延迟的自动登录（若已配置）。</translation>
@@ -138,6 +139,11 @@
           如果此政策已启用或未设置，用户可以决定是否记住 Kerberos 密码，记住密码后就不需要重新输入密码。除非需要进行额外的身份验证（双重身份验证），否则系统会自动获取 Kerberos 票据。
 
           如果此政策已停用，系统永远不会记住密码，并会移除之前存储的所有密码。每当需要向 Kerberos 系统验证身份时，用户都必须输入密码。这种情况通常每 8 小时到数月时间就会发生一次，具体取决于服务器设置。</translation>
+<translation id="112794759469625182">此政策已从 M118 中移除。此政策旨在为用户启用和停用远程证明，但系统默认已启用远程证明。
+
+如果此政策已启用，用户便可使用 <ph name="PRODUCT_OS_NAME" /> 设备上的硬件，通过 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 的 <ph name="CHALLENGE_USER_KEY_FUNCTION" /> 向隐私认证中心 (Privacy CA) 远程证明其身份。
+
+      如果已停用或未设置此政策，则会导致无法调用该 API 并返回错误代码。</translation>
 <translation id="1133622335785078255">允许用户在 <ph name="LACROS_NAME" /> 浏览器中创建和使用次级个人资料以及使用访客模式</translation>
 <translation id="1137096407176363892">允许在“随选朗读”这项无障碍功能中使用增强型网络文字转语音的语音。这些语音会将文字发送给 Google 的服务器以合成自然语音内容。
 
@@ -1450,6 +1456,7 @@
       此政策会覆盖 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> 和用户的偏好设置。
 
       此政策仅会对通过 Web Serial API 访问 USB 设备这一操作产生影响。若要通过 WebUSB API 授权访问 USB 设备，请参见 <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> 政策。</translation>
+<translation id="2246565294817797392">禁止使用被截断的 Cookie</translation>
 <translation id="2246621891161157804">允许 Chrome 阻止导航到沙盒化 iframe 中的外部协议</translation>
 <translation id="224750967938323855">在登录期间不显示同步同意声明</translation>
 <translation id="2252400912879027343">不安全情境中的 WebSQL 在 M109 之前将一直可用，然后从 M110 起将不再可用。</translation>
@@ -5003,6 +5010,7 @@
       如果您选择了“Forced”，用户将只能以无痕模式打开网页。请注意，“Forced”不适用于 Android 版 Chrome
 
       另请注意：在 iOS 上，如果此政策在会话期间发生更改，相应更改要等到重新启动浏览器时才会生效。</translation>
+<translation id="549471902631700911">禁用后，用户将不会接收到“安全浏览”功能调查问卷</translation>
 <translation id="5499375345075963939">此策略仅在零售模式下有效。
 
       当该策略值已设置，且不为零，那么当不活动期达到指定的时间期间后，当前登录的演示用户就会自动退出。
@@ -6036,6 +6044,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 另请参阅 <ph name="HTTPS_ONLY_MODE_POLICY_NAME" /> 政策。</translation>
 <translation id="6438972408080276697">如果您将此政策设为 True，系统便会向 Google 报告由政策触发的主要 Android 应用安装事件。将此政策设为 False 意味着系统不会记录任何事件。</translation>
 <translation id="6440051664870270040">允许网站在导航的同时打开弹出式窗口</translation>
+<translation id="6441781723322254041">允许使用被截断的 Cookie</translation>
 <translation id="6446366416439249472">禁止在连接移动网络的情况下进行 Google 云端硬盘同步</translation>
 <translation id="6447948611083700881">已停用备份和恢复服务</translation>
 <translation id="6449476513004303784">禁止用户管理证书</translation>
@@ -6283,6 +6292,13 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="66265932317331474">报告 CPU 信息</translation>
 <translation id="6628120204569232711">报告存储状态</translation>
 <translation id="662991036483361836">禁止用户启用“附近分享”功能</translation>
+<translation id="6634974629075330608">此政策是一项临时的选择停用机制：在通过 JavaScript 更改 Chrome 处理 Cookie 的方式时，如果 JavaScript 包含特定的控制字符（NULL、回车符和换行符），就可以使用此政策。
+以前，如果 Cookie 字符串中存在上述任意字符，该 Cookie 字符串就会被截断但仍处于设定状态。
+现在，如果存在这些字符，整个 Cookie 字符串都会被忽略。
+
+如果此政策设为 True（默认值），系统会启用新行为。
+
+如果此政策设为 False，系统会启用旧行为。</translation>
 <translation id="663685822663765995">限制打印颜色模式</translation>
 <translation id="6637946190026453735">让您能够以列表形式指定要应用于 <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> 企业版接口的 <ph name="PRODUCT_NAME" /> 企业版接口服务设置，以供系统在有人通过 <ph name="PRODUCT_NAME" /> 打印网页或文件时调用。
 
@@ -8614,6 +8630,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="874149307422233209">此政策让管理员能够控制 Google 以何种方式处理通过 <ph name="PRODUCT_OS_NAME" /> 相关功能向 Google 搜索发送的用户数据。
 如果此政策已启用，用户不仅能使用 <ph name="PRODUCT_OS_NAME" /> 启动器搜索框，也能在 <ph name="PRODUCT_OS_NAME" /> 中使用 <ph name="PRODUCT_NAME" /> 浏览器地址框，而且用户的搜索记录不会与其身份关联。
 如果此政策未设置或已停用，用户的这些搜索数据将与其身份关联。</translation>
+<translation id="8743902569031401303">允许接收“安全浏览”功能调查问卷</translation>
 <translation id="8744844164152340112">控制用于在 OOBE 期间和会话期间呈现界面的主题（深色/浅色/自动）。
       自动模式会于日出和日落时自动在深色主题和浅色主题之间切换。
       最好使用此政策，以便用户能在系统设置中更改主题。</translation>
@@ -9193,6 +9210,8 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="981346395360763138">已停用 Google 位置信息服务</translation>
 <translation id="982497069985795632">启用拼写检查</translation>
 <translation id="983256325512298435">指定一系列协议以便无需提示用户就能启动所列来源中的外部应用</translation>
+<translation id="984365509386992443">如果已启用或未设置此政策，用户可能会收到与“安全浏览”功能相关的调查问卷。
+如果已停用此政策，用户将不会收到与“安全浏览”功能相关的调查问卷。</translation>
 <translation id="987261962216071510">仅允许通过浏览器访客模式登录</translation>
 <translation id="987975731398348803">如果此政策已启用或未设置，已注册的设备将会以列表形式报告近期登录过的设备用户。
 

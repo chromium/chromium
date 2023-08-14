@@ -96,6 +96,7 @@ Bu politikanın <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> ve <ph name
 <translation id="1065175969514496951">Politikanın ayarlanması <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> politikasına istisna olarak, kimlik doğrulama sırasında (ör. giriş ekranında ve kilit ekranında) listelenen URL'lere erişim sağlar. Bu listedeki girişlerin biçimi için söz konusu politikanın açıklamasına bakın. Örneğin, <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> politikasını <ph name="WILDCARD_VALUE" /> olarak ayarlamak tüm istekleri engeller. Bu durumda bu politikayı sınırlı bir URL listesine erişim izni vermek için kullanabilirsiniz. Bu ayarı, (https://support.google.com/chrome/a?p=url_blocklist_filter_format) adresinde belirtilen biçimi kullanarak belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları veya belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini, en spesifik filtre belirler. <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> politikası, <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> politikasına göre daha önceliklidir. Bu politika 1.000 giriş ile sınırlıdır.
 
 Politika ayarlanmadan bırakılırsa <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> politikası için hiçbir istisnaya izin verilmez.</translation>
+<translation id="1068801725746725727">Güvenli Tarama anketlerini almayı etkinleştir</translation>
 <translation id="1069489575852947981">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa cihaz yerel hesabı sıfır gecikmeyle otomatik oturum açmaya ayarlanır. <ph name="PRODUCT_OS_NAME" />, otomatik oturum açmayı atlayıp oturum açma ekranını göstermek için Ctrl+Alt+S klavye kısayolunu kullanır.
 
       Politika Devre dışı değerine ayarlanırsa kullanıcılar sıfır gecikmeyle otomatik oturum açmayı (yapılandırılmışsa) atlayamaz.</translation>
@@ -138,6 +139,11 @@ Politika ayarlanmadan bırakılırsa <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLI
           Bu politika etkinleştirilir veya ayarlanırsa kullanıcılar, tekrar girmeleri gerekmesin diye Kerberos şifrelerinin hatırlanıp hatırlanmayacağına karar verebilirler. Ek bir kimlik doğrulama işlemi (iki faktörlü kimlik doğrulama) gerekmedikçe Kerberos biletleri otomatik olarak getirilir.
 
           Bu politika devre dışı bırakılırsa şifreler hiçbir zaman hatırlanmaz ve daha önce saklanan tüm şifreler silinir. Kullanıcılar, Kerberos sisteminde kimlik doğrulamaları gerektiğinde her zaman şifrelerini girmelidirler. Sunucu ayarlarına bağlı olarak, bu genellikle her 8 saatte bir ile birkaç ayda bir arasında olur.</translation>
+<translation id="112794759469625182">Bu politika M118'de kaldırıldı. Kullanıcının uzaktan doğrulamayı etkinleştirmesi ve devre dışı bırakması için kullanılıyordu ancak uzaktan doğrulama varsayılan olarak etkinleştirildi.
+
+Politika, Etkin değerine ayarlanırsa kullanıcıların, <ph name="CHALLENGE_USER_KEY_FUNCTION" /> kullanarak <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> aracılığıyla cihaz kimliğini gizlilik CA'sına uzaktan onaylatmak için <ph name="PRODUCT_OS_NAME" /> cihazlarda donanım kullanmalarına izin verilir.
+
+      Politikanın, Devre Dışı değerine ayarlanması veya ayarlanmadan bırakılması, API'ye yapılan çağrıların bir hata koduyla başarısız olmasına neden olur.</translation>
 <translation id="1133622335785078255">Kullanıcıların, <ph name="LACROS_NAME" /> tarayıcıda hem ikinci profiller oluşturup kullanmalarına hem de misafir modunu kullanmalarına izin ver</translation>
 <translation id="1137096407176363892">Seç ve Dinle erişilebilirlik özelliğinde gelişmiş ağ metin okuma seslerine izin ver. Bu sesler, kulağa doğal gelen konuşmaları sentezlemek için Google sunucularına metin gönderir.
 
@@ -1459,6 +1465,7 @@ Bu politika ayarlanmadan bırakılır veya devre dışı değerine ayarlanırsa 
       Bu politika <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> ve kullanıcının tercihlerini geçersiz kılar.
 
       Bu politika, yalnızca Web Serial API üzerinden USB cihazlarına erişimi etkiler. WebUSB API üzerinden USB cihazlarına erişim izni vermek için <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> politikasını inceleyin.</translation>
+<translation id="2246565294817797392">Kısaltılmış çerezleri engelle</translation>
 <translation id="2246621891161157804">Chrome'un, korumalı alana alınmış iframe'lerdeki harici protokollere yönelik gezinmeyi engellemesine izin ver</translation>
 <translation id="224750967938323855">Oturum açma sırasında senkronizasyon izin istemini gösterme</translation>
 <translation id="2252400912879027343">Güvenli olmayan bağlamlarda WebSQL, M109'a kadar kullanılabilir ancak M110'dan itibaren kullanılamaz.</translation>
@@ -5087,6 +5094,7 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
       "Zorunlu" seçeneği belirlenirse sayfalar YALNIZCA Gizli modda açılabilir. "Zorunlu" seçeneğinin Android-on-Chrome'da çalışmadığını unutmayın
 
       Not: iOS'ta oturum esnasında yapılan politika değişiklikleri yeniden başlatmadan sonra devreye girer.</translation>
+<translation id="549471902631700911">Güvenli Tarama anketlerini almayı devre dışı bırak</translation>
 <translation id="5499375345075963939">Bu politika yalnızca mağaza modunda etkindir.
 
       Bu politika için 0 dışında bir değer ayarlandığında, belirtilen sürede herhangi bir etkinlik gerçekleştirilmezse giriş yapmış olan tanıtım kullanıcısının oturumu otomatik olarak kapanır.
@@ -6138,6 +6146,7 @@ Belirli ana makine adlarının veya ana makine adı kalıplarının bu özellik 
 <ph name="HTTPS_ONLY_MODE_POLICY_NAME" /> politikasına da göz atın.</translation>
 <translation id="6438972408080276697">Politikayı True (Doğru) değerine ayarlamak, politika tarafından tetiklenen önemli Android uygulaması yükleme etkinliklerinin raporlarını Google'a gönderir. Politikanın False (Yanlış) değerine ayarlanması, hiçbir etkinliğin yakalanmayacağı anlamına gelir.</translation>
 <translation id="6440051664870270040">Sitelerin eşzamanlı olarak gezinmesine ve pop-up açmasına için izin ver</translation>
+<translation id="6441781723322254041">Kısaltılmış çerezlere izin ver</translation>
 <translation id="6446366416439249472">Hücresel bağlantılar üzerinden Google Drive senkronizasyonunu devre dışı bırak</translation>
 <translation id="6447948611083700881">Yedekleme ve geri yükleme devre dışı</translation>
 <translation id="6449476513004303784">Kullanıcıların sertifikaları yönetmelerine izin verme</translation>
@@ -6386,6 +6395,13 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
 <translation id="66265932317331474">CPU bilgisi raporlama</translation>
 <translation id="6628120204569232711">Depolama durumunu bildir</translation>
 <translation id="662991036483361836">Kullanıcıların Yakındakilerle Paylaş ayarını etkinleştirmesini engelle</translation>
+<translation id="6634974629075330608">Bu politika, Chrome'un belirli kontrol karakterlerini (NULL, satır başı karakteri ve satır feed'i) içeren JavaScript aracılığıyla ayarlanmış çerezleri işleme şekliyle ilgili değişiklikler için geçici bir devre dışı bırakma seçeneği sunar.
+Önceden, bir çerez dizesinde bu karakterlerden herhangi birinin mevcut olması, dizenin kısaltılmasına ancak yine de ayarlanmasına neden oluyordu.
+Artık bu karakterlerin mevcut olması, tüm çerez dizesinin yoksayılmasına neden olur.
+
+Bu politika, Doğru değerine (varsayılan) ayarlandığında yeni davranış etkinleştirilir.
+
+Bu politika Yanlış değerine ayarlandığında eski davranış etkinleştirilir.</translation>
 <translation id="663685822663765995">Renkli yazdırma modunu kısıtla</translation>
 <translation id="6637946190026453735"><ph name="PRODUCT_NAME" /> hizmetinden bir sayfa veya dosya yazdırıldığında tetiklenen <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> Enterprise Bağlayıcı'ya uygulanacak <ph name="PRODUCT_NAME" /> Enterprise Connectors hizmetleri ayarlarının listesidir.
 
@@ -8761,6 +8777,7 @@ Politika ayarlanmadan bırakılırsa kayıtlı şifreler ilk çalıştırma sır
 <translation id="874149307422233209">Bu politika ile yöneticiler, <ph name="PRODUCT_OS_NAME" /> özellikleri aracılığıyla Arama'ya gönderilen kullanıcı verilerinin Google tarafından nasıl işleneceğini belirleyebilir.
 Politika etkinleştirildiğinde kullanıcı <ph name="PRODUCT_OS_NAME" /> Başlatıcı arama kutusu ile <ph name="PRODUCT_OS_NAME" /> içindeki <ph name="PRODUCT_NAME" /> Tarayıcı adres kutusunu kullanabilir ve kullanıcının arama geçmişi kullanıcının kimliğine bağlanmaz.
 Politika ayarlanmaz veya devre dışı bırakılırsa kullanıcının bu aramalardaki verileri kullanıcının kimliğine bağlanır.</translation>
+<translation id="8743902569031401303">Güvenli Tarama anketlerine izin ver</translation>
 <translation id="8744844164152340112">OOBE ve oturum sırasında kullanıcı arayüzü oluşturmak için kullanılan temayı kontrol eder (koyu/açık/otomatik).
       Otomatik mod, gün doğumu ve gün batımında otomatik olarak koyu ve açık tema arasında geçiş yapar.
       Kullanıcıların sistem ayarlarında temayı değiştirmesine imkan veren bu politika önerilmelidir.</translation>
@@ -9355,6 +9372,8 @@ Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> varsayılan olar
 <translation id="981346395360763138">Google konum hizmetleri devre dışı</translation>
 <translation id="982497069985795632">Yazım denetimini etkinleştir</translation>
 <translation id="983256325512298435">Listelenen kaynaklardan kullanıcıya sormadan harici uygulama başlatabilecek protokollerin bir listesini tanımlayın</translation>
+<translation id="984365509386992443">Bu politika etkinleştirildiğinde veya ayarlanmadan bırakıldığında kullanıcı, Güvenli Tarama ile ilgili anketler alabilir.
+Bu politika devre dışı bırakıldığında kullanıcı, Güvenli Tarama ile ilgili anketleri almaz.</translation>
 <translation id="987261962216071510">Yalnızca tarayıcıya misafir girişlerine izin ver</translation>
 <translation id="987975731398348803">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar kısa süre önce oturum açan cihaz kullanıcılarının listesini bildirir.
 

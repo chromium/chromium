@@ -126,7 +126,6 @@
 <translation id="1657011748321897393">Тармакка туташпай тургандыктан, бөлүшө албай калдыңыз.</translation>
 <translation id="1657641691196698092">Бөгөттөлгөн cookie-файлдары</translation>
 <translation id="165877110639533037">Ачык өтмөктөр жок</translation>
-<translation id="166310177317698233">Өтмөктөрдү көрсөтүү баскычын таптап, кадалган өтмөктөрдү көрө аласыз.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> тилинен <ph name="TARGET_LANGUAGE" /> тилине</translation>
 <translation id="1683483432843341018">Мобилдик версиясы керек</translation>
 <translation id="168715261339224929">Кыстармаларды бардык түзмөктөрүңүздө колдонуу үчүн шайкештирүүнү күйгүзүңүз.</translation>
@@ -235,7 +234,6 @@
 <translation id="2423077901494354337">Chrome'дун бардык мүмкүнчүлүктөрүн түзмөгүңүздө колдонуңуз.</translation>
 <translation id="2434405374328098816">"<ph name="USERNAME" />" үчүн <ph name="WEBSITE" /> вебсайтында сырсөздү сактап койгонсуз</translation>
 <translation id="2435457462613246316">Сырсөздү көрсөтүү</translation>
-<translation id="2451654228769116489">Өтмөктү кадоо</translation>
 <translation id="2459155039684421202">"Таржымалды өчүрүү" же "сырсөздөрдү өзгөртүү" сыяктуу жасалчу ишти дарек тилкесине жазыңыз.</translation>
 <translation id="2461070143328828326">Сырсөздүн параметрлери</translation>
 <translation id="2469960372084740698">Коопсуз серептөө өчүрүлсүнбү?</translation>
@@ -304,7 +302,6 @@
 <translation id="2800683595868705743">Өтмөк которуштургучтан кетүү</translation>
 <translation id="2815198996063984598">2. Демейки серепчи колдонмосун басыңыз</translation>
 <translation id="2818821771744632548">iPhone'ду баштапкы абалга келтирүүдө <ph name="USER_NAME" /> аккаунтунан чыктыңыз. Кайрадан кирүү үчүн төмөндөгү "Улантуу" баскычын басыңыз.</translation>
-<translation id="2822917246944009066">Өтмөк кадалды</translation>
 <translation id="2830972654601096923">Даректерди башкаруу…</translation>
 <translation id="2834399722155632105">3. Сырсөздүн параметрлерин таптап коюңуз</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -836,7 +833,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6059830886158432458">Окуяларыңызды жана аракеттериңизди бул жерден көзөмөлдөңүз</translation>
 <translation id="6064824697233747382">Уюмуңуз шайкештирүүнү өчүрүүнү талап кылат.</translation>
 <translation id="6066301408025741299">Жокко чыгаруу үчүн таптаңыз.</translation>
-<translation id="6071409777669089905">Өтмөктү бошотуу</translation>
 <translation id="6084848228346514841">Өтмөктөрдү тандоо</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> катары кирдиңиз. Параметрлерди ачат.</translation>
 <translation id="6103540626693881831">Түзмөктө шифрлөө</translation>
@@ -1081,7 +1077,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7431991332293347422">Издөөнү жана башка кызматтарды жекечелештирүү үчүн серептөө таржымалыңыз кандайча пайдаланыларын көзөмөлдөңүз</translation>
 <translation id="7435356471928173109">Администраторуңуз өчүрүп койду</translation>
 <translation id="7438481509621345350">Эми жаңы өтмөктү ачканда, <ph name="CHANNEL_NAME" /> окуяларын көрүп турасыз.</translation>
-<translation id="7446583256109515732">Өтмөк бошотулду</translation>
 <translation id="7451023311965289370">{count,plural, =1{Кыстарма төмөнкүгө сакталды: "{title}"}other{Кыстарма төмөнкүгө сакталды: "{title}"}}</translation>
 <translation id="7454057999980797137">Өлкө/Округ</translation>
 <translation id="745899714366929493">Күнү бою</translation>
@@ -1108,7 +1103,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> эч качан которулбасын</translation>
 <translation id="7603852183842204213">Калкп чыкм бөгөтт (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Сырсөздү жок кылуу</translation>
-<translation id="7611459119367035420">Кадалган өтмөктөрүңүздү ушул жерден таба аласыз.</translation>
 <translation id="7638584964844754484">Туура эмес купуя сөз айкашы</translation>
 <translation id="7640669552036055091">Android'деги өтмөктөр</translation>
 <translation id="7646263789464975852">Меню → Тууралоо → Коопсуздукту текшерүү</translation>

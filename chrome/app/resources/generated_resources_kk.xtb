@@ -182,7 +182,6 @@
 <translation id="1142713751288681188">Қағаз түрі</translation>
 <translation id="1143142264369994168">Сертификатқа қол қоюшы</translation>
 <translation id="1145593918056169051">Принтер тоқтады</translation>
-<translation id="114571748016232560">Бірдеңе дұрыс болмады. Оның орнына терезелерді қолмен ашыңыз.</translation>
 <translation id="114721135501989771">Chrome-дағы Google ақылды функциялары</translation>
 <translation id="1147322039136785890">Енді <ph name="SUPERVISED_USER_NAME" /> құрылғыны пайдалана алады</translation>
 <translation id="1147991416141538220">Пайдалану рұқсатын алу үшін құрылғының әкімшісіне хабарласыңыз.</translation>
@@ -793,7 +792,6 @@
 <translation id="163072119192489970">Дерек жіберуге және алуға рұқсаты барлар</translation>
 <translation id="1630768113285622200">Қайта қосу және жалғастыру</translation>
 <translation id="1631503405579357839">Дальтонизм</translation>
-<translation id="1632082166874334883">Google аккаунтыңызда сақталған құпия сөз</translation>
 <translation id="1632756664321977232">Қию құралы</translation>
 <translation id="163309982320328737">Бастапқы таңба ені толық</translation>
 <translation id="1633947793238301227">Google Assistant қолданбасын өшіру</translation>
@@ -1026,7 +1024,6 @@
 <translation id="181577467034453336">Тағы <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">Пернетақтаның сканерлеу жылдамдығы</translation>
 <translation id="1817871734039893258">Microsoft File Recovery</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" /> құпия сөзін жою</translation>
 <translation id="1818913467757368489">Журнал жүктеп салынуда.</translation>
 <translation id="1819443852740954262">Барлығын инкогнито терезесінде ашу</translation>
 <translation id="1819721979226826163">"Қолданба туралы хабарландырулар &gt; Google Play Services" түймесін түртіңіз.</translation>
@@ -3637,7 +3634,6 @@
 <translation id="3930602610362250897">Авторлық құқығы қорғалған контентті ойнату үшін сайттар контентті қорғау қызметін қолдануы керек.</translation>
 <translation id="3930737994424905957">Құрылғылар ізделуде</translation>
 <translation id="3930968231047618417">Фон түсі</translation>
-<translation id="3933283459331715412"><ph name="USERNAME" /> аккаунтының жойылған құпия сөзін қалпына келтіру</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> құрылғысы сізбен Wi-Fi желісін бөлісіп жатыр.</translation>
 <translation id="3936390757709632190">&amp;Аудионы жаңа қойындыда ашу</translation>
 <translation id="3936925983113350642">Таңдалған құпия сөз кейін осы сертификатты қалпына келтіру үшін қажет болады. Оны қауіпсіз жерге сақтап қойыңыз.</translation>

@@ -126,7 +126,6 @@
 <translation id="1657011748321897393">ඔබ ජාලයට සම්බන්ධ වී නැති නිසා බෙදා ගැනීම අසාර්ථක විය.</translation>
 <translation id="1657641691196698092">අවහිර කළ කුකී</translation>
 <translation id="165877110639533037">විවෘත පටිති නැත</translation>
-<translation id="166310177317698233">පටිති පෙන්වන්න බොත්තම තට්ටු කිරීමෙන් ඔබට ඔබේ ඇමිණූ පටිති සොයා ගත හැක.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> සිට <ph name="TARGET_LANGUAGE" /> ට</translation>
 <translation id="1683483432843341018">ජංගම අඩවිය ඉල්ලන්න</translation>
 <translation id="168715261339224929">ඔබේ සියලු උපාංගවල ඔබේ පිටුසන් ලබා ගැනීමට, සමමුහුර්තය ක්‍රියාත්මක කරන්න.</translation>
@@ -235,7 +234,6 @@
 <translation id="2423077901494354337">ඔබ දැන් ඔබේ උපාංගයෙහි Chrome වෙතින් උපරිමය ලබා ගනු ඇත.</translation>
 <translation id="2434405374328098816">ඔබ දැනටමත් "<ph name="USERNAME" />" සඳහා මුරපදයක් <ph name="WEBSITE" /> හි සුරැක ඇත</translation>
 <translation id="2435457462613246316">මුරපදය පෙන්වන්න</translation>
-<translation id="2451654228769116489">පටිත්ත අමුණන්න</translation>
 <translation id="2459155039684421202">ලිපින තීරුවේ, “මගේ ඉතිහාසය හිස් කරන්න” හෝ “මුරපද සංස්කරණ කරන්න” වැනි කාර්යයක් ඇතුළු කරන්න.</translation>
 <translation id="2461070143328828326">මුරපද සැකසීම්</translation>
 <translation id="2469960372084740698">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාවිරහිත කරන්නද?</translation>
@@ -304,7 +302,6 @@
 <translation id="2800683595868705743">පටිති මාරුකරවනය වෙතින් ඉවත් වන්න</translation>
 <translation id="2815198996063984598">2. පෙරනිමි බ්‍රව්සර යෙදුම තට්ටු කරන්න</translation>
 <translation id="2818821771744632548">ඔබේ iPhone යළි සැකසීමේ කොටසක් ලෙස, ඔබ ඔබේ <ph name="USER_NAME" /> ගිණුමෙන් වරන ලදි. නැවත පුරන්නට, පහත "ඉදිරියට යන්න" වෙත තට්ටු කරන්න.</translation>
-<translation id="2822917246944009066">පටිත්ත අමුණන ලදි</translation>
 <translation id="2830972654601096923">ලිපින කළමනාකරණය...</translation>
 <translation id="2834399722155632105">3. මුරපද විකල්ප තට්ටු කරන්න</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -836,7 +833,6 @@
 <translation id="6059830886158432458">මෙහි ඔබේ කතා සහ ක්‍රියාකාරකම් පාලන කරන්න</translation>
 <translation id="6064824697233747382">ඔබගේ සංවිධානයට ඔබ සමමුහුර්තය ක්‍රියාවිරහිත කිරීම අවශ්‍ය වේ.</translation>
 <translation id="6066301408025741299">අවලංගු කිරීමට තට්ටු කරන්න.</translation>
-<translation id="6071409777669089905">පටිත්ත ගලවන්න</translation>
 <translation id="6084848228346514841">ටැබ තෝරන්න</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> ලෙස පුරනය වී ඇත. සැකසීම් විවෘත කරයි.</translation>
 <translation id="6103540626693881831">උපාංගයේ සංකේතනය</translation>
@@ -1081,7 +1077,6 @@
 <translation id="7431991332293347422">ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය සෙවීම, සහ තවත් දේ පුද්ගලායන කිරීමට භාවිත කරන ආකාරය පාලන කිරීම</translation>
 <translation id="7435356471928173109">ඔබේ පරිපාලක විසින් ක්‍රියාවිරහිත කරන ලදි</translation>
 <translation id="7438481509621345350">ඔබ දැන් නව ටැබයක් විවෘත කරන විට <ph name="CHANNEL_NAME" /> වෙතින් නව කතන්දර දකිනු ඇත.</translation>
-<translation id="7446583256109515732">පටිත්ත ගලවන ලදි</translation>
 <translation id="7451023311965289370">{count,plural, =1{"{title}" වෙත පිටුසන සුරැකිණි}one{"{title}" වෙත පිටුසන් සුරැකිණි}other{"{title}" වෙත පිටුසන් සුරැකිණි}}</translation>
 <translation id="7454057999980797137">රාජ්‍යය / ජනපදය</translation>
 <translation id="745899714366929493">දවස පුරා</translation>
@@ -1108,7 +1103,6 @@
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> කිසිදා පරිවර්තනය නොකරන්න</translation>
 <translation id="7603852183842204213">උත්පතන අවහිරයි ( <ph name="NUMBER_OF_BLOCKED_POPUPS" /> )</translation>
 <translation id="7607521702806708809">මුරපදය මකන්න</translation>
-<translation id="7611459119367035420">ඔබට ඔබේ අමුණන ලද පටිති මෙහි සොයා ගත හැක.</translation>
 <translation id="7638584964844754484">රහස්පදය වැරදියි</translation>
 <translation id="7640669552036055091">Android වෙතින් පටිති</translation>
 <translation id="7646263789464975852">මෙනුව → සැකසීම් → ආරක්ෂක පරීක්ෂාව</translation>

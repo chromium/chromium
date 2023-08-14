@@ -180,7 +180,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1142713751288681188">Kağız növü</translation>
 <translation id="1143142264369994168">Sertifikat İmzaçısı</translation>
 <translation id="1145593918056169051">Printer dayanıb</translation>
-<translation id="114571748016232560">Xəta oldu. Pəncərələri manual qaydada açın.</translation>
 <translation id="114721135501989771">Chrome'da Google yenilikləri əldə edin</translation>
 <translation id="1147322039136785890">İndi <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin növbəsidir</translation>
 <translation id="1147991416141538220">Giriş tələb etmək üçün bu cihazın administratoru ilə əlaqə saxlayın.</translation>
@@ -792,7 +791,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="163072119192489970">Verilənlərin göndərilməsini və qəbulunu tamamlamaq icazəsi verilib</translation>
 <translation id="1630768113285622200">Yenidən başladın və davam edin</translation>
 <translation id="1631503405579357839">Rəng korluğu</translation>
-<translation id="1632082166874334883">Google hesabınızda saxlanılmış parol</translation>
 <translation id="1632756664321977232">Kəsmə Aləti</translation>
 <translation id="163309982320328737">Başlanğıc simvolunun eni tamdır</translation>
 <translation id="1633947793238301227">Google Assistenti deaktiv edin</translation>
@@ -1025,7 +1023,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> daha...</translation>
 <translation id="1816036116994822943">Klaviaturanın skan edilmə sürəti</translation>
 <translation id="1817871734039893258">Microsoft Fayl Bərpası</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" /> parolunu silin</translation>
 <translation id="1818913467757368489">Yükləmə davam edir.</translation>
 <translation id="1819443852740954262">Hamısını Anonim pəncərədə açın</translation>
 <translation id="1819721979226826163">Tətbiq bildirişlər &gt; Google Play xidmətləri seçiminə klikləyin.</translation>
@@ -3639,7 +3636,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="3930602610362250897">Müəllif hüququ ilə qorunan məzmunu oxutmaq üçün saytlar məzmun qoruma xidmətindən istifadə etməli ola bilər</translation>
 <translation id="3930737994424905957">Cihazlar axtarılır</translation>
 <translation id="3930968231047618417">Arxa fon rəngi</translation>
-<translation id="3933283459331715412">Silinmiş <ph name="USERNAME" /> parolunu yenidən bərpa edin</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> sizinlə Wi-Fi şəbəkəsi paylaşır</translation>
 <translation id="3936390757709632190">Audionu yeni tabda açın</translation>
 <translation id="3936925983113350642">Seçdiyiniz parol sonra bu sertifikatı bərpa etmək üçün tələb olunacaq. Lütfən, təhlükəsiz yerdə saxlayın.</translation>

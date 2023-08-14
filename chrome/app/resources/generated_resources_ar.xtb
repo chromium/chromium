@@ -182,7 +182,6 @@
 <translation id="1142713751288681188">نوع الورق</translation>
 <translation id="1143142264369994168">الموقّع على الشهادات</translation>
 <translation id="1145593918056169051">توقفت الطابعة</translation>
-<translation id="114571748016232560">حدث خطأ. يُرجى فتح النوافذ يدويًا بدلاً من ذلك.</translation>
 <translation id="114721135501989771">‏الحصول على ميزات Google الذكية في Chrome</translation>
 <translation id="1147322039136785890">يستطيع <ph name="SUPERVISED_USER_NAME" /> الآن استخدام الجهاز</translation>
 <translation id="1147991416141538220">لطلب إذن الوصول إلى التطبيق، يُرجى التواصل مع مشرف هذا الجهاز.</translation>
@@ -799,7 +798,6 @@
 <translation id="163072119192489970">المواقع الإلكترونية التي يُسمح لها بإنهاء إرسال البيانات أو استلامها</translation>
 <translation id="1630768113285622200">إعادة التشغيل والمواصلة</translation>
 <translation id="1631503405579357839">عَمَى الألوان</translation>
-<translation id="1632082166874334883">‏كلمة المرور المُخزَّنة في حسابك على Google</translation>
 <translation id="1632756664321977232">أداة الاقتصاص</translation>
 <translation id="163309982320328737">العرض الأولي للحرف هو عرض بالكامل</translation>
 <translation id="1633947793238301227">‏إيقاف خدمة "مساعد Google"</translation>
@@ -1032,7 +1030,6 @@
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> أخرى...</translation>
 <translation id="1816036116994822943">سرعة مسح لوحة المفاتيح</translation>
 <translation id="1817871734039893258">‏استرداد ملفات Microsoft</translation>
-<translation id="1818007989243628752">حذف كلمة مرور <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">جارٍ تحميل السِجلّ.</translation>
 <translation id="1819443852740954262">فتح الكل في نافذة التصفُّح المتخفي</translation>
 <translation id="1819721979226826163">‏يُرجى النقر على "إشعارات التطبيق" &gt; خدمات Google Play.</translation>
@@ -3646,7 +3643,6 @@
 <translation id="3930602610362250897">لتشغيل المحتوى المحمي بموجب حقوق الطبع والنشر، قد تتطلّب المواقع الإلكترونية استخدام إحدى خدمات حماية المحتوى.</translation>
 <translation id="3930737994424905957">جارٍ البحث عن أجهزة</translation>
 <translation id="3930968231047618417">لون الخلفية</translation>
-<translation id="3933283459331715412">استعادة كلمة المرور المحذوفة لـ <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852">‏يشارك <ph name="DEVICE_NAME" /> شبكة Wi-Fi معك.</translation>
 <translation id="3936390757709632190">&amp;فتح ملف الصوت في علامة تبويب جديدة</translation>
 <translation id="3936925983113350642">ستكون كلمة المرور التي تختارها مطلوبة لاستعادة هذه الشهادة لاحقًا. يُرجى تسجيلها في مكان آمن.</translation>

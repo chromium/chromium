@@ -126,7 +126,6 @@
 <translation id="1657011748321897393">साझेदारी असफल भयो किनभने तपाईं सञ्जालमा जडित हुनुहुँदैन।</translation>
 <translation id="1657641691196698092">रोक लगाइएका कुकीहरू</translation>
 <translation id="165877110639533037">खुल्ला ट्याबहरू छैनन्</translation>
-<translation id="166310177317698233">तपाईं "ट्याबहरू देखाइऊन्" बटनमा ट्याप गरेर आफूले पिन गरेका ट्याबहरू भेट्टाउन सक्नुहुन्छ।</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> बाट <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">मोबाइल साइट देखाउन अनुरोध गर्नुहोस्</translation>
 <translation id="168715261339224929">आफ्ना सबै डिभाइसमा पुस्तक चिन्हहरू प्राप्त गर्न सिंक गर्ने सुविधा अन गर्नुहोस्।</translation>
@@ -235,7 +234,6 @@
 <translation id="2423077901494354337">तपाईं अब आफ्नो डिभाइसमा Chrome बाट बढीभन्दा बढी फाइदा पाउनु हुने छ।</translation>
 <translation id="2434405374328098816">तपाईंले <ph name="WEBSITE" /> का हकमा "<ph name="USERNAME" />" को पासवर्ड सेभ गरिसक्नुभएको छ</translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
-<translation id="2451654228769116489">ट्याब पिन गर्नुहोस्</translation>
 <translation id="2459155039684421202">एड्रेस बारमा "मेरो हिस्ट्री मेटाउनुहोस्" वा "पासवर्डहरू बदल्नुहोस्" जस्ता कार्य हाल्नुहोस्।</translation>
 <translation id="2461070143328828326">पासवर्डसम्बन्धी सेटिङ</translation>
 <translation id="2469960372084740698">Safe Browsing अफ गर्ने हो?</translation>
@@ -304,7 +302,6 @@
 <translation id="2800683595868705743">ट्याब स्विचर छोड्नुहोस्</translation>
 <translation id="2815198996063984598">२. डिफल्ट ब्राउजर एपमा ट्याप गर्नुहोस्</translation>
 <translation id="2818821771744632548">तपाईंको iPhone रिसेट गर्ने क्रममा तपाईंलाई तपाईंको <ph name="USER_NAME" /> खाताबाट साइन आउट गरिएको थियो। फेरि साइन इन गर्न तलको "जारी राख्नुहोस्" मा ट्याप गर्नुहोस्।</translation>
-<translation id="2822917246944009066">यो ट्याब पिन गरिएको छ</translation>
 <translation id="2830972654601096923">ठेगानाहरू व्यवस्थापन गर्नुहोस्...</translation>
 <translation id="2834399722155632105">३. पासवर्डसम्बन्धी विकल्पहरूमा ट्याप गर्नुहोस्</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -836,7 +833,6 @@
 <translation id="6059830886158432458">यहाँ आफ्नो समाचार फिडमा देखिने सामग्री तथा क्रियाकलाप नियन्त्रण गर्नुहोस्</translation>
 <translation id="6064824697233747382">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले सिंक गर्ने सुविधा अफ गर्नु पर्ने हुन्छ।</translation>
 <translation id="6066301408025741299">रद्द गर्न ट्याप गर्नुहोस्।</translation>
-<translation id="6071409777669089905">ट्याब अनपिन गर्नुहोस्</translation>
 <translation id="6084848228346514841">ट्याबहरू चयन गर्नुहोस्</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> का नामबाट साइन इन गरिएको छ। यसले सेटिङ खोल्छ।</translation>
 <translation id="6103540626693881831">डिभाइसमै चल्ने इन्क्रिप्सन</translation>
@@ -1081,7 +1077,6 @@
 <translation id="7431991332293347422">खोज र थप कुराहरू वैयक्तीकृत गर्ने प्रयोजनका लागि तपाईंको ब्राउजिङ इतिहासको प्रयोग गरिने तरिका नियन्त्रण गर्नुहोस्</translation>
 <translation id="7435356471928173109">तपाईंका एड्मिनले अफ गर्नुभएको</translation>
 <translation id="7438481509621345350">तपाईंले नयाँ ट्याब खोल्दा अब तपाईंलाई <ph name="CHANNEL_NAME" /> का लेखहरू देखाइने छन्।</translation>
-<translation id="7446583256109515732">यो ट्याब अनपिन गरिएको छ</translation>
 <translation id="7451023311965289370">{count,plural, =1{बुकमार्क "{title}" मा सेभ गरिएको छ}other{बुकमार्कहरू "{title}" मा सेभ गरिएका छन्}}</translation>
 <translation id="7454057999980797137">राज्य / काउन्टी</translation>
 <translation id="745899714366929493">दिनभरि</translation>
@@ -1108,7 +1103,6 @@
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="7603852183842204213">पप-अपहरु ब्लक गरियो (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">पासवर्ड मेट्नुहोस्</translation>
-<translation id="7611459119367035420">तपाईं आफ्ना पिन गरिएका ट्याबहरू यहाँ भेट्टाउन सक्नुहुन्छ।</translation>
 <translation id="7638584964844754484">गलत पासफ्रेज</translation>
 <translation id="7640669552036055091">Android मा हालसालै खोलिएका ट्याबहरू</translation>
 <translation id="7646263789464975852">मेनु → सेटिङ → सुरक्षितपनाको जाँच</translation>

@@ -184,7 +184,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1142713751288681188">Vrsta papira</translation>
 <translation id="1143142264369994168">Potpisnik potvrde</translation>
 <translation id="1145593918056169051">Štampač je prestao raditi</translation>
-<translation id="114571748016232560">Nešto nije uredu. Onda ručno otvorite prozore.</translation>
 <translation id="114721135501989771">Preuzmite pametne Google funkcije za Chrome</translation>
 <translation id="1147322039136785890">Sada je na redu <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Da zatražite pristup, kontaktirajte administratora ovog uređaja.</translation>
@@ -801,7 +800,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="163072119192489970">Dozvoljeno je završavanje slanja i primanja podataka</translation>
 <translation id="1630768113285622200">Ponovo pokreni i nastavi</translation>
 <translation id="1631503405579357839">Daltonizam</translation>
-<translation id="1632082166874334883">Lozinka je pohranjena na vašem Google računu</translation>
 <translation id="1632756664321977232">Alat za izrezivanje</translation>
 <translation id="163309982320328737">Znakovi su u punoj širini</translation>
 <translation id="1633947793238301227">Onemogućite Google Asistenta</translation>
@@ -1039,7 +1037,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="181577467034453336">Još <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">Brzina skeniranja tastature</translation>
 <translation id="1817871734039893258">Microsoft oporavak fajlova</translation>
-<translation id="1818007989243628752">Brisanje lozinke za korisnika <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Otpremanje zapisnika je u toku.</translation>
 <translation id="1819443852740954262">Otvori sve u anonimnom prozoru</translation>
 <translation id="1819721979226826163">Dodirnite Obavještenja iz aplikacija &gt; Google Play usluge.</translation>
@@ -3656,7 +3653,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="3930602610362250897">Da reproduciraju sadržaj zaštićen autorskim pravima, web lokacijama može biti potrebna usluga zaštite sadržaja</translation>
 <translation id="3930737994424905957">Traženje uređaja</translation>
 <translation id="3930968231047618417">Boja pozadine</translation>
-<translation id="3933283459331715412">Vratite izbrisanu lozinku za <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852">Uređaj <ph name="DEVICE_NAME" /> dijeli WiFi mrežu s vama</translation>
 <translation id="3936390757709632190">&amp;Otvori zvuk na novoj kartici</translation>
 <translation id="3936925983113350642">Lozinka koju ste odabrali će vam kasnije biti potrebna za vraćanje potvrde. Čuvajte je na sigurnoj lokaciji.</translation>

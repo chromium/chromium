@@ -182,7 +182,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1142713751288681188">Typ papíru</translation>
 <translation id="1143142264369994168">Autor podpisu certifikátu</translation>
 <translation id="1145593918056169051">Tiskárna přestala fungovat</translation>
-<translation id="114571748016232560">Něco se pokazilo. Otevřete okna ručně.</translation>
 <translation id="114721135501989771">Získejte do Chromu chytré funkce Google</translation>
 <translation id="1147322039136785890">Teď je na řadě <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Chcete-li požádat o přístup, kontaktujte administrátora tohoto zařízení.</translation>
@@ -798,7 +797,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="163072119192489970">Povolení dokončovat odeslání a příjem dat</translation>
 <translation id="1630768113285622200">Restartovat a pokračovat</translation>
 <translation id="1631503405579357839">Barvoslepost</translation>
-<translation id="1632082166874334883">Heslo uložené ve vašem účtu Google</translation>
 <translation id="1632756664321977232">Nástroj Oříznout</translation>
 <translation id="163309982320328737">Výchozí šířka znaků je Plná</translation>
 <translation id="1633947793238301227">Deaktivovat Asistenta Google</translation>
@@ -1031,7 +1029,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="181577467034453336">Ještě <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">Rychlost prohledávání klávesnice</translation>
 <translation id="1817871734039893258">Obnovení souborů Microsoft</translation>
-<translation id="1818007989243628752">Smazat heslo uživatele <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Probíhá nahrávání protokolu.</translation>
 <translation id="1819443852740954262">Otevřít vše v anonymním okně</translation>
 <translation id="1819721979226826163">Klepněte na Oznámení z aplikací &gt; Služby Google Play.</translation>
@@ -3642,7 +3639,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3930602610362250897">K přehrávání obsahu chráněného autorskými právy mohou weby potřebovat používat službu ochrany obsahu</translation>
 <translation id="3930737994424905957">Vyhledávání zařízení</translation>
 <translation id="3930968231047618417">Barva pozadí</translation>
-<translation id="3933283459331715412">Obnovit smazané heslo uživatele <ph name="USERNAME" /></translation>
 <translation id="3936260554100916852">Zařízení <ph name="DEVICE_NAME" /> s vámi sdílí síť Wi-Fi</translation>
 <translation id="3936390757709632190">&amp;Otevřít zvuk na nové kartě</translation>
 <translation id="3936925983113350642">Heslo, které si vyberete, budete později potřebovat k obnovení certifikátu. Bezpečně jej uschovejte.</translation>

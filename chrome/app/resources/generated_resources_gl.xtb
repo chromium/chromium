@@ -182,7 +182,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1143142264369994168">Titular do certificado</translation>
 <translation id="1145593918056169051">A impresora deixou de funcionar</translation>
-<translation id="114571748016232560">Produciuse un erro. Proba a abrir a ventá de maneira manual.</translation>
 <translation id="114721135501989771">Obter tecnoloxía de Google en Chrome</translation>
 <translation id="1147322039136785890">Agora é a quenda de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Para solicitar acceso, ponte en contacto co administrador deste dispositivo.</translation>
@@ -795,7 +794,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="163072119192489970">Sitios que poden rematar de enviar ou recibir datos</translation>
 <translation id="1630768113285622200">Reiniciar e continuar</translation>
 <translation id="1631503405579357839">Daltonismo</translation>
-<translation id="1632082166874334883">Contrasinal almacenado na túa conta de Google</translation>
 <translation id="1632756664321977232">Ferramenta de recorte</translation>
 <translation id="163309982320328737">A largura inicial do carácter é completa</translation>
 <translation id="1633947793238301227">Desactivar Asistente de Google</translation>
@@ -1028,7 +1026,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> máis...</translation>
 <translation id="1816036116994822943">Velocidade de busca do teclado</translation>
 <translation id="1817871734039893258">Recuperación de ficheiros de Microsoft</translation>
-<translation id="1818007989243628752">Eliminar contrasinal de <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Cargando rexistro.</translation>
 <translation id="1819443852740954262">Abrir todos nunha ventá do modo de incógnito</translation>
 <translation id="1819721979226826163">Toca Notificacións da aplicación &gt; Servizos de Google Play.</translation>
@@ -3642,7 +3639,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3930602610362250897">Para reproducir contido protexido con copyright, é posible que algúns sitios necesiten usar un servizo de protección de contido</translation>
 <translation id="3930737994424905957">Buscando dispositivos</translation>
 <translation id="3930968231047618417">Cor do fondo</translation>
-<translation id="3933283459331715412">Restaurar o contrasinal de <ph name="USERNAME" /> eliminado</translation>
 <translation id="3936260554100916852">O dispositivo <ph name="DEVICE_NAME" /> está compartindo unha rede wifi contigo</translation>
 <translation id="3936390757709632190">&amp;Abrir audio na pestana nova</translation>
 <translation id="3936925983113350642">O contrasinal que seleccionaches solicitarase para restablecer este certificado máis tarde. Gárdao nunha localización segura.</translation>

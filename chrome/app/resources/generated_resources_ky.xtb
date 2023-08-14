@@ -184,7 +184,6 @@
 <translation id="1142713751288681188">Кагаздын түрү</translation>
 <translation id="1143142264369994168">Тастыктамага кол коюучу</translation>
 <translation id="1145593918056169051">Принтер токтотулду</translation>
-<translation id="114571748016232560">Бир жерден ката кетти. Терезени кол менен ачып көрүңүз.</translation>
 <translation id="114721135501989771">Google'дун акылдуу параметрлерин Chrome'до колдонуңуз</translation>
 <translation id="1147322039136785890">Эми түзмөктү <ph name="SUPERVISED_USER_NAME" /> алсын</translation>
 <translation id="1147991416141538220">Кирүү мүмкүнчүлүгүн алуу үчүн түзмөктүн администраторуна кайрылыңыз.</translation>
@@ -799,7 +798,6 @@
 <translation id="163072119192489970">Маалымат жөнөтүүнү жана алууну аягына чыгара алат</translation>
 <translation id="1630768113285622200">Өчүрүп-күйгүзүү жана улантуу</translation>
 <translation id="1631503405579357839">Түс сокурдугу</translation>
-<translation id="1632082166874334883">Google аккаунтуңузда сакталган сырсөз</translation>
 <translation id="1632756664321977232">"Кесүү" куралы</translation>
 <translation id="163309982320328737">Баштапкы белгинин эни Толук</translation>
 <translation id="1633947793238301227">Google Жардамчыны өчүрүү</translation>
@@ -1040,7 +1038,6 @@
 <translation id="181577467034453336">Дагы <ph name="NUMBER_OF_VIEWS" />…</translation>
 <translation id="1816036116994822943">Баскычтопту скандоо ылдамдыгы</translation>
 <translation id="1817871734039893258">Microsoft Файлды калыбына келтирүү</translation>
-<translation id="1818007989243628752"><ph name="USERNAME" /> дарегинин сырсөзүн жок кылуу</translation>
 <translation id="1818913467757368489">Таржымалды жүктөп берүү күтүлүүдө.</translation>
 <translation id="1819443852740954262">Баарын жашыруун терезеде ачуу</translation>
 <translation id="1819721979226826163">Колдонмо билдирүүлөрү &gt; Google Play кызматтарын таптаңыз.</translation>
@@ -3655,7 +3652,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3930602610362250897">Автордук укук менен корголгон мазмунду ойнотуу үчүн сайттар мазмунду коргоочу кызматты колдонушу керек</translation>
 <translation id="3930737994424905957">Түзмөктөр изделүүдө</translation>
 <translation id="3930968231047618417">Фондун түсү</translation>
-<translation id="3933283459331715412"><ph name="USERNAME" /> дарегинин өчүрүлгөн сырсөзүн калыбына келтирүү</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> түзмөгү Wi-Fi тармагын сиз менен бөлүшүүдө</translation>
 <translation id="3936390757709632190">&amp;Аудиону жаңы өтмөктө ачуу</translation>
 <translation id="3936925983113350642">Тандалган сырсөз кийинчерээк бул тастыктаманы калыбына келтирүүдө керек болот. Аны коопсуз жерге жаздырып коюңуз.</translation>

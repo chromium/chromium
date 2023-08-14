@@ -2025,7 +2025,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5287456746628258573">Este sitio usa una configuración de seguridad obsoleta. Si envías información (p. ej., contraseñas o números de tarjetas de crédito) a este sitio, es posible que quede expuesta.</translation>
 <translation id="5288108484102287882">La validación de los valores de la política generó advertencias</translation>
 <translation id="5288393065350884210">Contabilidad y auditoría</translation>
-<translation id="5288808348893593856">La conexión del sitio es segura a menos que Chrome te indique lo contrario.</translation>
 <translation id="5289384342738547352">Control de varios documentos</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Debes actualizar ChromeOS hoy}=2{Debes actualizar ChromeOS para mañana}other{Debes actualizar ChromeOS dentro de # días}}</translation>
 <translation id="5293919335876685914">Cupés</translation>
@@ -2616,7 +2615,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6569060085658103619">Estás viendo la página de una extensión</translation>
 <translation id="6569366777234823130">Películas de drama</translation>
 <translation id="6573200754375280815">Perforación doble a la derecha</translation>
-<translation id="6576181918031900030">Comenzar a transmitir contenido</translation>
 <translation id="6578434528542148658">El ID de la extensión no es válido.</translation>
 <translation id="657902945730878902">Dibujo y coloreado</translation>
 <translation id="6579630537141957243">¿Quieres conectar un dispositivo MIDI?</translation>
