@@ -391,6 +391,7 @@ struct DesksTestParams {
   bool use_touch_gestures = false;
   bool use_16_desks = false;
   bool enable_jellyroll = false;
+  bool per_desk_shelf = false;
 };
 
 // Defines a parameterized test fixture to test Virtual Desks behavior.
@@ -416,7 +417,8 @@ class DesksTest : public AshTestBase,
         {{features::kDeskButton, true},
          {features::kFeatureManagement16Desks, GetParam().use_16_desks},
          {chromeos::features::kJellyroll, GetParam().enable_jellyroll},
-         {chromeos::features::kJelly, GetParam().enable_jellyroll}});
+         {chromeos::features::kJelly, GetParam().enable_jellyroll},
+         {features::kPerDeskShelf, GetParam().per_desk_shelf}});
 
     AshTestBase::SetUp();
     SetVirtualKeyboardEnabled(true);
@@ -11411,8 +11413,9 @@ TEST_P(DeskButtonTest, TabOrder) {
 // Instantiate the parametrized tests.
 
 // This is used for tests that test all combinations of 8/16 desks, enabled /
-// disabled feature flag `Jellyroll` as well as clicks/touch.
-constexpr DesksTestParams kAllCombinations[] = {
+// disabled feature flag `Jellyroll` as well as clicks/touch. Additionally, some
+// combinations are tested with per-desk-shelf enabled.
+constexpr DesksTestParams kTestCombinations[] = {
     {.use_touch_gestures = false,
      .use_16_desks = false,
      .enable_jellyroll = false},
@@ -11437,6 +11440,11 @@ constexpr DesksTestParams kAllCombinations[] = {
     {.use_touch_gestures = true,
      .use_16_desks = true,
      .enable_jellyroll = true},
+    // Per-desk shelf enabled combinations.
+    // TODO(b/293951721): Enable once the current per-desk-shelf test failures
+    // have been sorted out.
+    // {.enable_jellyroll = false, .per_desk_shelf = true},
+    // {.enable_jellyroll = true, .per_desk_shelf = true},
 };
 
 // This is used for tests that only want to test 8/16 desks.
@@ -11446,17 +11454,17 @@ constexpr DesksTestParams kDeskCountOnly[] = {
 };
 
 std::string GetDeskCountSuffix(bool use_16_desks) {
-  return use_16_desks ? "16DesksOn" : "16DesksOff";
+  return use_16_desks ? "16Desks" : "8Desks";
 }
 
-std::string GetTestSuffix(bool use_touch_gestures,
-                          bool use_16_desks,
-                          bool enable_jellyroll) {
-  std::string use_touch_str = use_touch_gestures ? "Touch" : "Mouse";
-  std::string use_16_str = GetDeskCountSuffix(use_16_desks);
-  std::string jelly_str = enable_jellyroll ? "JellyOn" : "JellyOff";
-  return base::StringPrintf("%s_%s_%s", use_touch_str.c_str(),
-                            use_16_str.c_str(), jelly_str.c_str());
+std::string GetTestSuffix(const DesksTestParams& params) {
+  std::string use_touch = params.use_touch_gestures ? "Touch" : "Mouse";
+  std::string use_16 = GetDeskCountSuffix(params.use_16_desks);
+  std::string use_jelly = params.enable_jellyroll ? "Jelly" : "NoJelly";
+  std::string use_per_desk_shelf =
+      params.per_desk_shelf ? "PerDeskShelf" : "NoPerDeskShelf";
+  return base::StringPrintf("%s_%s_%s_%s", use_touch.c_str(), use_16.c_str(),
+                            use_jelly.c_str(), use_per_desk_shelf.c_str());
 }
 
 std::string GetDeskCountOnlyTestSuffix(
@@ -11472,11 +11480,9 @@ constexpr DeskButtonTestParams kDeskButtonTestParamCombinations[] = {
 INSTANTIATE_TEST_SUITE_P(
     All,
     DesksTest,
-    ValuesIn(kAllCombinations),
+    ValuesIn(kTestCombinations),
     [](const testing::TestParamInfo<DesksTestParams>& info) {
-      return GetTestSuffix(info.param.use_touch_gestures,
-                           info.param.use_16_desks,
-                           info.param.enable_jellyroll);
+      return GetTestSuffix(info.param);
     });
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -11515,14 +11521,11 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(DeskBarViewBase::Type::kDeskButton,
                                      DeskBarViewBase::Type::kOverview)),
     [](const testing::TestParamInfo<DeskBarTest::ParamType>& info) {
-      bool use_touch_gestures;
-      bool use_16_desks;
-      bool enable_jellyroll;
+      DesksTestParams params;
       DeskBarViewBase::Type bar_type;
-      std::tie(use_touch_gestures, use_16_desks, enable_jellyroll, bar_type) =
-          info.param;
-      std::string result =
-          GetTestSuffix(use_touch_gestures, use_16_desks, enable_jellyroll);
+      std::tie(params.use_touch_gestures, params.use_16_desks,
+               params.enable_jellyroll, bar_type) = info.param;
+      std::string result = GetTestSuffix(params);
       std::string bar_type_str;
       switch (bar_type) {
         case DeskBarViewBase::Type::kDeskButton:
