@@ -18,6 +18,10 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace syncer {
+class SyncService;
+}
+
 // Configuration object used by the DiscoverFeedService.
 // TODO(crbug.com/1277504): Rename this to FeedConfiguration.
 @interface DiscoverFeedConfiguration : NSObject
@@ -25,8 +29,13 @@ class IdentityManager;
 // AuthenticationService used by DiscoverFeedService.
 @property(nonatomic, assign) AuthenticationService* authService;
 
-// PrefService used by DiscoverFeedService.
+// The per BrowserState PrefService.
+@property(nonatomic, assign) PrefService* browserStatePrefService;
+// TODO(crbug.com/1468530): Same as above, remove after downstream migrated.
 @property(nonatomic, assign) PrefService* prefService;
+
+// The global PrefService.
+@property(nonatomic, assign) PrefService* localStatePrefService;
 
 // IdentityManager used by DiscoverFeedService.
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
@@ -39,6 +48,9 @@ class IdentityManager;
 
 // The service to get the default search engine.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
+
+// The service exposing sync state.
+@property(nonatomic, assign) syncer::SyncService* syncService;
 
 @end
 

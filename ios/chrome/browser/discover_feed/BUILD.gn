@@ -53,6 +53,7 @@ source_set("discover_feed_factory") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/public/provider/chrome/browser/discover_feed:discover_feed_api",
   ]
