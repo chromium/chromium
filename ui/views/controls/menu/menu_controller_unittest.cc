@@ -2041,7 +2041,7 @@ TEST_F(MenuControllerTest, AsynchronousGestureDeletesController) {
   params.do_capture = true;
   sub_menu->ShowAt(params);
 
-  gfx::Point location(sub_menu->GetLocalBounds().CenterPoint());
+  gfx::Point location = sub_menu->GetMenuItemAt(0)->bounds().CenterPoint();
   ui::GestureEvent event(location.x(), location.y(), 0, ui::EventTimeForNow(),
                          ui::GestureEventDetails(ui::ET_GESTURE_TAP));
 
