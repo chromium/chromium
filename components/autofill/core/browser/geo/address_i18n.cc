@@ -147,14 +147,5 @@ bool IsFieldRequired(ServerFieldType server_type,
   return false;
 }
 
-base::span<const ServerFieldType> GetStaticEditorFields() {
-  static constexpr std::array<ServerFieldType, 3> static_fields = {
-      EMAIL_ADDRESS,
-      PHONE_HOME_WHOLE_NUMBER,
-      NAME_HONORIFIC_PREFIX,
-  };
-  return static_fields;
-}
-
 }  // namespace i18n
 }  // namespace autofill

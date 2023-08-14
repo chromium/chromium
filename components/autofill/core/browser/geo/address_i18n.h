@@ -51,11 +51,6 @@ bool FieldForType(ServerFieldType server_type,
 bool IsFieldRequired(ServerFieldType server_type,
                      const std::string& country_code);
 
-// Returns the list of fields which are added to the editors regardless of the
-// specified country. This list determines the fields that should not be cleared
-// from AutofillProfile even though they may be not user visible.
-base::span<const ServerFieldType> GetStaticEditorFields();
-
 }  // namespace i18n
 }  // namespace autofill
 
