@@ -9001,21 +9001,6 @@
             ]
         }
     ],
-    "LoadNotificationsForSameDocumentNavigations": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Control_20230530",
-                    "enable_features": [
-                        "LoadNotificationsForSameDocumentNavigations"
-                    ]
-                }
-            ]
-        }
-    ],
     "LowerMemoryLimitForNonMainRenderers": [
         {
             "platforms": [

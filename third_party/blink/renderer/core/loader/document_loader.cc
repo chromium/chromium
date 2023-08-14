@@ -169,12 +169,6 @@
 namespace blink {
 namespace {
 
-// When enabled, ProgressStarted() and ProgressFinished() will be called
-// for same document navigations.
-BASE_FEATURE(kLoadNotificationsForSameDocumentNavigations,
-             "LoadNotificationsForSameDocumentNavigations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 Vector<OriginTrialFeature> CopyInitiatorOriginTrials(
     const WebVector<int>& initiator_origin_trial_features) {
   Vector<OriginTrialFeature> result;
@@ -834,9 +828,6 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   if (history_item)
     history_item_ = history_item;
 
-  bool send_loading_notifications = base::FeatureList::IsEnabled(
-      kLoadNotificationsForSameDocumentNavigations);
-
   // Spec "URL and history update steps", step 4 [1]:
   // " If document's is initial about:blank is true, then set historyHandling to
   // 'replace'."
@@ -852,7 +843,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   // Do not fire the notifications if the frame is concurrently navigating away
   // from the document, since a new document is already loading.
   bool was_loading = frame_->IsLoading();
-  if (!was_loading && send_loading_notifications) {
+  if (!was_loading) {
     GetFrameLoader().Progress().ProgressStarted();
   }
 
@@ -913,7 +904,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   // NavigateEvent, the navigation will finish asynchronously, so
   // don't immediately call DidStopLoading() in that case.
   bool should_send_stop_notification =
-      !was_loading && send_loading_notifications &&
+      !was_loading &&
       same_document_navigation_type !=
           mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept;
   if (should_send_stop_notification)
