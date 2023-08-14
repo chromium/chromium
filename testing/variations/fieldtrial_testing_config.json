@@ -10122,6 +10122,39 @@
             ]
         }
     ],
+    "OmniboxRelaxedDriveRequirements": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Both",
+                    "enable_features": [
+                        "OmniboxDocumentProviderNoSetting",
+                        "OmniboxDocumentProviderNoSyncRequirement"
+                    ]
+                },
+                {
+                    "name": "Enabled_NoSetting",
+                    "enable_features": [
+                        "OmniboxDocumentProviderNoSetting"
+                    ]
+                },
+                {
+                    "name": "Enabled_NoSyncRequirement",
+                    "enable_features": [
+                        "OmniboxDocumentProviderNoSyncRequirement"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxTailSuggestIOS": [
         {
             "platforms": [
