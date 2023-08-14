@@ -198,6 +198,26 @@ public class TranslateBridge {
         TranslateBridgeJni.get().setIgnoreMissingKeyForTesting(ignore); // IN-TEST
     }
 
+    /**
+     * Get current page language.
+     *
+     * @param tab Tab to get the current language for
+     * @return The current language code or empty string if no language detected.
+     */
+    public static String getCurrentLanguage(Tab tab) {
+        return getCurrentLanguage(tab.getWebContents());
+    }
+
+    /**
+     * Get the current page language.
+     *
+     * @param webContents Web contents to get the current language for
+     * @return The current language code or empty string if no language detected.
+     */
+    public static String getCurrentLanguage(WebContents webContents) {
+        return TranslateBridgeJni.get().getCurrentLanguage(webContents);
+    }
+
     @NativeMethods
     public interface Natives {
         void manualTranslateWhenReady(WebContents webContents);
@@ -221,5 +241,7 @@ public class TranslateBridge {
         boolean getAppLanguagePromptShown();
         void setAppLanguagePromptShown();
         void setIgnoreMissingKeyForTesting(boolean ignore);
+
+        String getCurrentLanguage(WebContents webContents);
     }
 }

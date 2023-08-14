@@ -193,6 +193,11 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public String getCurrentLanguage(WebContents webContents) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Extra utility functions for MockTranslateBridge
      */

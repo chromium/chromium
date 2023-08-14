@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelTabObserver;
+import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
@@ -168,6 +170,9 @@ public class ReadAloudController {
     public void playTab(Tab tab) {
         Log.e(TAG, "playTab() not implemented.");
         mExpandedPlayerCoordinator.show();
+        PlaybackArgs args =
+                new PlaybackArgs(tab.getUrl().getSpec(), TranslateBridge.getCurrentLanguage(tab),
+                        /* voice=*/null, /* dateModifiedMsSinceEpock=*/0);
     }
 
     /**

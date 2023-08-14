@@ -381,6 +381,23 @@ static void JNI_TranslateBridge_SetAppLanguagePromptShown(JNIEnv* env) {
   translate_prefs->SetAppLanguagePromptShown();
 }
 
+static base::android::ScopedJavaLocalRef<jstring>
+JNI_TranslateBridge_GetCurrentLanguage(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  ChromeTranslateClient* client =
+      ChromeTranslateClient::FromWebContents(web_contents);
+  DCHECK(client);
+  const std::string& current_language_code =
+      client->GetLanguageState().current_language();
+  DCHECK(!current_language_code.empty());
+  base::android::ScopedJavaLocalRef<jstring> j_current_language =
+      base::android::ConvertUTF8ToJavaString(env, current_language_code);
+  return j_current_language;
+}
+
 static void JNI_TranslateBridge_SetIgnoreMissingKeyForTesting(  // IN-TEST
     JNIEnv* env,
     jboolean ignore) {
