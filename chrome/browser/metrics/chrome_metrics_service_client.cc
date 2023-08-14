@@ -917,6 +917,9 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
           reinterpret_cast<ChromeOSSystemProfileProvider*>(
               cros_system_profile_provider_.get())));
 
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<ChromeOSHistogramMetricsProvider>());
+
   if (base::FeatureList::IsEnabled(::features::kUmaStorageDimensions)) {
     metrics_service_->RegisterMetricsProvider(
         std::make_unique<CrosHealthdMetricsProvider>());
