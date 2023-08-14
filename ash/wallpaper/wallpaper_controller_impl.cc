@@ -1993,6 +1993,15 @@ void WallpaperControllerImpl::SetOnlineWallpaperImpl(
     const gfx::ImageSkia& image) {
   DCHECK(!image.isNull()) << " image should not be empty";
   WallpaperInfo wallpaper_info = WallpaperInfo(params);
+  if (current_wallpaper_ &&
+      current_wallpaper_->wallpaper_info().MatchesSelection(wallpaper_info)) {
+    DVLOG(1) << "Detected a change in asset for the same wallpaper.";
+    // Keep the current wallpaper info date since the wallpaper doesn't change
+    // and only one of its variant gets repainted (ex: dark/light or time of day
+    // wallpapers).
+    wallpaper_info.date = current_wallpaper_->wallpaper_info().date;
+  }
+
   if (!SetUserWallpaperInfo(params.account_id, wallpaper_info)) {
     LOG(ERROR) << "Setting user wallpaper info fails. This should never happen "
                   "except in tests.";

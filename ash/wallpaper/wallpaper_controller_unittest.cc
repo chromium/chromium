@@ -161,7 +161,7 @@ gfx::ImageSkia CreateImage(int width, int height, SkColor color) {
 
 // Returns the bitmap for test image decoder.
 SkBitmap TestImageBitmap() {
-  return *CreateImage(1, 1, SK_ColorBLUE).bitmap();
+  return *CreateImage(10, 10, SK_ColorBLUE).bitmap();
 }
 
 // Returns number of child windows in a shell window container.
@@ -4573,6 +4573,12 @@ TEST_P(WallpaperControllerTest, UpdateWallpaperOnScheduleCheckpointChanged) {
     run_loop->Run();
     EXPECT_EQ(1, GetWallpaperCount());
     EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
+    WallpaperInfo actual;
+    ASSERT_TRUE(
+        pref_manager_->GetUserWallpaperInfo(active_account_id, &actual));
+    base::Time original_timestamp = actual.date;
+
+    task_environment()->FastForwardBy(base::Hours(1));
 
     // Switch to light mode and simulate schedule checkpoint change to reflect
     // light mode.
@@ -4587,11 +4593,61 @@ TEST_P(WallpaperControllerTest, UpdateWallpaperOnScheduleCheckpointChanged) {
         WALLPAPER_LAYOUT_CENTER_CROPPED, /*preview_mode=*/false,
         /*from_user=*/true,
         /*daily_refresh_enabled=*/false, kUnitId, variants));
-    WallpaperInfo actual;
-    EXPECT_TRUE(
+    ASSERT_TRUE(
         pref_manager_->GetUserWallpaperInfo(active_account_id, &actual));
-    EXPECT_TRUE(actual.MatchesAsset(expected));
+    // The wallpaper in pref should still match what was originally selected.
+    // However, the |date| should not be affected by the dark -> light change.
+    EXPECT_TRUE(actual.MatchesSelection(WallpaperInfo(params)));
+    EXPECT_EQ(actual.date, original_timestamp);
   }
+}
+
+TEST_P(WallpaperControllerTest, UpdateWallpaperOnAutoColorMode) {
+  SimulateUserLogin(kAccountId1);
+
+  Shell::Get()->dark_light_mode_controller()->SetAutoScheduleEnabled(true);
+
+  auto run_loop = std::make_unique<base::RunLoop>();
+  ClearWallpaperCount();
+  std::vector<OnlineWallpaperVariant> variants;
+  variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  variants.emplace_back(kAssetId2, GURL(kDummyUrl2),
+                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  const OnlineWallpaperParams& params =
+      OnlineWallpaperParams(kAccountId1, kAssetId, GURL(kDummyUrl),
+                            TestWallpaperControllerClient::kDummyCollectionId,
+                            WALLPAPER_LAYOUT_CENTER_CROPPED,
+                            /*preview_mode=*/false, /*from_user=*/true,
+                            /*daily_refresh_enabled=*/true, kUnitId, variants);
+  controller_->SetOnlineWallpaper(
+      params, base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_TRUE(success);
+        run_loop->Quit();
+      }));
+  run_loop->Run();
+  EXPECT_EQ(1, GetWallpaperCount());
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDaily);
+  WallpaperInfo actual;
+  ASSERT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual));
+  base::Time original_timestamp = actual.date;
+
+  // Forward time to trigger checkpoints.
+  task_environment()->FastForwardBy(base::Hours(12));
+  RunAllTasksUntilIdle();
+
+  WallpaperInfo expected = WallpaperInfo(OnlineWallpaperParams(
+      kAccountId1, kAssetId2, GURL(kDummyUrl2),
+      TestWallpaperControllerClient::kDummyCollectionId,
+      WALLPAPER_LAYOUT_CENTER_CROPPED, /*preview_mode=*/false,
+      /*from_user=*/true,
+      /*daily_refresh_enabled=*/true, kUnitId, variants));
+
+  ASSERT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual));
+  // The wallpaper in pref should still match what was originally selected.
+  // However, the |date| should not be affected by the dark -> light change.
+  EXPECT_TRUE(actual.MatchesSelection(expected));
+  EXPECT_EQ(actual.date, original_timestamp);
 }
 
 TEST_P(WallpaperControllerTest,

@@ -60,6 +60,15 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   std::string user_file_path;
   WallpaperLayout layout;
   WallpaperType type;
+  // The timestamp at which this wallpaper was first rendered. This is usually
+  // synonymous with the user selecting it unless there were delays or
+  // unexpected errors when trying to download/decode the wallpaper before it's
+  // actually rendered.
+  //
+  // Note the following do not affect this timestamp:
+  // a) Re-rendering this wallpaper (ex: after a reboot/re-login)
+  // b) Rendering a different variant of this wallpaper
+  //    (ex: dark/light mode changes).
   base::Time date;
 
   // These fields are applicable if |type| == WallpaperType::kOnceGooglePhotos
