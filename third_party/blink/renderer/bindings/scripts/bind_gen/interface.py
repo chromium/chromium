@@ -3729,149 +3729,62 @@ bindings::V8SetReturnValue(
 # ----------------------------------------------------------------------------
 
 
-def make_named_props_obj_indexed_getter_callback(cg_context, function_name):
+# This generates the following functions:
+# NamedPropsObjIndexedGetterCallback
+# NamedPropsObjIndexedSetterCallback
+# NamedPropsObjIndexedDeleterCallback
+# NamedPropsObjIndexedDefinerCallback
+# NamedPropsObjIndexedDescriptorCallback
+def make_named_props_obj_indexed_callback(cg_context, callback_type):
     assert isinstance(cg_context, CodeGenContext)
-    assert isinstance(function_name, str)
+    assert isinstance(callback_type, str)
+    arg_decls = ["uint32_t index"]
+    arg_names = ["index"]
 
-    arg_decls = [
-        "uint32_t index",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["index", "info"]
+    if callback_type == "Getter":
+        callback_info_type = "Value"
+    elif callback_type == "Setter":
+        arg_decls.append("v8::Local<v8::Value> v8_property_value")
+        arg_names.append("v8_property_value")
+        callback_info_type = "Value"
+    elif callback_type == "Deleter":
+        callback_info_type = "Boolean"
+    elif callback_type == "Definer":
+        arg_decls.append("const v8::PropertyDescriptor& v8_property_desc")
+        arg_names.append("v8_property_desc")
+        callback_info_type = "Value"
+    elif callback_type == "Descriptor":
+        callback_info_type = "Value"
+    else:
+        assert False
+    arg_decls.append(
+        _format("const v8::PropertyCallbackInfo<v8::{}>& info",
+                callback_info_type))
+    arg_names.append("info")
 
+    function_name = "NamedPropsObjIndexed" + callback_type + "Callback"
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
-        "NamedPropertiesObject_IndexedPropertyGetter")
-    body = func_def.body
+        "NamedPropertiesObject_IndexedProperty" + callback_type)
 
-    body.append(
+    # All args are forwarded, except that the first arg is converted to a
+    # string and renamed to `property_name`.
+    forwarded_args = list(arg_names)
+    assert forwarded_args[0] == "index"
+    forwarded_args[0] = "property_name"
+
+    body = func_def.body
+    body.extend([
         TextNode("""\
+// Indexed interceptors on the named properties object redirect to the named
+// interceptor.
 v8::Local<v8::String> property_name =
     V8AtomicString(${isolate}, AtomicString::Number(${index}));
-NamedPropsObjNamedGetterCallback(property_name, ${info});
-"""))
-
-    return func_def
-
-
-def make_named_props_obj_indexed_setter_callback(cg_context, function_name):
-    assert isinstance(cg_context, CodeGenContext)
-    assert isinstance(function_name, str)
-
-    arg_decls = [
-        "uint32_t index",
-        "v8::Local<v8::Value> v8_property_value",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["index", "v8_property_value", "info"]
-
-    func_def = _make_interceptor_callback_def(
-        cg_context, function_name, arg_decls, arg_names, None,
-        "NamedPropertiesObject_IndexedPropertySetter")
-    body = func_def.body
-
-    body.append(
-        TextNode("""\
-// 3.6.4.2. [[DefineOwnProperty]]
-// https://webidl.spec.whatwg.org/#named-properties-object-defineownproperty
-bindings::V8SetReturnValue(${info}, nullptr);
-if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(
-      ${info}.GetIsolate(),
-      ExceptionContext::Context::kIndexedPropertySet,
-      "${interface.identifier}");
-  exception_state.ThrowTypeError("Named property setter is not supported.");
-}
-"""))
-
-    return func_def
-
-
-def make_named_props_obj_indexed_deleter_callback(cg_context, function_name):
-    assert isinstance(cg_context, CodeGenContext)
-    assert isinstance(function_name, str)
-
-    arg_decls = [
-        "uint32_t index",
-        "const v8::PropertyCallbackInfo<v8::Boolean>& info",
-    ]
-    arg_names = ["index", "info"]
-
-    func_def = _make_interceptor_callback_def(
-        cg_context, function_name, arg_decls, arg_names, None,
-        "NamedPropertiesObject_IndexedPropertyDeleter")
-    body = func_def.body
-
-    body.append(
-        TextNode("""\
-bindings::V8SetReturnValue(${info}, false);
-if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(
-      ${info}.GetIsolate(),
-      ExceptionContext::Context::kIndexedPropertyDelete,
-      "${interface.identifier}");
-  exception_state.ThrowTypeError("Named property deleter is not supported.");
-}
-"""))
-
-    return func_def
-
-
-def make_named_props_obj_indexed_definer_callback(cg_context, function_name):
-    assert isinstance(cg_context, CodeGenContext)
-    assert isinstance(function_name, str)
-
-    arg_decls = [
-        "uint32_t index",
-        "const v8::PropertyDescriptor& v8_property_desc",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["index", "v8_property_desc", "info"]
-
-    func_def = _make_interceptor_callback_def(
-        cg_context, function_name, arg_decls, arg_names, None,
-        "NamedPropertiesObject_IndexedPropertyDefiner")
-    body = func_def.body
-
-    body.append(
-        TextNode("""\
-// 3.6.4.2. [[DefineOwnProperty]]
-// https://webidl.spec.whatwg.org/#named-properties-object-defineownproperty
-bindings::V8SetReturnValue(${info}, nullptr);
-if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(
-      ${info}.GetIsolate(),
-      ExceptionContext::Context::kIndexedPropertySet,
-      "${interface.identifier}");
-  exception_state.ThrowTypeError("Named property setter is not supported.");
-}
-"""))
-
-    return func_def
-
-
-def make_named_props_obj_indexed_descriptor_callback(cg_context,
-                                                     function_name):
-    assert isinstance(cg_context, CodeGenContext)
-    assert isinstance(function_name, str)
-
-    arg_decls = [
-        "uint32_t index",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["index", "info"]
-
-    func_def = _make_interceptor_callback_def(
-        cg_context, function_name, arg_decls, arg_names, None,
-        "NamedPropertiesObject_IndexedPropertyDescriptor")
-    body = func_def.body
-
-    body.append(
-        TextNode("""\
-v8::Local<v8::String> property_name =
-    V8AtomicString(${isolate}, AtomicString::Number(${index}));
-NamedPropsObjNamedDescriptorCallback(property_name, ${info});
-"""))
+"""),
+        FormatNode("NamedPropsObjNamed{callback_type}Callback({args});",
+                   callback_type=callback_type,
+                   args=", ".join(forwarded_args))
+    ])
 
     return func_def
 
@@ -6425,19 +6338,16 @@ def make_named_properties_object_callbacks_and_install_node(cg_context):
             cg_context, "NamedPropsObjNamedDefinerCallback"),
         make_named_props_obj_named_descriptor_callback(
             cg_context, "NamedPropsObjNamedDescriptorCallback"),
-        make_named_props_obj_indexed_getter_callback(
-            cg_context, "NamedPropsObjIndexedGetterCallback"),
-        make_named_props_obj_indexed_setter_callback(
-            cg_context, "NamedPropsObjIndexedSetterCallback"),
-        make_named_props_obj_indexed_deleter_callback(
-            cg_context, "NamedPropsObjIndexedDeleterCallback"),
-        make_named_props_obj_indexed_definer_callback(
-            cg_context, "NamedPropsObjIndexedDefinerCallback"),
-        make_named_props_obj_indexed_descriptor_callback(
-            cg_context, "NamedPropsObjIndexedDescriptorCallback"),
     ]
     for func_def in func_defs:
         callback_defs.append(func_def)
+        callback_defs.append(EmptyNode())
+
+    for callback_type in [
+            "Getter", "Setter", "Deleter", "Definer", "Descriptor"
+    ]:
+        callback_defs.append(
+            make_named_props_obj_indexed_callback(cg_context, callback_type))
         callback_defs.append(EmptyNode())
 
     text = """\
