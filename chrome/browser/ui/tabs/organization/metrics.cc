@@ -18,8 +18,8 @@
 
 namespace {
 
-int kMaxLoggedTabs = 30;
-
+// Max number of tabs within 3 std deviations of mean.
+int kMaxLoggedTabs = 115;
 }
 
 void LogTabStripOrganizationUKM(
