@@ -566,9 +566,8 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
       vk_image_info.fCurrentQueueFamily = VK_QUEUE_FAMILY_IGNORED;
       vk_image_info.fProtected = GrProtected::kNo;
       const auto& vk_image_size = vulkan_surface_->image_size();
-      GrBackendRenderTarget render_target(vk_image_size.width(),
-                                          vk_image_size.height(),
-                                          0 /* sample_cnt */, vk_image_info);
+      GrBackendRenderTarget render_target(
+          vk_image_size.width(), vk_image_size.height(), vk_image_info);
 
       auto sk_color_type = surface_format == VK_FORMAT_B8G8R8A8_UNORM
                                ? kBGRA_8888_SkColorType
