@@ -1410,6 +1410,23 @@ void PrerenderHostRegistry::ResourceLoadComplete(
         &host->GetPrerenderedMainFrameHost()->GetPage()) {
       continue;
     }
+
+    // Investigation of crbug.com/1445438
+    SCOPED_CRASH_KEY_STRING1024("Bug1445438", "host_url",
+                                host->prerendering_url().spec());
+    SCOPED_CRASH_KEY_STRING1024("Bug1445438", "rli_final_url",
+                                resource_load_info.final_url.spec());
+    SCOPED_CRASH_KEY_STRING1024("Bug1445438", "rli_original_url",
+                                resource_load_info.original_url.spec());
+    SCOPED_CRASH_KEY_STRING1024("Bug1445438", "rli_method",
+                                resource_load_info.method);
+    SCOPED_CRASH_KEY_NUMBER(
+        "Bug1445438", "rli_request_destination",
+        static_cast<int32_t>(resource_load_info.request_destination));
+    SCOPED_CRASH_KEY_STRING1024("Bug1445438", "rli_mime_type",
+                                resource_load_info.mime_type);
+    base::debug::DumpWithoutCrashing();
+
     RecordBlockedByClientResourceType(resource_load_info.request_destination,
                                       host->trigger_type(),
                                       host->embedder_histogram_suffix());
