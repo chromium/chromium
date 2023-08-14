@@ -824,32 +824,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.LCPP.PaintTiming.NavigationOrActivationToFirstContentfulPaint"
+    name="PageLoad.Clients.LCPP.PaintTiming.NavigationToFirstContentfulPaint"
     units="ms" expires_after="2024-01-29">
   <owner>kouhei@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
   <summary>
-    Measures the time from navigation start or the page activation (in the case
-    of Prerendering) to the first contentful paint. The metric is emitted only
-    for navigations that LCP Critical Path Predictor provided non-empty hint
-    data.
+    Measures the time from navigation start to the first contentful paint. The
+    metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data.
   </summary>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.LCPP.PaintTiming.NavigationOrActivationToLargestContentfulPaint"
+    name="PageLoad.Clients.LCPP.PaintTiming.NavigationToLargestContentfulPaint"
     units="ms" expires_after="2024-01-29">
   <owner>kouhei@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
   <summary>
-    Measures the time from navigation start or the page activation (in the case
-    of Prerendering) to the largest contentful paint. The metric is emitted only
-    for navigations that LCP Critical Path Predictor provided non-empty hint
-    data.
+    Measures the time from navigation start to the largest contentful paint. The
+    metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data.
   </summary>
 </histogram>
 
