@@ -306,8 +306,9 @@ int VerifyTestServerCert(
 bool HasSubjectCommonName(CERTCertificate* cert_handle,
                           const std::string& subject_common_name) {
   char* nss_text = CERT_GetCommonName(&cert_handle->subject);
-  if (!nss_text)
+  if (!nss_text) {
     return false;
+  }
 
   const bool result = subject_common_name == nss_text;
   PORT_Free(nss_text);
@@ -670,29 +671,29 @@ class PolicyProvidedCertsForSigninExtensionTest
   base::Value::Dict BuildONCForExtensionScopedCertificate(
       const std::string& x509_contents,
       const std::string& extension_id) {
-    base::Value::Dict onc_cert_scope;
-    onc_cert_scope.Set(onc::scope::kType, onc::scope::kExtension);
-    onc_cert_scope.Set(onc::scope::kId, extension_id);
+    auto onc_cert_scope = base::Value::Dict()
+                              .Set(onc::scope::kType, onc::scope::kExtension)
+                              .Set(onc::scope::kId, extension_id);
 
-    base::Value::List onc_cert_trust_bits;
-    onc_cert_trust_bits.Append(onc::certificate::kWeb);
+    auto onc_cert_trust_bits =
+        base::Value::List().Append(onc::certificate::kWeb);
 
-    base::Value::Dict onc_certificate;
-    onc_certificate.Set(onc::certificate::kGUID, base::Value("guid"));
-    onc_certificate.Set(onc::certificate::kType, onc::certificate::kAuthority);
-    onc_certificate.Set(onc::certificate::kX509, x509_contents);
-    onc_certificate.Set(onc::certificate::kScope, std::move(onc_cert_scope));
-    onc_certificate.Set(onc::certificate::kTrustBits,
-                        std::move(onc_cert_trust_bits));
+    auto onc_certificate =
+        base::Value::Dict()
+            .Set(onc::certificate::kGUID, base::Value("guid"))
+            .Set(onc::certificate::kType, onc::certificate::kAuthority)
+            .Set(onc::certificate::kX509, x509_contents)
+            .Set(onc::certificate::kScope, std::move(onc_cert_scope))
+            .Set(onc::certificate::kTrustBits, std::move(onc_cert_trust_bits));
 
-    base::Value::List onc_certificates;
-    onc_certificates.Append(std::move(onc_certificate));
+    auto onc_certificates =
+        base::Value::List().Append(std::move(onc_certificate));
 
-    base::Value::Dict onc_dict;
-    onc_dict.Set(onc::toplevel_config::kCertificates,
-                 std::move(onc_certificates));
-    onc_dict.Set(onc::toplevel_config::kType,
-                 onc::toplevel_config::kUnencryptedConfiguration);
+    auto onc_dict = base::Value::Dict()
+                        .Set(onc::toplevel_config::kCertificates,
+                             std::move(onc_certificates))
+                        .Set(onc::toplevel_config::kType,
+                             onc::toplevel_config::kUnencryptedConfiguration);
 
     return onc_dict;
   }

@@ -159,9 +159,9 @@ class NetworkTelemetrySamplerBrowserTest
         /*notify_changed=*/true);
     base::RunLoop().RunUntilIdle();
 
-    base::Value::Dict ip_config_properties;
-    ip_config_properties.Set(shill::kAddressProperty, kIpAddress);
-    ip_config_properties.Set(shill::kGatewayProperty, kGateway);
+    auto ip_config_properties = base::Value::Dict()
+                                    .Set(shill::kAddressProperty, kIpAddress)
+                                    .Set(shill::kGatewayProperty, kGateway);
     network_handler_test_helper_->ip_config_test()->AddIPConfig(
         kIPConfigPath, std::move(ip_config_properties));
 

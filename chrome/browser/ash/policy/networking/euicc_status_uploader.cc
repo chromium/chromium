@@ -7,6 +7,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -100,9 +101,10 @@ EuiccStatusUploader::EuiccStatusUploader(
 }
 
 EuiccStatusUploader::~EuiccStatusUploader() {
-  if (ash::NetworkHandler::IsInitialized())
+  if (ash::NetworkHandler::IsInitialized()) {
     ash::NetworkHandler::Get()->managed_cellular_pref_handler()->RemoveObserver(
         this);
+  }
   OnManagedNetworkConfigurationHandlerShuttingDown();
 }
 
@@ -181,11 +183,10 @@ void EuiccStatusUploader::OnEuiccReset(const dbus::ObjectPath& euicc_path) {
 }
 
 base::Value::Dict EuiccStatusUploader::GetCurrentEuiccStatus() const {
-  base::Value::Dict status;
-
-  status.Set(kLastUploadedEuiccStatusEuiccCountKey,
-             static_cast<int>(
-                 ash::HermesManagerClient::Get()->GetAvailableEuiccs().size()));
+  auto status = base::Value::Dict().Set(
+      kLastUploadedEuiccStatusEuiccCountKey,
+      static_cast<int>(
+          ash::HermesManagerClient::Get()->GetAvailableEuiccs().size()));
 
   base::Value::List esim_profiles;
 
@@ -193,22 +194,25 @@ base::Value::Dict EuiccStatusUploader::GetCurrentEuiccStatus() const {
                                       ->cellular_esim_profile_handler()
                                       ->GetESimProfiles()) {
     // Do not report non-provisioned cellular networks.
-    if (esim_profile.iccid().empty())
+    if (esim_profile.iccid().empty()) {
       continue;
+    }
 
     const std::string* smdp_address =
         ash::NetworkHandler::Get()
             ->managed_cellular_pref_handler()
             ->GetSmdpAddressFromIccid(esim_profile.iccid());
     // Report only managed profiles with a SMDP address.
-    if (!smdp_address)
+    if (!smdp_address) {
       continue;
+    }
 
-    base::Value::Dict esim_profile_to_add;
-    esim_profile_to_add.Set(kLastUploadedEuiccStatusESimProfilesIccidKey,
-                            esim_profile.iccid());
-    esim_profile_to_add.Set(kLastUploadedEuiccStatusESimProfilesSmdpAddressKey,
-                            *smdp_address);
+    auto esim_profile_to_add =
+        base::Value::Dict()
+            .Set(kLastUploadedEuiccStatusESimProfilesIccidKey,
+                 esim_profile.iccid())
+            .Set(kLastUploadedEuiccStatusESimProfilesSmdpAddressKey,
+                 *smdp_address);
     esim_profiles.Append(std::move(esim_profile_to_add));
   }
 
@@ -274,8 +278,9 @@ void EuiccStatusUploader::MaybeUploadStatus() {
 
 void EuiccStatusUploader::UploadStatus(base::Value::Dict status) {
   // Do not upload anything until the current upload finishes.
-  if (currently_uploading_)
+  if (currently_uploading_) {
     return;
+  }
   currently_uploading_ = true;
   attempted_upload_status_ = std::move(status);
 
@@ -320,8 +325,9 @@ void EuiccStatusUploader::RetryUpload() {
 }
 
 void EuiccStatusUploader::FireRetryTimerIfExistsForTesting() {
-  if (retry_timer_)
+  if (retry_timer_) {
     retry_timer_->FireNow();
+  }
 }
 
 }  // namespace policy

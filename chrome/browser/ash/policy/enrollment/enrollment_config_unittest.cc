@@ -94,10 +94,10 @@ TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
 
   // Server-backed state: advertised enrollment.
-  base::Value::Dict state_dict;
-  state_dict.Set(kDeviceStateMode,
-                 kDeviceStateRestoreModeReEnrollmentRequested);
-  state_dict.Set(kDeviceStateManagementDomain, "example.com");
+  auto state_dict =
+      base::Value::Dict()
+          .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentRequested)
+          .Set(kDeviceStateManagementDomain, "example.com");
   local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
       local_state_, install_attributes_, &statistics_provider_);
