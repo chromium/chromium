@@ -3057,6 +3057,8 @@ constexpr char kWallpaperFastRefreshInternalName[] = "wallpaper-fast-refresh";
 constexpr char kWallpaperGooglePhotosSharedAlbumsInternalName[] =
     "wallpaper-google-photos-shared-albums";
 constexpr char kWallpaperPerDeskName[] = "per-desk-wallpaper";
+constexpr char kWallpaperRefreshRevampInternalName[] =
+    "wallpaper-refresh-revamp";
 constexpr char kLibAssistantV2MigrationInternalName[] =
     "cros-libassistant-v2-migration";
 constexpr char kTimeOfDayWallpaperInternalName[] = "time-of-day-wallpaper";
@@ -8757,6 +8759,10 @@ const FeatureEntry kFeatureEntries[] = {
     {kWallpaperPerDeskName, flag_descriptions::kWallpaperPerDeskName,
      flag_descriptions::kWallpaperPerDeskDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWallpaperPerDesk)},
+    {kWallpaperRefreshRevampInternalName,
+     flag_descriptions::kWallpaperRefreshRevampName,
+     flag_descriptions::kWallpaperRefreshRevampDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kWallpaperRefreshRevamp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

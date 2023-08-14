@@ -2636,6 +2636,11 @@ BASE_FEATURE(kWallpaperPerDesk,
              "WallpaperPerDesk",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable daily wallpaper refresh revamp.
+BASE_FEATURE(kWallpaperRefreshRevamp,
+             "WallpaperRefreshRevamp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables special handling of Chrome tab drags from a WebUI tab strip.
 // These will be treated similarly to a window drag, showing split view
 // indicators in tablet mode, etc. The functionality is behind a flag right now
@@ -4002,6 +4007,10 @@ bool IsWallpaperGooglePhotosSharedAlbumsEnabled() {
 
 bool IsWallpaperPerDeskEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperPerDesk);
+}
+
+bool IsWallpaperRefreshRevampEnabled() {
+  return base::FeatureList::IsEnabled(kWallpaperRefreshRevamp);
 }
 
 bool IsWebUITabStripTabDragIntegrationEnabled() {

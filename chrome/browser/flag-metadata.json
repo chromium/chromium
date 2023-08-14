@@ -8138,6 +8138,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "wallpaper-refresh-revamp",
+    "owners": ["jasontt@google.com", "assistive-eng@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "web-app-dedupe-install-urls",
     "owners": [ "alancutter", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 122
