@@ -2904,6 +2904,16 @@ void RenderFrameHostImpl::AccessibilityFatalError() {
   if (accessibility_reset_token_ || !render_accessibility_)
     return;
 
+  static auto* ax_rfhi_url_crash_key = base::debug::AllocateCrashKeyString(
+      "ax_rfhi_url", base::debug::CrashKeySize::Size256);
+  base::debug::ScopedCrashKeyString ax_rfhi_url(ax_rfhi_url_crash_key,
+                                                GetLastCommittedURL().spec());
+  static auto* ax_rfhi_top_url_crash_key = base::debug::AllocateCrashKeyString(
+      "ax_rfhi_top_url", base::debug::CrashKeySize::Size256);
+  base::debug::ScopedCrashKeyString ax_rfhi_top_url(
+      ax_rfhi_top_url_crash_key,
+      GetOutermostMainFrameOrEmbedder()->GetLastCommittedURL().spec());
+
   accessibility_fatal_error_count_++;
   if (accessibility_fatal_error_count_ > max_accessibility_resets_) {
     // This will both create an "Aw Snap..." and generate a second crash report
