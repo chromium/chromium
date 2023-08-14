@@ -79,6 +79,7 @@ class WebAuthnCredManDelegate;
 
 namespace password_manager {
 
+class FieldInfoManager;
 class PasswordFeatureManager;
 class PasswordFormManagerForUI;
 class PasswordManagerDriver;
@@ -446,6 +447,9 @@ class PasswordManagerClient {
 
   // Returns the identity manager for profile.
   virtual signin::IdentityManager* GetIdentityManager() = 0;
+
+  // Returns the field info manager for profile.
+  virtual password_manager::FieldInfoManager* GetFieldInfoManager() const;
 
   // Returns a pointer to the URLLoaderFactory owned by the storage partition of
   // the current profile.

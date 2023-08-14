@@ -83,6 +83,7 @@ class DeviceAuthenticator;
 }
 
 namespace password_manager {
+class FieldInfoManager;
 class WebAuthnCredentialsDelegate;
 class CredManController;
 class KeyboardReplacingSurfaceVisibilityController;
@@ -256,6 +257,7 @@ class ChromePasswordManagerClient
   GetPasswordRequirementsService() override;
   favicon::FaviconService* GetFaviconService() override;
   signin::IdentityManager* GetIdentityManager() override;
+  password_manager::FieldInfoManager* GetFieldInfoManager() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::NetworkContext* GetNetworkContext() const override;
   void UpdateFormManagers() override;

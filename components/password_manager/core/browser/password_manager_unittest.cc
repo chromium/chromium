@@ -35,6 +35,7 @@
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
@@ -244,6 +245,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               RefreshPasswordManagerSettingsIfNeeded,
               (),
               (const, override));
+  MOCK_METHOD(FieldInfoManager*, GetFieldInfoManager, (), (const, override));
   MOCK_METHOD(WebAuthnCredentialsDelegate*,
               GetWebAuthnCredentialsDelegateForDriver,
               (PasswordManagerDriver*),
@@ -434,6 +436,10 @@ class PasswordManagerTest : public testing::Test {
         password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
 #endif
     ON_CALL(client_, GetPrefs()).WillByDefault(Return(prefs_.get()));
+
+    field_info_manager_ = std::make_unique<FieldInfoManager>(task_runner_);
+    ON_CALL(client_, GetFieldInfoManager())
+        .WillByDefault(Return(field_info_manager_.get()));
 
     // When waiting for predictions is on, it makes tests more complicated.
     // Disable waiting, since most tests have nothing to do with predictions.
@@ -642,6 +648,7 @@ class PasswordManagerTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<PasswordAutofillManager> password_autofill_manager_;
   std::unique_ptr<PasswordManager> manager_;
+  std::unique_ptr<FieldInfoManager> field_info_manager_;
   scoped_refptr<TestMockTimeTaskRunner> task_runner_;
 };
 
@@ -4521,6 +4528,27 @@ TEST_F(PasswordManagerTest, HaveFormManagersReceivedDataDependsOnDriver) {
 
   EXPECT_TRUE(manager()->HaveFormManagersReceivedData(&driver_));
   EXPECT_FALSE(manager()->HaveFormManagersReceivedData(&other_driver));
+}
+
+TEST_F(PasswordManagerTest, FieldDataManagerGetsData) {
+  feature_list_.InitAndEnableFeature(
+      password_manager::features::kForgotPasswordFormSupport);
+
+  // Simulate the user typed in a text field.
+  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
+  ON_CALL(driver_, GetLastCommittedURL())
+      .WillByDefault(ReturnRef(username_form.url));
+  std::u16string potential_username_value = u"is_that_a_username?";
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, username_form.form_data.fields[0].unique_renderer_id,
+      /*value=*/potential_username_value,
+      /*autocomplete_attribute_has_username=*/false, /*is_likely_otp=*/false);
+
+  std::string signon_realm = GetSignonRealm(username_form.url);
+  std::vector<FieldInfo> expected = {
+      {driver_.GetId(), username_form.form_data.fields[0].unique_renderer_id,
+       signon_realm, potential_username_value}};
+  EXPECT_EQ(field_info_manager_->GetFieldInfo(signon_realm), expected);
 }
 
 enum class PredictionSource {

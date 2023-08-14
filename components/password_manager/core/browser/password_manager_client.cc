@@ -6,6 +6,7 @@
 
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -150,6 +151,11 @@ PasswordManagerClient::GetPasswordRequirementsService() {
 }
 
 favicon::FaviconService* PasswordManagerClient::GetFaviconService() {
+  return nullptr;
+}
+
+password_manager::FieldInfoManager* PasswordManagerClient::GetFieldInfoManager()
+    const {
   return nullptr;
 }
 

@@ -34,6 +34,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credential_cache.h"
+#include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
@@ -621,6 +622,14 @@ void PasswordManager::OnUserModifiedNonPasswordField(
                              renderer_id, value, base::Time::Now(), driver_id,
                              autocomplete_attribute_has_username,
                              is_likely_otp);
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kForgotPasswordFormSupport)) {
+    FieldInfoManager* field_info_manager = client_->GetFieldInfoManager();
+    field_info_manager->AddFieldInfo(
+        {driver_id, renderer_id, GetSignonRealm(driver->GetLastCommittedURL()),
+         value});
+  }
 }
 
 void PasswordManager::OnInformAboutUserInput(PasswordManagerDriver* driver,
