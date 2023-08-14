@@ -11,16 +11,22 @@ class PrefRegistrySyncable;
 
 namespace reporting {
 
-// A list pref that controls website activity event reporting.
-constexpr char kReportWebsiteActivity[] = "reporting.report_website_activity";
+// A list pref that specifies allowlisted URLs for website activity event
+// reporting.
+constexpr char kReportWebsiteActivityAllowlist[] =
+    "reporting.report_website_activity_allowlist";
 
-// A list pref that controls website usage telemetry reporting.
-constexpr char kReportWebsiteUsage[] = "reporting.report_website_usage";
+// A list pref that specifies allowlisted URLs for website telemetry reporting.
+constexpr char kReportWebsiteTelemetryAllowlist[] =
+    "reporting.report_website_telemetry_allowlist";
 
-// An integer pref that controls the collection frequency of website usage
-// telemetry.
-constexpr char kReportWebsiteUsageCollectionRateMs[] =
-    "reporting.report_website_usage_collection_rate_ms";
+// A list pref that controls website telemetry data types being reported.
+constexpr char kReportWebsiteTelemetry[] = "reporting.report_website_telemetry";
+
+// An integer pref that controls the collection frequency of website telemetry
+// data.
+constexpr char kReportWebsiteTelemetryCollectionRateMs[] =
+    "reporting.report_website_telemetry_collection_rate_ms";
 
 void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry);
 

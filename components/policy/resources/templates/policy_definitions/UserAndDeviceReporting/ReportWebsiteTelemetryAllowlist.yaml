@@ -1,10 +1,10 @@
-caption: Website usage reporting
+caption: Website telemetry reporting allowlist
 default: []
 desc: |-
-  Reports website usage telemetry data for affiliated users.
+  Allowlist that controls website telemetry reporting for affiliated users. Telemetry data types being reported are controlled by the <ph name="REPORT_WEBSITE_TELEMETRY_POLICY_NAME">ReportWebsiteTelemetry</ph> policy.
 
-  Setting the policy controls website usage telemetry reporting for allowlisted URLs.
-  If unset, no website usage telemetry will be reported.
+  Setting the policy controls website telemetry reporting for allowlisted URLs.
+  If unset, no website telemetry will be reported.
   For detailed information on valid URL patterns, see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Only HTTP and HTTPS URL schemes are allowed for this policy.
 example_value:
 - 'example.com'

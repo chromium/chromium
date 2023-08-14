@@ -23550,14 +23550,14 @@
       }
     ]
   },
-  "ReportWebsiteActivity": {
+  "ReportWebsiteActivityAllowlist": {
     "os": [ "chromeos_ash", "chromeos_lacros" ],
     "policy_pref_mapping_tests": [
       {
         "note": "Check default values (no policies set).",
         "policies": [],
         "prefs": {
-          "reporting.report_website_activity": {
+          "reporting.report_website_activity_allowlist": {
             "default_value": []
           }
         }
@@ -23565,27 +23565,27 @@
       {
         "note": "Simple value.",
         "policies": {
-          "ReportWebsiteActivity": [
+          "ReportWebsiteActivityAllowlist": [
             "https://www.google.com",
             "[*.]chromium.org"
           ]
         },
         "prefs": {
-          "reporting.report_website_activity": {
+          "reporting.report_website_activity_allowlist": {
             "value": [ "https://www.google.com", "[*.]chromium.org" ]
           }
         }
       }
     ]
   },
-  "ReportWebsiteUsage": {
+  "ReportWebsiteTelemetryAllowlist": {
     "os": [ "chromeos_ash", "chromeos_lacros" ],
     "policy_pref_mapping_tests": [
       {
         "note": "Check default values (no policies set).",
         "policies": [],
         "prefs": {
-          "reporting.report_website_usage": {
+          "reporting.report_website_telemetry_allowlist": {
             "default_value": []
           }
         }
@@ -23593,27 +23593,27 @@
       {
         "note": "Simple value.",
         "policies": {
-          "ReportWebsiteUsage": [
+          "ReportWebsiteTelemetryAllowlist": [
             "https://www.google.com",
             "[*.]chromium.org"
           ]
         },
         "prefs": {
-          "reporting.report_website_usage": {
+          "reporting.report_website_telemetry_allowlist": {
             "value": [ "https://www.google.com", "[*.]chromium.org" ]
           }
         }
       }
     ]
   },
-  "ReportWebsiteUsageCollectionRateMs": {
+  "ReportWebsiteTelemetryCollectionRateMs": {
     "os": [ "chromeos_ash", "chromeos_lacros" ],
     "policy_pref_mapping_tests": [
       {
         "note": "Check default values (no policies set).",
         "policies": {},
         "prefs": {
-          "reporting.report_website_usage_collection_rate_ms": {
+          "reporting.report_website_telemetry_collection_rate_ms": {
             "default_value": 900000
           }
         }
@@ -23621,11 +23621,36 @@
       {
         "note": "Simple value.",
         "policies": {
-          "ReportWebsiteUsageCollectionRateMs": 300000
+          "ReportWebsiteTelemetryCollectionRateMs": 300000
         },
         "prefs": {
-          "reporting.report_website_usage_collection_rate_ms": {
+          "reporting.report_website_telemetry_collection_rate_ms": {
             "value": 300000
+          }
+        }
+      }
+    ]
+  },
+  "ReportWebsiteTelemetry": {
+    "os": [ "chromeos_ash", "chromeos_lacros" ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": {},
+        "prefs": {
+          "reporting.report_website_telemetry": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple list value.",
+        "policies": {
+          "ReportWebsiteTelemetry": [ "usage" ]
+        },
+        "prefs": {
+          "reporting.report_website_telemetry": {
+            "value": [ "usage" ]
           }
         }
       }

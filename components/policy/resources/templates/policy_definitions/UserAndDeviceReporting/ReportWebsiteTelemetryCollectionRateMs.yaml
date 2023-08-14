@@ -1,7 +1,7 @@
-caption: Website usage telemetry collection rate in milliseconds.
+caption: Website telemetry collection rate in milliseconds.
 default: 900000
 desc: |-
-  Rate at which website usage telemetry is collected on enrolled devices for affiliated users. The minimum allowed is 5 minutes.
+  Rate at which website telemetry data is collected on enrolled devices for affiliated users. The minimum allowed is 5 minutes.
 
   If not set, the default rate of 15 minutes applies.
 example_value: 900000

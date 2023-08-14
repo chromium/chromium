@@ -1,7 +1,7 @@
-caption: Website activity reporting
+caption: Website activity reporting allowlist
 default: []
 desc: |-
-  Reports website activity data for affiliated users.
+  Allowlist that controls website activity reporting for affiliated users.
 
   Setting the policy controls website URL opened and closed event reporting for allowlisted URLs.
   If unset, no website events will be reported.

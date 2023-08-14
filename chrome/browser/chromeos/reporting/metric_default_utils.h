@@ -47,8 +47,8 @@ constexpr base::TimeDelta kDefaultReportUploadFrequency = base::Hours(3);
 constexpr base::TimeDelta kDefaultReportUploadFrequencyForTesting =
     base::Minutes(5);
 
-// Default website usage telemetry collection rate.
-constexpr base::TimeDelta kDefaultWebsiteUsageTelemetryCollectionRate =
+// Default website telemetry collection rate.
+constexpr base::TimeDelta kDefaultWebsiteTelemetryCollectionRate =
     base::Minutes(15);
 
 // Initial metric reporting collection delay.

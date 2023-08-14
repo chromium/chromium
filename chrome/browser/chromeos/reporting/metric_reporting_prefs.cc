@@ -12,11 +12,12 @@ namespace reporting {
 
 void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry) {
   CHECK(registry);
-  registry->RegisterListPref(kReportWebsiteActivity);
-  registry->RegisterListPref(kReportWebsiteUsage);
+  registry->RegisterListPref(kReportWebsiteActivityAllowlist);
+  registry->RegisterListPref(kReportWebsiteTelemetryAllowlist);
+  registry->RegisterListPref(kReportWebsiteTelemetry);
   registry->RegisterIntegerPref(
-      kReportWebsiteUsageCollectionRateMs,
-      ::reporting::metrics::kDefaultWebsiteUsageTelemetryCollectionRate
+      kReportWebsiteTelemetryCollectionRateMs,
+      ::reporting::metrics::kDefaultWebsiteTelemetryCollectionRate
           .InMilliseconds());
 }
 

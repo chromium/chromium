@@ -1136,11 +1136,12 @@ policies:
   1135: DeviceReportRuntimeCountersCheckingRateMs
   1136: BruschettaInstallerConfiguration
   1137: ForcePermissionPolicyUnloadDefaultEnabled
-  1138: ReportWebsiteActivity
-  1139: ReportWebsiteUsage
-  1140: ReportWebsiteUsageCollectionRateMs
+  1138: ReportWebsiteActivityAllowlist
+  1139: ReportWebsiteTelemetryAllowlist
+  1140: ReportWebsiteTelemetryCollectionRateMs
   1141: SafeBrowsingSurveysEnabled
   1142: BlockTruncatedCookies
+  1143: ReportWebsiteTelemetry
 atomic_groups:
   1: Homepage
   2: RemoteAccess
