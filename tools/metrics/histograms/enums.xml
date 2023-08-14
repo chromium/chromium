@@ -18377,6 +18377,10 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Model unavailable"/>
   <int value="5" label="Mismatched URL"/>
   <int value="6" label="IPC not made"/>
+  <int value="7" label="Ongoing classification"/>
+  <int value="8" label="Fetch model request"/>
+  <int value="9" label="Callback cancelled"/>
+  <int value="10" label="Query cancelled"/>
 </enum>
 
 <enum name="CompanionLibraryApisList">

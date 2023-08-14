@@ -71,6 +71,7 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+using side_panel::mojom::LoadingState;
 using side_panel::mojom::MethodType;
 using side_panel::mojom::PromoAction;
 using side_panel::mojom::PromoType;
@@ -162,6 +163,7 @@ struct CompanionScriptBuilder {
   absl::optional<std::string> text_directive;
   absl::optional<std::vector<std::string>> cq_text_directives;
   absl::optional<int> click_position;
+  absl::optional<LoadingState> loading_state;
 
   // Useful in case chrome sends a postmessage in response. Companion waits for
   // the message in response and resolves the promise that was sent back to
@@ -253,6 +255,11 @@ struct CompanionScriptBuilder {
          << base::NumberToString(click_position.value()) << ";";
     }
 
+    if (loading_state.has_value()) {
+      ss << "message['companionLoadingState'] = "
+         << base::NumberToString(static_cast<size_t>(loading_state.value()))
+         << ";";
+    }
     ss << "window.parent.postMessage(message, '*');";
 
     if (wait_for_message) {
@@ -965,6 +972,10 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
 
+  CompanionScriptBuilder builder(MethodType::kCompanionLoadingState);
+  builder.loading_state = LoadingState::kStartedLoading;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
   // TODO(b/289113873) - Fix model flakiness for all platforms.
   // Reading models is flaky on certain platform, using this temporary path
   // check as a proxy; however, this should be done in a better way long-term.
@@ -972,14 +983,25 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   base::File model_file(model_file_path(),
                         base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (base::PathExists(model_file_path()) && model_file.IsValid()) {
-    WaitForHistogram("Companion.VisualSearch.ClassificationResultsSize");
+    WaitForHistogram("Companion.VisualQuery.SendVisualResultSuccess");
     histogram_tester.ExpectBucketCount(
         "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
     histogram_tester.ExpectBucketCount(
-        "Companion.VisualSearch.ClassificationResultsSize", 1, 1);
+        "Companion.VisualQuery.ClassificationResultsSize", 1, 1);
     histogram_tester.ExpectBucketCount(
         "Companion.VisualSearch.EndClassificationSuccess", true, 1);
+    histogram_tester.ExpectBucketCount(
+        "Companion.VisualQuery.SendVisualResultSuccess", true, 1);
   }
+
+  CompanionScriptBuilder builder2(MethodType::kCompanionLoadingState);
+  builder2.loading_state = LoadingState::kFinishedLoading;
+  EXPECT_TRUE(ExecJs(builder2.Build()));
+
+  // Verifies that we don't trigger the false state because we successfully
+  // processed the image and sent result before receiving |kFinishedLoading|.
+  histogram_tester.ExpectBucketCount(
+      "Companion.VisualQuery.SendVisualResultSuccess", false, 0);
 
   side_panel_coordinator()->Close();
   // TODO(b/289113873) - Update iFrame to show UI and verify image bytes.

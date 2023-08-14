@@ -3,16 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/renderer/companion/visual_search/visual_search_classifier_agent.h"
-#include <cstddef>
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/common/companion/visual_search.mojom-forward.h"
 #include "chrome/common/companion/visual_search.mojom.h"
 #include "chrome/renderer/companion/visual_search/visual_search_classification_and_eligibility.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
@@ -37,6 +36,10 @@ using DOMImageList = base::flat_map<ImageId, SingleImageFeaturesAndBytes>;
 
 // Only sending back 1 result to match our current UI behavior.
 const int kMaxNumberResults = 1;
+
+// The number of seconds that we need to wait before we retry to traverse the
+// DOM again and perform visual classification.
+const int kRetryDelay = 2;
 
 EligibilitySpec CreateEligibilitySpec(std::string config_proto) {
   EligibilitySpec eligibility_spec;
@@ -192,8 +195,28 @@ void VisualSearchClassifierAgent::StartVisualClassification(
     base::File visual_model,
     const std::string& config_proto,
     mojo::PendingRemote<mojom::VisualSuggestionsResultHandler> result_handler) {
-  LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.Agent.StartClassification",
-                          true);
+  DOMImageList dom_images = FindImagesOnPage(render_frame_);
+
+  // We check to see if we have found any images in the DOM, if there are no
+  // images, we use that as a strong signal that we traversed the DOM
+  // prematurely, so we try again after 2 seconds. We use the |is_retrying_|
+  // boolean to ensure that we only do this once.
+  // TODO(b/294900101) - Remove this first attempt for more robust heuristic.
+  if (dom_images.size() == 0 && !is_retrying_) {
+    base::UmaHistogramBoolean("Companion.VisualQuery.Agent.StartClassification",
+                              false);
+    is_retrying_ = true;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&VisualSearchClassifierAgent::StartVisualClassification,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(visual_model),
+                       std::move(config_proto), std::move(result_handler)),
+        base::Seconds(kRetryDelay));
+    return;
+  }
+  base::UmaHistogramBoolean("Companion.VisualQuery.Agent.StartClassification",
+                            true);
+
   result_handler_.reset();
   result_handler_.Bind(std::move(result_handler));
   ClassificationResultsAndStats empty_results;
@@ -225,9 +248,8 @@ void VisualSearchClassifierAgent::StartVisualClassification(
   std::string model_data =
       std::string(reinterpret_cast<const char*>(visual_model_.data()),
                   visual_model_.length());
-  DOMImageList dom_images = FindImagesOnPage(render_frame_);
-  UMA_HISTOGRAM_COUNTS_100("Companion.VisualQuery.Agent.DomImageCount",
-                           dom_images.size());
+  base::UmaHistogramCounts100("Companion.VisualQuery.Agent.DomImageCount",
+                              dom_images.size());
 
   blink::WebLocalFrame* frame = render_frame_->GetWebFrame();
   gfx::SizeF viewport_size = frame->View()->VisualViewportSize();
@@ -243,6 +265,7 @@ void VisualSearchClassifierAgent::StartVisualClassification(
 void VisualSearchClassifierAgent::OnClassificationDone(
     ClassificationResultsAndStats results) {
   is_classifying_ = false;
+  is_retrying_ = false;
   std::vector<mojom::VisualSearchSuggestionPtr> final_results;
   for (const auto& result : results.first) {
     final_results.emplace_back(mojom::VisualSearchSuggestion::New(result));

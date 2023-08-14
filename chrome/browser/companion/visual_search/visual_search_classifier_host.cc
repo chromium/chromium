@@ -79,8 +79,8 @@ VisualSearchClassifierHost::~VisualSearchClassifierHost() = default;
 void VisualSearchClassifierHost::HandleClassification(
     std::vector<mojom::VisualSearchSuggestionPtr> results,
     mojom::ClassificationStatsPtr classification_stats) {
-  LOCAL_HISTOGRAM_COUNTS_100("Companion.VisualSearch.ClassificationResultsSize",
-                             results.size());
+  base::UmaHistogramCounts100("Companion.VisualQuery.ClassificationResultsSize",
+                              results.size());
   std::vector<std::string> data_uris;
   data_uris.reserve(results.size());
 
