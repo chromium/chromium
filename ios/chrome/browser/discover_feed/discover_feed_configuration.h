@@ -31,8 +31,6 @@ class SyncService;
 
 // The per BrowserState PrefService.
 @property(nonatomic, assign) PrefService* browserStatePrefService;
-// TODO(crbug.com/1468530): Same as above, remove after downstream migrated.
-@property(nonatomic, assign) PrefService* prefService;
 
 // The global PrefService.
 @property(nonatomic, assign) PrefService* localStatePrefService;
