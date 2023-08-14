@@ -149,8 +149,6 @@ class ArcApps : public KeyedService,
   void OnAppStatesChanged(const std::string& app_id,
                           const ArcAppListPrefs::AppInfo& app_info) override;
   void OnAppRemoved(const std::string& app_id) override;
-  void OnAppIconUpdated(const std::string& app_id,
-                        const ArcAppIconDescriptor& descriptor) override;
   void OnAppNameUpdated(const std::string& app_id,
                         const std::string& name) override;
   void OnAppLastLaunchTimeUpdated(const std::string& app_id) override;

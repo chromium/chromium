@@ -46,7 +46,6 @@
 #include "components/grit/components_resources.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
@@ -214,30 +213,28 @@ void AppServiceProxyAsh::Uninstall(const std::string& app_id,
 void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
                                 AppType app_type,
                                 bool should_notify_initialized) {
-  if (base::FeatureList::IsEnabled(kUnifiedAppServiceIconLoading)) {
-    // Delete app icon folders for uninstalled apps or the icon updated app.
-    std::vector<std::string> app_ids;
-    for (const auto& delta : deltas) {
-      if ((delta->readiness != Readiness::kUnknown &&
-           !apps_util::IsInstalled(delta->readiness)) ||
-          (delta->icon_key.has_value() && delta->icon_key->raw_icon_updated)) {
-        // If there's already a deletion in progress, skip the deletion request.
-        if (base::Contains(pending_read_icon_requests_, delta->app_id)) {
-          continue;
-        }
-
-        app_ids.push_back(delta->app_id);
-        pending_read_icon_requests_[delta->app_id] =
-            std::vector<base::OnceCallback<void()>>();
+  // Delete app icon folders for uninstalled apps or the icon updated app.
+  std::vector<std::string> app_ids;
+  for (const auto& delta : deltas) {
+    if ((delta->readiness != Readiness::kUnknown &&
+         !apps_util::IsInstalled(delta->readiness)) ||
+        (delta->icon_key.has_value() && delta->icon_key->raw_icon_updated)) {
+      // If there's already a deletion in progress, skip the deletion request.
+      if (base::Contains(pending_read_icon_requests_, delta->app_id)) {
+        continue;
       }
-    }
 
-    if (!app_ids.empty()) {
-      ScheduleIconFoldersDeletion(
-          profile_->GetPath(), app_ids,
-          base::BindOnce(&AppServiceProxyAsh::PostIconFoldersDeletion,
-                         weak_ptr_factory_.GetWeakPtr(), app_ids));
+      app_ids.push_back(delta->app_id);
+      pending_read_icon_requests_[delta->app_id] =
+          std::vector<base::OnceCallback<void()>>();
     }
+  }
+
+  if (!app_ids.empty()) {
+    ScheduleIconFoldersDeletion(
+        profile_->GetPath(), app_ids,
+        base::BindOnce(&AppServiceProxyAsh::PostIconFoldersDeletion,
+                       weak_ptr_factory_.GetWeakPtr(), app_ids));
   }
 
   // Close uninstall dialogs for any uninstalled apps.
@@ -777,8 +774,7 @@ bool AppServiceProxyAsh::ShouldReadIcons(AppType app_type) {
   // Exclude the remote apps, because remote apps regenerate app id for each
   // user login session. So we can't save the remote app icon image files in the
   // app id directories.
-  return base::FeatureList::IsEnabled(kUnifiedAppServiceIconLoading) &&
-         app_type != AppType::kRemote;
+  return app_type != AppType::kRemote;
 }
 
 void AppServiceProxyAsh::ReadIcons(AppType app_type,

@@ -57,7 +57,6 @@
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
@@ -1071,18 +1070,6 @@ void ArcApps::OnAppRemoved(const std::string& app_id) {
   AppPublisher::Publish(std::move(app));
 }
 
-void ArcApps::OnAppIconUpdated(const std::string& app_id,
-                               const ArcAppIconDescriptor& descriptor) {
-  if (!base::FeatureList::IsEnabled(apps::kUnifiedAppServiceIconLoading)) {
-    // OnAppIconUpdated is called when ArcAppListPrefs installs icon files in
-    // the ARC directory. When the flag kUnifiedAppServiceIconLoading is
-    // enabled, we no longer depend on the icon files in the ARC directory. So
-    // we don't need to update icon effects and reload icons when
-    // ArcAppListPrefs installs icon files.
-    SetIconEffect(app_id);
-  }
-}
-
 void ArcApps::OnAppNameUpdated(const std::string& app_id,
                                const std::string& name) {
   auto app = std::make_unique<App>(AppType::kArc, app_id);
@@ -1485,17 +1472,12 @@ void ArcApps::ConvertAndPublishPackageApps(
        prefs->GetAppsForPackage(package_info.package_name)) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
     if (app_info && !IsWebAppShellPackage(profile_, *app_info)) {
-      if (base::FeatureList::IsEnabled(apps::kUnifiedAppServiceIconLoading)) {
-        // When the flag kUnifiedAppServiceIconLoading is enabled, if the
-        // package is added or modified, the app icon files might be modified,
-        // so set `update_icon` and `raw_icon_updated` as true to update icon
-        // files in the icon folders.
-        AppPublisher::Publish(CreateApp(prefs, app_id, *app_info,
-                                        /*update_icon=*/true,
-                                        /*raw_icon_updated=*/true));
-      } else {
-        AppPublisher::Publish(CreateApp(prefs, app_id, *app_info, update_icon));
-      }
+      // If the package is added or modified, the app icon files might be
+      // modified, so set `update_icon` and `raw_icon_updated` as true to update
+      // icon files in the icon folders.
+      AppPublisher::Publish(CreateApp(prefs, app_id, *app_info,
+                                      /*update_icon=*/true,
+                                      /*raw_icon_updated=*/true));
     }
   }
 }
