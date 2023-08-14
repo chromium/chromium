@@ -62,15 +62,18 @@
   }
 
   #images {
-    background: var(--color-new-tab-page-module-background);
     border-radius: var(--ntp-module-item-border-radius);
     margin: 4px;
     overflow: hidden;
     position: relative;
-    height: 50%;
+    height: 122px;
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
+  }
+
+  :host([format='wide']:not([show-related-searches])) #images {
+    height: 68px;
   }
 
   #images img {
@@ -83,9 +86,16 @@
   }
 
   .small-image {
-    background: var(--color-new-tab-page-dialog-border);
+    background: var(--color-new-tab-page-module-background);
     border-radius: var(--ntp-module-item-border-radius);
     height: calc(100%/2 - 2px); /* subtract half of gap for each image */
+    width: calc(100%/2 - 2px); /* subtract half of gap for each image */
+  }
+
+  :host([format='wide']:not([show-related-searches])) .small-image,
+  :host([image-count_='2']) .small-image,
+  :host([image-count_='3']) .small-image {
+    height: 100%;
     width: calc(100%/2 - 2px); /* subtract half of gap for each image */
   }
 
@@ -127,7 +137,8 @@
   }
 
   :host([format='wide']) #title {
-    margin: 24px 16px;
+    -webkit-line-clamp: 1;
+    margin: 12px 16px 8px;
   }
 
   #titleAnnotation {
@@ -168,7 +179,9 @@
     color: var(--color-new-tab-page-secondary-foreground);
     min-width: max-content;
     bottom: 16px;
+    font-size: 11px;
     left: 16px;
+    line-height: 12px;
     position: absolute;
   }
 
@@ -216,7 +229,7 @@
       </template>
       <template is="dom-if" if="[[shouldShowExtraImagesCard_()]]" restamp>
         <div id="extraImageCard" class="small-image">
-          [[getExtraImagesCountString_()]]
+          +[[getExtraImagesCount_()]]
         </div>
       </template>
     </template>

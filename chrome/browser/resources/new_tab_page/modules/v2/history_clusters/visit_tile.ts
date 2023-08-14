@@ -48,9 +48,8 @@ export class VisitTileModuleElement extends I18nMixin
         computed: `computeLabel_(visit.urlForDisplay)`,
       },
 
-      imagesEnabled_: {
+      imagesEnabled: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('historyClustersImagesEnabled'),
         reflectToAttribute: true,
       },
 
@@ -63,7 +62,6 @@ export class VisitTileModuleElement extends I18nMixin
 
       format: {
         type: String,
-        value: 'narrow',
         reflectToAttribute: true,
       },
     };

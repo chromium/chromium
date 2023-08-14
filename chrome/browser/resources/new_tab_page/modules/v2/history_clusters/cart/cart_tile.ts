@@ -28,9 +28,10 @@ export class CartTileModuleElementV2 extends I18nMixin
 
       format: {
         type: String,
-        value: 'narrow',
         reflectToAttribute: true,
       },
+
+      showRelatedSearches: Boolean,
 
       /* The label of the tile in a11y mode. */
       tileLabel_: {
@@ -38,16 +39,18 @@ export class CartTileModuleElementV2 extends I18nMixin
         computed: `computeTileLabel_(cart)`,
       },
 
-      showDiscountChip_: {
-        type: Boolean,
-        computed: `computeShowDiscountChip_(cart)`,
+      imageCount_: {
+        type: Number,
+        computed: `computeImageCount_()`,
         reflectToAttribute: true,
       },
     };
   }
 
   cart: Cart;
-
+  format: string;
+  showRelatedSearches: boolean;
+  private imageCount_: number;
   private tileLabel_: string;
 
   override ready() {
@@ -61,11 +64,7 @@ export class CartTileModuleElementV2 extends I18nMixin
   }
 
   private hasMultipleImages_(): boolean {
-    if (this.cart.productImageUrls.length > 1) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.cart.productImageUrls.length > 1;
   }
 
   private getSingleImageToShow_(): string {
@@ -74,15 +73,41 @@ export class CartTileModuleElementV2 extends I18nMixin
 
   private getImagesToShow_(): Object[] {
     const images = this.cart.productImageUrls;
-    return images.slice(0, (images.length > 4) ? 3 : 4);
+    if (this.showRelatedSearches || this.format !== 'wide') {
+      if (images.length >= 4) {
+        return images.slice(0, (images.length > 4) ? 3 : 4);
+      } else if (images.length === 3) {
+        return images.slice(0, 1);
+      } else {
+        return images;
+      }
+    } else {
+      return images.slice(0, 1);
+    }
   }
 
   private shouldShowExtraImagesCard_(): boolean {
-    return this.cart.productImageUrls.length > 4;
+    return this.showRelatedSearches ? (this.cart.productImageUrls.length > 2) :
+                                      true;
   }
 
-  private getExtraImagesCountString_(): string {
-    return '+' + (this.cart.productImageUrls.length - 3).toString();
+  private getExtraImagesCount_(): number {
+    const images = this.cart.productImageUrls;
+    if (this.showRelatedSearches || this.format !== 'wide') {
+      if (images.length >= 4) {
+        return images.length - 3;
+      } else if (images.length === 3) {
+        return 2;
+      } else {
+        return 1;
+      }
+    } else {
+      return images.length - 1;
+    }
+  }
+
+  private computeImageCount_(): number {
+    return this.cart.productImageUrls.length;
   }
 
   private computeTileLabel_(): string {
@@ -105,10 +130,6 @@ export class CartTileModuleElementV2 extends I18nMixin
           'modulesJourneysCartTileLabelPlural', productCount, discountText,
           merchantName, merchantDomain, relativeDate);
     }
-  }
-
-  private computeShowDiscountChip_(): boolean {
-    return !!this.cart.discountText;
   }
 }
 

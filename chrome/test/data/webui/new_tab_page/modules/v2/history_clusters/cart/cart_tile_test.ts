@@ -15,10 +15,13 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileV2Test', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  async function initializeModule(cart: Cart):
-      Promise<CartTileModuleElementV2> {
+  async function initializeModule(
+      cart: Cart, showRelatedSearches: boolean = true,
+      format: string = 'narrow'): Promise<CartTileModuleElementV2> {
     const tileElement = new CartTileModuleElementV2();
+    tileElement.showRelatedSearches = showRelatedSearches;
     tileElement.cart = cart;
+    tileElement.format = format;
     document.body.append(tileElement);
     await waitAfterNextRender(tileElement);
     return tileElement;
@@ -175,5 +178,73 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileV2Test', () => {
         // Assert.
         assertTrue(!!tileElement);
         assertTrue(!$$(tileElement, '#discountChip'));
+      });
+
+  test('Tile shows single image for not showing related searches', async () => {
+    // Arrange.
+    const tileElement = await initializeModule(createSampleCart(3), false);
+
+    // Assert.
+    assertTrue(!!tileElement);
+    assertEquals(
+        $$(tileElement, '#content')!.getAttribute('href'), 'https://foo.com');
+    assertEquals(
+        $$(tileElement, '#content')!.getAttribute('aria-label'),
+        loadTimeData.getStringF(
+            'modulesJourneysCartTileLabelPlural', 3, '', 'Foo', 'foo.com',
+            '6 mins ago'));
+    assertEquals($$(tileElement, '#title')!.textContent, 'Foo');
+    assertTrue(isVisible($$(tileElement, '#titleAnnotation')!));
+    assertEquals(
+        $$(tileElement, '#titleAnnotation')!.textContent!.trim(),
+        loadTimeData.getString('modulesJourneysCartAnnotation'));
+    assertEquals(
+        tileElement.shadowRoot!.querySelectorAll('.small-image').length, 2);
+    assertEquals(
+        tileElement.shadowRoot!.querySelectorAll('.large-image').length, 0);
+    assertTrue(isVisible($$(tileElement, '#extraImageCard')!));
+    assertEquals(
+        $$(tileElement, '#extraImageCard')!.textContent!.replace(
+            /[\r\n ]/gm, ''),
+        '+2');
+    assertFalse(isVisible($$(tileElement, '#fallbackImage')!));
+    assertEquals($$(tileElement, '#label')!.textContent!, 'foo.com');
+    assertEquals($$(tileElement, '#date')!.textContent!, '6 mins ago');
+  });
+
+  test(
+      'Tile shows single image for wide format eith no related searches',
+      async () => {
+        // Arrange.
+        const tileElement =
+            await initializeModule(createSampleCart(3), false, 'wide');
+
+        // Assert.
+        assertTrue(!!tileElement);
+        assertEquals(
+            $$(tileElement, '#content')!.getAttribute('href'),
+            'https://foo.com');
+        assertEquals(
+            $$(tileElement, '#content')!.getAttribute('aria-label'),
+            loadTimeData.getStringF(
+                'modulesJourneysCartTileLabelPlural', 3, '', 'Foo', 'foo.com',
+                '6 mins ago'));
+        assertEquals($$(tileElement, '#title')!.textContent, 'Foo');
+        assertTrue(isVisible($$(tileElement, '#titleAnnotation')!));
+        assertEquals(
+            $$(tileElement, '#titleAnnotation')!.textContent!.trim(),
+            loadTimeData.getString('modulesJourneysCartAnnotation'));
+        assertEquals(
+            tileElement.shadowRoot!.querySelectorAll('.small-image').length, 2);
+        assertEquals(
+            tileElement.shadowRoot!.querySelectorAll('.large-image').length, 0);
+        assertTrue(isVisible($$(tileElement, '#extraImageCard')!));
+        assertEquals(
+            $$(tileElement, '#extraImageCard')!.textContent!.replace(
+                /[\r\n ]/gm, ''),
+            '+2');
+        assertFalse(isVisible($$(tileElement, '#fallbackImage')!));
+        assertEquals($$(tileElement, '#label')!.textContent!, 'foo.com');
+        assertEquals($$(tileElement, '#date')!.textContent!, '6 mins ago');
       });
 });

@@ -32,17 +32,21 @@
   #label-container {
     color: var(--color-new-tab-page-primary-foreground);
     display: flex;
-    font-size: 24px;
+    font-size: 20px;
     height: 48px;
     line-height: 24px;
-    padding: 0 16px 8px;
+    padding: 0 16px;
   }
 
   :host([suggestion-chip-header-enabled_]) #label-container {
-    align-items: center;
     background: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
-    padding: 8px 16px;
+    height: 100%;
+  }
+
+  :host([suggestion-chip-header-enabled_][format='wide']:not([show-related-searches])) #label-container {
+    align-items: start;
+    padding: 16px;
   }
 
   h2 {
@@ -51,8 +55,13 @@
     display: -webkit-box;
     font-weight: inherit;
     font-size: inherit;
+    margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  :host([suggestion-chip-header-enabled_]) h2 {
+    -webkit-line-clamp: 1;
   }
 
   #suggestion-chip {
@@ -61,7 +70,7 @@
   }
 
   #suggestion-chip-icon {
-    --cr-icon-ripple-size: 20px;
+    --cr-icon-ripple-size: 16px;
     --cr-icon-image: url(chrome://resources/images/icon_history.svg);
     background-color: var(--color-new-tab-page-primary-foreground);
     margin: auto;
@@ -70,6 +79,7 @@
   #suggestion-chip-label {
     align-self: center;
     margin-inline-start: 12px;
+    line-height: 20px;
   }
 </style>
 <ntp-module-header-v2

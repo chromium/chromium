@@ -59,14 +59,19 @@ export class HistoryClustersModuleElement extends I18nMixin
 
       format: {
         type: String,
-        value: 'narrow',
         reflectToAttribute: true,
       },
 
-      imagesEnabled_: {
+      imagesEnabled: {
         type: Boolean,
         value: true,
-        computed: `computeImagesEnabled_(cart)`,
+        computed: `computeImagesEnabled(cart)`,
+        reflectToAttribute: true,
+      },
+
+      showRelatedSearches: {
+        type: Boolean,
+        computed: `computeShowRelatedSearches()`,
         reflectToAttribute: true,
       },
     };
@@ -75,6 +80,7 @@ export class HistoryClustersModuleElement extends I18nMixin
   cart: Cart|null;
   cluster: Cluster;
   format: string;
+  showRelatedSearches: boolean;
   private imagesEnabled_: boolean;
   private setDisabledModulesListenerId_: number|null = null;
 
@@ -155,9 +161,17 @@ export class HistoryClustersModuleElement extends I18nMixin
         !!cart;
   }
 
-  private computeImagesEnabled_(): boolean {
-    return loadTimeData.getBoolean('historyClustersImagesEnabled') &&
+  private computeImagesEnabled(): boolean {
+    return loadTimeData.getBoolean('historyClustersImagesEnabled') ||
         !!this.cart;
+  }
+
+  private computeShowRelatedSearches(): boolean {
+    return this.cluster.relatedSearches.length > 1;
+  }
+
+  private computeLabel_(): string {
+    return this.cluster.label.replace(/[“”]+/g, '');
   }
 }
 

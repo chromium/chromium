@@ -45,7 +45,7 @@
     margin: 16px;
   }
 
-  :host([images-enabled_]) #label-container {
+  :host([images-enabled]) #label-container {
     border-radius: var(--ntp-module-item-border-radius);
     color: var(--color-new-tab-page-primary-foreground);
     display: flex;
@@ -57,7 +57,7 @@
     z-index: 1;
   }
 
-  :host([images-enabled_][image-url_]) #label-container {
+  :host([images-enabled][image-url_]) #label-container {
     background: linear-gradient(0, rgba(0, 0, 0, 0) 0%,
       rgba(0, 0, 0, 0.4) 69.79%);
   }
@@ -68,22 +68,26 @@
     max-width: 100px;
   }
 
-  :host([images-enabled_]) #label {
+  :host([images-enabled]) #label {
     color: white;
     margin-top: 12px;
   }
 
-  :host([images-enabled_]) #icon {
+  :host([images-enabled]) #icon {
     margin: 12px 8px 0 12px;
   }
 
   #image {
-    background: var(--color-new-tab-page-module-item-background);
+    background: var(--color-new-tab-page-module-background);
     border-radius: var(--ntp-module-item-border-radius);
     margin: 4px;
     overflow: hidden;
     position: relative;
-    height: 50%;
+    height: 122px;
+  }
+
+  :host([format='wide']:not([show-related-searches])) #image {
+    height: 68px;
   }
 
   #image img {
@@ -120,14 +124,16 @@
   }
 
   :host([format='wide']) #title {
-    margin: 24px 16px;
+    margin: 12px 16px;
   }
 
   #date {
     color: var(--color-new-tab-page-secondary-foreground);
     min-width: max-content;
     bottom: 16px;
+    font-size: 11px;
     left: 16px;
+    line-height: 12px;
     position: absolute;
   }
 
@@ -157,7 +163,7 @@
     </page-favicon>
     <div id="label" class="truncate">[[label_]]</div>
   </div>
-  <div id="image" hidden="[[!imagesEnabled_]]">
+  <div id="image" hidden="[[!imagesEnabled]]">
     <template is="dom-if" if="[[imageUrl_]]" restamp>
       <img is="cr-auto-img" auto-src="[[imageUrl_.url]]"
           draggable="false" alt="">

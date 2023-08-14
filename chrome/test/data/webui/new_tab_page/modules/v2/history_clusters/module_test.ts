@@ -190,5 +190,22 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
           assertUpdateClusterVisitsInteractionStateCall(
               InteractionState.kDefault, 3);
         });
+
+    [...Array(3).keys()].forEach(numRelatedSearches => {
+      test('module shows correct amount of related searches', async () => {
+        // Arrange.
+        const sampleClusterLabel = '"Sample Journey"';
+        const moduleElements = await initializeModule([createSampleCluster(
+            numRelatedSearches, {label: sampleClusterLabel})]);
+        const moduleElement = moduleElements[0];
+
+        // Assert.
+        assertTrue(!!moduleElement);
+        const relatedSearchesElement =
+            $$(moduleElement, '#related-searches') as HTMLElement;
+        assertTrue(!!relatedSearchesElement);
+        assertEquals((numRelatedSearches < 2), relatedSearchesElement.hidden);
+      });
+    });
   });
 });
