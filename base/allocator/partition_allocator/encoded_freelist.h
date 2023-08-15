@@ -10,7 +10,6 @@
 
 #include "base/allocator/partition_allocator/freeslot_bitmap.h"
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
@@ -266,21 +265,6 @@ class PartitionFreelistEntry {
   uintptr_t shadow_;
 #endif
 };
-
-static_assert(kSmallestBucket >= sizeof(PartitionFreelistEntry),
-              "Need enough space for freelist entries in the smallest slot");
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-// The smallest bucket actually used. Note that the smallest request is 1 (if
-// it's 0, it gets patched to 1), and ref-count gets added to it.
-namespace {
-constexpr size_t kSmallestUsedBucket =
-    base::bits::AlignUp(1 + sizeof(PartitionRefCount), kSmallestBucket);
-}
-static_assert(kSmallestUsedBucket >=
-                  sizeof(PartitionFreelistEntry) + sizeof(PartitionRefCount),
-              "Need enough space for freelist entries and the ref-count in the "
-              "smallest *used* slot");
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
 template <bool crash_on_corruption>
 PA_ALWAYS_INLINE PartitionFreelistEntry*
