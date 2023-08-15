@@ -379,6 +379,9 @@ const char kFedCmIdpSignoutFieldTrialParamName[] = "IdpSignout";
 // Enables usage of the FedCM Authz API.
 BASE_FEATURE(kFedCmAuthz, "FedCmAuthz", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables usage of the FedCM Error API.
+BASE_FEATURE(kFedCmError, "FedCmError", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM HostedDomain feature. ChromeStatus entry:
 // https://chromestatus.com/feature/5202286040580096
 BASE_FEATURE(kFedCmHostedDomain,

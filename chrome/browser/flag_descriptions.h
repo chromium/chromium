@@ -933,6 +933,9 @@ extern const char kFedCmDescription[];
 extern const char kFedCmAuthzName[];
 extern const char kFedCmAuthzDescription[];
 
+extern const char kFedCmErrorName[];
+extern const char kFedCmErrorDescription[];
+
 extern const char kFedCmHostedDomainName[];
 extern const char kFedCmHostedDomainDescription[];
 

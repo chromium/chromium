@@ -8869,6 +8869,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmAuthzDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmAuthz)},
 
+    {"fedcm-error", flag_descriptions::kFedCmErrorName,
+     flag_descriptions::kFedCmErrorDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmError)},
+
     {"fedcm-hosted-domain", flag_descriptions::kFedCmHostedDomainName,
      flag_descriptions::kFedCmHostedDomainDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmHostedDomain)},

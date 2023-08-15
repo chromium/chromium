@@ -1660,6 +1660,10 @@ const char kFedCmAuthzName[] = "FedCmAuthz";
 const char kFedCmAuthzDescription[] =
     "Enables RPs to request authorization for custom IdP scopes.";
 
+const char kFedCmErrorName[] = "FedCmError";
+const char kFedCmErrorDescription[] =
+    "Enables IDPs to show information about an error.";
+
 const char kFedCmHostedDomainName[] = "FedCmHostedDomain";
 const char kFedCmHostedDomainDescription[] =
     "Enables RPs to request only FedCM invocations to only show accounts "
