@@ -156,10 +156,7 @@ GetAssertionOperation::ResponseForCredential(const Credential& credential,
                                              FidoTransportProtocol::kInternal);
   response.credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey, credential.credential_id);
-  if (has_uv) {
-    response.user_entity =
-        credential.metadata.ToPublicKeyCredentialUserEntity();
-  }
+  response.user_entity = credential.metadata.ToPublicKeyCredentialUserEntity();
   return response;
 }
 

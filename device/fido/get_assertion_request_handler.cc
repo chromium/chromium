@@ -180,8 +180,8 @@ bool ResponseValid(
 
     // PublicKeyUserEntity field in GetAssertion response is optional with the
     // following constraints:
-    // - If assertion has been made without user verification, user identifiable
-    //   information must not be included.
+    // - If assertion has been made without user verification on a
+    //   non-platform authenticator/security key.
     // - For resident key credentials, user id of the user entity is mandatory.
     // - When multiple accounts exist for specified RP ID, user entity is
     //   mandatory.
@@ -189,7 +189,8 @@ bool ResponseValid(
     const bool has_user_identifying_info =
         user_entity && (user_entity->display_name || user_entity->name);
     if (!response.authenticator_data.obtained_user_verification() &&
-        has_user_identifying_info) {
+        has_user_identifying_info &&
+        authenticator.GetType() == AuthenticatorType::kOther) {
       return false;
     }
 
