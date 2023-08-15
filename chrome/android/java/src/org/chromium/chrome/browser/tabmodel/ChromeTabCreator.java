@@ -216,10 +216,14 @@ public class ChromeTabCreator extends TabCreator {
      */
     public Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, Intent intent) {
+        int position = (intent == null || !IntentUtils.isTrustedIntentFromSelf(intent))
+                ? TabModel.INVALID_TAB_INDEX
+                : intent.getIntExtra(IntentHandler.EXTRA_TAB_INDEX, TabModel.INVALID_TAB_INDEX);
         // If parent is in the same tab model, place the new tab next to it.
-        int position = TabModel.INVALID_TAB_INDEX;
-        int index = mTabModel.indexOf(parent);
-        if (index != TabModel.INVALID_TAB_INDEX) position = index + 1;
+        if (position == TabModel.INVALID_TAB_INDEX) {
+            int index = mTabModel.indexOf(parent);
+            if (index != TabModel.INVALID_TAB_INDEX) position = index + 1;
+        }
 
         return createNewTab(loadUrlParams, type, parent, position, intent);
     }

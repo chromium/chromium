@@ -263,6 +263,12 @@ public class IntentHandler {
      */
     public static final String EXTRA_FEDCM_ID = "org.chromium.chrome.browser.fedcm_id";
 
+    /**
+     * A position of the new tab added to the tabs toolbar. Used when a tab is being moved from one
+     * instance of the Chrome to another.
+     */
+    public static final String EXTRA_TAB_INDEX = "com.android.chrome.tab_index";
+
     private static Pair<Integer, String> sPendingReferrer;
     private static int sReferrerId;
     private static String sPendingIncognitoUrl;

@@ -9,12 +9,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseArray;
@@ -40,6 +47,7 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.UiThreadTest;
@@ -52,8 +60,6 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerApi31UnitTest
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -117,6 +123,7 @@ public class MultiInstanceManagerApi31UnitTest {
     private static final int INVALID_INSTANCE_ID = MultiInstanceManagerApi31.INVALID_INSTANCE_ID;
     private static final int INSTANCE_ID_1 = 1;
     private static final int INSTANCE_ID_2 = 2;
+    private static final int NON_EXISTANT_INSTANCE_ID = 4;
     private static final int PASSED_ID_2 = 2;
     private static final int PASSED_ID_INVALID = INVALID_INSTANCE_ID;
     private static final int TASK_ID_56 = 56;
@@ -184,6 +191,10 @@ public class MultiInstanceManagerApi31UnitTest {
     ChromeTabbedActivity mTabbedActivityTask65;
     @Mock
     ChromeTabbedActivity mTabbedActivityTask66;
+    @Mock
+    ActivityInfo mActivityInfo;
+    @Mock
+    private PackageManager mPackageManager;
 
     Activity mCurrentActivity;
 
@@ -193,6 +204,8 @@ public class MultiInstanceManagerApi31UnitTest {
 
     private int mNormalTabCount;
     private int mIncognitoTabCount;
+
+    private Context mContextTabMove;
 
     private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
             new TabModelSelectorFactory() {
@@ -280,6 +293,29 @@ public class MultiInstanceManagerApi31UnitTest {
                 return mTestInstanceInfos;
             }
             return super.getInstanceInfo();
+        }
+
+        @Override
+        void bringTaskForeground(int taskId) {}
+
+        @Override
+        void setupIntentForReparenting(Tab tab, Intent intent, Runnable finalizeCallback) {}
+
+        @Override
+        void beginReparenting(
+                Tab tab, Intent intent, Bundle startActivityOptions, Runnable finalizeCallback) {}
+    }
+
+    private void setIsMultiInstanceApi31EnabledMock() {
+        try {
+            mContextTabMove = Mockito.spy(ContextUtils.getApplicationContext());
+            when(mContextTabMove.getPackageManager()).thenReturn(mPackageManager);
+            when(mPackageManager.getActivityInfo(any(), anyInt())).thenReturn(mActivityInfo);
+            ContextUtils.initApplicationContextForTests(mContextTabMove);
+            mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
+        } catch (NameNotFoundException nameNotFoundException) {
+            assertTrue("setIsMultiInstanceApi31EnabledMock failed - NameNotFoundException thrown .",
+                    false);
         }
     }
 
@@ -902,19 +938,22 @@ public class MultiInstanceManagerApi31UnitTest {
     @UiThreadTest
     @Features.EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToCurrentWindow_calledWithDesiredParameters() {
+        int tabAtIndex = 0;
         mMultiInstanceManager.mTestBuildInstancesList = true;
         // Create two instances first before asking to move a tab from one to current.
         assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
         assertEquals(INSTANCE_ID_2, allocInstanceIndex(INSTANCE_ID_2, mTabbedActivityTask63, true));
         assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
 
-        Mockito.doNothing().when(mMultiInstanceManager).moveTabAction(any(), eq(mTab1));
+        Mockito.doNothing()
+                .when(mMultiInstanceManager)
+                .moveTabAction(any(), eq(mTab1), eq(tabAtIndex));
 
         // Action
-        mMultiInstanceManager.moveTabToWindow(mTabbedActivityTask63, mTab1, /*atIndex*/ 0);
+        mMultiInstanceManager.moveTabToWindow(mTabbedActivityTask63, mTab1, tabAtIndex);
 
         // Verify moveTabAction and getCurrentInstanceInfo are each called once.
-        verify(mMultiInstanceManager, times(1)).moveTabAction(any(), eq(mTab1));
+        verify(mMultiInstanceManager, times(1)).moveTabAction(any(), eq(mTab1), eq(tabAtIndex));
         verify(mMultiInstanceManager, times(1)).getInstanceInfoFor(any());
     }
 
@@ -922,40 +961,79 @@ public class MultiInstanceManagerApi31UnitTest {
     @UiThreadTest
     @Features.DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToWindow_notCalled() {
+        int tabAtIndex = 0;
         MultiInstanceManagerApi31 multiInstanceManager = Mockito.spy(
                 createChromeInstance(INSTANCE_ID_1, TASK_ID_62, List.of(mTab1, mTab2, mTab3)));
-        Mockito.doNothing().when(multiInstanceManager).moveTabAction(any(), eq(mTab2));
+        Mockito.doNothing()
+                .when(multiInstanceManager)
+                .moveTabAction(any(), eq(mTab2), eq(tabAtIndex));
 
         // Action
-        multiInstanceManager.moveTabToWindow(mTabbedActivityTask62, mTab2, /*atIndex*/ 0);
+        multiInstanceManager.moveTabToWindow(mTabbedActivityTask62, mTab2, tabAtIndex);
 
         // Verify moveTabAction is not called.
-        verify(multiInstanceManager, times(0)).moveTabAction(any(), eq(mTab2));
+        verify(multiInstanceManager, times(0)).moveTabAction(any(), eq(mTab2), eq(tabAtIndex));
     }
 
     @Test
     @UiThreadTest
     @Features.EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    public void testTabMove_DidAddTab_CalledWithDesiredParameters_success() {
+    public void testTabMove_MoveTabAction_WithTabIndex_success() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         // Create two instances first before asking to move a tab from one to current.
         assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
         assertEquals(INSTANCE_ID_2, allocInstanceIndex(INSTANCE_ID_2, mTabbedActivityTask63, true));
         assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
 
-        Mockito.doNothing().when(mMultiInstanceManager).moveTabAction(any(), eq(mTab1));
-        Mockito.doNothing().when(mMultiInstanceManager).clearTabModelObserverForTabMove();
+        // Action
+        InstanceInfo info = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
+        mMultiInstanceManager.moveTabAction(info, mTab1, /*atIndex*/ 0);
+
+        // Verify reparentTabToRunningActivity is called once.
+        verify(mMultiInstanceManager, times(1))
+                .reparentTabToRunningActivity(any(), eq(mTab1), eq(0));
+        verify(mMultiInstanceManager, times(0))
+                .moveAndReparentTabToNewWindow(
+                        eq(mTab1), eq(INVALID_INSTANCE_ID), eq(false), eq(true), eq(true));
+    }
+
+    @Test
+    @UiThreadTest
+    @Config(sdk = 31)
+    @Features.EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    public void testTabMove_MoveTabAction_WithNonExistantInstance_success() {
+        mMultiInstanceManager.mTestBuildInstancesList = true;
+        // Create two instances first before asking to move a tab from one to current.
+        assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
+        assertEquals(
+                INSTANCE_ID_2, allocInstanceIndex(INSTANCE_ID_2, mTabbedActivityTask63, false));
+        assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
+        setIsMultiInstanceApi31EnabledMock();
+        Mockito.doAnswer(invocation -> {
+                   // Change the last parameter to false to bypass calling
+                   // IntentUtils.addTrustedIntentExtras() for testing.
+                   mMultiInstanceManager.moveAndReparentTabToNewWindow(
+                           mTab1, NON_EXISTANT_INSTANCE_ID, false, true, false);
+                   return null;
+               })
+                .when(mMultiInstanceManager)
+                .moveAndReparentTabToNewWindow(
+                        eq(mTab1), eq(NON_EXISTANT_INSTANCE_ID), eq(false), eq(true), eq(true));
 
         // Action
-        mMultiInstanceManager.moveTabToWindow(mTabbedActivityTask63, mTab1, /*atIndex*/ 0);
-        MultiInstanceManagerApi31
-                .TabModelSelectorTabModelObserverForTabMove tabModelObserverForTabMove =
-                Mockito.spy(mMultiInstanceManager.getTabModelObserverForTabMove());
-        tabModelObserverForTabMove.didAddTab(mTab1, TabLaunchType.FROM_REPARENTING,
-                TabCreationState.LIVE_IN_FOREGROUND, /*markedForSelection*/ true);
+        InstanceInfo info = new InstanceInfo(NON_EXISTANT_INSTANCE_ID, NON_EXISTANT_INSTANCE_ID,
+                InstanceInfo.Type.ADJACENT, "https://id-4.com", "", 0, 0, false);
 
-        // Verify moveTabAction and clearDestinationInfo are each called once.
-        verify(mMultiInstanceManager, times(1)).moveTabAction(any(), eq(mTab1));
-        verify(tabModelObserverForTabMove, times(1)).clearDestinationInfo();
+        mMultiInstanceManager.moveTabAction(info, mTab1, /*atIndex*/ 0);
+
+        // Verify moveAndReparentTabToNewWindow is called made with desired parameters once. The
+        // method is validated in integration test here
+        // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/javatests/src/org/chromium/chrome/browser/multiwindow/MultiWindowIntegrationTest.java.
+        // Also reparentTabToRunningActivity is not called.
+        verify(mMultiInstanceManager, times(1))
+                .moveAndReparentTabToNewWindow(
+                        eq(mTab1), eq(NON_EXISTANT_INSTANCE_ID), eq(false), eq(true), eq(false));
+        verify(mMultiInstanceManager, times(0))
+                .reparentTabToRunningActivity(any(), eq(mTab1), eq(0));
     }
 }
