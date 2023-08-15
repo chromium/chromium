@@ -115,11 +115,6 @@ class MockObserver : public WebsiteMetrics::Observer {
               (const GURL& gurl, ::content::WebContents* web_contents),
               (override));
 
-  MOCK_METHOD(void,
-              OnUrlUsage,
-              (const GURL& gurl, base::TimeDelta running_time),
-              (override));
-
   MOCK_METHOD(void, OnWebsiteMetricsDestroyed, (), (override));
 };
 
@@ -1311,43 +1306,6 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
   owned_website_metrics->AddObserver(&observer_);
   EXPECT_CALL(observer_, OnWebsiteMetricsDestroyed).Times(1);
   owned_website_metrics.reset();
-}
-
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest, NotifyOnUrlUsage) {
-  const std::string& kUrl = "https://a.example.org";
-  auto* const browser = CreateBrowser();
-  NavigateActiveTab(browser, kUrl);
-  website_metrics()->AddObserver(&observer_);
-
-  EXPECT_CALL(observer_, OnUrlUsage)
-      .WillOnce([&](const GURL& url, base::TimeDelta running_time) {
-        EXPECT_THAT(url, Eq(GURL(kUrl)));
-        EXPECT_TRUE(running_time.is_positive());
-      });
-  website_metrics()->OnFiveMinutes();
-}
-
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
-                       DoNotNotifyBackgroundUrlUsage) {
-  const std::string& kUrl = "https://a.example.org";
-  const std::string& kBackgroundUrl = "https://b.example.org";
-  auto* const browser = CreateBrowser();
-  NavigateActiveTab(browser, kUrl);
-  InsertBackgroundTab(browser, kBackgroundUrl);
-  website_metrics()->AddObserver(&observer_);
-
-  EXPECT_CALL(observer_, OnUrlUsage(GURL(kUrl), _)).Times(1);
-  EXPECT_CALL(observer_, OnUrlUsage(GURL(kBackgroundUrl), _)).Times(0);
-  website_metrics()->OnFiveMinutes();
-}
-
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest, NoUrlUsage) {
-  CreateBrowser();
-  website_metrics()->AddObserver(&observer_);
-
-  // Verify observer is not notified because there is no web content usage.
-  EXPECT_CALL(observer_, OnUrlUsage).Times(0);
-  website_metrics()->OnFiveMinutes();
 }
 
 }  // namespace apps
