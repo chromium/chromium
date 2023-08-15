@@ -327,20 +327,6 @@ static_library("test_support") {
     "//skia",
     "//ui/gfx",
   ]
-
-  if (is_android) {
-    sources += [ "image_android.cc" ]
-  }
-
-  if (is_linux || is_chromeos || is_fuchsia) {
-    sources += [ "image_linux.cc" ]
-  }
-  if (is_apple) {
-    sources += [ "image_mac.cc" ]
-  }
-  if (is_win) {
-    sources += [ "image_win.cc" ]
-  }
 }
 
 if (enable_printing_unittests) {

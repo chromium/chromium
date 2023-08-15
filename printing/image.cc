@@ -4,23 +4,15 @@
 
 #include "printing/image.h"
 
-#include "base/hash/md5.h"
-#include "printing/metafile.h"
+#include <utility>
 
 namespace printing {
 
-Image::Image(const Metafile& metafile) : row_length_(0) {
-  LoadMetafile(metafile);
-}
+Image::Image(gfx::Size size, int line_stride, std::vector<unsigned char> buffer)
+    : size_(size), row_length_(line_stride), data_(std::move(buffer)) {}
 
 Image::Image(const Image& image) = default;
 
 Image::~Image() = default;
-
-std::string Image::checksum() const {
-  base::MD5Digest digest;
-  base::MD5Sum(&data_[0], data_.size(), &digest);
-  return base::MD5DigestToBase16(digest);
-}
 
 }  // namespace printing

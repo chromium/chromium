@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -27,6 +28,7 @@
 #include "content/public/test/render_view_test.h"
 #include "ipc/ipc_listener.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/image.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_range.h"
 #include "printing/print_job_constants.h"
@@ -46,14 +48,9 @@
 #include "printing/print_settings_conversion.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-#include "base/files/file_util.h"
-#include "printing/image.h"
-
 using blink::WebFrame;
 using blink::WebLocalFrame;
 using blink::WebString;
-#endif
 
 namespace printing {
 
@@ -322,7 +319,7 @@ class TestPrintManagerHost
   void DidPrintDocument(mojom::DidPrintDocumentParamsPtr params,
                         DidPrintDocumentCallback callback) override {
     base::RunLoop().RunUntilIdle();
-    printer_->PrintPage(std::move(params));
+    printer_->OnDocumentPrinted(std::move(params));
     std::move(callback).Run(true);
     is_printed_ = true;
   }
@@ -830,6 +827,91 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, MonolithicAbsposOverflowingParent) {
   OnPrintPages();
 }
 
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+
+TEST_F(MAYBE_PrintRenderFrameHelperTest, Pixels) {
+  // This test should generate two pages. The first should be 16x16 CSS pixels
+  // large, and the second should be 24x24. The pixels and page size information
+  // are going on a ride through the machineries, so use size values carefully,
+  // to avoid subpixel issues. At some point on the journey, everything will be
+  // changed to 300 DPI, and the page sizes involved will be rounded to integers
+  // (so we need something that ends up with integers after having been
+  // multiplied by 300/72 and back). See crbug.com/1466995 . Furthermore, the
+  // final output will be in points, not CSS pixels, which is why the
+  // expectation is to get 12x12 and 18x18 pages instead of 16x16 and 24x24 (and
+  // a 4px border becomes a 3pt border).
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 24px;
+        margin: 0;
+      }
+      @page:first {
+        size: 16px;
+      }
+      body {
+        margin: 0;
+      }
+      div {
+        box-sizing: border-box;
+        border: 4px solid;
+      }
+    </style>
+    <div style="width:16px; height:16px; border-color:#00ff00;"></div>
+    <div style="width:24px; height:24px; border-color:#0000ff;"></div>
+  )HTML");
+
+  printer()->set_should_print_backgrounds(true);
+  printer()->set_should_generate_page_images(true);
+  OnPrintPages();
+
+  // First page:
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const Image& first_image = page->image();
+  ASSERT_EQ(first_image.size(), gfx::Size(12, 12));
+  // Top left corner:
+  EXPECT_EQ(first_image.pixel_at(0, 0), 0x00ff00U);
+  EXPECT_EQ(first_image.pixel_at(2, 2), 0x00ff00U);
+  EXPECT_EQ(first_image.pixel_at(3, 3), 0xffffffU);
+  // Top right corner:
+  EXPECT_EQ(first_image.pixel_at(11, 0), 0x00ff00U);
+  EXPECT_EQ(first_image.pixel_at(9, 2), 0x00ff00U);
+  EXPECT_EQ(first_image.pixel_at(8, 3), 0xffffffU);
+  // Bottom right corner:
+  EXPECT_EQ(first_image.pixel_at(11, 11), 0x00ff00U);
+  EXPECT_EQ(first_image.pixel_at(9, 9), 0x00ff00U);
+  EXPECT_EQ(first_image.pixel_at(8, 8), 0xffffffU);
+  // Bottom left corner:
+  EXPECT_EQ(first_image.pixel_at(0, 11), 0x00ff00U);
+  EXPECT_EQ(first_image.pixel_at(2, 9), 0x00ff00U);
+  EXPECT_EQ(first_image.pixel_at(3, 8), 0xffffffU);
+
+  // Second page:
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  const Image& second_image = page->image();
+  ASSERT_EQ(second_image.size(), gfx::Size(18, 18));
+  // Top left corner:
+  EXPECT_EQ(second_image.pixel_at(0, 0), 0x0000ffU);
+  EXPECT_EQ(second_image.pixel_at(2, 2), 0x0000ffU);
+  EXPECT_EQ(second_image.pixel_at(3, 3), 0xffffffU);
+  // Top right corner:
+  EXPECT_EQ(second_image.pixel_at(0, 17), 0x0000ffU);
+  EXPECT_EQ(second_image.pixel_at(2, 15), 0x0000ffU);
+  EXPECT_EQ(second_image.pixel_at(3, 14), 0xffffffU);
+  // Bottom right corner:
+  EXPECT_EQ(second_image.pixel_at(17, 17), 0x0000ffU);
+  EXPECT_EQ(second_image.pixel_at(15, 15), 0x0000ffU);
+  EXPECT_EQ(second_image.pixel_at(14, 14), 0xffffffU);
+  // Bottom left corner:
+  EXPECT_EQ(second_image.pixel_at(0, 17), 0x0000ffU);
+  EXPECT_EQ(second_image.pixel_at(2, 15), 0x0000ffU);
+  EXPECT_EQ(second_image.pixel_at(3, 14), 0xffffffU);
+}
+
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
+
 TEST_F(MAYBE_PrintRenderFrameHelperTest, SpecifiedPageSize1) {
   LoadHTML(R"HTML(
     <style>
@@ -909,11 +991,8 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, MediaQueryNoCSSPageMargins) {
   VerifyPagesPrinted(true);
 }
 
-#if BUILDFLAG(IS_APPLE)
-// TODO(estade): I don't think this test is worth porting to Linux. We will have
-// to rip out and replace most of the IPC code if we ever plan to improve
-// printing, and the comment below by sverrir suggests that it doesn't do much
-// for us anyway.
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+
 TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe) {
   // Document that populates an iframe.
   static const char html[] =
@@ -925,6 +1004,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe) {
       "  frames['sub1'].document.close();"
       "</script></body></html>";
 
+  printer()->set_should_generate_page_images(true);
   LoadHTML(html);
 
   // Find the frame and set it as the focused one.  This should mean that that
@@ -942,8 +1022,8 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe) {
 
   // Verify output through MockPrinter.
   const MockPrinter* mock_printer(printer());
-  ASSERT_EQ(1, mock_printer->GetPrintedPages());
-  const Image& image1(mock_printer->GetPrintedPage(0)->image());
+  ASSERT_EQ(1, mock_printer->GetPageCount());
+  const Image& image1(mock_printer->GetPrinterPage(0)->image());
 
   // TODO(sverrir): Figure out a way to improve this test to actually print
   // only the content of the iframe.  Currently image1 will contain the full
@@ -951,88 +1031,8 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe) {
   EXPECT_NE(0, image1.size().width());
   EXPECT_NE(0, image1.size().height());
 }
-#endif  // BUILDFLAG(IS_APPLE)
 
-// Tests if we can print a page and verify its results.
-// This test prints HTML pages into a pseudo printer and check their outputs,
-// i.e. a simplified version of the PrintingLayoutTextTest UI test.
-namespace {
-// Test cases used in this test.
-struct TestPageData {
-  const char* page;
-  size_t printed_pages;
-  int width;
-  int height;
-  const char* checksum;
-  const wchar_t* file;
-};
-
-#if BUILDFLAG(IS_APPLE)
-const TestPageData kTestPages[] = {
-    {
-        "<html>"
-        "<head>"
-        "<meta"
-        "  http-equiv=\"Content-Type\""
-        "  content=\"text/html; charset=utf-8\"/>"
-        "<title>Test 1</title>"
-        "</head>"
-        "<body style=\"background-color: white;\">"
-        "<p style=\"font-family: arial;\">Hello World!</p>"
-        "</body>",
-        1,
-        // Mac printing code compensates for the WebKit scale factor while
-        // generating the metafile, so we expect smaller pages. (On non-Mac
-        // platforms, this would be 675x900).
-        600, 780, nullptr, nullptr,
-    },
-};
-#endif  // BUILDFLAG(IS_APPLE)
-}  // namespace
-
-// TODO(estade): need to port MockPrinter to get this on Linux. This involves
-// hooking up Cairo to read a pdf stream, or accessing the cairo surface in the
-// metafile directly.
-// Same for printing via PDF on Windows.
-#if BUILDFLAG(IS_APPLE)
-TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintLayoutTest) {
-  EXPECT_TRUE(printer());
-  for (size_t i = 0; i < std::size(kTestPages); ++i) {
-    // Load an HTML page and print it.
-    LoadHTML(kTestPages[i].page);
-    OnPrintPages();
-    VerifyPagesPrinted(true);
-
-    // MockRenderThread::Send() just calls MockRenderThread::OnReceived().
-    // So, all IPC messages sent in the above RenderView::OnPrintPages() call
-    // has been handled by the MockPrinter object, i.e. this printing job
-    // has been already finished.
-    // So, we can start checking the output pages of this printing job.
-    // Retrieve the number of pages actually printed.
-    size_t pages = printer()->GetPrintedPages();
-    EXPECT_EQ(kTestPages[i].printed_pages, pages);
-
-    // Retrieve the width and height of the output page.
-    int width = printer()->GetWidth(0);
-    int height = printer()->GetHeight(0);
-
-    // Check with margin for error.  This has been failing with a one pixel
-    // offset on our buildbot.
-    const int kErrorMargin = 5;  // 5%
-    EXPECT_GT(kTestPages[i].width * (100 + kErrorMargin) / 100, width);
-    EXPECT_LT(kTestPages[i].width * (100 - kErrorMargin) / 100, width);
-    EXPECT_GT(kTestPages[i].height * (100 + kErrorMargin) / 100, height);
-    EXPECT_LT(kTestPages[i].height * (100 - kErrorMargin) / 100, height);
-
-    // Retrieve the checksum of the bitmap data from the pseudo printer and
-    // compare it with the expected result.
-    std::string bitmap_actual;
-    EXPECT_TRUE(printer()->GetBitmapChecksum(0, &bitmap_actual));
-    if (kTestPages[i].checksum)
-      EXPECT_EQ(kTestPages[i].checksum, bitmap_actual);
-  }
-}
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
 // These print preview tests do not work on Chrome OS yet.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -13,11 +13,16 @@
 
 #include "base/memory/ref_counted.h"
 #include "components/printing/common/print.mojom-forward.h"
+#include "pdf/buildflags.h"
 #include "printing/image.h"
 #include "printing/mojom/print.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#define MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
+#endif
 
 // A class which represents an output page used in the MockPrinter class.
 // The MockPrinter class stores output pages in a vector, so, this class
@@ -61,6 +66,16 @@ class MockPrinter {
   MockPrinter& operator=(const MockPrinter&) = delete;
   ~MockPrinter();
 
+  void set_should_print_backgrounds(bool val) {
+    should_print_backgrounds_ = val;
+  }
+
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+  void set_should_generate_page_images(bool val) {
+    should_generate_page_images_ = val;
+  }
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
+
   // Functions that changes settings of a pseudo printer.
   void ResetPrinter();
   void SetDefaultPrintSettings(const printing::mojom::PrintParams& params);
@@ -74,19 +89,20 @@ class MockPrinter {
                      uint32_t expected_pages_count,
                      bool has_selection,
                      printing::mojom::PrintPagesParams* settings);
-  void PrintPage(printing::mojom::DidPrintDocumentParamsPtr params);
+  void OnDocumentPrinted(printing::mojom::DidPrintDocumentParamsPtr params);
 
   // Functions that retrieve the output pages.
   Status GetPrinterStatus() const { return printer_status_; }
-  int GetPrintedPages() const;
+  int GetPageCount() const;
 
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
   // Get a pointer to the printed page, returns NULL if pageno has not been
   // printed.  The pointer is for read only view and should not be deleted.
-  const MockPrinterPage* GetPrintedPage(unsigned int pageno) const;
+  const MockPrinterPage* GetPrinterPage(unsigned int pageno) const;
 
   int GetWidth(unsigned int page) const;
   int GetHeight(unsigned int page) const;
-  bool GetBitmapChecksum(unsigned int page, std::string* checksum) const;
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
  private:
   // Sets `document_cookie_` based on `use_invalid_settings_`.
@@ -117,9 +133,8 @@ class MockPrinter {
   // The current status of this printer.
   Status printer_status_;
 
-  // The output of a printing job.
-  uint32_t number_pages_;
-  uint32_t page_number_;
+  // The number of pages printed.
+  int page_count_;
 
   // Used only in the preview sequence.
   bool is_first_request_;
@@ -137,6 +152,13 @@ class MockPrinter {
 
   // Used for generating invalid settings.
   bool use_invalid_settings_;
+
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+  // If true, one MockPrinterPage object (including an Image) will be generated
+  // for each page, so that tests that want to look at pixels can do that. This
+  // operation is surprisingly expensive, so it's false by default.
+  bool should_generate_page_images_ = false;
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
   std::vector<scoped_refptr<MockPrinterPage>> pages_;
 };

@@ -17,9 +17,10 @@
 #include "printing/print_settings.h"
 #include "printing/units.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
-#if BUILDFLAG(IS_APPLE)
-#include "printing/pdf_metafile_cg_mac.h"
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+#include "pdf/pdf.h"
 #endif
 
 MockPrinterPage::MockPrinterPage(const printing::Image& image)
@@ -33,8 +34,7 @@ MockPrinter::MockPrinter()
       selection_only_(false),
       should_print_backgrounds_(false),
       printer_status_(PRINTER_READY),
-      number_pages_(0u),
-      page_number_(0u),
+      page_count_(0),
       is_first_request_(true),
       print_to_pdf_(false),
       preview_request_id_(0),
@@ -107,77 +107,96 @@ void MockPrinter::SetPrintedPagesCount(int cookie, uint32_t number_pages) {
   // RenderViewTest class can verify the this function finishes without errors.
   EXPECT_EQ(document_cookie_, cookie);
   EXPECT_EQ(PRINTER_PRINTING, printer_status_);
-  EXPECT_EQ(0u, number_pages_);
-  EXPECT_EQ(0u, page_number_);
+  EXPECT_EQ(0, page_count_);
 
-  // Initialize the job status.
-  number_pages_ = number_pages;
-  page_number_ = 0u;
-  pages_.clear();
+  page_count_ = number_pages;
 }
 
-void MockPrinter::PrintPage(printing::mojom::DidPrintDocumentParamsPtr params) {
+void MockPrinter::OnDocumentPrinted(
+    printing::mojom::DidPrintDocumentParamsPtr params) {
   // Verify the input parameter and update the printer status so that the
   // RenderViewTest class can verify the this function finishes without errors.
   EXPECT_EQ(PRINTER_PRINTING, printer_status_);
   EXPECT_EQ(document_cookie_, params->document_cookie);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  // Load the data sent from a RenderView object and create a PageData object.
-  ASSERT_TRUE(params->content->metafile_data_region.IsValid());
-  base::ReadOnlySharedMemoryMapping mapping =
-      params->content->metafile_data_region.Map();
-  ASSERT_TRUE(mapping.IsValid());
-  EXPECT_GT(mapping.size(), 0U);
+  pages_.clear();
 
-#if BUILDFLAG(IS_APPLE)
-  printing::PdfMetafileCg metafile;
-#else
-  printing::MetafileSkia metafile;
-#endif
-  metafile.InitFromData(mapping.GetMemoryAsSpan<const uint8_t>());
-  printing::Image image(metafile);
-  pages_.push_back(base::MakeRefCounted<MockPrinterPage>(image));
-#endif
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+  if (should_generate_page_images_) {
+    // Load the data sent from a RenderView object and create a PageData object.
+    ASSERT_TRUE(params->content->metafile_data_region.IsValid());
+    base::ReadOnlySharedMemoryMapping mapping =
+        params->content->metafile_data_region.Map();
+    ASSERT_TRUE(mapping.IsValid());
+    EXPECT_GT(mapping.size(), 0U);
 
-  // We finish printing a printing job.
-  // Reset the job status and the printer status.
-  ++page_number_;
-  if (number_pages_ == page_number_)
-    ResetPrinter();
+    base::span<const uint8_t> pdf_buffer =
+        mapping.GetMemoryAsSpan<const uint8_t>();
+
+    int page_count;
+    bool success = chrome_pdf::GetPDFDocInfo(pdf_buffer, &page_count, nullptr);
+    ASSERT_TRUE(success);
+    for (int page_index = 0; page_index < page_count; page_index++) {
+      absl::optional<gfx::SizeF> page_size =
+          chrome_pdf::GetPDFPageSizeByIndex(pdf_buffer, page_index);
+      ASSERT_TRUE(page_size);
+      gfx::Size size = gfx::ToCeiledSize(*page_size);
+      ASSERT_GT(size.width(), 0);
+      ASSERT_GT(size.height(), 0);
+      int line_stride = size.width() * sizeof(uint32_t);
+      std::vector<unsigned char> pixel_buffer;
+      pixel_buffer.resize(line_stride * size.height());
+      gfx::Size dpi(72, 72);
+      chrome_pdf::RenderOptions options = {
+          /* stretch_to_bounds=*/false,
+          /* keep_aspect_ratio=*/false,
+          /* autorotate=*/false,
+          /* use_color=*/true, chrome_pdf::RenderDeviceType::kDisplay};
+
+      success = chrome_pdf::RenderPDFPageToBitmap(
+          pdf_buffer, page_index, pixel_buffer.data(), size, dpi, options);
+      ASSERT_TRUE(success);
+
+      printing::Image image(size, line_stride, std::move(pixel_buffer));
+      ASSERT_FALSE(image.size().IsEmpty());
+      pages_.push_back(base::MakeRefCounted<MockPrinterPage>(image));
+    }
+  }
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
+
+  ResetPrinter();
 }
 
-int MockPrinter::GetPrintedPages() const {
+int MockPrinter::GetPageCount() const {
   if (printer_status_ != PRINTER_READY)
     return -1;
-  return page_number_;
+  return page_count_;
 }
 
-const MockPrinterPage* MockPrinter::GetPrintedPage(unsigned int pageno) const {
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+
+const MockPrinterPage* MockPrinter::GetPrinterPage(unsigned int pageno) const {
+  EXPECT_TRUE(should_generate_page_images_);
   if (pageno >= pages_.size())
     return nullptr;
   return pages_[pageno].get();
 }
 
 int MockPrinter::GetWidth(unsigned int page) const {
+  EXPECT_TRUE(should_generate_page_images_);
   if (printer_status_ != PRINTER_READY || page >= pages_.size())
     return -1;
   return pages_[page]->width();
 }
 
 int MockPrinter::GetHeight(unsigned int page) const {
+  EXPECT_TRUE(should_generate_page_images_);
   if (printer_status_ != PRINTER_READY || page >= pages_.size())
     return -1;
   return pages_[page]->height();
 }
 
-bool MockPrinter::GetBitmapChecksum(unsigned int page,
-                                    std::string* checksum) const {
-  if (printer_status_ != PRINTER_READY || page >= pages_.size())
-    return false;
-  *checksum = pages_[page]->image().checksum();
-  return true;
-}
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
 void MockPrinter::CreateDocumentCookie() {
   EXPECT_FALSE(document_cookie_.has_value());
@@ -203,4 +222,5 @@ void MockPrinter::GetPrintParams(printing::mojom::PrintParams* params) const {
   params->display_header_footer = display_header_footer_;
   params->title = title_;
   params->url = url_;
+  params->prefer_css_page_size = true;
 }

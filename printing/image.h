@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string>
 #include <vector>
 
 #include "base/check.h"
@@ -16,15 +15,12 @@
 
 namespace printing {
 
-class Metafile;
-
 // Lightweight raw-bitmap management. The image, once initialized, is immutable.
 // The only purpose is testing image contents.
 class Image {
  public:
-  // Creates the image from the metafile.  Deduces bounds based on bounds in
-  // metafile.  If loading fails size().IsEmpty() will be true.
-  explicit Image(const Metafile& metafile);
+  // Creates an image from raw ARGB pixel data, 32 bits per pixel.
+  Image(gfx::Size size, int line_stride, std::vector<unsigned char> buffer);
 
   // Copy constructor.
   explicit Image(const Image& image);
@@ -32,9 +28,6 @@ class Image {
   ~Image();
 
   const gfx::Size& size() const { return size_; }
-
-  // Return a checksum of the image (MD5 over the internal data structure).
-  std::string checksum() const;
 
   // Returns the 0x0RGB value of the pixel at the given location.
   uint32_t Color(uint32_t color) const {
@@ -50,18 +43,15 @@ class Image {
   }
 
  private:
-  // Loads the first page from `metafile`.
-  bool LoadMetafile(const Metafile& metafile);
-
   // Pixel dimensions of the image.
-  gfx::Size size_;
+  const gfx::Size size_;
 
   // Length of a line in bytes.
-  int row_length_;
+  const int row_length_;
 
   // Actual bitmap data in arrays of RGBAs (so when loaded as uint32_t, it's
   // 0xABGR).
-  std::vector<unsigned char> data_;
+  const std::vector<unsigned char> data_;
 
   // Prevent operator= (this function has no implementation)
   Image& operator=(const Image& image);
