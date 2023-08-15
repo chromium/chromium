@@ -76,7 +76,7 @@ void SlotAssignmentTest::SetBody(const char* html) {
 TEST_F(SlotAssignmentTest, DeclarativeShadowDOM) {
   SetBody(R"HTML(
     <div id=host>
-      <template shadowroot=open></template>
+      <template shadowrootmode=open></template>
     </div>
   )HTML");
 
@@ -88,9 +88,9 @@ TEST_F(SlotAssignmentTest, DeclarativeShadowDOM) {
 TEST_F(SlotAssignmentTest, NestedDeclarativeShadowDOM) {
   SetBody(R"HTML(
     <div id=host1>
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <div id=host2>
-          <template shadowroot=open></template>
+          <template shadowrootmode=open></template>
         </div>
       </template>
     </div>
@@ -110,7 +110,7 @@ TEST_F(SlotAssignmentTest, NestedDeclarativeShadowDOM) {
 TEST_F(SlotAssignmentTest, AssignedNodesAreSet) {
   SetBody(R"HTML(
     <div id=host>
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <slot></slot>
       </template>
       <div id='host-child'></div>
@@ -134,7 +134,7 @@ TEST_F(SlotAssignmentTest, AssignedNodesAreSet) {
 TEST_F(SlotAssignmentTest, ScheduleVisualUpdate) {
   SetBody(R"HTML(
     <div id="host">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <slot></slot>
       </template>
       <div></div>

@@ -31,10 +31,10 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, Next) {
   GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div id="c0">
       <div id="c00">
-        <template shadowroot="open"></template>
+        <template shadowrootmode="open"></template>
       </div>
       <div id="c01">
-        <template shadowroot="open">
+        <template shadowrootmode="open">
           <div id="s0"></div>
           <div id="s1">
             <div id="s10"></div>
@@ -44,7 +44,7 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, Next) {
       <div id="c02">
         <div id="c020"></div>
         <div id="c021" slot="t01"></div>
-        <template shadowroot="open">
+        <template shadowrootmode="open">
           <div id="t0">
             <slot id="t00"></slot>
             <slot id="t01"></slot>
@@ -122,7 +122,7 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, DescendantsOf) {
       <div id="a01"></div>
     </div>
     <div id="a1">
-      <template shadowroot="open" id="sr1">
+      <template shadowrootmode="open" id="sr1">
         <div id="b0">
           <div id="b00"></div>
         </div>

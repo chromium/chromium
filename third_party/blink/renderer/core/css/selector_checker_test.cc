@@ -628,7 +628,7 @@ TEST_P(MatchFlagsShadowTest, Host) {
 
   GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div id=host>
-      <template shadowroot="open">
+      <template shadowrootmode="open">
         <div></div>
       </template>
     </div>
@@ -799,7 +799,7 @@ TEST_F(SelectorCheckerTest, PseudoTrue) {
 TEST_F(SelectorCheckerTest, PseudoTrueMatchesHost) {
   GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div id=host>
-      <template shadowroot=open>
+      <template shadowrootmode=open>
       </template>
     </div>
   )HTML");

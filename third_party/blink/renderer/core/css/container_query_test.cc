@@ -1293,7 +1293,7 @@ TEST_F(ContainerQueryTest, TreeScopedReferenceUserOrigin) {
       <span id="user_target"></span>
     </div>
     <div id="host">
-      <template shadowroot="open">
+      <template shadowrootmode="open">
         <style>
           @container user-container (width >= 0) {
             div > span {

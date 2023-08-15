@@ -6,16 +6,16 @@
 <div id=case0>
   <form>
     <div id=host1>
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <label for=input1>name</label>
         <input id=input1>
       </template>
     </div>
 
     <div id=host2>
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <div id=innerhost2>
-          <template shadowroot=open>
+          <template shadowrootmode=open>
             <label for=input2>address</label>
             <input id=input2>
           </template>
@@ -24,7 +24,7 @@
     </div>
 
     <div id=host3>
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <label for=input3>state</label>
         <select id=input3>
           <option value=WA>WA</option>
@@ -38,19 +38,19 @@
 
 <div id=case1>
   <!-- A copy of the above, but inside another shadow DOM. -->
-  <template shadowroot=open>
+  <template shadowrootmode=open>
     <form>
       <div id=host1>
-        <template shadowroot=open>
+        <template shadowrootmode=open>
           <label for=input1>name</label>
           <input id=input1>
         </template>
       </div>
 
       <div id=host2>
-        <template shadowroot=open>
+        <template shadowrootmode=open>
           <div id=innerhost2>
-            <template shadowroot=open>
+            <template shadowrootmode=open>
               <label for=input2>address</label>
               <input id=input2>
             </template>
@@ -59,7 +59,7 @@
       </div>
 
       <div id=host3>
-        <template shadowroot=open>
+        <template shadowrootmode=open>
           <label for=input3>state</label>
           <select id=input3>
             <option value=WA>WA</option>

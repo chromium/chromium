@@ -699,7 +699,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrExtendCorrectly) {
           </div>
         </div>
         <div id=fg4-container>
-          <template shadowroot=open>
+          <template shadowrootmode=open>
             <div id=fg4 focusgroup=extend></div>
           </template>
         </div>

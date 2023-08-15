@@ -413,7 +413,7 @@ TEST_F(FocusgroupControllerTest, FindNearestFocusgroupAncestor) {
             </tr>
           </table>
           <div id=fg6-container>
-            <template shadowroot=open>
+            <template shadowrootmode=open>
               <div id=fg6 focusgroup=extend>
                 <span id=item8 tabindex=-1></span>
               </div>
@@ -515,7 +515,7 @@ TEST_F(FocusgroupControllerTest, NextElement) {
       <span id=item3 tabindex=-1></span>
     </div>
     <div id=fg3 focusgroup>
-        <template shadowroot=open>
+        <template shadowrootmode=open>
           <span id=item4 tabindex=-1></span>
         </template>
     </div>
@@ -551,7 +551,7 @@ TEST_F(FocusgroupControllerTest, PreviousElement) {
       <span id=item3 tabindex=-1></span>
     </div>
     <div id=fg3 focusgroup>
-        <template shadowroot=open>
+        <template shadowrootmode=open>
           <span id=item4 tabindex=-1></span>
         </template>
     </div>
@@ -579,7 +579,7 @@ TEST_F(FocusgroupControllerTest, LastElementWithin) {
       <span id=item2 tabindex=-1></span>
     </div>
     <div id=fg2 focusgroup>
-        <template shadowroot=open>
+        <template shadowrootmode=open>
           <span id=item3 tabindex=-1></span>
           <span id=item4></span>
         </template>

@@ -86,11 +86,11 @@ TEST_F(HTMLFormElementTest, ListedElementsDetachedForm) {
 // <body>
 //   <form id=form1>
 //     <div id=form1div>
-//       <template shadowroot=open>
+//       <template shadowrootmode=open>
 //         <form id=form2>
 //           <form id=form3>
 //             <div id=form3div>
-//               <template shadowroot=open>
+//               <template shadowrootmode=open>
 //
 // An <input> element is appended at the bottom and moved up one node at a time
 // in this tree, and each step of the way, ListedElements is checked on all
@@ -260,7 +260,7 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTrees) {
 //  <form id=form1>
 //    <input id=input1>
 //    <div id=div1>
-//      <template shadowroot=open>
+//      <template shadowrootmode=open>
 //        <input id=input2>
 //      </template>
 //    </div>
@@ -299,7 +299,7 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTreesFormAttribute) {
   body->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <form id=form1>
       <div id=shadowhost>
-        <template shadowroot=open>
+        <template shadowrootmode=open>
           <input id=input2>
           <form id=form2>
             <input id=input3>

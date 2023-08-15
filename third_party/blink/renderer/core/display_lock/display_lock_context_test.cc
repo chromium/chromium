@@ -3376,7 +3376,7 @@ TEST_P(DisplayLockContextTest, ConnectedElementDefersSubtreeChecks) {
 TEST_P(DisplayLockContextTest, BlockedReattachOfSlotted) {
   GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div id="host">
-      <template shadowroot="open">
+      <template shadowrootmode="open">
         <style>
           slot { display: block; }
           .locked {
@@ -3408,7 +3408,7 @@ TEST_P(DisplayLockContextTest, BlockedReattachOfShadowTree) {
       .locked { content-visibility: hidden; }
     </style>
     <div id="host">
-      <template shadowroot="open">
+      <template shadowrootmode="open">
         <span id="span"></span>
       </template>
     </div>

@@ -986,7 +986,7 @@ TEST_F(StyleResolverTest, EnsureComputedStyleOutsideFlatTree) {
       .documentElement()
       ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div id=host>
-      <template shadowroot=open>
+      <template shadowrootmode=open>
       </template>
       <div id=a>
         <div id=b>
@@ -1736,7 +1736,7 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
       }
     </style>
     <div id=host>
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <style>
           @layer bar {
             :host { font-size: 16px; }
@@ -3132,7 +3132,7 @@ TEST_F(StyleResolverTest, ScopedAnchorName) {
     <div id="outer-anchor" style="anchor-name: --outer"></div>
     <style>#host::part(anchor) { anchor-name: --part; }</style>
     <div id="host">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <style>:host { anchor-name: --host; }</style>
         <div id="part" part="anchor"></div>
         <div id="inner-anchor" style="anchor-name: --inner"></div>
@@ -3169,7 +3169,7 @@ TEST_F(StyleResolverTest, ScopedAnchorDefault) {
     <div id="outer-anchor" style="anchor-default: --outer"></div>
     <style>#host::part(anchor) { anchor-default: --part; }</style>
     <div id="host">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <style>:host { anchor-default: --host; }</style>
         <div id="part" part="anchor"></div>
         <div id="inner-anchor" style="anchor-default: --inner"></div>
@@ -3221,7 +3221,7 @@ TEST_F(StyleResolverTest, ScopedAnchorFunction) {
     </style>
     <div id="left"></div>
     <div id="bottom">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <style>
           div { position: absolute; }
           #top { top: anchor(--a top); }
@@ -3238,7 +3238,7 @@ TEST_F(StyleResolverTest, ScopedAnchorFunction) {
     </style>
     <div id="inline-start"></div>
     <div id="block-end">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <style>
           div { position: absolute }
           :host { inset-block-end: anchor(--a bottom); }
@@ -3296,7 +3296,7 @@ TEST_F(StyleResolverTest, ScopedAnchorSizeFunction) {
       #width { width: anchor-size(--a width); }
     </style>
     <div id="width">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <style>
           div { position: absolute; }
           #height { height: anchor-size(--a height); }
@@ -3311,7 +3311,7 @@ TEST_F(StyleResolverTest, ScopedAnchorSizeFunction) {
     </style>
     <div id="min-width"></div>
     <div id="max-width">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <style>
           div { position: absolute; }
           #min-height { min-height: anchor-size(--a height); }

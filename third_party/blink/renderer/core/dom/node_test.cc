@@ -511,12 +511,12 @@ TEST_F(NodeTest, UpdateChildDirtyAfterSlottingDirtyNode) {
 TEST_F(NodeTest, ReassignStyleDirtyElementIntoSlotOutsideFlatTree) {
   GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div>
-      <template shadowroot="open">
+      <template shadowrootmode="open">
         <div>
           <slot name="s1"></slot>
         </div>
         <div>
-          <template shadowroot="open">
+          <template shadowrootmode="open">
             <div></div>
           </template>
           <slot name="s2"></slot>
@@ -552,7 +552,7 @@ TEST_F(NodeTest, ReassignStyleDirtyElementIntoSlotOutsideFlatTree) {
 TEST_F(NodeTest, FlatTreeParentForChildDirty) {
   GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div id="host">
-      <template shadowroot="open">
+      <template shadowrootmode="open">
         <slot id="slot1">
           <span id="fallback1"></span>
         </slot>

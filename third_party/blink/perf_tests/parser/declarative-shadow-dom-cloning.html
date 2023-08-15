@@ -7,9 +7,9 @@
 function createDeepShadowTemplateContent(levels, slotted) {
   const nestedContent = levels > 0 ? createDeepShadowTemplateContent(levels-1) : '<span>End</span>';
   if (slotted) {
-    return `<div><template shadowroot=open><slot></slot></template>${nestedContent}</div>`;
+    return `<div><template shadowrootmode=open><slot></slot></template>${nestedContent}</div>`;
   } else {
-    return `<div><template shadowroot=open>${nestedContent}</template></div>`;
+    return `<div><template shadowrootmode=open>${nestedContent}</template></div>`;
   }
 }
 

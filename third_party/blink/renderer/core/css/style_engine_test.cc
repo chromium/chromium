@@ -4559,7 +4559,7 @@ TEST_F(StyleEngineTest, CascadeLayersInOriginsAndTreeScopes) {
       @layer bar, foo;
     </style>
     <div id="host">
-      <template shadowroot="open">
+      <template shadowrootmode="open">
         <style>
           @layer foo, bar, foo.baz;
         </style>
@@ -4731,7 +4731,7 @@ TEST_F(StyleEngineTest, CascadeLayersSheetsRemoved) {
       @layer bar, foo;
     </style>
     <div id="host">
-      <template shadowroot="open">
+      <template shadowrootmode="open">
         <style>
           @layer foo, bar, foo.baz;
         </style>

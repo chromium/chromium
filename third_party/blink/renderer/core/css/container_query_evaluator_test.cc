@@ -826,7 +826,7 @@ TEST_F(ContainerQueryEvaluatorTest, ScopedCaching) {
       .documentElement()
       ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div id="host" style="container-name: n1">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <div style="container-name: n1">
           <slot id="slot"></slot>
         </div>
