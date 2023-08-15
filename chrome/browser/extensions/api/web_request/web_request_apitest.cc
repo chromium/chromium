@@ -2838,7 +2838,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestMockedClockTest,
       LoadExtension(test_dir.AppendASCII("extension_1"));
   ASSERT_TRUE(extension_1);
   ASSERT_TRUE(ready_1_listener.WaitUntilSatisfied());
-  const std::string extension_id_1 = extension_1->id();
+  const ExtensionId extension_id_1 = extension_1->id();
 
   // Load the second extension.
   ExtensionTestMessageListener ready_2_listener("ready_2");
@@ -2846,7 +2846,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestMockedClockTest,
       LoadExtension(test_dir.AppendASCII("extension_2"));
   ASSERT_TRUE(extension_2);
   ASSERT_TRUE(ready_2_listener.WaitUntilSatisfied());
-  const std::string extension_id_2 = extension_2->id();
+  const ExtensionId extension_id_2 = extension_2->id();
 
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_LT(prefs->GetLastUpdateTime(extension_id_1),
