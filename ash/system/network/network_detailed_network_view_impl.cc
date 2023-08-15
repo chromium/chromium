@@ -13,6 +13,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/rounded_container.h"
 #include "ash/style/typography.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_detailed_view.h"
 #include "ash/system/network/network_list_mobile_header_view_impl.h"
 #include "ash/system/network/network_list_network_item_view.h"
@@ -33,10 +34,46 @@
 
 namespace ash {
 namespace {
-using chromeos::network_config::mojom::NetworkType;
+using chromeos::network_config::mojom::InhibitReason;
 
 constexpr auto kMainContainerMargins = gfx::Insets::TLBR(2, 0, 0, 0);
 constexpr auto kTopContainerBorder = gfx::Insets::TLBR(4, 0, 4, 4);
+
+// The following getter methods should only be used for `NetworkType::kWiFi` and
+// `NetworkType::kMobile` types otherwise a crash will occur.
+std::u16string GetLabelForWifiAndMobileNetwork(NetworkType type) {
+  switch (type) {
+    case NetworkType::kWiFi:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_QUICK_SETTINGS_JOIN_WIFI_NETWORK);
+    case NetworkType::kMobile:
+      return l10n_util::GetStringUTF16(IDS_ASH_QUICK_SETTINGS_ADD_ESIM);
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+std::u16string GetTooltipForWifiAndMobileNetwork(NetworkType type) {
+  switch (type) {
+    case NetworkType::kWiFi:
+      return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_OTHER_WIFI);
+    case NetworkType::kMobile:
+      return l10n_util::GetStringUTF16(GetAddESimTooltipMessageId());
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+int GetViewIDForWifiAndMobileNetwork(NetworkType type) {
+  switch (type) {
+    case NetworkType::kWiFi:
+      return VIEW_ID_JOIN_WIFI_NETWORK_ENTRY;
+    case NetworkType::kMobile:
+      return VIEW_ID_ADD_ESIM_ENTRY;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
 }  // namespace
 
 NetworkDetailedNetworkViewImpl::NetworkDetailedNetworkViewImpl(
@@ -83,19 +120,19 @@ NetworkListNetworkItemView* NetworkDetailedNetworkViewImpl::AddNetworkListItem(
       std::make_unique<NetworkListNetworkItemView>(/*listener=*/this));
 }
 
-HoverHighlightView* NetworkDetailedNetworkViewImpl::AddJoinNetworkEntry() {
-  HoverHighlightView* entry =
-      GetNetworkList(NetworkType::kWiFi)
-          ->AddChildView(
-              std::make_unique<HoverHighlightView>(/*listener=*/this));
-  entry->SetID(VIEW_ID_JOIN_NETWORK_ENTRY);
+HoverHighlightView* NetworkDetailedNetworkViewImpl::AddConfigureNetworkEntry(
+    NetworkType type) {
+  CHECK(type == NetworkType::kWiFi || type == NetworkType::kMobile);
+  HoverHighlightView* entry = GetNetworkList(type)->AddChildView(
+      std::make_unique<HoverHighlightView>(/*listener=*/this));
+  entry->SetID(GetViewIDForWifiAndMobileNetwork(type));
+  entry->SetTooltipText(GetTooltipForWifiAndMobileNetwork(type));
 
   auto image_view = std::make_unique<views::ImageView>();
   image_view->SetImage(ui::ImageModel::FromVectorIcon(
       kSystemMenuPlusIcon, cros_tokens::kCrosSysPrimary));
-  entry->AddViewAndLabel(
-      std::move(image_view),
-      l10n_util::GetStringUTF16(IDS_ASH_QUICK_SETTINGS_JOIN_WIFI_NETWORK));
+  entry->AddViewAndLabel(std::move(image_view),
+                         GetLabelForWifiAndMobileNetwork(type));
   views::Label* label = entry->text_label();
   label->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,

@@ -43,6 +43,10 @@ ASH_EXPORT void RecordNetworkTypeToggled(
     chromeos::network_config::mojom::NetworkType network_type,
     bool new_state);
 
+// Returns the add esim button (`kQsRevamp` disabled) or add esim entry
+// (`kQsRevamp` enabled) tooltip message id.
+ASH_EXPORT int GetAddESimTooltipMessageId();
+
 // Returns the subtext to display for a connected network in a portal state.
 // This is used in the network menu, the tooltip, and for a11y.
 ASH_EXPORT absl::optional<std::u16string> GetPortalStateSubtext(

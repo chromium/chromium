@@ -51,13 +51,21 @@ void NetworkDetailedView::HandleViewClicked(views::View* view) {
     return;
   }
 
-  if (view->GetID() == VIEW_ID_JOIN_NETWORK_ENTRY) {
+  if (view->GetID() == VIEW_ID_JOIN_WIFI_NETWORK_ENTRY) {
     base::RecordAction(
         base::UserMetricsAction("QS_Subpage_Network_JoinNetwork"));
     Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
         onc::network_type::kWiFi);
     return;
   }
+
+  if (view->GetID() == VIEW_ID_ADD_ESIM_ENTRY) {
+    base::RecordAction(base::UserMetricsAction("QS_Subpage_Network_AddESim"));
+    Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
+        ::onc::network_type::kCellular);
+    return;
+  }
+
   delegate()->OnNetworkListItemSelected(
       static_cast<NetworkListItemView*>(view)->network_properties());
 }

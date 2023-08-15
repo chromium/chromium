@@ -53,7 +53,7 @@ class ASH_EXPORT NetworkListViewControllerImpl
   ~NetworkListViewControllerImpl() override;
 
  protected:
-  TrayNetworkStateModel* model() { return model_; }
+  TrayNetworkStateModel* model() const { return model_; }
 
   NetworkDetailedNetworkView* network_detailed_network_view() {
     return network_detailed_network_view_;
@@ -125,8 +125,16 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // `unknown_header_`.
   size_t CreateWifiGroupHeader(size_t index, const bool is_known);
 
-  // Creates and adds the join wifi entry at the bottom of the wifi networks.
-  size_t CreateJoinWifiEntry(size_t index);
+  // Creates and adds the "+ <network>" entry at the bottom of the wifi
+  // networks (for `NetworkType::kWiFi`) or mobile networks (for
+  // `NetworkType::kMobile`) based on the value of `type`.
+  // `plus_network_entry_ptr` is the pointer to the "+ <network>" entry, and
+  // `index` is increased by 1 to indicate the order of this view so that this
+  // view can be reordered later if necessary.
+  size_t CreateConfigureNetworkEntry(
+      HoverHighlightView** plus_network_entry_ptr,
+      NetworkType type,
+      size_t index);
 
   // Updates Mobile data section, updates add eSIM button states and
   // calls UpdateMobileToggleAndSetStatusMessage().
@@ -197,6 +205,9 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // if the default network has a proxy configured or if a VPN is active.
   void MaybeShowConnectionWarningManagedIcon(bool using_proxy);
 
+  // For QsRevamp: whether to add eSim entry or not.
+  bool ShouldAddESimEntry() const;
+
   raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
 
   mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
@@ -250,6 +261,9 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #addr-of
   RAW_PTR_EXCLUSION HoverHighlightView* join_wifi_entry_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION HoverHighlightView* add_esim_entry_ = nullptr;
 
   bool has_mobile_networks_;
   bool has_wifi_networks_;
