@@ -107,11 +107,10 @@ void ModifyPrivacyIndicatorsNotification(
     bool is_camera_used,
     bool is_microphone_used,
     scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate) {
-  // With `features::kVideoConference` enabled, the tray serves as this
-  // notifier, so do not show these notifications.
-  if (features::IsVideoConferenceEnabled()) {
+  if (!features::IsPrivacyIndicatorsEnabled()) {
     return;
   }
+
   auto* message_center = message_center::MessageCenter::Get();
   std::string id = GetPrivacyIndicatorsNotificationId(app_id);
   bool notification_exists = message_center->FindNotificationById(id);
