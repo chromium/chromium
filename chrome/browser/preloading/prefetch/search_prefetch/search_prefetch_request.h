@@ -172,6 +172,11 @@ class SearchPrefetchRequest {
   // exists.
   void SetPrefetchAttemptFailureReason(content::PreloadingFailureReason reason);
 
+  // Tells StreamingSearchPrefetchURLLoader to run the callback upon
+  // destruction.
+  void SetLoaderDestructionCallbackForTesting(
+      base::OnceClosure streaming_url_loader_destruction_callback);
+
  private:
   // Starts and begins processing |resource_request|.
   void StartPrefetchRequestInternal(

@@ -527,6 +527,12 @@ void SearchPrefetchRequest::SetPrefetchAttemptFailureReason(
   prefetch_preloading_attempt_.reset();
 }
 
+void SearchPrefetchRequest::SetLoaderDestructionCallbackForTesting(
+    base::OnceClosure streaming_url_loader_destruction_callback) {
+  streaming_url_loader_->set_on_destruction_callback_for_testing(  // IN-TEST
+      std::move(streaming_url_loader_destruction_callback));
+}
+
 void SearchPrefetchRequest::SetPrefetchAttemptTriggeringOutcome(
     content::PreloadingTriggeringOutcome outcome) {
   if (!prefetch_preloading_attempt_)

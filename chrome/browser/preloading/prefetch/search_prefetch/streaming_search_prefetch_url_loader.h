@@ -246,6 +246,12 @@ class StreamingSearchPrefetchURLLoader
   // recorded when |navigation_prefetch_| is true.
   void RecordNavigationURLHistogram(const GURL& navigation_url);
 
+  void set_on_destruction_callback_for_testing(
+      base::OnceClosure on_destruction_callback_for_testing) {
+    on_destruction_callback_for_testing_ =
+        std::move(on_destruction_callback_for_testing);
+  }
+
  private:
   friend class base::RefCounted<StreamingSearchPrefetchURLLoader>;
 
@@ -376,10 +382,6 @@ class StreamingSearchPrefetchURLLoader
   // Whether we are serving from |body_content_|.
   bool serving_from_data_ = false;
 
-  // Whether this loader created a reader and served the response to
-  // prerendering navigation.
-  bool was_served_to_prerender_reader_ = false;
-
   // The status returned from |network_url_loader_|.
   absl::optional<network::URLLoaderCompletionStatus> status_;
 
@@ -420,6 +422,9 @@ class StreamingSearchPrefetchURLLoader
 
   // TODO(https://crbug.com/1400881): Make it a generic reader.
   std::unique_ptr<ResponseReader> response_reader_for_prerender_;
+  // The number of times that this loader created a reader and served the
+  // response to prerendering navigation.
+  int count_prerender_serving_times_ = 0;
 
   // Set to true when we encounter an error in between when the prefetch request
   // owns this loader and the loader has started. When the forwarding client is
@@ -454,6 +459,8 @@ class StreamingSearchPrefetchURLLoader
 
   // Whether this url loader was activated via the navigation stack.
   bool is_activated_ = false;
+
+  base::OnceClosure on_destruction_callback_for_testing_;
 
   base::WeakPtrFactory<StreamingSearchPrefetchURLLoader> weak_factory_{this};
 };
