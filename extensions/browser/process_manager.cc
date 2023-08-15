@@ -765,8 +765,8 @@ base::Uuid ProcessManager::IncrementServiceWorkerKeepaliveCount(
 
   base::Uuid request_uuid = base::Uuid::GenerateRandomV4();
 
-  service_worker_keepalives_[request_uuid] =
-      ServiceWorkerKeepaliveData{worker_id, activity_type, extra_data};
+  service_worker_keepalives_[request_uuid] = ServiceWorkerKeepaliveData{
+      worker_id, activity_type, extra_data, timeout_type};
 
   content::ServiceWorkerContext* service_worker_context =
       util::GetServiceWorkerContextForExtensionId(extension->id(),

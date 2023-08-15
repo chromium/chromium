@@ -261,7 +261,8 @@ base::Value::List DisableReasonsToList(int disable_reasons) {
 //    "service_worker_keepalives": {
 //      "activities": [ {
 //        "extra_data": "tabs.create",
-//        "type": "API_FUNCTION
+//        "timeout_type": "Default",
+//        "type": "API_FUNCTION"
 //      } ]
 //      "count": 1
 //    }
@@ -332,6 +333,7 @@ base::Value::List DisableReasonsToList(int disable_reasons) {
 //      "activities": LIST
 //        DICT
 //          "extra_data": STRING
+//          "timeout_type": STRING,
 //          "type": STRING
 //      "count": INT
 //    "type": STRING
@@ -368,6 +370,7 @@ constexpr base::StringPiece kPermissionsExplicitHostsKey = "explicit_hosts";
 constexpr base::StringPiece kPermissionsScriptableHostsKey = "scriptable_hosts";
 constexpr base::StringPiece kServiceWorkerKeepalivesKey =
     "service_worker_keepalives";
+constexpr base::StringPiece kTimeoutTypeKey = "timeout_type";
 constexpr base::StringPiece kTypeKey = "type";
 
 base::Value::Dict FormatBackgroundPageKeepaliveData(
@@ -398,11 +401,25 @@ base::Value::Dict FormatServiceWorkerKeepaliveData(
       process_manager.GetServiceWorkerKeepaliveDataForRecords(extension_id);
   keepalive_data.Set(kCountKey, base::checked_cast<int>(keepalives.size()));
   base::Value::List activities_data;
+
+  auto get_timeout_type_value =
+      [](content::ServiceWorkerExternalRequestTimeoutType timeout_type) {
+        switch (timeout_type) {
+          case content::ServiceWorkerExternalRequestTimeoutType::kDefault:
+            return "Default";
+          case content::ServiceWorkerExternalRequestTimeoutType::
+              kDoesNotTimeout:
+            return "Does Not Timeout";
+        }
+      };
+
   for (const auto& keepalive : keepalives) {
     base::Value::Dict activities_entry;
     activities_entry.Set(
         kTypeKey, extensions::Activity::ToString(keepalive.activity_type));
     activities_entry.Set(kExtraDataKey, keepalive.extra_data);
+    activities_entry.Set(kTimeoutTypeKey,
+                         get_timeout_type_value(keepalive.timeout_type));
     activities_data.Append(std::move(activities_entry));
   }
   keepalive_data.Set(kActivitesKey, std::move(activities_data));

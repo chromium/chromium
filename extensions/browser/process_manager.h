@@ -66,6 +66,7 @@ class ProcessManager : public KeyedService,
     WorkerId worker_id;
     Activity::Type activity_type;
     std::string extra_data;
+    content::ServiceWorkerExternalRequestTimeoutType timeout_type;
   };
   using ServiceWorkerKeepaliveDataMap =
       std::map<base::Uuid, ServiceWorkerKeepaliveData>;
