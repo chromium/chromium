@@ -109,7 +109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuImageUploadState" enum="GpuImageUsageState"
-    expires_after="2023-12-10">
+    expires_after="2024-02-11">
   <owner>khushalsagar@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
