@@ -1693,7 +1693,11 @@
     "allow-discrete",
 
     // (inverted-colors:) media feature
-    "inverted"
+    "inverted",
+    // none
+
+    // navigation-trigger
+    "cross-document-same-origin",
     // none
   ],
 }

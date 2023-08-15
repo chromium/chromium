@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>View transitions: CSSOM for @view-transitions rule</title>
+<link rel="help" href="https://github.com/WICG/view-transitions">
+<link rel="author" href="mailto:bokan@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style></style>
+<script>
+  function resetStateAndTest(testFunction) {
+    const sheet = document.styleSheets[0];
+    while (sheet.cssRules.length > 0) sheet.deleteRule(0);
+    testFunction();
+  }
+
+  test(function () {
+    resetStateAndTest(() => {
+      document.styleSheets[0].insertRule(`
+        @view-transitions {
+        }
+      `);
+      let rule = document.styleSheets[0].cssRules[0];
+      assert_true(rule instanceof CSSViewTransitionsRule);
+      assert_equals(rule.type, 0);
+      assert_equals(rule.cssText, "@view-transitions { }");
+      assert_equals(rule.navigationTrigger, '');
+
+    });
+  }, "CSSViewTransitionsRule is correctly parsed and accessible via CSSOM.");
+
+  test(function () {
+    resetStateAndTest(() => {
+      document.styleSheets[0].insertRule(`
+        @view-transitions {
+          navigation-trigger: cross-document-same-origin;
+        }
+      `);
+      let rule = document.styleSheets[0].cssRules[0];
+      assert_equals(rule.cssText,
+          "@view-transitions { navigation-trigger: cross-document-same-origin; }");
+      assert_equals(rule.navigationTrigger, 'cross-document-same-origin');
+
+    });
+  }, "`navigation-trigger: cross-document-same-origin` is correctly parsed.");
+
+  test(function () {
+    resetStateAndTest(() => {
+      document.styleSheets[0].insertRule(`
+        @view-transitions {
+          navigation-trigger: none;
+        }
+      `);
+      let rule = document.styleSheets[0].cssRules[0];
+      assert_equals(rule.cssText, "@view-transitions { navigation-trigger: none; }");
+      assert_equals(rule.navigationTrigger, 'none');
+    });
+  }, "`navigation-trigger: none` is correctly parsed.");
+
+  test(function () {
+    resetStateAndTest(() => {
+      assert_throws_dom('SyntaxError', () => {
+        document.styleSheets[0].insertRule('@view-transitions foo {}');
+      }, "Failed to execute 'insertRule' on 'CSSStyleSheet': " +
+          "Failed to parse the rule '@view-transitions foo {}'");
+      assert_equals(document.styleSheets[0].cssRules.length, 0);
+    });
+  }, "@view-transitions fails parsing with a preamble");
+
+  test(function () {
+    resetStateAndTest(() => {
+      document.styleSheets[0].insertRule(`
+        @view-transitions {
+          navigation-trigger: foo;
+        }
+      `);
+      let rule = document.styleSheets[0].cssRules[0];
+      assert_equals(rule.cssText, "@view-transitions { }");
+    });
+  }, "Invalid navigation-trigger fails to parse.");
+
+  test(function () {
+    resetStateAndTest(() => {
+      document.styleSheets[0].insertRule(`
+        @view-transitions {
+          navigation-trigger: none !important;
+        }
+      `);
+      let rule = document.styleSheets[0].cssRules[0];
+      assert_equals(rule.cssText, "@view-transitions { }");
+    });
+  }, "navigation-trigger with !important flag should fail to parse.");
+
+</script>

@@ -13,6 +13,12 @@
 namespace blink {
 
 CSSAtRuleID CssAtRuleID(StringView name) {
+  if (EqualIgnoringASCIICase(name, "view-transitions")) {
+    if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
+      return CSSAtRuleID::kCSSAtRuleViewTransitions;
+    }
+    return CSSAtRuleID::kCSSAtRuleInvalid;
+  }
   if (EqualIgnoringASCIICase(name, "charset")) {
     return CSSAtRuleID::kCSSAtRuleCharset;
   }
@@ -109,6 +115,8 @@ absl::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
   switch (rule_id) {
     case CSSAtRuleID::kCSSAtRuleAnnotation:
       return WebFeature::kCSSAtRuleAnnotation;
+    case CSSAtRuleID::kCSSAtRuleViewTransitions:
+      return WebFeature::kCSSAtRuleViewTransitions;
     case CSSAtRuleID::kCSSAtRuleCharset:
       return WebFeature::kCSSAtRuleCharset;
     case CSSAtRuleID::kCSSAtRuleCharacterVariant:

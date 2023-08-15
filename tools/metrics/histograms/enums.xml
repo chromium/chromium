@@ -42664,7 +42664,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3808" label="InsertHTMLCommandOnReadWritePlainText"/>
   <int value="3809" label="CSSAtRuleCounterStyle"/>
   <int value="3810" label="CanvasUseColorSpace"/>
-  <int value="3811" label="SelectMenuElement"/>
+  <int value="3811" label="SelectListElement"/>
   <int value="3812"
       label="OBSOLETE_RTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial"/>
   <int value="3813" label="WebAppManifestCaptureLinks"/>
@@ -43518,6 +43518,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4623" label="V8RTCEncodedVideoFrame_SetMetadata_Method"/>
   <int value="4624" label="V8RTCEncodedVideoFrame_SetTimestamp_Method"/>
   <int value="4625" label="V8RTCEncodedAudioFrame_SetTimestamp_Method"/>
+  <int value="4626" label="CSSAtRuleViewTransitions"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -69878,6 +69879,7 @@ Called by update_use_counter_css.py.-->
   <int value="765" label="position-fallback-bounds"/>
   <int value="766" label="transition-behavior"/>
   <int value="767" label="text-autospace"/>
+  <int value="768" label="navigation-trigger"/>
 </enum>
 
 <enum name="MappedEditingCommands">

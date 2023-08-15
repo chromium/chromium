@@ -31,6 +31,7 @@ class CSSParserContext;
 class CSSParserObserver;
 class CSSParserTokenStream;
 class StyleRule;
+class StyleRuleViewTransitions;
 class StyleRuleBase;
 class StyleRuleCharset;
 class StyleRuleCounterStyle;
@@ -228,6 +229,8 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleBase* ConsumeScopeRule(CSSParserTokenStream&,
                                   CSSNestingType,
                                   StyleRule* parent_rule_for_nesting);
+  StyleRuleViewTransitions* ConsumeViewTransitionsRule(
+      CSSParserTokenStream& stream);
   StyleRuleContainer* ConsumeContainerRule(CSSParserTokenStream& stream,
                                            CSSNestingType,
                                            StyleRule* parent_rule_for_nesting);

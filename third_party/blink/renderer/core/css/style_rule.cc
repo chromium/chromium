@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
 #include "third_party/blink/renderer/core/css/css_try_rule.h"
+#include "third_party/blink/renderer/core/css/css_view_transitions_rule.h"
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
+#include "third_party/blink/renderer/core/css/style_rule_view_transitions.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -144,6 +146,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kStartingStyle:
       To<StyleRuleStartingStyle>(this)->TraceAfterDispatch(visitor);
       return;
+    case kViewTransitions:
+      To<StyleRuleViewTransitions>(this)->TraceAfterDispatch(visitor);
+      return;
   }
   NOTREACHED();
 }
@@ -216,6 +221,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kStartingStyle:
       To<StyleRuleStartingStyle>(this)->~StyleRuleStartingStyle();
       return;
+    case kViewTransitions:
+      To<StyleRuleViewTransitions>(this)->~StyleRuleViewTransitions();
+      return;
   }
   NOTREACHED();
 }
@@ -266,6 +274,8 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRulePositionFallback>(this)->Copy();
     case kStartingStyle:
       return To<StyleRuleStartingStyle>(this)->Copy();
+    case kViewTransitions:
+      return To<StyleRuleViewTransitions>(this)->Copy();
     case kTry:
       return To<StyleRuleTry>(this)->Copy();
   }
@@ -350,6 +360,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kStartingStyle:
       rule = MakeGarbageCollected<CSSStartingStyleRule>(
           To<StyleRuleStartingStyle>(self), parent_sheet);
+      break;
+    case kViewTransitions:
+      rule = MakeGarbageCollected<CSSViewTransitionsRule>(
+          To<StyleRuleViewTransitions>(self), parent_sheet);
       break;
     case kTry:
       // @try rules must be child rules of @position-fallback.
@@ -507,6 +521,7 @@ void StyleRuleBase::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
     case kTry:
     case kKeyframe:
     case kCharset:
+    case kViewTransitions:
       // Cannot have any child rules.
       break;
   }

@@ -70,6 +70,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kPositionFallback,
     kTry,
     kStartingStyle,
+    kViewTransitions,
   };
 
   // Name of a cascade layer as given by an @layer rule, split at '.' into a
@@ -106,6 +107,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsPositionFallbackRule() const { return GetType() == kPositionFallback; }
   bool IsTryRule() const { return GetType() == kTry; }
   bool IsStartingStyleRule() const { return GetType() == kStartingStyle; }
+  bool IsViewTransitionsRule() const { return GetType() == kViewTransitions; }
   bool IsConditionRule() const {
     return GetType() == kContainer || GetType() == kMedia ||
            GetType() == kSupports || GetType() == kStartingStyle;
@@ -554,8 +556,6 @@ class StyleRuleStartingStyle : public StyleRuleCondition {
   StyleRuleStartingStyle* Copy() const {
     return MakeGarbageCollected<StyleRuleStartingStyle>(*this);
   }
-
-  void SetConditionText(const ExecutionContext*, String);
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     StyleRuleCondition::TraceAfterDispatch(visitor);

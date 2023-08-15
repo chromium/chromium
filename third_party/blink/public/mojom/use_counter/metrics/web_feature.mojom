@@ -3963,6 +3963,7 @@ enum WebFeature {
   kV8RTCEncodedVideoFrame_SetMetadata_Method = 4623,
   kV8RTCEncodedVideoFrame_SetTimestamp_Method = 4624,
   kV8RTCEncodedAudioFrame_SetTimestamp_Method = 4625,
+  kCSSAtRuleViewTransitions = 4626,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

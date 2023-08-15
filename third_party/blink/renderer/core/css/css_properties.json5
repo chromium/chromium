@@ -6791,6 +6791,12 @@
       is_descriptor: true,
       is_property: false,
     },
+    {
+      name: "navigation-trigger",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "ViewTransitionOnNavigation",
+    },
 
     // Shorthands
     {

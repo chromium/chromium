@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<title>View Transitions: @view-transitions opt out in new ocument (ref)</title>
+<link rel="help" href="https://github.com/WICG/view-transitions">
+<link rel="author" href="mailto:bokan@chromium.org">
+<style>
+  :root {
+    /*
+     * There should be no transition due to  `navigation-trigger: none` in the
+     * new or old page.
+     */
+    background: grey;
+  }
+</style>
