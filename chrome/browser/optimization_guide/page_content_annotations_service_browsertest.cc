@@ -344,6 +344,59 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
+                       ContentGetsAnnotatedWhenPageTitleChanges) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/random_title.html"));
+
+  // Navigate to the page for the first time.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Navigate to the page for the second time. This time the page title changes,
+  // but the url stays the same.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  int expected_count = 2;
+#else
+  int expected_count = 0;
+#endif
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
+      expected_count);
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+      GetContentAnnotationsForURL(url);
+  ASSERT_TRUE(got_content_annotations.has_value());
+  EXPECT_TRUE(got_content_annotations->model_annotations.categories.empty());
+#endif
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
+      expected_count);
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", true,
+      2);
+#else
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", false,
+      2);
+#endif
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  WaitForHistoryServiceToFinish();
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageContentAnnotations2::kEntryName);
+  EXPECT_EQ(2u, entries.size());
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        ModelExecutes) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -381,22 +434,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      1);
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      PageContentAnnotationsStorageStatus::kSuccess, 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus.ModelAnnotations",
-      PageContentAnnotationsStorageStatus::kSuccess, 1);
-
+  WaitForHistoryServiceToFinish();
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
@@ -960,11 +998,11 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitNoAnnotateTest,
 
   base::HistogramTester histogram_tester;
   HistoryVisit history_visit1(base::Time::Now(),
-                              GURL("https://probablynotarealurl1.com/"), 1);
+                              GURL("https://probablynotarealurl1.com/"));
   HistoryVisit history_visit2(base::Time::Now(),
-                              GURL("https://probablynotarealurl2.com/"), 2);
+                              GURL("https://probablynotarealurl2.com/"));
   HistoryVisit history_visit3(base::Time::Now(),
-                              GURL("https://probablynotarealurl3.com/"), 3);
+                              GURL("https://probablynotarealurl3.com/"));
   history_visit1.text_to_annotate = "sometext1";
   history_visit2.text_to_annotate = "sometext2";
   history_visit3.text_to_annotate = "sometext3";

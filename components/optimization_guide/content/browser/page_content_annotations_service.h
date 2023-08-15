@@ -64,7 +64,7 @@ class PageContentAnnotationsWebContentsObserver;
 // The information used by HistoryService to identify a visit to a URL.
 struct HistoryVisit {
   HistoryVisit();
-  HistoryVisit(base::Time nav_entry_timestamp, GURL url, int64_t navigation_id);
+  HistoryVisit(base::Time nav_entry_timestamp, GURL url);
   explicit HistoryVisit(history::VisitID visit_id);
   ~HistoryVisit();
   HistoryVisit(const HistoryVisit&);
@@ -169,6 +169,8 @@ class PageContentAnnotationsService : public KeyedService,
       EntityMetadataRetrievedCallback callback) override;
 
   // history::HistoryServiceObserver:
+  void OnURLsModified(history::HistoryService* history_service,
+                      const history::URLRows& changed_urls) override;
   void OnURLVisitedWithNavigationId(
       history::HistoryService* history_service,
       const history::URLRow& url_row,
@@ -328,6 +330,10 @@ class PageContentAnnotationsService : public KeyedService,
       OptimizationGuideDecision decision,
       const OptimizationMetadata& metadata);
 
+  // Sends the page for annotation from |OnURLVisitedWithNavigationId| and
+  // |OnURLsModified|.
+  void OnWaitForTitleDone(const GURL& url);
+
   // Provider client instance used when parsing cached ZPS response data.
   std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client_;
 
@@ -361,6 +367,13 @@ class PageContentAnnotationsService : public KeyedService,
   // requested for another annotation on the same visit.
   base::LRUCache<HistoryVisit, bool, HistoryVisit::Comp>
       last_annotated_history_visits_;
+
+  // A LRU cache containing a set of unique |HistoryVisit|'s for any url.
+  // In OnURLVisited, the HistoryVisit will be added to the map with its
+  // corresponding url and we'll either wait (5 seconds) for the title to be
+  // populated in OnURLsModified or call annotate with the title we already
+  // have.
+  base::LRUCache<GURL, std::vector<HistoryVisit>> missing_title_visits_by_url_;
 
   // A LRU cache of the annotation results for visits. If the text of the visit
   // is in the cache, the cached model annotations will be used.

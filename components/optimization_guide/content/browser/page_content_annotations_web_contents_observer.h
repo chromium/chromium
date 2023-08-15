@@ -14,10 +14,6 @@
 class OptimizationGuideLogger;
 class TemplateURLService;
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 namespace prerender {
 class NoStatePrefetchManager;
 }  // namespace prerender
@@ -53,8 +49,6 @@ class PageContentAnnotationsWebContentsObserver
   friend class PageContentAnnotationsWebContentsObserverTest;
 
   // content::WebContentsObserver:
-  void DidFinishNavigation(content::NavigationHandle* handle) override;
-  void TitleWasSet(content::NavigationEntry* navigation_entry) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   void DidStopLoading() override;

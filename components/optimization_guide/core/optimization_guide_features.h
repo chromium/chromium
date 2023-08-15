@@ -170,6 +170,10 @@ base::TimeDelta StoredModelsValidDuration();
 // allowed to be used and not be purged.
 base::TimeDelta URLKeyedHintValidCacheDuration();
 
+// The amount of time the PCAService will wait for the title of a page to be
+// modified.
+base::TimeDelta PCAServiceWaitForTitleDelayDuration();
+
 // The maximum number of hosts allowed to be requested by the client to the
 // remote Optimization Guide Service for use by prediction models.
 size_t MaxHostsForOptimizationGuideServiceModelsFetch();

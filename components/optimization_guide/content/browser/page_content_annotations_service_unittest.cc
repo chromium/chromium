@@ -126,6 +126,7 @@ class PageContentAnnotationsServiceTest : public testing::Test {
          {features::kPageContentAnnotations,
           {
               {"write_to_history_service", "true"},
+              {"pca_service_wait_for_title_delay_in_milliseconds", "4999"},
           }},
          {features::kPageVisibilityPageContentAnnotations, {}}},
         /*disabled_features=*/{features::kPreventLongRunningPredictionModels});
@@ -183,13 +184,14 @@ class PageContentAnnotationsServiceTest : public testing::Test {
     return optimization_guide_decider_.get();
   }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
  protected:
   std::unique_ptr<MockHistoryService> history_service_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<TestOptimizationGuideModelProvider>
       optimization_guide_model_provider_;
@@ -202,11 +204,16 @@ class PageContentAnnotationsServiceTest : public testing::Test {
 TEST_F(PageContentAnnotationsServiceTest, ObserveLocalVisitNonSearch) {
   history::VisitID visit_id = 1;
 
-  // Should not call history service at all.
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  EXPECT_CALL(*history_service_,
+              AddContentModelAnnotationsForVisit(_, visit_id));
+#endif
 
   VisitURL(GURL("https://example.com"), u"test", visit_id,
            /*local_navigation_id=*/1,
            /*is_synced_visit=*/false);
+
+  task_environment_.FastForwardBy(base::Seconds(5));
 }
 
 TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsNonSearch) {
@@ -220,18 +227,30 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsNonSearch) {
   VisitURL(GURL("https://example.com"), u"test", visit_id,
            /*local_navigation_id=*/1,
            /*is_synced_visit=*/true);
+
+  task_environment_.FastForwardBy(base::Seconds(5));
 }
 
 TEST_F(PageContentAnnotationsServiceTest, ObserveLocalVisitsSearch) {
   history::VisitID visit_id = 1;
+  base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*history_service_, AddSearchMetadataForVisit(_, _, visit_id));
 
-  // Should not send for annotation.
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  EXPECT_CALL(*history_service_,
+              AddContentModelAnnotationsForVisit(_, visit_id));
+#endif
 
-  VisitURL(GURL("https://default-engine.com/search?q=test#frag"), u"Test Page",
+  VisitURL(GURL("http://www.google.com/search?q=test#frag"), u"Test Page",
            visit_id, /*local_navigation_id=*/1,
            /*is_synced_visit=*/false);
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted",
+      true, 1);
 }
 
 TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsSearch) {
@@ -247,6 +266,8 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsSearch) {
   VisitURL(GURL("https://default-engine.com/search?q=test#frag"), u"Test Page",
            visit_id, /*local_navigation_id=*/1,
            /*is_synced_visit=*/true);
+
+  task_environment_.FastForwardBy(base::Seconds(5));
 }
 
 class PageContentAnnotationsServiceRemotePageMetadataTest

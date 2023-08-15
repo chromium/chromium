@@ -95,8 +95,7 @@ void MaybeRecordVisibilityUKM(
     const HistoryVisit& visit,
     const absl::optional<history::VisitContentModelAnnotations>&
         content_annotations) {
-  if (visit.visit_id) {
-    // This is for a remote visit not tied to a navigation.
+  if (!visit.navigation_id) {
     return;
   }
 
@@ -156,6 +155,8 @@ PageContentAnnotationsService::PageContentAnnotationsService(
       template_url_service_(template_url_service),
       zero_suggest_cache_service_(zero_suggest_cache_service),
       last_annotated_history_visits_(
+          features::MaxContentAnnotationRequestsCached()),
+      missing_title_visits_by_url_(
           features::MaxContentAnnotationRequestsCached()),
       annotated_text_cache_(features::MaxVisitAnnotationCacheSize()),
       optimization_guide_logger_(optimization_guide_logger),
@@ -665,6 +666,27 @@ void PageContentAnnotationsService::GetMetadataForEntityId(
 #endif
 }
 
+void PageContentAnnotationsService::OnURLsModified(
+    history::HistoryService* history_service,
+    const history::URLRows& changed_urls) {
+  DCHECK_EQ(history_service, history_service_);
+
+  // Set the title and annotate for all history visits paired with each
+  // changed url. Remove the url & history visits from the LRU map once
+  // annotated.
+  for (const auto& url_row : changed_urls) {
+    auto it = missing_title_visits_by_url_.Peek(url_row.url());
+    if (it == missing_title_visits_by_url_.end()) {
+      continue;
+    }
+
+    for (auto& history_visit : it->second) {
+      history_visit.text_to_annotate = base::UTF16ToUTF8(url_row.title());
+    }
+    OnWaitForTitleDone(url_row.url());
+  }
+}
+
 void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
     history::HistoryService* history_service,
     const history::URLRow& url_row,
@@ -682,6 +704,14 @@ void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
   if (template_url_service_) {
     auto search_metadata =
         template_url_service_->ExtractSearchMetadata(url_row.url());
+
+    if (google_util::IsGoogleSearchUrl(url_row.url())) {
+      base::UmaHistogramBoolean(
+          "OptimizationGuide.PageContentAnnotations."
+          "GoogleSearchMetadataExtracted",
+          search_metadata.has_value());
+    }
+
     if (search_metadata) {
       history_service_->AddSearchMetadataForVisit(
           search_metadata->normalized_url, search_metadata->search_terms,
@@ -693,33 +723,63 @@ void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
     }
   }
 
-  // Annotate remote visits with the text that was determined above.
-  if (!visit_row.originator_cache_guid.empty()) {
-    if (switches::ShouldLogPageContentAnnotationsInput()) {
-      LOG(ERROR) << "Annotating remote visit " << visit_row.visit_id << ":\n"
-                 << "URL: " << url_row.url() << "\n"
-                 << "Text: " << *(history_visit.text_to_annotate);
-    }
-    Annotate(history_visit);
+  if (switches::ShouldLogPageContentAnnotationsInput()) {
+    LOG(ERROR) << "Is remote: " << !visit_row.originator_cache_guid.empty();
+    LOG(ERROR) << "Annotating visit " << visit_row.visit_id << ":\n"
+               << "URL: " << url_row.url() << "\n"
+               << "Text: " << *(history_visit.text_to_annotate);
+  }
+
+  // Add the new |history_visit| with its corresponding url in the LRU map.
+  if (missing_title_visits_by_url_.Peek(url_row.url()) !=
+      missing_title_visits_by_url_.end()) {
+    missing_title_visits_by_url_.Get(url_row.url())
+        ->second.push_back(history_visit);
   } else {
-    // Fetch remote page load metadata for local visits.
-    if (features::RemotePageMetadataEnabled() && optimization_guide_decider_) {
-      optimization_guide_decider_->CanApplyOptimization(
-          url_row.url(), proto::PAGE_ENTITIES,
-          base::BindOnce(&PageContentAnnotationsService::
-                             OnOptimizationGuideResponseReceived,
-                         weak_ptr_factory_.GetWeakPtr(), history_visit,
-                         proto::PAGE_ENTITIES));
+    std::vector<HistoryVisit> history_visits;
+    history_visits.push_back(history_visit);
+    missing_title_visits_by_url_.Put({url_row.url(), history_visits});
+  }
+
+  // This delay is needed in case if OnURLsModified gets called and the url_row
+  // title gets updated.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PageContentAnnotationsService::OnWaitForTitleDone,
+                     weak_ptr_factory_.GetWeakPtr(), url_row.url()),
+      features::PCAServiceWaitForTitleDelayDuration());
+
+  // Fetch remote page load metadata for local visits only.
+  if (!visit_row.originator_cache_guid.empty()) {
+    return;
+  }
+
+  if (features::RemotePageMetadataEnabled() && optimization_guide_decider_) {
+    optimization_guide_decider_->CanApplyOptimization(
+        url_row.url(), proto::PAGE_ENTITIES,
+        base::BindOnce(
+            &PageContentAnnotationsService::OnOptimizationGuideResponseReceived,
+            weak_ptr_factory_.GetWeakPtr(), history_visit,
+            proto::PAGE_ENTITIES));
+  }
+  if (features::ShouldPersistSalientImageMetadata() &&
+      optimization_guide_decider_) {
+    optimization_guide_decider_->CanApplyOptimization(
+        url_row.url(), proto::SALIENT_IMAGE,
+        base::BindOnce(
+            &PageContentAnnotationsService::OnOptimizationGuideResponseReceived,
+            weak_ptr_factory_.GetWeakPtr(), history_visit,
+            proto::SALIENT_IMAGE));
+  }
+}
+
+void PageContentAnnotationsService::OnWaitForTitleDone(const GURL& url) {
+  auto it = missing_title_visits_by_url_.Peek(url);
+  if (it != missing_title_visits_by_url_.end()) {
+    for (auto& history_visit : it->second) {
+      Annotate(history_visit);
     }
-    if (features::ShouldPersistSalientImageMetadata() &&
-        optimization_guide_decider_) {
-      optimization_guide_decider_->CanApplyOptimization(
-          url_row.url(), proto::SALIENT_IMAGE,
-          base::BindOnce(&PageContentAnnotationsService::
-                             OnOptimizationGuideResponseReceived,
-                         weak_ptr_factory_.GetWeakPtr(), history_visit,
-                         proto::SALIENT_IMAGE));
-    }
+    missing_title_visits_by_url_.Erase(it);
   }
 }
 
@@ -873,12 +933,9 @@ void PageContentAnnotationsService::OnOptimizationGuideResponseReceived(
 
 HistoryVisit::HistoryVisit() = default;
 
-HistoryVisit::HistoryVisit(base::Time nav_entry_timestamp,
-                           GURL url,
-                           int64_t navigation_id) {
+HistoryVisit::HistoryVisit(base::Time nav_entry_timestamp, GURL url) {
   this->nav_entry_timestamp = nav_entry_timestamp;
   this->url = url;
-  this->navigation_id = navigation_id;
 }
 
 HistoryVisit::HistoryVisit(history::VisitID visit_id) {

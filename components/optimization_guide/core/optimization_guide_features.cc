@@ -446,6 +446,12 @@ base::TimeDelta URLKeyedHintValidCacheDuration() {
       60 * 60 /* 1 hour */));
 }
 
+base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
+  return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
+      kPageContentAnnotations,
+      "pca_service_wait_for_title_delay_in_milliseconds", 5000));
+}
+
 size_t MaxHostsForOptimizationGuideServiceModelsFetch() {
   return GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction,
