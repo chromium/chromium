@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -41,10 +42,6 @@
 namespace headless {
 
 namespace {
-
-void RemoveSpaces(std::string& str) {
-  str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
-}
 
 bool DecodePNG(const std::string& png_data, SkBitmap* bitmap) {
   return gfx::PNGCodec::Decode(
@@ -216,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeDumpDomCommandBrowserTestWithTimeout,
 
   capture_stdout_.StopCapture();
   std::string captured_stdout = capture_stdout_.TakeCapturedData();
-  RemoveSpaces(captured_stdout);
+  base::EraseIf(captured_stdout, isspace);
 
   // Expect about:blank page DOM.
   EXPECT_THAT(captured_stdout,
@@ -293,7 +290,7 @@ IN_PROC_BROWSER_TEST_P(
 
   capture_stdout_.StopCapture();
   std::string captured_stdout = capture_stdout_.TakeCapturedData();
-  RemoveSpaces(captured_stdout);
+  base::EraseIf(captured_stdout, isspace);
 
   if (delay_response()) {
     EXPECT_THAT(result,
