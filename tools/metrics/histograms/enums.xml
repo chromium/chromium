@@ -18706,6 +18706,11 @@ Called by update_net_error_codes.py.-->
       label="Icons, Addresses, Names, Emails, and Telephone numbers requested"/>
 </enum>
 
+<enum name="ContentClassification">
+  <int value="0" label="Other"/>
+  <int value="1" label="Long article"/>
+</enum>
+
 <enum name="ContentEncoding">
   <int value="0" label="ISO_8859_1"/>
   <int value="1" label="ISO_8859_2"/>
