@@ -442,6 +442,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/answer/AnswerSuggestionProcessorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/answer/AnswerTextNewLayoutUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/ActionChipsAdapterUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/ActionChipsProcessorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/ActionChipsViewUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionProcessorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionViewBinderUnitTest.java",

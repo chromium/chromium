@@ -39,6 +39,19 @@ enum class ActionInSuggestUmaType {
   kMaxValue = kReviews
 };
 
+constexpr const char* ToUmaUsageHistogramName(
+    omnibox::ActionInfo::ActionType type) {
+  switch (type) {
+    case omnibox::ActionInfo_ActionType_CALL:
+      return "Omnibox.ActionInSuggest.UsageByType.Call";
+    case omnibox::ActionInfo_ActionType_DIRECTIONS:
+      return "Omnibox.ActionInSuggest.UsageByType.Directions";
+    case omnibox::ActionInfo_ActionType_REVIEWS:
+      return "Omnibox.ActionInSuggest.UsageByType.Reviews";
+  }
+  NOTREACHED() << "Unexpected type of Action: " << (int)type;
+}
+
 // Get the UMA action type from ActionInfo::ActionType.
 constexpr ActionInSuggestUmaType ToUmaActionType(
     omnibox::ActionInfo::ActionType action_type) {
@@ -113,6 +126,9 @@ void OmniboxActionInSuggest::RecordActionShown(size_t position,
     base::UmaHistogramEnumeration("Omnibox.ActionInSuggest.Used",
                                   ToUmaActionType(action_info.action_type()));
   }
+
+  base::UmaHistogramBoolean(ToUmaUsageHistogramName(action_info.action_type()),
+                            executed);
 }
 
 void OmniboxActionInSuggest::Execute(ExecutionContext& context) const {

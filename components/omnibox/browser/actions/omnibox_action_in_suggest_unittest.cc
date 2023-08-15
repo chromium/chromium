@@ -199,15 +199,22 @@ TEST_F(OmniboxActionInSuggestTest, HistogramsRecording) {
   };
 
   // Correlation between ActionType and UMA-recorded bucket.
-  const std::pair<ActionType, UmaTypeForTest> test_cases[]{
-      {omnibox::ActionInfo_ActionType_CALL, UmaTypeForTest::kCall},
-      {omnibox::ActionInfo_ActionType_DIRECTIONS, UmaTypeForTest::kDirections},
-      {omnibox::ActionInfo_ActionType_REVIEWS, UmaTypeForTest::kReviews},
+  struct {
+    omnibox::ActionInfo::ActionType type;
+    UmaTypeForTest recordedUmaType;
+    const char* dedicatedHistogram;
+  } test_cases[]{
+      {omnibox::ActionInfo_ActionType_CALL, UmaTypeForTest::kCall,
+       "Omnibox.ActionInSuggest.UsageByType.Call"},
+      {omnibox::ActionInfo_ActionType_DIRECTIONS, UmaTypeForTest::kDirections,
+       "Omnibox.ActionInSuggest.UsageByType.Directions"},
+      {omnibox::ActionInfo_ActionType_REVIEWS, UmaTypeForTest::kReviews,
+       "Omnibox.ActionInSuggest.UsageByType.Reviews"},
   };
 
   for (const auto& test_case : test_cases) {
     ActionInfo action_info;
-    action_info.set_action_type(test_case.first);
+    action_info.set_action_type(test_case.type);
     scoped_refptr<OmniboxAction> action =
         base::MakeRefCounted<OmniboxActionInSuggest>(std::move(action_info),
                                                      absl::nullopt);
@@ -217,11 +224,14 @@ TEST_F(OmniboxActionInSuggestTest, HistogramsRecording) {
       base::HistogramTester histograms;
       action->RecordActionShown(1, false);
       histograms.ExpectBucketCount("Omnibox.ActionInSuggest.Shown",
-                                   test_case.second, 1);
+                                   test_case.recordedUmaType, 1);
       histograms.ExpectBucketCount("Omnibox.ActionInSuggest.Used",
-                                   test_case.second, 0);
+                                   test_case.recordedUmaType, 0);
       histograms.ExpectTotalCount("Omnibox.ActionInSuggest.Shown", 1);
       histograms.ExpectTotalCount("Omnibox.ActionInSuggest.Used", 0);
+
+      histograms.ExpectBucketCount(test_case.dedicatedHistogram, false, 1);
+      histograms.ExpectTotalCount(test_case.dedicatedHistogram, 1);
     }
 
     {
@@ -229,11 +239,14 @@ TEST_F(OmniboxActionInSuggestTest, HistogramsRecording) {
       base::HistogramTester histograms;
       action->RecordActionShown(1, true);
       histograms.ExpectBucketCount("Omnibox.ActionInSuggest.Shown",
-                                   test_case.second, 1);
+                                   test_case.recordedUmaType, 1);
       histograms.ExpectBucketCount("Omnibox.ActionInSuggest.Used",
-                                   test_case.second, 1);
+                                   test_case.recordedUmaType, 1);
       histograms.ExpectTotalCount("Omnibox.ActionInSuggest.Shown", 1);
       histograms.ExpectTotalCount("Omnibox.ActionInSuggest.Used", 1);
+
+      histograms.ExpectBucketCount(test_case.dedicatedHistogram, true, 1);
+      histograms.ExpectTotalCount(test_case.dedicatedHistogram, 1);
     }
   }
 }
