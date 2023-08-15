@@ -117,9 +117,7 @@ TEST_F(BrowserShortcutsTest, PublishExistingBrowserShortcut) {
 }
 
 TEST_F(BrowserShortcutsTest, WebAppNotPublishedAsShortcut) {
-  const std::string kAppName = "App";
-
-  auto app_id = CreateWebApp(kAppName);
+  auto app_id = CreateWebApp("App");
 
   InitializeBrowserShortcutPublisher();
 
@@ -127,6 +125,34 @@ TEST_F(BrowserShortcutsTest, WebAppNotPublishedAsShortcut) {
       apps::AppServiceProxyFactory::GetForProfile(profile())
           ->ShortcutRegistryCache();
   EXPECT_EQ(cache->GetAllShortcuts().size(), 0u);
+
+  auto new_app_id = CreateWebApp("NewApp");
+  EXPECT_EQ(cache->GetAllShortcuts().size(), 0u);
+}
+
+TEST_F(BrowserShortcutsTest, PublishNewBrowserShortcut) {
+  InitializeBrowserShortcutPublisher();
+  apps::ShortcutRegistryCache* cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->ShortcutRegistryCache();
+  ASSERT_EQ(cache->GetAllShortcuts().size(), 0u);
+
+  const std::string kShortcutName = "Shortcut";
+
+  auto local_shortcut_id = CreateShortcut(kShortcutName);
+  apps::ShortcutId expected_shortcut_id =
+      apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
+
+  ASSERT_EQ(cache->GetAllShortcuts().size(), 1u);
+  ASSERT_TRUE(cache->HasShortcut(expected_shortcut_id));
+
+  apps::ShortcutView stored_shortcut = cache->GetShortcut(expected_shortcut_id);
+  ASSERT_TRUE(stored_shortcut);
+  EXPECT_EQ(stored_shortcut->shortcut_id, expected_shortcut_id);
+  EXPECT_EQ(stored_shortcut->name, "Shortcut");
+  EXPECT_EQ(stored_shortcut->shortcut_source, apps::ShortcutSource::kUser);
+  EXPECT_EQ(stored_shortcut->host_app_id, app_constants::kChromeAppId);
+  EXPECT_EQ(stored_shortcut->local_id, local_shortcut_id);
 }
 
 TEST_F(BrowserShortcutsTest, LaunchShortcut) {

@@ -64,17 +64,12 @@ void BrowserShortcuts::InitBrowserShortcuts() {
   // Register publisher for shortcuts created from browser.
   RegisterShortcutPublisher(apps::AppType::kChromeApp);
 
-  for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
-    if (!IsShortcut(web_app.app_id())) {
-      continue;
-    }
-    apps::ShortcutPtr shortcut = std::make_unique<apps::Shortcut>(
-        app_constants::kChromeAppId, web_app.app_id());
-    shortcut->name =
-        provider_->registrar_unsafe().GetAppShortName(web_app.app_id());
-    shortcut->shortcut_source = apps::ShortcutSource::kUser;
-    apps::ShortcutPublisher::PublishShortcut(std::move(shortcut));
+  for (const AppId& web_app_id : provider_->registrar_unsafe().GetAppIds()) {
+    MaybePublishBrowserShortcut(web_app_id);
   }
+
+  install_manager_observation_.Observe(&provider_->install_manager());
+
   if (*GetInitializedCallbackForTesting()) {
     std::move(*GetInitializedCallbackForTesting()).Run();
   }
@@ -88,6 +83,22 @@ bool BrowserShortcuts::IsShortcut(const AppId& app_id) {
   }
 }
 
+void BrowserShortcuts::MaybePublishBrowserShortcut(const AppId& app_id) {
+  if (!IsShortcut(app_id)) {
+    return;
+  }
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
+  if (!web_app) {
+    return;
+  }
+  apps::ShortcutPtr shortcut = std::make_unique<apps::Shortcut>(
+      app_constants::kChromeAppId, web_app->app_id());
+  shortcut->name =
+      provider_->registrar_unsafe().GetAppShortName(web_app->app_id());
+  shortcut->shortcut_source = apps::ShortcutSource::kUser;
+  apps::ShortcutPublisher::PublishShortcut(std::move(shortcut));
+}
+
 void BrowserShortcuts::LaunchShortcut(const std::string& host_app_id,
                                       const std::string& local_id,
                                       int64_t display_id) {
@@ -97,6 +108,18 @@ void BrowserShortcuts::LaunchShortcut(const std::string& host_app_id,
       apps::LaunchSource::kFromAppListGrid, display_id);
   provider_->scheduler().LaunchAppWithCustomParams(std::move(params),
                                                    base::DoNothing());
+}
+
+void BrowserShortcuts::OnWebAppInstalled(const AppId& app_id) {
+  MaybePublishBrowserShortcut(app_id);
+}
+
+void BrowserShortcuts::OnWebAppInstalledWithOsHooks(const AppId& app_id) {
+  MaybePublishBrowserShortcut(app_id);
+}
+
+void BrowserShortcuts::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 }  // namespace web_app
