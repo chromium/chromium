@@ -6003,6 +6003,8 @@ static_library("ui") {
       "aura/accessibility/automation_manager_aura.h",
       "aura/tab_contents/web_drag_bookmark_handler_aura.cc",
       "aura/tab_contents/web_drag_bookmark_handler_aura.h",
+      "overscroll_pref_manager.cc",
+      "overscroll_pref_manager.h",
       "views/accelerator_utils_aura.cc",
       "views/apps/app_window_easy_resize_window_targeter.cc",
       "views/apps/app_window_easy_resize_window_targeter.h",

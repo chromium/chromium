@@ -288,9 +288,6 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(
 
   cursor_manager_ = std::make_unique<CursorManager>(this);
 
-  SetOverscrollControllerEnabled(
-      base::FeatureList::IsEnabled(features::kOverscrollHistoryNavigation));
-
   selection_controller_client_ =
       std::make_unique<TouchSelectionControllerClientAura>(this);
   CreateSelectionController();

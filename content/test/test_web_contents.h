@@ -175,6 +175,9 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
       absl::optional<blink::mojom::PictureInPictureWindowOptions> options)
       override;
 
+  void SetOverscrollNavigationEnabled(bool enabled) override;
+  bool GetOverscrollNavigationEnabled() override;
+
  protected:
   // The deprecated WebContentsTester still needs to subclass this.
   explicit TestWebContents(BrowserContext* browser_context);
@@ -234,6 +237,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   base::TimeTicks tab_switch_start_time_;
   absl::optional<blink::mojom::PictureInPictureWindowOptions>
       picture_in_picture_options_;
+  bool overscroll_enabled_ = true;
 };
 
 }  // namespace content

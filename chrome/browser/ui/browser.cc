@@ -121,6 +121,7 @@
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/overscroll_pref_manager.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -496,6 +497,10 @@ Browser::Browser(const CreateParams& params)
       ,
       extension_browser_window_helper_(
           std::make_unique<extensions::ExtensionBrowserWindowHelper>(this))
+#endif
+#if defined(USE_AURA)
+      ,
+      overscroll_pref_manager_(std::make_unique<OverscrollPrefManager>(this))
 #endif
 {
   if (!profile_->IsOffTheRecord()) {
@@ -1346,7 +1351,8 @@ void Browser::SetTopControlsGestureScrollInProgress(bool in_progress) {
 bool Browser::CanOverscrollContent() {
 #if defined(USE_AURA)
   return !is_type_devtools() &&
-         base::FeatureList::IsEnabled(features::kOverscrollHistoryNavigation);
+         base::FeatureList::IsEnabled(features::kOverscrollHistoryNavigation) &&
+         overscroll_pref_manager_->IsOverscrollHistoryNavigationEnabled();
 #else
   return false;
 #endif

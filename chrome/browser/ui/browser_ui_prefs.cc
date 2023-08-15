@@ -58,6 +58,11 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
 #endif  // BUILDFLAG(IS_MAC)
 
   registry->RegisterBooleanPref(prefs::kHoverCardImagesEnabled, true);
+
+#if defined(USE_AURA)
+  registry->RegisterBooleanPref(prefs::kOverscrollHistoryNavigationEnabled,
+                                true);
+#endif
 }
 
 void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {

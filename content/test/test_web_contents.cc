@@ -567,4 +567,12 @@ void TestWebContents::SetPictureInPictureOptions(
   picture_in_picture_options_ = options;
 }
 
+void TestWebContents::SetOverscrollNavigationEnabled(bool enabled) {
+  overscroll_enabled_ = enabled;
+}
+
+bool TestWebContents::GetOverscrollNavigationEnabled() {
+  return overscroll_enabled_;
+}
+
 }  // namespace content

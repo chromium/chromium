@@ -122,6 +122,7 @@ class CONTENT_EXPORT WebContentsViewAura
 
   friend class WebContentsViewAuraTest;
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, EnableDisableOverscroll);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, RenderViewHostChanged);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropFiles);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            DragDropFilesOriginateFromRenderer);

@@ -9998,4 +9998,8 @@ std::pair<int, int> WebContentsImpl::GetAvailablePointerAndHoverTypes() {
   return ui::GetAvailablePointerAndHoverTypes();
 }
 
+void WebContentsImpl::SetOverscrollNavigationEnabled(bool enabled) {
+  GetView()->SetOverscrollControllerEnabled(enabled);
+}
+
 }  // namespace content

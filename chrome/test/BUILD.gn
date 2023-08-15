@@ -8859,6 +8859,8 @@ test("unit_tests") {
   }
 
   if (use_aura) {
+    sources += [ "../browser/ui/overscroll_pref_manager_unittest.cc" ]
+
     deps += [
       "//ui/aura:test_support",
       "//ui/views:test_support",

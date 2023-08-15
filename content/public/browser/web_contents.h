@@ -1426,6 +1426,9 @@ class WebContents : public PageNavigator,
   [[nodiscard]] virtual base::ScopedClosureRunner
   CreateDisallowCustomCursorScope() = 0;
 
+  // Enables overscroll history navigation.
+  virtual void SetOverscrollNavigationEnabled(bool enabled) = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class WebContentsImpl;

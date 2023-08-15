@@ -1416,6 +1416,12 @@ inline constexpr char kAccessibilityFocusHighlightEnabled[] =
     "settings.a11y.focus_highlight";
 #endif
 
+#if defined(USE_AURA)
+// Whether horizontal overscroll will trigger history navigation.
+inline constexpr char kOverscrollHistoryNavigationEnabled[] =
+    "settings.a11y.overscroll_history_navigation";
+#endif
+
 // Whether the PDF OCR feature is set to be always active. The PDF OCR feature
 // is exposed to only screen reader users.
 inline constexpr char kAccessibilityPdfOcrAlwaysActive[] =

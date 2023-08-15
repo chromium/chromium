@@ -1073,7 +1073,10 @@ void WebContentsViewAura::SetPageTitle(const std::u16string& title) {
 void WebContentsViewAura::RenderViewReady() {}
 
 void WebContentsViewAura::RenderViewHostChanged(RenderViewHost* old_host,
-                                                RenderViewHost* new_host) {}
+                                                RenderViewHost* new_host) {
+  WebContentsDelegate* delegate = web_contents_->GetDelegate();
+  SetOverscrollControllerEnabled(!delegate || delegate->CanOverscrollContent());
+}
 
 void WebContentsViewAura::SetOverscrollControllerEnabled(bool enabled) {
   RenderWidgetHostViewAura* view =
