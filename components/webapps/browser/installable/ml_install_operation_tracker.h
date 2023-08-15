@@ -48,6 +48,8 @@ class MlInstallOperationTracker {
   // installation dialog to the MlInstallResultReporter, if it exists.
   void ReportResult(MlInstallUserResponse response);
 
+  bool MLReporterAlreadyConnected();
+
   base::WeakPtr<MlInstallOperationTracker> GetWeakPtr();
 
  private:
