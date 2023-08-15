@@ -1460,6 +1460,7 @@
   'chrome_public_test_apk': {
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
+      'android-code-coverage-native', # Does not generate profraw data.
     ],
     'modifications': {
       'Oreo Phone Tester': {
@@ -5128,6 +5129,7 @@
       # matching android builders, the test fails on these.
       'ToTAndroid',
       'android-asan',  # https://crbug.com/964562
+      'android-code-coverage-native', # Does not generate profraw data.
     ],
     'modifications': {
       'Oreo Phone Tester': {
@@ -5171,15 +5173,6 @@
       'android-13-x64-rel': {
         'swarming': {
           'shards': 9,
-        },
-      },
-      'android-code-coverage-native': {
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'swarming': {
-          # Shard number is increased for added local coverage data merging time.
-          'shards': 12,
         },
       },
       # If you change this, make similar changes in android-x86-code-coverage below
