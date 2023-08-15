@@ -70,9 +70,6 @@ class QuickDeleteViewBinder {
     private static void updateBrowsingHistoryRowIfPending(
             @NonNull Context context, @NonNull View quickDeleteView, boolean isPending) {
         if (!isPending) return;
-
-        updateBrowsingHistorySubtitleVisibility(quickDeleteView, false);
-
         ViewGroup quickDeleteHistoryRow =
                 quickDeleteView.findViewById(R.id.quick_delete_history_row);
         TemplatePreservingTextView title =

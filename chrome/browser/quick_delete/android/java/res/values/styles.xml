@@ -8,18 +8,19 @@ found in the LICENSE file.
     <style name="MoreOptionsButton" parent="FilledButton.Flat" >
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
         <item name="android:textAlignment">viewStart</item>
-        <item name="buttonColor">?attr/defaultBgColorElev2Baseline</item>
+        <item name="buttonColor">@color/color_primary_with_alpha_5</item>
         <item name="buttonTextColor">@macro/default_text_color</item>
         <item name="verticalInset">0dp</item>
-        <item name="drawableHeight">24dp</item>
-        <item name="drawableWidth">24dp</item>
-        <item name="android:paddingStart">12dp</item>
-        <item name="android:paddingEnd">12dp</item>
-        <item name="android:paddingTop">16dp</item>
-        <item name="android:paddingBottom">16dp</item>
-        <item name="rippleCornerRadiusTopStart">16dp</item>
-        <item name="rippleCornerRadiusBottomEnd">16dp</item>
-        <item name="rippleCornerRadiusBottomStart">16dp</item>
-        <item name="rippleCornerRadiusTopEnd">16dp</item>
+        <item name="drawableHeight">@dimen/qd_dialog_button_icon_size</item>
+        <item name="drawableWidth">@dimen/qd_dialog_button_icon_size</item>
+        <item name="android:drawableTint">@macro/default_text_color</item>
+        <item name="android:paddingStart">@dimen/qd_dialog_button_icon_padding</item>
+        <item name="android:paddingEnd">@dimen/qd_dialog_button_icon_end_padding</item>
+        <item name="android:paddingTop">@dimen/qd_dialog_button_icon_padding</item>
+        <item name="android:paddingBottom">@dimen/qd_dialog_button_icon_padding</item>
+        <item name="rippleCornerRadiusTopStart">@dimen/qd_dialog_button_radius</item>
+        <item name="rippleCornerRadiusBottomEnd">@dimen/qd_dialog_button_radius</item>
+        <item name="rippleCornerRadiusBottomStart">@dimen/qd_dialog_button_radius</item>
+        <item name="rippleCornerRadiusTopEnd">@dimen/qd_dialog_button_radius</item>
     </style>
 </resources>

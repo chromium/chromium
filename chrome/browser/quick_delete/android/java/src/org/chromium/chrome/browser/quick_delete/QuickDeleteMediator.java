@@ -47,12 +47,11 @@ class QuickDeleteMediator implements QuickDeleteDialogDelegate.TimePeriodChangeO
     public void onTimePeriodChanged(@TimePeriod int timePeriod) {
         mPropertyModel.set(
                 QuickDeleteProperties.IS_SIGNED_IN, QuickDeleteDelegate.isSignedIn(mProfile));
-        mPropertyModel.set(QuickDeleteProperties.IS_SYNCING_HISTORY,
-                QuickDeleteDelegate.isSyncingHistory(mProfile));
         mPropertyModel.set(QuickDeleteProperties.CLOSED_TABS_COUNT,
                 mQuickDeleteTabsFilter.getListOfTabsToBeClosed(timePeriod).size());
         mPropertyModel.set(QuickDeleteProperties.TIME_PERIOD, timePeriod);
 
+        mPropertyModel.set(QuickDeleteProperties.IS_SYNCING_HISTORY, false);
         mPropertyModel.set(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING, true);
         // This is an async call which would update the browsing history row.
         mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(timePeriod, this);
@@ -70,6 +69,8 @@ class QuickDeleteMediator implements QuickDeleteDialogDelegate.TimePeriodChangeO
     public void onLastVisitedDomainAndUniqueDomainCountReady(
             String lastVisitedDomain, int domainCount) {
         mPropertyModel.set(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING, false);
+        mPropertyModel.set(QuickDeleteProperties.IS_SYNCING_HISTORY,
+                QuickDeleteDelegate.isSyncingHistory(mProfile));
         mPropertyModel.set(QuickDeleteProperties.DOMAIN_VISITED_DATA,
                 new QuickDeleteDelegate.DomainVisitsData(lastVisitedDomain, domainCount));
     }

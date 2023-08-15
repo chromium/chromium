@@ -10,11 +10,13 @@ import android.content.Context;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -135,11 +137,9 @@ class QuickDeleteDialogDelegate {
 
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
-                .with(ModalDialogProperties.TITLE,
-                        mContext.getString(R.string.quick_delete_dialog_title))
                 .with(ModalDialogProperties.CUSTOM_VIEW, mQuickDeleteView)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                        mContext.getString(R.string.delete))
+                        mContext.getString(R.string.clear_data_delete))
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                         mContext.getString(R.string.cancel))
                 .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
@@ -157,7 +157,17 @@ class QuickDeleteDialogDelegate {
     private void updateSpinner(@NonNull Spinner quickDeleteSpinner) {
         TimePeriodSpinnerOption[] options = getTimePeriodSpinnerOptions(mContext);
         ArrayAdapter<TimePeriodSpinnerOption> adapter = new ArrayAdapter<>(
-                mContext, android.R.layout.simple_spinner_dropdown_item, options);
+                mContext, android.R.layout.simple_spinner_dropdown_item, options) {
+            @NonNull
+            @Override
+            public View getView(
+                    int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                view.setPadding(0, 0, 0, 0);
+                return view;
+            }
+        };
+
         quickDeleteSpinner.setAdapter(adapter);
         quickDeleteSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
