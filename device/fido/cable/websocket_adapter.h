@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WebSocketAdapter
       // on_tunnel_ready is called once with a boolean that indicates whether
       // the WebSocket successfully connected and an optional routing ID.
       TunnelReadyCallback on_tunnel_ready,
-      // on_tunnel_ready is called repeatedly, after successful connection, with
+      // on_tunnel_data is called repeatedly, after successful connection, with
       // the contents of WebSocket messages. Framing is preserved so a single
       // message written by the server will result in a single callback.
       TunnelDataCallback on_tunnel_data);
