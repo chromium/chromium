@@ -46,6 +46,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/lens/lens_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
@@ -505,6 +506,14 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
         companion_server_.GetURL("/upload").spec();
 
     std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (enable_feature_lens_standalone_) {
+      enabled_features.emplace_back(base::test::FeatureRefAndParams(
+          lens::features::kLensStandalone, /*params*/ {}));
+    } else {
+      disabled_features.emplace_back(lens::features::kLensStandalone);
+    }
+
     if (enable_feature_side_panel_companion_) {
       enabled_features.emplace_back(
           companion::features::internal::kSidePanelCompanion, params);
@@ -521,7 +530,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
         params2);
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                /*disabled_features=*/{});
+                                                disabled_features);
   }
 
   virtual std::string ShouldOpenLinkInCurrentTab() { return "false"; }
@@ -603,6 +612,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   std::string last_targetlang_;
   bool enable_feature_side_panel_companion_ = true;
   bool enable_feature_visual_search_ = true;
+  bool enable_feature_lens_standalone_ = true;
 };
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, InitialNavigationWithoutMsbb) {
@@ -1891,13 +1901,23 @@ class SidePanelCompanion2BrowserEnabledTest : public CompanionPageBrowserTest {
 
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
+    if (enable_feature_lens_standalone_) {
+      enabled_features.emplace_back(base::test::FeatureRefAndParams(
+          lens::features::kLensStandalone, /*params*/ {}));
+    } else {
+      disabled_features.emplace_back(lens::features::kLensStandalone);
+    }
 
     if (enable_feature_side_panel_companion_) {
       enabled_features.emplace_back(
           companion::features::internal::kSidePanelCompanion2, enabled_params);
       feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                   disabled_features);
-      EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
+      if (enable_feature_lens_standalone_) {
+        EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
+      } else {
+        EXPECT_FALSE(companion::IsCompanionFeatureEnabled());
+      }
     } else {
       disabled_features.emplace_back(
           companion::features::internal::kSidePanelCompanion);
@@ -1946,4 +1966,21 @@ IN_PROC_BROWSER_TEST_F(SidePanelCompanion2BrowserEnabledTest, FeatureEnabled) {
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
   EXPECT_EQ(1u, requests_received_on_server());
+}
+
+class LensStandaloneDisabledBrowserTest : public CompanionPageBrowserTest {
+ public:
+  LensStandaloneDisabledBrowserTest() : CompanionPageBrowserTest() {
+    enable_feature_lens_standalone_ = false;
+  }
+};
+
+// Verifies the behavior when Lens standalone feature is disabled but the side
+// panel Companion flag is enabled.
+IN_PROC_BROWSER_TEST_F(
+    LensStandaloneDisabledBrowserTest,
+    CompanionFeatureStatusWhenLensStandaloneFeatureDisabled) {
+  EXPECT_TRUE(base::FeatureList::IsEnabled(
+      companion::features::internal::kSidePanelCompanion));
+  EXPECT_FALSE(companion::IsCompanionFeatureEnabled());
 }
