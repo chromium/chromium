@@ -1344,10 +1344,17 @@ var PrintPreviewPrinterStatusTestCros = class extends PrintPreviewTest {
 };
 
 TEST_F(
-    'PrintPreviewPrinterStatusTestCros', 'PrinterStatusUpdatesColor',
+    'PrintPreviewPrinterStatusTestCros', 'PrinterStatusUpdatesColor_FlagOff',
     function() {
       this.runMochaTest(
-          printer_status_test_cros.TestNames.PrinterStatusUpdatesColor);
+          printer_status_test_cros.TestNames.PrinterStatusUpdatesColor_FlagOff);
+    });
+
+TEST_F(
+    'PrintPreviewPrinterStatusTestCros', 'PrinterStatusUpdatesColor_FlagOn',
+    function() {
+      this.runMochaTest(
+          printer_status_test_cros.TestNames.PrinterStatusUpdatesColor_FlagOn);
     });
 
 TEST_F(
