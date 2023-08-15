@@ -1031,8 +1031,6 @@ void DeskBarViewBase::UpdateLibraryButtonVisibility() {
             expanded_state_library_button_->GetInnerButton());
       }
     }
-  } else {
-    // TODO(b/277988182): Add support for desk button desk bar.
   }
 
   const int begin_x = GetFirstMiniViewXOffset();
@@ -1451,8 +1449,6 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
       highlight_controller->OnViewDestroyingOrDisabling(
           (*iter)->desk_preview());
     }
-  } else {
-    // TODO(b/277988182): Add support for desk button desk bar.
   }
 
   if (chromeos::features::IsJellyrollEnabled()) {
