@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -32,22 +33,22 @@ using ::ash::cros_healthd::mojom::CrashUploadInfo;
 using ::ash::cros_healthd::mojom::EventCategoryEnum;
 using ::ash::cros_healthd::mojom::EventInfo;
 
-// Tests fatal crash events observer. `NoSessionAshTestBase` is needed here
-// because the observer uses `ash::Shell()` to obtain the user session type.
-class FatalCrashEventsObserverTest
-    : public ::ash::NoSessionAshTestBase,
-      public ::testing::WithParamInterface</*uploaded=*/bool> {
+// Base class for testing `FatalCrashEventsObserver`. `NoSessionAshTestBase` is
+// needed here because the observer uses `ash::Shell()` to obtain the user
+// session type.
+class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
  public:
-  FatalCrashEventsObserverTest(const FatalCrashEventsObserverTest&) = delete;
-  FatalCrashEventsObserverTest& operator=(const FatalCrashEventsObserverTest&) =
+  FatalCrashEventsObserverTestBase(const FatalCrashEventsObserverTestBase&) =
       delete;
+  FatalCrashEventsObserverTestBase& operator=(
+      const FatalCrashEventsObserverTestBase&) = delete;
 
  protected:
   static constexpr std::string_view kCrashReportId = "Crash Report ID";
   static constexpr std::string_view kUserEmail = "user@example.com";
 
-  FatalCrashEventsObserverTest() = default;
-  ~FatalCrashEventsObserverTest() override = default;
+  FatalCrashEventsObserverTestBase() = default;
+  ~FatalCrashEventsObserverTestBase() override = default;
 
   void SetUp() override {
     ::ash::NoSessionAshTestBase::SetUp();
@@ -58,8 +59,6 @@ class FatalCrashEventsObserverTest
     FakeCrosHealthd::Shutdown();
     ::ash::NoSessionAshTestBase::TearDown();
   }
-
-  bool is_uploaded() const { return GetParam(); }
 
   // Let the fake cros_healthd emit the crash event and wait for the
   // `FatalCrashTelemetry` message to become available.
@@ -83,9 +82,9 @@ class FatalCrashEventsObserverTest
 
   // Create a new `CrashEventInfo` object that respects the `is_uploaded`
   // param.
-  CrashEventInfoPtr NewCrashEventInfo() {
+  CrashEventInfoPtr NewCrashEventInfo(bool is_uploaded) {
     auto crash_event_info = CrashEventInfo::New();
-    if (is_uploaded()) {
+    if (is_uploaded) {
       crash_event_info->upload_info = CrashUploadInfo::New();
       crash_event_info->upload_info->crash_report_id = kCrashReportId;
     }
@@ -93,7 +92,20 @@ class FatalCrashEventsObserverTest
     return crash_event_info;
   }
 
-  // Similar to SimulateUserLogin, except the user is affiliated.
+  // Simulate user login and allows specifying whether the user is affiliated.
+  void SimulateUserLogin(std::string_view user_email,
+                         user_manager::UserType user_type,
+                         bool is_user_affiliated) {
+    if (is_user_affiliated) {
+      SimulateAffiliatedUserLogin(user_email, user_type);
+    } else {
+      // Calls the proxy of the parent's `SimulateUserLogin`.
+      SimulateUserLogin(std::string(user_email), user_type);
+    }
+  }
+
+ private:
+  // Similar to `AshTestBase::SimulateUserLogin`, except the user is affiliated.
   void SimulateAffiliatedUserLogin(std::string_view user_email,
                                    user_manager::UserType user_type) {
     const auto account_id = AccountId::FromUserEmail(std::string(user_email));
@@ -106,12 +118,36 @@ class FatalCrashEventsObserverTest
         session_manager::SessionState::ACTIVE);
   }
 
- private:
+  // A proxy of parent's `AshTestBase::SimulateUserLogin`. This is to make it
+  // private so that it won't be accidentally called, because every user login
+  // simulation in the tests should specify whether the user is affiliated. Use
+  // `SimulateUserLogin` defined in this class instead.
+  void SimulateUserLogin(const std::string& user_email,
+                         user_manager::UserType user_type) {
+    NoSessionAshTestBase::SimulateUserLogin(user_email, user_type);
+  }
+
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 };
 
+// Tests `FatalCrashEventsObserver` with `uploaded` being parameterized.
+class FatalCrashEventsObserverTest
+    : public FatalCrashEventsObserverTestBase,
+      public ::testing::WithParamInterface</*uploaded=*/bool> {
+ public:
+  FatalCrashEventsObserverTest(const FatalCrashEventsObserverTest&) = delete;
+  FatalCrashEventsObserverTest& operator=(const FatalCrashEventsObserverTest&) =
+      delete;
+
+ protected:
+  FatalCrashEventsObserverTest() = default;
+  ~FatalCrashEventsObserverTest() override = default;
+
+  bool is_uploaded() const { return GetParam(); }
+};
+
 TEST_P(FatalCrashEventsObserverTest, FieldTypePassedThrough) {
-  auto crash_event_info = NewCrashEventInfo();
+  auto crash_event_info = NewCrashEventInfo(is_uploaded());
   crash_event_info->crash_type = CrashEventInfo::CrashType::kKernel;
 
   const auto fatal_crash_telemetry =
@@ -124,7 +160,7 @@ TEST_P(FatalCrashEventsObserverTest, FieldTypePassedThrough) {
 TEST_P(FatalCrashEventsObserverTest, FieldLocalIdPassedThrough) {
   static constexpr std::string_view kLocalId = "local ID a";
 
-  auto crash_event_info = NewCrashEventInfo();
+  auto crash_event_info = NewCrashEventInfo(is_uploaded());
   crash_event_info->local_id = kLocalId;
 
   const auto fatal_crash_telemetry =
@@ -136,7 +172,7 @@ TEST_P(FatalCrashEventsObserverTest, FieldLocalIdPassedThrough) {
 TEST_P(FatalCrashEventsObserverTest, FieldTimestampPassedThrough) {
   static constexpr base::Time kCaptureTime = base::Time::FromTimeT(2);
 
-  auto crash_event_info = NewCrashEventInfo();
+  auto crash_event_info = NewCrashEventInfo(is_uploaded());
   crash_event_info->capture_time = kCaptureTime;
 
   const auto fatal_crash_telemetry =
@@ -147,7 +183,7 @@ TEST_P(FatalCrashEventsObserverTest, FieldTimestampPassedThrough) {
 
 TEST_P(FatalCrashEventsObserverTest, FieldCrashReportIdPassedThrough) {
   const auto fatal_crash_telemetry =
-      WaitForFatalCrashTelemetry(NewCrashEventInfo());
+      WaitForFatalCrashTelemetry(NewCrashEventInfo(is_uploaded()));
   if (is_uploaded()) {
     ASSERT_TRUE(fatal_crash_telemetry.has_crash_report_id());
     EXPECT_EQ(fatal_crash_telemetry.crash_report_id(), kCrashReportId);
@@ -158,8 +194,9 @@ TEST_P(FatalCrashEventsObserverTest, FieldCrashReportIdPassedThrough) {
 }
 
 TEST_P(FatalCrashEventsObserverTest, FieldUserEmailFilledIfAffiliated) {
-  SimulateAffiliatedUserLogin(kUserEmail, user_manager::USER_TYPE_REGULAR);
-  auto crash_event_info = NewCrashEventInfo();
+  SimulateUserLogin(kUserEmail, user_manager::USER_TYPE_REGULAR,
+                    /*is_user_affiliated=*/true);
+  auto crash_event_info = NewCrashEventInfo(is_uploaded());
   const auto fatal_crash_telemetry =
       WaitForFatalCrashTelemetry(std::move(crash_event_info));
 
@@ -169,14 +206,48 @@ TEST_P(FatalCrashEventsObserverTest, FieldUserEmailFilledIfAffiliated) {
 }
 
 TEST_P(FatalCrashEventsObserverTest, FieldUserEmailAbsentIfUnaffiliated) {
-  SimulateUserLogin(std::string(kUserEmail), user_manager::USER_TYPE_REGULAR);
-  auto crash_event_info = NewCrashEventInfo();
+  SimulateUserLogin(kUserEmail, user_manager::USER_TYPE_REGULAR,
+                    /*is_user_affiliated=*/false);
+  auto crash_event_info = NewCrashEventInfo(is_uploaded());
   const auto fatal_crash_telemetry =
       WaitForFatalCrashTelemetry(std::move(crash_event_info));
   EXPECT_FALSE(fatal_crash_telemetry.has_affiliated_user());
 }
 
-TEST_P(FatalCrashEventsObserverTest, FieldSessionTypeFilledIfAffiliated) {
+INSTANTIATE_TEST_SUITE_P(
+    FatalCrashEventsObserverTests,
+    FatalCrashEventsObserverTest,
+    ::testing::Bool(),
+    [](const testing::TestParamInfo<FatalCrashEventsObserverTest::ParamType>&
+           info) { return info.param ? "uploaded" : "unuploaded"; });
+
+// Tests `FatalCrashEventsObserver` with both uploaded and user affiliation
+// parameterized. Useful when testing behaviors that require a user session and
+// that are homogeneous regarding user affiliation.
+class FatalCrashEventsObserverWithUserAffiliationParamTest
+    : public FatalCrashEventsObserverTestBase,
+      public ::testing::WithParamInterface<
+          std::tuple</*uploaded=*/bool,
+                     /*user_affiliated=*/bool>> {
+ public:
+  FatalCrashEventsObserverWithUserAffiliationParamTest(
+      const FatalCrashEventsObserverWithUserAffiliationParamTest&) = delete;
+  FatalCrashEventsObserverWithUserAffiliationParamTest& operator=(
+      const FatalCrashEventsObserverWithUserAffiliationParamTest&) = delete;
+
+ protected:
+  FatalCrashEventsObserverWithUserAffiliationParamTest() = default;
+  ~FatalCrashEventsObserverWithUserAffiliationParamTest() override = default;
+
+  bool is_uploaded() const { return std::get<0>(GetParam()); }
+  bool is_user_affiliated() const { return std::get<1>(GetParam()); }
+};
+
+TEST_P(FatalCrashEventsObserverWithUserAffiliationParamTest,
+       FieldSessionTypeFilledIfAffiliated) {
+  if (!is_user_affiliated()) {
+    GTEST_SKIP();
+  }
   // Sample 2 session types. Otherwise it would be repeating `GetSessionType`
   // in fatal_crash_events_observer.cc.
   static constexpr std::tuple<user_manager::UserType,
@@ -187,9 +258,9 @@ TEST_P(FatalCrashEventsObserverTest, FieldSessionTypeFilledIfAffiliated) {
                           FatalCrashTelemetry::SESSION_TYPE_GUEST}};
 
   for (size_t i = 0; i < std::size(kSessionTypes); ++i) {
-    SimulateAffiliatedUserLogin(std::string(kUserEmail),
-                                std::get<0>(kSessionTypes[i]));
-    auto crash_event_info = NewCrashEventInfo();
+    SimulateUserLogin(kUserEmail, std::get<0>(kSessionTypes[i]),
+                      /*is_user_affiliated=*/true);
+    auto crash_event_info = NewCrashEventInfo(is_uploaded());
     const auto fatal_crash_telemetry =
         WaitForFatalCrashTelemetry(std::move(crash_event_info));
     ASSERT_TRUE(fatal_crash_telemetry.has_session_type());
@@ -199,10 +270,14 @@ TEST_P(FatalCrashEventsObserverTest, FieldSessionTypeFilledIfAffiliated) {
   }
 }
 
-TEST_P(FatalCrashEventsObserverTest,
+TEST_P(FatalCrashEventsObserverWithUserAffiliationParamTest,
        FieldSessionTypeUnspecifiedIfUnaffiliated) {
-  SimulateUserLogin(std::string(kUserEmail), user_manager::USER_TYPE_REGULAR);
-  auto crash_event_info = NewCrashEventInfo();
+  if (is_user_affiliated()) {
+    GTEST_SKIP();
+  }
+  SimulateUserLogin(kUserEmail, user_manager::USER_TYPE_REGULAR,
+                    /*is_user_affiliated=*/false);
+  auto crash_event_info = NewCrashEventInfo(is_uploaded());
   const auto fatal_crash_telemetry =
       WaitForFatalCrashTelemetry(std::move(crash_event_info));
   ASSERT_TRUE(fatal_crash_telemetry.has_session_type());
@@ -211,10 +286,16 @@ TEST_P(FatalCrashEventsObserverTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    FatalCrashEventsObserverTests,
-    FatalCrashEventsObserverTest,
-    ::testing::Bool(),
-    [](const testing::TestParamInfo<FatalCrashEventsObserverTest::ParamType>&
-           info) { return info.param ? "uploaded" : "unuploaded"; });
+    FatalCrashEventsObserverWithUserAffiliationParamTests,
+    FatalCrashEventsObserverWithUserAffiliationParamTest,
+    ::testing::Combine(::testing::Bool(), ::testing::Bool()),
+    [](const testing::TestParamInfo<
+        FatalCrashEventsObserverWithUserAffiliationParamTest::ParamType>&
+           info) {
+      std::ostringstream ss;
+      ss << (std::get<0>(info.param) ? "uploaded" : "unuploaded") << '_'
+         << (std::get<1>(info.param) ? "user_affiliated" : "user_unaffiliated");
+      return ss.str();
+    });
 }  // namespace
 }  // namespace reporting
