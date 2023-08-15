@@ -356,7 +356,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2531025035050312891">dispositivo lento</translation>
 <translation id="2531107890083353124">Prima <ph name="KEY_ONE" /> enquanto arrasta o separador</translation>
 <translation id="254900897760075745">Copiar o conteúdo selecionado para a área de transferência</translation>
-<translation id="2549711466868162843">Melhorar iluminação</translation>
+<translation id="2549711466868162843">Melhorar a iluminação</translation>
 <translation id="2549985041256363841">Iniciar gravação</translation>
 <translation id="255671100581129685">O Assistente Google não está disponível para sessões públicas.</translation>
 <translation id="256712445991462162">a lupa ancorada</translation>
@@ -421,6 +421,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2840766858109427815">Avançar para a página seguinte</translation>
 <translation id="2841907151129139818">Mudou para o modo de tablet</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta frontal do lado esquerdo)</translation>
+<translation id="2844350028562914727">detalhes</translation>
 <translation id="2848120746144143659">Prima Enter para fazer uma captura de ecrã inteiro</translation>
 <translation id="2849936225196189499">Crítica</translation>
 <translation id="2860184359326882502">Melhor correspondência</translation>
@@ -979,6 +980,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5176318573511391780">Gravar ecrã parcial</translation>
 <translation id="5187627942836026988">Veja os detalhes da zona Wi-Fi. A zona Wi-Fi foi bloqueada pelo seu administrador.</translation>
+<translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> em combinação com <ph name="IN_PLACE_APP" /> para criar uma nova pasta.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1083,6 +1085,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Mudámos a sua ligação para uma rede melhor</translation>
 <translation id="5619862035903135339">A política do administrador desativa a captura de ecrã.</translation>
+<translation id="5620856676199877916">Ver todos os trabalhos da turma no Website do Google Classroom</translation>
 <translation id="5620979661744857819">Isto permite o acesso para a app <ph name="APP_NAME" /> e todas as apps e Websites com as autorizações da câmara e do microfone. Pode ter de atualizar a página Web ou reiniciar a app.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Não foi possível validar a sua palavra-passe. Tente novamente.</translation>
@@ -1212,6 +1215,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="6154006699632741460">O periférico não é suportado</translation>
 <translation id="6156960295318603523">Definições de idioma</translation>
 <translation id="615957422585914272">Mostrar teclado no ecrã</translation>
+<translation id="616543563528926612">O atalho do clique com o botão direito do rato foi atualizado da tecla <ph name="LAUNCHER_KEY_NAME" /> + clique para alt + clique</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6166852626429024716">Pesquise no dispositivo, nas apps, nas definições, na Web…</translation>
 <translation id="6168318496333165060">Abrir a app Diagnósticos</translation>
@@ -1499,6 +1503,7 @@ Nova instalação</translation>
 <translation id="7497767806359279797">Escolher idioma e teclado</translation>
 <translation id="7508690557411636492">Aberto no mês passado</translation>
 <translation id="7509246181739783082">Valide a sua identidade</translation>
+<translation id="7512509370370076552">O atalho do clique com o botão direito do rato foi atualizado de alt + clique para a tecla <ph name="LAUNCHER_KEY_NAME" /> + clique</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, não selecionado</translation>
 <translation id="7513622367902644023">Modo de captura de ecrã selecionado</translation>
 <translation id="7513922695575567867">Atualmente, está selecionada a semana de <ph name="DATE" />, <ph name="SELECTED_DATE" />, do calendário.</translation>
@@ -1602,6 +1607,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7904094684485781019">O gestor desta conta removeu a permissão de início de sessão integrado.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivos ligados</translation>
+<translation id="7926080067315048321">Ver todas as tarefas no Google Tasks na Web</translation>
 <translation id="7930731167419639574">Agora, a voz é processada localmente e o ditado funciona offline.</translation>
 <translation id="7932451802722951285">Abrir no Calendário Google</translation>
 <translation id="7933084174919150729">O Assistente Google está disponível apenas no perfil principal.</translation>
@@ -1784,6 +1790,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8721053961083920564">Ative/desative o volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captura de ecrã total</translation>
 <translation id="8725214031272624704">Mostrar lista de métodos de introdução disponíveis</translation>
+<translation id="8730621377337864115">Concluído</translation>
 <translation id="8731487213223706745">Termina à(s) <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">É possível que esteja a tentar roubar os seus toques de teclas.</translation>
 <translation id="8735678380411481005">Cor da retroiluminação do teclado</translation>

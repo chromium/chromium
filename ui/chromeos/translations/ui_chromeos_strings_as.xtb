@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">তৰমুজ</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ফৰ্মেট কৰা হ’ল</translation>
 <translation id="1931134289871235022">Slovak</translation>
-<translation id="1933345018156373194">স্থানান্তৰ কৰাত বিফল হ’ল, অপ্ৰত্যাশিত আসোঁৱাহ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ফিনিশ্ব</translation>
 <translation id="1942765061641586207">প্ৰতিচ্ছবিৰ ৰিজ’লিউছন</translation>
 <translation id="1972984168337863910">ফাইলসমূহৰ প্ৰতিক্ৰিয়াৰ পেনেলটো বিস্তাৰ কৰক</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">এলবাম</translation>
 <translation id="4972330214479971536">ফাইল ছিংক কৰাৰ ছেট আপ সম্পূৰ্ণ কৰিব পৰা নগ’ল</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" />টা বা তাতকৈ কম বৰ্ণ থকা এটা নাম ব্যৱহাৰ কৰক</translation>
-<translation id="4973970068702235170">জিপ কৰিব পৰা নগ'ল, অপ্ৰত্যাশিত আসোঁৱাহ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">জাপানীজ</translation>
 <translation id="4987699874727873250">ইংৰাজী (ভাৰত)</translation>
 <translation id="4988205478593450158">আপুনি "<ph name="FILE_NAME" />"ক নিশ্চিতভাৱে মচিব খোজেনে?</translation>
@@ -633,7 +631,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> টাৰ ভিতৰত <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, সক্ৰিয় নকৰা, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সবিশেষ</translation>
 <translation id="5911887972742538906">আপোনাৰ Linux এপ্লিকেশ্বন ইনষ্টল কৰাৰ সময়ত আসোঁৱাহৰ সৃষ্টি হৈছে৷</translation>
 <translation id="5912396950572065471">ফৰ্মেট কৰক</translation>
-<translation id="5913638992615760742">প্ৰতিলিপি কৰিব পৰা নগ’ল, অপ্ৰত্যাশিত আসোঁৱাহ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">সন্ধানৰ নতুন সুবিধাসমূহ উপলব্ধ</translation>
 <translation id="5926082595146149752">আমেৰিকা যুক্তৰাষ্ট্ৰৰ আন্তঃৰাষ্ট্ৰীয় PC কীব’ৰ্ডৰ সৈতে ডাট্‌চ (নেডাৰলেণ্ডছ)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -641,7 +638,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />টা বস্তু</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">মিলোৱাৰ বিকল্পসমূহ</translation>
-<translation id="6007237601604674381">স্থানান্তৰ কৰিবপৰা নগ’ল। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ইথাৰনেট নেটৱৰ্ক</translation>
 <translation id="60357267506638014">ছেক QWERTY</translation>
 <translation id="603895874132768835">আপুনি এটা নতুন পিন ছেট নকৰা পৰ্যন্ত এই নেটৱৰ্কটো ব্যৱহাৰ কৰিবলৈ সক্ষম নহ’ব</translation>

@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Sandía</translation>
 <translation id="1924372192547904021">Formatouse <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Eslovaco</translation>
-<translation id="1933345018156373194">Non se puido realizar o movemento debido a un erro inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finés</translation>
 <translation id="1942765061641586207">Resolución da imaxe</translation>
 <translation id="1972984168337863910">Despregar paneis de comentarios de ficheiros</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Álbum</translation>
 <translation id="4972330214479971536">Non se puido terminar de configurar a sincronización de ficheiros</translation>
 <translation id="4973523518332075481">Utiliza un nome de <ph name="MAX_LENGTH" /> caracteres ou menos</translation>
-<translation id="4973970068702235170">Non se puido realizar a operación de comprimir debido a un erro inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Xaponés</translation>
 <translation id="4987699874727873250">Inglés (India)</translation>
 <translation id="4988205478593450158">Seguro que queres eliminar "<ph name="FILE_NAME" />"?</translation>
@@ -633,7 +631,6 @@
 <translation id="5896749729057314184">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="5911887972742538906">Produciuse un erro durante a instalación da aplicación Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
-<translation id="5913638992615760742">Non se puido efectuar a copia porque se produciu un erro inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Novas funcións de busca dispoñibles</translation>
 <translation id="5926082595146149752">Neerlandés (Países Baixos) con teclado internacional estadounidense (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -641,7 +638,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementos</translation>
 <translation id="5957366693331451795">Dispositivos Chromebox</translation>
 <translation id="5982621672636444458">Opcións de ordenación</translation>
-<translation id="6007237601604674381">Non se puido mover. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rede Ethernet</translation>
 <translation id="60357267506638014">QWERTY checo</translation>
 <translation id="603895874132768835">Non poderás utilizar esta rede ata que configures un PIN novo</translation>

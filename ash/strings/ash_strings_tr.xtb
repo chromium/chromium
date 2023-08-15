@@ -421,6 +421,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2840766858109427815">Sonraki sayfaya git</translation>
 <translation id="2841907151129139818">Tablet moduna geçildi</translation>
 <translation id="2844169650293029770">USB-C cihaz (sol ön bağlantı noktası)</translation>
+<translation id="2844350028562914727">ayrıntılar</translation>
 <translation id="2848120746144143659">Tam ekran görüntüsü almak için enter tuşuna basın</translation>
 <translation id="2849936225196189499">Önemli</translation>
 <translation id="2860184359326882502">En İyi Eşleşme</translation>
@@ -979,6 +980,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5176318573511391780">Kısmi ekranı kaydet</translation>
 <translation id="5187627942836026988">Hotspot ayrıntılarını göster. Hotspot, yöneticiniz tarafından engellendi.</translation>
+<translation id="5197255632782567636">İnternet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> etkinlik</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> ile <ph name="IN_PLACE_APP" /> birleştirilerek yeni bir klasör oluşturuldu.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1784,6 +1786,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8721053961083920564">Sesi Aç/Kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tam ekran görüntüsü alma</translation>
 <translation id="8725214031272624704">Kullanılabilir giriş yöntemlerinin listesini görün</translation>
+<translation id="8730621377337864115">Bitti</translation>
 <translation id="8731487213223706745">Bitiş zamanı: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Bu klavye, tuş vuruşlarınızı çalmaya çalışıyor olabilir</translation>
 <translation id="8735678380411481005">Klavye arka ışığı rengi</translation>

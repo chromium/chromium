@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Shalqi</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> u formatua</translation>
 <translation id="1931134289871235022">Sllovakisht</translation>
-<translation id="1933345018156373194">Zhvendosja dështoi, gabim i papritur: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandisht</translation>
 <translation id="1942765061641586207">Rezolucioni i imazhit</translation>
 <translation id="1972984168337863910">Zgjero panelet e komenteve të skedarëve</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Albumi</translation>
 <translation id="4972330214479971536">Konfigurimi i sinkronizimit të skedarëve nuk mund të përfundonte</translation>
 <translation id="4973523518332075481">Përdor një emër që është <ph name="MAX_LENGTH" /> karaktere i gjatë ose më pak</translation>
-<translation id="4973970068702235170">Ngjeshja dështoi, gabim i papritur: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonisht</translation>
 <translation id="4987699874727873250">Anglisht (Indi)</translation>
 <translation id="4988205478593450158">Je i sigurt se dëshiron të fshish "<ph name="FILE_NAME" />"?</translation>
@@ -633,7 +631,6 @@
 <translation id="5896749729057314184">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, i paaktivizuar, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detajet</translation>
 <translation id="5911887972742538906">Ndodhi një gabim gjatë instalimit të aplikacionit tënd për Linux.</translation>
 <translation id="5912396950572065471">Formati</translation>
-<translation id="5913638992615760742">Operacioni i kopjimit dështoi, gabim i papritur: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Ofrohet një veçori e re për kërkimin</translation>
 <translation id="5926082595146149752">Holandisht (Holandë) me tastierë amerikane ndërkombëtare për PC</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -641,7 +638,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> artikuj</translation>
 <translation id="5957366693331451795">Pajisjet Chromebox</translation>
 <translation id="5982621672636444458">Opsionet e renditjes</translation>
-<translation id="6007237601604674381">Lëvizja dështoi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rrjeti i eternetit</translation>
 <translation id="60357267506638014">Tastierë çeke QWERTY</translation>
 <translation id="603895874132768835">Nuk do të mund ta përdorësh këtë rrjet derisa të konfigurosh një kod të ri PIN</translation>

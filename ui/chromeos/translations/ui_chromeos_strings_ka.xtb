@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">საზამთრო</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> დაფორმატდა</translation>
 <translation id="1931134289871235022">სლოვაკური</translation>
-<translation id="1933345018156373194">გადაადგილება ვერ მოხერხდა, მოულოდნელი შეცდომა: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ფინური</translation>
 <translation id="1942765061641586207">სურათის გარჩევადობა</translation>
 <translation id="1972984168337863910">ფაილების გამოხმაურების არეების გაფართოება</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">ალბომი</translation>
 <translation id="4972330214479971536">ფაილების სინქრონიზაციის დაყენება ვერ დასრულდა</translation>
 <translation id="4973523518332075481">სახელის სიგრძე უნდა იყოს <ph name="MAX_LENGTH" /> ან ნაკლები სიმბოლო</translation>
-<translation id="4973970068702235170">დაარქივება ვერ მოხერხდა, მოულოდნელი შეცდომა: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">იაპონური</translation>
 <translation id="4987699874727873250">ინგლისური (ინდოეთი)</translation>
 <translation id="4988205478593450158">ნამდვილად გსურთ, წაშალოთ „<ph name="FILE_NAME" />“?</translation>
@@ -633,7 +631,6 @@
 <translation id="5896749729057314184">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, არააქტიური, სიგნალის სიძლიერეა <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="5911887972742538906">თქვენი Linux აპლიკაციის ინსტალაციისას მოხდა შეცდომა.</translation>
 <translation id="5912396950572065471">ფორმატი</translation>
-<translation id="5913638992615760742">კოპირების ოპერაცია ვერ შესრულდა, მოულოდნელი შეცდომა: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">ხელმისაწვდომია ახალი საძიებო ფუნქციები</translation>
 <translation id="5926082595146149752">ნიდერლანდური (ნიდერლანდები) აშშ-ის საერთაშორისო (PC) კლავიატურით</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -641,7 +638,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ერთეული</translation>
 <translation id="5957366693331451795">Chromebox-ები</translation>
 <translation id="5982621672636444458">დალაგების ვარიანტები</translation>
-<translation id="6007237601604674381">გადაადგილება ვერ მოხერხდა. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet ქსელი</translation>
 <translation id="60357267506638014">ჩეხური QWERTY</translation>
 <translation id="603895874132768835">ამ ქსელს ვერ გამოიყენებთ, სანამ ახალ PIN-კოდს არ დააყენებთ</translation>

@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Melancia</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> formatado</translation>
 <translation id="1931134289871235022">Eslovaco</translation>
-<translation id="1933345018156373194">Falha ao mover, erro inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandês</translation>
 <translation id="1942765061641586207">Resolução da imagem</translation>
 <translation id="1972984168337863910">Expandir painéis de feedback de arquivos</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Álbum</translation>
 <translation id="4972330214479971536">Não foi possível concluir a configuração da sincronização de arquivos</translation>
 <translation id="4973523518332075481">Use um nome que tenha no máximo <ph name="MAX_LENGTH" /> caracteres</translation>
-<translation id="4973970068702235170">Falha na compactação, erro inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonês</translation>
 <translation id="4987699874727873250">Inglês (Índia)</translation>
 <translation id="4988205478593450158">Tem certeza de que quer excluir "<ph name="FILE_NAME" />"?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inativa, intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="5911887972742538906">Ocorreu um erro durante a instalação do aplicativo Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
-<translation id="5913638992615760742">Falha na operação de cópia, erro inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Novos recursos de pesquisa disponíveis</translation>
 <translation id="5926082595146149752">Holandês (Países Baixos) com teclado internacional de PC dos EUA</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> itens</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Opções de classificação</translation>
-<translation id="6007237601604674381">Falha na transferência. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rede Ethernet</translation>
 <translation id="60357267506638014">QWERTY Tcheco</translation>
 <translation id="603895874132768835">Não será possível usar esta rede até que um novo PIN seja configurado.</translation>

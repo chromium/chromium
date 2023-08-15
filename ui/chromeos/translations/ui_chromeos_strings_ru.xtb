@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Арбуз</translation>
 <translation id="1924372192547904021">Внешнее хранилище "<ph name="DRIVE_NAME" />" отформатировано.</translation>
 <translation id="1931134289871235022">Словацкий</translation>
-<translation id="1933345018156373194">Произошла непредвиденная ошибка. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Финский</translation>
 <translation id="1942765061641586207">Разрешение изображения</translation>
 <translation id="1972984168337863910">Развернуть панель с информацией о файлах</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Альбом</translation>
 <translation id="4972330214479971536">Не удалось завершить настройку синхронизации файлов</translation>
 <translation id="4973523518332075481">Слишком длинное название. Максимальное количество символов: <ph name="MAX_LENGTH" />.</translation>
-<translation id="4973970068702235170">Возникла непредвиденная ошибка. <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="4984616446166309645">Японский</translation>
 <translation id="4987699874727873250">Английский (Индия)</translation>
 <translation id="4988205478593450158">Вы действительно хотите удалить файл "<ph name="FILE_NAME" />"?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активирована, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
 <translation id="5911887972742538906">При установке приложения для Linux произошла ошибка.</translation>
 <translation id="5912396950572065471">Форматировать</translation>
-<translation id="5913638992615760742">Произошла непредвиденная ошибка. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">В результатах поиска доступны новые функции</translation>
 <translation id="5926082595146149752">Нидерландский (Нидерланды), американская международная раскладка (ПК)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329">Объектов: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Устройства Chromebox</translation>
 <translation id="5982621672636444458">Сортировать</translation>
-<translation id="6007237601604674381">Не удалось выполнить перемещение. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Сеть Ethernet</translation>
 <translation id="60357267506638014">Чешская (QWERTY)</translation>
 <translation id="603895874132768835">Вы не сможете использовать эту сеть, пока не зададите новый PIN-код.</translation>

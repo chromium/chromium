@@ -1339,7 +1339,6 @@
 <translation id="2061366302742593739">Харуулах зүйл байхгүй</translation>
 <translation id="2062354623176996748">Нууцлалтай цонхоор вебийг хөтчийн түүхээ хадгалалгүйгээр ашиглана уу</translation>
 <translation id="206308717637808771">Таныг бүх цонхыг хаахад өгөгдлийг устгана. Өгөгдөлд таны үзэж буй сайтын адилаар хандана</translation>
-<translation id="2063623149012168328"><ph name="BRAND" />-д товчлол нэмнэ үү</translation>
 <translation id="2065405795449409761">Chrome-г туршилтын автомат программ хангамжаар удирдаж байна.</translation>
 <translation id="2071393345806050157">Суурин бүртгэлийн файл алга байна.</translation>
 <translation id="2071692954027939183">Та мэдэгдлийг ихэвчлэн зөвшөөрдөггүй тул тэдгээрийг автоматаар блоклосон</translation>
@@ -2820,6 +2819,7 @@
 <translation id="3267726687589094446">Олон тооны файлуудыг автоматаар татаж авахыг үргэлжүүлэн зөвшөөрөх</translation>
 <translation id="3268451620468152448">Цонхнуудыг нээх</translation>
 <translation id="3269093882174072735">Зураг ачаалах</translation>
+<translation id="326911502853238749"><ph name="MODULE_NAME" />-г бүү харуул</translation>
 <translation id="3269175001434213183">Зүйлсээ хуулбарлаж, дурын төхөөрөмж дээр ашиглахын тулд синк хийхийг асаана уу</translation>
 <translation id="3269612321104318480">Цайвар номин ногоон ба цагаан</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}other{# файл}}</translation>
@@ -2890,7 +2890,6 @@
 <translation id="3321460131042519426">Үг хураангуйлахыг идэвхжүүлэх</translation>
 <translation id="3321494112580110651">Хэвлэгчээ харахгүй байна уу?</translation>
 <translation id="3323521181261657960">Бонус! Таны дэлгэцийн цагийг сунгалаа</translation>
-<translation id="3323577066981719144">Таны энд хийсэн өөрчлөлтүүд зөвхөн Chrome хөтчид хэрэгжинэ. Lacros Chrome хөтчийн тохиргоондоо өөрчлөлтүүд хийхийн тулд Lacros Chrome хөтчийг нээж, тохиргоо руу очно уу.</translation>
 <translation id="3325804108816646710">Боломжтой профайлыг хайж байна...</translation>
 <translation id="3325910708063135066">Камер болон микрофоныг Mac-н системийн сонголтод унтраасан байна</translation>
 <translation id="3325930488268995856">Microsoft OneDrive холбогдсон</translation>
@@ -3778,6 +3777,7 @@
 <translation id="4037084878352560732">Морь</translation>
 <translation id="403725336528835653">Эхлээд туршиж үзэх</translation>
 <translation id="4040041015953651705">Орчуулах хэл</translation>
+<translation id="4042660782729322247">Та дэлгэцээ хуваалцаж байна</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Хуудаснаас гарах}other{Хуудаснуудаас гарах}}</translation>
 <translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> руу <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р үргэлжлүүлэх</translation>
 <translation id="4043267180218562935">Курсорын хэмжээ</translation>
@@ -4433,6 +4433,7 @@
 <translation id="4598556348158889687">Сангийн менежмент</translation>
 <translation id="4598776695426288251">Wi-Fi олон төхөөрөмжид боломжтой байна</translation>
 <translation id="4600071396330666617">Зөвлөмжийн тоо</translation>
+<translation id="4601095002996233687">Сэжигтэй татаж авсан файлд хийх нарийвчилсан скан.</translation>
 <translation id="4601426376352205922">Уншаагүй гэж тэмдэглэх</translation>
 <translation id="460190672235687855">Нуц үгнүүдийг харах</translation>
 <translation id="4602466770786743961"><ph name="HOST" />-д таны камер болон микрофонд нэвтрэхийг үргэлж зөвшөөрөх</translation>
@@ -5873,6 +5874,7 @@
 <translation id="5840680448799937675">Файлыг үргэлж офлайн үед хуваалцана</translation>
 <translation id="5841270259333717135">Ethernet-г тохируулах</translation>
 <translation id="5842497610951477805">Bluetooth-г идэвхжүүлэх</translation>
+<translation id="5844284118433003733">Таныг нэвтэрсэн үед аюулгүй байдалтай холбоотой тохиолдлын дараа Gmail-д хамгаалалтыг нэмэх зэргээр таныг Google-н үйлчилгээнүүдэд хамгаалахын тулд энэ өгөгдлийг Google Бүртгэлтэй тань холбодог.</translation>
 <translation id="5844574845205796324">Судлах шинэ контент санал болгох</translation>
 <translation id="5846200638699387931">Холбоосын дүрмийн алдаа: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Сүүдэр байхгүй</translation>
@@ -6719,6 +6721,7 @@
 <translation id="6548945820758901244">Google Хайлтын хажуугийн самбарыг нээнэ үү</translation>
 <translation id="6549038875972762904">Тохируулгыг дахин хийх</translation>
 <translation id="6550675742724504774">Сонголтууд</translation>
+<translation id="6550891580932862748">Таныг аюултай вебсайт, татаж авсан файл болон өргөтгөлүүдээс хамгаалахгүй. Google-н бусад бүтээгдэхүүн дэх таны Аюулгүй хөтчийн тохиргоонд нөлөөлөхгүй.</translation>
 <translation id="65513682072153627">Тохиргоо эсвэл онцлогийг танай администратор удирддаг бол та энэ Удирддаг дүрс тэмдгийг харна.</translation>
 <translation id="6551508934388063976">Комманд боломжгүй байна. Шинэ цонх нээхийн тулд control-N-ийг дар</translation>
 <translation id="6551606359270386381">Зууван дүрсний хэрэгсэл</translation>
@@ -6794,6 +6797,7 @@
 <translation id="6609478180749378879">Таныг Нууцлалын горимоос гарсны дараа нэвтрэх өгөгдлийг энэ төхөөрөмж дээр хадгална. Та энэ вебсайтад дараа нь төхөөрөмжөөрөө нэвтрэх боломжтой болно.</translation>
 <translation id="6610002944194042868">Орчуулах сонголт</translation>
 <translation id="6611972847767394631">Эндээс табуудаа олоорой</translation>
+<translation id="661266467055912436">Таны болон веб дэх хүн бүрийн аюулгүй байдлыг нэмэгдүүлдэг.</translation>
 <translation id="6613267708691765962">Хортой программыг скан хийж байна...</translation>
 <translation id="6613668613087513143">Энэ шинэчлэлтийг дуусгахад энэ төхөөрөмж дээр хангалттай зай байхгүй байна. Төхөөрөмж дээрээ <ph name="NECESSARY_SPACE" />-г цэвэрлээд, Chrome хөтчөөсөө дахин оролдоно уу.</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
@@ -8198,6 +8202,7 @@
 <translation id="7774792847912242537">Хэт олон хүсэлт байна.</translation>
 <translation id="7775694664330414886">Табыг нэргүй бүлэг рүү зөөсөн - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Таныг энэ сайтын бүх табыг хаах хүртэл <ph name="ORIGIN" /> нь <ph name="FOLDERNAME" /> доторх файлуудыг үзэх боломжтой байна</translation>
+<translation id="777637629667389858">Таныг нэвтэрсэн үед Google-н үйлчилгээнүүдэд хамгаална.</translation>
 <translation id="7776701556330691704">Дуу хоолой олдсонгүй</translation>
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" />-д зориулсан <ph name="SHORTCUT" /> товчлол</translation>
 <translation id="7781335840981796660">Бүх хэрэглэгчийн бүртгэлүүд болон суурин өгөгдлүүд устах болно.</translation>
@@ -8233,7 +8238,6 @@
 <translation id="7799650166313181433">Энэ төхөөрөмжтэй зөвхөн <ph name="USER_EMAIL" />-д нэвтэрсэн төхөөрөмжүүд хуваалцах боломжтой. Та төхөөрөмжүүд хооронд хуваалцахыг зөвшөөрөх шаардлагагүй.</translation>
 <translation id="7800485561443537737">Таны <ph name="DEVICE_TYPE" />-н мобайл датаг ашиглах бөгөөд оператор компани тань нэмэлт хураамжийн төлбөр нэхэмжилж магадгүй. Батарей ашиглалтыг нэмэгдүүлж магадгүй. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Цагийн зүүний эсрэг эргүүлэх</translation>
-<translation id="7801679634091975683">Таны энд хийсэн өөрчлөлтүүд зөвхөн Lacros Chrome хөтчид хэрэгжинэ. Chrome хөтчийн тохиргоондоо өөрчлөлтүүд хийхийн тулд Chrome хөтчийг нээж, тохиргоо руу очно уу.</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7803657407897251194">Android төхөөрөмжөөрөө үргэлжлүүлэн тохируулахын тулд өөрийн <ph name="DEVICE_TYPE" />-г сүлжээнд холбоорой</translation>
 <translation id="7804072833593604762">Таб хаагдсан</translation>
@@ -8450,6 +8454,7 @@
 <translation id="7974713334845253259">Өгөгдмөл өнгө</translation>
 <translation id="7974936243149753750">Дэлгэцийн дүрсийг бүтнээр нь гаргахгүй байх</translation>
 <translation id="7975504106303186033">Та энэ Chrome Education төхөөрөмжийг боловсролын бүртгэлд бүртгүүлэх ёстой. Шинэ бүртгэлд бүртгүүлэхийн тулд g.co/workspace/edusignup хаягт зочилно уу.</translation>
+<translation id="7977451675950311423">Таныг өгөгдлийн зөрчилд алдагдсан нууц үгийг ашигласан тохиолдолд танд сануулна.</translation>
 <translation id="7978412674231730200">Хувийн түлхүүр</translation>
 <translation id="7978450511781612192">Энэ нь таныг Google Бүртгэлүүдээс тань гаргах болно. Таны хавчуурга, түүх, нууц үгнүүд болон бусад зүйлийг синк хийхээ зогсооно.</translation>
 <translation id="7980084013673500153">Хөрөнгийн ID: <ph name="ASSET_ID" /></translation>
@@ -8840,6 +8845,7 @@
 <translation id="8295450130892483256">Microsoft 365-ыг суулгах</translation>
 <translation id="8297292446125062288">HID-н тохиргоо</translation>
 <translation id="8298429963694909221">Та одоо утасныхаа мэдэгдлийг <ph name="DEVICE_TYPE" /> дээрээ хүлээн авах боломжтой. Мэдэгдлийг <ph name="DEVICE_TYPE" /> дээр хаавал таны утсан дээр мөн хаагдах болно. Таны утас ойрхон, Bluetooth, Wi-Fi-г нь асаасан эсэхийг шалгана уу.</translation>
+<translation id="829923460755755423">Google Password Manager-т товчлол нэмэх</translation>
 <translation id="8299319456683969623">Та одоогоор офлайн байна.</translation>
 <translation id="8300011035382349091">Энэ табын хавчуургыг засах</translation>
 <translation id="8300374739238450534">Хар хөх</translation>
@@ -9495,6 +9501,7 @@
 <translation id="885246833287407341">API функцийн аргумент</translation>
 <translation id="8853586775156634952">Энэ картыг зөвхөн энэ төхөөрөмжид хадгална</translation>
 <translation id="8854745870658584490">Сонгосон товчлол</translation>
+<translation id="8855242995793521265">Таны хөтөч эсвэл төхөөрөмжийг мэдэгдэхүйц хэмжээгээр удаашруулахгүй.</translation>
 <translation id="8855977033756560989">Энэхүү Chromebook Enterprise төхөөрөмж нь Chrome Enterprise дэвшүүлэлттэй цуг багцаар ирдэг. Байгууллагын функцийн чадамжийн давуу талыг эдлэхийн тулд энэ төхөөрөмжийг Google админы бүртгэлээр бүртгүүлнэ үү.</translation>
 <translation id="8856028055086294840">Апп болон хуудсыг сэргээх</translation>
 <translation id="885701979325669005">Хадгалалт</translation>

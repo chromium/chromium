@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">數據編密</translation>
 <translation id="1072700771426194907">偵測到 USB 裝置</translation>
 <translation id="107278043869924952">使用 PIN 和密碼</translation>
+<translation id="107450319332239199">發生錯誤，請改為手動開啟視窗。</translation>
 <translation id="1076176485976385390">使用文字游標導覽網頁</translation>
 <translation id="1076382954055048850">顯示其他投放工作階段</translation>
 <translation id="1076698951459398590">啟用主題背景</translation>
@@ -1343,7 +1344,6 @@
 <translation id="2061366302742593739">沒有可顯示的內容</translation>
 <translation id="2062354623176996748">如果您使用無痕式視窗瀏覽網頁，系統便不會保留您的瀏覽記錄</translation>
 <translation id="206308717637808771">在關閉所有視窗後刪除資料。資料的處理方式與處理目前瀏覽網站的方式相同</translation>
-<translation id="2063623149012168328">新增「<ph name="BRAND" />」捷徑</translation>
 <translation id="2065405795449409761">Chrome 目前由自動化測試軟件控制。</translation>
 <translation id="2071393345806050157">沒有本機記錄檔案。</translation>
 <translation id="2071692954027939183">由於您通常不允許通知，因此系統已自動封鎖通知</translation>
@@ -2824,6 +2824,7 @@
 <translation id="3267726687589094446">繼續允許自動下載多個檔案</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
 <translation id="3269093882174072735">載入圖片</translation>
+<translation id="326911502853238749">不要顯示<ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">開啟同步功能即可備份資料，並在任何裝置上使用</translation>
 <translation id="3269612321104318480">淺藍綠色和白色</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{檔案}other{# 個檔案}}</translation>
@@ -2894,7 +2895,6 @@
 <translation id="3321460131042519426">啟用自動換行功能</translation>
 <translation id="3321494112580110651">看不到打印機嗎？</translation>
 <translation id="3323521181261657960">恭喜！您的裝置使用時間增加了</translation>
-<translation id="3323577066981719144">您在這裡作出的變更只會套用到 Chrome 瀏覽器。如要變更 Lacros Chrome 瀏覽器設定，請開啟 Lacros Chrome 瀏覽器並前往設定頁面。</translation>
 <translation id="3325804108816646710">正在尋找可用的設定檔…</translation>
 <translation id="3325910708063135066">已關閉 Mac 系統偏好設定中的相機和麥克風</translation>
 <translation id="3325930488268995856">已連線至 Microsoft OneDrive</translation>
@@ -3779,6 +3779,7 @@
 <translation id="4037084878352560732">馬</translation>
 <translation id="403725336528835653">先試用</translation>
 <translation id="4040041015953651705">要翻譯的語言</translation>
+<translation id="4042660782729322247">您正在分享螢幕畫面</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
 <translation id="4042941173059740150">繼續使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 支付 <ph name="SITE_ETLD_PLUS_ONE" /> 費用</translation>
 <translation id="4043267180218562935">游標大小</translation>
@@ -4434,6 +4435,7 @@
 <translation id="4598556348158889687">管理儲存空間</translation>
 <translation id="4598776695426288251">可透過多部裝置使用 Wi-Fi</translation>
 <translation id="4600071396330666617">建議數量</translation>
+<translation id="4601095002996233687">提供深入掃瞄功能，檢查是否有可疑的下載內容。</translation>
 <translation id="4601426376352205922">標示為未讀取</translation>
 <translation id="460190672235687855">查看密碼</translation>
 <translation id="4602466770786743961">永遠允許 <ph name="HOST" /> 存取您的相機和麥克風</translation>
@@ -5871,6 +5873,7 @@
 <translation id="5840680448799937675">一律在離線時分享檔案</translation>
 <translation id="5841270259333717135">設定以太網絡</translation>
 <translation id="5842497610951477805">藍牙開關</translation>
+<translation id="5844284118433003733">當你登入後，這類資料會連結至 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後提升 Gmail 的保護功能。</translation>
 <translation id="5844574845205796324">建議可探索的新內容</translation>
 <translation id="5846200638699387931">關聯語法錯誤：<ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">沒有陰影</translation>
@@ -6718,6 +6721,7 @@
 <translation id="6548945820758901244">開 Google 搜尋側面板</translation>
 <translation id="6549038875972762904">重做設定</translation>
 <translation id="6550675742724504774">選項</translation>
+<translation id="6550891580932862748">無法防範危險網站、下載檔案和擴充程式。其他 Google 產品的「安全瀏覽」設定不會受影響。</translation>
 <translation id="65513682072153627">當某項設定或功能是由管理員管理時，系統會顯示這個「受管理」圖示。</translation>
 <translation id="6551508934388063976">無法使用指令。按下 Ctrl + N 鍵可開啟新視窗。</translation>
 <translation id="6551606359270386381">橢圓形工具</translation>
@@ -6793,6 +6797,7 @@
 <translation id="6609478180749378879">離開無痕模式後，登入資料會儲存在此裝置中。您可在日後透過裝置再次登入此網站。</translation>
 <translation id="6610002944194042868">翻譯選項</translation>
 <translation id="6611972847767394631">您的分頁會在這裡顯示</translation>
+<translation id="661266467055912436">為您和網絡上的所有使用者提高安全性。</translation>
 <translation id="6613267708691765962">正在掃瞄惡意軟件…</translation>
 <translation id="6613668613087513143">裝置空間不足，無法完成此更新。請在裝置上騰出 <ph name="NECESSARY_SPACE" /> 的空間，然後前往 Chrome 瀏覽器再試一次。</translation>
 <translation id="6615455863669487791">顯示</translation>
@@ -7712,6 +7717,7 @@
 <translation id="7396017167185131589">共用資料夾將會在這裡顯示</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> 會隨著系統一併啟動，即使在所有 <ph name="PRODUCT_NAME" /> 視窗都關閉後，仍會在背景繼續執行。</translation>
 <translation id="7399045143794278225">自訂同步處理功能</translation>
+<translation id="7399616692258236448">系統會自動封鎖所有網站的位置資訊要求 (你允許的網站除外)</translation>
 <translation id="7400418766976504921">網址</translation>
 <translation id="7400447915166857470">要改回使用 <ph name="OLD_SEARCH_PROVIDER" /> 嗎？</translation>
 <translation id="7400839060291901923">在 <ph name="PHONE_NAME" /> 上設定連線</translation>
@@ -8197,6 +8203,7 @@
 <translation id="7774792847912242537">要求數量過多。</translation>
 <translation id="7775694664330414886">分頁移咗去包含「<ph name="GROUP_CONTENTS" />」嘅未命名群組</translation>
 <translation id="7776156998370251340">在您關閉此網站的所有分頁前，<ph name="ORIGIN" /> 都能查看「<ph name="FOLDERNAME" />」中的檔案</translation>
+<translation id="777637629667389858">當你登入帳戶後，保護你在各項 Google 服務中的安全。</translation>
 <translation id="7776701556330691704">找不到語音</translation>
 <translation id="7777624210360383048">「<ph name="EXTENSION_NAME" />」的快速鍵 <ph name="SHORTCUT" /></translation>
 <translation id="7781335840981796660">系統將移除所有使用者帳戶和本機數據。</translation>
@@ -8233,7 +8240,6 @@
 <translation id="7799650166313181433">只有已登入 <ph name="USER_EMAIL" /> 的裝置可與此裝置分享內容。你無需核准在裝置之間的分享要求。</translation>
 <translation id="7800485561443537737">使用 <ph name="DEVICE_TYPE" /> 的流動數據，且流動網絡供應商可能會收取額外費用。這樣做可能會增加電池用量。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">逆時針旋轉(&amp;O)</translation>
-<translation id="7801679634091975683">您在這裡作出的變更只會套用到 Lacros Chrome 瀏覽器。如要變更 Chrome 瀏覽器設定，請開啟 Chrome 瀏覽器並前往設定。</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7803657407897251194">如要繼續使用 Android 裝置進行設定，請將 <ph name="DEVICE_TYPE" /> 連接網絡</translation>
 <translation id="7804072833593604762">閂咗分頁</translation>
@@ -8450,6 +8456,7 @@
 <translation id="7974713334845253259">預設顏色</translation>
 <translation id="7974936243149753750">溢出掃描</translation>
 <translation id="7975504106303186033">您必須將此 Chrome Education 裝置註冊至教育版帳戶。如要註冊新帳戶，請前往 g.co/workspace/edusignup。</translation>
+<translation id="7977451675950311423">如果你使用在資料外洩中被盜用的密碼，系統便會向你發出警告。</translation>
 <translation id="7978412674231730200">私密金鑰</translation>
 <translation id="7978450511781612192">此操作會將您登出 Google 帳戶。系統將不會繼續將書籤、記錄、密碼和其他同步至您的 Google 帳戶。</translation>
 <translation id="7980084013673500153">資產識別碼：<ph name="ASSET_ID" /></translation>
@@ -8842,6 +8849,7 @@
 <translation id="8295450130892483256">安裝 Microsoft 365</translation>
 <translation id="8297292446125062288">HID 設定</translation>
 <translation id="8298429963694909221">您現在可在 <ph name="DEVICE_TYPE" /> 上接收手機的通知。在 <ph name="DEVICE_TYPE" /> 上關閉通知，您手機上的通知也會關閉。請確認您的手機在附近，且已開啟藍牙和 Wi-Fi。</translation>
+<translation id="829923460755755423">新增「Google 密碼管理工具」的捷徑</translation>
 <translation id="8299319456683969623">您目前處於離線狀態。</translation>
 <translation id="8300011035382349091">編輯此分頁的書籤</translation>
 <translation id="8300374739238450534">午夜藍色</translation>
@@ -9499,6 +9507,7 @@
 <translation id="885246833287407341">API 函數引數</translation>
 <translation id="8853586775156634952">此卡只會儲存在此裝置上</translation>
 <translation id="8854745870658584490">候選快速鍵</translation>
+<translation id="8855242995793521265">不會大幅減慢瀏覽器或裝置運作速度。</translation>
 <translation id="8855977033756560989">此 Chromebook Enterprise 裝置附隨 Chrome Enterprise Upgrade。如要善用企業功能，請使用 Google 管理員帳戶註冊此裝置。</translation>
 <translation id="8856028055086294840">還原應用程式及網頁</translation>
 <translation id="885701979325669005">儲存設備</translation>
@@ -9662,9 +9671,11 @@
 <translation id="8986494364107987395">自動將使用統計資料和當機報告傳送給 Google</translation>
 <translation id="8987305927843254629">每位使用者都可將體驗個人化，以確保資料私隱。</translation>
 <translation id="8987927404178983737">月</translation>
+<translation id="8988539543012086784">這個網頁已儲存到「<ph name="BOOKMARK_FOLDER" />」</translation>
 <translation id="8989359959810288806">重新整理網絡共享狀態</translation>
 <translation id="8991520179165052608">網站可以使用您的麥克風</translation>
 <translation id="8991694323904646277">沒有相機</translation>
+<translation id="8991766915726096402">本機資料復原</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - 記憶體用量 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">即使忘記 <ph name="DEVICE_TYPE" /> 密碼，您仍可還原本機資料。您需要登入 Google 帳戶或使用復原帳戶功能。</translation>
 <translation id="8993737615451556423">提供可加快、減慢及暫停語音朗讀的控制項</translation>

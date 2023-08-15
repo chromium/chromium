@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">कलिंगड</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> फॉरमॅट केली आहे</translation>
 <translation id="1931134289871235022">स्लोव्हाक</translation>
-<translation id="1933345018156373194">हलवता आले नाही, अनपेक्षित एरर: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">फिन्निश</translation>
 <translation id="1942765061641586207">इमेज रिझोल्युशन</translation>
 <translation id="1972984168337863910">फाइल फीडबॅक पॅनलचा विस्तार करा</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">अल्बम</translation>
 <translation id="4972330214479971536">फाइल सिंक करणे पूर्ण करता आले नाही</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> किंवा त्यापेक्षा कमी वर्णांचे नाव वापरा</translation>
-<translation id="4973970068702235170">झिप करता आले नाही, अनपेक्षित एरर: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">जपानी</translation>
 <translation id="4987699874727873250">इंग्रजी (भारत)</translation>
 <translation id="4988205478593450158">तुम्हाला "<ph name="FILE_NAME" />" नक्की हटवायची आहे का?</translation>
@@ -634,7 +632,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5896749729057314184"><ph name="NETWORK_NAME" /> चे <ph name="NETWORK_INDEX" /> पैकी <ph name="NETWORK_COUNT" /> नेटवर्क, ॲक्टिव्हेट केलेले नाही, सिग्नलची क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
 <translation id="5911887972742538906">तुमच्या Linux ॲप्लिकेशनच्या इंस्टॉलेशन दरम्यान एरर आली आहे.</translation>
 <translation id="5912396950572065471">फॉरमॅट</translation>
-<translation id="5913638992615760742">कॉपी ऑपरेशन करता आले नाही, अनपेक्षित एरर: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">नवीन शोध वैशिष्ट्ये उपलब्ध</translation>
 <translation id="5926082595146149752">यूएस आंतरराष्ट्रीय पीसी कीबोर्डसह डच (नेदरलँड)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> आयटम</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">क्रमवारी पर्याय</translation>
-<translation id="6007237601604674381">हलविणे अयशस्वी. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">इथरनेट नेटवर्क</translation>
 <translation id="60357267506638014">झेक QWERTY</translation>
 <translation id="603895874132768835">तुम्ही नवीन पिन सेट करेपर्यंत तुम्हाला हे नेटवर्क वापरता येणार नाही</translation>

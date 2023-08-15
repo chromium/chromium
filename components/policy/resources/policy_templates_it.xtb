@@ -96,6 +96,7 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
 <translation id="1065175969514496951">La configurazione del criterio consente di accedere agli URL elencati durante l'autenticazione (ad es. nella schermata di accesso e nella schermata di blocco), sotto forma di eccezioni a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Leggi la descrizione del criterio per conoscere il formato delle voci di questo elenco. Ad esempio, se imposti il criterio <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> su <ph name="WILDCARD_VALUE" />, tutte le richieste verranno bloccate e puoi utilizzare questo criterio per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. Il criterio <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza sul criterio <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Per questo criterio è possibile definire al massimo 1000 voci.
 
 Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
+<translation id="1068801725746725727">Attiva la ricezione di sondaggi di Navigazione sicura</translation>
 <translation id="1069489575852947981">Se il criterio viene impostato su Attivato o se non viene configurato, l'account locale del dispositivo viene configurato per l'accesso automatico senza ritardo. <ph name="PRODUCT_OS_NAME" /> rispetta la scorciatoie da tastiera Ctrl + Alt + S per eludere l'accesso automatico e mostrare la schermata di accesso.
 
       Se il criterio viene impostato su Disattivato, gli utenti non possono eludere l'accesso automatico senza ritardo (se configurato).</translation>
@@ -139,6 +140,11 @@ Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="
           Se questo criterio viene attivato o se non viene configurato, gli utenti possono decidere se memorizzare o meno le password Kerberos in modo da non doverle inserire nuovamente. I ticket Kerberos vengono recuperati automaticamente, a meno che non sia necessaria un'ulteriore autenticazione (autenticazione a due fattori).
 
           Se il criterio viene disattivato, le password non vengono mai memorizzate e tutte le password salvate in precedenza vengono rimosse. Gli utenti devono inserire la propria password ogni volta che devono eseguire l'autenticazione con il sistema Kerberos. In base alle impostazioni del server, generalmente questa operazione deve essere svolta con una frequenza che varia da 8 ore e diversi mesi.</translation>
+<translation id="112794759469625182">Questo criterio è stato rimosso da M118. Consente di attivare e disattivare l'attestazione remota per l'utente, ma questa è attivata per impostazione predefinita.
+
+Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hardware sui dispositivi <ph name="PRODUCT_OS_NAME" /> per attestare da remoto la propria identità all'autorità di certificazione della privacy tramite <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> usando la funzione <ph name="CHALLENGE_USER_KEY_FUNCTION" />.
+
+      Se viene impostato su Disattivato o se non viene impostato, le chiamate all'API non vengono eseguite correttamente e viene visualizzato un codice di errore.</translation>
 <translation id="1133622335785078255">Consenti agli utenti di creare e usare profili secondari e di utilizzare la modalità ospite nel browser <ph name="LACROS_NAME" /></translation>
 <translation id="1137096407176363892">Consenti le voci di sintesi vocale di rete migliorate durante l'utilizzo della funzione di accessibilità in Seleziona per ascoltare. Queste voci inviano il testo ai server di Google per sintetizzare un discorso dal tono naturale.
 
@@ -1454,6 +1460,7 @@ Se questo criterio non viene configurato o se viene disattivato, il trasferiment
       Questo criterio esegue l'override di <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e delle preferenze dell'utente.
 
       Questo criterio viene applicato soltanto per l'accesso ai dispositivi USB tramite l'API Web Serial. Per concedere l'accesso ai dispositivi USB tramite l'API WebUSB, vedi il criterio <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="2246565294817797392">Blocca cookie troncati</translation>
 <translation id="2246621891161157804">Consenti a Chrome di bloccare le navigazioni verso protocolli esterni all'interno di iframe con sandbox</translation>
 <translation id="224750967938323855">Non mostrare il consenso alla sincronizzazione durante l'accesso</translation>
 <translation id="2252400912879027343">WebSQL in contesti non sicuri rimarrà disponibile fino alla versione M109, dopodiché non sarà disponibile a partire dalla versione M110.</translation>
@@ -4560,6 +4567,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio non viene impostato, non viene aggiunto alcun sito web all'elenco.
 
       Nota: puoi aggiungere elementi all'elenco anche tramite il criterio <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
+<translation id="5063480226653192405">Utilizzo</translation>
 <translation id="5067143124345820993">Whitelist di utenti con accesso</translation>
 <translation id="5069522005630249098">Questa impostazione consente di stabilire la quantità di dati utente da conservare dopo la disattivazione di <ph name="LACROS_NAME" />.
 
@@ -5055,6 +5063,7 @@ Se il criterio viene impostato su Disabled o se non viene configurato, gli eleme
       Se viene selezionata l'opzione "Forced", è possibile aprire le pagine SOLTANTO in modalità di navigazione in incognito. Tieni presente che l'opzione "Forced" non funziona per Android-on-Chrome.
 
       Nota: su iOS, se il criterio viene modificato durante una sessione, avrà effetto solamente al riavvio.</translation>
+<translation id="549471902631700911">Disattiva la ricezione di sondaggi di Navigazione sicura</translation>
 <translation id="5499375345075963939">Questa norma è attiva soltanto in modalità retail.
 
       Quando il valore di questa norma è impostato e non è 0, l'utente Demo correntemente connesso verrà disconnesso automaticamente dopo che sarà trascorso il tempo di inattività della durata specificata.
@@ -6109,6 +6118,7 @@ Il criterio <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separato può essere utiliz
 Vedi anche il criterio <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6438972408080276697">Se il criterio è impostato su True, vengono inviati rapporti degli eventi principali di installazione delle app Android attivati dal criterio. Se il criterio è impostato su False, non viene acquisito alcun evento.</translation>
 <translation id="6440051664870270040">Consenti ai siti di navigare e aprire popup contemporaneamente</translation>
+<translation id="6441781723322254041">Consenti cookie troncati</translation>
 <translation id="6446366416439249472">Disattiva la sincronizzazione Google Drive tramite reti cellulari</translation>
 <translation id="6447948611083700881">Backup e ripristino disabilitati</translation>
 <translation id="6449476513004303784">Non consentire agli utenti di gestire i certificati
@@ -6358,6 +6368,13 @@ Il salvaschermo dell'utente mostra le immagini a cui fa riferimento il criterio 
 <translation id="66265932317331474">Segnala informazioni sulla CPU</translation>
 <translation id="6628120204569232711">Segnala lo stato di archiviazione</translation>
 <translation id="662991036483361836">Impedisci agli utenti di attivare la Condivisione nelle vicinanze</translation>
+<translation id="6634974629075330608">Questo criterio consente di disattivare temporaneamente le modifiche al modo in cui Chrome gestisce i cookie impostati tramite JavaScript che contengono determinati caratteri di controllo (null, ritorno a capo e avanzamento riga).
+In precedenza, la presenza di uno qualsiasi di questi caratteri in una stringa di cookie causava un troncamento ma il criterio veniva comunque impostato.
+Ora, la presenza di questi caratteri farà sì che l'intera stringa di cookie venga ignorata.
+
+Se questo criterio viene impostato su Vero (valore predefinito), il nuovo comportamento viene attivato.
+
+Se questo criterio viene impostato su Falso, viene attivato il comportamento precedente.</translation>
 <translation id="663685822663765995">Limita la modalità di stampa a colori</translation>
 <translation id="6637946190026453735">Elenco di impostazioni per i servizi di <ph name="PRODUCT_NAME" /> Enterprise Connectors da applicare al connettore di <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> Enterprise, che si attiva quando una pagina o un file vengono stampati da <ph name="PRODUCT_NAME" />.
 
@@ -8696,6 +8713,7 @@ Se il criterio non viene configurato, alla prima esecuzione non vengono importat
 <translation id="874149307422233209">Questo criterio consente agli amministratori di controllare il modo in cui Google tratta i dati utente inviati alla Ricerca tramite le funzionalità di <ph name="PRODUCT_OS_NAME" />.
 Se il criterio viene attivato, l'utente potrà usare la casella di ricerca di Avvio app di <ph name="PRODUCT_OS_NAME" /> e la casella di indirizzo del browser <ph name="PRODUCT_NAME" /> in <ph name="PRODUCT_OS_NAME" />, in modo che la cronologia delle ricerche dell'utente non venga collegata alla sua identità.
 Se il criterio non viene configurato o se viene disattivato, i dati dell'utente di queste ricerche vengono collegati alla sua identità.</translation>
+<translation id="8743902569031401303">Consenti sondaggi di Navigazione sicura</translation>
 <translation id="8744844164152340112">Consente di stabilire il tema (scuro/chiaro/automatico) usato per eseguire il rendering dell'UI durante l'OOBE e nella sessione.
       Con la modalità automatica viene effettuato il passaggio automatico tra tema scuro e tema chiaro all'alba e al tramonto.
       Questo criterio dovrebbe essere consigliato per dare agli utenti la possibilità di cambiare il tema nelle impostazioni di sistema.</translation>
@@ -9271,6 +9289,8 @@ Se il criterio non viene configurato, per impostazione predefinita <ph name="PRO
 <translation id="981346395360763138">Servizi di geolocalizzazione di Google disabilitati</translation>
 <translation id="982497069985795632">Attiva il controllo ortografico</translation>
 <translation id="983256325512298435">Definisci un elenco di protocolli che possono lanciare un'applicazione esterna dalle origini elencate senza chiedere conferma all'utente</translation>
+<translation id="984365509386992443">Se questo criterio viene attivato o se non viene impostato, l'utente potrebbe ricevere sondaggi relativi a Navigazione sicura.
+Se viene disattivato, l'utente non riceverà sondaggi relativi a Navigazione sicura.</translation>
 <translation id="987261962216071510">Consenti solo gli accessi come ospite al browser</translation>
 <translation id="987975731398348803">Se il criterio viene attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di utenti dei dispositivi che hanno eseguito l'accesso di recente.
 

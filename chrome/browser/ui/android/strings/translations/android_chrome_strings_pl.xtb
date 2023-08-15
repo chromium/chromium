@@ -1069,6 +1069,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6649642165559792194">Wyświetl podgląd obrazu <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6659594942844771486">Karta</translation>
+<translation id="6662119761881114773">Obecnie haseł zapisanych na tym urządzeniu nie można używać w kanałach Chrome. W wersjach nowszych niż Chrome 121 hasła w Chrome i <ph name="CHROME_CHANNEL" /> zapisane na urządzeniu zostaną scalone i będzie można ich używać w obu aplikacjach.</translation>
 <translation id="666731172850799929">Otwórz w <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Kopiuj grafikę</translation>
 <translation id="6672917148207387131">Dodaj <ph name="DOMAIN" /></translation>

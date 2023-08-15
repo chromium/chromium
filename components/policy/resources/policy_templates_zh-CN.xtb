@@ -4517,6 +4517,7 @@
       如果您不设置此政策，系统不会将任何网站加入列表。
 
       注意：系统也可通过 <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> 政策向该列表添加元素。</translation>
+<translation id="5063480226653192405">使用情况</translation>
 <translation id="5067143124345820993">登录用户白名单</translation>
 <translation id="5069522005630249098">此设置用于确定在 <ph name="LACROS_NAME" /> 停用后保留多少用户数据。
 

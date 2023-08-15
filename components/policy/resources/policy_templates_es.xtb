@@ -4556,6 +4556,7 @@ Si se asigna el valor False a esta política, se usará el comportamiento predet
       Si no se asigna ningún valor a esta política, no se añadirá ningún sitio web a la lista.
 
       Nota: También se pueden añadir elementos a la lista a través de la política <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
+<translation id="5063480226653192405">Uso</translation>
 <translation id="5067143124345820993">Lista de admisión de usuarios con permiso para iniciar sesión</translation>
 <translation id="5069522005630249098">Esta opción determina cuántos datos de usuario se conservarán después de inhabilitar <ph name="LACROS_NAME" />.
 

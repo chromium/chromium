@@ -347,6 +347,7 @@
 <translation id="1668071460721346172">接收驗證電郵</translation>
 <translation id="1671391448414634642">從現在開始，來源語言為<ph name="SOURCE_LANGUAGE" />的網頁一律會翻譯成<ph name="TARGET_LANGUAGE" />。</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯成<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">你造訪的網頁網址清單 (僅列出發生<ph name="BEGIN_LINK" />舊版技術事件<ph name="END_LINK" />的網址)。</translation>
 <translation id="1682696192498422849">先從短邊開始</translation>
 <translation id="168693727862418163">此政策的值無法通過其綱要 (schema) 的驗證，因此會被忽略。</translation>
 <translation id="168841957122794586">伺服器憑證含有防護力薄弱的加密編譯金鑰。</translation>
@@ -2030,6 +2031,7 @@
 <translation id="5296589789433599000">烹飪和食譜</translation>
 <translation id="5299298092464848405">解析政策時發生錯誤</translation>
 <translation id="5299638840995777423">機械人科學</translation>
+<translation id="5300062471671636390">隱藏投放裝置清單</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5306593769196050043">兩張工作表</translation>
 <translation id="5307166000025436103">有效</translation>
@@ -3494,6 +3496,7 @@
 <translation id="8368027906805972958">不明或不支援的裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play 服務</translation>
 <translation id="8369073279043109617">取得新的驗證碼</translation>
+<translation id="8371841335382565017">顯示投放裝置清單</translation>
 <translation id="8371889962595521444">自訂根憑證</translation>
 <translation id="8374636051559112948">不定</translation>
 <translation id="8378714024927312812">由您的機構管理</translation>

@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Görögdinnye</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> formázva</translation>
 <translation id="1931134289871235022">szlovák</translation>
-<translation id="1933345018156373194">Az áthelyezés nem várt hiba miatt nem sikerült: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">finn</translation>
 <translation id="1942765061641586207">Képfelbontás</translation>
 <translation id="1972984168337863910">A fájlokhoz tartozó visszajelzési párbeszédpanel kibontása</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Nem sikerült befejezni a fájlszinkronizálás beállítását</translation>
 <translation id="4973523518332075481">Olyan nevet adjon meg, amely legfeljebb <ph name="MAX_LENGTH" /> karakter hosszú</translation>
-<translation id="4973970068702235170">A tömörítés váratlan hiba miatt nem sikerült: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japán</translation>
 <translation id="4987699874727873250">angol (India)</translation>
 <translation id="4988205478593450158">Biztosan törli a(z) „<ph name="FILE_NAME" />” fájlt?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />/<ph name="NETWORK_INDEX" /> hálózat, <ph name="NETWORK_NAME" />, Inaktiválva, Jelerősség <ph name="SIGNAL_STRENGTH" />%, Részletek</translation>
 <translation id="5911887972742538906">Hiba történt a Linux-alkalmazás telepítése során.</translation>
 <translation id="5912396950572065471">Formázás</translation>
-<translation id="5913638992615760742">A másolási művelet nem várt hiba miatt nem sikerült: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Új keresési funkciók állnak rendelkezésre</translation>
 <translation id="5926082595146149752">holland (Hollandia), amerikai nemzetközi PC-billentyűzettel</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elem</translation>
 <translation id="5957366693331451795">Chromeboxok</translation>
 <translation id="5982621672636444458">Rendezési beállítások</translation>
-<translation id="6007237601604674381">Az áthelyezés sikertelen. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-hálózat</translation>
 <translation id="60357267506638014">cseh QWERTY</translation>
 <translation id="603895874132768835">Addig nem tudja használni ezt a hálózatot, amíg új PIN-kódot nem állít be.</translation>

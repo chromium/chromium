@@ -356,7 +356,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2531025035050312891">qurilma sekin ishlayapti</translation>
 <translation id="2531107890083353124">Varaqni sudrayotganda <ph name="KEY_ONE" /> tugmasini bosing</translation>
 <translation id="254900897760075745">Tanlangan kontentni vaqtincha xotiraga nusxalash</translation>
-<translation id="2549711466868162843">Yoritish darajasini yaxshilash</translation>
+<translation id="2549711466868162843">Yoritishni yaxshilash</translation>
 <translation id="2549985041256363841">Yozuvni boshlash</translation>
 <translation id="255671100581129685">Google Assistent demo seansda ishlamaydi.</translation>
 <translation id="256712445991462162">mahkamlangan lupa</translation>
@@ -421,6 +421,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2840766858109427815">Keyingi sahifaga o‘tish</translation>
 <translation id="2841907151129139818">Planshet rejimiga almashildi</translation>
 <translation id="2844169650293029770">USB-C qurilma (chap tomondagi old port)</translation>
+<translation id="2844350028562914727">batafsil</translation>
 <translation id="2848120746144143659">Butun ekranni rasmga olish uchun Enter tugmasini bosing</translation>
 <translation id="2849936225196189499">Jiddiy</translation>
 <translation id="2860184359326882502">Eng mosi</translation>
@@ -979,6 +980,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5176318573511391780">Ekran qismini yozib olish</translation>
 <translation id="5187627942836026988">Hotspot axborotini ochish. Hotspot xizmatini administrator bloklagan.</translation>
+<translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ta tadbir</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> va <ph name="IN_PLACE_APP" /> ilovalari yangi jildga birlashtirildi.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1083,6 +1085,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5601503069213153581">PIN kod</translation>
 <translation id="5618148318840095371">Yaxshiroq tarmoqqa almashtirildingiz</translation>
 <translation id="5619862035903135339">Administrator ekranni tasvirga olishni taqiqlagan</translation>
+<translation id="5620856676199877916">Barcha sinf ishlarini Google Classroom saytida koʻring</translation>
 <translation id="5620979661744857819">Bunda kamera va mikrofonga ruxsat beriladi. <ph name="APP_NAME" /> va barcha ilova va saytlar kamera va mikrofondan foydalana oladi. Sayt yoki sahifani yangilash yoki ilovani qayta ochish talab etilishi mumkin.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Parol tasdiqlanmadi. Qayta urining.</translation>
@@ -1212,6 +1215,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="6154006699632741460">Tashqi qurilmalar ishlamaydi</translation>
 <translation id="6156960295318603523">Til sozlamalari</translation>
 <translation id="615957422585914272">Ekran klaviaturasini ko‘rsatish</translation>
+<translation id="616543563528926612">Oʻng klik tugmasi <ph name="LAUNCHER_KEY_NAME" /> + klikdan Alt + klikka yangilandi</translation>
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6166852626429024716">Qurilma, ilovalar va internetdan qidirish...</translation>
 <translation id="6168318496333165060">Diagnostika ilovasini ochish</translation>
@@ -1499,6 +1503,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7497767806359279797">Til va klaviaturani tanlang</translation>
 <translation id="7508690557411636492">Oxirgi oyda ochilgan</translation>
 <translation id="7509246181739783082">Shaxsni tasdiqlash</translation>
+<translation id="7512509370370076552">Oʻng klik tugmasi Alt + klikdan <ph name="LAUNCHER_KEY_NAME" /> + klikka yangilandi</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, tanlanmagan</translation>
 <translation id="7513622367902644023">Skrinshot rejimi tanlandi</translation>
 <translation id="7513922695575567867">Taqvim, <ph name="DATE" /> haftasi, hozir <ph name="SELECTED_DATE" /> tanlangan.</translation>
@@ -1602,6 +1607,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7904094684485781019">Administrator bu hisobga boshqa hisoblar bilan birdaniga kirishni taqiqlab qo‘ygan.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> ta qurilma ulangan</translation>
+<translation id="7926080067315048321">Barcha vazifalarni vebdagi Google vazifalarida koʻring</translation>
 <translation id="7930731167419639574">Nutq qurilmada qayta ishlanadi va ovoz bilan yozish internetsiz ishlaydi</translation>
 <translation id="7932451802722951285">Google Taqvim orqali ochish</translation>
 <translation id="7933084174919150729">Google Assistent faqat asosiy profilda ishlaydi xolos.</translation>
@@ -1784,6 +1790,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8721053961083920564">Tovushlar: <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Butun ekranni tasvirga olish</translation>
 <translation id="8725214031272624704">Mavjud kiritish usullari roʻyxati</translation>
+<translation id="8730621377337864115">Tayyor</translation>
 <translation id="8731487213223706745">Tugash vaqti: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Bu bosilayotgan tugmalarni kuzatish urinishi bo‘lishi mumkin.</translation>
 <translation id="8735678380411481005">Klaviatura orqa chirogʻi rangi</translation>

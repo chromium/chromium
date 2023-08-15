@@ -421,6 +421,7 @@
 <translation id="2840766858109427815">తర్వాతి పేజీ కోసం ముందుకు వెళ్లండి</translation>
 <translation id="2841907151129139818">టాబ్లెట్ మోడ్‌కు స్విచ్ చేయబడింది</translation>
 <translation id="2844169650293029770">USB-C పరికరం (ఎడమవైపు ముందు పోర్ట్)</translation>
+<translation id="2844350028562914727">వివరాలు</translation>
 <translation id="2848120746144143659">ఫుల్ స్క్రీన్‌షాట్‌ను క్యాప్చర్ చేయడానికి enterను నొక్కండి</translation>
 <translation id="2849936225196189499">క్లిష్టమైన</translation>
 <translation id="2860184359326882502">బాగా మ్యాచ్ అయ్యే సెర్చ్ ఫలితాలు</translation>
@@ -980,6 +981,7 @@
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="5176318573511391780">పాక్షిక స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="5187627942836026988">హాట్‌స్పాట్ వివరాలను చూడండి. హాట్‌స్పాట్‌ను మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు.</translation>
+<translation id="5197255632782567636">ఇంటర్నెట్</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ఈవెంట్‌లు</translation>
 <translation id="5198715732953550718">కొత్త ఫోల్డర్‌ను క్రియేట్ చేయడం కోసం <ph name="MOVED_APP_NAME" /> అనేది <ph name="IN_PLACE_APP" />తో కలపబడింది.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1084,6 +1086,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">మేము మిమ్మల్ని మెరుగైన నెట్‌వర్క్‌కు మార్చాము</translation>
 <translation id="5619862035903135339">అడ్మినిస్ట్రేటర్ పాలసీ స్క్రీన్ క్యాప్చర్‌ను డిజేబుల్ చేస్తోంది</translation>
+<translation id="5620856676199877916">Google Classroom వెబ్‌సైట్‌లో అన్ని క్లాస్‌వర్క్‌లను చూడండి</translation>
 <translation id="5620979661744857819">కెమెరా, మైక్రోఫోన్ అనుమతులతో ఇది <ph name="APP_NAME" />‌తో పాటు, అన్ని యాప్‌లు, వెబ్‌సైట్‌లకు యాక్సెస్‌ను అనుమతిస్తుంది. మీరు వెబ్ పేజీని రిఫ్రెష్ చేయాల్సి రావచ్చు లేదా యాప్‌ను రీస్టార్ట్ చేయాల్సి రావచ్చు.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">మీ పాస్‌వర్డ్ వెరిఫై చేయడం సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
@@ -1213,6 +1216,7 @@
 <translation id="6154006699632741460">పెరిఫెరల్ సపోర్ట్ చేయదు</translation>
 <translation id="6156960295318603523">భాష సెట్టింగ్‌లు</translation>
 <translation id="615957422585914272">స్క్రీన్‌పై కీబోర్డ్‌ను చూపు</translation>
+<translation id="616543563528926612">కుడి క్లిక్ షార్ట్‌కట్ <ph name="LAUNCHER_KEY_NAME" /> కీ + క్లిక్ నుండి alt + క్లిక్ షార్ట్‌కట్‌కు అప్‌డేట్ చేయబడింది</translation>
 <translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
 <translation id="6166852626429024716">మీ పరికరం, యాప్‌లు, సెట్టింగ్‌లు, వెబ్‌ను వెతకండి...</translation>
 <translation id="6168318496333165060">సమస్య విశ్లేషణ యాప్‌ను తెరవండి</translation>
@@ -1500,6 +1504,7 @@
 <translation id="7497767806359279797">భాషను మరియు కీబోర్డ్‌ను ఎంచుకోండి</translation>
 <translation id="7508690557411636492">గత నెలలో తెరిచారు</translation>
 <translation id="7509246181739783082">మీ గుర్తింపును వెరిఫై చేయండి</translation>
+<translation id="7512509370370076552">కుడి క్లిక్ షార్ట్‌కట్ alt + క్లిక్ నుండి <ph name="LAUNCHER_KEY_NAME" /> కీ + క్లిక్ షార్ట్‌కట్‌కు అప్‌డేట్ చేయబడింది</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />ను ఎంచుకోలేదు</translation>
 <translation id="7513622367902644023">స్క్రీన్‌షాట్ మోడ్ ఎంచుకోబడింది</translation>
 <translation id="7513922695575567867">క్యాలెండర్, <ph name="DATE" /> వారం, ప్రస్తుతం <ph name="SELECTED_DATE" /> ఎంపిక చేయబడింది.</translation>
@@ -1603,6 +1608,7 @@
 <translation id="7904094684485781019">ఈ ఖాతా నిర్వాహకులు బహుళ సైన్-ఇన్‌కు అనుమతించలేదు.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> పరికరాలు కనెక్ట్ అయ్యాయి</translation>
+<translation id="7926080067315048321">వెబ్‌లోని Google టాస్క్‌లలో అన్ని టాస్క్‌లను చూడండి</translation>
 <translation id="7930731167419639574">స్పీచ్ ఇప్పుడు పరికరంలోనే ప్రాసెస్ చేయబడింది, డిక్టేషన్ ఆఫ్‌లైన్‌లో పని చేస్తుంది</translation>
 <translation id="7932451802722951285">Google Calendarలో తెరవండి</translation>
 <translation id="7933084174919150729">ప్రాథమిక ప్రొఫైల్‌కు మాత్రమే Google Assistant అందుబాటులో ఉంటుంది.</translation>
@@ -1785,6 +1791,7 @@
 <translation id="8721053961083920564">వాల్యూమ్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ఫుల్ స్క్రీన్ క్యాప్చర్</translation>
 <translation id="8725214031272624704">అందుబాటులో ఉన్న ఇన్‌పుట్ విధానాల లిస్ట్‌ను చూపండి</translation>
+<translation id="8730621377337864115">పూర్తయింది</translation>
 <translation id="8731487213223706745"><ph name="DAYS_ELAPSED" /><ph name="END_TIME" />‌కు ముగుస్తుంది</translation>
 <translation id="8734991477317290293">మీ కీస్ట్రోక్‌లను దొంగిలించడానికి ఇది ప్రయత్నిస్తుండవచ్చు</translation>
 <translation id="8735678380411481005">కీబోర్డ్ బ్యాక్‌లైట్ రంగు</translation>

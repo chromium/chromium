@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Wassermelone</translation>
 <translation id="1924372192547904021">"<ph name="DRIVE_NAME" />" wurde formatiert</translation>
 <translation id="1931134289871235022">Slowakisch</translation>
-<translation id="1933345018156373194">Unerwarteter Fehler beim Verschieben: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finnisch</translation>
 <translation id="1942765061641586207">Bildauflösung</translation>
 <translation id="1972984168337863910">Erweiterte Dateiinformationen maximieren</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Die Einrichtung der Dateisynchronisierung konnte nicht abgeschlossen werden</translation>
 <translation id="4973523518332075481">Der Name darf höchstens <ph name="MAX_LENGTH" /> Zeichen lang sein</translation>
-<translation id="4973970068702235170">Fehler beim Zippen, unerwarteter Fehler: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japanisch</translation>
 <translation id="4987699874727873250">Englisch (Indien)</translation>
 <translation id="4988205478593450158">Soll "<ph name="FILE_NAME" />" wirklich gelöscht werden?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nicht aktiviert, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
 <translation id="5911887972742538906">Bei der Installation deiner Linux-Anwendung ist ein Fehler aufgetreten.</translation>
 <translation id="5912396950572065471">Format</translation>
-<translation id="5913638992615760742">Unerwarteter Fehler beim Kopieren: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Es sind neue Suchfunktionen verfügbar</translation>
 <translation id="5926082595146149752">Niederländisch (Niederlande) mit internationaler US-amerikanischer PC-Tastatur</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> Elemente</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sortieroptionen</translation>
-<translation id="6007237601604674381">Fehler beim Verschieben. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-Netzwerk</translation>
 <translation id="60357267506638014">Tschechisch – QWERTY</translation>
 <translation id="603895874132768835">Du kannst dieses Mobilfunknetz erst verwenden, wenn du eine neue PIN festlegst</translation>

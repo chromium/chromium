@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Pepene verde</translation>
 <translation id="1924372192547904021">S-a formatat <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Slovacă</translation>
-<translation id="1933345018156373194">Mutarea nu a reușit, eroare neprevăzută: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandeză</translation>
 <translation id="1942765061641586207">Rezoluția imaginii</translation>
 <translation id="1972984168337863910">Extinde panourile cu feedback privind fișierele</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Nu s-a putut finaliza configurarea sincronizării fișierelor</translation>
 <translation id="4973523518332075481">Folosește un nume de maximum <ph name="MAX_LENGTH" /> caractere</translation>
-<translation id="4973970068702235170">Arhivarea nu a reușit, eroare neașteptată: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japoneză</translation>
 <translation id="4987699874727873250">Engleză (India)</translation>
 <translation id="4988205478593450158">Sigur vrei să ștergi „<ph name="FILE_NAME" />”?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inactivă, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
 <translation id="5911887972742538906">A apărut o eroare în timpul instalării aplicației Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
-<translation id="5913638992615760742">Nu s-a putut copia, eroare neprevăzută: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Sunt disponibile funcții de căutare noi</translation>
 <translation id="5926082595146149752">Neerlandeză (Țările de Jos) cu tastatură S.U.A. internațională pentru PC</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elemente</translation>
 <translation id="5957366693331451795">Chromeboxurile</translation>
 <translation id="5982621672636444458">Opțiuni de sortare</translation>
-<translation id="6007237601604674381">Mutarea nu a reușit. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rețeaua ethernet</translation>
 <translation id="60357267506638014">Cehă QWERTY</translation>
 <translation id="603895874132768835">Nu vei putea să folosești rețeaua dacă nu configurezi un PIN nou.</translation>

@@ -25,6 +25,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="108486256082349153">Mobile : <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bonjour <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Recherchez vos <ph name="CATEGORY" />, fichiers, applis, etc. Utilisez les touches fléchées pour naviguer dans vos applis.</translation>
+<translation id="1093645050124056515">Ctrl+Alt+Flèche vers le bas</translation>
 <translation id="109942774857561566">Je m'ennuie</translation>
 <translation id="1104084341931202936">Afficher les paramètres d'accessibilité</translation>
 <translation id="1104621072296271835">Vos appareils fonctionnent encore mieux ensemble</translation>
@@ -43,6 +44,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1178581264944972037">Suspendre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1182225749592316782">L'accès est accordé à l'ensemble des sites Web et applis ayant l'autorisation d'accéder à l'appareil photo et au micro</translation>
+<translation id="1182876754474670069">Accueil</translation>
 <translation id="1183863904939664422">Cette suggestion ne m'intéresse pas</translation>
 <translation id="1184126796192815024">Ce réseau n'est pas compatible avec les applis de streaming de votre téléphone. Essayez d'utiliser le point d'accès de votre téléphone. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Veuillez saisir votre mot de passe ou votre code d'accès pour renforcer la sécurité</translation>
@@ -147,6 +149,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1586324912145647027">Accéder aux bureaux 1 à 8</translation>
 <translation id="1589090746204042747">Accéder à toutes vos activités dans cette session</translation>
 <translation id="1592682369233288537">Bureau suivant : <ph name="NEXT_DESK_NAME" />, appuyez sur Recherche+Espace pour l'activer.</translation>
+<translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" />+Flèche vers le bas</translation>
 <translation id="1604857178818051494">Mettre en pause le contenu multimédia</translation>
 <translation id="1610778689852195798">"Annuler"</translation>
 <translation id="1611993646327628135">Activé</translation>
@@ -249,6 +252,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2021864487439853900">Cliquez pour le déverrouiller</translation>
 <translation id="2023558322300866873">Vous pouvez interrompre la capture de paquets à tout moment</translation>
 <translation id="2034971124472263449">Enregistrer quand même</translation>
+<translation id="204259843076055848">Le raccourci <ph name="SIX_PACK_KEY_NAME" /> est actuellement désactivé</translation>
 <translation id="2049240716062114887">Le nom du bureau a été remplacé par <ph name="DESK_NAME" /></translation>
 <translation id="206377500836174974">Maximum</translation>
 <translation id="2064048859448024834">Aperçu de la caméra affiché</translation>
@@ -381,6 +385,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> et <ph name="UNAVAILABLE_APPS_TWO" /> ne sont pas sur cet appareil.</translation>
 <translation id="2673968385134502798">Jeux</translation>
 <translation id="2678852583403169292">Menu Sélectionner pour prononcer</translation>
+<translation id="2687510499067466116">Le raccourci clavier a changé</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Afficher les paramètres du clavier. <ph name="KEYBOARD_NAME" /> sélectionné.</translation>
@@ -416,6 +421,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2840766858109427815">Passer à la page suivante</translation>
 <translation id="2841907151129139818">Mode tablette activé</translation>
 <translation id="2844169650293029770">Appareil USB de type C (port situé sur la gauche de l'appareil, à l'avant)</translation>
+<translation id="2844350028562914727">détails</translation>
 <translation id="2848120746144143659">Appuyez sur Entrée pour faire une capture de tout l'écran</translation>
 <translation id="2849936225196189499">Essentielle</translation>
 <translation id="2860184359326882502">Meilleure correspondance</translation>
@@ -636,12 +642,14 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3738664582935948253">Vous pouvez désormais afficher les clics et les raccourcis clavier dans les enregistrements d'écran</translation>
 <translation id="3742055079367172538">Capture d'écran réalisée</translation>
 <translation id="3756485814916578707">Diffusion de l'écran</translation>
+<translation id="3765841382945324995">Le raccourci pour <ph name="SIX_PACK_KEY_NAME" /> est passé de <ph name="OLD_SHORTCUT" /> à <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Modifié aujourd'hui</translation>
 <translation id="3773700760453577392">Un administrateur a désactivé la connexion multicompte pour <ph name="USER_EMAIL" />. Tous les utilisateurs doivent se déconnecter pour continuer.</translation>
 <translation id="3779139509281456663">Connexion à l'appareil suivant : <ph name="NAME" /></translation>
 <translation id="3781910048497807059">Placer le curseur dans le volet précédent</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
+<translation id="3796215473395753611">Alt+Flèche vers le haut</translation>
 <translation id="3796746699333205839">Une application utilise la caméra et le micro</translation>
 <translation id="3798670284305777884">Haut-parleur (interne)</translation>
 <translation id="3799080171973636491">Vous avez appuyé sur le raccourci clavier de la loupe plein écran. Voulez-vous l'activer ?</translation>
@@ -697,6 +705,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4026843240379844265">Transférer la fenêtre active entre des écrans</translation>
 <translation id="4028481283645788203">Veuillez saisir le mot de passe pour renforcer la sécurité</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" />+Flèche vers la gauche</translation>
 <translation id="4042660782729322247">Vous partagez votre écran</translation>
 <translation id="404437169852192935">Arrêt des mises à jour</translation>
 <translation id="4049230407053723315">Réglages rapides</translation>
@@ -718,6 +727,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4129129681837227511">Pour afficher les notifications sur l'écran de verrouillage, déverrouillez votre appareil afin de modifier ce paramètre</translation>
 <translation id="4131973331381812765">Température : <ph name="TEMPERATURE" /> °C – Vitesse actuelle : <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Activé jusqu'au lever du soleil</translation>
+<translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" />+Flèche vers la droite</translation>
 <translation id="4146671046252289537">Atteindre la fin du mot suivant</translation>
 <translation id="4146833061457621061">Joue de la musique</translation>
 <translation id="4150201353443180367">Écran</translation>
@@ -864,6 +874,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4747410141429390146">Veuillez déverrouiller pour afficher les notifications</translation>
 <translation id="4752784485658729358">Seuls six bureaux enregistrés sont autorisés. Supprimez un bureau pour en enregistrer un nouveau.</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
+<translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" />+Flèche vers le haut</translation>
 <translation id="4762573482154983647">Masquer les applis</translation>
 <translation id="4763885921995354846">L'accès à l'appareil photo est accordé à l'ensemble des applis et sites Web ayant l'autorisation d'y accéder. Vous devrez peut-être actualiser la page Web ou redémarrer l'appli.</translation>
 <translation id="4774338217796918551">Revenez demain à <ph name="COME_BACK_TIME" />.</translation>
@@ -945,6 +956,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Vous recevrez une notification si vous parlez lorsque le son est coupé. Les données audio ne quittent jamais votre appareil.</translation>
 <translation id="5078796286268621944">Code PIN incorrect</translation>
+<translation id="5083035541015925118">Ctrl+Alt+Flèche vers le haut</translation>
 <translation id="5083553833479578423">Déverrouiller plus de fonctionnalités de l'Assistant.</translation>
 <translation id="5092436659250499817">Activer/Désactiver le rétroéclairage du clavier</translation>
 <translation id="5094577350232361255">à propos de</translation>
@@ -967,6 +979,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5176318573511391780">Enregistrer une partie de l'écran</translation>
 <translation id="5187627942836026988">Voir les détails du point d'accès. Celui-ci est bloqué par votre administrateur.</translation>
+<translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> événements</translation>
 <translation id="5198715732953550718">Les applications <ph name="MOVED_APP_NAME" /> et <ph name="IN_PLACE_APP" /> ont été combinées pour créer un dossier.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" /> : <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1066,6 +1079,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5590609058453685222">Le rappel micro est activé. Vous recevrez une notification si vous parlez alors que le son est coupé.</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> <ph name="DATE" /></translation>
+<translation id="5599242528220103262">Le raccourci clavier est désactivé</translation>
 <translation id="5600837773213129531">Appuyez sur Ctrl+Alt+Z pour désactiver les commentaires audio.</translation>
 <translation id="5601503069213153581">Code d'accès</translation>
 <translation id="5618148318840095371">Nous vous avons connecté à un meilleur réseau</translation>
@@ -1085,6 +1099,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5678564054339031017">Afficher la semaine suivante</translation>
 <translation id="5679050765726761783">Adaptateur basse consommation branché</translation>
 <translation id="5682642926269496722">L'Assistant Google n'est pas disponible pour le compte utilisateur actuel.</translation>
+<translation id="5689233503102158537">Alt+Retour arrière</translation>
 <translation id="5689633613396158040">Cette fonctionnalité facilite la lecture à l'écran lorsque l'éclairage est faible. Appuyez ici pour modifier l'heure à laquelle elle doit s'activer ou désactivez-la complètement.</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
 <translation id="5693255400847650006">Micro utilisé</translation>
@@ -1246,6 +1261,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="639644700271529076">La touche de verrouillage des majuscules est désactivée.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
+<translation id="641817663353603351">Page précédente</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Effacer toutes les notifications</translation>
 <translation id="643147933154517414">Terminé</translation>
@@ -1255,6 +1271,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> événement</translation>
 <translation id="6449483711453944360">Les applis Linux et les fenêtres de navigation privée ne sont pas prises en charge actuellement</translation>
+<translation id="6450245544201845082">Le raccourci par clic droit est actuellement désactivé</translation>
 <translation id="6452181791372256707">Refuser</translation>
 <translation id="6453179446719226835">La langue a été modifiée</translation>
 <translation id="6459472438155181876">Extension de l'écran pour <ph name="DISPLAY_NAME" /></translation>
@@ -1379,6 +1396,7 @@ Nouvelle installation</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Démarrer</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6980402667292348590">Insérer</translation>
 <translation id="6981291220124935078">Activer l'accès</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">L'ensemble des données locales et des fichiers associés à cet utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
@@ -1430,6 +1448,7 @@ Nouvelle installation</translation>
 <translation id="7258828758145722155">Modifié hier</translation>
 <translation id="726276584504105859">Faire glisser ici pour utiliser l'écran partagé</translation>
 <translation id="7262906531272962081">Créer un rappel</translation>
+<translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />+Retour arrière</translation>
 <translation id="7297440678881127227"><ph name="START_TIME" /> à
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />,
@@ -1440,6 +1459,7 @@ Nouvelle installation</translation>
 <translation id="7312210124139670355">Votre administrateur réinitialise votre eSIM. Cela peut prendre quelques minutes.</translation>
 <translation id="7313193732017069507">Développer la caméra</translation>
 <translation id="7316261577130609484">Ajouter une tâche</translation>
+<translation id="7331646370422660166">Alt+Flèche vers le bas</translation>
 <translation id="7340731148882810149">Menu des clics automatiques</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Clavier virtuel</translation>
@@ -1485,6 +1505,7 @@ Nouvelle installation</translation>
 <translation id="7513922695575567867">Agenda, semaine du <ph name="DATE" />, le <ph name="SELECTED_DATE" /> est actuellement sélectionné.</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">Page suivante</translation>
 <translation id="7519206258459640379">Le cadrage de la caméra est activé.</translation>
 <translation id="7519649142417630956">Une fois votre appareil éteint, l'administrateur sera déconnecté et ne pourra plus le contrôler.
 
@@ -1764,6 +1785,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8721053961083920564">Activer/désactiver le volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Capture plein écran</translation>
 <translation id="8725214031272624704">Afficher la liste des modes de saisie disponibles</translation>
+<translation id="8730621377337864115">OK</translation>
 <translation id="8731487213223706745">Se termine à <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Il est possible que cet autre clavier tente d'enregistrer les touches sur lesquelles vous appuyez afin de vous soutirer des informations</translation>
 <translation id="8735678380411481005">Couleur de rétroéclairage du clavier</translation>
@@ -1855,6 +1877,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="9126339866969410112">Annuler la dernière action</translation>
 <translation id="9133335900048457298">Impossible d'enregistrer un contenu protégé</translation>
 <translation id="9139720510312328767">Supprimer la lettre suivante</translation>
+<translation id="9151906066336345901">Fin</translation>
 <translation id="9161053988251441839">SUGGESTIONS D'APPLICATIONS</translation>
 <translation id="9168436347345867845">Plus tard</translation>
 <translation id="9178475906033259337">1 résultat pour <ph name="QUERY" /></translation>

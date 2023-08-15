@@ -4592,6 +4592,7 @@ Politika, Yanlış değerine ayarlanırsa varsayılan davranış kullanılır.</
       Politika ayarlanmadan bırakılırsa web siteleri listeye eklenmez.
 
       Not: Bu listeye <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> politikası aracılığıyla öğeler eklenebileceğini de unutmayın.</translation>
+<translation id="5063480226653192405">Kullanım</translation>
 <translation id="5067143124345820993">Kullanıcı beyaz listesine giriş yap</translation>
 <translation id="5069522005630249098">Bu ayar, <ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra kullanıcı verilerinin ne kadarının saklanacağını belirler.
 

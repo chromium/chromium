@@ -2031,6 +2031,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5296589789433599000">Mat og oppskrifter</translation>
 <translation id="5299298092464848405">Feil under analysen av enhetsinnstillingene</translation>
 <translation id="5299638840995777423">Robotikk</translation>
+<translation id="5300062471671636390">Skjul enhetslisten for casting</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5306593769196050043">Begge arkene</translation>
 <translation id="5307166000025436103">OK</translation>
@@ -3494,6 +3495,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8368027906805972958">Ukjent eller ikke-støttet enhet (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play-tjenester</translation>
 <translation id="8369073279043109617">Få en ny kode</translation>
+<translation id="8371841335382565017">Vis enhetslisten for casting</translation>
 <translation id="8371889962595521444">Tilpassede rotsertifikater</translation>
 <translation id="8374636051559112948">Varierer</translation>
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>

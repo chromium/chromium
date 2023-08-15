@@ -356,7 +356,7 @@
 <translation id="2531025035050312891">裝置緩慢</translation>
 <translation id="2531107890083353124">在拖曳分頁時按 <ph name="KEY_ONE" /> 鍵</translation>
 <translation id="254900897760075745">將選取的內容複製至剪貼簿</translation>
-<translation id="2549711466868162843">提高亮度</translation>
+<translation id="2549711466868162843">改善光線</translation>
 <translation id="2549985041256363841">開始錄影</translation>
 <translation id="255671100581129685">「Google 助理」不適用於公開工作階段。</translation>
 <translation id="256712445991462162">固定的放大鏡</translation>
@@ -421,6 +421,7 @@
 <translation id="2840766858109427815">前往下一頁</translation>
 <translation id="2841907151129139818">已切換至平板電腦模式</translation>
 <translation id="2844169650293029770">USB-C 裝置 (左側前方連接埠)</translation>
+<translation id="2844350028562914727">詳細資料</translation>
 <translation id="2848120746144143659">㩒 Enter 掣就可以擷取全螢幕截圖</translation>
 <translation id="2849936225196189499">重要</translation>
 <translation id="2860184359326882502">最符合的項目</translation>
@@ -978,6 +979,7 @@
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5176318573511391780">錄影部分螢幕</translation>
 <translation id="5187627942836026988">顯示熱點詳情。管理員已封鎖熱點。</translation>
+<translation id="5197255632782567636">互聯網</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
 <translation id="5198715732953550718">結合「<ph name="MOVED_APP_NAME" />」同「<ph name="IN_PLACE_APP" />」就可以建立新資料夾。</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />，<ph name="NOTIFICATION_TITLE" />：<ph name="MESSAGE" />，<ph name="PHONE_NAME" /></translation>
@@ -1082,6 +1084,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">我們已將您的連線切換至更優質的網絡</translation>
 <translation id="5619862035903135339">管理員政策停用擷取螢幕截圖功能</translation>
+<translation id="5620856676199877916">前往 Google Classroom 網站查看所有課堂作業</translation>
 <translation id="5620979661744857819">此操作會允許「<ph name="APP_NAME" />」和所有具備相機和麥克風權限的應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">無法驗證您的密碼。請再試一次。</translation>
@@ -1211,6 +1214,7 @@
 <translation id="6154006699632741460">不支援周邊裝置</translation>
 <translation id="6156960295318603523">語言設定</translation>
 <translation id="615957422585914272">顯示螢幕小鍵盤</translation>
+<translation id="616543563528926612">右鍵快速鍵已從<ph name="LAUNCHER_KEY_NAME" />鍵 + 點按更新為 alt + 點按</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6166852626429024716">搜尋您的裝置、應用程式、設定、網絡…</translation>
 <translation id="6168318496333165060">開啟「診斷」應用程式</translation>
@@ -1497,6 +1501,7 @@
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
 <translation id="7508690557411636492">上個月開啟過</translation>
 <translation id="7509246181739783082">驗證您的身分</translation>
+<translation id="7512509370370076552">右鍵快速鍵已從 alt + 點按更新為<ph name="LAUNCHER_KEY_NAME" />鍵 + 點按</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />，未選取</translation>
 <translation id="7513622367902644023">揀咗螢幕截圖模式</translation>
 <translation id="7513922695575567867">日曆，<ph name="DATE" />嗰個星期，目前揀咗 <ph name="SELECTED_DATE" /> 日。</translation>
@@ -1600,6 +1605,7 @@
 <translation id="7904094684485781019">這個帳戶的管理員已禁止多重登入。</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">已連接 <ph name="DEVICECOUNT" /> 部裝置</translation>
+<translation id="7926080067315048321">前往 Google Tasks 網頁版查看所有工作</translation>
 <translation id="7930731167419639574">語音處理程序已在本機執行，語音輸入功能會離線運作</translation>
 <translation id="7932451802722951285">在「Google 日曆」中開啟</translation>
 <translation id="7933084174919150729">「Google 助理」僅適用於主要設定檔。</translation>
@@ -1782,6 +1788,7 @@
 <translation id="8721053961083920564">切換音量設定。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">全螢幕畫面擷取</translation>
 <translation id="8725214031272624704">顯示可用的輸入方法清單</translation>
+<translation id="8730621377337864115">完成</translation>
 <translation id="8731487213223706745">結束時間：<ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">鍵盤可能會嘗試盜取您的按鍵操作</translation>
 <translation id="8735678380411481005">鍵盤背光顏色</translation>

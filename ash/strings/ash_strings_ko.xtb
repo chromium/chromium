@@ -421,6 +421,7 @@
 <translation id="2840766858109427815">다음 페이지로 이동하기</translation>
 <translation id="2841907151129139818">태블릿 모드로 전환됨</translation>
 <translation id="2844169650293029770">USB-C 기기(좌측 전면 포트)</translation>
+<translation id="2844350028562914727">세부정보</translation>
 <translation id="2848120746144143659">전체 화면 스크린샷을 캡처하려면 Enter를 누르세요</translation>
 <translation id="2849936225196189499">중요</translation>
 <translation id="2860184359326882502">가장 일치하는 결과</translation>
@@ -979,6 +980,7 @@
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5176318573511391780">화면 일부 녹화</translation>
 <translation id="5187627942836026988">핫스팟 세부정보를 표시합니다. 관리자가 핫스팟을 차단했습니다.</translation>
+<translation id="5197255632782567636">인터넷</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, 일정 <ph name="NUMBER" />개</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> 앱과 <ph name="IN_PLACE_APP" /> 앱이 포함된 새 폴더를 만들었습니다.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1784,6 +1786,7 @@
 <translation id="8721053961083920564">볼륨 변경. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">전체 화면 캡처</translation>
 <translation id="8725214031272624704">사용 가능한 입력 방법 목록 표시</translation>
+<translation id="8730621377337864115">완료</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" /><ph name="DAYS_ELAPSED" />에 종료</translation>
 <translation id="8734991477317290293">키 입력 내용을 도용하려는 시도일 수 있습니다.</translation>
 <translation id="8735678380411481005">키보드 백라이트 색상</translation>

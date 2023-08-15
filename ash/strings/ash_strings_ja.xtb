@@ -416,6 +416,7 @@
 <translation id="2840766858109427815">次のページに進む</translation>
 <translation id="2841907151129139818">タブレット モードに切り替えました</translation>
 <translation id="2844169650293029770">USB-C デバイス（左手前のポート）</translation>
+<translation id="2844350028562914727">詳細</translation>
 <translation id="2848120746144143659">全画面のスクリーンショットを撮影するには Enter キーを押してください</translation>
 <translation id="2849936225196189499">重要</translation>
 <translation id="2860184359326882502">ベストマッチ</translation>
@@ -968,6 +969,7 @@
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5176318573511391780">画面の一部を録画</translation>
 <translation id="5187627942836026988">アクセス ポイントの詳細を表示します。アクセス ポイントは管理者によってブロックされています。</translation>
+<translation id="5197255632782567636">インターネット</translation>
 <translation id="5198413532174090167"><ph name="DATE" />、<ph name="NUMBER" /> 件の予定</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> で <ph name="IN_PLACE_APP" /> を使用して新しいフォルダが作成されました。</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />、<ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />、<ph name="PHONE_NAME" /></translation>
@@ -1071,6 +1073,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">より安全なネットワークに切り替えました</translation>
 <translation id="5619862035903135339">管理者が設定したポリシーにより、スクリーン キャプチャは無効になっています</translation>
+<translation id="5620856676199877916">Google Classroom ウェブサイトの全授業を表示</translation>
 <translation id="5620979661744857819">カメラとマイクへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、アクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">パスワードを確認できませんでした。もう一度お試しください。</translation>
@@ -1199,6 +1202,7 @@
 <translation id="6154006699632741460">サポートされていない周辺機器です</translation>
 <translation id="6156960295318603523">言語設定</translation>
 <translation id="615957422585914272">画面キーボードを表示する</translation>
+<translation id="616543563528926612">右クリックのショートカットが、<ph name="LAUNCHER_KEY_NAME" />キー+クリックから Alt キー+クリックに変更されました</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6166852626429024716">デバイス、アプリ、設定、ウェブを検索...</translation>
 <translation id="6168318496333165060">診断アプリを開きます</translation>
@@ -1482,6 +1486,7 @@
 <translation id="7497767806359279797">言語とキーボードを選択</translation>
 <translation id="7508690557411636492">過去 1 か月以内に開いたファイル</translation>
 <translation id="7509246181739783082">本人確認</translation>
+<translation id="7512509370370076552">右クリックのショートカットが、Alt キー+クリックから <ph name="LAUNCHER_KEY_NAME" />キー+クリックに変更されました</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />、未選択</translation>
 <translation id="7513622367902644023">スクリーンショット モードを選択しました</translation>
 <translation id="7513922695575567867">カレンダー、<ph name="DATE" /> の週、現在 <ph name="SELECTED_DATE" /> が選択されています。</translation>
@@ -1584,6 +1589,7 @@
 <translation id="7904094684485781019">このアカウントの管理者がマルチログインを許可していません。</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> 台のデバイスが接続されています</translation>
+<translation id="7926080067315048321">ウェブの Google ToDo リストの全タスクを表示</translation>
 <translation id="7930731167419639574">音声はローカルで処理されました。オフラインで音声入力を使用できます。</translation>
 <translation id="7932451802722951285">Google カレンダーで開く</translation>
 <translation id="7933084174919150729">Google アシスタントはメインのプロフィールでのみご利用いただけます。</translation>
@@ -1766,6 +1772,7 @@
 <translation id="8721053961083920564">音量を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">全画面キャプチャ</translation>
 <translation id="8725214031272624704">利用可能な入力方法のリストを表示する</translation>
+<translation id="8730621377337864115">完了</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> に終了</translation>
 <translation id="8734991477317290293">キー入力が読み取られる可能性があります</translation>
 <translation id="8735678380411481005">キーボードのバックライトの色</translation>

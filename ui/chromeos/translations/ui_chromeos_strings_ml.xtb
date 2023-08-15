@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">തണ്ണിമത്തൻ</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ഫോർമാറ്റ് ചെയ്തു</translation>
 <translation id="1931134289871235022">സ്ലോവാക്</translation>
-<translation id="1933345018156373194">അപ്രതീക്ഷിത പിശക് കാരണം നീക്കാനായില്ല: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ഫിന്നിഷ്</translation>
 <translation id="1942765061641586207">ചിത്രത്തിന്റെ റെസല്യൂഷൻ</translation>
 <translation id="1972984168337863910">ഫയലുകളുടെ ഫീഡ്ബാക്ക് പാനലുകൾ വികസിപ്പിക്കുക</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">ആല്‍‌ബം</translation>
 <translation id="4972330214479971536">ഫയൽ സമന്വയിപ്പിക്കൽ സജ്ജീകരിക്കുന്നത് പൂർത്തിയാക്കാനായില്ല</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> പ്രതീകങ്ങളോ അതിൽ കുറവോ ഉള്ള ഒരു പേര് ഉപയോഗിക്കുക</translation>
-<translation id="4973970068702235170">അപ്രതീക്ഷിത പിശക് കാരണം സിപ്പ് ചെയ്യൽ പരാജയപ്പെട്ടു: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ജാപ്പനീസ്</translation>
 <translation id="4987699874727873250">ഇംഗ്ലീഷ് (ഇന്ത്യ)</translation>
 <translation id="4988205478593450158">"<ph name="FILE_NAME" />" ഇല്ലാതാക്കണെമെന്ന് ഉറപ്പാണോ?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, സജീവമാക്കിയിട്ടില്ല, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="5911887972742538906">നിങ്ങളുടെ Linux ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുന്ന സമയത്ത് ഒരു പിശക് സംഭവിച്ചു.</translation>
 <translation id="5912396950572065471">ഫോർമാറ്റ്</translation>
-<translation id="5913638992615760742">അപ്രതീക്ഷിത പിശക് കാരണം പകർത്താനായില്ല: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">പുതിയ തിരയൽ ഫീച്ചറുകൾ ലഭ്യമാണ്</translation>
 <translation id="5926082595146149752">യുഎസ് അന്താരാഷ്ട്ര PC കീബോർഡ് ഉള്ള ഡച്ച് (നെതർലാൻഡ്‌സ്)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ</translation>
 <translation id="5957366693331451795">Chromebox-കൾ</translation>
 <translation id="5982621672636444458">അടുക്കൽ ഓപ്‌ഷനുകൾ</translation>
-<translation id="6007237601604674381">നീക്കുന്നത് പരാജയപ്പെട്ടു. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">എതെർനെറ്റ് നെറ്റ്‌വർക്ക്</translation>
 <translation id="60357267506638014">ചെക്ക് QWERTY</translation>
 <translation id="603895874132768835">പുതിയ പിൻ സജ്ജീകരിക്കുന്നത് വരെ നിങ്ങൾക്ക് ഈ നെറ്റ്‌വർക്ക് ഉപയോഗിക്കാനാകില്ല</translation>

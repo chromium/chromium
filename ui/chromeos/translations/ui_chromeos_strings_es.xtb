@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Sandía</translation>
 <translation id="1924372192547904021">Se ha formateado <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Eslovaco</translation>
-<translation id="1933345018156373194">No se ha podido mover el archivo porque se ha producido un error inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandés</translation>
 <translation id="1942765061641586207">Resolución de imagen</translation>
 <translation id="1972984168337863910">Ampliar paneles de comentarios de archivos</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Álbum</translation>
 <translation id="4972330214479971536">No se ha podido terminar de configurar la sincronización de archivos</translation>
 <translation id="4973523518332075481">Utiliza un nombre que tenga <ph name="MAX_LENGTH" /> caracteres como máximo</translation>
-<translation id="4973970068702235170">Error al comprimir; error inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonés</translation>
 <translation id="4987699874727873250">Inglés (India)</translation>
 <translation id="4988205478593450158">¿Seguro que quieres eliminar "<ph name="FILE_NAME" />"?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, no activada, intensidad de la señal del <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="5911887972742538906">No se ha podido instalar la aplicación de Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
-<translation id="5913638992615760742">No se ha podido copiar debido a un error inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Nuevas funciones de búsqueda disponibles</translation>
 <translation id="5926082595146149752">Neerlandés (Países Bajos) con teclado de EE. UU. internacional (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementos</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Opciones de orden</translation>
-<translation id="6007237601604674381">Se ha producido un error al mover el archivo (<ph name="ERROR_MESSAGE" />).</translation>
 <translation id="6011074160056912900">Red Ethernet</translation>
 <translation id="60357267506638014">Checo (QWERTY)</translation>
 <translation id="603895874132768835">No podrás usar esta red hasta que establezcas un nuevo PIN.</translation>

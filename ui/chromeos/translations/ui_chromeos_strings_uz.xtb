@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Tarvuz</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> formatlandi</translation>
 <translation id="1931134289871235022">Slovak</translation>
-<translation id="1933345018156373194">Bajarilmadi, kutilmagan xatolik: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fin tili</translation>
 <translation id="1942765061641586207">Tasvirning piksellar sig‘imi</translation>
 <translation id="1972984168337863910">Fayllar holat panelini yoyish</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Albom</translation>
 <translation id="4972330214479971536">Fayllar sinxronlanishi oxirigacha sozlanmadi</translation>
 <translation id="4973523518332075481">Nom <ph name="MAX_LENGTH" /> yoki undan kam belgilardan iborat bo‘lishi zarur</translation>
-<translation id="4973970068702235170">Arxivlashda kutilmagan xatolik yuz berdi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Yapon</translation>
 <translation id="4987699874727873250">Ingliz (Hindiston)</translation>
 <translation id="4988205478593450158">“<ph name="FILE_NAME" />” fayli oʻchirib tashlansinmi?</translation>
@@ -633,7 +631,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5896749729057314184">Tarmoq: <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, faolsizlantirilgan, signal kuchi <ph name="SIGNAL_STRENGTH" />%, tafsilotlar</translation>
 <translation id="5911887972742538906">Linux ilovasini o‘rnatishda xatolik yuz berdi.</translation>
 <translation id="5912396950572065471">Format</translation>
-<translation id="5913638992615760742">Nusxalash amali bajarilmadi, kutilmagan xatolik: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Yangi qidiruv funksiyalari chiqdi</translation>
 <translation id="5926082595146149752">Golland (Niderlandiya) va kompyuter uchun AQSH klaviaturasi (xalqaro)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -641,7 +638,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ta obyekt</translation>
 <translation id="5957366693331451795">Chromeboxe qurilmalari</translation>
 <translation id="5982621672636444458">Saralash</translation>
-<translation id="6007237601604674381">Ko‘chirib bo‘lmadi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet tarmoq</translation>
 <translation id="60357267506638014">Chex (QWERTY)</translation>
 <translation id="603895874132768835">Yangi PIN kodni sozlamaguncha bu tarmoqdan foydalana olmaysiz</translation>

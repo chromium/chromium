@@ -421,6 +421,7 @@
 <translation id="2840766858109427815">နောက်စာမျက်နှာသို့ သွားရန်</translation>
 <translation id="2841907151129139818">တက်ဘလက်မုဒ်သို့ ပြောင်းထားသည်</translation>
 <translation id="2844169650293029770">USB-C ကိရိယာ (အရှေ့ပိုင်း ဘယ် ပို့တ်)</translation>
+<translation id="2844350028562914727">အသေးစိတ်</translation>
 <translation id="2848120746144143659">ဖန်သားပြင်အပြည့် ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
 <translation id="2849936225196189499">အရေးကြီး</translation>
 <translation id="2860184359326882502">အနီးစပ်ဆုံး</translation>
@@ -979,6 +980,7 @@
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="5176318573511391780">ဖန်သားပြင်တစ်စိတ်တစ်ပိုင်းကို ရိုက်ကူးရန်</translation>
 <translation id="5187627942836026988">ဟော့စပေါ့အသေးစိတ် ပြသည်။ ဟော့စပေါ့ကို သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်။</translation>
+<translation id="5197255632782567636">အင်တာနက်</translation>
 <translation id="5198413532174090167"><ph name="DATE" />၊ အစီအစဉ် <ph name="NUMBER" /> ခု</translation>
 <translation id="5198715732953550718">ဖိုင်တွဲအသစ်ပြုလုပ်ရန် <ph name="MOVED_APP_NAME" /> သည် <ph name="IN_PLACE_APP" /> နှင့် ပေါင်းစည်းထားသည်။</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />၊ <ph name="NOTIFICATION_TITLE" />- <ph name="MESSAGE" />၊ <ph name="PHONE_NAME" /></translation>
@@ -1784,6 +1786,7 @@
 <translation id="8721053961083920564">အသံခလုတ်ကို နှိပ်ပါ။ <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ဖန်သားပြင်အပြည့် ပုံဖမ်းခြင်း</translation>
 <translation id="8725214031272624704">ရနိုင်သော လက်ကွက်စာရင်းကို ပြပါ</translation>
+<translation id="8730621377337864115">ပြီးပါပြီ</translation>
 <translation id="8731487213223706745"><ph name="DAYS_ELAPSED" /> <ph name="END_TIME" /> တွင် ပြီးဆုံးမည်</translation>
 <translation id="8734991477317290293">၎င်းသည် သင်၏ ခလုတ်နှိပ်ချက်များကို ခိုးယူရန် ကြိုးပမ်းနိုင်သည်။</translation>
 <translation id="8735678380411481005">ကီးဘုတ်နောက်ခံမီးရောင်</translation>

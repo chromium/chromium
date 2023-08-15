@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Meloun</translation>
 <translation id="1924372192547904021">Disk <ph name="DRIVE_NAME" /> byl naformátován</translation>
 <translation id="1931134289871235022">slovenština</translation>
-<translation id="1933345018156373194">Přesunutí se nezdařilo, neočekávaná chyba: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">finština</translation>
 <translation id="1942765061641586207">Rozlišení obrázku</translation>
 <translation id="1972984168337863910">Rozbalit panely zpětné vazby k souborům</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Nastavení synchronizace souborů se nepodařilo dokončit</translation>
 <translation id="4973523518332075481">Název nesmí být delší než <ph name="MAX_LENGTH" /> znaků</translation>
-<translation id="4973970068702235170">Komprimace se nezdařila, neočekávaná chyba: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japonština</translation>
 <translation id="4987699874727873250">Angličtina (Indie)‎</translation>
 <translation id="4988205478593450158">Opravdu soubor <ph name="FILE_NAME" /> chcete odstranit?</translation>
@@ -633,7 +631,6 @@
 <translation id="5896749729057314184">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivováno, síla signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="5911887972742538906">Při instalaci aplikace pro Linux došlo k chybě.</translation>
 <translation id="5912396950572065471">Formát</translation>
-<translation id="5913638992615760742">Kopírování se nezdařilo, neočekávaná chyba: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">K dispozici jsou nové funkce vyhledávání</translation>
 <translation id="5926082595146149752">nizozemština (Nizozemsko) s klávesnicí USA – mezinárodní (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -641,7 +638,6 @@
 <translation id="5955954492236143329">Počet položek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Možnosti řazení</translation>
-<translation id="6007237601604674381">Přesun se nezdařil. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Síť Ethernet</translation>
 <translation id="60357267506638014">Česká klávesnice QWERTY</translation>
 <translation id="603895874132768835">Tuto síť budete moci používat až poté, co si nastavíte nový PIN</translation>

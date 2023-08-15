@@ -1180,6 +1180,7 @@
 <translation id="1925124445985510535">Безбедносната проверка беше извршена во <ph name="TIME" /></translation>
 <translation id="192564025059434655">Старите верзии на апликациите на Chrome нема да се отвораат на уреди со Windows по декември 2022 година. Може да проверите дали има достапно нова верзија.</translation>
 <translation id="1926339101652878330">Правилата на организацијата ги контролираат овие поставки. Контактирајте со администраторот за повеќе информации.</translation>
+<translation id="1926887872692564784">Курсор</translation>
 <translation id="1927632033341042996">Прст <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN-код за заклучување екран</translation>
 <translation id="192858925209436740">Поврзете го OneDrive со апликацијата „Датотеки“ за да управувате со складираните документи од вашиот Chromebook. Ќе треба да се најавите на вашата сметка на Google.</translation>
@@ -1343,7 +1344,6 @@
 <translation id="2061366302742593739">Нема што да се прикаже</translation>
 <translation id="2062354623176996748">Користете интернет без да ја зачувувате историјата на прелистувањето со прозорец „Инкогнито“</translation>
 <translation id="206308717637808771">Податоците се бришат при затворање на сите прозорци. Податоците се третираат исто како сајтот што го прегледувате</translation>
-<translation id="2063623149012168328">Додајте кратенка за <ph name="BRAND" /></translation>
 <translation id="2065405795449409761">Автоматизиран софтвер за тестирање го контролира Chrome.</translation>
 <translation id="2071393345806050157">Нема локална датотека со евиденција.</translation>
 <translation id="2071692954027939183">Известувањата беа блокирани автоматски бидејќи обично не ги дозволувате</translation>
@@ -2824,6 +2824,7 @@
 <translation id="3267726687589094446">Продолжи со дозволување автоматски преземања на повеќе датотеки</translation>
 <translation id="3268451620468152448">Отворени картички</translation>
 <translation id="3269093882174072735">Вчитај слика</translation>
+<translation id="326911502853238749">Не прикажувај <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Вклучете синхронизација за да се прави бекап од вашите работи и користете ги на сите уреди</translation>
 <translation id="3269612321104318480">Светла синозелена и бела</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Датотека}one{# датотека}other{# датотеки}}</translation>
@@ -2894,7 +2895,6 @@
 <translation id="3321460131042519426">Овозможи прелом на зборови</translation>
 <translation id="3321494112580110651">Не го гледате вашиот печатач?</translation>
 <translation id="3323521181261657960">Бонус! Доби уште време за користење на уредот</translation>
-<translation id="3323577066981719144">Промените што ќе ги извршите тука важат само за прелистувачот Chrome. За да извршите промени во поставките за прелистувачот Lacros Chrome, отворете го и одете во поставки.</translation>
 <translation id="3325804108816646710">Се бараат достапни профили…</translation>
 <translation id="3325910708063135066">Камерата и микрофонот се исклучени во поставките за системот Mac</translation>
 <translation id="3325930488268995856">Microsoft OneDrive е поврзан</translation>
@@ -3284,6 +3284,7 @@
 <translation id="3653887973853407813">Не може да ја користиш екстензијава. Твојот родител или старател исклучил „Дозволи за сајтови, апликации и екстензии“ за Chrome.</translation>
 <translation id="3653999333232393305">Продолжи дозволувајќи <ph name="HOST" /> да пристапи до вашиот микрофон</translation>
 <translation id="3654045516529121250">Прочитајте ги поставките за пристапност</translation>
+<translation id="3656328935986149999">Брзина на курсорот</translation>
 <translation id="3658871634334445293">Забрзување на TrackPoint</translation>
 <translation id="3659550105763988702">Користете го криптографскиот клуч за <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Внесовте премногу неточни кодови за пристап. Обидете се повторно подоцна</translation>
@@ -3782,6 +3783,7 @@
 <translation id="4037084878352560732">Коњ</translation>
 <translation id="403725336528835653">Прво испробајте</translation>
 <translation id="4040041015953651705">Јазик од кој треба да се преведе</translation>
+<translation id="4042660782729322247">Го споделувате екранот</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Излези од страницата}one{Излези од страниците}other{Излези од страниците}}</translation>
 <translation id="4042941173059740150">Продолжете на <ph name="SITE_ETLD_PLUS_ONE" /> со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Големина на курсорот</translation>
@@ -3996,6 +3998,7 @@
 <translation id="4232375817808480934">Конфигурирајте го Kerberos</translation>
 <translation id="4233739489690259993">Вашиот Chromebook веќе не прима безбедносни и софтверски ажурирања. Надградете го уредот за најнови безбедносни ажурирања и нови поставки. Важат „Условите на понудата“.</translation>
 <translation id="4235965441080806197">Откажи најавување</translation>
+<translation id="4235976607074422892">Брзина на лизгање</translation>
 <translation id="4237282663517880406">Прикажи предлози од Google Drive</translation>
 <translation id="4241182343707213132">Рестартирајте за да се ажурираат апликациите на организацијата</translation>
 <translation id="4242145785130247982">Не се поддржани повеќе клиентски сертификати</translation>
@@ -4436,6 +4439,7 @@
 <translation id="4598556348158889687">Управување со меморијата</translation>
 <translation id="4598776695426288251">Wi-Fi е достапно преку повеќе уреди</translation>
 <translation id="4600071396330666617">Број на предлози</translation>
+<translation id="4601095002996233687">Детални скенирања за сомнителни преземања.</translation>
 <translation id="4601426376352205922">Обележи како непрочитано</translation>
 <translation id="460190672235687855">Прегледајте ги лозинките</translation>
 <translation id="4602466770786743961">Секогаш дозволувај <ph name="HOST" /> да пристапи до камерата и микрофонот</translation>
@@ -5319,6 +5323,7 @@
 <translation id="5365881113273618889">Папката што ја избравте содржи чувствителни датотеки. Дали сигурно сакате да ѝ доделите на <ph name="APP_NAME" /> постојан пристап за пишување во оваа папка?</translation>
 <translation id="536638840841140142">Нема</translation>
 <translation id="5368246151595623328">„<ph name="NETWORK_NAME" />“ зачувано од <ph name="DEVICE_NAME" /></translation>
+<translation id="5368255566854433132">Создајте лозинка за <ph name="DEVICE_TYPE" /></translation>
 <translation id="5368720394188453070">Вашиот телефон е заклучен. Отклучете го за да влезете.</translation>
 <translation id="5368779022775404937">Најавете се на <ph name="REALM" /></translation>
 <translation id="536882527576164740">{0,plural, =1{Инкогнито}one{Инкогнито (#)}other{Инкогнито (#)}}</translation>
@@ -5874,6 +5879,7 @@
 <translation id="5840680448799937675">Датотеките секогаш ќе се споделуваат офлајн</translation>
 <translation id="5841270259333717135">Конфигурирајте етернет</translation>
 <translation id="5842497610951477805">Овозможете Bluetooth</translation>
+<translation id="5844284118433003733">Кога сте најавени, податоциве се поврзуваат со вашата сметка на Google за да ве штитат на услугите на Google, на пример, зголемување на заштитата во Gmail по безбедносен инцидент.</translation>
 <translation id="5844574845205796324">Предложете нови содржини за истражување</translation>
 <translation id="5846200638699387931">Синтаксичка грешка во односот: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Без сенка</translation>
@@ -6721,6 +6727,7 @@
 <translation id="6548945820758901244">Отвори ја страничната табла на „Пребарување на Google“</translation>
 <translation id="6549038875972762904">Повтори го поставувањето</translation>
 <translation id="6550675742724504774">Опции</translation>
+<translation id="6550891580932862748">Не ве штити од опасни веб-сајтови, преземања и екстензии. Ова нема да влијае на поставките за „Безбедно прелистување“ на други производи на Google.</translation>
 <translation id="65513682072153627">Ќе ја видите иконава „Управувано“ кога поставката или функцијата ќе биде управувана од администраторот.</translation>
 <translation id="6551508934388063976">Наредбата е недостапна. Притиснете control-N за да отворите нов прозорец.</translation>
 <translation id="6551606359270386381">Алатка за елипса</translation>
@@ -6798,6 +6805,7 @@
 <translation id="6609478180749378879">Податоците за најавување ќе се складираат во уредов откако ќе излезете од режимот „Инкогнито“. Подоцна ќе може повторно да се најавите на овој веб-сајт со уредот.</translation>
 <translation id="6610002944194042868">Опции за „Преведи“</translation>
 <translation id="6611972847767394631">Најдете ги вашите картички тука</translation>
+<translation id="661266467055912436">Ја подобрува безбедноста за вас и сите останати на интернет.</translation>
 <translation id="6613267708691765962">Се скенира за злонамерен софтвер…</translation>
 <translation id="6613668613087513143">Нема доволно простор на уредов за да се заврши ажурирањето. Избришете <ph name="NECESSARY_SPACE" /> на вашиот уред и пробајте пак од прелистувач Chrome.</translation>
 <translation id="6615455863669487791">Покажи ми</translation>
@@ -8202,6 +8210,7 @@
 <translation id="7774792847912242537">Премногу барања.</translation>
 <translation id="7775694664330414886">Картичката е преместена во неименувана група - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> ќе може да прегледува датотеки во <ph name="FOLDERNAME" /> сѐ додека не ги затворите сите картички за сајтов</translation>
+<translation id="777637629667389858">Кога сте најавени, ве штити на услугите на Google.</translation>
 <translation id="7776701556330691704">Не се најдени гласови</translation>
 <translation id="7777624210360383048">Кратенка <ph name="SHORTCUT" /> за <ph name="EXTENSION_NAME" /></translation>
 <translation id="7781335840981796660">Сите кориснички сметки и локални податоци ќе бидат отстранети.</translation>
@@ -8238,7 +8247,6 @@
 <translation id="7799650166313181433">Само уредите што се најавени на <ph name="USER_EMAIL" /> може да споделуваат со уредов. Нема да треба да одобрувате споделување меѓу вашите уреди.</translation>
 <translation id="7800485561443537737">Го користи мобилниот интернет на вашиот <ph name="DEVICE_TYPE" /> и вашиот оператор може да ви наплати дополнително. Може да се зголеми користењето на батеријата. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Ротирај на&amp;лево</translation>
-<translation id="7801679634091975683">Промените што ќе ги извршите тука важат само за прелистувачот Lacros Chrome. За да извршите промени во поставките за прелистувачот Chrome, отворете го и одете во поставки.</translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7803657407897251194">За да продолжите со поставување со вашиот уред со Android, поврзете го вашиот <ph name="DEVICE_TYPE" /> на мрежа</translation>
 <translation id="7804072833593604762">Картичката е затворена</translation>
@@ -8455,6 +8463,7 @@
 <translation id="7974713334845253259">Стандардна боја</translation>
 <translation id="7974936243149753750">Прелевање</translation>
 <translation id="7975504106303186033">Мора да го регистрирате уредов за Chrome Education во сметка на Education. За да се регистрирате за нова сметка, одете на g.co/workspace/edusignup.</translation>
+<translation id="7977451675950311423">Ве предупредува ако користите лозинка компромитирана во упад во податоци.</translation>
 <translation id="7978412674231730200">Приватен клуч</translation>
 <translation id="7978450511781612192">Ова ќе ве одјави од вашите сметки на Google. Обележувачите, историјата, лозинките и друго веќе нема да се синхронизираат.</translation>
 <translation id="7980084013673500153">ИД на средство: <ph name="ASSET_ID" /></translation>
@@ -8647,6 +8656,7 @@
 <translation id="8137559199583651773">Управувај со наставки</translation>
 <translation id="8138217203226449454">Дали сакавте да го смените пребарувачот?</translation>
 <translation id="8138997515734480534">Статус на <ph name="VM_NAME" /></translation>
+<translation id="8139440916039659819">Забрзување на курсорот</translation>
 <translation id="8139447493436036221">Датотеки на Google Drive</translation>
 <translation id="8139643636835015859">Со ова ќе се отстрани простор од <ph name="OFFLINE_STORAGE_SIZE" /> што го користат офлајн датотеките. Некои датотеки и понатаму ќе бидат достапни офлајн. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" /> <ph name="SECOND_DEVICE" /></translation>
@@ -8848,6 +8858,7 @@
 <translation id="8295450130892483256">Инсталирање Microsoft 365</translation>
 <translation id="8297292446125062288">Поставки за HID</translation>
 <translation id="8298429963694909221">Сега може да добивате известувања од телефонот на вашиот <ph name="DEVICE_TYPE" />. Отфрлањето на известувањата на <ph name="DEVICE_TYPE" /> ќе ги отфрли и на телефонот. Проверете дали телефонот е во близина и со вклучени Bluetooth и Wi-Fi.</translation>
+<translation id="829923460755755423">Додајте кратенка за Google Password Manager</translation>
 <translation id="8299319456683969623">Во моментов сте исклучени.</translation>
 <translation id="8300011035382349091">Изменете го обележувачот за картичкава</translation>
 <translation id="8300374739238450534">Тегет</translation>
@@ -8986,6 +8997,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Дозволени: <ph name="PERMISSION" /> и уште <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Дали сакате да го активирате ChromeVox, вградениот читач на екранот за Chrome OS?</translation>
+<translation id="8414065061814811918">Забрзување на лизгањето. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Спомените ќе бидат скриени два дена</translation>
 <translation id="8414396119627470038">Најавете се на <ph name="SITE_ETLD_PLUS_ONE" /> со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Белешки</translation>
@@ -9112,6 +9124,7 @@
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Звучници</translation>
 <translation id="8527257351549797148">Вашата организација може да бара регистрација за да може да пристапувате до апликации, екстензии и друго. Ова ѝ овозможува на организацијата да управува со работи како безбедноста и поставките на уредот.</translation>
+<translation id="8527869672961320915"><ph name="VM_NAME" /> апликации</translation>
 <translation id="8528074251912154910">Додај јазици</translation>
 <translation id="8528479410903501741">Зачувајте го IBAN</translation>
 <translation id="8528962588711550376">Се пријавува.</translation>
@@ -9368,6 +9381,7 @@
 <translation id="8736288397686080465">Локацијава се ажурираше во заднина.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Изберете го јазикот за превод на страницата</translation>
+<translation id="8740086188450289493">Употребете ја лозинката за сметката на Google</translation>
 <translation id="8740247629089392745">Може да му го предадете овој Chromebook на<ph name="SUPERVISED_USER_NAME" />. Поставувањето речиси е готово, а потоа е време за истражување.</translation>
 <translation id="8740672167979365981">Потребно е ажурирање на ChromeOS Flex</translation>
 <translation id="8741944563400125534">Водич за поставување „Пристап со прекинувачи“</translation>
@@ -9503,6 +9517,7 @@
 <translation id="885246833287407341">Аргументи за функцијата API</translation>
 <translation id="8853586775156634952">Картичкава ќе се зачува само на овој уред</translation>
 <translation id="8854745870658584490">Кратенка на изборот</translation>
+<translation id="8855242995793521265">Не го забавува значително прелистувачот или уредот.</translation>
 <translation id="8855977033756560989">Овој уред Chromebook Enterprise доаѓа во комплет со ажурирање на Chrome Enterprise. За да ги искористите можностите за претпријатие, регистрирајте го уредов со администраторска сметка на Google.</translation>
 <translation id="8856028055086294840">Враќање на апликациите и страниците</translation>
 <translation id="885701979325669005">Склад</translation>
@@ -9751,6 +9766,7 @@
 <translation id="9045160989383249058">Списокот за читање е преместен во новата странична табла. Испробајте тука.</translation>
 <translation id="9045430190527754450">Ја испраќа интернет-адресата на страницата до којашто се обидувате да стигнете до Google</translation>
 <translation id="9048745018038487540">Избери ги сите фонтови</translation>
+<translation id="9050135202879860719">Користете лозинка за да се најавите на <ph name="DEVICE_TYPE" /></translation>
 <translation id="9050666287014529139">Пристапна фраза</translation>
 <translation id="9052404922357793350">Продолжи со блокирање</translation>
 <translation id="90528604757378587">Активноста во заднина и некои визуелни ефекти, како непречено лизгање, може да се ограничени.</translation>

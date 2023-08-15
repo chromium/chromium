@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">بطيخ</translation>
 <translation id="1924372192547904021">تم ضبط <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">السلوفاكية</translation>
-<translation id="1933345018156373194">تعذَّر النقل، خطأ غير متوقِّع: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">الفنلندية</translation>
 <translation id="1942765061641586207">دقة الصورة</translation>
 <translation id="1972984168337863910">توسيع لوحات تعليقات الملفات</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">الألبوم</translation>
 <translation id="4972330214479971536">تعذَّر إكمال إعداد مزامنة الملفات</translation>
 <translation id="4973523518332075481">يرجى استخدام اسم يحتوي على <ph name="MAX_LENGTH" /> حرف أو أقل</translation>
-<translation id="4973970068702235170">تعذَّر الضغط، خطأ غير متوقع: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">اليابانية</translation>
 <translation id="4987699874727873250">الإنجليزية (الهند)</translation>
 <translation id="4988205478593450158">هل تريد بالتأكيد حذف "<ph name="FILE_NAME" />"؟</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، غير مفعَّلة، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="5911887972742538906">‏حدث خطأ أثناء تثبيت تطبيق Linux.</translation>
 <translation id="5912396950572065471">التنسيق</translation>
-<translation id="5913638992615760742">تعذَّر إتمام عملية النسخ، خطأ غير متوقِّع: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">تتوفّر ميزات بحث جديدة.</translation>
 <translation id="5926082595146149752">الهولندية (هولندا) باستخدام لوحة مفاتيح الكمبيوتر الشخصي الأمريكية الدولية</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> من العناصر</translation>
 <translation id="5957366693331451795">‏أجهزة Chromebox</translation>
 <translation id="5982621672636444458">خيارات التصنيف</translation>
-<translation id="6007237601604674381">تعذّر النقل. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">شبكة إيثرنت</translation>
 <translation id="60357267506638014">‏تخطيط QWERTY للتشيكية</translation>
 <translation id="603895874132768835">لن تتمكّن من استخدام هذه الشبكة إلى أن يتم إعداد رقم تعريف شخصي جديد.</translation>

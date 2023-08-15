@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Lubenica</translation>
 <translation id="1924372192547904021">Pogon <ph name="DRIVE_NAME" /> je bil formatiran</translation>
 <translation id="1931134289871235022">slovaščina</translation>
-<translation id="1933345018156373194">Premikanje ni uspelo, nepričakovana napaka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">finščina</translation>
 <translation id="1942765061641586207">Ločljivost slike</translation>
 <translation id="1972984168337863910">Razširitev datotek podoken povratnih informacij</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Nastavitve sinhronizacije datotek ni bilo mogoče dokončati</translation>
 <translation id="4973523518332075481">Uporabite ime, ki vsebuje največ toliko znakov: <ph name="MAX_LENGTH" /></translation>
-<translation id="4973970068702235170">Ustvarjanje arhiva zip ni uspelo, nepričakovana napaka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japonščina</translation>
 <translation id="4987699874727873250">angleščina (Indija)</translation>
 <translation id="4988205478593450158">Ali ste prepričani, da želite izbrisati datoteko »<ph name="FILE_NAME" />«?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_INDEX" />. omrežje od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivirano, moč signala <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="5911887972742538906">Med nameščanjem aplikacije za Linux je prišlo do napake.</translation>
 <translation id="5912396950572065471">Oblika</translation>
-<translation id="5913638992615760742">Operacija kopiranja ni uspela, nepričakovana napaka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Na voljo so nove oblike iskanja</translation>
 <translation id="5926082595146149752">nizozemščina (Nizozemska) z mednarodno angleško tipkovnico (ZDA – za računalnike s sistemom Windows)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329">Št. datotek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboxi</translation>
 <translation id="5982621672636444458">Možnosti razvrščanja</translation>
-<translation id="6007237601604674381">Premikanje ni uspelo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernetno omrežje</translation>
 <translation id="60357267506638014">češčina – QWERTY</translation>
 <translation id="603895874132768835">Dokler ne nastavite nove kode PIN, ne bo mogoče uporabljati tega omrežja.</translation>

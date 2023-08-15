@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Angurria</translation>
 <translation id="1924372192547904021">Formateatu da <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Eslovakiarra</translation>
-<translation id="1933345018156373194">Ezin izan da mugitu ustekabeko errore hau gertatu delako: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandiarra</translation>
 <translation id="1942765061641586207">Irudiaren bereizmena</translation>
 <translation id="1972984168337863910">Zabaldu fitxategien oharren panelak</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Albuma</translation>
 <translation id="4972330214479971536">Ezin izan da amaitu konfiguratzen fitxategiak sinkronizatzeko aukera</translation>
 <translation id="4973523518332075481">Erabili <ph name="MAX_LENGTH" /> karaktere edo gutxiago dituen izen bat</translation>
-<translation id="4973970068702235170">Ezin izan da konprimatu ustekabeko errore hau gertatu delako: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japoniarra</translation>
 <translation id="4987699874727873250">Ingelesa (India)</translation>
 <translation id="4988205478593450158">Ziur "<ph name="FILE_NAME" />" ezabatu nahi duzula?</translation>
@@ -633,7 +631,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, aktibatu gabe, seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, xehetasunak</translation>
 <translation id="5911887972742538906">Errore bat gertatu da Linux aplikazioa instalatzean.</translation>
 <translation id="5912396950572065471">Formatua</translation>
-<translation id="5913638992615760742">Ezin izan da kopiatu ustekabeko errore hau gertatu delako: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Bilaketa-eginbide berriak daude erabilgarri</translation>
 <translation id="5926082595146149752">Nederlandarra (Herbehereak), nazioarteko teklatu estatubatuarrarekin (ordenagailurako)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -641,7 +638,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementu</translation>
 <translation id="5957366693331451795">Chromebox-ak</translation>
 <translation id="5982621672636444458">Ordenatzeko aukerak</translation>
-<translation id="6007237601604674381">Ezin izan da eraman. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-sarea</translation>
 <translation id="60357267506638014">QWERTY txekiarra</translation>
 <translation id="603895874132768835">Ezingo duzu erabili sarea beste PIN bat konfiguratzen duzun arte</translation>

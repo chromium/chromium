@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Samlet antal filer</translation>
 <translation id="1755345808328621801">Denne fil er designet til en pc, der kører Windows-software. Den er ikke kompatibel med din enhed, der kører ChromeOS. Søg efter en anden egnet app i Chrome Webshop.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
+<translation id="1761091787730831947">Del med <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Godkendelsescertifikatet blev afvist lokalt</translation>
 <translation id="1775381402323441512">Videooplysninger</translation>
 <translation id="180035236176489073">Du skal være online for at få adgang til disse filer.</translation>
@@ -114,7 +115,6 @@
 <translation id="1920798810075583923">Vandmelon</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> er formateret</translation>
 <translation id="1931134289871235022">Slovakisk</translation>
-<translation id="1933345018156373194">Flytningen mislykkedes. Uventet fejl: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finsk</translation>
 <translation id="1942765061641586207">Billedopløsning</translation>
 <translation id="1972984168337863910">Udvid paneler med feedback til filer</translation>
@@ -211,6 +211,7 @@
 <translation id="2718540689505416944">Installer app med Linux</translation>
 <translation id="2719020180254996569">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, info</translation>
 <translation id="2724954091494693138">Tyrkisk med F-tastatur</translation>
+<translation id="2732288874651063549">Administrer deling for <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnamesisk VNI</translation>
 <translation id="2735623501230989521">Giv Parallels Desktop adgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Du har brugt al din individuelle lagerplads i Google Workspace.</translation>
@@ -305,6 +306,7 @@
 <translation id="3509680540198371098">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, info</translation>
 <translation id="3511705761158917664">Gør klar til synkronisere <ph name="NUMBER_OF_ITEMS" /> elementer...</translation>
 <translation id="3522708245912499433">Portugisisk</translation>
+<translation id="3523225005467146490">1 mappe er delt med <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Advarsel! Disse filer er midlertidige og kan slettes automatisk for at frigøre diskplads.  <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mappe</translation>
 <translation id="3548125359243647069">Der blev angivet en forkert pinkode for mange gange.</translation>
@@ -498,7 +500,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Konfigurationen af filsynkronisering kunne ikke gennemføres</translation>
 <translation id="4973523518332075481">Brug et navn med højst <ph name="MAX_LENGTH" /> tegn</translation>
-<translation id="4973970068702235170">Komprimering mislykkedes. Der opstod en uventet fejl: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japansk</translation>
 <translation id="4987699874727873250">Engelsk (Indien)</translation>
 <translation id="4988205478593450158">Er du sikker på, at du vil slette "<ph name="FILE_NAME" />"?</translation>
@@ -634,7 +635,6 @@
 <translation id="5896749729057314184">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktiveret, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, oplysninger</translation>
 <translation id="5911887972742538906">Der opstod en fejl ved installationen af Linux-appen.</translation>
 <translation id="5912396950572065471">Format</translation>
-<translation id="5913638992615760742">Kopiering mislykkedes, uventet fejl: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Der er kommet nye søgefunktioner</translation>
 <translation id="5926082595146149752">Hollandsk (Holland) med amerikansk internationalt computertastatur</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +642,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementer</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sorteringsmuligheder</translation>
-<translation id="6007237601604674381">Flytningen mislykkedes. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-netværk</translation>
 <translation id="60357267506638014">Tjekkisk (QWERTY)</translation>
 <translation id="603895874132768835">Du kan ikke bruge dette netværk, før du har oprettet en ny pinkode</translation>
@@ -664,6 +663,7 @@
 <translation id="6164412158936057769">Sommerfugle</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6170470584681422115">Sandwich</translation>
+<translation id="6181912134988520389">Giv <ph name="VM_NAME" /> adgang til filer i Google Drev. Ændringer synkroniseres med dine andre enheder.</translation>
 <translation id="6187719147498869044">Ungarsk</translation>
 <translation id="6198252989419008588">Skift pinkode</translation>
 <translation id="6199801702437275229">Venter på oplysninger om ledig plads...</translation>
@@ -767,6 +767,7 @@
 <translation id="6989942356279143254">Svensk</translation>
 <translation id="6990081529015358884">Der er ikke mere plads</translation>
 <translation id="6993826899923627728">Disse elementer er i din papirkurv</translation>
+<translation id="6996593023542748157">Del mappe med <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Din organisation skal bruge lagerplads for at gennemføre uploaden.</translation>
 <translation id="7009985720488544166">Administratorpolitikken tillader ikke, at du flytter <ph name="COUNT" /> filer</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -952,6 +953,7 @@
 <translation id="8335837413233998004">Hviderussisk</translation>
 <translation id="8336153091935557858">I går <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Der findes allerede en fil eller en mappe med samme navn.</translation>
+<translation id="83651606385705612">Giv <ph name="VM_NAME" /> adgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Ugyldig WEP-nøgle</translation>
 <translation id="8372852072747894550">Græsk</translation>
 <translation id="8386903983509584791">Scanningen er udført</translation>
@@ -961,6 +963,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-netværk, opretter forbindelse</translation>
 <translation id="8425213833346101688">Skift</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> mapper blev delt med <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Skift pinkode til SIM-kort</translation>
 <translation id="8437209419043462667">Amerikansk</translation>
 <translation id="8452135315243592079">SIM-kort mangler</translation>

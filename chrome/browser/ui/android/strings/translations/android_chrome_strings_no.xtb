@@ -1069,6 +1069,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6649642165559792194">Forhåndsvis bildet <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6659594942844771486">Fane</translation>
+<translation id="6662119761881114773">Passord som er lagret på denne enheten, kan ikke brukes i ulike Chrome-kanaler akkurat nå. Etter Chrome 121 blir passord for Chrome og <ph name="CHROME_CHANNEL" /> som er lagret på enheten din, slått sammen, slik at de kan brukes i begge appene.</translation>
 <translation id="666731172850799929">Åpne i <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Kopiér bildet</translation>
 <translation id="6672917148207387131">Legg til <ph name="DOMAIN" /></translation>

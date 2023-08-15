@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">તરબૂચ</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરી</translation>
 <translation id="1931134289871235022">સ્લોવૅક</translation>
-<translation id="1933345018156373194">ખસેડવું નિષ્ફળ થયું, અનપેક્ષિત ભૂલ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ફિનિશ</translation>
 <translation id="1942765061641586207">છબી રિઝોલ્યુશન</translation>
 <translation id="1972984168337863910">ફાઇલોના પ્રતિસાદની પૅનલ મોટી કરો</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">આલ્બમ</translation>
 <translation id="4972330214479971536">ફાઇલ સિંકનું સેટઅપ પૂર્ણ કરી શકાયું નથી</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> કે તેથી ઓછા અક્ષરોનું હોય તેવા નામનો ઉપયોગ કરો</translation>
-<translation id="4973970068702235170">ઝિપ કરવાનું નિષ્ફળ, અનપેક્ષિત ભૂલ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">જાપાનીઝ</translation>
 <translation id="4987699874727873250">અંગ્રેજી (ભારત)</translation>
 <translation id="4988205478593450158">શું તમે ખરેખર "<ph name="FILE_NAME" />"ને ડિલીટ કરવા માંગો છો?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="NETWORK_NAME" />, સક્રિય કર્યા વિનાનું, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
 <translation id="5911887972742538906">તમારી Linux ઍપ્લિકેશનના ઇન્સ્ટૉલેશન દરમિયાન ભૂલ આવી.</translation>
 <translation id="5912396950572065471">ફોર્મેટ</translation>
-<translation id="5913638992615760742">કૉપિ ઑપરેશન નિષ્ફળ થયું, અનપેક્ષિત ભૂલ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">નવી શોધ સુવિધાઓ ઉપલબ્ધ છે</translation>
 <translation id="5926082595146149752">ડચ (નેધરલૅન્ડ), યુએસ આંતરરાષ્ટ્રીય PC કીબોર્ડ સાથે</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> આઇટમ</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">સૉર્ટ કરવા માટેના વિકલ્પો</translation>
-<translation id="6007237601604674381">ખસેડવું નિષ્ફળ થયું. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ઇથરનેટ નેટવર્ક</translation>
 <translation id="60357267506638014">ચેક QWERTY</translation>
 <translation id="603895874132768835">જ્યાં સુધી તમે નવો પિન સેટઅપ નહીં કરો, ત્યાં સુધી તમે આ નેટવર્કનો ઉપયોગ કરી શકશો નહીં</translation>

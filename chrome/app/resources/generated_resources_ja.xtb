@@ -1327,7 +1327,6 @@
 <translation id="2061366302742593739">表示するものがありません</translation>
 <translation id="2062354623176996748">シークレット ウィンドウを使うと、閲覧履歴を残さずにウェブを閲覧できます</translation>
 <translation id="206308717637808771">すべてのウィンドウを閉じるときにデータを削除します。データは表示しているサイトと同じように扱われます</translation>
-<translation id="2063623149012168328"><ph name="BRAND" /> のショートカットを追加します</translation>
 <translation id="2065405795449409761">Chrome は自動テスト ソフトウェアによって制御されています。</translation>
 <translation id="2071393345806050157">ローカルのログ ファイルがありません。</translation>
 <translation id="2071692954027939183">普段は通知を許可されないようですので、通知を自動的にブロックしました</translation>
@@ -2802,6 +2801,7 @@
 <translation id="3267726687589094446">複数ファイルの自動ダウンロードを今後も許可する</translation>
 <translation id="3268451620468152448">開いているタブ</translation>
 <translation id="3269093882174072735">画像を読み込む</translation>
+<translation id="326911502853238749"><ph name="MODULE_NAME" />を表示しない</translation>
 <translation id="3269175001434213183">他のデバイスで使用できるように同期をオンにしてデータをバックアップ</translation>
 <translation id="3269612321104318480">明るい青緑と白</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
@@ -2872,7 +2872,6 @@
 <translation id="3321460131042519426">ワードラップを有効にする</translation>
 <translation id="3321494112580110651">お使いのプリンタが表示されない場合</translation>
 <translation id="3323521181261657960">ボーナスタイムが加算されました</translation>
-<translation id="3323577066981719144">ここで加えた変更は、Chrome ブラウザにのみ反映されます。Lacros Chrome ブラウザの設定に変更を加えるには、Lacros Chrome ブラウザを開いて [設定] に移動してください。</translation>
 <translation id="3325804108816646710">使用可能なプロファイルを検出しています...</translation>
 <translation id="3325910708063135066">Mac のシステム環境設定でカメラとマイクがオフになっています</translation>
 <translation id="3325930488268995856">Microsoft OneDrive に接続しました</translation>
@@ -3759,6 +3758,7 @@
 <translation id="4037084878352560732">馬</translation>
 <translation id="403725336528835653">試してみる</translation>
 <translation id="4040041015953651705">翻訳元の言語</translation>
+<translation id="4042660782729322247">画面を共有しています</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{ページを離れる}other{ページを離れる}}</translation>
 <translation id="4042941173059740150">引き続き <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> を利用</translation>
 <translation id="4043267180218562935">カーソルのサイズ</translation>
@@ -4411,6 +4411,7 @@
 <translation id="4598556348158889687">ストレージ管理</translation>
 <translation id="4598776695426288251">複数のデバイスから Wi-Fi に接続できます</translation>
 <translation id="4600071396330666617">サジェストの候補数</translation>
+<translation id="4601095002996233687">不審なダウンロードを詳しくスキャンします。</translation>
 <translation id="4601426376352205922">未読にする</translation>
 <translation id="460190672235687855">パスワードを表示</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> によるカメラとマイクへのアクセスを常に許可する</translation>
@@ -5847,6 +5848,7 @@
 <translation id="5840680448799937675">常にオフラインでファイルを共有します</translation>
 <translation id="5841270259333717135">イーサネットを設定する</translation>
 <translation id="5842497610951477805">Bluetooth 有効</translation>
+<translation id="5844284118433003733">ログイン中は、このデータを Google アカウントにリンクして、すべての Google サービスで保護します（セキュリティ インシデント後に Gmail で保護を強化するなど）。</translation>
 <translation id="5844574845205796324">提案されるコンテンツの範囲を拡大する</translation>
 <translation id="5846200638699387931">関係を表す構文にエラーがあります: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">シャドウなし</translation>
@@ -6693,6 +6695,7 @@
 <translation id="6548945820758901244">Google 検索のサイドパネルを開く</translation>
 <translation id="6549038875972762904">設定をやり直す</translation>
 <translation id="6550675742724504774">オプション</translation>
+<translation id="6550891580932862748">危険なウェブサイト、ダウンロード、拡張機能から保護されていません。他の Google サービスのセーフ ブラウジング設定には影響しません。</translation>
 <translation id="65513682072153627">設定や機能が管理者に管理されていると、この管理対象アイコンが表示されます。</translation>
 <translation id="6551508934388063976">コマンドを使用できません。Ctrl+N を押して新しいウィンドウを開いてください。</translation>
 <translation id="6551606359270386381">楕円ツール</translation>
@@ -6768,6 +6771,7 @@
 <translation id="6609478180749378879">ログインデータはシークレット モードの終了後にこのデバイスに保存されます。今後、このデバイスからこのウェブサイトにログインできるようになります。</translation>
 <translation id="6610002944194042868">翻訳オプション</translation>
 <translation id="6611972847767394631">ここからタブを確認できます</translation>
+<translation id="661266467055912436">すべてのウェブユーザーの安全性を高めます。</translation>
 <translation id="6613267708691765962">マルウェアをスキャンしています...</translation>
 <translation id="6613668613087513143">更新を完了するのに十分な容量がデバイスにありません。デバイスで <ph name="NECESSARY_SPACE" /> の容量を確保してから、Chrome ブラウザでもう一度お試しください。</translation>
 <translation id="6615455863669487791">表示</translation>
@@ -7685,6 +7689,7 @@
 <translation id="7396017167185131589">共有フォルダがここに表示されます</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> はシステム起動時に開始され、他の <ph name="PRODUCT_NAME" /> ウィンドウをすべて閉じてもバックグラウンドで動作し続けます。</translation>
 <translation id="7399045143794278225">同期をカスタマイズする</translation>
+<translation id="7399616692258236448">許可したサイト以外の位置情報リクエストが自動的にブロックされます</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470"><ph name="OLD_SEARCH_PROVIDER" /> に戻しますか？</translation>
 <translation id="7400839060291901923">「<ph name="PHONE_NAME" />」で接続設定を行ってください</translation>
@@ -8170,6 +8175,7 @@
 <translation id="7774792847912242537">リクエストが多すぎます。</translation>
 <translation id="7775694664330414886">タブを名前のないグループに移動しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">このサイトのタブをすべて閉じるまでの間、<ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」内のファイルを読み取れるようになります</translation>
+<translation id="777637629667389858">ログイン中、すべての Google サービスで保護します。</translation>
 <translation id="7776701556330691704">音声が見つかりません</translation>
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> のショートカット <ph name="SHORTCUT" /></translation>
 <translation id="7781335840981796660">すべてのユーザー アカウントとローカル データは削除されます。</translation>
@@ -8206,7 +8212,6 @@
 <translation id="7799650166313181433">このデバイスと共有できるのは、<ph name="USER_EMAIL" /> にログインしているデバイスのみです。お使いのデバイス間では共有リクエストを承認する必要はありません。</translation>
 <translation id="7800485561443537737"><ph name="DEVICE_TYPE" /> のモバイルデータ通信を使用します。携帯通信会社によっては追加料金が発生する場合があります。バッテリー使用量が増える可能性があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">反時計回りに回転(&amp;O)</translation>
-<translation id="7801679634091975683">ここで加えた変更は、Lacros Chrome ブラウザにのみ反映されます。Chrome ブラウザの設定に変更を加えるには、Chrome ブラウザを開いて [設定] に移動してください。</translation>
 <translation id="780301667611848630">同意しない</translation>
 <translation id="7803657407897251194">Android デバイスで設定を続けるには、<ph name="DEVICE_TYPE" /> をネットワークに接続してください</translation>
 <translation id="7804072833593604762">タブが閉じられました</translation>
@@ -8423,6 +8428,7 @@
 <translation id="7974713334845253259">デフォルト色</translation>
 <translation id="7974936243149753750">オーバースキャン</translation>
 <translation id="7975504106303186033">この Chrome Education デバイスを教育機関向けアカウントに登録する必要があります。新しいアカウントに登録する場合は、g.co/workspace/edusignup にアクセスしてください。</translation>
+<translation id="7977451675950311423">データ侵害で流出したパスワードを使用すると警告します。</translation>
 <translation id="7978412674231730200">秘密鍵</translation>
 <translation id="7978450511781612192">この操作を行うと Google アカウントからログアウトし、ブックマーク、履歴、パスワードなどの設定は同期されなくなります。</translation>
 <translation id="7980084013673500153">アセット ID: <ph name="ASSET_ID" /></translation>
@@ -8814,6 +8820,7 @@
 <translation id="8295450130892483256">Microsoft 365 をインストール</translation>
 <translation id="8297292446125062288">HID 設定</translation>
 <translation id="8298429963694909221">スマートフォンの通知を <ph name="DEVICE_TYPE" /> で受信できるようになりました。<ph name="DEVICE_TYPE" /> で通知を非表示にすると、その通知はスマートフォンでも表示されなくなります。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi もオンになっていることを確認してください。</translation>
+<translation id="829923460755755423">Google パスワード マネージャーへのショートカットを追加できます</translation>
 <translation id="8299319456683969623">現在オフラインです。</translation>
 <translation id="8300011035382349091">このタブのブックマークを編集します</translation>
 <translation id="8300374739238450534">ミッドナイトブルー</translation>
@@ -9468,6 +9475,7 @@
 <translation id="885246833287407341">API 関数の引数</translation>
 <translation id="8853586775156634952">このカードはこのデバイスにのみ保存されます</translation>
 <translation id="8854745870658584490">候補選択ショートカット</translation>
+<translation id="8855242995793521265">ブラウザやデバイスの動作が大幅に遅くなることはありません。</translation>
 <translation id="8855977033756560989">この Chromebook Enterprise デバイスには Chrome Enterprise Upgrade が付属しています。エンタープライズ向け機能を活用するには、Google 管理コンソール アカウントを使用してこのデバイスを登録してください。</translation>
 <translation id="8856028055086294840">アプリとページの復元</translation>
 <translation id="885701979325669005">ストレージ</translation>
@@ -9631,6 +9639,7 @@
 <translation id="8986494364107987395">使用統計データと障害レポートを Google に自動送信します</translation>
 <translation id="8987305927843254629">ユーザーごとに使用環境をカスタマイズして、データのプライバシーを確保できます。</translation>
 <translation id="8987927404178983737">月</translation>
+<translation id="8988539543012086784">このページは <ph name="BOOKMARK_FOLDER" /> に保存されています</translation>
 <translation id="8989359959810288806">テザリング ステータスを更新</translation>
 <translation id="8991520179165052608">サイトにマイクの使用が許可されています</translation>
 <translation id="8991694323904646277">カメラがありません</translation>

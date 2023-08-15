@@ -1178,6 +1178,7 @@
 <translation id="1925124445985510535">सुरक्षा तपासणी <ph name="TIME" /> वाजता रन केली गेली</translation>
 <translation id="192564025059434655">Chrome ॲप्सच्या जुन्या आवृत्त्या डिसेंबर २०२२ नंतर Windows डिव्हाइसवर उघडणार नाहीत. नवीन आवृत्ती उपलब्ध आहे का ते तुम्ही तपासू शकता.</translation>
 <translation id="1926339101652878330">या सेटिंग्ज संस्थेच्या धोरणानुसार नियंत्रित केल्या जातात. कृपया अधिक माहितीसाठी तुमच्या ॲडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
+<translation id="1926887872692564784">कर्सर</translation>
 <translation id="1927632033341042996">फिंगर <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">स्क्रीन लॉक पिन</translation>
 <translation id="192858925209436740">तुमच्या Chromebook वरून तुमचे स्टोअर केलेले दस्तऐवज व्यवस्थापित करण्यासाठी OneDrive हे Files ॲपशी कनेक्ट करा. तुम्हाला तुमचे Microsoft खाते वापरून साइन इन करावे लागेल.</translation>
@@ -1341,7 +1342,6 @@
 <translation id="2061366302742593739">दाखवण्यासाठी काहीही नाही</translation>
 <translation id="2062354623176996748">गुप्त विंडोमधील तुमचा ब्राउझिंग इतिहास सेव्ह न करता वेब वापरा</translation>
 <translation id="206308717637808771">तुम्ही सर्व विंडो बंद करता, तेव्हा डेटा हटवा. डेटा हा तुम्ही पाहत असलेल्या साइटप्रमाणेच हाताळला जातो</translation>
-<translation id="2063623149012168328"><ph name="BRAND" /> मध्ये शॉर्टकट जोडा</translation>
 <translation id="2065405795449409761">स्वयंचलित चाचणी सॉफ्टवेअरने Chrome नियंत्रित केले जात आहे.</translation>
 <translation id="2071393345806050157">स्थानिक लॉग फाइल नाही.</translation>
 <translation id="2071692954027939183">सूचना आपोआप ब्लॉक केल्या होत्या कारण तुम्ही सहसा त्यांना अनुमती देत नाही</translation>
@@ -2822,6 +2822,7 @@
 <translation id="3267726687589094446">एकाधिक फायलींच्या स्वयंचलित डाउनलोडिंगला अनुमती देणे सुरू ठेवा</translation>
 <translation id="3268451620468152448">उघडे Tabs</translation>
 <translation id="3269093882174072735">इमेज लोड करा</translation>
+<translation id="326911502853238749"><ph name="MODULE_NAME" /> दाखवू नका</translation>
 <translation id="3269175001434213183">तुमच्या आशयाचा बॅकअप घेण्यासाठी आणि तो कोणत्याही डिव्हाइसवर वापरण्यासाठी सिंक सुरू करा</translation>
 <translation id="3269612321104318480">फिकट टील आणि पांढरा</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{फाइल}other{# फाइल}}</translation>
@@ -2892,7 +2893,6 @@
 <translation id="3321460131042519426">वर्ड व्रॅप सुरू करा</translation>
 <translation id="3321494112580110651">तुमचा प्रिंटर दिसत नाही का?</translation>
 <translation id="3323521181261657960">बोनस! तुम्हाला आणखी स्क्रीन वेळ मिळाला</translation>
-<translation id="3323577066981719144">तुम्ही येथे केलेले बदल फक्त Chrome ब्राउझरवर लागू होतात. तुमच्या Lacros Chrome ब्राउझर सेटिंग्जमध्ये बदल करण्यासाठी, Lacros Chrome ब्राउझर उघडा आणि सेटिंग्जवर जा.</translation>
 <translation id="3325804108816646710">उपलब्ध प्रोफाइल शोधत आहे...</translation>
 <translation id="3325910708063135066">Mac सिस्टम प्राधान्ये मधील कॅमेरा आणि मायक्रोफोन बंद आहे</translation>
 <translation id="3325930488268995856">Microsoft OneDrive कनेक्ट केले आहे</translation>
@@ -3282,6 +3282,7 @@
 <translation id="3653887973853407813">तुम्ही हे एक्स्टेंशन वापरू शकत नाही. तुमच्या पालकांनी Chrome साठी “साइट, ॲप्स आणि एक्स्टेंशनसाठी परवानग्या” बंद केल्या आहेत.</translation>
 <translation id="3653999333232393305">तुमचा मायक्रोफोन ॲक्सेस करण्यासाठी <ph name="HOST" /> ला परवानगी  देणे सुरू ठेवा</translation>
 <translation id="3654045516529121250">तुमच्या ॲक्सेस योग्यता सेटिंग्ज वाचा</translation>
+<translation id="3656328935986149999">कर्सरचा वेग</translation>
 <translation id="3658871634334445293">TrackPoint अ‍ॅक्सिलरेशन</translation>
 <translation id="3659550105763988702">तुमची पासकी <ph name="APP_NAME" /> साठी वापरा</translation>
 <translation id="3659929705630080526">तुम्ही खूप वेळा चुकीचा अ‍ॅक्सेस कोड एंटर केला आहे. नंतर पुन्हा प्रयत्न करा</translation>
@@ -3780,6 +3781,7 @@
 <translation id="4037084878352560732">घोडा</translation>
 <translation id="403725336528835653">आधी वापरून पहा</translation>
 <translation id="4040041015953651705">ज्यामधून भाषांतर करायचे आहे ती भाषा</translation>
+<translation id="4042660782729322247">तुम्ही तुमची स्क्रीन शेअर करत आहात</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{पेजमधून बाहेर या}other{पेजमधून बाहेर या}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह <ph name="SITE_ETLD_PLUS_ONE" /> वर पुढे सुरू ठेवा</translation>
 <translation id="4043267180218562935">कर्सरचा आकार:</translation>
@@ -3992,6 +3994,7 @@
 <translation id="4232375817808480934">Kerberos कॉंफिगर करा</translation>
 <translation id="4233739489690259993">तुमच्या Chromebook ला आता सुरक्षा आणि सॉफ्टवेअर अपडेट मिळत नाहीत. नवीनतम सुरक्षेसाठी आणि नवीन वैशिष्ट्यांसाठी तुमचे डिव्हाइस अपग्रेड करा. ऑफर अटी लागू.</translation>
 <translation id="4235965441080806197">साइन इन रद्द करा</translation>
+<translation id="4235976607074422892">स्क्रोलिंगचा वेग</translation>
 <translation id="4237282663517880406">Google Drive सूचना दाखवा</translation>
 <translation id="4241182343707213132">संस्थेची अ‍ॅप अपडेट करण्यासाठी रीस्टार्ट करा</translation>
 <translation id="4242145785130247982">एकाहून अधिक क्लायंट सर्टिफिकेटना सपोर्ट करत नाही</translation>
@@ -4432,6 +4435,7 @@
 <translation id="4598556348158889687">स्टोरेज व्यवस्थापन</translation>
 <translation id="4598776695426288251">एकाहून अधिक डिव्हाइसद्वारे वाय-फाय उपलब्ध आहे</translation>
 <translation id="4600071396330666617">सूचनांची संख्या</translation>
+<translation id="4601095002996233687">संशयास्पद डाउनलोडसाठी तपशीलवार स्कॅनची सुविधा.</translation>
 <translation id="4601426376352205922">न वाचलेली म्हणून मार्क करा</translation>
 <translation id="460190672235687855">पासवर्ड दाखवा</translation>
 <translation id="4602466770786743961">नेहमी <ph name="HOST" /> ला तुमचा कॅमेरा आणि मायक्रोफोन ॲक्सेस करण्‍यास परवानगी द्या</translation>
@@ -5315,6 +5319,7 @@
 <translation id="5365881113273618889">तुम्ही निवडलेल्या फोल्डरमध्ये संवेदनशील फाइल आहेत. तुम्हाला नक्की "<ph name="APP_NAME" />" ला या फोल्डरचा कायमचा राइट अ‍ॅक्सेस द्यायचा आहे का?</translation>
 <translation id="536638840841140142">काहीही नाही</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" /> वरील '<ph name="NETWORK_NAME" />' सेव्ह केले</translation>
+<translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> पासवर्ड तयार करा</translation>
 <translation id="5368720394188453070">तुमचा फोन लॉक केला आहे. प्रविष्‍ट करण्‍यासाठी तो अनलॉक करा.</translation>
 <translation id="5368779022775404937"><ph name="REALM" /> मध्ये साइन इन करा</translation>
 <translation id="536882527576164740">{0,plural, =1{गुप्त}other{गुप्त (#)}}</translation>
@@ -5870,6 +5875,7 @@
 <translation id="5840680448799937675">फाइल नेहमी ऑफलाइन शेअर केल्या जातील</translation>
 <translation id="5841270259333717135">इथरनेट कॉंफिगर करा</translation>
 <translation id="5842497610951477805">ब्लूटूथ सक्षम आहे</translation>
+<translation id="5844284118433003733">तुम्ही साइन इन केले असते, तेव्हा संपूर्ण Google सेवांवर तुमचे संरक्षण करण्यासाठी हा डेटा तुमच्या Google खाते शी लिंक केला जातो, उदाहरणार्थ सुरक्षेशी संबंधित घटनेनंतर Gmail मध्ये संरक्षण वाढवणे.</translation>
 <translation id="5844574845205796324">एक्सप्लोर करण्यासाठी नवीन आशय सुचवा</translation>
 <translation id="5846200638699387931">रिलेशन सिंटॅक्स एरर: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">कोणतीही शॅडो नाही</translation>
@@ -6718,6 +6724,7 @@
 <translation id="6548945820758901244">Google Search साइड पॅनल उघडा</translation>
 <translation id="6549038875972762904">सेटअप पुन्हा करा</translation>
 <translation id="6550675742724504774">पर्याय</translation>
+<translation id="6550891580932862748">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून तुमचे संरक्षण करत नाही. तुमच्या इतर Google उत्पादनांमधील सुरक्षित ब्राउझिंग सेटिंग्जवर परिणाम होणार नाही.</translation>
 <translation id="65513682072153627">तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे सेटिंग किंवा वैशिष्ट्य व्यवस्थापित केले जात असल्यास, तुम्हाला हे व्यवस्थापित केलेले असे आयकन दिसेल.</translation>
 <translation id="6551508934388063976">कमांड अनुपलब्ध. एक नवीन विंडो उघडण्यासाठी control-N प्रेस करा.</translation>
 <translation id="6551606359270386381">एलिप्स टूल</translation>
@@ -6793,6 +6800,7 @@
 <translation id="6609478180749378879">तुम्ही गुप्त मोड यामधून बाहेर पडल्यानंतर साइन इन डेटा या डिव्हाइसवर सेव्ह केला जाईल. तुम्हाला नंतर पुन्हा तुमचे डिव्हाइस वापरून या वेबसाइटवर साइन करता येईल.</translation>
 <translation id="6610002944194042868">भाषांतराचे पर्याय</translation>
 <translation id="6611972847767394631">येथे तुमचे टॅब शोधा</translation>
+<translation id="661266467055912436">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते.</translation>
 <translation id="6613267708691765962">मालवेअरसाठी स्कॅन करत आहे…</translation>
 <translation id="6613668613087513143">हे अपडेट पूर्ण करण्यासाठी, या डिव्हाइसवर पुरेशी जागा नाही. तुमच्या डिव्हाइसवरील <ph name="NECESSARY_SPACE" /> साफ करा आणि Chrome ब्राउझरवरून पुन्हा प्रयत्न करा.</translation>
 <translation id="6615455863669487791">मला दर्शवा</translation>
@@ -8198,6 +8206,7 @@
 <translation id="7774792847912242537">खूप जास्त विनंत्या.</translation>
 <translation id="7775694664330414886">टॅब अनामित गटामध्ये हलवला आहे - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">तुम्ही या साइटसाठी सर्व टॅब बंद करेपर्यंत <ph name="ORIGIN" /> ला <ph name="FOLDERNAME" /> मधील फाइल पाहता येतील</translation>
+<translation id="777637629667389858">तुम्ही साइन इन केलेले असते, तेव्हा संपूर्ण Google सेवांवर तुमचे संरक्षण करते.</translation>
 <translation id="7776701556330691704">कोणतेही व्हॉइस सापडले नाहीत</translation>
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> साठी शॉर्टकट <ph name="SHORTCUT" /></translation>
 <translation id="7781335840981796660">सर्व वापरकर्ता खाती आणि स्थानिक डेटा काढला जाईल.</translation>
@@ -8232,7 +8241,6 @@
 <translation id="7799650166313181433">फक्त <ph name="USER_EMAIL" /> मध्ये साइन इन केलेली डिव्हाइस या डिव्हाइससोबत शेअर करू शकतात. तुम्हाला तुमच्या डिव्हाइसदरम्यान शेअर करण्याची मंजुरी देण्याची आवश्यकता नाही.</translation>
 <translation id="7800485561443537737">तुमच्या <ph name="DEVICE_TYPE" /> चा मोबाइल डेटा वापरते आणि तुमचा वाहक अतिरिक्त शुल्के आकारू शकतो. बॅटरी वापर वाढू शकतो. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">घड्याळाच्या वि&amp;रुद्ध दिशेने फिरवा</translation>
-<translation id="7801679634091975683">तुम्ही येथे केलेले बदल फक्त Lacros Chrome ब्राउझरवर लागू होतात. तुमच्या Chrome ब्राउझर सेटिंग्जमध्ये बदल करण्यासाठी, Chrome ब्राउझर उघडा आणि सेटिंग्जवर जा.</translation>
 <translation id="780301667611848630">नाही, नको</translation>
 <translation id="7803657407897251194">तुमचे Android डिव्हाइस वापरून सेटअप करणे पुढे सुरू ठेवण्यासाठी, तुमचे <ph name="DEVICE_TYPE" /> नेटवर्कशी कनेक्ट करा</translation>
 <translation id="7804072833593604762">टॅब बंद केला</translation>
@@ -8449,6 +8457,7 @@
 <translation id="7974713334845253259">डीफॉल्ट रंग</translation>
 <translation id="7974936243149753750">ओव्हरस्कॅन</translation>
 <translation id="7975504106303186033">तुम्ही या Chrome Education डिव्हाइसची शिक्षण खात्यामध्ये नोंदणी करणे आवश्यक आहे. नवीन खात्यासाठी साइन अप करण्याकरिता, कृपया g.co/workspace/edusignup ला भेट द्या.</translation>
+<translation id="7977451675950311423">तुम्ही डेटा भंगामध्ये धोक्यात असलेला पासवर्ड वापरल्यास, तुम्हाला चेतावणी देते.</translation>
 <translation id="7978412674231730200">प्रायव्हेट की</translation>
 <translation id="7978450511781612192">हे तुम्हाला तुमच्या Google खात्यामधून साइन आउट करेल. तुमचे बुकमार्क, इतिहास, पासवर्ड आणि बरेच काही आता सिंक होणार नाही.</translation>
 <translation id="7980084013673500153">मालमत्ता आयडी: <ph name="ASSET_ID" /></translation>
@@ -8642,6 +8651,7 @@
 <translation id="8137559199583651773">विस्तार व्यवस्थापित करा</translation>
 <translation id="8138217203226449454">तुम्हाला तुमचा शोध पुरवठादार बदलायचा आहे का?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> स्टेटस</translation>
+<translation id="8139440916039659819">कर्सर अ‍ॅक्सिलरेशन</translation>
 <translation id="8139447493436036221">Google Drive फाइल</translation>
 <translation id="8139643636835015859">हे तुमच्या ऑफलाइन फाइलद्वारे वापरली जाणारी <ph name="OFFLINE_STORAGE_SIZE" /> जागा काढून टाकेल. काही फाइल तरीही ऑफलाइन उपलब्ध असतील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -8840,6 +8850,7 @@
 <translation id="8295450130892483256">Microsoft 365 इंस्टॉल करा</translation>
 <translation id="8297292446125062288">HID सेटिंग्ज</translation>
 <translation id="8298429963694909221">तुम्ही आता तुमच्या फोनमधील सूचना तुमच्या <ph name="DEVICE_TYPE" /> वर मिळवू शकता. तुमच्या <ph name="DEVICE_TYPE" /> वर सूचना डिसमिस केल्याने त्या तुमच्या फोनवरूनदेखील डिसमिस होतील. तुमचा फोन जवळपास असल्याची आणि त्यात ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
+<translation id="829923460755755423">Google Password Manager मध्ये शॉर्टकट जोडा</translation>
 <translation id="8299319456683969623">तुम्ही सध्या ऑफलाइन आहात.</translation>
 <translation id="8300011035382349091">या टॅबचे बुकमार्क संपादित करा</translation>
 <translation id="8300374739238450534">भडक निळा</translation>
@@ -8978,6 +8989,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">अनुमती असलेले <ph name="PERMISSION" /> आणि आणखी <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">तुम्हाला ChromeOS साठी बिल्ट-इन स्क्रीन रीडर असलेले ChromeVox अ‍ॅक्टिव्हेट करायचे आहे का?</translation>
+<translation id="8414065061814811918">अ‍ॅक्सिलरेशन स्क्रोल करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">मेमरी दोन दिवसांसाठी लपवल्या गेल्या</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> वापरून <ph name="SITE_ETLD_PLUS_ONE" /> मध्ये साइन इन करा</translation>
 <translation id="8414685983518053656">टिपा</translation>
@@ -9104,6 +9116,7 @@
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">स्पीकर</translation>
 <translation id="8527257351549797148">तुमच्या संस्थेला नोंदणी आवश्यक असू शकते, जेणेकरून तुम्ही ॲप्स, एक्स्टेंशन आणि आणखी बरेच काही ॲक्सेस करू शकता. हे तुमच्या संस्थेला सुरक्षा आणि डिव्हाइस सेटिंग्ज यांसारख्या गोष्टी व्यवस्थापित करण्याची अनुमती देते.</translation>
+<translation id="8527869672961320915"><ph name="VM_NAME" /> अ‍ॅप्स</translation>
 <translation id="8528074251912154910">भाषा जोडा</translation>
 <translation id="8528479410903501741">IBAN सेव्ह करा</translation>
 <translation id="8528962588711550376">साइन इन करत आहे.</translation>
@@ -9360,6 +9373,7 @@
 <translation id="8736288397686080465">ही साइट पार्श्वभूमीमध्ये अपडेट केली गेली आहे.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">पेज ज्यामध्ये भाषांतरित करायचे आहे ती भाषा निवडा</translation>
+<translation id="8740086188450289493">Google खाते पासवर्ड वापरा</translation>
 <translation id="8740247629089392745">तुम्ही हे Chromebook <ph name="SUPERVISED_USER_NAME" /> कडे सोपवू शकता. सेट करणे जवळपास पूर्ण झाले आहे, त्यानंतर एक्सप्लोर करण्याची वेळ आहे.</translation>
 <translation id="8740672167979365981">ChromeOS Flex अपडेट करणे आवश्यक आहे</translation>
 <translation id="8741944563400125534">स्विच अ‍ॅक्सेस सेटअप मार्गदर्शक</translation>
@@ -9495,6 +9509,7 @@
 <translation id="885246833287407341">API फंक्शन arguments</translation>
 <translation id="8853586775156634952">हे कार्ड फक्त या डिव्हाइसवर सेव्ह केले जाईल</translation>
 <translation id="8854745870658584490">निवडीशी संबंधित शॉर्टकट</translation>
+<translation id="8855242995793521265">तुमचा ब्राउझर किंवा डिव्हाइस लक्षणीयरीत्या धीमे करत नाही.</translation>
 <translation id="8855977033756560989">हे Chromebook एंटरप्राइझ डिव्हाइस Chromebook एंटरप्राइझ अपग्रेडसोबत बंडल केलेले येते. एंटरप्राइझ क्षमतांचा फायदा घेण्यासाठी, या डिव्हाइसची Google अ‍ॅडमिन खात्यावर नोंदणी करा.</translation>
 <translation id="8856028055086294840">अ‍ॅप्स आणि पेज रिस्टोअर करा</translation>
 <translation id="885701979325669005">स्टोरेज</translation>
@@ -9743,6 +9758,7 @@
 <translation id="9045160989383249058">तुमची वाचन सूची नवीन साइड पॅनलमध्ये हलवण्यात आली आहे. ते येथे वापरून पहा.</translation>
 <translation id="9045430190527754450">Google वरून ज्या पेजवर तुम्ही पोहोचण्याचा प्रयत्न करत आहात त्याचा वेब पत्ता पाठवते</translation>
 <translation id="9048745018038487540">सर्व फॉंट निवडा</translation>
+<translation id="9050135202879860719">तुमच्या <ph name="DEVICE_TYPE" /> मध्ये साइन इन करण्यासाठी पासवर्ड वापरा</translation>
 <translation id="9050666287014529139">सांकेतिक पासफ्रेझ</translation>
 <translation id="9052404922357793350">ब्लॉक करणे सुरू ठेवा</translation>
 <translation id="90528604757378587">बॅकग्राउंड अ‍ॅक्टिव्हिटी आणि सहजपणे स्क्रोल करणे यांसारखे काही व्हिज्युअल इफेक्ट मर्यादित असू शकतात.</translation>

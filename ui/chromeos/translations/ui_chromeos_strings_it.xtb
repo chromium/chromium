@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Anguria</translation>
 <translation id="1924372192547904021">Formattazione di <ph name="DRIVE_NAME" /> eseguita</translation>
 <translation id="1931134289871235022">Slovacco</translation>
-<translation id="1933345018156373194">Movimento non riuscito, errore imprevisto: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandese</translation>
 <translation id="1942765061641586207">Risoluzione dell'immagine</translation>
 <translation id="1972984168337863910">Espandi i riquadri di feedback dei file</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Impossibile completare la configurazione della sincronizzazione dei file</translation>
 <translation id="4973523518332075481">Il nome deve contenere un massimo di <ph name="MAX_LENGTH" /> caratteri</translation>
-<translation id="4973970068702235170">Compressione non riuscita. Errore imprevisto: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Giapponese</translation>
 <translation id="4987699874727873250">Inglese (India)</translation>
 <translation id="4988205478593450158">Vuoi eliminare "<ph name="FILE_NAME" />"?</translation>
@@ -633,7 +631,6 @@
 <translation id="5896749729057314184">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Non attivato, Intensità del segnale <ph name="SIGNAL_STRENGTH" />%, Dettagli</translation>
 <translation id="5911887972742538906">Si è verificato un errore durante l'installazione dell'applicazione Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
-<translation id="5913638992615760742">Operazione di copia non riuscita, errore imprevisto: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Nuove funzionalità di ricerca disponibili</translation>
 <translation id="5926082595146149752">Olandese (Paesi Bassi) con tastiera PC internazionale USA</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -641,7 +638,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementi</translation>
 <translation id="5957366693331451795">I Chromebox</translation>
 <translation id="5982621672636444458">Opzioni ordinamento</translation>
-<translation id="6007237601604674381">Spostamento non riuscito. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rete Ethernet</translation>
 <translation id="60357267506638014">Tastiera QWERTY Ceco</translation>
 <translation id="603895874132768835">Non potrai utilizzare questa rete finché non configuri un nuovo PIN</translation>

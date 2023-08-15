@@ -4535,6 +4535,7 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns *
       การไม่ตั้งค่านโยบายนี้จะไม่เพิ่มเว็บไซต์ลงในรายการ
 
       โปรดทราบว่าคุณเพิ่มเอลิเมนต์ลงในรายการนี้ผ่านนโยบาย <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> ได้ด้วย</translation>
+<translation id="5063480226653192405">การใช้</translation>
 <translation id="5067143124345820993">ลงชื่อเข้าใช้รายชื่อผู้ใช้ที่อนุญาต</translation>
 <translation id="5069522005630249098">การตั้งค่านี้เป็นตัวกำหนดปริมาณข้อมูลผู้ใช้ที่ระบบจะเก็บไว้หลังจากปิดใช้ <ph name="LACROS_NAME" />
 

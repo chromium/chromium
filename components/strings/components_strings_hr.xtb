@@ -347,6 +347,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1668071460721346172">Primanje e-poruke</translation>
 <translation id="1671391448414634642">Odsad će se <ph name="SOURCE_LANGUAGE" /> prevoditi na <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Ograničeni popis URL-ova stranica koje posjećujete na kojima se odvijaju <ph name="BEGIN_LINK" />događaji naslijeđene tehnologije<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Najprije kratki rub</translation>
 <translation id="168693727862418163">Ova vrijednost pravila nije uspjela potvrditi valjanost sheme i zanemarit će se.</translation>
 <translation id="168841957122794586">Certifikat poslužitelja sadrži slab kriptografski ključ!</translation>
@@ -2030,6 +2031,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5296589789433599000">Kuhanje i recepti</translation>
 <translation id="5299298092464848405">Pogreška u pravilu analize</translation>
 <translation id="5299638840995777423">Robotika</translation>
+<translation id="5300062471671636390">Sakrij popis uređaja za emitiranje</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5306593769196050043">Oba lista</translation>
 <translation id="5307166000025436103">U redu</translation>
@@ -3494,6 +3496,7 @@ Dodatne pojedinosti:
 <translation id="8368027906805972958">Nepoznati ili nepodržani uređaj (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play usluge</translation>
 <translation id="8369073279043109617">Zatražite novi kôd</translation>
+<translation id="8371841335382565017">Prikaži popis uređaja za emitiranje</translation>
 <translation id="8371889962595521444">Prilagođeni korijenski certifikati</translation>
 <translation id="8374636051559112948">razlikuje se</translation>
 <translation id="8378714024927312812">Pod upravljanjem vaše organizacije</translation>

@@ -349,6 +349,7 @@
 <translation id="1668071460721346172">ఈమెయిల్‌ను పొందండి</translation>
 <translation id="1671391448414634642">ఇప్పటి నుండి <ph name="SOURCE_LANGUAGE" /> భాషలో ఉన్న పేజీలు <ph name="TARGET_LANGUAGE" /> భాషలోకి అనువదించబడతాయి.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> నుండి <ph name="TARGET_LANGUAGE" />లోకి</translation>
+<translation id="1674542638006317838"><ph name="BEGIN_LINK" />లెగసీ టెక్నాలజీ ఈవెంట్‌లు<ph name="END_LINK" /> జరుగుతున్న చోట మీరు చూసే పేజీల URLలకు సంబంధించిన పరిమిత లిస్ట్.</translation>
 <translation id="1682696192498422849">పేజీని అడ్డంగా తిప్పి ప్రింట్ చేయి</translation>
 <translation id="168693727862418163">ఈ పాలసీ విలువ దాని స్కీమాకు వ్యతిరేకంగా వాలిడేట్ చేయడంలో విఫలమైంది, కాబట్టి విస్మరించబడుతుంది.</translation>
 <translation id="168841957122794586">సర్వర్ ప్రమాణపత్రం బలహీన క్రిప్టోగ్రాఫిక్ కీని కలిగి ఉంది.</translation>
@@ -2033,6 +2034,7 @@
 <translation id="5296589789433599000">వంట &amp; వంటకాలు</translation>
 <translation id="5299298092464848405">విధానాన్ని అన్వయించడంలో ఎర్రర్</translation>
 <translation id="5299638840995777423">రోబోటిక్స్</translation>
+<translation id="5300062471671636390">ప్రసారం చేయడం కోసం పరికర లిస్ట్‌ను దాచండి</translation>
 <translation id="5300589172476337783">చూపించు</translation>
 <translation id="5306593769196050043">రెండు షీట్‌లూ</translation>
 <translation id="5307166000025436103">సరే</translation>
@@ -3497,6 +3499,7 @@
 <translation id="8368027906805972958">తెలియని లేదా మద్దతు లేని పరికరం (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play సర్వీసులు</translation>
 <translation id="8369073279043109617">కొత్త కోడ్‌ను పొందండి</translation>
+<translation id="8371841335382565017">ప్రసారం చేయడం కోసం పరికర లిస్ట్‌ను చూపించండి</translation>
 <translation id="8371889962595521444">అనుకూల రూట్ సెట్టింగ్‌లు</translation>
 <translation id="8374636051559112948">మారుతుంది</translation>
 <translation id="8378714024927312812">మీ సంస్థ ద్వారా నిర్వహించబడుతున్నవి</translation>

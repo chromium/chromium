@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Lubenica</translation>
 <translation id="1924372192547904021">Formatiranje memorijskog uređaja <ph name="DRIVE_NAME" /> je uspelo</translation>
 <translation id="1931134289871235022">slovački</translation>
-<translation id="1933345018156373194">Premeštanje nije uspelo, neočekivana greška: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">finski</translation>
 <translation id="1942765061641586207">Rezolucija slike</translation>
 <translation id="1972984168337863910">Proširi okna za povratne informacije o datotekama</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Završavanje podešavanja sinhronizacije fajlova nije uspelo</translation>
 <translation id="4973523518332075481">Koristite naziv čiji je maksimalni broj znakova <ph name="MAX_LENGTH" /></translation>
-<translation id="4973970068702235170">Dodavanje u zip datoteku nije uspelo, neočekivana greška: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japanski</translation>
 <translation id="4987699874727873250">engleski (Indija)</translation>
 <translation id="4988205478593450158">Želite li stvarno da izbrišete „<ph name="FILE_NAME" />“?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nije aktivirana, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="5911887972742538906">Došlo je do greške tokom instaliranja Linux aplikacije.</translation>
 <translation id="5912396950572065471">Format</translation>
-<translation id="5913638992615760742">Operacija kopiranja nije uspela, neočekivana greška: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Dostupne su nove funkcije pretrage</translation>
 <translation id="5926082595146149752">holandski (Holandija) sa američkom internacionalnom tastaturom za računar</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329">Stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox-ovi</translation>
 <translation id="5982621672636444458">Opcije sortiranja</translation>
-<translation id="6007237601604674381">Premeštanje nije uspelo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Eternet mreža</translation>
 <translation id="60357267506638014">češka QWERTY</translation>
 <translation id="603895874132768835">Nećete moći da koristite ovu mrežu dok ne podesite novi PIN</translation>

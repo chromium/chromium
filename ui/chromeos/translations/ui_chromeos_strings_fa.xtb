@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">هندوانه</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> قالب‌بندی شد</translation>
 <translation id="1931134289871235022">اسلواکی</translation>
-<translation id="1933345018156373194">انتقال انجام نشد، خطای غیرمنتظره: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">فنلاندی</translation>
 <translation id="1942765061641586207">وضوح تصویر</translation>
 <translation id="1972984168337863910">بزرگ کردن پانل‌های بازخورد فایل‌ها</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">آلبوم</translation>
 <translation id="4972330214479971536">راه‌اندازی همگام‌سازی فایل تکمیل نشد</translation>
 <translation id="4973523518332075481">‏از نامی استفاده کنید که ‎<ph name="MAX_LENGTH" /> نویسه یا کمتر داشته باشد</translation>
-<translation id="4973970068702235170">فشرده‌سازی انجام نشد، خطای غیرمنتظره: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ژاپنی</translation>
 <translation id="4987699874727873250">انگلیسی (هند)</translation>
 <translation id="4988205478593450158">آیا مطمئنید می‌خواهید «<ph name="FILE_NAME" />» را حذف کنید؟</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />،‏ <ph name="NETWORK_NAME" />،‏ غیرفعال، قدرت سیگنال: <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
 <translation id="5911887972742538906">‏هنگام نصب برنامه Linux خطایی روی داد.</translation>
 <translation id="5912396950572065471">قالب</translation>
-<translation id="5913638992615760742">عملیات کپی انجام نشد، خطای غیرمنتظره: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">ویژگی‌های جستجوی جدید دردسترس است</translation>
 <translation id="5926082595146149752">هلندی (هلند) با صفحه‌کلید بین‌المللی آمریکایی رایانه</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> مورد</translation>
 <translation id="5957366693331451795">‏دستگاه‌های Chromebox</translation>
 <translation id="5982621672636444458">گزینه‌های مرتب‌سازی</translation>
-<translation id="6007237601604674381">انتقال انجام نشد. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">شبکه اترنت</translation>
 <translation id="60357267506638014">‏QWERTY چکی</translation>
 <translation id="603895874132768835">تا پین جدیدی راه‌اندازی نکنید، نمی‌توانید از این شبکه استفاده کنید</translation>

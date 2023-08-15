@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">スイカ</translation>
 <translation id="1924372192547904021">「<ph name="DRIVE_NAME" />」をフォーマットしました</translation>
 <translation id="1931134289871235022">スロバキア語</translation>
-<translation id="1933345018156373194">移動できませんでした。予期しないエラー: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">フィンランド語</translation>
 <translation id="1942765061641586207">画像解像度</translation>
 <translation id="1972984168337863910">ファイルのフィードバック パネルを展開します</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">アルバム</translation>
 <translation id="4972330214479971536">ファイルの同期の設定を完了できませんでした</translation>
 <translation id="4973523518332075481">名前は <ph name="MAX_LENGTH" /> 文字以内で指定してください</translation>
-<translation id="4973970068702235170">圧縮できませんでした。予期しないエラー: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">日本語</translation>
 <translation id="4987699874727873250">英語（インド）</translation>
 <translation id="4988205478593450158">「<ph name="FILE_NAME" />」を削除してもよろしいですか？</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">ネットワーク <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />、<ph name="NETWORK_NAME" />、未有効化、電波強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="5911887972742538906">Linux アプリケーションのインストール中にエラーが発生しました。</translation>
 <translation id="5912396950572065471">形式</translation>
-<translation id="5913638992615760742">コピーできませんでした。予期しないエラー: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">新しい検索機能をご利用いただけます</translation>
 <translation id="5926082595146149752">オランダ語（オランダ）（US インターナショナル PC）キーボード</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 個のアイテム</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">並べ替え方法</translation>
-<translation id="6007237601604674381">移動できませんでした。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">イーサネット ネットワーク</translation>
 <translation id="60357267506638014">チェコ語 QWERTY 配列</translation>
 <translation id="603895874132768835">新しい PIN を設定するまでこのネットワークは使用できません。</translation>

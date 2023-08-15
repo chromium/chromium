@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Watermeloen</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> is geformatteerd</translation>
 <translation id="1931134289871235022">Slowaaks</translation>
-<translation id="1933345018156373194">Verplaatsen mislukt. Onverwachte fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fins</translation>
 <translation id="1942765061641586207">Afbeeldingsresolutie</translation>
 <translation id="1972984168337863910">Feedbackvensters voor bestanden uitvouwen</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Kan instellingen van de bestandssynchronisatie niet afronden</translation>
 <translation id="4973523518332075481">Gebruik een naam die maximaal <ph name="MAX_LENGTH" /> tekens bevat</translation>
-<translation id="4973970068702235170">Inpakken mislukt. Onverwachte fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japans</translation>
 <translation id="4987699874727873250">Engels (India)</translation>
 <translation id="4988205478593450158">Weet je zeker dat je '<ph name="FILE_NAME" />' wilt verwijderen?</translation>
@@ -635,7 +633,6 @@
 <translation id="5896749729057314184">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, niet geactiveerd, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="5911887972742538906">Er is een fout opgetreden tijdens de installatie van je Linux-app.</translation>
 <translation id="5912396950572065471">Indeling</translation>
-<translation id="5913638992615760742">Kopiëren mislukt. Onverwachte fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Nieuwe zoekfuncties beschikbaar</translation>
 <translation id="5926082595146149752">Nederlands (Nederland) met Amerikaans pc-toetsenbord (internationaal)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -643,7 +640,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> items</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sorteeropties</translation>
-<translation id="6007237601604674381">Verplaatsen mislukt. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-netwerk</translation>
 <translation id="60357267506638014">Tsjechisch QWERTY</translation>
 <translation id="603895874132768835">Je kunt dit netwerk pas gebruiken nadat je een nieuwe pincode hebt ingesteld.</translation>

@@ -1343,7 +1343,6 @@
 <translation id="2061366302742593739">कोई जानकारी मौजूद नहीं है</translation>
 <translation id="2062354623176996748">गुप्त विंडो की मदद से, अपना ब्राउज़िंग इतिहास सेव किए बिना वेब को इस्तेमाल करें</translation>
 <translation id="206308717637808771">सभी विंडो बंद करने पर डेटा मिटाएं. देखी जा रही साइट के लिए, स्टोरेज ऐक्सेस की जो सेटिंग चुनी गई है वही डेटा के लिए भी लागू होती है</translation>
-<translation id="2063623149012168328"><ph name="BRAND" /> में शॉर्टकट जोड़ें</translation>
 <translation id="2065405795449409761">Chrome को स्वचालित परीक्षण सॉफ़्टवेयर नियंत्रित करता है.</translation>
 <translation id="2071393345806050157">कोई स्थानीय लॉग फ़ाइल नहीं है.</translation>
 <translation id="2071692954027939183">सूचनाओं को अपने-आप ब्लॉक कर दिया गया, क्योंकि आम तौर पर आप उन्हें अनुमति नहीं देते हैं</translation>
@@ -2824,6 +2823,7 @@
 <translation id="3267726687589094446">एकाधिक फ़ाइलों के स्वचालित डाउनलोड की अनुमति देना जारी रखें</translation>
 <translation id="3268451620468152448">खुले सत्र</translation>
 <translation id="3269093882174072735">इमेज लोड करें</translation>
+<translation id="326911502853238749"><ph name="MODULE_NAME" /> न दिखाएं</translation>
 <translation id="3269175001434213183">कॉन्टेंट का बैक अप लेने और इसे किसी भी डिवाइस पर इस्तेमाल करने के लिए, सिंक करने की सुविधा चालू करें</translation>
 <translation id="3269612321104318480">हल्का नीला-हरा और सफ़ेद</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
@@ -2894,7 +2894,6 @@
 <translation id="3321460131042519426">शब्द रैप करना चालू करें</translation>
 <translation id="3321494112580110651">क्या आपका प्रिंटर नहीं दिख रहा है?</translation>
 <translation id="3323521181261657960">बोनस! आप और देर तक डिवाइस इस्तेमाल कर सकते हैं</translation>
-<translation id="3323577066981719144">यहां किए गए बदलाव सिर्फ़ Chrome ब्राउज़र पर लागू होते हैं. अपने Lacros Chrome ब्राउज़र की सेटिंग में बदलाव करने के लिए, Lacros Chrome ब्राउज़र खोलें और सेटिंग में जाएं.</translation>
 <translation id="3325804108816646710">प्रोफ़ाइलें खोजी जा रही हैं...</translation>
 <translation id="3325910708063135066">Mac सिस्टम प्राथमिकताओं में कैमरा और माइक्रोफ़ोन किए गए हैं</translation>
 <translation id="3325930488268995856">Microsoft OneDrive से कनेक्ट किया गया</translation>
@@ -3781,6 +3780,7 @@
 <translation id="4037084878352560732">घोड़ा</translation>
 <translation id="403725336528835653">पहले इसे आज़माएं</translation>
 <translation id="4040041015953651705">वह भाषा जिससे अनुवाद करना है</translation>
+<translation id="4042660782729322247">आप अपनी स्क्रीन शेयर कर रहे हैं</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{पेज से बाहर निकलें}one{पेज से बाहर निकलें}other{पेज से बाहर निकलें}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> की मदद से मिली <ph name="SITE_ETLD_PLUS_ONE" /> का इस्तेमाल करें</translation>
 <translation id="4043267180218562935">कर्सर का साइज़</translation>
@@ -4435,6 +4435,7 @@
 <translation id="4598556348158889687">डिवाइस की मेमोरी का प्रबंधन</translation>
 <translation id="4598776695426288251">एक से ज़्यादा डिवाइस के ज़रिए वाई-फ़ाई उपलब्ध है</translation>
 <translation id="4600071396330666617">सुझावों की संख्या</translation>
+<translation id="4601095002996233687">यह सुविधा संदिग्ध डाउनलोड की जांच करने के लिए गहराई से स्कैन करती है.</translation>
 <translation id="4601426376352205922">'नहीं पढ़ा गया' का निशान लगाएं</translation>
 <translation id="460190672235687855">पासवर्ड देखें</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> को अपना कैमरा और माइक्रोफ़ोन हमेशा एक्सेस करने दें</translation>
@@ -5873,6 +5874,7 @@
 <translation id="5840680448799937675">फ़ाइलों को हमेशा ऑफ़लाइन शेयर किया जाएगा</translation>
 <translation id="5841270259333717135">ईथरनेट कॉन्फ़िगर करें</translation>
 <translation id="5842497610951477805">ब्लूटूथ चालू है</translation>
+<translation id="5844284118433003733">Google खाते में साइन इन करने पर, यह डेटा आपके Google खाते से लिंक हो जाता है. ऐसा, Google की सभी सेवाओं पर आपके डेटा की सुरक्षा के लिए किया जाता है. जैसे, डेटा की सुरक्षा से जुड़े किसी मामले के बाद, Gmail में आपके डेटा की सुरक्षा बढ़ाना.</translation>
 <translation id="5844574845205796324">एक्सप्लोर करने के लिए नया कॉन्टेंट सुझाएं</translation>
 <translation id="5846200638699387931">रिलेशन सिंटैक्स गड़बड़ी: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">कोई शैडो नहीं</translation>
@@ -6720,6 +6722,7 @@
 <translation id="6548945820758901244">Google Search का साइड पैनल खोलें</translation>
 <translation id="6549038875972762904">फिर से सेट अप करें</translation>
 <translation id="6550675742724504774">विकल्प</translation>
+<translation id="6550891580932862748">इस मोड में आपको नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से सुरक्षा नहीं मिलती. Google के अन्य प्रॉडक्ट में सुरक्षित ब्राउज़िंग की सेटिंग पर इसका कोई असर नहीं होगा.</translation>
 <translation id="65513682072153627">आपको यह 'मैनेज किया जा रहा' आइकॉन तब दिखेगा, जब किसी सेटिंग या सुविधा को आपका एडमिन मैनेज करता हो.</translation>
 <translation id="6551508934388063976">निर्देश मौजूद नहीं है. नई विंडों खोलने के लिए control-N दबाएं.</translation>
 <translation id="6551606359270386381">इलिप्स बनाने का टूल</translation>
@@ -6797,6 +6800,7 @@
 <translation id="6609478180749378879">जब आप गुप्त मोड से बाहर निकल जाएंगे, तब साइन इन करने का डेटा इस डिवाइस में सेव किया जाएगा. अपने डिवाइस की मदद से, आप बाद में इस वेबसाइट पर साइन इन कर पाएंगे.</translation>
 <translation id="6610002944194042868">अनुवाद के विकल्प</translation>
 <translation id="6611972847767394631">अपने टैब यहां देखें</translation>
+<translation id="661266467055912436">यह सुविधा, वेब पर आपकी और सभी उपयोगकर्ताओं की सुरक्षा को बेहतर बनाती है.</translation>
 <translation id="6613267708691765962">मैलवेयर का पता लगाने के लिए स्कैन किया जा रहा है...</translation>
 <translation id="6613668613087513143">इस अपडेट को पूरा करने के लिए, आपके डिवाइस में स्टोरेज कम है. अपने डिवाइस में, <ph name="NECESSARY_SPACE" /> स्टोरेज खाली करें और अपने Chrome ब्राउज़र में जाकर फिर से कोशिश करें.</translation>
 <translation id="6615455863669487791">मुझे दिखाएं</translation>
@@ -8201,6 +8205,7 @@
 <translation id="7774792847912242537">बहुत सारे अनुरोध.</translation>
 <translation id="7775694664330414886">टैब को बिना नाम वाले ग्रुप में ले जाया गया - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">जब तक आप इस साइट के लिए सभी टैब बंद नहीं कर देते, <ph name="ORIGIN" /> तब तक फाइलों को <ph name="FOLDERNAME" /> में देख पाएगी</translation>
+<translation id="777637629667389858">जब आप साइन इन होते हैं, तब यह सुविधा Google की सभी सेवाओं पर आपकी सुरक्षा करती है.</translation>
 <translation id="7776701556330691704">कोई आवाज़ नहीं मिली</translation>
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> के लिए शॉर्टकट <ph name="SHORTCUT" /></translation>
 <translation id="7781335840981796660">सभी 'उपयोगकर्ता खातों' और 'स्थानीय डेटा' को हटा दिया जाएगा.</translation>
@@ -8236,7 +8241,6 @@
 <translation id="7799650166313181433">सिर्फ़ ऐसे डिवाइस जो <ph name="USER_EMAIL" /> से साइन इन हैं, इस डिवाइस के साथ फ़ाइलें शेयर कर सकते हैं. आपको अपने डिवाइसों के लिए, शेयर करने की अनुमति देने की ज़रूरत नहीं पड़ेगी.</translation>
 <translation id="7800485561443537737">हॉटस्पॉट, आपके <ph name="DEVICE_TYPE" /> के मोबाइल डेटा का इस्तेमाल करता है. इसे चालू करने पर आपको, मोबाइल और इंटरनेट सेवा देने वाली कंपनी को अतिरिक्त शुल्क चुकाना पड़ सकता है. इससे बैटरी खर्च बढ़ सकता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">घड़ी की &amp;विपरीत दिशा में घुमाएं</translation>
-<translation id="7801679634091975683">आप यहां जो भी बदलाव करते हैं वे सिर्फ़ Lacros Chrome ब्राउज़र पर लागू होते हैं. अपने Chrome ब्राउज़र की सेटिंग में बदलाव करने के लिए, Chrome ब्राउज़र खोलें और सेटिंग पर जाएं.</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
 <translation id="7803657407897251194">अपने Android डिवाइस की मदद से सेटअप जारी रखने के लिए, अपने <ph name="DEVICE_TYPE" /> को नेटवर्क से कनेक्ट करें</translation>
 <translation id="7804072833593604762">टैब बंद है</translation>
@@ -8453,6 +8457,7 @@
 <translation id="7974713334845253259">डिफ़ॉल्ट रंग</translation>
 <translation id="7974936243149753750">ओवरस्कैन</translation>
 <translation id="7975504106303186033">किसी 'शिक्षा के लिए G Suite' खाते में इस Chrome Education डिवाइस का नाम दर्ज करना ज़रूरी है. नए खाते के लिए, कृपया g.co/workspace/edusignup पर जाकर, साइन अप करें.</translation>
+<translation id="7977451675950311423">अगर किसी ऐसे पासवर्ड का इस्तेमाल किया जाता है जो डेटा के गलत इस्तेमाल की वजह से हैक हो गया है, तो यह सुविधा आपको चेतावनी दिखाती है.</translation>
 <translation id="7978412674231730200">निजी कुंजी</translation>
 <translation id="7978450511781612192">इससे आपको अपने Google खातों से साइन आउट कर दिया जाएगा. आपके बुकमार्क, इतिहास, पासवर्ड वगैरह अब सिंक नहीं किए जाएंगे.</translation>
 <translation id="7980084013673500153">एसेट आईडी: <ph name="ASSET_ID" /></translation>
@@ -8844,6 +8849,7 @@
 <translation id="8295450130892483256">Microsoft 365 इंस्टॉल करें</translation>
 <translation id="8297292446125062288">एचआईडी की सेटिंग</translation>
 <translation id="8298429963694909221">अब आप <ph name="DEVICE_TYPE" /> पर अपने फ़ोन की सूचनाएं पा सकते हैं. <ph name="DEVICE_TYPE" /> पर सूचनाएं खारिज करने पर ये आपके फ़ोन से भी खारिज हो जाएंगी. पक्का करें कि आपका फ़ोन आस-पास हो और उस पर ब्लूटूथ और वाई-फ़ाई चालू हों.</translation>
+<translation id="829923460755755423">Google Password Manager का शॉर्टकट जोड़ें</translation>
 <translation id="8299319456683969623">आप वर्तमान में ऑफलाइन हैं.</translation>
 <translation id="8300011035382349091">इस टैब के लिए बुकमार्क में बदलाव करें</translation>
 <translation id="8300374739238450534">गहरा नीला (मिड नाइट ब्लू)</translation>
@@ -9499,6 +9505,7 @@
 <translation id="885246833287407341">एपीआई फ़ंक्शन के तर्क</translation>
 <translation id="8853586775156634952">इस कार्ड को सिर्फ़ इस डिवाइस पर सेव किया जाएगा</translation>
 <translation id="8854745870658584490">चुनने का शॉर्टकट</translation>
+<translation id="8855242995793521265">आपके ब्राउज़र या डिवाइस को धीमा नहीं करती.</translation>
 <translation id="8855977033756560989">इस Chromebook Enterprise डिवाइस के साथ Chrome Enterprise Upgrade भी दिया जाता है. एंटरप्राइज़ की सुविधाओं का फ़ायदा उठाने के लिए, इस डिवाइस को Google Admin खाते से रजिस्टर करें.</translation>
 <translation id="8856028055086294840">ऐप्लिकेशन और पेजों को वापस लाएं</translation>
 <translation id="885701979325669005">मेमोरी</translation>

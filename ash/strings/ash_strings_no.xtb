@@ -421,6 +421,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2840766858109427815">Gå videre til neste side</translation>
 <translation id="2841907151129139818">Byttet til nettbrettmodus</translation>
 <translation id="2844169650293029770">USB-C-enhet (porten foran på venstre side)</translation>
+<translation id="2844350028562914727">detaljer</translation>
 <translation id="2848120746144143659">Trykk på Enter for å ta en skjermdump av hele skjermen</translation>
 <translation id="2849936225196189499">Kritisk</translation>
 <translation id="2860184359326882502">Beste treff</translation>
@@ -979,6 +980,7 @@ Koble enheten til strøm.</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5176318573511391780">Ta opp en del av skjermen</translation>
 <translation id="5187627942836026988">Vis detaljer for wifi-sonen. Administratoren din har blokkert wifi-soner.</translation>
+<translation id="5197255632782567636">Internett</translation>
 <translation id="5198413532174090167"><ph name="DATE" /> – <ph name="NUMBER" /> hendelser</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> er kombinert med <ph name="IN_PLACE_APP" /> for å opprette en ny mappe.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1784,6 +1786,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8721053961083920564">Slå lyden av/på. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Skjermdump av hele skjermen</translation>
 <translation id="8725214031272624704">Vis liste over tilgjengelige inndatametoder</translation>
+<translation id="8730621377337864115">Ferdig</translation>
 <translation id="8731487213223706745">Slutter kl. <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Det brukes kanskje til å stjele tastetrykkene dine.</translation>
 <translation id="8735678380411481005">Farge på tastaturets bakgrunnsbelysning</translation>

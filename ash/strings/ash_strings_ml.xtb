@@ -356,7 +356,7 @@
 <translation id="2531025035050312891">ഉപകരണം മന്ദഗതിയിലാണ്</translation>
 <translation id="2531107890083353124">ടാബ് വലിച്ചിടുമ്പോൾ <ph name="KEY_ONE" /> അമർത്തുക</translation>
 <translation id="254900897760075745">ക്ലിപ്പ്ബോർഡിലേക്ക് തിരഞ്ഞെടുത്ത ഉള്ളടക്കം പകർത്തുക</translation>
-<translation id="2549711466868162843">ലൈറ്റിംഗ് മെച്ചപ്പെടുത്തുക</translation>
+<translation id="2549711466868162843">ലൈറ്റിംഗ് മെച്ചപ്പെടുത്തൽ</translation>
 <translation id="2549985041256363841">റെക്കോർഡിംഗ് ആരംഭിക്കൂ</translation>
 <translation id="255671100581129685">പൊതു സെഷനില്‍ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
 <translation id="256712445991462162">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ</translation>
@@ -421,6 +421,7 @@
 <translation id="2840766858109427815">അടുത്ത പേജിലേക്ക് പോവുക</translation>
 <translation id="2841907151129139818">ടാബ്‌ലെറ്റ് മോഡിലേക്ക് മാറി</translation>
 <translation id="2844169650293029770">USB-C ഉപകരണം (ഇടത് വശത്ത് മുൻഭാഗത്തെ പോർട്ട്)</translation>
+<translation id="2844350028562914727">വിശദാംശങ്ങൾ</translation>
 <translation id="2848120746144143659">പൂർണ്ണ സ്ക്രീൻ സ്ക്രീൻഷോട്ട് എടുക്കാൻ Enter അമർത്തുക</translation>
 <translation id="2849936225196189499">ഗുരുതരം</translation>
 <translation id="2860184359326882502">മികച്ച പൊരുത്തം</translation>
@@ -979,6 +980,7 @@
 <translation id="5170568018924773124">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
 <translation id="5176318573511391780">ഭാഗിക സ്ക്രീൻ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="5187627942836026988">ഹോട്ട്സ്പോട്ട് വിശദാംശങ്ങൾ കാണിക്കുക. ഹോട്ട്സ്‌പോട്ട് നിങ്ങളുടെ അഡ്‌മിൻ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു.</translation>
+<translation id="5197255632782567636">ഇന്‍റര്‍നെറ്റ്</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ഇവന്റുകൾ</translation>
 <translation id="5198715732953550718">പുതിയ ഫോൾഡർ സൃഷ്‌ടിക്കുന്നതിനായി <ph name="MOVED_APP_NAME" /> എന്നതിനെ <ph name="IN_PLACE_APP" /> എന്നതുമായി സംയോജിപ്പിച്ചു.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1784,6 +1786,7 @@
 <translation id="8721053961083920564">വോളിയം മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">പൂർണ്ണ സ്ക്രീൻ ക്യാപ്‌ചർ ചെയ്യൽ</translation>
 <translation id="8725214031272624704">ലഭ്യമായ ഇൻപുട്ട് രീതികളുടെ ലിസ്റ്റ് കാണിക്കുക</translation>
+<translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" />-ന് <ph name="DAYS_ELAPSED" /> അവസാനിക്കുന്നു</translation>
 <translation id="8734991477317290293">ഇത് നിങ്ങളുടെ കീസ്ട്രോക്കുകൾ മോഷ്‌ടിക്കാൻ ശ്രമിച്ചേക്കാം.</translation>
 <translation id="8735678380411481005">കീബോർഡ് ബാക്ക്‌ലൈറ്റ് നിറം</translation>

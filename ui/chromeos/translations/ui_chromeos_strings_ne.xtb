@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">खरबुजा</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> फर्म्याट गरियो</translation>
 <translation id="1931134289871235022">स्लोभाक</translation>
-<translation id="1933345018156373194">सार्न सकिएन, अनपेक्षित त्रुटि: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">समाप्त गर्नुहोस्</translation>
 <translation id="1942765061641586207">छविको रिजोल्युसन</translation>
 <translation id="1972984168337863910">फाइलका प्रतिक्रियाका प्यानलहरू विस्तृत गर्नुहोस्</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">एल्बम</translation>
 <translation id="4972330214479971536">फाइल सिंक गर्ने सुविधा सेटअप गर्ने कार्य पूरा सकिएन</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> वा सोभन्दा कम वर्णहरू भएको कुनै नाम प्रयोग गर्नुहोस्</translation>
-<translation id="4973970068702235170">जिप गर्न सकिएन, अनपेक्षित त्रुटि: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">जापानी</translation>
 <translation id="4987699874727873250">अङ्ग्रेजी (भारत)</translation>
 <translation id="4988205478593450158">तपाईं "<ph name="FILE_NAME" />" लाई मेटाउने कुरामा निश्चित हुनुहुन्छ?</translation>
@@ -633,7 +631,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, अन नगरिएको, सिग्नलको क्षमता<ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
 <translation id="5911887972742538906">तपाईंको Linux एप स्थापना गर्ने क्रममा त्रुटि भयो।</translation>
 <translation id="5912396950572065471">ढाँचा</translation>
-<translation id="5913638992615760742">कपी गर्न सकिएन, अनपेक्षित त्रुटि: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">खोजसम्बन्धी नयाँ सुविधाहरू उपलब्ध छन्</translation>
 <translation id="5926082595146149752">सं. रा. अमेरिकी अन्तर्राष्ट्रिय PC ढाँचाको डच (नेदरल्यान्ड) किबोर्ड</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -641,7 +638,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">विकल्पहरू क्रमबद्ध गर्नुहोस्</translation>
-<translation id="6007237601604674381">सार्ने कार्य असफल भयो। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">इथरनेट नेटवर्क</translation>
 <translation id="60357267506638014">चेक QWERTY</translation>
 <translation id="603895874132768835">नयाँ PIN सेटअप गरेपछि मात्र तपाईं यो नेटवर्क प्रयोग गर्न सक्नुहुन्छ</translation>

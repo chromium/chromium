@@ -421,6 +421,7 @@
 <translation id="2840766858109427815">அடுத்த பக்கத்திற்குச் செல்லும்</translation>
 <translation id="2841907151129139818">டேப்லெட் பயன்முறைக்கு மாற்றப்பட்டது</translation>
 <translation id="2844169650293029770">USB-C சாதனம் (இடது பக்கம் முன்னே இருக்கும் போர்ட்)</translation>
+<translation id="2844350028562914727">விவரங்கள்</translation>
 <translation id="2848120746144143659">முழுத்திரையை ஸ்கிரீன்ஷாட் எடுக்க Enter பட்டனை அழுத்தவும்</translation>
 <translation id="2849936225196189499">சிக்கலான</translation>
 <translation id="2860184359326882502">சிறப்பாகப் பொருந்துபவை</translation>
@@ -979,6 +980,7 @@
 <translation id="5170568018924773124">ஃபோல்டரில் காண்பி</translation>
 <translation id="5176318573511391780">திரையைப் பகுதியளவு ரெக்கார்டு செய்யும்</translation>
 <translation id="5187627942836026988">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். உங்கள் நிர்வாகி ஹாட்ஸ்பாட்டைத் தடுத்துள்ளார்.</translation>
+<translation id="5197255632782567636">இணையம்</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> நிகழ்வுகள்</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> மற்றும் <ph name="IN_PLACE_APP" /> ஆப்ஸை ஒருங்கிணைத்து புதிய ஃபோல்டர் உருவாக்கப்பட்டது.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1784,6 +1786,7 @@
 <translation id="8721053961083920564">ஒலியை இயக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">முழுத்திரையைப் படமெடுக்கும்</translation>
 <translation id="8725214031272624704">கிடைக்கக்கூடிய உள்ளீட்டு முறைகளின் பட்டியலைக் காட்டு</translation>
+<translation id="8730621377337864115">முடிந்தது</translation>
 <translation id="8731487213223706745">முடியும் நேரம்: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">அது உங்கள் விசை அழுத்தங்களைத் திருட முயற்சித்துக் கொண்டிருக்கக்கூடும்</translation>
 <translation id="8735678380411481005">கீபோர்டு பேக்லைட் வண்ணம்</translation>

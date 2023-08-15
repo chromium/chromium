@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">西瓜</translation>
 <translation id="1924372192547904021">已将“<ph name="DRIVE_NAME" />”格式化</translation>
 <translation id="1931134289871235022">斯洛伐克语</translation>
-<translation id="1933345018156373194">移动失败，出现了意外的错误：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">芬兰语</translation>
 <translation id="1942765061641586207">图片分辨率</translation>
 <translation id="1972984168337863910">展开文件反馈面板</translation>
@@ -152,7 +151,7 @@
 <translation id="2225536596944493418">确定要删除这 <ph name="NUMBER_OF_ITEMS" /> 项吗？</translation>
 <translation id="2230062665678605299">无法创建文件夹“<ph name="FOLDER_NAME" />”。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">一个人在喝咖啡</translation>
-<translation id="2247561763838186830">您已退出帐号</translation>
+<translation id="2247561763838186830">您已退出账号</translation>
 <translation id="2251368349685848079">从回收站还原</translation>
 <translation id="2278133026967558505">所有网站和网址都能访问文件</translation>
 <translation id="2282155092769082568">自动配置网址：</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">专辑</translation>
 <translation id="4972330214479971536">无法完成文件同步设置</translation>
 <translation id="4973523518332075481">所用名称的长度不得超过 <ph name="MAX_LENGTH" /> 个字符</translation>
-<translation id="4973970068702235170">压缩失败，出现了意外的错误：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">日语</translation>
 <translation id="4987699874727873250">英语（印度）</translation>
 <translation id="4988205478593450158">确定要删除“<ph name="FILE_NAME" />”吗？</translation>
@@ -629,7 +627,6 @@
 <translation id="5896749729057314184">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，未激活，信号强度 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="5911887972742538906">安装 Linux 应用时出错。</translation>
 <translation id="5912396950572065471">格式</translation>
-<translation id="5913638992615760742">复制操作失败，出现了意外的错误：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">新的搜索功能现已推出</translation>
 <translation id="5926082595146149752">荷兰语（荷兰）美式国际 PC 键盘</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -637,7 +634,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 项内容</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">排序选项</translation>
-<translation id="6007237601604674381">移动失败。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">以太网</translation>
 <translation id="60357267506638014">捷克语(QWERTY)</translation>
 <translation id="603895874132768835">在设置新 PIN 码之前，您将无法使用此网络</translation>
@@ -1028,7 +1024,7 @@
 <translation id="8997962250644902079">中文（繁体）拼音</translation>
 <translation id="8998871447376656508">您的 Google 云端硬盘中的可用空间不足，无法完成上传。</translation>
 <translation id="9003940392834790328">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
-<translation id="9007990314804111233">登录您的 Microsoft 帐号</translation>
+<translation id="9007990314804111233">登录您的 Microsoft 账号</translation>
 <translation id="9017798300203431059">俄语（注音）</translation>
 <translation id="9034924485347205037">Linux 文件</translation>
 <translation id="9035012421917565900">这些内容一旦移出“<ph name="DESTINATION_NAME" />”便无法移回，因此您将无法撤消这项操作。</translation>

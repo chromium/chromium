@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">تربوز</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> کو فارمیٹ کر دیا گیا</translation>
 <translation id="1931134289871235022">سلاواکی</translation>
-<translation id="1933345018156373194">منتقلی ناکام ہو گئی، غیر متوقع خرابی: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">فنّنِش</translation>
 <translation id="1942765061641586207">تصویر کا ریزولیوشن</translation>
 <translation id="1972984168337863910">فائلز کے تاثرات کے پینلز کو پھیلائیں</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">البم</translation>
 <translation id="4972330214479971536">فائل کی مطابقت پذیری کا سیٹ اپ مکمل نہیں کیا جا سکا</translation>
 <translation id="4973523518332075481">ایک ایسا نام استعمال کریں جو <ph name="MAX_LENGTH" /> یا اس سے کم حروف پر مشتمل ہو</translation>
-<translation id="4973970068702235170">زِپ کرنے کا عمل ناکام، غیر متوقع خرابی: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">جاپانی</translation>
 <translation id="4987699874727873250">انگریزی (ہندوستان)</translation>
 <translation id="4988205478593450158">کیا آپ واقعی "<ph name="FILE_NAME" />" کو حذف کرنا چاہتے ہیں؟</translation>
@@ -633,7 +631,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> کا نیٹ ورک <ph name="NETWORK_INDEX" /> غیر فعال ہے، <ph name="SIGNAL_STRENGTH" />% سگنل کی مضبوطی، تفصیلات</translation>
 <translation id="5911887972742538906">‏آپ کی Linux ایپلیکیشن انسٹال کرنے کے دوران ایک خرابی پیش آ گئی۔</translation>
 <translation id="5912396950572065471">فارمیٹ</translation>
-<translation id="5913638992615760742">کاپی کرنے کی کارروائی ناکام ہو گئی، غیر متوقع خرابی: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">تلاش کی نئی خصوصیات دستیاب ہیں</translation>
 <translation id="5926082595146149752">‏امریکی بین الاقوامی PC کی بورڈ کے ساتھ ڈچ (نیدرلینڈز)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -641,7 +638,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> آئٹمز</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ترتیب دینے کے اختیارات</translation>
-<translation id="6007237601604674381">منتقل کرنا ناکام ہوگیا۔ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ایتھرنیٹ نیٹ ورک</translation>
 <translation id="60357267506638014">Czech QWERTY</translation>
 <translation id="603895874132768835">‏جب تک آپ نیا PIN سیٹ اپ نہیں کرتے ہیں تب تک آپ اس نیٹ ورک کا استعمال نہیں کر سکیں گے</translation>

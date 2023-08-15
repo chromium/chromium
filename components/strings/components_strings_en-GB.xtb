@@ -347,6 +347,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1668071460721346172">Get an email</translation>
 <translation id="1671391448414634642">Pages in <ph name="SOURCE_LANGUAGE" /> will be translated to <ph name="TARGET_LANGUAGE" /> from now on.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> to <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">A limited list of URLs of pages you visit where <ph name="BEGIN_LINK" />legacy technology events<ph name="END_LINK" /> are occuring.</translation>
 <translation id="1682696192498422849">Short edge first</translation>
 <translation id="168693727862418163">This policy value failed to validate against its schema and will be ignored.</translation>
 <translation id="168841957122794586">The server certificate contains a weak cryptographic key.</translation>
@@ -2031,6 +2032,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5296589789433599000">Cooking and recipes</translation>
 <translation id="5299298092464848405">Error parsing policy</translation>
 <translation id="5299638840995777423">Robotics</translation>
+<translation id="5300062471671636390">Hide device list for casting</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5306593769196050043">Both sheets</translation>
 <translation id="5307166000025436103">OK</translation>
@@ -3495,6 +3497,7 @@ Additional details:
 <translation id="8368027906805972958">Unknown or unsupported device (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play services</translation>
 <translation id="8369073279043109617">Get new code</translation>
+<translation id="8371841335382565017">Show device list for casting</translation>
 <translation id="8371889962595521444">Custom root certificates</translation>
 <translation id="8374636051559112948">Varies</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>

@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Arbuz</translation>
 <translation id="1924372192547904021">Sformatowano: <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Słowacki</translation>
-<translation id="1933345018156373194">Przenoszenie nie powiodło się z powodu nieoczekiwanego błędu: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fiński</translation>
 <translation id="1942765061641586207">Rozdzielczość grafiki</translation>
 <translation id="1972984168337863910">Rozwiń panele informacji zwrotnej o plikach</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Nie udało się dokończyć konfigurowania synchronizacji plików</translation>
 <translation id="4973523518332075481">Użyj nazwy, której długość nie przekracza <ph name="MAX_LENGTH" /> znaków</translation>
-<translation id="4973970068702235170">Pakowanie nie powiodło się z powodu nieoczekiwanego błędu: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japoński</translation>
 <translation id="4987699874727873250">Angielski (Indie)</translation>
 <translation id="4988205478593450158">Czy na pewno chcesz usunąć plik „<ph name="FILE_NAME" />”?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nieaktywowana, siła sygnału <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="5911887972742538906">Podczas instalowania aplikacji na Linuksa wystąpił błąd.</translation>
 <translation id="5912396950572065471">Format</translation>
-<translation id="5913638992615760742">Kopiowanie nie powiodło się z powodu nieoczekiwanego błędu: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Dostępne są nowe funkcje wyszukiwania</translation>
 <translation id="5926082595146149752">Niderlandzki (Holandia) z klawiaturą amerykańską międzynarodową (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329">Elementy: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboksy</translation>
 <translation id="5982621672636444458">Opcje sortowania</translation>
-<translation id="6007237601604674381">Przenoszenie nie powiodło się. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Sieć Ethernet</translation>
 <translation id="60357267506638014">czeski (QWERTY)</translation>
 <translation id="603895874132768835">Nie możesz korzystać z tej sieci, dopóki nie ustawisz nowego kodu PIN</translation>

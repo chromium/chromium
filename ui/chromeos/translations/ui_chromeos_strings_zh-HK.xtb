@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">西瓜</translation>
 <translation id="1924372192547904021">已格式化「<ph name="DRIVE_NAME" />」</translation>
 <translation id="1931134289871235022">斯洛伐克文</translation>
-<translation id="1933345018156373194">移動失敗，發生未預期的錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">芬蘭文</translation>
 <translation id="1942765061641586207">圖片解像度</translation>
 <translation id="1972984168337863910">展開檔案意見面板</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">專輯</translation>
 <translation id="4972330214479971536">無法完成檔案同步設定</translation>
 <translation id="4973523518332075481">請使用不多於 <ph name="MAX_LENGTH" /> 個字元的名稱</translation>
-<translation id="4973970068702235170">壓縮失敗，發生未預期的錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">日文</translation>
 <translation id="4987699874727873250">英文 (印度)</translation>
 <translation id="4988205478593450158">確定要刪除「<ph name="FILE_NAME" />」嗎？</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個網絡，<ph name="NETWORK_NAME" />，未啟用，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="5911887972742538906">安裝 Linux 應用程式時發生錯誤。</translation>
 <translation id="5912396950572065471">格式</translation>
-<translation id="5913638992615760742">複製作業失敗，發生未預期的錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">新搜尋功能已推出</translation>
 <translation id="5926082595146149752">荷蘭文 (荷蘭)，美國國際 (PC) 鍵盤</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">排序選項</translation>
-<translation id="6007237601604674381">移動失敗。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">以太網絡</translation>
 <translation id="60357267506638014">捷克 QWERTY</translation>
 <translation id="603895874132768835">除非您設定新 PIN，否則將無法使用此網絡</translation>

@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Waatlemoen</translation>
 <translation id="1924372192547904021">Het <ph name="DRIVE_NAME" /> geformateer</translation>
 <translation id="1931134289871235022">Slowaaks</translation>
-<translation id="1933345018156373194">Kon nie skuif nie; 'n onverwagse fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fins</translation>
 <translation id="1942765061641586207">Prentresolusie</translation>
 <translation id="1972984168337863910">Vou lêersterugvoerpanele uit</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Kon nie opstelling van lêersinkronisering voltooi nie</translation>
 <translation id="4973523518332075481">Gebruik 'n naam wat <ph name="MAX_LENGTH" /> karakters of minder bevat</translation>
-<translation id="4973970068702235170">Kon nie kompakteer nie; onverwagte fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japannees</translation>
 <translation id="4987699874727873250">Engels (Indië)</translation>
 <translation id="4988205478593450158">Is jy seker jy wil "<ph name="FILE_NAME" />" uitvee?</translation>
@@ -633,7 +631,6 @@
 <translation id="5896749729057314184">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />; nie geaktiveer nie; seinsterkte <ph name="SIGNAL_STRENGTH" />%; besonderhede</translation>
 <translation id="5911887972742538906">Kon nie jou Linux-program installeer nie.</translation>
 <translation id="5912396950572065471">Formaat</translation>
-<translation id="5913638992615760742">Kon nie kopieer nie; 'n onverwagse fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Nuwe soekkenmerke is beskikbaar</translation>
 <translation id="5926082595146149752">Nederlands met Internasionale VSA- (rekenaar-) sleutelbord</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -641,7 +638,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> items</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Rangskikopsies</translation>
-<translation id="6007237601604674381">Kon nie skuif nie. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-netwerk</translation>
 <translation id="60357267506638014">Tsjeggiese QWERTY</translation>
 <translation id="603895874132768835">Jy sal nie hierdie netwerk kan gebruik voordat jy 'n nuwe PIN opgestel het nie</translation>

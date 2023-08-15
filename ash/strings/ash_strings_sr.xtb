@@ -421,6 +421,7 @@
 <translation id="2840766858109427815">Пређите на следећу страницу</translation>
 <translation id="2841907151129139818">Прешли сте у режим таблета</translation>
 <translation id="2844169650293029770">Уређај са USB прикључком типа C (леви предњи порт)</translation>
+<translation id="2844350028562914727">детаљи</translation>
 <translation id="2848120746144143659">Притисните Enter да бисте направили снимак целог екрана</translation>
 <translation id="2849936225196189499">Од пресудне важности</translation>
 <translation id="2860184359326882502">Најбоље подударање</translation>
@@ -980,6 +981,7 @@
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
 <translation id="5176318573511391780">Сними део екрана</translation>
 <translation id="5187627942836026988">Прегледајте детаље хотспота. Администратор је блокирао хотспот.</translation>
+<translation id="5197255632782567636">Интернет</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> догађаја</translation>
 <translation id="5198715732953550718">Апликација <ph name="MOVED_APP_NAME" /> је комбинована са апликацијом <ph name="IN_PLACE_APP" /> да би се направио нови фолдер.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1789,6 +1791,7 @@
 <translation id="8721053961083920564">Укључите/искључите звук. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Снимање целог екрана</translation>
 <translation id="8725214031272624704">Прикажи листу доступних метода уноса</translation>
+<translation id="8730621377337864115">Готово</translation>
 <translation id="8731487213223706745">Завршава се у <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Можда покушава да украде вашу комбинацију тастера</translation>
 <translation id="8735678380411481005">Боја позадинског осветљења тастатуре</translation>

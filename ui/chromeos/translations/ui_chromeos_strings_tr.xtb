@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Karpuz</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> biçimlendirildi</translation>
 <translation id="1931134289871235022">Slovakça</translation>
-<translation id="1933345018156373194">Taşıma işlemi başarısız, beklenmeyen hata: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fince</translation>
 <translation id="1942765061641586207">Resim çözünürlüğü</translation>
 <translation id="1972984168337863910">Dosyalar geri bildirim panellerini genişlet</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Albüm</translation>
 <translation id="4972330214479971536">Dosya senkronizasyonu kurulumu tamamlanamadı</translation>
 <translation id="4973523518332075481">En fazla <ph name="MAX_LENGTH" /> karakterden oluşan bir ad kullanın</translation>
-<translation id="4973970068702235170">Sıkıştırma işlemi başarısız oldu, beklenmedik hata oluştu: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonca</translation>
 <translation id="4987699874727873250">İngilizce (Hindistan)</translation>
 <translation id="4988205478593450158">"<ph name="FILE_NAME" />" adlı dosyayı silmek istediğinizden emin misiniz?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> ağdan <ph name="NETWORK_INDEX" />., <ph name="NETWORK_NAME" />, Etkinleştirilmemiş, Sinyal Gücü %<ph name="SIGNAL_STRENGTH" />, Ayrıntılar</translation>
 <translation id="5911887972742538906">Linux uygulamanızın yüklenmesi sırasında bir hata oluştu.</translation>
 <translation id="5912396950572065471">Biçim</translation>
-<translation id="5913638992615760742">Kopyalama işlemi başarısız oldu, beklenmeyen hata: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Yeni arama özellikleri mevcut</translation>
 <translation id="5926082595146149752">ABD Uluslararası PC klavyesiyle Felemenkçe (Hollanda)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> öğe</translation>
 <translation id="5957366693331451795">Chromebox'lar</translation>
 <translation id="5982621672636444458">Sıralama seçenekleri</translation>
-<translation id="6007237601604674381">Taşıma başarısız oldu. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet ağı</translation>
 <translation id="60357267506638014">Çekçe QWERTY</translation>
 <translation id="603895874132768835">Yeni bir PIN oluşturana kadar bu ağı kullanamazsınız</translation>

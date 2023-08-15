@@ -347,6 +347,7 @@
 <translation id="1668071460721346172">دریافت ایمیل</translation>
 <translation id="1671391448414634642">از این به بعد، صفحه‌های <ph name="SOURCE_LANGUAGE" />، به <ph name="TARGET_LANGUAGE" /> ترجمه خواهند شد.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> به<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">فهرست محدودی از نشانی وب صفحه‌هایی که بازدید می‌کنید و <ph name="BEGIN_LINK" />رویدادهای فناوری قدیمی<ph name="END_LINK" /> در آن‌ها روی می‌دهد.</translation>
 <translation id="1682696192498422849">ابتدا لبه کوتاه</translation>
 <translation id="168693727862418163">این مقدار خط‌مشی در رابطه با طرح آن تأیید نشده است و نادیده گرفته می‌شود.</translation>
 <translation id="168841957122794586">گواهی‌نامه سرور دارای یک کلید رمزنگاری ضعیف است.</translation>
@@ -2031,6 +2032,7 @@
 <translation id="5296589789433599000">آشپزی و دستورغذا</translation>
 <translation id="5299298092464848405">خطا در تجزیه خط‌‌مشی</translation>
 <translation id="5299638840995777423">روباتیک</translation>
+<translation id="5300062471671636390">پنهان کردن فهرست دستگاه برای پخش محتوا</translation>
 <translation id="5300589172476337783">نمایش</translation>
 <translation id="5306593769196050043">هر دو برگ</translation>
 <translation id="5307166000025436103">تأیید</translation>
@@ -3495,6 +3497,7 @@
 <translation id="8368027906805972958">دستگاه ناشناس یا پشتیبانی‌نشده (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">‏خدمات Google Play</translation>
 <translation id="8369073279043109617">کد جدید دریافت کنید</translation>
+<translation id="8371841335382565017">نمایش فهرست دستگاه برای پخش محتوا</translation>
 <translation id="8371889962595521444">گواهی‌نامه ریشه سفارشی</translation>
 <translation id="8374636051559112948">متفاوت است</translation>
 <translation id="8378714024927312812">توسط سازمانتان مدیریت می‌شود</translation>

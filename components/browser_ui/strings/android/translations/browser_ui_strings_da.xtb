@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Åbn på nettet</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
+<translation id="1073417869336441572">Hjælp os med at forbedre Chrome ved at fortælle os, hvorfor du har tilladt tredjepartscookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">Dette rydder <ph name="DATASIZE" /> data og cookies, som er gemt af websites eller apps på din startskærm.</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Fjern</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">Tilladt, undtagen tredjepartscookies</translation>
 <translation id="1989112275319619282">Gennemse</translation>
 <translation id="1994173015038366702">Webadresse</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{Udløber om 1 dag}one{Udløber om # dag}other{Udløber om # dage}}</translation>
 <translation id="2004697686368036666">Funktionerne på visse websites virker muligvis ikke</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2030769033451695672">Tryk for at vende tilbage til <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">Spørg, om websites må få adgang til din lokation (anbefales)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Tredjepartscookies er blokeret</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{I morgen blokerer Chrome cookies igen}one{Chrome blokerer cookies igen om # dag}other{Chrome blokerer cookies igen om # dage}}</translation>
 <translation id="3521663503435878242">Websites på <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Bloker oprettelsen af 3D-kort over dine omgivelser eller registrering af kamerapositionen for websites</translation>
 <translation id="3544058026430919413">En virksomhed kan definere en gruppe af websites, der kan bruge cookies til at dele din aktivitet i gruppen. Dette er deaktiveret i inkognitotilstand.</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">Telefonnumre</translation>
 <translation id="3826050100957962900">Third-party sign-in</translation>
 <translation id="3835233591525155343">Din enhedsbrug</translation>
+<translation id="3843916486309149084">I dag blokerer Chrome cookies igen</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="3859306556332390985">Spol fremad</translation>
 <translation id="3895926599014793903">Tving aktivering af zoom</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">Bloker tredjepartslogin for et bestemt website.</translation>
 <translation id="6388207532828177975">Ryd og nulstil</translation>
 <translation id="6398765197997659313">Afslut fuld skærm</translation>
+<translation id="640163077447496506">Udløber i dag</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Bloker websites fra at benytte dine virtual reality-enheder og -data</translation>
 <translation id="6447842834002726250">Cookies</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8154912474061769055">Funktionerne på mange websites virker muligvis ikke</translation>
 <translation id="8168435359814927499">Indhold</translation>
+<translation id="8186479265534291036">Fungerer websitet ikke? Tredjepartscookies er blokeret</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> blev tilladt</translation>
 <translation id="8200772114523450471">Genoptag</translation>
 <translation id="8206354486702514201">Denne indstilling håndhæves af din administrator.</translation>

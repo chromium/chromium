@@ -3,6 +3,7 @@
 <translationbundle lang="fa">
 <translation id="1011749477052068769">انتقال به اینجا</translation>
 <translation id="1016498331642356377">به‌سرعت با صدایتان جستجو کنید. برای ویرایش این میان‌بر، لمس کنید و نگه دارید.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">درحال ارسال به <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">داده‌های این سایت‌ها و برنامه‌ها نیز پاک شود؟</translation>
 <translation id="1034259925032978114">پنجره باز است</translation>
@@ -51,6 +52,7 @@
 <translation id="1240288207750131269">درحال بار کردن <ph name="LANG" /></translation>
 <translation id="1240903469550363138">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> نام، نشانی ایمیل، و عکس نمایه‌تان را با این سایت هم‌رسانی خواهد کرد. <ph name="BEGIN_LINK1" />خط‌مشی رازداری<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات<ph name="END_LINK2" /> این سایت را مطالعه کنید.</translation>
 <translation id="124116460088058876">زبان‌های بیشتر</translation>
+<translation id="1241792820757384812">‏گذرواژه‌هایتان از «مدیر گذرواژه Google» برای <ph name="CHROME_CHANNEL" /> حذف خواهد شد. فایل گذرواژه‌هایی که اکنون بارگیری کردید نزد شما باقی می‌ماند.</translation>
 <translation id="1242883863226959074">دستگاه</translation>
 <translation id="124678866338384709">بستن برگه کنونی</translation>
 <translation id="1246905108078336582">پیشنهاد از بریده‌دان حذف شود؟</translation>
@@ -431,6 +433,7 @@
 <translation id="3303414029551471755">ادامه می‌دهید و محتوا را بارگیری می‌کنید؟</translation>
 <translation id="3305130791745726624">ارسال به دستگاه‌ها</translation>
 <translation id="3305795716056605962">ترجمه صفحه‌ها ازطریق دکمه «گزینه‌های بیشتر»</translation>
+<translation id="3324393723900507254">الگوی <ph name="TEMPLATE_TITLE" /> انتخاب شد</translation>
 <translation id="3334729583274622784">پسوند فایل تغییر کند؟</translation>
 <translation id="3341262203274374114">لغو دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
 <translation id="3359667936385849800">استفاده از ارائه‌دهنده خدمات کنونی</translation>
@@ -576,6 +579,7 @@
 <translation id="4124152339699379357">جریان اجازه اعلان به‌صورت کامل باز شد</translation>
 <translation id="4135200667068010335">فهرست دستگاه‌هایی که می‌توان با آن‌ها برگه هم‌رسانی کرد، بسته است.</translation>
 <translation id="4137746084635924146">زبان کنونی دستگاه</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">به‌طور پیش‌فرض سایت‌های ویژه رایانه درخواست می‌شود</translation>
 <translation id="4147131678541801076">وقتی نسخه آزمایشی روشن باشد، «کاهش هرزنامه و تقلب» برای کمک به سایت‌ها در مبارزه با تقلب و تشخیص ربات‌ها از انسان، به کدهای حالت خصوصی متکی است.
 
@@ -1069,6 +1073,7 @@
 <translation id="6649642165559792194">پیش‌نمایش تصویر <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6659594942844771486">برگه</translation>
+<translation id="6662119761881114773">‏درحال‌حاضر، گذرواژه‌های ذخیره‌شده در این دستگاه را نمی‌توان در کانال‌های Chrome استفاده کرد. پس‌از نسخه ۱۲۱، گذرواژه‌های ذخیره‌شده در دستگاهتان برای Chrome و <ph name="CHROME_CHANNEL" /> ادغام خواهند شد و می‌توان از آن‌ها در هردو برنامه استفاده کرد.</translation>
 <translation id="666731172850799929">باز کردن در <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">کپی تصویر</translation>
 <translation id="6672917148207387131">افزودن <ph name="DOMAIN" /></translation>
@@ -1320,6 +1325,7 @@
 <translation id="7944772052836377867">همگام‌سازی باید هویتتان را تأیید کند</translation>
 <translation id="7947953824732555851">پذیرش و ورود به سیستم</translation>
 <translation id="7957413488482743710">کارت مجازی با پنهان کردن کارت واقعی‌تان از شما دربرابر کلاهبرداری‌های احتمالی محافظت می‌کند. <ph name="BEGIN_LINK1" />درباره کارت‌های مجازی بیشتر بدانید<ph name="END_LINK1" /></translation>
+<translation id="7960972236129063347">دکمه برگشتن در برگه اطلاعات آماری صفحه</translation>
 <translation id="7961926449547174351">دسترسی به «فضای ذخیره‌سازی» را غیرفعال کرده‌اید، لطفاً برای فعال کردن آن به «تنظیمات» بروید.</translation>
 <translation id="7963646190083259054">ارائه‌دهنده:</translation>
 <translation id="7965838025086216108">‏گذرواژه‌های ذخیره‌شده را در هر دستگاهی می‌توانید استفاده کنید. این گذرواژه‌ها در «مدیر گذرواژه Google» برای <ph name="ACCOUNT" /> ذخیره می‌شود.</translation>
@@ -1563,6 +1569,7 @@
 <translation id="9158770349521403363">فقط هم‌رسانی محتوا</translation>
 <translation id="9159716826369098114">بازیابی گروه برگه <ph name="TAB_COUNT" /> برگه‌ای به‌عنوان گروه برگه جدید پس‌زمینه.</translation>
 <translation id="9169507124922466868">سابقه «پیمایش» نیمه‌باز است</translation>
+<translation id="918419812064856259">‏Chrome نسخه بتا</translation>
 <translation id="9190276265094487094">سابقه‌تان در همه دستگاه‌های همگام‌سازی‌شده دردسترس خواهد بود تا بتوانید آنچه را انجام می‌دادید ادامه دهید</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{آخرین بررسی: ۱ دقیقه قبل}one{آخرین بررسی: # دقیقه قبل}other{آخرین بررسی: # دقیقه قبل}}</translation>
 <translation id="9204021776105550328">درحال حذف کردن</translation>
@@ -1577,6 +1584,7 @@
 <translation id="926205370408745186">‏فعالیت Chrome شما از «آسایش دیجیتالی» برداشته شود</translation>
 <translation id="927968626442779827">‏استفاده از «حالت ساده» در Google Chrome</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> را دنبال می‌کنید</translation>
+<translation id="93533588269984624">همه گذرواژه‌ها در دستگاهتان بارگیری خواهند شد و از <ph name="CHROME_CHANNEL" /> برداشته می‌شوند</translation>
 <translation id="938850635132480979">خطا: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">گذرعبارت را وارد کنید</translation>
 <translation id="952301137339791907">برگ زیرین اطلاعات آماری صفحه باز شده است</translation>

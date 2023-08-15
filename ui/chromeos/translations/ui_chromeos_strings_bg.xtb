@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Диня</translation>
 <translation id="1924372192547904021">Устройството „<ph name="DRIVE_NAME" />“ бе форматирано</translation>
 <translation id="1931134289871235022">словашки</translation>
-<translation id="1933345018156373194">Преместването не бе успешно. Възникна неочаквана грешка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">финландски</translation>
 <translation id="1942765061641586207">Разделителна способност на изображението</translation>
 <translation id="1972984168337863910">Разгъване на панелите с информация за файловете</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Албум</translation>
 <translation id="4972330214479971536">Настройването на функцията за синхронизиране на файловете не завърши</translation>
 <translation id="4973523518332075481">Използвайте име с дължина най-много <ph name="MAX_LENGTH" /> знака</translation>
-<translation id="4973970068702235170">Компресирането не бе успешно. Възникна неочаквана грешка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Японски</translation>
 <translation id="4987699874727873250">английски (Индия)</translation>
 <translation id="4988205478593450158">Наистина ли искате да изтриете „<ph name="FILE_NAME" />“?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, неактивирана, сила на сигнала: <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="5911887972742538906">Възникна грешка при инсталирането на приложението за Linux.</translation>
 <translation id="5912396950572065471">Формат</translation>
-<translation id="5913638992615760742">Копирането не бе успешно. Възникна неочаквана грешка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Налице са нови функции за търсене</translation>
 <translation id="5926082595146149752">Нидерландски (Нидерландия) с американска международна клавиатура (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> елемента</translation>
 <translation id="5957366693331451795">Устройствата Chromebox</translation>
 <translation id="5982621672636444458">Опции за сортиране</translation>
-<translation id="6007237601604674381">Преместването не бе успешно. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet мрежа</translation>
 <translation id="60357267506638014">Чешка (QWERTY) клавиатура</translation>
 <translation id="603895874132768835">Няма да можете да използвате тази мрежа, докато не настроите нов ПИН код</translation>

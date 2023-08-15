@@ -356,7 +356,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2531025035050312891">uređaj je spor</translation>
 <translation id="2531107890083353124">Dok povlačite karticu, pritisnite <ph name="KEY_ONE" /></translation>
 <translation id="254900897760075745">Kopiranje odabranog sadržaja u međuspremnik</translation>
-<translation id="2549711466868162843">Poboljšaj osvjetljenje</translation>
+<translation id="2549711466868162843">Poboljšanje osvjetljenja</translation>
 <translation id="2549985041256363841">Početak snimanja</translation>
 <translation id="255671100581129685">Google asistent nije dostupan u javnoj sesiji.</translation>
 <translation id="256712445991462162">usidreno povećalo</translation>
@@ -421,6 +421,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2840766858109427815">Prelazak na sljedeću stranicu</translation>
 <translation id="2841907151129139818">Prebačeno na način tableta</translation>
 <translation id="2844169650293029770">USB-C uređaj (prednji lijevi priključak)</translation>
+<translation id="2844350028562914727">pojedinosti</translation>
 <translation id="2848120746144143659">Pritisnite Enter za snimanje snimke cijelog zaslona</translation>
 <translation id="2849936225196189499">Kritično</translation>
 <translation id="2860184359326882502">Najbolje podudaranje</translation>
@@ -978,6 +979,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5170568018924773124">Pokaži u mapi</translation>
 <translation id="5176318573511391780">Snimanje dijela zaslona</translation>
 <translation id="5187627942836026988">Prikažite pojedinosti žarišne točke. Žarišnu točku blokirao je vaš administrator.</translation>
+<translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> događaj/događaja</translation>
 <translation id="5198715732953550718">Aplikacija <ph name="MOVED_APP_NAME" /> povezana je s aplikacijom <ph name="IN_PLACE_APP" /> u novu mapu.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1082,6 +1084,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Prebacili smo vas na bolju mrežu</translation>
 <translation id="5619862035903135339">Administratorska pravila onemogućuju snimku zaslona</translation>
+<translation id="5620856676199877916">Pregled svih školskih zadaća na web-lokaciji Google učionice</translation>
 <translation id="5620979661744857819">To omogućuje pristup za aplikaciju <ph name="APP_NAME" /> te sve aplikacije i web-lokacije s dopuštenjem za kameru i mikrofon. Možda ćete morati osvježiti web-stranicu ili ponovo pokrenuti aplikaciju.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Vaš identitet nije potvrđen. Pokušajte ponovo.</translation>
@@ -1211,6 +1214,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="6154006699632741460">Periferni uređaj nije podržan</translation>
 <translation id="6156960295318603523">Postavke jezika</translation>
 <translation id="615957422585914272">Prikaži zaslonsku tipkovnicu</translation>
+<translation id="616543563528926612">Prečac desnom tipkom miša ažuriran je na Alt + klik (stari prečac: <ph name="LAUNCHER_KEY_NAME" /> + klik)</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6166852626429024716">Pretražite uređaj, aplikacije, postavke, web...</translation>
 <translation id="6168318496333165060">Otvaranje aplikacije Dijagnostika</translation>
@@ -1498,6 +1502,7 @@ Novo instaliranje</translation>
 <translation id="7497767806359279797">Odaberite jezik i tipkovnicu</translation>
 <translation id="7508690557411636492">Otvoreno prošli mjesec</translation>
 <translation id="7509246181739783082">Potvrdite svoj identitet</translation>
+<translation id="7512509370370076552">Prečac desnom tipkom miša ažuriran je na tipku <ph name="LAUNCHER_KEY_NAME" /> i klik (stari prečac: Alt + klik)</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nije odabrano</translation>
 <translation id="7513622367902644023">Odabran je način snimanja zaslona</translation>
 <translation id="7513922695575567867">Kalendar, tjedan od <ph name="DATE" />, trenutačno je odabran datum <ph name="SELECTED_DATE" />.</translation>
@@ -1601,6 +1606,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7904094684485781019">Administrator ovog računa onemogućio je višestruku prijavu.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" /></translation>
+<translation id="7926080067315048321">Pogledajte sve zadatke na Googleovim zadacima na webu</translation>
 <translation id="7930731167419639574">Govor se sada obrađuje lokalno, a diktiranje funkcionira offline.</translation>
 <translation id="7932451802722951285">Otvori u Google kalendaru</translation>
 <translation id="7933084174919150729">Google asistent dostupan je samo za primarni profil.</translation>
@@ -1783,6 +1789,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8721053961083920564">Uključivanje ili isključivanje zvuka. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Snimka cijelog zaslona</translation>
 <translation id="8725214031272624704">Prikaz popisa dostupnih načina unosa</translation>
+<translation id="8730621377337864115">Gotovo</translation>
 <translation id="8731487213223706745">Završava u <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Možda pokušava ukrasti podatke o pritisnutim tipkama</translation>
 <translation id="8735678380411481005">Boja pozadinskog svjetla tipkovnice</translation>

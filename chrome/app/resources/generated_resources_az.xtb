@@ -1327,7 +1327,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2061366302742593739">Göstəriləcək heç nə yoxdur</translation>
 <translation id="2062354623176996748">Axtarış tarixçənizi Anonim pəncərədə saxlamadan vebdən istifadə edin</translation>
 <translation id="206308717637808771">Bütün pəncərələri bağladığınız zaman datanı silin. Dataya baxdığınız saytla eyni şəkildə yanaşılır</translation>
-<translation id="2063623149012168328">Qısayol əlavə edin: <ph name="BRAND" /></translation>
 <translation id="2065405795449409761">Chrome'u avtomatlaşdırılmış test proqram təminatı idarə edir.</translation>
 <translation id="2071393345806050157">Lokal qeydiyyat faylı yoxdur.</translation>
 <translation id="2071692954027939183">Bildirişlərə adətən icazə vermədiyinizə görə onlar avtomatik olaraq bloklanıb</translation>
@@ -2808,6 +2807,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3267726687589094446">Çoxsaylı faylların avtomatik endirilməsinə icazə verməyə davam edin</translation>
 <translation id="3268451620468152448">Panelləri Açın</translation>
 <translation id="3269093882174072735">Şəkli yükləyin</translation>
+<translation id="326911502853238749"><ph name="MODULE_NAME" /> modulunu göstərməyin</translation>
 <translation id="3269175001434213183">Elementləri yedəkləmək və istənilən cihazda istifadə etmək üçün sinxronizasiyanı aktiv edin</translation>
 <translation id="3269612321104318480">Açıq-firuzəyi və ağ</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fayl}other{# fayl}}</translation>
@@ -2878,7 +2878,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3321460131042519426">Söz paketini aktivləşdirin</translation>
 <translation id="3321494112580110651">Printer görünmür?</translation>
 <translation id="3323521181261657960">Bonus! Daha çox ekran vaxtı əldə etdiniz</translation>
-<translation id="3323577066981719144">Burada etdiyiniz dəyişikliklər yalnız Chrome Brauzerinə aiddir. Lacros Chrome Brauzer ayarlarınızda dəyişiklik etmək üçün Lacros Chrome Brauzerini açın və ayarlara keçin.</translation>
 <translation id="3325804108816646710">Əlçatan profillər axtarılır...</translation>
 <translation id="3325910708063135066">Kamera və mikrofon Mac Sistem Tərcihlərində deaktivdir</translation>
 <translation id="3325930488268995856">Microsoft OneDrive qoşulub</translation>
@@ -3767,6 +3766,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4037084878352560732">At</translation>
 <translation id="403725336528835653">Bunu birinci sınayın</translation>
 <translation id="4040041015953651705">Bu dildən tərcümə edin:</translation>
+<translation id="4042660782729322247">Ekranı paylaşırsınız</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Səhifədən Çıxın}other{Səhifələrdən Çıxın}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ilə <ph name="SITE_ETLD_PLUS_ONE" /> saytına davam edin</translation>
 <translation id="4043267180218562935">Kursor ölçüsü</translation>
@@ -4419,6 +4419,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4598556348158889687">Yaddaş idarəetməsi</translation>
 <translation id="4598776695426288251">Wi-Fi çoxsaylı cihazlar üzərindən əlçatandır</translation>
 <translation id="4600071396330666617">Təklif sayı</translation>
+<translation id="4601095002996233687">Şübhəli endirmələr üçün hərtərəfli skanlama.</translation>
 <translation id="4601426376352205922">Oxunmamış kimi qeyd edin</translation>
 <translation id="460190672235687855">Parollara baxın</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> hostuna kameranıza və mikrofonunuza həmişə girməsinə imkan verin</translation>
@@ -5858,6 +5859,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5840680448799937675">Fayllar həmişə oflayn paylaşılacaq</translation>
 <translation id="5841270259333717135">Ethernet şəbəkəsini konfiqurasiya edin</translation>
 <translation id="5842497610951477805">Bluetooth'un aktiv edilməsi</translation>
+<translation id="5844284118433003733">Daxil olduqda sizi Google xidmətlərində qorumaq üçün bu data Google Hesabı ilə əlaqələndirilir. Məsələn, təhlükəsizlik insidentindən sonra Gmail-də qoruma artırılır.</translation>
 <translation id="5844574845205796324">Araşdırmaq üçün yeni məzmun təklif edin</translation>
 <translation id="5846200638699387931">Əlaqə sintaksis xətası: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Kölgə yoxdur</translation>
@@ -6703,6 +6705,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6548945820758901244">Google Axtarış yan panelini açın</translation>
 <translation id="6549038875972762904">Ayarlamanı təkrarlayın</translation>
 <translation id="6550675742724504774">Seçimlər</translation>
+<translation id="6550891580932862748">Təhlükəli veb-sayt, endirmə və artırmalardan qorumur. Digər Google məhsullarında Təhlükəsiz baxış ayarlarına təsir etmir.</translation>
 <translation id="65513682072153627">Ayar və ya funksiya administratorunuz tərəfindən idarə edildikdə bu "İdarə olunur" ikonasını görəcəksiniz.</translation>
 <translation id="6551508934388063976">Əmr əlçatmazdır. Yeni pəncərə açmaq üçün control-N basın.</translation>
 <translation id="6551606359270386381">Ellips Aləti</translation>
@@ -6778,6 +6781,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6609478180749378879">Anonim rejimdən çıxdıqdan sonra giriş datası bu cihazda saxlanılacaq. Bu veb sayta daha sonra cihazınızla yenidən daxil ola biləcəksiniz.</translation>
 <translation id="6610002944194042868">Tərcümə Seçimləri</translation>
 <translation id="6611972847767394631">Tablarınızı burada tapın</translation>
+<translation id="661266467055912436">Siz və vebdəki hər kəs üçün təhlükəsizliyi artırır.</translation>
 <translation id="6613267708691765962">Zərərli proqram skanlanır...</translation>
 <translation id="6613668613087513143">Bu güncəlləməni tamamlamaq üçün bu cihazda kifayət qədər yer yoxdur. Cihazınızda <ph name="NECESSARY_SPACE" /> yer boşaldın və Chrome brauzerinizdə yenidən cəhd edin.</translation>
 <translation id="6615455863669487791">Mənə göstərin</translation>
@@ -8182,6 +8186,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7774792847912242537">Həddən çox sorğu var.</translation>
 <translation id="7775694664330414886">Tab adsız qrupa köçürüldü - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Siz bu sayt üzrə bütün tabları bağlayanadək <ph name="ORIGIN" /> <ph name="FOLDERNAME" /> qovluğundakı fayllara baxa biləcək</translation>
+<translation id="777637629667389858">Daxil olduqda Google xidmətlərində sizi qoruyur.</translation>
 <translation id="7776701556330691704">Səs tapılmadı</translation>
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> üçün <ph name="SHORTCUT" /> qısayolu</translation>
 <translation id="7781335840981796660">Bütün istifadəçi hesabları və lokal data silinəcək.</translation>
@@ -8218,7 +8223,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7799650166313181433">Yalnız <ph name="USER_EMAIL" /> hesabına daxil olmuş cihazlar bu cihazla paylaşım edə bilər. Cihazlarınız arasında paylaşımı təsdiqləməli deyilsiniz.</translation>
 <translation id="7800485561443537737"><ph name="DEVICE_TYPE" /> mobil datasını istifadə edir və operator əlavə ödəniş tuta bilər. Batareya istifadəsi arta bilər. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Saat əqrəbi istiqamətinin əksinə fırladın</translation>
-<translation id="7801679634091975683">Burada etdiyiniz dəyişikliklər yalnız Lacros Chrome Brauzerinə aiddir. Chrome Brauzer ayarlarınızda dəyişiklik etmək üçün Chrome Brauzerini açın və ayarlara keçin.</translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
 <translation id="7803657407897251194">Android cihazı ilə ayarlamağa davam etmək üçün <ph name="DEVICE_TYPE" /> cihazını şəbəkəyə qoşun</translation>
 <translation id="7804072833593604762">Tab bağlanıb</translation>
@@ -8435,6 +8439,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7974713334845253259">Defolt rəng</translation>
 <translation id="7974936243149753750">Overskan</translation>
 <translation id="7975504106303186033">Bu Chrome Təhsil cihazını təhsil hesabında qeydiyyata almalısınız. Yeni hesab üçün qeydiyyatdan keçmək üçün g.co/workspace/edusignup ünvanına daxil olun.</translation>
+<translation id="7977451675950311423">Verilənlərin pozulması nəticəsində ifşa olunan parol istifadə etdikdə xəbərdarlıq edir.</translation>
 <translation id="7978412674231730200">Şəxsi açar</translation>
 <translation id="7978450511781612192">Bununla Google Hesablarınızdan çıxacaqsınız. Əlfəcin, tarixçə, parol və digərləri artıq sinxronizasiya olunmayacaq.</translation>
 <translation id="7980084013673500153">Obyekt identifikatoru: <ph name="ASSET_ID" /></translation>
@@ -8826,6 +8831,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8295450130892483256">Microsoft 365-i quraşdırın</translation>
 <translation id="8297292446125062288">HID ayarları</translation>
 <translation id="8298429963694909221">İndi <ph name="DEVICE_TYPE" /> cihazında telefonunuzdan bildirişlər ala bilərsiniz. <ph name="DEVICE_TYPE" /> cihazınızda bildirişləri qapatsanız, onlar telefonunuzda da qapadılacaq. Telefonunuzun yaxınlıqda olduğuna, Bluetooth və Wi-Fi'ın aktiv olduğuna əmin olun.</translation>
+<translation id="829923460755755423">Google Parol Menecerinə qısayol əlavə edin</translation>
 <translation id="8299319456683969623">Hazırda oflaynsınız</translation>
 <translation id="8300011035382349091">Bu tab üçün əlfəcini redaktə edin</translation>
 <translation id="8300374739238450534">Gecə mavisi</translation>
@@ -9481,6 +9487,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="885246833287407341">API funksiya arqumentləri</translation>
 <translation id="8853586775156634952">Bu kart yalnız bu cihazda yadda saxlanılacaq</translation>
 <translation id="8854745870658584490">Seçim Qısayolu</translation>
+<translation id="8855242995793521265">Brauzer və ya cihazı çox yavaşlatmır.</translation>
 <translation id="8855977033756560989">Bu Chromebook Enterprise cihazı Chrome Enterprise Upgrade ilə bir paket şəklində təqdim edilir. Müəssisə imkanlarından yararlanmaq üçün bu cihazı Google admin hesabı ilə qeydiyyatdan keçirin.</translation>
 <translation id="8856028055086294840">Tətbiq və səhifələri bərpa edin</translation>
 <translation id="885701979325669005">Yaddaş</translation>

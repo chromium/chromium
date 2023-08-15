@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Tembikai</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> diformatkan</translation>
 <translation id="1931134289871235022">Bahasa Slovakia</translation>
-<translation id="1933345018156373194">Pengalihan gagal, ralat tidak dijangka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Bahasa Finland</translation>
 <translation id="1942765061641586207">Peleraian imej</translation>
 <translation id="1972984168337863910">Kembangkan panel maklum balas fail</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Tidak dapat menyelesaikan persediaan penyegerakan fail</translation>
 <translation id="4973523518332075481">Gunakan nama yang mengandungi tidak lebih daripada <ph name="MAX_LENGTH" /> aksara</translation>
-<translation id="4973970068702235170">Gagal mengezip, ralat tidak dijangka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Jepun</translation>
 <translation id="4987699874727873250">Bahasa Inggeris (India)</translation>
 <translation id="4988205478593450158">Adakah anda pasti anda mahu memadamkan "<ph name="FILE_NAME" />"?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Dinyahaktifkan, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Butiran</translation>
 <translation id="5911887972742538906">Ralat telah berlaku semasa pemasangan aplikasi Linux anda.</translation>
 <translation id="5912396950572065471">Format</translation>
-<translation id="5913638992615760742">Operasi salin gagal, ralat tidak dijangka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Ciri carian baharu tersedia</translation>
 <translation id="5926082595146149752">Belanda (Belanda) dengan papan kekunci PC Antarabangsa AS</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> item</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Pilihan isihan</translation>
-<translation id="6007237601604674381">Pemindahan gagal. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rangkaian ethernet</translation>
 <translation id="60357267506638014">QWERTY bahasa Czech</translation>
 <translation id="603895874132768835">Anda tidak akan dapat menggunakan rangkaian ini sehinggalah anda menyediakan PIN baharu</translation>

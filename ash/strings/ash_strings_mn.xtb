@@ -421,6 +421,7 @@
 <translation id="2840766858109427815">Дараагийн хуудас руу урагшлах</translation>
 <translation id="2841907151129139818">Таблетын горим руу сэлгэсэн</translation>
 <translation id="2844169650293029770">USB-C төхөөрөмж (урд талын портын зүүн тал)</translation>
+<translation id="2844350028562914727">дэлгэрэнгүй</translation>
 <translation id="2848120746144143659">Бүтэн дэлгэцийн агшин авахын тулд enter дээр дарна уу</translation>
 <translation id="2849936225196189499">Аюултай</translation>
 <translation id="2860184359326882502">Хамгийн сайн тохирол</translation>
@@ -980,6 +981,7 @@
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5176318573511391780">Хэсэгчилсэн дэлгэцийг бичих</translation>
 <translation id="5187627942836026988">Сүлжээний цэгийн дэлгэрэнгүйг харуулна уу. Сүлжээний цэгийг танай администратор блоклосон.</translation>
+<translation id="5197255632782567636">Интернэт</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> үйл явдал</translation>
 <translation id="5198715732953550718">Шинэ фолдер үүсгэхийн тулд <ph name="MOVED_APP_NAME" />-г <ph name="IN_PLACE_APP" />-тай цуг нийлүүлсэн.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1786,6 +1788,7 @@
 <translation id="8721053961083920564">Дууг хаах/нээх. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Бүтэн дэлгэцийн зураг авах</translation>
 <translation id="8725214031272624704">Боломжтой оруулах аргуудын жагсаалтыг харуулах</translation>
+<translation id="8730621377337864115">хийсэн</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" />-д дуусна <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Энэ нь таны түлхүүрийн цуглуулгыг хулгайлахаар оролдож байж болзошгүй</translation>
 <translation id="8735678380411481005">Гарын арын гэрлийн өнгө</translation>

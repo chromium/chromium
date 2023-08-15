@@ -998,6 +998,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6363990818884053551">Pour lancer la synchronisation, confirmez votre identité</translation>
 <translation id="6364438453358674297">Supprimer la suggestion de l'historique?</translation>
 <translation id="6380100320871303656">Précharge plus fréquemment les pages que vous êtes susceptible de visiter selon Chrome. Ce paramètre peut entraîner une augmentation de la consommation de données.</translation>
+<translation id="6382848304055775421">Exportation en cours…</translation>
 <translation id="6391355955030242704">Pour synchroniser vos données Chrome et sécuriser vos données dans le véhicule, vous devez créer un verrouillage de profil dans vos paramètres de sécurité. Vous utiliserez un code ou un mot de passe chaque fois que vous entrerez dans le véhicule.</translation>
 <translation id="6394791151443660613">Recherche : <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LIEN</translation>
@@ -1133,6 +1134,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6979737339423435258">Toutes les périodes</translation>
 <translation id="6987047470128880212">Cet appareil ne prend pas en charge la navigation privée</translation>
 <translation id="6995899638241819463">Vous envoyer un avertissement si des mots de passe sont exposés dans une violation de données</translation>
+<translation id="6996145122199359148">Télécharger cette page</translation>
 <translation id="7020741890149022655">Ajout. à liste lect. <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Ouvrir dans le navigateur</translation>
 <translation id="7027549951530753705">Élément restauré : <ph name="ITEM_TITLE" /></translation>
@@ -1563,6 +1565,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="9169507124922466868">L'historique de navigation est ouvert à moitié</translation>
 <translation id="9190276265094487094">Vous aurez accès à votre historique sur tous vos appareils synchronisés pour reprendre le cours de vos activités</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Dernière vérification : il y a 1 minute}one{Dernière vérification : il y a # minute}other{Dernière vérification : il y a # minutes}}</translation>
+<translation id="9204021776105550328">Suppression en cours…</translation>
 <translation id="9204836675896933765">1 fichier restant</translation>
 <translation id="9205933215779845960">Impossible de trouver cette page. Vérifiez votre orthographe ou essayez une recherche sur <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

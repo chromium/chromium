@@ -421,6 +421,7 @@
 <translation id="2840766858109427815">前往下一頁</translation>
 <translation id="2841907151129139818">已切換為平板電腦模式</translation>
 <translation id="2844169650293029770">USB-C 裝置 (左前方連接埠)</translation>
+<translation id="2844350028562914727">詳細資料</translation>
 <translation id="2848120746144143659">按下 Enter 鍵以擷取全螢幕截圖</translation>
 <translation id="2849936225196189499">重要</translation>
 <translation id="2860184359326882502">最符合的項目</translation>
@@ -976,6 +977,7 @@
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5176318573511391780">錄製部分螢幕畫面</translation>
 <translation id="5187627942836026988">顯示無線基地台詳細資料。系統管理員已封鎖無線基地台。</translation>
+<translation id="5197255632782567636">網際網路</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
 <translation id="5198715732953550718">已將「<ph name="MOVED_APP_NAME" />」與「<ph name="IN_PLACE_APP" />」合併，並建立新資料夾。</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />，<ph name="NOTIFICATION_TITLE" />：<ph name="MESSAGE" />，<ph name="PHONE_NAME" /></translation>
@@ -1080,6 +1082,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">已切換至連線品質更好的網路</translation>
 <translation id="5619862035903135339">系統管理員政策已停用螢幕畫面擷取功能</translation>
+<translation id="5620856676199877916">前往 Google Classroom 網站查看所有課堂作業</translation>
 <translation id="5620979661744857819">這將允許「<ph name="APP_NAME" />」與具有攝影機和麥克風權限的所有應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">系統無法驗證密碼，請再試一次。</translation>
@@ -1209,6 +1212,7 @@
 <translation id="6154006699632741460">不支援周邊裝置</translation>
 <translation id="6156960295318603523">語言設定</translation>
 <translation id="615957422585914272">顯示螢幕小鍵盤</translation>
+<translation id="616543563528926612">右鍵快速鍵已從<ph name="LAUNCHER_KEY_NAME" />鍵 + 點按更新為 alt + 點按</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6166852626429024716">搜尋你的裝置、應用程式、設定、網路...</translation>
 <translation id="6168318496333165060">開啟「診斷」應用程式</translation>
@@ -1495,6 +1499,7 @@
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
 <translation id="7508690557411636492">過去一個月開啟過</translation>
 <translation id="7509246181739783082">驗證身分</translation>
+<translation id="7512509370370076552">右鍵快速鍵已從 alt + 點按更新為<ph name="LAUNCHER_KEY_NAME" />鍵 + 點按</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />，未選取</translation>
 <translation id="7513622367902644023">已選取螢幕截圖模式</translation>
 <translation id="7513922695575567867">日曆，<ph name="DATE" />當週，目前已選取 <ph name="SELECTED_DATE" /> 日。</translation>
@@ -1598,6 +1603,7 @@
 <translation id="7904094684485781019">這個帳戶的管理員已禁止多重登入。</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">有 <ph name="DEVICECOUNT" /> 部裝置已連線</translation>
+<translation id="7926080067315048321">前往 Google Tasks 網頁版查看所有工作</translation>
 <translation id="7930731167419639574">語音處理程序已在本機執行，語音輸入功能會離線運作</translation>
 <translation id="7932451802722951285">在 Google 日曆中開啟</translation>
 <translation id="7933084174919150729">Google 助理僅適用於主要設定檔。</translation>
@@ -1780,6 +1786,7 @@
 <translation id="8721053961083920564">切換音量設定。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">全螢幕畫面擷取</translation>
 <translation id="8725214031272624704">顯示可用的輸入法清單</translation>
+<translation id="8730621377337864115">完成</translation>
 <translation id="8731487213223706745">結束時間：<ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">你的按鍵行為可能會遭到側錄</translation>
 <translation id="8735678380411481005">鍵盤背光顏色</translation>

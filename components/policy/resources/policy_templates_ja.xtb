@@ -4380,6 +4380,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       このポリシーを未設定のままにした場合、リストにウェブサイトは追加されません。
 
       注: このリストには、<ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> ポリシーからも要素が追加される可能性があります。</translation>
+<translation id="5063480226653192405">使用状況</translation>
 <translation id="5067143124345820993">ログイン ユーザーのホワイト リスト</translation>
 <translation id="5069522005630249098">この設定により、<ph name="LACROS_NAME" /> が無効になった後、どれだけのユーザーデータが保持されるかが決まります。
 

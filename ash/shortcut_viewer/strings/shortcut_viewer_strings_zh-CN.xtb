@@ -105,7 +105,7 @@
 <translation id="449214506787633354">按 <ph name="CTRL" /> 键，然后按 <ph name="LEFT" /> 或 <ph name="RIGHT" /> 或 <ph name="UP" /> 或 <ph name="DOWN" /> 键</translation>
 <translation id="4556221320735744018">查看键盘快捷键助手</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> 或 <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
-<translation id="4628718545549558538">打开状态区（其中显示了您的帐号头像）</translation>
+<translation id="4628718545549558538">打开状态区（其中显示了您的账号头像）</translation>
 <translation id="4698850295812410683">显示触控笔工具</translation>
 <translation id="4801989101741319327">移到下一个字词的末尾</translation>
 <translation id="4866066940972151697">启用右侧桌面</translation>
@@ -142,7 +142,7 @@
 <translation id="6276708887952587684">查看网页源代码</translation>
 <translation id="6321940490215594447">打开“历史记录”页面</translation>
 <translation id="6340769215862220182">放大显示内容</translation>
-<translation id="634687982629734605">在以下元素之间切换焦点：状态区（其中显示了您的帐号头像）、启动器、地址栏、书签栏（若显示）、打开的网页、下载内容栏（若显示）。如果屏幕上显示了一个可聚焦的对话框，该命令会改为将焦点移至那里。</translation>
+<translation id="634687982629734605">在以下元素之间切换焦点：状态区（其中显示了您的账号头像）、启动器、地址栏、书签栏（若显示）、打开的网页、下载内容栏（若显示）。如果屏幕上显示了一个可聚焦的对话框，该命令会改为将焦点移至那里。</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">选择直到行尾的文字</translation>
 <translation id="6425378783626925378">点击任务栏中的第 1-8 个图标</translation>

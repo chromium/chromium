@@ -356,7 +356,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2531025035050312891">wolne urządzenie</translation>
 <translation id="2531107890083353124">Podczas przeciągania karty naciśnij <ph name="KEY_ONE" /></translation>
 <translation id="254900897760075745">Skopiuj wybraną treść do schowka</translation>
-<translation id="2549711466868162843">Polepsz oświetlenie</translation>
+<translation id="2549711466868162843">Ulepszenie oświetlenia</translation>
 <translation id="2549985041256363841">Zacznij nagrywanie</translation>
 <translation id="255671100581129685">Asystent Google jest niedostępny w sesji publicznej.</translation>
 <translation id="256712445991462162">Lupa zadokowana</translation>
@@ -421,6 +421,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2840766858109427815">Przejdź na następną stronę</translation>
 <translation id="2841907151129139818">Przełączono na tryb tabletu</translation>
 <translation id="2844169650293029770">Urządzenie USB-C (przedni port na lewym boku)</translation>
+<translation id="2844350028562914727">szczegóły</translation>
 <translation id="2848120746144143659">Aby zrobić zrzut całego ekranu, naciśnij Enter</translation>
 <translation id="2849936225196189499">Krytyczne</translation>
 <translation id="2860184359326882502">Najlepsze dopasowanie</translation>
@@ -979,6 +980,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5176318573511391780">Nagraj fragment ekranu</translation>
 <translation id="5187627942836026988">Pokaż szczegóły hotspota. Jest on zablokowany przez administratora.</translation>
+<translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, zdarzenia: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Aplikacja <ph name="MOVED_APP_NAME" /> została połączona z aplikacją <ph name="IN_PLACE_APP" />, by utworzyć nowy folder.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1783,6 +1785,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8721053961083920564">Przełącz głośność. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Zrzut całego ekranu</translation>
 <translation id="8725214031272624704">Pokaż listę dostępnych metod wprowadzania</translation>
+<translation id="8730621377337864115">Gotowe</translation>
 <translation id="8731487213223706745">Zakończenie o <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Klawiatura może próbować przechwycić naciskane klawisze</translation>
 <translation id="8735678380411481005">Kolor podświetlenia klawiatury</translation>

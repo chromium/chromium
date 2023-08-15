@@ -1344,7 +1344,6 @@
 <translation id="2061366302742593739">표시할 항목이 없습니다.</translation>
 <translation id="2062354623176996748">시크릿 창에서는 인터넷 사용 기록을 저장하지 않고 웹을 사용할 수 있습니다.</translation>
 <translation id="206308717637808771">모든 창을 닫으면 데이터를 삭제합니다. 데이터는 현재 보고 있는 사이트와 동일하게 처리됩니다.</translation>
-<translation id="2063623149012168328"><ph name="BRAND" />에 바로가기 추가</translation>
 <translation id="2065405795449409761">Chrome이 자동화된 테스트 소프트웨어에 의해 제어되고 있습니다.</translation>
 <translation id="2071393345806050157">로컬 로그 파일이 없습니다.</translation>
 <translation id="2071692954027939183">알림을 평소에 허용하지 않았기 때문에 알림이 자동으로 차단되었습니다.</translation>
@@ -2826,6 +2825,7 @@
 <translation id="3267726687589094446">여러 파일을 자동으로 다운로드하도록 계속 허용</translation>
 <translation id="3268451620468152448">열린 탭</translation>
 <translation id="3269093882174072735">이미지 로드</translation>
+<translation id="326911502853238749"><ph name="MODULE_NAME" /> 표시 안함</translation>
 <translation id="3269175001434213183">콘텐츠를 백업하고 어느 기기에서나 사용하려면 동기화를 사용 설정하세요</translation>
 <translation id="3269612321104318480">연한 청록색 및 흰색</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{파일}other{파일 #개}}</translation>
@@ -2896,7 +2896,6 @@
 <translation id="3321460131042519426">줄바꿈 사용</translation>
 <translation id="3321494112580110651">프린터가 표시되지 않나요?</translation>
 <translation id="3323521181261657960">보너스 기기 사용 시간이 추가되었습니다</translation>
-<translation id="3323577066981719144">여기에서 변경하는 사항은 Chrome 브라우저에만 적용됩니다. Lacros Chrome 브라우저 설정을 변경하려면 Lacros Chrome 브라우저를 열고 설정으로 이동하세요.</translation>
 <translation id="3325804108816646710">사용 가능한 프로필 찾는 중...</translation>
 <translation id="3325910708063135066">Mac 시스템 환경설정에서 카메라와 마이크가 사용 중지되었습니다</translation>
 <translation id="3325930488268995856">Microsoft OneDrive 연결됨</translation>
@@ -3785,6 +3784,7 @@
 <translation id="4037084878352560732">말</translation>
 <translation id="403725336528835653">먼저 사용해 보기</translation>
 <translation id="4040041015953651705">출발 언어</translation>
+<translation id="4042660782729322247">화면 공유 중</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{페이지 나가기}other{페이지 나가기}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" /> 계속하기</translation>
 <translation id="4043267180218562935">커서 크기</translation>
@@ -4438,6 +4438,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4598556348158889687">저장용량 관리</translation>
 <translation id="4598776695426288251">여러 기기를 통해 Wi-Fi 사용 가능</translation>
 <translation id="4600071396330666617">추천 수</translation>
+<translation id="4601095002996233687">의심스러운 다운로드 항목을 심층 스캔합니다.</translation>
 <translation id="4601426376352205922">읽지 않은 상태로 표시</translation>
 <translation id="460190672235687855">비밀번호 보기</translation>
 <translation id="4602466770786743961"><ph name="HOST" />에서 카메라와 마이크에 액세스하도록 항상 허용</translation>
@@ -5877,6 +5878,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5840680448799937675">항상 오프라인으로 파일 공유</translation>
 <translation id="5841270259333717135">이더넷 구성</translation>
 <translation id="5842497610951477805">블루투스 사용</translation>
+<translation id="5844284118433003733">사용자가 로그인하면 이 데이터는 사용자의 Google 계정에 연결되어 Google 서비스 전반에서 사용자를 보호합니다(예: 보안 사고 발생 후 Gmail의 보안 강화).</translation>
 <translation id="5844574845205796324">둘러볼 새 콘텐츠 추천</translation>
 <translation id="5846200638699387931">관계 구문 오류: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">음영 없음</translation>
@@ -6724,6 +6726,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6548945820758901244">Google 검색 측면 패널 열기</translation>
 <translation id="6549038875972762904">다시 설정</translation>
 <translation id="6550675742724504774">옵션</translation>
+<translation id="6550891580932862748">위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호하지 않습니다. 다른 Google 제품의 세이프 브라우징 설정은 영향을 받지 않습니다.</translation>
 <translation id="65513682072153627">관리자가 관리하는 설정이나 기능의 경우 관리됨 아이콘이 표시됩니다</translation>
 <translation id="6551508934388063976">명령어가 없습니다. 컨트롤 키와 N을 눌러 새 창을 여세요.</translation>
 <translation id="6551606359270386381">말줄임표 도구</translation>
@@ -6799,6 +6802,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6609478180749378879">시크릿 모드를 종료한 후 로그인 데이터가 기기에 저장됩니다. 나중에 다시 기기에서 이 웹사이트에 로그인할 수 있습니다.</translation>
 <translation id="6610002944194042868">번역 옵션</translation>
 <translation id="6611972847767394631">여기에서 탭 찾아보기</translation>
+<translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6613267708691765962">멀웨어 검사 중...</translation>
 <translation id="6613668613087513143">기기에 업데이트를 완료하기 위한 공간이 부족합니다. 기기 공간을 <ph name="NECESSARY_SPACE" />만큼 확보한 다음 Chrome 브라우저에서 다시 시도하세요.</translation>
 <translation id="6615455863669487791">보기</translation>
@@ -8203,6 +8207,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7774792847912242537">요청 횟수가 너무 많습니다.</translation>
 <translation id="7775694664330414886">이름이 지정되지 않은 그룹으로 탭을 이동함 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 볼 수 있게 됩니다.</translation>
+<translation id="777637629667389858">로그인하면 Google 서비스 전반에서 사용자를 보호합니다.</translation>
 <translation id="7776701556330691704">음성을 찾을 수 없음</translation>
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" />의 <ph name="SHORTCUT" /> 단축키</translation>
 <translation id="7781335840981796660">모든 사용자 계정과 로컬 데이터가 삭제됩니다.</translation>
@@ -8239,7 +8244,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7799650166313181433"><ph name="USER_EMAIL" />에 로그인된 기기만 이 기기와 공유할 수 있습니다. 내 기기 간에 공유할 경우 승인할 필요가 없습니다.</translation>
 <translation id="7800485561443537737"><ph name="DEVICE_TYPE" />의 모바일 데이터를 사용하며 이동통신사에서 추가 요금을 부과할 수 있습니다. 배터리 사용량이 증가할 수 있습니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">반시계 방향으로 회전(&amp;O)</translation>
-<translation id="7801679634091975683">여기에서 변경하는 사항은 Lacros Chrome 브라우저에만 적용됩니다. Chrome 브라우저 설정을 변경하려면 Chrome 브라우저를 열고 설정으로 이동하세요.</translation>
 <translation id="780301667611848630">취소</translation>
 <translation id="7803657407897251194">Android 기기로 설정을 계속하려면 <ph name="DEVICE_TYPE" /> 기기를 네트워크에 연결하세요</translation>
 <translation id="7804072833593604762">탭 닫음</translation>
@@ -8457,6 +8461,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7974713334845253259">기본 색상</translation>
 <translation id="7974936243149753750">오버스캔</translation>
 <translation id="7975504106303186033">Chrome Education 기기를 Education 계정에 등록해야 합니다. 새 계정으로 가입하려면 g.co/workspace/edusignup 페이지로 이동하세요.</translation>
+<translation id="7977451675950311423">정보 유출로 인해 유출된 비밀번호를 사용하면 경고를 보냅니다.</translation>
 <translation id="7978412674231730200">비공개 키</translation>
 <translation id="7978450511781612192">Google 계정에서 로그아웃됩니다. 북마크, 방문 기록, 비밀번호 등이 더 이상 동기화되지 않습니다.</translation>
 <translation id="7980084013673500153">애셋 ID: <ph name="ASSET_ID" /></translation>
@@ -8849,6 +8854,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8295450130892483256">Microsoft 365 설치하기</translation>
 <translation id="8297292446125062288">HID 설정</translation>
 <translation id="8298429963694909221">이제 <ph name="DEVICE_TYPE" />에서 휴대전화 알림을 받아 볼 수 있습니다. <ph name="DEVICE_TYPE" />에서 알림을 닫으면 휴대전화에서도 알림이 닫힙니다. 휴대전화가 근처에 있고 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
+<translation id="829923460755755423">Google 비밀번호 관리자에 바로가기 추가</translation>
 <translation id="8299319456683969623">현재 오프라인 상태</translation>
 <translation id="8300011035382349091">이 탭의 북마크 수정</translation>
 <translation id="8300374739238450534">미드나잇 블루</translation>
@@ -9506,6 +9512,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="885246833287407341">API 함수 인수</translation>
 <translation id="8853586775156634952">이 카드는 이 기기에만 저장됩니다.</translation>
 <translation id="8854745870658584490">선택 단축키</translation>
+<translation id="8855242995793521265">브라우저나 기기 속도에 크게 영향을 미치지 않습니다.</translation>
 <translation id="8855977033756560989">이 Chromebook Enterprise 기기는 Chrome Enterprise 업그레이드와 함께 제공됩니다. 엔터프라이즈 기능을 활용하려면 Google 관리 계정으로 이 기기를 등록하세요.</translation>
 <translation id="8856028055086294840">앱 및 페이지 복원</translation>
 <translation id="885701979325669005">저장소</translation>

@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Vannmelon</translation>
 <translation id="1924372192547904021">Formaterte <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Slovakisk</translation>
-<translation id="1933345018156373194">Flyttingen mislyktes på grunn av en uventet feil: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finsk</translation>
 <translation id="1942765061641586207">Bildeoppløsning</translation>
 <translation id="1972984168337863910">Vis tilbakemeldingspaneler på filer</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Kunne ikke fullføre konfigureringen av filsynkronisering</translation>
 <translation id="4973523518332075481">Bruk et navn på <ph name="MAX_LENGTH" /> eller færre tegn</translation>
-<translation id="4973970068702235170">Zippingen mislyktes på grunn av en uventet feil: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japansk</translation>
 <translation id="4987699874727873250">Engelsk (India)</translation>
 <translation id="4988205478593450158">Er du sikker på at du vil slette «<ph name="FILE_NAME" />»?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktivert, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, detaljer</translation>
 <translation id="5911887972742538906">Det oppsto en feil under installasjon av Linux-appen.</translation>
 <translation id="5912396950572065471">Format</translation>
-<translation id="5913638992615760742">Kopieringshandlingen mislyktes på grunn av en uventet feil: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Nye søkefunksjoner er tilgjengelig</translation>
 <translation id="5926082595146149752">Nederlandsk (Nederland) med datamaskintastaturet USA-Internasjonal</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementer</translation>
 <translation id="5957366693331451795">Chromebox-enheter</translation>
 <translation id="5982621672636444458">Sorteringsalternativer</translation>
-<translation id="6007237601604674381">Flytting mislyktes. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-nettverk</translation>
 <translation id="60357267506638014">Tsjekkisk QWERTY</translation>
 <translation id="603895874132768835">Du ka nikke bruke dette nettverket før du har satt opp en ny PIN-kode.</translation>

@@ -574,6 +574,7 @@
 <translation id="2166049586286450108">Целосен пристап на администраторот</translation>
 <translation id="2166378884831602661">Сајтот не може да даде безбедна врска</translation>
 <translation id="2168151236314517198">Администраторското правило го блокира печатењето на содржиниве</translation>
+<translation id="2175630235841878061">Датотеките поголеми од 100 MB не се достапни за преземање</translation>
 <translation id="2176974405772725904">Зачувајте ја адресата на сметката</translation>
 <translation id="2178665390943006934">Копче за ажурирање на Chrome, активирајте го за да го ажурирате Chrome од поставките за Chrome</translation>
 <translation id="2181821976797666341">Политики</translation>
@@ -2403,6 +2404,7 @@
 <translation id="6118782133429281336">Списокот со потекло е празен.</translation>
 <translation id="6120179357481664955">Да се запомни ID за UPI?</translation>
 <translation id="6122181661879998141">предната страна од картичката</translation>
+<translation id="6124058285696691147">Преземете го прилогот</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Плик Chinese #2</translation>
 <translation id="6127379762771434464">Ставката е отстранета</translation>

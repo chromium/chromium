@@ -421,6 +421,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2840766858109427815">Go forward to next page</translation>
 <translation id="2841907151129139818">Switched to tablet mode</translation>
 <translation id="2844169650293029770">USB-C device (left side front port)</translation>
+<translation id="2844350028562914727">details</translation>
 <translation id="2848120746144143659">Press enter to capture full-screen screenshot</translation>
 <translation id="2849936225196189499">Critical</translation>
 <translation id="2860184359326882502">Best match</translation>
@@ -979,6 +980,7 @@ Connect your device to power.</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5176318573511391780">Record partial screen</translation>
 <translation id="5187627942836026988">Show hotspot details. Hotspot is blocked by your administrator.</translation>
+<translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> events</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combined with <ph name="IN_PLACE_APP" /> to create new folder.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1083,6 +1085,7 @@ Connect your device to power.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">We've switched you to a better network</translation>
 <translation id="5619862035903135339">Administrator policy disables screen capture</translation>
+<translation id="5620856676199877916">See all classwork on Google Classroom website</translation>
 <translation id="5620979661744857819">This allows access for <ph name="APP_NAME" /> and all apps and websites with the camera and microphone permissions. You may need to refresh the web page or restart the app.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Your password couldn't be verified. Try again.</translation>
@@ -1212,6 +1215,7 @@ Connect your device to power.</translation>
 <translation id="6154006699632741460">Peripheral not supported</translation>
 <translation id="6156960295318603523">Language Settings</translation>
 <translation id="615957422585914272">Show on-screen keyboard</translation>
+<translation id="616543563528926612">The right-click shortcut is updated to alt + click from <ph name="LAUNCHER_KEY_NAME" /> key + click</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6166852626429024716">Search your device, apps, settings, web…</translation>
 <translation id="6168318496333165060">Open Diagnostics app</translation>
@@ -1499,6 +1503,7 @@ New install</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
 <translation id="7508690557411636492">Opened in the past month</translation>
 <translation id="7509246181739783082">Verify your identity</translation>
+<translation id="7512509370370076552">The right-click shortcut is updated to <ph name="LAUNCHER_KEY_NAME" /> key + click from alt + click</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, not selected</translation>
 <translation id="7513622367902644023">Screenshot mode selected</translation>
 <translation id="7513922695575567867">Calendar, week of <ph name="DATE" />, <ph name="SELECTED_DATE" /> is currently selected.</translation>
@@ -1602,6 +1607,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7904094684485781019">The administrator for this account has disallowed multiple sign-in.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> devices connected</translation>
+<translation id="7926080067315048321">See all tasks on Google tasks on web</translation>
 <translation id="7930731167419639574">Speech is now processed locally and dictation works offline</translation>
 <translation id="7932451802722951285">Open in Google Calendar</translation>
 <translation id="7933084174919150729">The Google Assistant is only available for primary profile.</translation>
@@ -1784,6 +1790,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8721053961083920564">Toggle volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Full screen capture</translation>
 <translation id="8725214031272624704">Show list of available input methods</translation>
+<translation id="8730621377337864115">Done</translation>
 <translation id="8731487213223706745">Ends at <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">It may be attempting to steal your keystrokes</translation>
 <translation id="8735678380411481005">Keyboard backlight colour</translation>

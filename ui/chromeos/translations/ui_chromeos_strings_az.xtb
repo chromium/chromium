@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Qarpız</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> formatlandı</translation>
 <translation id="1931134289871235022">Slovak</translation>
-<translation id="1933345018156373194">Köçürmək alınmadı, gözlənilməz xəta baş verdi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fin</translation>
 <translation id="1942765061641586207">Şəkil dəqiqliyi</translation>
 <translation id="1972984168337863910">Faylların rəy panelini genişləndirin</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Albom</translation>
 <translation id="4972330214479971536">Fayl sinxronlaşdırması ayarlanmadı</translation>
 <translation id="4973523518332075481">Maksimum <ph name="MAX_LENGTH" /> və ya daha az simvoldan ibarət olan addan istifadə edin</translation>
-<translation id="4973970068702235170">Sıxmaq alınmadı, gözlənilməz xəta baş verdi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Yapon</translation>
 <translation id="4987699874727873250">İngilis (Hindistan)</translation>
 <translation id="4988205478593450158">"<ph name="FILE_NAME" />" faylını silmək istədyinizə əminsiniz?</translation>
@@ -633,7 +631,6 @@
 <translation id="5896749729057314184">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Deaktivdir, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>
 <translation id="5911887972742538906">Linux tətbiqi quraşdırılan zaman xəta baş verdi.</translation>
 <translation id="5912396950572065471">Format</translation>
-<translation id="5913638992615760742">Kopyalamaq alınmadı, gözlənilməz xəta:<ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Yeni axtarış funksiyaları var</translation>
 <translation id="5926082595146149752">ABŞ Beynəlxalq kompüter klaviaturası ilə Holland dili (Niderland)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -641,7 +638,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> element</translation>
 <translation id="5957366693331451795">Chromebox cihazları</translation>
 <translation id="5982621672636444458">Çeşidləmə variantları</translation>
-<translation id="6007237601604674381">Daşınma alınmadı. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet şəbəkəsi</translation>
 <translation id="60357267506638014">Çex QWERTY</translation>
 <translation id="603895874132768835">Yeni bir PİN ayarlayana qədər bu şəbəkədən istifadə edə bilməyəcəksiniz</translation>

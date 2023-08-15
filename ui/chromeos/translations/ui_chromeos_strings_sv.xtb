@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Vattenmelon</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> har formaterats</translation>
 <translation id="1931134289871235022">Slovakiska</translation>
-<translation id="1933345018156373194">Flytten misslyckades. Oväntat fel: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">finska</translation>
 <translation id="1942765061641586207">Bildupplösning</translation>
 <translation id="1972984168337863910">Utöka panel med information om filåtgärder</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Det gick inte att slutföra konfigureringen av filsynkronisering</translation>
 <translation id="4973523518332075481">Ange ett namn på högst <ph name="MAX_LENGTH" /> tecken</translation>
-<translation id="4973970068702235170">Komprimeringen misslyckades. Oväntat fel: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japanska</translation>
 <translation id="4987699874727873250">Engelska (Indien)</translation>
 <translation id="4988205478593450158">Vill du ta bort <ph name="FILE_NAME" />?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inaktiverat, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="5911887972742538906">Ett fel uppstod under installationen av Linux-programmet.</translation>
 <translation id="5912396950572065471">Format</translation>
-<translation id="5913638992615760742">Kopieringen misslyckades. Oväntat fel: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Det finns nya sökfunktioner</translation>
 <translation id="5926082595146149752">nederländska (Nederländerna) med internationellt PC-tangentbord för USA</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> objekt</translation>
 <translation id="5957366693331451795">Chromebox-modeller</translation>
 <translation id="5982621672636444458">Sorteringsalternativ</translation>
-<translation id="6007237601604674381">Flytten misslyckades. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-nätverk</translation>
 <translation id="60357267506638014">Tjeckiska (QWERTY)</translation>
 <translation id="603895874132768835">Du kan inte använda det här nätverket förrän du har ställt in en ny pinkod.</translation>

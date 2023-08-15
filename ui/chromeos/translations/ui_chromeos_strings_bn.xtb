@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">তরমুজ</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ফরম্যাট করা হয়েছে</translation>
 <translation id="1931134289871235022">স্লোভাক</translation>
-<translation id="1933345018156373194">স্থানান্তরিত করা যায়নি, অপ্রত্যাশিত সমস্যা হয়েছে: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ফিনিশ</translation>
 <translation id="1942765061641586207">ছবির রেজোলিউশন</translation>
 <translation id="1972984168337863910">ফাইল ফিডব্যাক প্যানেল বড় করুন</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">অ্যালবাম</translation>
 <translation id="4972330214479971536">ফাইল সিঙ্ক করার প্রসেস সেট-আপ সম্পূর্ণ করা যায়নি</translation>
 <translation id="4973523518332075481">এমন একটি নাম ব্যবহার করুন যেটিতে <ph name="MAX_LENGTH" /> বা তার কম অক্ষর আছে</translation>
-<translation id="4973970068702235170">জিপ করা যায়নি, অপ্রত্যাশিত সমস্যা হয়েছে: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">জাপানি</translation>
 <translation id="4987699874727873250">ইংরেজী (ভারত)</translation>
 <translation id="4988205478593450158">আপনি কি "<ph name="FILE_NAME" />" মুছে ফেলার ব্যাপারে নিশ্চিত?</translation>
@@ -633,7 +631,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, চালু করা হয়নি, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
 <translation id="5911887972742538906">Linux অ্যাপ্লিকেশন ইনস্টল করার সময়ে সমস্যা হয়েছে।</translation>
 <translation id="5912396950572065471">ফর্ম্যাট</translation>
-<translation id="5913638992615760742">কপি করা যায়নি, অপ্রত্যাশিত সমস্যা হয়েছে: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">নতুন সার্চ ফিচার উপলভ্য আছে</translation>
 <translation id="5926082595146149752">ডাচ (নেদারল্যান্ডস) ভাষায় ইউএস ইন্টারন্যাশনাল পিসি কীবোর্ড</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -641,7 +638,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />টি আইটেম</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">বাছাই বিকল্পগুলি</translation>
-<translation id="6007237601604674381">স্থানান্তরণ ব্যর্থ হয়েছে৷ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ইথারনেট নেটওয়ার্ক</translation>
 <translation id="60357267506638014">চেক QWERTY</translation>
 <translation id="603895874132768835">আপনি একটি নতুন পিন সেট আপ না করা পর্যন্ত এই নেটওয়ার্ক ব্যবহার করতে পারবেন না</translation>

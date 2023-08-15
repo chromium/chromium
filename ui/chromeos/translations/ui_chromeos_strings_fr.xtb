@@ -114,7 +114,6 @@
 <translation id="1920798810075583923">Pastèque</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> a bien été formaté</translation>
 <translation id="1931134289871235022">Slovaque</translation>
-<translation id="1933345018156373194">Échec du transfert en raison d'une erreur inattendue : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finnois</translation>
 <translation id="1942765061641586207">Résolution de l'image</translation>
 <translation id="1972984168337863910">Développer les panneaux de commentaires sur les fichiers</translation>
@@ -498,7 +497,6 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Impossible de terminer la configuration de la synchronisation des fichiers</translation>
 <translation id="4973523518332075481">Utilisez un nom comportant <ph name="MAX_LENGTH" /> caractères au maximum</translation>
-<translation id="4973970068702235170">Échec de la compression au format .zip, en raison d'une erreur inattendue : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonais</translation>
 <translation id="4987699874727873250">Anglais (Inde)</translation>
 <translation id="4988205478593450158">Voulez-vous vraiment supprimer "<ph name="FILE_NAME" />" ?</translation>
@@ -634,7 +632,6 @@
 <translation id="5896749729057314184">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, désactivé, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="5911887972742538906">Une erreur s'est produite lors de l'installation de votre application Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
-<translation id="5913638992615760742">Échec de l'opération de copie en raison d'une erreur inattendue : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Nouvelles options d'affichage disponibles dans les résultats de recherche</translation>
 <translation id="5926082595146149752">Néerlandais (Pays-Bas) avec clavier international américain (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -642,7 +639,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> éléments</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Options de tri</translation>
-<translation id="6007237601604674381">Échec du transfert. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Réseau Ethernet</translation>
 <translation id="60357267506638014">QWERTY tchèque</translation>
 <translation id="603895874132768835">Vous ne pourrez pas utiliser ce réseau tant que vous n'aurez pas défini un nouveau code PIN</translation>
