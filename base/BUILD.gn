@@ -4588,6 +4588,7 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/DisabledTest.java",
       "test/android/javatests/src/org/chromium/base/test/util/DoNotBatch.java",
       "test/android/javatests/src/org/chromium/base/test/util/DoNotRevive.java",
+      "test/android/javatests/src/org/chromium/base/test/util/DumpThreadsOnFailureRule.java",
       "test/android/javatests/src/org/chromium/base/test/util/EnormousTest.java",
       "test/android/javatests/src/org/chromium/base/test/util/Feature.java",
       "test/android/javatests/src/org/chromium/base/test/util/Features.java",

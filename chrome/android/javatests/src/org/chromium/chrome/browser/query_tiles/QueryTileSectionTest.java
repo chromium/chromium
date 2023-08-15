@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.query_tiles.ViewActions.scrollTo;
 
 import android.view.View;
 
+import androidx.test.espresso.IdlingPolicies;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DumpThreadsOnFailureRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,6 +47,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.components.query_tiles.TestTileProvider;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Tests for the query tiles section on new tab page.
  */
@@ -57,6 +61,9 @@ public class QueryTileSectionTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    // TODO(https://crbug.com/1469931) Remove after flakes are understood/fixed.
+    @Rule
+    public DumpThreadsOnFailureRule mDumpThreadsOnFailureRule = new DumpThreadsOnFailureRule();
 
     private Tab mTab;
     private TestTileProvider mTileProvider;
@@ -64,6 +71,11 @@ public class QueryTileSectionTest {
 
     @Before
     public void setUp() {
+        // Espresso defaults to 60 seconds, but this is often too long, as our tests cases are
+        // killed in a similar amount of time. Shorten this to make it more likely that we'll fail
+        // in Java, allowing our mDumpThreadsOnFailureRule to trigger.
+        IdlingPolicies.setMasterPolicyTimeout(10, TimeUnit.SECONDS);
+
         mTileProvider = new TestTileProvider(2 /* levels */, 8 /* count */);
         TileProviderFactory.setTileProviderForTesting(mTileProvider);
         mActivityTestRule.startMainActivityOnBlankPage();
