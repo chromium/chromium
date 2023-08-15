@@ -717,6 +717,13 @@ void DevToolsWindow::OpenExternalFrontend(
     std::string effective_frontend_url =
         use_bundled_frontend ? kFallbackFrontendURL
                              : DevToolsUI::GetProxyURL(frontend_url).spec();
+    if (type == "tab") {
+      if (effective_frontend_url.find("?") == std::string::npos) {
+        effective_frontend_url += "?targetType=tab";
+      } else {
+        effective_frontend_url += "&targetType=tab";
+      }
+    }
     window =
         Create(profile, nullptr, frontend_type, effective_frontend_url, false,
                std::string(), std::string(), agent_host->IsAttached(),

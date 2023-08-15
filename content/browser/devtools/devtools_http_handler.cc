@@ -607,14 +607,21 @@ void DevToolsHttpHandler::OnJsonRequest(
     DecompressAndSendJsonProtocol(connection_id);
     return;
   }
+  std::vector<base::StringPiece> query_components = base::SplitStringPiece(
+      query, "&", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  bool for_tab = base::Contains(query_components, "for_tab");
 
   if (command == "list") {
     DevToolsManager* manager = DevToolsManager::GetInstance();
     DevToolsAgentHost::List list =
-        manager->delegate() ? manager->delegate()->RemoteDebuggingTargets()
-                            : DevToolsAgentHost::GetOrCreateAll();
+        manager->delegate() ? manager->delegate()->RemoteDebuggingTargets(
+                                  for_tab ? DevToolsManagerDelegate::kTab
+                                          : DevToolsManagerDelegate::kFrame)
+            : DevToolsAgentHost::GetOrCreateAll();
+
     RespondToJsonList(connection_id, info.GetHeaderValue("host"),
-                      std::move(list));
+                      std::move(list), for_tab);
     return;
   }
 
@@ -629,8 +636,6 @@ void DevToolsHttpHandler::OnJsonRequest(
       return;
     }
 
-    std::vector<base::StringPiece> query_components = base::SplitStringPiece(
-        query, "&", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     base::StringPiece escaped_url =
         query_components.empty() ? "" : query_components[0];
     GURL url(base::UnescapeBinaryURLComponent(escaped_url));
@@ -638,8 +643,6 @@ void DevToolsHttpHandler::OnJsonRequest(
       url = GURL(url::kAboutBlankURL);
     // TODO(dsv): Remove for "for_tab" support once DevTools Frontend
     // no longer needs it for e2e tests
-    bool for_tab =
-        query_components.size() > 1 && query_components[1] == "for_tab";
     scoped_refptr<DevToolsAgentHost> agent_host = delegate_->CreateNewTarget(
         url, for_tab ? DevToolsManagerDelegate::kTab
                      : DevToolsManagerDelegate::kFrame);
@@ -709,18 +712,17 @@ void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 }
 
-void DevToolsHttpHandler::RespondToJsonList(
-    int connection_id,
-    const std::string& host,
-    DevToolsAgentHost::List hosts) {
+void DevToolsHttpHandler::RespondToJsonList(int connection_id,
+                                            const std::string& host,
+                                            DevToolsAgentHost::List hosts,
+                                            bool for_tab) {
   DevToolsAgentHost::List agent_hosts = std::move(hosts);
   std::sort(agent_hosts.begin(), agent_hosts.end(), TimeComparator);
   base::Value::List list_value;
   for (auto& agent_host : agent_hosts) {
-    // TODO(caseq): figure out if it makes sense exposing tab target to
-    // HTTP clients and potentially compatibility risks involved.
-    if (agent_host->GetType() != DevToolsAgentHost::kTypeTab)
+    if (agent_host->GetType() != DevToolsAgentHost::kTypeTab || for_tab) {
       list_value.Append(SerializeDescriptor(agent_host, host));
+    }
   }
   SendJson(connection_id, net::HTTP_OK, list_value, std::string());
 }

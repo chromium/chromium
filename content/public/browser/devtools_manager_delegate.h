@@ -48,9 +48,8 @@ class CONTENT_EXPORT DevToolsManagerDelegate {
   // https://docs.google.com/document/d/14aeiC_zga2SS0OXJd6eIFj8N0o5LGwUpuqa4L8NKoR4/
   enum TargetType { kFrame, kTab };
 
-  // Returns all targets embedder would like to report as debuggable
-  // remotely.
-  virtual DevToolsAgentHost::List RemoteDebuggingTargets();
+  // Returns all targets embedder would like to report as debuggable remotely.
+  virtual DevToolsAgentHost::List RemoteDebuggingTargets(TargetType target_type);
 
   // Creates new inspectable target given the |url|.
   virtual scoped_refptr<DevToolsAgentHost> CreateNewTarget(

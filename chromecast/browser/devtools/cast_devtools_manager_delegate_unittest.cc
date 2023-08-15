@@ -63,15 +63,17 @@ TEST_F(CastDevToolsManagerDelegateTest, TestSingletonGetter) {
 }
 
 TEST_F(CastDevToolsManagerDelegateTest, DisabledWebContents) {
-  TestDiscoveredTargets(WebContentsSet(),
-                        devtools_manager_delegate_->RemoteDebuggingTargets());
+    TestDiscoveredTargets(WebContentsSet(), 
+                          devtools_manager_delegate_->RemoteDebuggingTargets( 
+                              content::DevToolsManagerDelegate::kFrame));
 }
 
 TEST_F(CastDevToolsManagerDelegateTest, EnabledWebContents) {
   devtools_manager_delegate_->EnableWebContentsForDebugging(web_contents());
   WebContentsSet enabled_web_contents({web_contents()});
-  TestDiscoveredTargets(enabled_web_contents,
-                        devtools_manager_delegate_->RemoteDebuggingTargets());
+  TestDiscoveredTargets(enabled_web_contents, 
+                          devtools_manager_delegate_->RemoteDebuggingTargets( 
+                              content::DevToolsManagerDelegate::kFrame));
 }
 
 }  // namespace shell
