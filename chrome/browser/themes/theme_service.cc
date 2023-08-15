@@ -386,6 +386,33 @@ void ThemeService::UseSystemTheme() {
   UseDefaultTheme();
 }
 
+void ThemeService::UseDeviceTheme(bool follow) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // This toggle is currently only on ChromeOS and we only want platforms to set
+  // the value if they have a visible toggle.
+  profile_->GetPrefs()->SetBoolean(prefs::kBrowserFollowsSystemThemeColors,
+                                   follow);
+  NotifyThemeChanged();
+#endif
+}
+
+bool ThemeService::UsingDeviceTheme() const {
+#if BUILDFLAG(IS_CHROMEOS)
+  const PrefService::Preference* pref = profile_->GetPrefs()->FindPreference(
+      prefs::kBrowserFollowsSystemThemeColors);
+  // Ensure we respect previous theme settings for an unset follow theme
+  // value.
+  if (pref->IsDefaultValue() && (!GetIsBaseline() || UsingExtensionTheme())) {
+    return false;
+  }
+
+  return pref->GetValue()->GetBool();
+#else
+  // Only ChromeOS has this toggle.
+  return false;
+#endif
+}
+
 bool ThemeService::IsSystemThemeDistinctFromDefaultTheme() const {
   return false;
 }
@@ -596,6 +623,11 @@ void ThemeService::SetIsGrayscale(bool is_grayscale) {
 
 bool ThemeService::GetIsGrayscale() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kGrayscaleThemeEnabled);
+}
+
+bool ThemeService::GetIsBaseline() const {
+  // Baseline is represented as a missing user_color in prefs.
+  return !GetUserColor().has_value();
 }
 
 // static

@@ -189,6 +189,11 @@ class BrowserFrameColorProviderTest : public BrowserFrameTest,
     GetThemeService(profile)->SetIsGrayscale(is_grayscale);
   }
 
+  // Sets the `kBrowserFollowsSystemThemeColors` pref for `profile`.
+  void SetFollowDevice(Profile* profile, bool follow_device) {
+    GetThemeService(profile)->UseDeviceTheme(follow_device);
+  }
+
   // Sets the `kBrowserColorVariant` pref for the `profile`.
   void SetBrowserColorVariant(Profile* profile,
                               ui::mojom::BrowserColorVariant color_variant) {
@@ -215,6 +220,8 @@ class BrowserFrameColorProviderTest : public BrowserFrameTest,
 // Verifies the BrowserFrame honors the BrowserColorScheme pref.
 IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
                        TracksBrowserColorScheme) {
+  SetFollowDevice(profile(), false);
+
   // Assert the browser follows the system color scheme (i.e. the color scheme
   // set on the associated native theme)
   views::Widget* browser_frame = GetBrowserFrame(browser());
@@ -355,6 +362,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
 // Verifies the BrowserFrame's user_color tracks the is_grayscale theme pref.
 IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
                        BrowserFrameTracksIsGrayscale) {
+  SetFollowDevice(profile(), false);
+
   // Set the is_grayscale pref to true. The browser should honor this pref.
   views::Widget* browser_frame = GetBrowserFrame(browser());
   SetIsGrayscale(profile(), true);
@@ -370,6 +379,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
 
 IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
                        GrayscaleUsesBaselinePalette) {
+  SetFollowDevice(profile(), false);
+
   // Set native theme to an obviously different color.
   test_native_theme_.set_user_color(SK_ColorMAGENTA);
   test_native_theme_.set_scheme_variant(
@@ -378,12 +389,11 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
   views::Widget* browser_frame = GetBrowserFrame(browser());
   browser_frame->SetNativeThemeForTest(&test_native_theme_);
   SetIsGrayscale(profile(), true);
-  EXPECT_EQ(kGrayColor,
-            browser_frame->GetColorProvider()->GetColor(ui::kColorSysHeader));
 
-  SetIsGrayscale(profile(), false);
-  EXPECT_EQ(SK_ColorMAGENTA,
-            browser_frame->GetColorProvider()->GetColor(ui::kColorSysHeader));
+  // kTransparent is the default value for sys.secondary if the user_color is
+  // not specified.
+  EXPECT_EQ(kTransparentColor, browser_frame->GetColorProvider()->GetColor(
+                                   ui::kColorSysSecondary));
 }
 
 // Verifies incognito browsers always force is_grayscale.
@@ -410,6 +420,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
 // pref.
 IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
                        BrowserFrameTracksBrowserColorVariant) {
+  SetFollowDevice(profile(), false);
   using BCV = ui::mojom::BrowserColorVariant;
 
   // Set the scheme_variant pref to kSystem. The browser should honor this pref.
@@ -428,6 +439,68 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
         GetColorForSchemeVariant(GetSchemeVariant(color_variant)),
         browser_frame->GetColorProvider()->GetColor(ui::kColorSysSurface));
   }
+}
+
+// Verifies the BrowserFrame's ColorProviderKey tracks the kBrowserColorVariant
+// pref.
+IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest, UseDeviceIgnoresTheme) {
+  const SkColor native_theme_color = SK_ColorMAGENTA;
+  const SkColor theme_service_color = SK_ColorGREEN;
+
+  views::Widget* browser_frame = GetBrowserFrame(browser());
+  // Set native theme to an obviously different color.
+  ui::NativeTheme* native_theme = browser_frame->GetNativeTheme();
+  native_theme->set_user_color(native_theme_color);
+  native_theme->set_scheme_variant(
+      ui::ColorProviderKey::SchemeVariant::kVibrant);
+
+  // Set the color in `ThemeService`.
+  SetUserColor(profile(), theme_service_color);
+  // Prefer color from NativeTheme.
+  SetFollowDevice(profile(), true);
+
+  // Non-chromeos platforms ignore the follow device pref and use the user
+  // color.
+  EXPECT_EQ(BUILDFLAG(IS_CHROMEOS) ? native_theme_color : theme_service_color,
+            browser_frame->GetColorProvider()->GetColor(ui::kColorSysHeader));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Verify that that grayscale is ignored if UseDeviceTheme is true.
+IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
+                       UseDeviceThemeIgnoresGrayscale) {
+  views::Widget* browser_frame = GetBrowserFrame(browser());
+  // Set native theme to an obviously different color.
+  ui::NativeTheme* native_theme = browser_frame->GetNativeTheme();
+  native_theme->set_user_color(SK_ColorMAGENTA);
+  native_theme->set_scheme_variant(
+      ui::ColorProviderKey::SchemeVariant::kVibrant);
+
+  SetIsGrayscale(profile(), true);
+  // Prefer color from NativeTheme.
+  SetFollowDevice(profile(), true);
+
+  EXPECT_EQ(SK_ColorMAGENTA,
+            browser_frame->GetColorProvider()->GetColor(ui::kColorSysHeader));
+}
+#endif
+
+IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
+                       BaselineThemeIgnoresNativeThemeColor) {
+  views::Widget* browser_frame = GetBrowserFrame(browser());
+  // Set native theme to an obviously different color.
+  ui::NativeTheme* native_theme = browser_frame->GetNativeTheme();
+  native_theme->set_user_color(SK_ColorMAGENTA);
+  native_theme->set_scheme_variant(
+      ui::ColorProviderKey::SchemeVariant::kVibrant);
+
+  // Set the color in `ThemeService` to nullopt to indicate the Baseline theme.
+  SetUserColor(profile(), absl::nullopt);
+  // Prevent follow pref from overriding theme.
+  SetFollowDevice(profile(), false);
+
+  EXPECT_EQ(kBaselineColor,
+            browser_frame->GetColorProvider()->GetColor(ui::kColorSysHeader));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, BrowserFrameColorProviderTest, testing::Bool());
