@@ -66,7 +66,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/libxml/chromium/libxml_utils.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <fcntl.h>
@@ -833,10 +832,6 @@ class TestRunner {
   // |done|.
   void CleanupTask(base::ScopedTempDir task_temp_dir, bool done);
 
-  // No-op error function that replaces libxml's default, which writes to
-  // stderr.
-  static void NullXmlErrorFunc(void* context, const char* message, ...) {}
-
   ThreadChecker thread_checker_;
 
   const raw_ptr<TestLauncher> launcher_;
@@ -849,9 +844,6 @@ class TestRunner {
   // Protects member used concurrently by worker tasks.
   base::Lock lock_;
   std::vector<std::string> tests_to_run_ GUARDED_BY(lock_);
-  // Set the global libxml error context and function pointer for the lifetime
-  // of this test runner.
-  ScopedXmlErrorFunc xml_error_func_{nullptr, &NullXmlErrorFunc};
 
   base::WeakPtrFactory<TestRunner> weak_ptr_factory_{this};
 };

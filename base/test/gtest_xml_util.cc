@@ -12,9 +12,20 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_launcher.h"
+#include "third_party/libxml/chromium/libxml_utils.h"
 #include "third_party/libxml/chromium/xml_reader.h"
 
 namespace base {
+
+namespace {
+
+// No-op error handler that replaces libxml's default, which writes to stderr.
+// The test launcher's worker threads speculatively parse results XML to detect
+// timeouts in the processes they manage, so logging parsing errors could be
+// noisy (e.g., crbug.com/1466897).
+void NullXmlErrorFunc(void* context, const char* message, ...) {}
+
+}  // namespace
 
 struct Link {
   // The name of the test case.
@@ -53,6 +64,9 @@ bool ProcessGTestOutput(const base::FilePath& output_file,
   std::string xml_contents;
   if (!ReadFileToString(output_file, &xml_contents))
     return false;
+
+  // Silence XML errors - otherwise they go to stderr.
+  ScopedXmlErrorFunc error_func(nullptr, &NullXmlErrorFunc);
 
   XmlReader xml_reader;
   if (!xml_reader.Load(xml_contents))
