@@ -1212,8 +1212,6 @@ static_library("browser") {
     "policy/homepage_location_policy_handler.h",
     "policy/javascript_policy_handler.cc",
     "policy/javascript_policy_handler.h",
-    "policy/management_utils.cc",
-    "policy/management_utils.h",
     "policy/messaging_layer/public/report_client.cc",
     "policy/messaging_layer/public/report_client.h",
     "policy/messaging_layer/upload/dm_server_uploader.cc",

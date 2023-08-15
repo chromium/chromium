@@ -28,12 +28,12 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/device_api/managed_configuration_api.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
@@ -43,6 +43,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -244,10 +245,6 @@ bool IsProfileManaged(Profile* profile) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
-bool IsDeviceManaged() {
-  return policy::IsDeviceEnterpriseManaged();
-}
 
 enum class DeviceReportingType {
   kSupervisedUser,
@@ -614,7 +611,8 @@ void ManagementUIHandler::InitializeInternal(content::WebUI* web_ui,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   handler->account_managed_ = IsProfileManaged(profile);
-  handler->device_managed_ = IsDeviceManaged();
+  handler->device_managed_ =
+      policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
 #else
   handler->account_managed_ = IsProfileManaged(profile) || IsBrowserManaged();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1409,9 +1407,12 @@ void ManagementUIHandler::UpdateManagedState() {
   bool managed_state_changed = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   managed_state_changed |= account_managed_ != IsProfileManaged(profile);
-  managed_state_changed |= device_managed_ != IsDeviceManaged();
+  managed_state_changed |=
+      device_managed_ !=
+      policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
   account_managed_ = IsProfileManaged(profile);
-  device_managed_ = IsDeviceManaged();
+  device_managed_ =
+      policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
 #else
   managed_state_changed |=
       account_managed_ != (IsProfileManaged(profile) || IsBrowserManaged());

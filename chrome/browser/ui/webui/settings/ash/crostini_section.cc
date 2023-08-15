@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/policy/management_utils.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/ash/crostini_handler.h"
@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -213,7 +214,7 @@ bool IsProfileManaged(Profile* profile) {
 }
 
 bool IsDeviceManaged() {
-  return policy::IsDeviceEnterpriseManaged();
+  return policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
 }
 
 bool IsAdbSideloadingAllowed() {

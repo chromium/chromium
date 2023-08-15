@@ -27,7 +27,6 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"

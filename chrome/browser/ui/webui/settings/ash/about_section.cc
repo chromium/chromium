@@ -17,8 +17,8 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
-#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/settings/about_handler.h"
@@ -32,6 +32,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -406,7 +407,8 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString("deviceManager", GetDeviceManager());
 
   if (user_manager::UserManager::IsInitialized()) {
-    bool is_enterprise_managed = policy::IsDeviceEnterpriseManaged();
+    bool is_enterprise_managed =
+        policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
     bool is_current_owner = user_manager->IsCurrentUserOwner();
 
@@ -447,8 +449,9 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       base::ASCIIToUTF16(chrome::kChromeUICrostiniCreditsURL));
   html_source->AddString("aboutProductOsWithLinuxLicense",
                          os_with_linux_license);
-  html_source->AddBoolean("aboutEnterpriseManaged",
-                          policy::IsDeviceEnterpriseManaged());
+  html_source->AddBoolean(
+      "aboutEnterpriseManaged",
+      policy::ManagementServiceFactory::GetForPlatform()->IsManaged());
   html_source->AddBoolean("aboutIsArcEnabled",
                           arc::IsArcPlayStoreEnabledForProfile(profile()));
   html_source->AddBoolean("aboutIsDeveloperMode",

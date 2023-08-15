@@ -27,7 +27,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/policy/management_utils.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -40,6 +40,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -119,7 +120,7 @@ std::u16string GetAllowedConnectionTypesMessage() {
 
 // Returns true if current user can change channel, false otherwise.
 bool CanChangeChannel(Profile* profile) {
-  if (policy::IsDeviceEnterpriseManaged()) {
+  if (policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
     bool value = false;
     // On a managed machine we delegate this setting to the affiliated users
     // only if the policy value is true.

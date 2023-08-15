@@ -24,7 +24,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"

@@ -18,8 +18,8 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
@@ -37,6 +37,7 @@
 #include "chrome/grit/support_tool_resources.h"
 #include "chrome/grit/support_tool_resources_map.h"
 #include "components/feedback/redaction_tool/pii_types.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
@@ -551,5 +552,6 @@ base::Value::Dict SupportToolUI::GetLocalizedStrings() {
 
 // static
 bool SupportToolUI::IsEnabled(Profile* profile) {
-  return policy::IsDeviceEnterpriseManaged() || !profile->IsGuestSession();
+  return policy::ManagementServiceFactory::GetForPlatform()->IsManaged() ||
+         !profile->IsGuestSession();
 }
