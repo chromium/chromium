@@ -639,9 +639,7 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
     // A menu item could have something other than a role of
     // |ROLE_SYSTEM_MENUITEM|. Zoom modification controls for example have a
     // role of button.
-    auto* parent = GetParentPlatformNodeWin();
-    int role = MSAARole();
-    if (role == ROLE_SYSTEM_MENUITEM) {
+    if (int role = MSAARole(); role == ROLE_SYSTEM_MENUITEM) {
       event_type = ax::mojom::Event::kFocus;
     } else if (role == ROLE_SYSTEM_LISTITEM) {
       if (const AXPlatformNodeBase* container = GetSelectionContainer()) {
@@ -651,9 +649,9 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
           event_type = ax::mojom::Event::kFocus;
         }
       }
-    } else if (parent) {
-      int parent_role = parent->MSAARole();
-      if (parent_role == ROLE_SYSTEM_MENUPOPUP ||
+    } else if (auto* parent = GetParentPlatformNodeWin(); parent) {
+      if (int parent_role = parent->MSAARole();
+          parent_role == ROLE_SYSTEM_MENUPOPUP ||
           parent_role == ROLE_SYSTEM_LIST) {
         event_type = ax::mojom::Event::kFocus;
       }
