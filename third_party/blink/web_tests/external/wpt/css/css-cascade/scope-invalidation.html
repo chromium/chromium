@@ -562,3 +562,158 @@ test_scope_invalidation(document.currentScript, () => {
   assert_not_green(inner_a);
 }, ':not(scope) in limit ancestor');
 </script>
+
+<template>
+  <style>
+    @scope (:nth-child(2n of .a)) {
+      :scope { background-color: green; }
+    }
+  </style>
+  <div id=wrapper>
+    <div class=a></div>
+    <div></div>
+    <div class=a></div>
+    <div></div>
+    <div class=a></div>
+    <div></div>
+    <div class=a></div>
+    <div></div>
+  </div>
+</template>
+<script>
+test_scope_invalidation(document.currentScript, () => {
+  let e = main.querySelectorAll('#wrapper > div');
+  assert_equals(e.length, 8);
+
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>
+  // <div></div>
+  assert_not_green(e[0]);
+  assert_not_green(e[1]);
+  assert_green(e[2]);
+  assert_not_green(e[3]);
+  assert_not_green(e[4]);
+  assert_not_green(e[5]);
+  assert_green(e[6]);
+  assert_not_green(e[7]);
+
+  e[1].classList.add('a');
+  // <div class=a></div>
+  // <div class=a></div>
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>
+  // <div></div>
+  assert_not_green(e[0]);
+  assert_green(e[1]);
+  assert_not_green(e[2]);
+  assert_not_green(e[3]);
+  assert_green(e[4]);
+  assert_not_green(e[5]);
+  assert_not_green(e[6]);
+  assert_not_green(e[7]);
+
+  e[1].classList.remove('a');
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>
+  // <div></div>
+  assert_not_green(e[0]);
+  assert_not_green(e[1]);
+  assert_green(e[2]);
+  assert_not_green(e[3]);
+  assert_not_green(e[4]);
+  assert_not_green(e[5]);
+  assert_green(e[6]);
+  assert_not_green(e[7]);
+}, ':nth-child() in scope root');
+</script>
+
+<template>
+  <style>
+    @scope (#wrapper) to (:nth-child(4n of .a)) {
+      div { background-color: green; }
+    }
+  </style>
+  <div id=wrapper>
+    <div class=a></div>
+    <div></div>
+    <div class=a></div>
+    <div></div>
+    <div class=a></div>
+    <div></div>
+    <div class=a></div>
+    <div></div>
+  </div>
+</template>
+<script>
+test_scope_invalidation(document.currentScript, () => {
+  let e = main.querySelectorAll('#wrapper > div');
+  assert_equals(e.length, 8);
+
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>  <= limit
+  // <div></div>
+  assert_green(e[0]);
+  assert_green(e[1]);
+  assert_green(e[2]);
+  assert_green(e[3]);
+  assert_green(e[4]);
+  assert_green(e[5]);
+  assert_not_green(e[6]);
+  assert_green(e[7]);
+
+  e[1].classList.add('a');
+  // <div class=a></div>
+  // <div class=a></div>
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>  <= limit
+  // <div></div>
+  // <div class=a></div>
+  // <div></div>
+  assert_green(e[0]);
+  assert_green(e[1]);
+  assert_green(e[2]);
+  assert_green(e[3]);
+  assert_not_green(e[4]);
+  assert_green(e[5]);
+  assert_green(e[6]);
+  assert_green(e[7]);
+
+  e[1].classList.remove('a');
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>
+  // <div></div>
+  // <div class=a></div>  <= limit
+  // <div></div>
+  assert_green(e[0]);
+  assert_green(e[1]);
+  assert_green(e[2]);
+  assert_green(e[3]);
+  assert_green(e[4]);
+  assert_green(e[5]);
+  assert_not_green(e[6]);
+  assert_green(e[7]);
+}, ':nth-child() in scope limit');
+
+</script>
