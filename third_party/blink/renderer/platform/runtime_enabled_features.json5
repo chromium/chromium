@@ -1752,6 +1752,12 @@
       base_feature: "none",
     },
     {
+      // Kill switch for crbug.com/1420810 fix
+      // TODO(xiaochengh): Remove after M122.
+      name: "FlushParserBeforeCreatingCustomElements",
+      status: "stable",
+    },
+    {
       name: "Focusgroup",
       status: "experimental",
       base_feature: "none",
