@@ -960,6 +960,10 @@ const char kShutdownNumProcesses[] = "shutdown.num_processes";
 const char kShutdownNumProcessesSlow[] = "shutdown.num_processes_slow";
 const char kShutdownType[] = "shutdown.type";
 
+// Deprecated 08/2023.
+const char kDriveFsBulkPinningMaxQueueSize[] =
+    "drivefs.bulk_pinning.max_queue_size";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1389,6 +1393,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kHatsPrivacyHubBaselineIsSelected, false);
   registry->RegisterIntegerPref(kHatsPrivacyHubBaselineCycleEndTs, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 08/2023.
+  registry->RegisterIntegerPref(kDriveFsBulkPinningMaxQueueSize, 0);
 }
 
 }  // namespace
@@ -2590,6 +2597,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   invalidation::PerUserTopicSubscriptionManager::ClearDeprecatedPrefs(
       profile_prefs);
   invalidation::FCMInvalidationService::ClearDeprecatedPrefs(profile_prefs);
+
+  // Added 08/2023.
+  profile_prefs->ClearPref(kDriveFsBulkPinningMaxQueueSize);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

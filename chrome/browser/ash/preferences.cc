@@ -282,10 +282,6 @@ void Preferences::RegisterProfilePrefs(
   // devices.
   registry->RegisterBooleanPref(drive::prefs::kDriveFsBulkPinningEnabled,
                                 false);
-  // Do not sync kDriveFsBulkPinningMaxQueueSize as the queue size is set
-  // per-device and should not sync the state across multiple devices.
-  registry->RegisterIntegerPref(drive::prefs::kDriveFsBulkPinningMaxQueueSize,
-                                5);
   // We don't sync ::prefs::kLanguageCurrentInputMethod and PreviousInputMethod
   // because they're just used to track the logout state of the device.
   registry->RegisterStringPref(::prefs::kLanguageCurrentInputMethod, "");
