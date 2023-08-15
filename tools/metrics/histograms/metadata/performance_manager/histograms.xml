@@ -35,7 +35,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.DatabaseInit"
-    enum="LocalSiteCharacteristicsDBInitStatus" expires_after="2023-09-28">
+    enum="LocalSiteCharacteristicsDBInitStatus" expires_after="2023-12-28">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -46,7 +46,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.DatabaseInitAfterDelete"
-    enum="LocalSiteCharacteristicsDBInitStatus" expires_after="2023-09-28">
+    enum="LocalSiteCharacteristicsDBInitStatus" expires_after="2023-12-28">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -57,7 +57,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.DatabaseInitAfterRepair"
-    enum="LocalSiteCharacteristicsDBInitStatus" expires_after="2023-09-28">
+    enum="LocalSiteCharacteristicsDBInitStatus" expires_after="2023-12-28">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -69,7 +69,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.DatabaseRepair"
-    enum="BooleanSuccess" expires_after="2023-09-28">
+    enum="BooleanSuccess" expires_after="2023-12-28">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -81,7 +81,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.SiteDB.ObservationTimeBeforeFirstUse.{Feature}"
-    units="ms" expires_after="2023-09-28">
+    units="ms" expires_after="2023-12-28">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -97,7 +97,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.OnDiskSize" units="KB"
-    expires_after="2023-09-28">
+    expires_after="2023-12-28">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -108,7 +108,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.ReadHasCompletedBeforeQuery"
-    enum="Boolean" expires_after="2023-09-28">
+    enum="Boolean" expires_after="2023-12-28">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
