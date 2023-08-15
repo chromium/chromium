@@ -50,6 +50,7 @@ android_resources("java_resources") {
     "java/res/drawable/baseline_more_horiz_24.xml",
     "java/res/drawable/baseline_replay_10_24.xml",
     "java/res/drawable/forward_30_button.xml",
+    "java/res/drawable/mini_play_button.xml",
     "java/res/drawable/pause_button.xml",
     "java/res/drawable/play_button.xml",
     "java/res/drawable/primary_gray_rounded.xml",

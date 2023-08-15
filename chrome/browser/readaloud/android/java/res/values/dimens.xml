@@ -6,15 +6,25 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Expanded player -->
+    <!-- Shared -->
+    <dimen name="readaloud_close_button_size">24dp</dimen>
 
+    <!-- Mini player -->
+    <dimen name="readaloud_mini_player_top_shadow_height">8dp</dimen>
+    <dimen name="readaloud_mini_player_margin_horizontal">16dp</dimen>
+    <dimen name="readaloud_mini_player_play_button_diameter">44dp</dimen>
+    <dimen name="readaloud_mini_player_play_button_margin_vertical">12dp</dimen>
+    <dimen name="readaloud_mini_player_play_button_margin_right">12dp</dimen>
+    <dimen name="readaloud_mini_player_close_button_margin_vertical">22dp</dimen>
+    <dimen name="readaloud_mini_player_progress_bar_height">4dp</dimen>
+
+    <!-- Expanded player -->
     <!-- Overall margins -->
     <dimen name="readaloud_expanded_player_margin_horizontal">24dp</dimen>
     <dimen name="readaloud_expanded_player_margin_bottom">12dp</dimen>
 
     <!-- Header -->
     <dimen name="readaloud_sheet_drag_bar_margin">8dp</dimen>
-    <dimen name="readaloud_close_button_size">24dp</dimen>
     <dimen name="readaloud_close_button_margin">12dp</dimen>
     <dimen name="readaloud_now_playing_spacing">20dp</dimen>
 

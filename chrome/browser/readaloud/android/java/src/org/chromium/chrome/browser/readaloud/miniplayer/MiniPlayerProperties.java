@@ -15,5 +15,10 @@ public class MiniPlayerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View.OnClickListener> ON_CLOSE_CLICK_KEY =
             new WritableObjectPropertyKey<>();
-    public static final PropertyKey[] ALL_KEYS = {VIEW_VISIBILITY_KEY, ON_CLOSE_CLICK_KEY};
+    public static final WritableObjectPropertyKey<String> TITLE_KEY =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> PUBLISHER_KEY =
+            new WritableObjectPropertyKey<>();
+    public static final PropertyKey[] ALL_KEYS = {
+            VIEW_VISIBILITY_KEY, ON_CLOSE_CLICK_KEY, TITLE_KEY, PUBLISHER_KEY};
 }

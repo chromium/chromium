@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,10 @@ public class MiniPlayerCoordinatorUnitTest {
     private LinearLayout mView;
     @Mock
     private ImageView mCloseButton;
+    @Mock
+    private TextView mTitleView;
+    @Mock
+    private TextView mPublisherView;
 
     private MiniPlayerCoordinator mCoordinator;
 
@@ -45,6 +50,8 @@ public class MiniPlayerCoordinatorUnitTest {
         doReturn(mCloseButton)
                 .when(mView)
                 .findViewById(eq(R.id.readaloud_mini_player_close_button));
+        doReturn(mTitleView).when(mView).findViewById(eq(R.id.readaloud_mini_player_title));
+        doReturn(mPublisherView).when(mView).findViewById(eq(R.id.readaloud_mini_player_publisher));
         mCoordinator = new MiniPlayerCoordinator(mViewStub);
     }
 

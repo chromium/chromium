@@ -31,6 +31,8 @@ public class MiniPlayerCoordinator {
             mLayout = (LinearLayout) mViewStub.inflate();
             mModel = new PropertyModel.Builder(MiniPlayerProperties.ALL_KEYS)
                              .with(MiniPlayerProperties.VIEW_VISIBILITY_KEY, View.GONE)
+                             .with(MiniPlayerProperties.TITLE_KEY, "Title")
+                             .with(MiniPlayerProperties.PUBLISHER_KEY, "Publisher")
                              .build();
             mModelChangeProcessor = PropertyModelChangeProcessor.create(
                     mModel, mLayout, MiniPlayerViewBinder::bind);

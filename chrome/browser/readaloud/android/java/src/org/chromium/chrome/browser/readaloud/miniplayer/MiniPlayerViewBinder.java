@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.readaloud.miniplayer;
 
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.chromium.chrome.browser.readaloud.R;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -22,6 +23,12 @@ public class MiniPlayerViewBinder {
         } else if (key == MiniPlayerProperties.ON_CLOSE_CLICK_KEY) {
             view.findViewById(R.id.readaloud_mini_player_close_button)
                     .setOnClickListener(model.get(MiniPlayerProperties.ON_CLOSE_CLICK_KEY));
+        } else if (key == MiniPlayerProperties.TITLE_KEY) {
+            ((TextView) view.findViewById(R.id.readaloud_mini_player_title))
+                    .setText(model.get(MiniPlayerProperties.TITLE_KEY));
+        } else if (key == MiniPlayerProperties.PUBLISHER_KEY) {
+            ((TextView) view.findViewById(R.id.readaloud_mini_player_publisher))
+                    .setText(model.get(MiniPlayerProperties.PUBLISHER_KEY));
         }
     }
 }
