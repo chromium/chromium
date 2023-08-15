@@ -18,9 +18,11 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
@@ -93,8 +95,13 @@ AttributionOsLevelManagerAndroid::AttributionOsLevelManagerAndroid() {
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
 
   if (AttributionOsLevelManager::ShouldInitializeApiState()) {
+    base::ElapsedThreadTimer timer;
     Java_AttributionOsLevelManager_getMeasurementApiStatus(
         base::android::AttachCurrentThread(), jobj_);
+    if (timer.is_supported()) {
+      base::UmaHistogramTimes("Conversions.GetMeasurementStatusTime",
+                              timer.Elapsed());
+    }
   }
 }
 

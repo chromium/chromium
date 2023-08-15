@@ -3823,6 +3823,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.GetMeasurementStatusTime" units="ms"
+    expires_after="M121">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time it took to go througth JNI to invoke Android API to get
+    measurement status. Only recorded on Android when the
+    AttributionReportingCrossAppWeb feature is enabled. Recorded once per
+    browser session when the browser starts up. Only recorded if
+    base::ThreadTicks is suppported.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.HttpResponseOrNetErrorCodeAggregatable"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="M121">
   <owner>anthonygarant@chromium.org</owner>
