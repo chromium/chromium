@@ -320,7 +320,7 @@ public class BookmarkToolbarMediatorTest {
         doReturn(true).when(mBookmarkItem).isFolder();
         assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
                            .apply(R.id.selection_mode_edit_menu_id));
-        verifyActivityLaunched(BookmarkAddEditFolderActivity.class);
+        verifyActivityLaunched(BookmarkEditActivity.class);
     }
 
     @Test

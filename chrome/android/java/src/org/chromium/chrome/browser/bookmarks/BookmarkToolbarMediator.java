@@ -141,7 +141,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
             List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
             assert list.size() == 1;
             BookmarkItem item = mBookmarkModel.getBookmarkById(list.get(0));
-            if (item.isFolder()) {
+            if (item.isFolder() && !BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
                 BookmarkAddEditFolderActivity.startEditFolderActivity(mContext, item.getId());
             } else {
                 BookmarkUtils.startEditActivity(mContext, item.getId());
