@@ -2824,7 +2824,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestRawHeadersWithRedirectAndHSTS) {
+// TODO(crbug.com/1471349): The bug is flaky on chromeos (mostly dbg).
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TestRawHeadersWithRedirectAndHSTS \
+  DISABLED_TestRawHeadersWithRedirectAndHSTS
+#else
+#define MAYBE_TestRawHeadersWithRedirectAndHSTS \
+  TestRawHeadersWithRedirectAndHSTS
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestRawHeadersWithRedirectAndHSTS) {
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(
