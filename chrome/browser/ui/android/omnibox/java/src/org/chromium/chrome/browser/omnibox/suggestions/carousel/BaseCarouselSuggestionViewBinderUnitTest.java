@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.content.res.Resources;
 
-import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -232,14 +231,6 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
         mModel.set(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE, false);
         Assert.assertFalse(mView.isHorizontalFadingEdgeEnabled());
-    }
-
-    @Test
-    public void recyclerView_setRecycledViewPool() {
-        createMVCForTest();
-        RecycledViewPool testRecycledViewPool = new RecycledViewPool();
-        mModel.set(BaseCarouselSuggestionViewProperties.RECYCLED_VIEW_POOL, testRecycledViewPool);
-        Assert.assertEquals(testRecycledViewPool, mView.getRecycledViewPool());
     }
 
     @Test

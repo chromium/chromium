@@ -331,8 +331,6 @@ public abstract class ChromeFeatureList {
     public static final String OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR =
             "OmniboxMatchToolbarAndStatusBarColor";
     public static final String OMNIBOX_MODERNIZE_VISUAL_UPDATE = "OmniboxModernizeVisualUpdate";
-    public static final String OMNIBOX_MOST_VISITED_TILES_ADD_RECYCLED_VIEW_POOL =
-            "OmniboxMostVisitedTilesAddRecycledViewPool";
 
     public static final String OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS =
             "OmniboxNoopEditUrlSuggestionClicks";
@@ -559,8 +557,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR, false);
     public static final CachedFlag sOmniboxModernizeVisualUpdate =
             new CachedFlag(OMNIBOX_MODERNIZE_VISUAL_UPDATE, false);
-    public static final CachedFlag sOmniboxMostVisitedTilesAddRecycledViewPool =
-            new CachedFlag(OMNIBOX_MOST_VISITED_TILES_ADD_RECYCLED_VIEW_POOL, false);
     public static final CachedFlag sOptimizationGuidePushNotifications =
             new CachedFlag(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false);
     public static final CachedFlag sPaintPreviewDemo = new CachedFlag(PAINT_PREVIEW_DEMO, false);
@@ -648,7 +644,6 @@ public abstract class ChromeFeatureList {
         sPrivacyGuidePostMVP,
         sOmniboxMatchToolbarAndStatusBarColor,
         sOmniboxModernizeVisualUpdate,
-        sOmniboxMostVisitedTilesAddRecycledViewPool,
         sOptimizationGuidePushNotifications,
         sPaintPreviewDemo,
         sQueryTiles,

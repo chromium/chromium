@@ -158,13 +158,6 @@ public class OmniboxFeatures {
         return ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled();
     }
 
-    /**
-     * Returns whether we need to add a RecycledViewPool to MostVisitedTiles.
-     */
-    public static boolean shouldAddMostVisitedTilesRecycledViewPool() {
-        return ChromeFeatureList.sOmniboxMostVisitedTilesAddRecycledViewPool.isEnabled();
-    }
-
     /** Whether Journeys suggestions should be shown as an action chip. */
     public static boolean isJourneysActionChipEnabled() {
         return sJourneysActionChipFlag.isEnabled();

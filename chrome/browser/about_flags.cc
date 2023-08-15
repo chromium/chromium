@@ -5878,12 +5878,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxModernizeVisualUpdateVariations,
                                     "OmniboxModernizeVisualUpdate")},
 
-    {"omnibox-most-visited-tiles-add-recycled-view-poll",
-     flag_descriptions::kOmniboxMostVisitedTilesAddRecycledViewPoolName,
-     flag_descriptions::kOmniboxMostVisitedTilesAddRecycledViewPoolDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxMostVisitedTilesAddRecycledViewPool)},
-
     {"omnibox-suppress-clipboard-suggestion-after-first-used",
      flag_descriptions::kOmniboxSuppressClipboardSuggestionAfterFirstUsedName,
      flag_descriptions::

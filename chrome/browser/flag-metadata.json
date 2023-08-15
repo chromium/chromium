@@ -6031,11 +6031,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-most-visited-tiles-add-recycled-view-poll",
-    "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "omnibox-most-visited-tiles-on-srp",
     "owners": [ "stkhapugin", "ender", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

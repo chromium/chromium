@@ -10,10 +10,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -41,21 +39,10 @@ import java.util.List;
  * SuggestionProcessor for Most Visited URL tiles.
  */
 public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
-    /**
-     * RecyclerView pool that adds the max recycled view for the most visited tile carousel and
-     * avoid re-creating views until we're sure we won't be needing them.
-     */
-    private class MostVisitedTilesRecycledViewPool extends RecycledViewPool {
-        public MostVisitedTilesRecycledViewPool() {
-            setMaxRecycledViews(OmniboxSuggestionUiType.DEFAULT, 10);
-        }
-    }
-
     private final @NonNull Context mContext;
     private final @NonNull SuggestionHost mSuggestionHost;
     private final @Nullable OmniboxImageSupplier mImageSupplier;
     private final int mMinCarouselItemViewHeight;
-    private @Nullable RecycledViewPool mMostVisitedTilesRecycledViewPool;
     private boolean mEnableOrganicRepeatableQueries;
 
     /**
@@ -101,12 +88,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
         mEnableOrganicRepeatableQueries =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES);
-
-        // Initialize a recycled view pool for the most visited tiles carousel to reduce unnecessary
-        // fetching and jankiness.
-        if (OmniboxFeatures.shouldAddMostVisitedTilesRecycledViewPool()) {
-            mMostVisitedTilesRecycledViewPool = new MostVisitedTilesRecycledViewPool();
-        }
     }
 
     @Override
@@ -187,20 +168,5 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
         }
 
         model.set(BaseCarouselSuggestionViewProperties.TILES, tileList);
-        model.set(BaseCarouselSuggestionViewProperties.RECYCLED_VIEW_POOL,
-                mMostVisitedTilesRecycledViewPool);
-    }
-
-    /**
-     * Respond to URL bar focus change.
-     *
-     * @param hasFocus Indicates whether URL bar is now focused.
-     */
-    @Override
-    public void onUrlFocusChange(boolean hasFocus) {
-        // Clear the Recycled View Pool when the omnibox loses focus.
-        if (!hasFocus && mMostVisitedTilesRecycledViewPool != null) {
-            mMostVisitedTilesRecycledViewPool.clear();
-        }
     }
 }
