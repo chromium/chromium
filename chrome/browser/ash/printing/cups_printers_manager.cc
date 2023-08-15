@@ -230,17 +230,6 @@ class CupsPrintersManagerImpl
   }
 
   // Public API function.
-  void PrinterInstalled(const Printer& printer, bool is_automatic) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-    if (!user_printers_allowed_.GetValue()) {
-      LOG(WARNING) << "PrinterInstalled() called when "
-                      "UserPrintersAllowed is  set to false";
-      return;
-    }
-    MaybeRecordInstallation(printer, is_automatic);
-  }
-
-  // Public API function.
   bool IsPrinterInstalled(const Printer& printer) const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     const auto found = installed_printer_fingerprints_.find(printer.id());
@@ -343,6 +332,7 @@ class CupsPrintersManagerImpl
   }
 
   void SetUpPrinter(const chromeos::Printer& printer,
+                    bool is_automatic_installation,
                     PrinterSetupCallback callback) override {
     // Check if the printer is currently set up.
     if (IsPrinterInstalled(printer)) {
@@ -368,7 +358,8 @@ class CupsPrintersManagerImpl
       printers_being_setup_[id].configurer->SetUpPrinterInCups(
           printer,
           base::BindOnce(&CupsPrintersManagerImpl::OnPrinterSetupResult,
-                         weak_ptr_factory_.GetWeakPtr(), id));
+                         weak_ptr_factory_.GetWeakPtr(), id,
+                         is_automatic_installation));
     }
   }
 
@@ -852,6 +843,7 @@ class CupsPrintersManagerImpl
 
   // Callback for `SetUpPrinterInCups`.
   void OnPrinterSetupResult(const std::string& printer_id,
+                            bool is_automatic_installation,
                             PrinterSetupResult result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
 
@@ -861,6 +853,19 @@ class CupsPrintersManagerImpl
 
     if (result == PrinterSetupResult::kSuccess) {
       installed_printer_fingerprints_[printer_id] = it->second.fingerprint;
+      // TODO: b/295243026 - Solve this issue during metrics clean-up.
+      // We check this condition before calling MaybeRecordInstallation() to
+      // make it backward compatible with the state before crrev.com/c/4763464.
+      // MaybeRecordInstallation() is used only for reporting and changing the
+      // condition below may have significant influence on some metrics.
+      // The better solution would be, instead of checking this flag, to NOT
+      // record events for server and enterprise printers.
+      if (user_printers_allowed_.GetValue()) {
+        absl::optional<chromeos::Printer> printer = printers_.Get(printer_id);
+        if (printer) {
+          MaybeRecordInstallation(*printer, is_automatic_installation);
+        }
+      }
     }
 
     std::vector<PrinterSetupCallback> callbacks =

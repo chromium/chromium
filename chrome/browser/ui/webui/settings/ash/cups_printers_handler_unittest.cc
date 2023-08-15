@@ -297,8 +297,8 @@ TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
 
   Printer printer("id");
   printers_manager_.SavePrinter(printer);
-  printers_manager_.SetUpPrinter(printer, base::DoNothing());
-  printers_manager_.PrinterInstalled(printer, /*is_automatic=*/true);
+  printers_manager_.SetUpPrinter(printer, /*is_automatic_installation=*/true,
+                                 base::DoNothing());
 
   const std::string remove_list = R"(
     [")" + printer.id() + R"(", "Test Printer 1"]

@@ -107,12 +107,11 @@ class CupsPrintersManager : public PrinterInstallationManager,
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // Implementation of PrinterInstallationManager interface.
-  void PrinterInstalled(const chromeos::Printer& printer,
-                        bool is_automatic) override = 0;
   bool IsPrinterInstalled(const chromeos::Printer& printer) const override = 0;
   void PrinterIsNotAutoconfigurable(const chromeos::Printer& printer) override =
       0;
   void SetUpPrinter(const chromeos::Printer& printer,
+                    bool is_automatic_installation,
                     PrinterSetupCallback callback) override = 0;
   void UninstallPrinter(const std::string& printer_id) override = 0;
 

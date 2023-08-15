@@ -40,7 +40,6 @@ class CupsProxyServiceDelegate {
       const std::string& id) = 0;
   virtual std::vector<std::string> GetRecentlyUsedPrinters() = 0;
   virtual bool IsPrinterInstalled(const chromeos::Printer& printer) = 0;
-  virtual void PrinterInstalled(const chromeos::Printer& printer) = 0;
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() = 0;
 
   // |cb| will be run on this delegate's sequenced context.

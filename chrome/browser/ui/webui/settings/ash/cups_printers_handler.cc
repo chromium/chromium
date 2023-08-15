@@ -424,8 +424,7 @@ void CupsPrintersHandler::HandleUpdateCupsPrinter(
     PRINTER_LOG(DEBUG) << "HandleUpdateCupsPrinter() called when "
                           "kUserPrintersAllowed is set to false";
     OnAddedOrEditedPrinterCommon(printer,
-                                 PrinterSetupResult::kNativePrintersNotAllowed,
-                                 false /* is_automatic */);
+                                 PrinterSetupResult::kNativePrintersNotAllowed);
     // Logs the error and runs the callback.
     OnAddOrEditPrinterError(callback_id,
                             PrinterSetupResult::kNativePrintersNotAllowed);
@@ -687,7 +686,7 @@ void CupsPrintersHandler::OnAutoconfQueriedDiscovered(
       PRINTER_LOG(DEBUG) << "Performing autoconf setup";
       printer.mutable_ppd_reference()->autoconf = true;
       printers_manager_->SetUpPrinter(
-          printer,
+          printer, /*is_automatic_installation=*/true,
           base::BindOnce(&CupsPrintersHandler::OnAddedDiscoveredPrinter,
                          weak_factory_.GetWeakPtr(), callback_id, printer));
       return;
@@ -806,8 +805,7 @@ void CupsPrintersHandler::AddOrReconfigurePrinter(const base::Value::List& args,
     PRINTER_LOG(DEBUG) << "AddOrReconfigurePrinter() called when "
                           "kUserPrintersAllowed is set to false";
     OnAddedOrEditedPrinterCommon(*printer,
-                                 PrinterSetupResult::kNativePrintersNotAllowed,
-                                 false /* is_automatic */);
+                                 PrinterSetupResult::kNativePrintersNotAllowed);
     // Used to fire the web UI listener.
     OnAddOrEditPrinterError(callback_id,
                             PrinterSetupResult::kNativePrintersNotAllowed);
@@ -886,6 +884,7 @@ void CupsPrintersHandler::AddOrReconfigurePrinter(const base::Value::List& args,
 
   printers_manager_->SetUpPrinter(
       *printer,
+      /*is_automatic_installation=*/false,
       base::BindOnce(&CupsPrintersHandler::OnAddedOrEditedSpecifiedPrinter,
                      weak_factory_.GetWeakPtr(), callback_id, *printer,
                      is_printer_edit));
@@ -893,8 +892,7 @@ void CupsPrintersHandler::AddOrReconfigurePrinter(const base::Value::List& args,
 
 void CupsPrintersHandler::OnAddedOrEditedPrinterCommon(
     const Printer& printer,
-    PrinterSetupResult result_code,
-    bool is_automatic) {
+    PrinterSetupResult result_code) {
   if (printer.IsZeroconf()) {
     UMA_HISTOGRAM_ENUMERATION("Printing.CUPS.ZeroconfPrinterSetupResult",
                               result_code, PrinterSetupResult::kMaxValue);
@@ -908,7 +906,6 @@ void CupsPrintersHandler::OnAddedOrEditedPrinterCommon(
       UMA_HISTOGRAM_ENUMERATION("Printing.CUPS.PrinterAdded",
                                 printer.GetProtocol(), Printer::kProtocolMax);
       PRINTER_LOG(USER) << "Performing printer setup";
-      printers_manager_->PrinterInstalled(printer, is_automatic);
       printers_manager_->SavePrinter(printer);
       if (printer.IsUsbProtocol()) {
         // Record UMA for USB printer setup source.
@@ -953,7 +950,7 @@ void CupsPrintersHandler::OnAddedDiscoveredPrinter(
     const std::string& callback_id,
     const Printer& printer,
     PrinterSetupResult result_code) {
-  OnAddedOrEditedPrinterCommon(printer, result_code, /*is_automatic=*/true);
+  OnAddedOrEditedPrinterCommon(printer, result_code);
   if (result_code == PrinterSetupResult::kSuccess) {
     ResolveJavascriptCallback(base::Value(callback_id),
                               base::Value(static_cast<int>(result_code)));
@@ -976,7 +973,7 @@ void CupsPrintersHandler::OnAddedOrEditedSpecifiedPrinter(
   }
   const int result_code_int = static_cast<int>(result_code);
   PRINTER_LOG(EVENT) << "Add/Update manual printer: " << result_code_int;
-  OnAddedOrEditedPrinterCommon(printer, result_code, /*is_automatic=*/false);
+  OnAddedOrEditedPrinterCommon(printer, result_code);
 
   if (result_code != PrinterSetupResult::kSuccess &&
       result_code != PrinterSetupResult::kEditSuccess) {
@@ -1251,7 +1248,7 @@ void CupsPrintersHandler::HandleAddDiscoveredPrinter(
     // If we have something that looks like a ppd reference for this printer,
     // try to configure it.
     printers_manager_->SetUpPrinter(
-        *printer,
+        *printer, /*is_automatic_installation=*/true,
         base::BindOnce(&CupsPrintersHandler::OnAddedDiscoveredPrinter,
                        weak_factory_.GetWeakPtr(), callback_id, *printer));
     return;

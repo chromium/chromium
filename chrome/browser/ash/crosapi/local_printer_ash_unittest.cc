@@ -558,7 +558,7 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityValidPrinter) {
   Printer saved_printer =
       CreateTestPrinter("printer1", "saved", "description1");
   printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
-  printers_manager().PrinterInstalled(saved_printer, /*is_automatic=*/true);
+  printers_manager().MarkInstalled(saved_printer.id());
 
   // Add printer capabilities to `test_backend_`.
   AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
@@ -634,7 +634,7 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityUnreachablePrinter) {
   Printer saved_printer =
       CreateTestPrinter("printer1", "saved", "description1");
   printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
-  printers_manager().PrinterInstalled(saved_printer, /*is_automatic=*/true);
+  printers_manager().MarkInstalled(saved_printer.id());
 
   crosapi::mojom::CapabilitiesResponsePtr fetched_caps;
   local_printer_ash()->GetCapability(
@@ -657,7 +657,7 @@ TEST_F(LocalPrinterAshServiceTest, GetCapabilityTerminatedService) {
   Printer saved_printer =
       CreateTestPrinter("printer1", "saved", "description1");
   printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
-  printers_manager().PrinterInstalled(saved_printer, /*is_automatic=*/true);
+  printers_manager().MarkInstalled(saved_printer.id());
 
   // Add printer capabilities to `test_backend_`.
   AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
@@ -688,7 +688,7 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityAccessDenied) {
   Printer saved_printer =
       CreateTestPrinter("printer1", "saved", "description1");
   printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
-  printers_manager().PrinterInstalled(saved_printer, /*is_automatic=*/true);
+  printers_manager().MarkInstalled(saved_printer.id());
 
   // Add printer capabilities to `test_backend_`.
   AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
@@ -712,7 +712,7 @@ TEST_F(LocalPrinterAshServiceTest, GetCapabilityElevatedPermissionsSucceeds) {
   Printer saved_printer =
       CreateTestPrinter("printer1", "saved", "description1");
   printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
-  printers_manager().PrinterInstalled(saved_printer, /*is_automatic=*/true);
+  printers_manager().MarkInstalled(saved_printer.id());
 
   // Add printer capabilities to `test_backend_`.
   AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
@@ -752,7 +752,7 @@ TEST_F(LocalPrinterAshTest, FetchValidEulaUrl) {
   Printer saved_printer = CreateTestPrinterWithPpdReference(
       "printer1", "saved", "description1", ref);
   printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
-  printers_manager().PrinterInstalled(saved_printer, /*is_automatic=*/true);
+  printers_manager().MarkInstalled(saved_printer.id());
 
   GURL fetched_eula_url;
   local_printer_ash()->GetEulaUrl(
@@ -770,7 +770,7 @@ TEST_F(LocalPrinterAshTest, FetchNotFoundEulaUrl) {
   Printer saved_printer =
       CreateTestPrinter("printer1", "saved", "description1");
   printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
-  printers_manager().PrinterInstalled(saved_printer, /*is_automatic=*/true);
+  printers_manager().MarkInstalled(saved_printer.id());
 
   GURL fetched_eula_url;
   local_printer_ash()->GetEulaUrl(

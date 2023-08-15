@@ -28,7 +28,6 @@ class FakeCupsProxyServiceDelegate : public CupsProxyServiceDelegate {
   absl::optional<chromeos::Printer> GetPrinter(const std::string& id) override;
   std::vector<std::string> GetRecentlyUsedPrinters() override;
   bool IsPrinterInstalled(const chromeos::Printer& printer) override;
-  void PrinterInstalled(const chromeos::Printer& printer) override;
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
   void SetupPrinter(const chromeos::Printer& printer,
                     SetupPrinterCallback cb) override;

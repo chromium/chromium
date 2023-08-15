@@ -82,6 +82,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   void HandleUpdateCupsPrinter(const base::Value::List& args);
   void HandleRemoveCupsPrinter(const base::Value::List& args);
   void HandleRetrieveCupsPrinterPpd(const base::Value::List& args);
+
   void OnSetUpPrinter(
       const std::string& printer_id,
       const std::string& printer_name,
@@ -208,8 +209,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   // Code common between the discovered and manual add printer code paths.
   void OnAddedOrEditedPrinterCommon(const chromeos::Printer& printer,
-                                    PrinterSetupResult result_code,
-                                    bool is_automatic);
+                                    PrinterSetupResult result_code);
 
   // CupsPrintersManager::Observer override:
   void OnPrintersChanged(

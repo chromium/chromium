@@ -49,9 +49,6 @@ class CupsProxyServiceDelegateImpl
   // Returns whether |printer| is currently installed in CUPS with this config.
   bool IsPrinterInstalled(const chromeos::Printer& printer) override;
 
-  // Records that |printer| has been installed into CUPS with this config.
-  void PrinterInstalled(const chromeos::Printer& printer) override;
-
   // Returns an IO-thread task runner.
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
 

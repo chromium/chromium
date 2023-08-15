@@ -163,7 +163,6 @@ TEST_F(AutomaticUsbPrinterConfigurerTest,
   fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer);
 
   EXPECT_TRUE(fake_installation_manager_->IsPrinterInstalled(printer));
-  EXPECT_TRUE(fake_installation_manager_->IsConfigured(printer_id));
 }
 
 TEST_F(AutomaticUsbPrinterConfigurerTest,
@@ -176,7 +175,6 @@ TEST_F(AutomaticUsbPrinterConfigurerTest,
   fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer);
 
   EXPECT_TRUE(fake_installation_manager_->IsPrinterInstalled(printer));
-  EXPECT_TRUE(fake_installation_manager_->IsConfigured(printer_id));
 }
 
 TEST_F(AutomaticUsbPrinterConfigurerTest, AutoIppPrinterNotInstalled) {
@@ -188,7 +186,6 @@ TEST_F(AutomaticUsbPrinterConfigurerTest, AutoIppPrinterNotInstalled) {
   fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer);
 
   EXPECT_FALSE(fake_installation_manager_->IsPrinterInstalled(printer));
-  EXPECT_FALSE(fake_installation_manager_->IsConfigured(printer_id));
 }
 
 TEST_F(AutomaticUsbPrinterConfigurerTest, DiscoveredUsbPrinterNotInstalled) {
@@ -200,7 +197,6 @@ TEST_F(AutomaticUsbPrinterConfigurerTest, DiscoveredUsbPrinterNotInstalled) {
   fake_observable_printers_manager_.AddNearbyDiscoveredPrinter(printer);
 
   EXPECT_FALSE(fake_installation_manager_->IsPrinterInstalled(printer));
-  EXPECT_FALSE(fake_installation_manager_->IsConfigured(printer_id));
 }
 
 TEST_F(AutomaticUsbPrinterConfigurerTest,
