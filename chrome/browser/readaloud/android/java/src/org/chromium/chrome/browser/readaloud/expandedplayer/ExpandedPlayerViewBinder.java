@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.readaloud.expandedplayer;
 
-import org.chromium.chrome.modules.readaloud.ExpandedPlayer.State;
+import org.chromium.chrome.browser.readaloud.PlayerState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -17,11 +17,11 @@ public class ExpandedPlayerViewBinder {
     public static void bind(
             PropertyModel model, ExpandedPlayerSheetContent content, PropertyKey key) {
         if (key == ExpandedPlayerProperties.STATE_KEY) {
-            @State
+            @PlayerState
             int state = model.get(ExpandedPlayerProperties.STATE_KEY);
-            if (state == State.SHOWING) {
+            if (state == PlayerState.SHOWING) {
                 content.show();
-            } else if (state == State.HIDING) {
+            } else if (state == PlayerState.HIDING) {
                 content.hide();
             }
         } else if (key == ExpandedPlayerProperties.SPEED_KEY) {

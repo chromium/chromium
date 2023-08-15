@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.readaloud.expandedplayer;
 
-import org.chromium.chrome.modules.readaloud.ExpandedPlayer.State;
+import org.chromium.chrome.browser.readaloud.PlayerState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -27,39 +27,39 @@ public class ExpandedPlayerMediator extends EmptyBottomSheetObserver {
     }
 
     public void show() {
-        @State
+        @PlayerState
         int state = getState();
-        if (state == State.SHOWING || state == State.VISIBLE) {
+        if (state == PlayerState.SHOWING || state == PlayerState.VISIBLE) {
             return;
         }
-        setState(State.SHOWING);
+        setState(PlayerState.SHOWING);
     }
 
     public void dismiss() {
-        @State
+        @PlayerState
         int state = getState();
-        if (state == State.GONE || state == State.HIDING) {
+        if (state == PlayerState.GONE || state == PlayerState.HIDING) {
             return;
         }
-        setState(State.HIDING);
+        setState(PlayerState.HIDING);
     }
 
-    public @State int getState() {
+    public @PlayerState int getState() {
         return mModel.get(ExpandedPlayerProperties.STATE_KEY);
     }
 
     // from EmptyBottomSheetObserver
     @Override
     public void onSheetOpened(@StateChangeReason int reason) {
-        setState(State.VISIBLE);
+        setState(PlayerState.VISIBLE);
     }
 
     @Override
     public void onSheetClosed(@StateChangeReason int reason) {
-        setState(State.GONE);
+        setState(PlayerState.GONE);
     }
 
-    private void setState(@State int state) {
+    private void setState(@PlayerState int state) {
         mModel.set(ExpandedPlayerProperties.STATE_KEY, state);
     }
 }

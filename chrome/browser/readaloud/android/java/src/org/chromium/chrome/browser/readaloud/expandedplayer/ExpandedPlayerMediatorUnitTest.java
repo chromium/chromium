@@ -21,7 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.modules.readaloud.ExpandedPlayer.State;
+import org.chromium.chrome.browser.readaloud.PlayerState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -39,7 +39,7 @@ public class ExpandedPlayerMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mModel = Mockito.spy(new PropertyModel.Builder(ExpandedPlayerProperties.ALL_KEYS)
-                                     .with(ExpandedPlayerProperties.STATE_KEY, State.GONE)
+                                     .with(ExpandedPlayerProperties.STATE_KEY, PlayerState.GONE)
                                      .build());
 
         mMediator = new ExpandedPlayerMediator(mBottomSheetController, mModel);
@@ -48,7 +48,7 @@ public class ExpandedPlayerMediatorUnitTest {
     @Test
     public void testInitialStateAfterConstructMediator() {
         verify(mBottomSheetController, times(1)).addObserver(eq(mMediator));
-        assertEquals(State.GONE, mMediator.getState());
+        assertEquals(PlayerState.GONE, mMediator.getState());
     }
 
     @Test
@@ -60,36 +60,36 @@ public class ExpandedPlayerMediatorUnitTest {
     @Test
     public void testShow() {
         mMediator.show();
-        assertEquals(State.SHOWING, mMediator.getState());
+        assertEquals(PlayerState.SHOWING, mMediator.getState());
     }
 
     @Test
     public void testShowAlreadyShowing() {
-        mModel.set(ExpandedPlayerProperties.STATE_KEY, State.SHOWING);
+        mModel.set(ExpandedPlayerProperties.STATE_KEY, PlayerState.SHOWING);
         reset(mModel);
         mMediator.show();
-        assertEquals(State.SHOWING, mMediator.getState());
+        assertEquals(PlayerState.SHOWING, mMediator.getState());
         verify(mModel, never()).set(any(), any());
 
-        mModel.set(ExpandedPlayerProperties.STATE_KEY, State.VISIBLE);
+        mModel.set(ExpandedPlayerProperties.STATE_KEY, PlayerState.VISIBLE);
         reset(mModel);
         mMediator.show();
-        assertEquals(State.VISIBLE, mMediator.getState());
+        assertEquals(PlayerState.VISIBLE, mMediator.getState());
         verify(mModel, never()).set(any(), any());
     }
 
     @Test
     public void testDismissAlreadyHiding() {
-        mModel.set(ExpandedPlayerProperties.STATE_KEY, State.HIDING);
+        mModel.set(ExpandedPlayerProperties.STATE_KEY, PlayerState.HIDING);
         reset(mModel);
         mMediator.dismiss();
-        assertEquals(State.HIDING, mMediator.getState());
+        assertEquals(PlayerState.HIDING, mMediator.getState());
         verify(mModel, never()).set(any(), any());
 
-        mModel.set(ExpandedPlayerProperties.STATE_KEY, State.GONE);
+        mModel.set(ExpandedPlayerProperties.STATE_KEY, PlayerState.GONE);
         reset(mModel);
         mMediator.dismiss();
-        assertEquals(State.GONE, mMediator.getState());
+        assertEquals(PlayerState.GONE, mMediator.getState());
         verify(mModel, never()).set(any(), any());
     }
 
@@ -97,6 +97,6 @@ public class ExpandedPlayerMediatorUnitTest {
     public void testDismiss() {
         mMediator.show();
         mMediator.dismiss();
-        assertEquals(State.HIDING, mMediator.getState());
+        assertEquals(PlayerState.HIDING, mMediator.getState());
     }
 }

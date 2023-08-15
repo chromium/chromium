@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.modules.readaloud;
 
-import androidx.annotation.IntDef;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.chromium.chrome.browser.readaloud.PlayerState;
 
 /** Interface for controlling the Read Aloud expanded player. */
 public interface ExpandedPlayer {
@@ -33,22 +30,8 @@ public interface ExpandedPlayer {
      */
     default void dismiss() {}
 
-    /** Visibility and animation states for the expanded player. */
-    @IntDef({State.GONE, State.SHOWING, State.VISIBLE, State.HIDING})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface State {
-        /** Expanded player isn't on the screen or transitioning. Default state. */
-        int GONE = 0;
-        /** Expanded player is transitioning from GONE to VISIBLE. */
-        int SHOWING = 1;
-        /** Expanded player is open and not transitioning. */
-        int VISIBLE = 2;
-        /** Expanded player is transitioning from VISIBLE to GONE. */
-        int HIDING = 3;
-    }
-
     /** Returns the expanded player state. */
-    default @State int getState() {
-        return State.GONE;
+    default @PlayerState int getState() {
+        return PlayerState.GONE;
     }
 }

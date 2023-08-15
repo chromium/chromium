@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.readaloud.expandedplayer;
 
 import android.content.Context;
 
+import org.chromium.chrome.browser.readaloud.PlayerState;
 import org.chromium.chrome.modules.readaloud.ExpandedPlayer;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -31,7 +32,7 @@ public class ExpandedPlayerCoordinator implements ExpandedPlayer {
         if (mSheetContent == null) {
             mSheetContent = new ExpandedPlayerSheetContent(mContext, mBottomSheetController);
             mModel = new PropertyModel.Builder(ExpandedPlayerProperties.ALL_KEYS)
-                             .with(ExpandedPlayerProperties.STATE_KEY, ExpandedPlayer.State.GONE)
+                             .with(ExpandedPlayerProperties.STATE_KEY, PlayerState.GONE)
                              .build();
             mModelChangeProcessor = PropertyModelChangeProcessor.create(
                     mModel, mSheetContent, ExpandedPlayerViewBinder::bind);
