@@ -507,7 +507,7 @@ const base::FeatureParam<ChromeRefresh2023Level> kChromeRefresh2023Level(
     ChromeRefresh2023Level::kLevel2,
     &kChromeRefresh2023LevelOption);
 
-ChromeRefresh2023Level GetChromeRefresh2023Level() {
+ChromeRefresh2023Level GetChromeRefresh2023LevelUncached() {
   if (!CustomizeChromeSupportsChromeRefresh2023()) {
     // Bail before checking any other feature flags so that associated studies
     // don't get activated.
@@ -519,9 +519,15 @@ ChromeRefresh2023Level GetChromeRefresh2023Level() {
     return ChromeRefresh2023Level::kLevel2;
   }
 
+  return IsChromeRefresh2023() ? kChromeRefresh2023Level.Get()
+                               : ChromeRefresh2023Level::kDisabled;
+}
+
+ChromeRefresh2023Level GetChromeRefresh2023Level() {
+  // Cached due to frequent calls for performance optimization.
+  // Please update `GetChromeRefresh2023LevelUncached()` for any changes.
   static const ChromeRefresh2023Level level =
-      IsChromeRefresh2023() ? kChromeRefresh2023Level.Get()
-                            : ChromeRefresh2023Level::kDisabled;
+      GetChromeRefresh2023LevelUncached();
   return level;
 }
 
