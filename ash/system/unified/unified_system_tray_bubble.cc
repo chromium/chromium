@@ -23,6 +23,7 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -389,6 +390,17 @@ void UnifiedSystemTrayBubble::UpdateBubbleHeight(bool is_showing_detiled_view) {
 }
 
 void UnifiedSystemTrayBubble::UpdateBubbleBounds() {
+  // USTB_UBB stands for `UnifiedSystemTrayBubble::UpdateBubbleBounds`. Here
+  // using the short version since the log method has a character count limit
+  // of 40.
+  SCOPED_CRASH_KEY_BOOL("USTB_UBB", "bubble_view_", !!bubble_view_);
+  SCOPED_CRASH_KEY_BOOL("USTB_UBB", "tray_", !!tray_);
+  SCOPED_CRASH_KEY_BOOL("USTB_UBB", "tray_->shelf()",
+                        !!tray_ && !!tray_->shelf());
+  SCOPED_CRASH_KEY_BOOL("USTB_UBB", "bubble_widget_", !!bubble_widget_);
+  SCOPED_CRASH_KEY_BOOL("USTB_UBB", "bubble_widget_->IsClosed()",
+                        !!bubble_widget_ && !!bubble_widget_->IsClosed());
+
   int max_height =
       CalculateMaxTrayBubbleHeight(tray_->GetBubbleWindowContainer());
   if (bubble_view_->ShouldUseFixedHeight()) {
