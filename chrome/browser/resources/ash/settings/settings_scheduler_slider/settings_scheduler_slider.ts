@@ -274,8 +274,8 @@ export class SettingsSchedulerSliderElement extends
    * @return The CSS style of the legend div.
    */
   private getLegendStyle_(percent: number, isRTL: boolean): string {
-    percent = isRTL ? 100 - percent : percent;
-    return 'left: ' + percent + '%';
+    const percentage = isRTL ? 100 - percent : percent;
+    return `left: ${percentage}%`;
   }
 
   /**
