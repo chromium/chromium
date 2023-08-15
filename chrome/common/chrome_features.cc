@@ -868,7 +868,7 @@ BASE_FEATURE(kMacSystemScreenCapturePermissionCheck,
 // whether to treat a WiFi or Cellular network as 'metered'.
 BASE_FEATURE(kMeteredShowToggle,
              "MeteredShowToggle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to show the Hidden toggle in Settings, allowing users to toggle
 // whether to treat a WiFi network as having a hidden ssid.
