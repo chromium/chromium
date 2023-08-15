@@ -4176,6 +4176,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.ServiceWorkerBackground.WorkerCountAfterAdd"
+    units="registered workers" expires_after="2024-08-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The count of active workers registered in the extension ProcessManager for a
+    given service worker-based extension. Reported immediately after a new
+    worker is registered for the extension.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.WorkerCountAfterRemove"
+    units="registered workers" expires_after="2024-08-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The count of active workers registered in the extension ProcessManager for a
+    given service worker-based extension. Reported immediately after a worker
+    for the extension is removed from the active set.
+  </summary>
+</histogram>
+
 <histogram
     name="Extensions.SettingsOverridden.BackToGoogleNtpOverriddenDialogResult"
     enum="SettingsOverriddenDialogResult" expires_after="2023-12-15">
