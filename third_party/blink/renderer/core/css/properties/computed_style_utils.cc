@@ -1807,7 +1807,8 @@ void PopulateGridTrackList(CSSValueList* list,
                            const ComputedStyle& style,
                            wtf_size_t start,
                            wtf_size_t end,
-                           int offset) {
+                           int offset,
+                           bool discard_line_names) {
   DCHECK_LE(start, end);
   if (collector.HasCollapsedAutoRepeatNamedLines()) {
     // If the collector has a collapsed auto-repeat track, we need to adjust
@@ -1819,7 +1820,8 @@ void PopulateGridTrackList(CSSValueList* list,
     }
   }
   for (wtf_size_t i = start; i < end; ++i) {
-    if (offset >= 0 || i >= static_cast<wtf_size_t>(-offset)) {
+    if (!discard_line_names &&
+        (offset >= 0 || i >= static_cast<wtf_size_t>(-offset))) {
       AddValuesForNamedGridLinesAtIndex(collector, i + offset, *list,
                                         NamedLinesType::kNamedLines);
     }
@@ -1832,7 +1834,8 @@ void PopulateGridTrackList(CSSValueList* list,
   // Subgrid track names are always relative to offset 0, so they can ignore the
   // tracks after the offset.
   if (!collector.IsSubgriddedAxis() &&
-      (offset >= 0 || end >= static_cast<wtf_size_t>(-offset))) {
+      (!discard_line_names &&
+       (offset >= 0 || end >= static_cast<wtf_size_t>(-offset)))) {
     AddValuesForNamedGridLinesAtIndex(collector, end + offset, *list,
                                       NamedLinesType::kNamedLines);
   }
@@ -2054,8 +2057,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   if (is_subgrid || (is_subgrid_specified && !grid)) {
     list->Append(
         *MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kSubgrid));
-  } else if ((!is_subgrid_specified && is_track_list_empty) ||
-             (grid && is_subgrid_specified && !is_subgrid_valid)) {
+  } else if (!is_subgrid_specified && is_track_list_empty) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
 
@@ -2100,8 +2102,15 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     int offset = -base::checked_cast<int>(
         grid->ExplicitGridStartForDirection(direction));
 
+    // If `subgrid` is specified in `grid-template-rows/columns`, but the
+    // element is not a valid subgrid, computed style should behave as if it's a
+    // standalone grid. It should also drop any line names specified in the
+    // invalid subgrid rows/column definitions. See
+    // https://github.com/w3c/csswg-drafts/issues/9015.
+    const bool discard_line_names =
+        grid && is_subgrid_specified && !is_subgrid_valid;
     PopulateGridTrackList(list, collector, track_sizes, style, start_index,
-                          end_index, offset);
+                          end_index, offset, discard_line_names);
     return list;
   }
 
