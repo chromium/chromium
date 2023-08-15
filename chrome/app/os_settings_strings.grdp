@@ -3129,7 +3129,7 @@ Press an assigned switch or key to remove assignment.
     Faster movements with your mouse will move the cursor farther
   </message>
   <message name="IDS_SETTINGS_MOUSE_SCROLL_ACCELERATION_LABEL" desc="In Device Settings, the text next to the toggle for mouse scroll acceleration. Faster scrolling with your mouse will scroll farther.">
-    Scroll acceleration. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    Scroll acceleration <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_CURSOR_SPEED_LABEL" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of the mouse cursor.">
     Cursor speed
