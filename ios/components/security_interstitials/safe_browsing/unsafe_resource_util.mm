@@ -51,20 +51,7 @@ std::string GetUnsafeResourceMetricPrefix(
       prefix = "billing";
       break;
     case BaseSafeBrowsingErrorUI::SB_REASON_PHISHING:
-      switch (resource.threat_metadata.threat_pattern_type) {
-        case ThreatPatternType::PHISHING:
-        case ThreatPatternType::NONE:
-          prefix = "phishing";
-          break;
-        case ThreatPatternType::SOCIAL_ENGINEERING_ADS:
-          prefix = "social_engineering_ads";
-          break;
-        case ThreatPatternType::SOCIAL_ENGINEERING_LANDING:
-          prefix = "social_engineering_landing";
-          break;
-        default:
-          break;
-      }
+      prefix = "phishing";
       break;
   }
   DCHECK(prefix.length());
