@@ -311,6 +311,7 @@ void NotifyLocaleChange() {
 void OnLanguageSwitchedCallback(
     std::unique_ptr<ShowLoginWizardSwitchLanguageCallbackData> self,
     const locale_util::LanguageSwitchResult& result) {
+  TRACE_EVENT0("login", "OnLanguageSwitchedCallback");
   if (!result.success)
     LOG(WARNING) << "Locale could not be found for '" << result.requested_locale
                  << "'";

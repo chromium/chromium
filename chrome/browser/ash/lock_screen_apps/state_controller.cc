@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/time/default_tick_clock.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager_impl.h"
 #include "chrome/browser/ash/lock_screen_apps/first_app_run_toast_manager.h"
@@ -319,6 +320,7 @@ void StateController::CloseLockScreenNote(CloseLockScreenNoteReason reason) {
 }
 
 void StateController::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "StateController::OnSessionStateChanged");
   if (!session_manager::SessionManager::Get()->IsScreenLocked()) {
     lock_screen_data_->SetSessionLocked(false);
     app_manager_->Stop();
