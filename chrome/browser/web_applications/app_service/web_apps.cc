@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -295,6 +296,7 @@ std::vector<apps::AppPtr> WebApps::CreateWebApps() {
 }
 
 void WebApps::InitWebApps() {
+  TRACE_EVENT0("ui", "WebApps::InitWebApps");
   is_ready_ = true;
 
   RegisterPublisher(app_type());

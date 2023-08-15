@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
@@ -29,6 +30,7 @@ AppIconDecoder::ImageSource::ImageSource(int32_t size_in_dip)
 AppIconDecoder::ImageSource::~ImageSource() = default;
 
 gfx::ImageSkiaRep AppIconDecoder::ImageSource::GetImageForScale(float scale) {
+  TRACE_EVENT0("ui", "AppIconDecoder::ImageSource::GetImageForScale");
   // Host loads icon asynchronously, so use default icon so far.
 
   // Get the ImageSkia for the resource IDR_APP_DEFAULT_ICON and the size
@@ -60,6 +62,7 @@ void AppIconDecoder::Start() {
 
 bool AppIconDecoder::SetScaleFactors(
     const std::map<ui::ResourceScaleFactor, IconValuePtr>& icon_datas) {
+  TRACE_EVENT0("ui", "AppIconDecoder::SetScaleFactors");
   for (const auto& [scale_factor, iv] : icon_datas) {
     if (!iv || iv->icon_type != IconType::kCompressed) {
       return false;
@@ -104,6 +107,7 @@ bool AppIconDecoder::SetScaleFactors(
 
 void AppIconDecoder::OnIconRead(
     std::map<ui::ResourceScaleFactor, IconValuePtr> icon_datas) {
+  TRACE_EVENT0("ui", "AppIconDecoder::OnIconRead");
   // Check `icon_datas` to set scale factors.
   if (!SetScaleFactors(icon_datas)) {
     DiscardDecodeRequest();
@@ -156,6 +160,7 @@ void AppIconDecoder::UpdateImageSkia(
     gfx::ImageSkia& image_skia,
     std::set<ui::ResourceScaleFactor>& incomplete_scale_factors,
     const SkBitmap& bitmap) {
+  TRACE_EVENT0("ui", "AppIconDecoder::UpdateImageSkia");
   // If decoding any scale factor fails, discard the entire decode request.
   if (bitmap.drawsNothing()) {
     DiscardDecodeRequest();
@@ -199,6 +204,7 @@ void AppIconDecoder::DiscardDecodeRequest() {
 }
 
 void AppIconDecoder::CompleteWithImageSkia(const gfx::ImageSkia& image_skia) {
+  TRACE_EVENT0("ui", "AppIconDecoder::CompleteWithImageSkia");
   // `callback_` is responsible for removing this AppIconDecoder object.
   auto iv = std::make_unique<apps::IconValue>();
   iv->icon_type = IconType::kUncompressed;

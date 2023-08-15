@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
@@ -44,6 +45,7 @@ void AppIconReader::ReadIcons(const std::string& app_id,
                               const IconKey& icon_key,
                               IconType icon_type,
                               LoadIconCallback callback) {
+  TRACE_EVENT0("ui", "AppIconReader::ReadIcons");
   IconEffects icon_effects = static_cast<IconEffects>(icon_key.icon_effects);
   int resource_id = GetResourceIdForIcon(app_id, size_in_dip, icon_key);
   if (resource_id != IconKey::kInvalidResourceId) {
@@ -75,6 +77,7 @@ void AppIconReader::OnUncompressedIconRead(int32_t size_in_dip,
                                            LoadIconCallback callback,
                                            AppIconDecoder* decoder,
                                            IconValuePtr iv) {
+  TRACE_EVENT0("ui", "AppIconReader::OnUncompressedIconRead");
   DCHECK_NE(IconType::kUnknown, icon_type);
 
   auto it = base::ranges::find(decodes_, decoder,
@@ -133,6 +136,7 @@ void AppIconReader::OnCompleteWithIconValue(int32_t size_in_dip,
                                             IconType icon_type,
                                             LoadIconCallback callback,
                                             IconValuePtr iv) {
+  TRACE_EVENT0("ui", "AppIconReader::OnCompleteWithIconValue");
   iv->uncompressed.MakeThreadSafe();
 
   if (icon_type != IconType::kCompressed) {
@@ -155,6 +159,7 @@ void AppIconReader::OnCompleteWithIconValue(int32_t size_in_dip,
 void AppIconReader::OnCompleteWithCompressedData(
     LoadIconCallback callback,
     std::vector<uint8_t> icon_data) {
+  TRACE_EVENT0("ui", "AppIconReader::OnCompleteWithCompressedData");
   auto iv = std::make_unique<IconValue>();
   iv->icon_type = IconType::kCompressed;
   iv->compressed = std::move(icon_data);
