@@ -7,7 +7,7 @@ UNSCHEDULED_blink_perf.base64,csharrison@chromium.org,Blink>Internals>WTF,https:
 UNSCHEDULED_blink_perf.performance_apis,yoavweiss@chromium.org,Blink>PerformanceAPIs,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_blink_perf.service_worker,"yyanagisawa@chromium.org, chrome-worker@google.com",Blink>ServiceWorker,https://bit.ly/blink-perf-benchmarks,
 UNSCHEDULED_blink_perf.view_transitions,"bokan@chromium.org, khushalsagar@chromium.org, vmpstr@chromium.org",Blink>ViewTransitions,https://bit.ly/blink-perf-benchmarks,all
-UNSCHEDULED_dummy_wpr_benchmark.loading_using_wpr,maxqli@googl.com,Test>Telemetry,,
+UNSCHEDULED_dummy_wpr_benchmark.loading_using_wpr,maxqli@google.com,Test>Telemetry,,
 UNSCHEDULED_jetstream20,"vahl@chromium.org, cbruni@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.0/in-depth.html,all
 UNSCHEDULED_jetstream21,"hablich@chromium.org, tcwang@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.1/in-depth.html,all
 UNSCHEDULED_loading.mbi,"blink-isolation-dev@chromium.org, kouhei@chromium.org",Blink>Internals>Modularization,https://bit.ly/loading-benchmarks,many_agents
@@ -80,7 +80,7 @@ v8.browsing_desktop,"cbruni@chromium.org, vahl@chromium.org, almuthanna@chromium
 v8.browsing_desktop-future,"cbruni@chromium.org, almuthanna@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,2021,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
 v8.browsing_mobile,"cbruni@chromium.org, leszeks@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2018,2019,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 v8.browsing_mobile-future,"cbruni@chromium.org, leszeks@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2018,2019,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
-v8.runtime_stats.top_25,"cbruni@chromium.org, leszeks@chromium.orgvahl@chromium.org",Blink>JavaScript,,"cold,hot,warm"
+v8.runtime_stats.top_25,"cbruni@chromium.org, leszeks@chromium.org, vahl@chromium.org",Blink>JavaScript,,"cold,hot,warm"
 views_perftests,tapted@chromium.org,Internals>Views,,
 wasmpspdfkit,"ahaas@chromium.org, vahl@chromium.org",Blink>JavaScript>WebAssembly,,all
 webrtc,"mbonadei@chromium.org, video-cmi-apis@google.com, herre@google.com",Blink>WebRTC,http://bit.ly/webrtc-benchmark,"all,datachannel,getusermedia,insertableStreams,pauseplay,sdp,smoothness,stress,videoConstraints"
