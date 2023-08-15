@@ -857,7 +857,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ORB.CorbVsOrb" enum="CorbVsOrb"
-    expires_after="2023-12-10">
+    expires_after="2024-02-11">
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>vogelheim@chromium.org</owner>

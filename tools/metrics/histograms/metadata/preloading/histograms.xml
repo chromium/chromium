@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Preloading.AnchorElementPreloader.PreloadingTriggered"
-    enum="AnchorElementPreloaderType" expires_after="2023-12-10">
+    enum="AnchorElementPreloaderType" expires_after="2024-02-11">
   <owner>spelchat@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
