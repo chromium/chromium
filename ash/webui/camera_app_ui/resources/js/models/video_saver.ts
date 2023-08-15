@@ -10,6 +10,7 @@ import {
   Resolution,
 } from '../type.js';
 import {getVideoProcessorHelper} from '../untrusted_scripts.js';
+import {lazySingleton} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {AsyncWriter} from './async_writer.js';
@@ -26,14 +27,14 @@ import {createPrivateTempVideoFile} from './file_system.js';
 import {FileAccessEntry} from './file_system_access_entry.js';
 
 // This is used like a class constructor.
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const FFMpegVideoProcessor = (async () => {
+// We don't initialize this immediately to avoid side effect on module import.
+const getFFMpegVideoProcessorConstructor = lazySingleton(async () => {
   const workerChannel = new MessageChannel();
   const videoProcessorHelper = await getVideoProcessorHelper();
   await videoProcessorHelper.connectToWorker(
       Comlink.transfer(workerChannel.port2, [workerChannel.port2]));
   return Comlink.wrap<VideoProcessorConstructor>(workerChannel.port1);
-})();
+});
 
 
 /**
@@ -41,7 +42,7 @@ const FFMpegVideoProcessor = (async () => {
  */
 async function createVideoProcessor(output: AsyncWriter, videoRotation: number):
     Promise<Comlink.Remote<VideoProcessor>> {
-  return new (await FFMpegVideoProcessor)(
+  return new (await getFFMpegVideoProcessorConstructor())(
       Comlink.proxy(output), createMp4Args(videoRotation, output.seekable()));
 }
 
@@ -51,7 +52,7 @@ async function createVideoProcessor(output: AsyncWriter, videoRotation: number):
 async function createGifVideoProcessor(
     output: AsyncWriter,
     resolution: Resolution): Promise<Comlink.Remote<VideoProcessor>> {
-  return new (await FFMpegVideoProcessor)(
+  return new (await getFFMpegVideoProcessorConstructor())(
       Comlink.proxy(output), createGifArgs(resolution));
 }
 
@@ -62,7 +63,7 @@ async function createTimeLapseProcessor(
     output: AsyncWriter,
     {resolution, fps, videoRotation}: TimeLapseEncoderArgs):
     Promise<Comlink.Remote<VideoProcessor>> {
-  return new (await FFMpegVideoProcessor)(
+  return new (await getFFMpegVideoProcessorConstructor())(
       Comlink.proxy(output),
       createTimeLapseArgs(resolution, fps, videoRotation));
 }

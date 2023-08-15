@@ -514,3 +514,16 @@ export function isFileSystemDirectoryHandle(handle: FileSystemHandle):
  * be served in a subpath.
  */
 export const expandPath = localDev.overridableFunction((path: string) => path);
+
+/**
+ * Lazily initialize a singleton.
+ */
+export function lazySingleton<T>(fn: () => T): () => T {
+  let val: T|null = null;
+  return () => {
+    if (val === null) {
+      val = fn();
+    }
+    return val;
+  };
+}
