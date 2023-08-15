@@ -20,11 +20,7 @@ namespace {
 // Append |frame_sizes| to |decoder_buffer|'s side_data.
 void AppendSideData(DecoderBuffer& decoder_buffer,
                     const std::vector<uint32_t>& frame_sizes) {
-  const uint8_t* side_data =
-      reinterpret_cast<const uint8_t*>(frame_sizes.data());
-  size_t side_data_size =
-      frame_sizes.size() * sizeof(uint32_t) / sizeof(uint8_t);
-  decoder_buffer.CopySideDataFrom(side_data, side_data_size);
+  decoder_buffer.WritableSideData().spatial_layers = frame_sizes;
 }
 }  // namespace
 

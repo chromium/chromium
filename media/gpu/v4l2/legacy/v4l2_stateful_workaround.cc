@@ -228,16 +228,16 @@ CreateV4L2StatefulWorkarounds(V4L2Device::Type device_type,
 }
 
 bool AppendVP9SuperFrameIndex(scoped_refptr<DecoderBuffer>& buffer) {
-  DCHECK_GT(buffer->side_data_size(), 0u);
+  DCHECK(buffer->has_side_data());
+  DCHECK(!buffer->side_data()->spatial_layers.empty());
 
-  const size_t num_of_layers = buffer->side_data_size() / sizeof(uint32_t);
+  const size_t num_of_layers = buffer->side_data()->spatial_layers.size();
   if (num_of_layers > 3u) {
     LOG(ERROR) << "The maximum number of spatial layers in VP9 is three";
     return false;
   }
 
-  const uint32_t* cue_data =
-      reinterpret_cast<const uint32_t*>(buffer->side_data());
+  const uint32_t* cue_data = buffer->side_data()->spatial_layers.data();
   std::vector<uint32_t> frame_sizes(cue_data, cue_data + num_of_layers);
   std::vector<uint8_t> superframe_index = CreateSuperFrameIndex(frame_sizes);
   const size_t vp9_superframe_size =

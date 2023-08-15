@@ -308,16 +308,10 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
     frame_sizes.push_back(ivf.header.frame_size);
   }
 
-  // Copy frame_sizes information to DecoderBuffer's side data. Since side_data
-  // is uint8_t*, we need to copy as uint8_t from uint32_t. The copied data is
-  // recognized as uint32_t in VD(A).
-  const uint8_t* side_data =
-      reinterpret_cast<const uint8_t*>(frame_sizes.data());
-  size_t side_data_size =
-      frame_sizes.size() * sizeof(uint32_t) / sizeof(uint8_t);
-
-  return DecoderBuffer::CopyFrom(reinterpret_cast<const uint8_t*>(data.data()),
-                                 data.size(), side_data, side_data_size);
+  auto buffer = DecoderBuffer::CopyFrom(
+      reinterpret_cast<const uint8_t*>(data.data()), data.size());
+  buffer->WritableSideData().spatial_layers = frame_sizes;
+  return buffer;
 }
 
 absl::optional<IvfFrameHeader> EncodedDataHelper::GetNextIvfFrameHeader()

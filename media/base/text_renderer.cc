@@ -178,35 +178,8 @@ void TextRenderer::BufferReady(DemuxerStream* stream,
     NOTREACHED_NORETURN();
   }
 
-  if (input->end_of_stream()) {
-    CueReady(stream, nullptr);
-    return;
-  }
-
-  DCHECK_EQ(status, DemuxerStream::kOk);
-  DCHECK_GE(input->side_data_size(), 2u);
-
-  // The side data contains both the cue id and cue settings,
-  // each terminated with a NUL.
-  const char* id_ptr = reinterpret_cast<const char*>(input->side_data());
-  size_t id_len = strlen(id_ptr);
-  std::string id(id_ptr, id_len);
-
-  const char* settings_ptr = id_ptr + id_len + 1;
-  size_t settings_len = strlen(settings_ptr);
-  std::string settings(settings_ptr, settings_len);
-
-  // The cue payload is stored in the data-part of the input buffer.
-  std::string text(input->data(), input->data() + input->data_size());
-
-  scoped_refptr<TextCue> text_cue(
-      new TextCue(input->timestamp(),
-                  input->duration(),
-                  id,
-                  settings,
-                  text));
-
-  CueReady(stream, text_cue);
+  // TODO(crbug.com/1471504): This is now broken without side data; remove.
+  CueReady(stream, nullptr);
 }
 
 void TextRenderer::CueReady(

@@ -228,9 +228,19 @@ struct Status {
   StatusData? internal@0;
 };
 
+// Based on |media.mojom.DecoderBufferSideData|.
+// Next min field ID: 3
+[Stable]
+struct DecoderBufferSideData {
+  array<uint32> spatial_layers@0;
+  array<uint8> alpha_data@1;
+  uint64 secure_handle@2;
+};
+
 // Based on |media.mojom.DecoderBuffer| but does not depend on
 // |media.mojom.DecryptConfig|.
-// Next min field ID: 9
+// Next min field ID: 10
+// Next version: 2
 [Stable]
 struct DecoderBuffer {
   mojo_base.mojom.TimeDelta timestamp@0;
@@ -242,12 +252,15 @@ struct DecoderBuffer {
 
   bool is_key_frame@4;
 
-  array<uint8> side_data@5;
+  // TODO(b/269383891): Deprecate |raw_side_data| in M120.
+  array<uint8> raw_side_data@5;
 
   DecryptConfig? decrypt_config@6;
 
   mojo_base.mojom.TimeDelta front_discard@7;
   mojo_base.mojom.TimeDelta back_discard@8;
+
+  [MinVersion=1] DecoderBufferSideData? side_data@9;
 };
 
 // Maps to |media.mojom.VideoDecoderType|.

@@ -155,8 +155,7 @@ scoped_refptr<media::StreamParserBuffer> MakeAudioStreamParserBuffer(
       kWebCodecsAudioTrackId);
 
   // Currently, we do not populate any side_data in these converters.
-  DCHECK_EQ(0U, stream_parser_buffer->side_data_size());
-  DCHECK_EQ(nullptr, stream_parser_buffer->side_data());
+  DCHECK(!stream_parser_buffer->has_side_data());
 
   stream_parser_buffer->set_timestamp(audio_chunk.buffer()->timestamp());
   // TODO(crbug.com/1144908): Get EncodedAudioChunk to have an optional duration
@@ -181,8 +180,7 @@ scoped_refptr<media::StreamParserBuffer> MakeVideoStreamParserBuffer(
       kWebCodecsVideoTrackId);
 
   // Currently, we do not populate any side_data in these converters.
-  DCHECK_EQ(0U, stream_parser_buffer->side_data_size());
-  DCHECK_EQ(nullptr, stream_parser_buffer->side_data());
+  DCHECK(!stream_parser_buffer->has_side_data());
 
   stream_parser_buffer->set_timestamp(video_chunk.buffer()->timestamp());
   // TODO(crbug.com/1144908): Get EncodedVideoChunk to have an optional decode
@@ -654,8 +652,7 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
     case V8EncodedChunks::ContentType::kEncodedAudioChunk:
       buffer_queue->emplace_back(
           MakeAudioStreamParserBuffer(*(chunks->GetAsEncodedAudioChunk())));
-      size += buffer_queue->back()->data_size() +
-              buffer_queue->back()->side_data_size();
+      size += buffer_queue->back()->data_size();
       break;
     case V8EncodedChunks::ContentType::kEncodedVideoChunk: {
       const auto& video_chunk = *(chunks->GetAsEncodedVideoChunk());
@@ -667,8 +664,7 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
         return ScriptPromise();
       }
       buffer_queue->emplace_back(MakeVideoStreamParserBuffer(video_chunk));
-      size += buffer_queue->back()->data_size() +
-              buffer_queue->back()->side_data_size();
+      size += buffer_queue->back()->data_size();
       break;
     }
     case V8EncodedChunks::ContentType::
@@ -681,8 +677,7 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
               kEncodedAudioChunk:
             buffer_queue->emplace_back(MakeAudioStreamParserBuffer(
                 *(av_chunk->GetAsEncodedAudioChunk())));
-            size += buffer_queue->back()->data_size() +
-                    buffer_queue->back()->side_data_size();
+            size += buffer_queue->back()->data_size();
             break;
           case V8UnionEncodedAudioChunkOrEncodedVideoChunk::ContentType::
               kEncodedVideoChunk: {
@@ -696,8 +691,7 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
             }
             buffer_queue->emplace_back(
                 MakeVideoStreamParserBuffer(video_chunk));
-            size += buffer_queue->back()->data_size() +
-                    buffer_queue->back()->side_data_size();
+            size += buffer_queue->back()->data_size();
             break;
           }
         }

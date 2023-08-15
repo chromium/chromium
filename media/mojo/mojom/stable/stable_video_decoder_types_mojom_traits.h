@@ -482,7 +482,7 @@ struct StructTraits<media::stable::mojom::DecoderBufferDataView,
 
   static bool is_key_frame(const scoped_refptr<media::DecoderBuffer>& input);
 
-  static std::vector<uint8_t> side_data(
+  static std::vector<uint8_t> raw_side_data(
       const scoped_refptr<media::DecoderBuffer>& input);
 
   static std::unique_ptr<media::DecryptConfig> decrypt_config(
@@ -494,8 +494,23 @@ struct StructTraits<media::stable::mojom::DecoderBufferDataView,
   static base::TimeDelta back_discard(
       const scoped_refptr<media::DecoderBuffer>& input);
 
+  static absl::optional<media::DecoderBufferSideData> side_data(
+      const scoped_refptr<media::DecoderBuffer>& input);
+
   static bool Read(media::stable::mojom::DecoderBufferDataView input,
                    scoped_refptr<media::DecoderBuffer>* output);
+};
+
+template <>
+struct StructTraits<media::stable::mojom::DecoderBufferSideDataDataView,
+                    media::DecoderBufferSideData> {
+  static std::vector<uint32_t> spatial_layers(
+      media::DecoderBufferSideData input);
+  static std::vector<uint8_t> alpha_data(media::DecoderBufferSideData input);
+  static uint64_t secure_handle(media::DecoderBufferSideData input);
+
+  static bool Read(media::stable::mojom::DecoderBufferSideDataDataView data,
+                   media::DecoderBufferSideData* output);
 };
 
 template <>

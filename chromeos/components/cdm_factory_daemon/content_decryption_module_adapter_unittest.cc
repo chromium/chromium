@@ -24,7 +24,6 @@ namespace {
 
 constexpr char kFakeEmeInitData[] = "fake_init_data";
 const std::vector<uint8_t> kFakeEncryptedData = {42, 22, 26, 13, 7, 16, 8, 2};
-const std::vector<uint8_t> kFakeSideData = {36, 24, 36};
 constexpr char kFakeKeyId[] = "fake_key_id";
 constexpr char kFakeIv[] = "fake_iv_16_bytes";
 constexpr char kFakeServiceCertificate[] = "fake_service_cert";
@@ -115,8 +114,8 @@ cdm::mojom::CdmPromiseResultPtr CreatePromise(bool success) {
 
 scoped_refptr<media::DecoderBuffer> CreateDecoderBuffer(
     const std::vector<uint8_t> data) {
-  scoped_refptr<media::DecoderBuffer> buffer = media::DecoderBuffer::CopyFrom(
-      data.data(), data.size(), kFakeSideData.data(), kFakeSideData.size());
+  scoped_refptr<media::DecoderBuffer> buffer =
+      media::DecoderBuffer::CopyFrom(data.data(), data.size());
   buffer->set_timestamp(base::Seconds(kFakeTimestampSec));
   buffer->set_duration(base::Seconds(kFakeDurationSec));
   return buffer;

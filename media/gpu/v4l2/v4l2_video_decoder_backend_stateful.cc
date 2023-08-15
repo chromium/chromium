@@ -34,7 +34,8 @@ namespace {
 bool IsVp9KSVCStream(VideoCodecProfile profile,
                      const DecoderBuffer& decoder_buffer) {
   return VideoCodecProfileToVideoCodec(profile) == VideoCodec::kVP9 &&
-         decoder_buffer.side_data_size() > 0;
+         decoder_buffer.has_side_data() &&
+         !decoder_buffer.side_data()->spatial_layers.empty();
 }
 
 bool IsVp9KSVCSupportedDriver(const std::string& driver_name) {

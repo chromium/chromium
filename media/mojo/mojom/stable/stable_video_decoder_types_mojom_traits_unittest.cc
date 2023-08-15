@@ -39,6 +39,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidNonEOSDecoderBuffer) {
             base::strict_cast<size_t>(mojom_decoder_buffer->data_size));
   EXPECT_EQ(deserialized_decoder_buffer->is_key_frame(),
             mojom_decoder_buffer->is_key_frame);
+  EXPECT_FALSE(deserialized_decoder_buffer->has_side_data());
 }
 
 TEST(StableVideoDecoderTypesMojomTraitsTest, InfiniteDecoderBufferDuration) {
@@ -66,6 +67,51 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, NegativeDecoderBufferDuration) {
   mojom_decoder_buffer->is_end_of_stream = false;
   mojom_decoder_buffer->data_size = 100;
   mojom_decoder_buffer->is_key_frame = true;
+
+  std::vector<uint8_t> serialized_decoder_buffer =
+      stable::mojom::DecoderBuffer::Serialize(&mojom_decoder_buffer);
+
+  scoped_refptr<DecoderBuffer> deserialized_decoder_buffer;
+  ASSERT_FALSE(stable::mojom::DecoderBuffer::Deserialize(
+      serialized_decoder_buffer, &deserialized_decoder_buffer));
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest, RawSideDataToValidSpatialLayers) {
+  stable::mojom::DecoderBufferPtr mojom_decoder_buffer =
+      stable::mojom::DecoderBuffer::New();
+  mojom_decoder_buffer->is_end_of_stream = false;
+  constexpr uint32_t kValidSpatialLayers[] = {1, 2, 3};
+  constexpr size_t kLayersSize = std::size(kValidSpatialLayers);
+  mojom_decoder_buffer->raw_side_data.assign(
+      reinterpret_cast<const uint8_t*>(kValidSpatialLayers),
+      reinterpret_cast<const uint8_t*>(kValidSpatialLayers + kLayersSize));
+
+  std::vector<uint8_t> serialized_decoder_buffer =
+      stable::mojom::DecoderBuffer::Serialize(&mojom_decoder_buffer);
+
+  scoped_refptr<DecoderBuffer> deserialized_decoder_buffer;
+  ASSERT_TRUE(stable::mojom::DecoderBuffer::Deserialize(
+      serialized_decoder_buffer, &deserialized_decoder_buffer));
+  ASSERT_TRUE(deserialized_decoder_buffer);
+
+  ASSERT_FALSE(deserialized_decoder_buffer->end_of_stream());
+  ASSERT_TRUE(deserialized_decoder_buffer->has_side_data());
+  EXPECT_EQ(deserialized_decoder_buffer->side_data()->spatial_layers,
+            std::vector<uint32_t>(kValidSpatialLayers,
+                                  kValidSpatialLayers + kLayersSize));
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest,
+     RawSideDataToInvalidSpatialLayers) {
+  stable::mojom::DecoderBufferPtr mojom_decoder_buffer =
+      stable::mojom::DecoderBuffer::New();
+  mojom_decoder_buffer->is_end_of_stream = false;
+  // The max number of spatial layers is 3.
+  constexpr uint32_t kInvalidSpatialLayers[] = {1, 2, 3, 4};
+  constexpr size_t kLayersSize = std::size(kInvalidSpatialLayers);
+  mojom_decoder_buffer->raw_side_data.assign(
+      reinterpret_cast<const uint8_t*>(kInvalidSpatialLayers),
+      reinterpret_cast<const uint8_t*>(kInvalidSpatialLayers + kLayersSize));
 
   std::vector<uint8_t> serialized_decoder_buffer =
       stable::mojom::DecoderBuffer::Serialize(&mojom_decoder_buffer);

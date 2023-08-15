@@ -322,21 +322,23 @@ bool StructTraits<media::stable::mojom::DecoderBufferDataView,
 // static
 std::vector<uint8_t> StructTraits<media::stable::mojom::DecoderBufferDataView,
                                   scoped_refptr<media::DecoderBuffer>>::
-    side_data(const scoped_refptr<media::DecoderBuffer>& input) {
-  static_assert(
-      std::is_same<decltype(input->side_data()), const uint8_t*>::value,
-      "Unexpected type for media::DecoderBuffer::side_data(). If you need to "
-      "change this assertion, please contact chromeos-gfx-video@google.com.");
-  static_assert(std::is_same<decltype(input->side_data_size()), size_t>::value,
-                "Unexpected type for media::DecoderBuffer::side_data_size(). "
-                "If you need to change this assertion, please contact "
-                "chromeos-gfx-video@google.com.");
-  if (input->end_of_stream() || !input->side_data())
+    raw_side_data(const scoped_refptr<media::DecoderBuffer>& input) {
+  if (input->end_of_stream()) {
     return {};
-  CHECK_GT(input->side_data_size(), 0u);
-  // This copy is okay because the side data is expected to be small always.
-  return std::vector<uint8_t>(input->side_data(),
-                              input->side_data() + input->side_data_size());
+  }
+  // TODO(b/269383891): Remove this in M120.
+  // If the receiver of the Mojo data is on an older version than us, then we
+  // need to convert the side data to a raw format. We only care about spatial
+  // layers since alpha data isn't used by HW decoders and the secure handle is
+  // only going to used in new code going forward.
+  if (!input->has_side_data() || input->side_data()->spatial_layers.empty()) {
+    return {};
+  }
+  std::vector<uint8_t> raw_data;
+  raw_data.resize(input->side_data()->spatial_layers.size() * sizeof(uint32_t));
+  memcpy(raw_data.data(), input->side_data()->spatial_layers.data(),
+         raw_data.size());
+  return raw_data;
 }
 
 // static
@@ -405,6 +407,22 @@ base::TimeDelta StructTraits<media::stable::mojom::DecoderBufferDataView,
 }
 
 // static
+absl::optional<media::DecoderBufferSideData>
+StructTraits<media::stable::mojom::DecoderBufferDataView,
+             scoped_refptr<media::DecoderBuffer>>::
+    side_data(const scoped_refptr<media::DecoderBuffer>& input) {
+  static_assert(
+      std::is_same<decltype(input->side_data()),
+                   const absl::optional<media::DecoderBufferSideData>&>::value,
+      "Unexpected type for input->side_data(). If you need to change this "
+      "assertion, please contact chromeos-gfx-video@google.com.");
+  if (input->end_of_stream()) {
+    return absl::nullopt;
+  }
+  return input->side_data();
+}
+
+// static
 bool StructTraits<media::stable::mojom::DecoderBufferDataView,
                   scoped_refptr<media::DecoderBuffer>>::
     Read(media::stable::mojom::DecoderBufferDataView input,
@@ -433,11 +451,9 @@ bool StructTraits<media::stable::mojom::DecoderBufferDataView,
 
   decoder_buffer->set_is_key_frame(input.is_key_frame());
 
-  std::vector<uint8_t> side_data;
-  if (!input.ReadSideData(&side_data))
+  std::vector<uint8_t> raw_side_data;
+  if (!input.ReadRawSideData(&raw_side_data)) {
     return false;
-  if (!side_data.empty()) {
-    decoder_buffer->CopySideDataFrom(side_data.data(), side_data.size());
   }
 
   std::unique_ptr<media::DecryptConfig> decrypt_config;
@@ -462,7 +478,82 @@ bool StructTraits<media::stable::mojom::DecoderBufferDataView,
                                                        back_discard);
   decoder_buffer->set_discard_padding(discard_padding);
 
+  absl::optional<media::DecoderBufferSideData> side_data;
+  if (!input.ReadSideData(&side_data)) {
+    return false;
+  }
+  decoder_buffer->set_side_data(side_data);
+
+  // TODO(b/269383891): Remove this in M120.
+  // If the input is an older version than us, then it may have |raw_side_data|
+  // set and we need to copy that into the potential values in |side_data|.
+  if (!raw_side_data.empty() && !side_data.has_value()) {
+    // Spatial layers is always a multiple of 4 with a max size of 12.
+    // HW decoders don't use alpha data, so we can ignore that case.
+    if (raw_side_data.size() % sizeof(uint32_t) != 0 ||
+        raw_side_data.size() > 3 * sizeof(uint32_t)) {
+      return false;
+    }
+    decoder_buffer->WritableSideData().spatial_layers.resize(
+        raw_side_data.size() / sizeof(uint32_t));
+    memcpy(decoder_buffer->WritableSideData().spatial_layers.data(),
+           raw_side_data.data(), raw_side_data.size());
+  }
+
   *output = std::move(decoder_buffer);
+  return true;
+}
+
+// static
+uint64_t StructTraits<media::stable::mojom::DecoderBufferSideDataDataView,
+                      media::DecoderBufferSideData>::
+    secure_handle(media::DecoderBufferSideData input) {
+  static_assert(
+      std::is_same<decltype(input.secure_handle), uint64_t>::value,
+      "Unexpected type for input.secure_handle. If you need to change this "
+      "assertion, please contact chromeos-gfx-video@google.com.");
+  return input.secure_handle;
+}
+
+// static
+std::vector<uint32_t> StructTraits<
+    media::stable::mojom::DecoderBufferSideDataDataView,
+    media::DecoderBufferSideData>::spatial_layers(media::DecoderBufferSideData
+                                                      input) {
+  static_assert(
+      std::is_same<decltype(input.spatial_layers),
+                   std::vector<uint32_t>>::value,
+      "Unexpected type for input.spatial_layers. If you need to change this "
+      "assertion, please contact chromeos-gfx-video@google.com.");
+  return input.spatial_layers;
+}
+
+// static
+std::vector<uint8_t> StructTraits<
+    media::stable::mojom::DecoderBufferSideDataDataView,
+    media::DecoderBufferSideData>::alpha_data(media::DecoderBufferSideData
+                                                  input) {
+  static_assert(
+      std::is_same<decltype(input.alpha_data), std::vector<uint8_t>>::value,
+      "Unexpected type for input.alpha_data. If you need to change this "
+      "assertion, please contact chromeos-gfx-video@google.com.");
+  return input.alpha_data;
+}
+
+// static
+bool StructTraits<media::stable::mojom::DecoderBufferSideDataDataView,
+                  media::DecoderBufferSideData>::
+    Read(media::stable::mojom::DecoderBufferSideDataDataView input,
+         media::DecoderBufferSideData* output) {
+  constexpr size_t kMaxSpatialLayers = 3;
+  if (!input.ReadSpatialLayers(&output->spatial_layers) ||
+      output->spatial_layers.size() > kMaxSpatialLayers) {
+    return false;
+  }
+  if (!input.ReadAlphaData(&output->alpha_data)) {
+    return false;
+  }
+  output->secure_handle = input.secure_handle();
   return true;
 }
 

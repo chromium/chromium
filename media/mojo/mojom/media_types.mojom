@@ -239,6 +239,13 @@ struct DecryptConfig {
   EncryptionPattern? encryption_pattern;
 };
 
+// This defines a mojo transport format for media::DecoderBufferSideData.
+struct DecoderBufferSideData {
+  array<uint32> spatial_layers;
+  array<uint8> alpha_data;
+  uint64 secure_handle;
+};
+
 // This defines a mojo transport format for media::DecoderBuffer.
 struct DecoderBuffer {
   mojo_base.mojom.TimeDelta timestamp;
@@ -256,15 +263,14 @@ struct DecoderBuffer {
   // Indicates whether or not this buffer is a random access point.
   bool is_key_frame;
 
-  // Empty when |side_data| doesn't exist.
-  array<uint8> side_data;
-
   // DecryptConfig for a encrypted buffer. NULL if the buffer is not encrypted.
   DecryptConfig? decrypt_config;
 
   // These fields indicate the amount of data to discard after decoding.
   mojo_base.mojom.TimeDelta front_discard;
   mojo_base.mojom.TimeDelta back_discard;
+
+  DecoderBufferSideData? side_data;
 };
 
 // This defines a mojo transport format for media::AudioBuffer.

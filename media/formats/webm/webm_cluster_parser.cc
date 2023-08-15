@@ -528,10 +528,13 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
     // type with remapped bytestream track numbers and allow multiple tracks as
     // applicable. See https://crbug.com/341581.
-    buffer = StreamParserBuffer::CopyFrom(
-        data + data_offset, size - data_offset,
-        additional, additional_size,
-        is_keyframe, buffer_type, track_num);
+    buffer =
+        StreamParserBuffer::CopyFrom(data + data_offset, size - data_offset,
+                                     is_keyframe, buffer_type, track_num);
+    if (additional_size) {
+      buffer->WritableSideData().alpha_data.assign(
+          additional, additional + additional_size);
+    }
 
     if (decrypt_config)
       buffer->set_decrypt_config(std::move(decrypt_config));
@@ -539,19 +542,9 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     std::string id, settings, content;
     WebMWebVTTParser::Parse(data, size, &id, &settings, &content);
 
-    std::vector<uint8_t> side_data;
-    MakeSideData(id.begin(), id.end(),
-                 settings.begin(), settings.end(),
-                 &side_data);
-
-    // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
-    // type with remapped bytestream track numbers and allow multiple tracks as
-    // applicable. See https://crbug.com/341581.
+    // TODO(crbug.com/1471504): This is now broken without side data; remove.
     buffer = StreamParserBuffer::CopyFrom(
-        reinterpret_cast<const uint8_t*>(content.data()),
-        content.length(),
-        &side_data[0],
-        side_data.size(),
+        reinterpret_cast<const uint8_t*>(content.data()), content.length(),
         true, buffer_type, track_num);
   }
 

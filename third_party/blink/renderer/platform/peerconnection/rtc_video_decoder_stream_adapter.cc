@@ -549,16 +549,11 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
   // Convert to media::DecoderBuffer.
   // TODO(sandersd): What is |render_time_ms|?
   auto pending_buffer = std::make_unique<PendingBuffer>();
+  pending_buffer->buffer =
+      media::DecoderBuffer::CopyFrom(input_image.data(), input_image.size());
   if (spatial_layer_frame_size.size() > 1) {
-    const uint8_t* side_data =
-        reinterpret_cast<const uint8_t*>(spatial_layer_frame_size.data());
-    size_t side_data_size =
-        spatial_layer_frame_size.size() * sizeof(uint32_t) / sizeof(uint8_t);
-    pending_buffer->buffer = media::DecoderBuffer::CopyFrom(
-        input_image.data(), input_image.size(), side_data, side_data_size);
-  } else {
-    pending_buffer->buffer =
-        media::DecoderBuffer::CopyFrom(input_image.data(), input_image.size());
+    pending_buffer->buffer->WritableSideData().spatial_layers =
+        spatial_layer_frame_size;
   }
   pending_buffer->buffer->set_timestamp(
       base::Microseconds(input_image.Timestamp()));
