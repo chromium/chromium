@@ -300,6 +300,13 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
 NGBreakStatus FinishFragmentationForFragmentainer(const NGConstraintSpace&,
                                                   NGBoxFragmentBuilder*);
 
+// Return true if there's a valid class A/B breakpoint between the child
+// fragment that was just added to the builder, and the next sibling, if one is
+// added.
+bool HasBreakOpportunityBeforeNextChild(
+    const NGPhysicalFragment& child_fragment,
+    const NGBreakToken* incoming_child_break_token);
+
 // Insert a fragmentainer break before the child if necessary. In that case, the
 // previous in-flow position will be updated, we'll return |kBrokeBefore|. If we
 // don't break inside, we'll consider the appeal of doing so anyway (and store

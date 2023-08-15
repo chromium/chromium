@@ -778,6 +778,32 @@ NGBreakStatus FinishFragmentationForFragmentainer(
   return NGBreakStatus::kContinue;
 }
 
+bool HasBreakOpportunityBeforeNextChild(
+    const NGPhysicalFragment& child_fragment,
+    const NGBreakToken* incoming_child_break_token) {
+  // Once we have added a child, there'll be a valid class A/B breakpoint [1]
+  // before consecutive siblings, which implies that we have container
+  // separation, which means that we may break before such siblings. Exclude
+  // children in parallel flows, since they shouldn't affect this flow.
+  //
+  // [1] https://www.w3.org/TR/css-break-3/#possible-breaks
+  if (const auto* box_fragment =
+          DynamicTo<NGPhysicalBoxFragment>(&child_fragment)) {
+    const auto* block_break_token =
+        To<NGBlockBreakToken>(incoming_child_break_token);
+    return !block_break_token || !block_break_token->IsAtBlockEnd();
+  }
+
+  // Only establish a valid break opportunity after a line box if it has
+  // non-zero height. When there's a block inside an inline, a zero-height line
+  // may be created before and after the block, but for the sake of
+  // fragmentation, pretend that they're not there.
+  DCHECK(child_fragment.IsLineBox());
+  NGFragment fragment(child_fragment.Style().GetWritingDirection(),
+                      child_fragment);
+  return fragment.BlockSize() != LayoutUnit();
+}
+
 NGBreakStatus BreakBeforeChildIfNeeded(
     const NGConstraintSpace& space,
     NGLayoutInputNode child,

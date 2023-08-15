@@ -244,7 +244,7 @@ NGBlockLayoutAlgorithm::NGBlockLayoutAlgorithm(
       fit_all_lines_(false),
       is_resuming_(IsBreakInside(params.break_token)),
       abort_when_bfc_block_offset_updated_(false),
-      has_processed_first_child_(false),
+      has_break_opportunity_before_next_child_(false),
       ignore_line_clamp_(false),
       is_line_clamp_context_(params.space.IsLineClampContext()),
       lines_until_clamp_(params.space.LinesUntilClamp()) {
@@ -611,10 +611,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
     // strictly correct (the monolithic content in question may have
     // break-after:avoid, for instance), but should be a reasonable approach,
     // unless we want to make a bigger effort.
-    //
-    // So just pretend that we have processed the first child already.
-    // TODO(layout-dev): Consider renaming has_processed_first_child_.
-    has_processed_first_child_ = true;
+    has_break_opportunity_before_next_child_ = true;
   }
 
   NGPreviousInflowPosition previous_inflow_position = {
@@ -831,17 +828,6 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
           // layout of the fragment. No more siblings should be processed.
           break;
         }
-
-        // Once we have added a child, there'll be a valid class A/B breakpoint
-        // [1] before consecutive siblings, which implies that we have container
-        // separation, which means that we may break before such siblings.
-        // Exclude children in parallel flows, since they shouldn't affect this
-        // flow.
-        //
-        // [1] https://www.w3.org/TR/css-break-3/#possible-breaks
-        has_processed_first_child_ =
-            !child_break_token || !child_break_token->IsBlockType() ||
-            !To<NGBlockBreakToken>(child_break_token)->IsAtBlockEnd();
       }
     }
   }
@@ -1556,7 +1542,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
 
   if (ConstraintSpace().HasBlockFragmentation()) {
     bool has_container_separation =
-        has_processed_first_child_ ||
+        has_break_opportunity_before_next_child_ ||
         child_bfc_offset.block_offset > child_bfc_offset_estimate ||
         layout_result->IsPushedByFloats();
     NGBreakStatus break_status = BreakBeforeChildIfNeeded(
@@ -1593,6 +1579,13 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
       *previous_inflow_position, child, child_data,
       child_bfc_offset.block_offset, logical_offset, *layout_result, fragment,
       /* self_collapsing_child_had_clearance */ false);
+
+  if (ConstraintSpace().HasBlockFragmentation() &&
+      !has_break_opportunity_before_next_child_) {
+    has_break_opportunity_before_next_child_ =
+        HasBreakOpportunityBeforeNextChild(physical_fragment,
+                                           child_break_token);
+  }
 
   return NGLayoutResult::kSuccess;
 }
@@ -2097,7 +2090,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
       // that gets pushed down (the container and the child may have adjoining
       // block-start margins).
       bool has_container_separation =
-          has_processed_first_child_ ||
+          has_break_opportunity_before_next_child_ ||
           (!container_builder_.IsPushedByFloats() &&
            (layout_result->IsPushedByFloats() || is_line_box_pushed_by_floats));
 
@@ -2225,6 +2218,14 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
           previous_inflow_position->logical_block_offset;
     }
   }
+
+  if (ConstraintSpace().HasBlockFragmentation() &&
+      !has_break_opportunity_before_next_child_) {
+    has_break_opportunity_before_next_child_ =
+        HasBreakOpportunityBeforeNextChild(physical_fragment,
+                                           child_break_token);
+  }
+
   return NGLayoutResult::kSuccess;
 }
 
