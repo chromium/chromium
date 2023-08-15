@@ -10,7 +10,6 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
-#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
@@ -27,9 +26,9 @@ namespace {
 class FilterExtractor {
  public:
   explicit FilterExtractor(
-      const DefaultModelManager::SegmentInfoList& segment_infos) {
-    for (const auto& info : segment_infos) {
-      const proto::SegmentInfo& segment_info = info->segment_info;
+      const SegmentInfoDatabase::SegmentInfoList& segment_infos) {
+    for (auto& info : segment_infos) {
+      proto::SegmentInfo segment_info = info.second;
       const auto& metadata = segment_info.model_metadata();
       AddUmaFeatures(metadata);
       if (AddUkmFeatures(metadata)) {
@@ -104,15 +103,15 @@ SignalFilterProcessor::SignalFilterProcessor(
 SignalFilterProcessor::~SignalFilterProcessor() = default;
 
 void SignalFilterProcessor::OnSignalListUpdated() {
-  storage_service_->default_model_manager()->GetAllSegmentInfoFromBothModels(
-      segment_ids_, storage_service_->segment_info_database(),
-      base::BindOnce(&SignalFilterProcessor::FilterSignals,
-                     weak_ptr_factory_.GetWeakPtr()));
+  auto available_segments =
+      storage_service_->segment_info_database()->GetSegmentInfoForBothModels(
+          segment_ids_);
+  FilterSignals(std::move(available_segments));
 }
 
 void SignalFilterProcessor::FilterSignals(
-    DefaultModelManager::SegmentInfoList segment_infos) {
-  FilterExtractor extractor(segment_infos);
+    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos) {
+  FilterExtractor extractor(*segment_infos.get());
 
   stats::RecordSignalsListeningCount(extractor.user_actions,
                                      extractor.histograms);
@@ -126,14 +125,13 @@ void SignalFilterProcessor::FilterSignals(
     history_observer_->SetHistoryBasedSegments(
         std::move(extractor.history_based_segments));
   }
-  for (const auto& segment_info : segment_infos) {
+  for (const auto& segment_info : *segment_infos) {
     if (is_first_time_model_update_) {
       stats::RecordModelUpdateTimeDifference(
-          segment_info->segment_info.segment_id(),
-          segment_info->segment_info.model_update_time_s());
+          segment_info.first, segment_info.second.model_update_time_s());
     }
     storage_service_->signal_storage_config()->OnSignalCollectionStarted(
-        segment_info->segment_info.model_metadata());
+        segment_info.second.model_metadata());
   }
   is_first_time_model_update_ = false;
 }
