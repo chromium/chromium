@@ -347,7 +347,40 @@ void av1_convolve_2d_sr_neon(const uint8_t* src,
                              const int subpel_x_qn,
                              const int subpel_y_qn,
                              ConvolveParams* conv_params);
-#define av1_convolve_2d_sr av1_convolve_2d_sr_neon
+void av1_convolve_2d_sr_neon_dotprod(const uint8_t* src,
+                                     int src_stride,
+                                     uint8_t* dst,
+                                     int dst_stride,
+                                     int w,
+                                     int h,
+                                     const InterpFilterParams* filter_params_x,
+                                     const InterpFilterParams* filter_params_y,
+                                     const int subpel_x_qn,
+                                     const int subpel_y_qn,
+                                     ConvolveParams* conv_params);
+void av1_convolve_2d_sr_neon_i8mm(const uint8_t* src,
+                                  int src_stride,
+                                  uint8_t* dst,
+                                  int dst_stride,
+                                  int w,
+                                  int h,
+                                  const InterpFilterParams* filter_params_x,
+                                  const InterpFilterParams* filter_params_y,
+                                  const int subpel_x_qn,
+                                  const int subpel_y_qn,
+                                  ConvolveParams* conv_params);
+RTCD_EXTERN void (*av1_convolve_2d_sr)(
+    const uint8_t* src,
+    int src_stride,
+    uint8_t* dst,
+    int dst_stride,
+    int w,
+    int h,
+    const InterpFilterParams* filter_params_x,
+    const InterpFilterParams* filter_params_y,
+    const int subpel_x_qn,
+    const int subpel_y_qn,
+    ConvolveParams* conv_params);
 
 void av1_convolve_horiz_rs_c(const uint8_t* src,
                              int src_stride,
@@ -378,7 +411,33 @@ void av1_convolve_x_sr_neon(const uint8_t* src,
                             const InterpFilterParams* filter_params_x,
                             const int subpel_x_qn,
                             ConvolveParams* conv_params);
-#define av1_convolve_x_sr av1_convolve_x_sr_neon
+void av1_convolve_x_sr_neon_dotprod(const uint8_t* src,
+                                    int src_stride,
+                                    uint8_t* dst,
+                                    int dst_stride,
+                                    int w,
+                                    int h,
+                                    const InterpFilterParams* filter_params_x,
+                                    const int subpel_x_qn,
+                                    ConvolveParams* conv_params);
+void av1_convolve_x_sr_neon_i8mm(const uint8_t* src,
+                                 int src_stride,
+                                 uint8_t* dst,
+                                 int dst_stride,
+                                 int w,
+                                 int h,
+                                 const InterpFilterParams* filter_params_x,
+                                 const int subpel_x_qn,
+                                 ConvolveParams* conv_params);
+RTCD_EXTERN void (*av1_convolve_x_sr)(const uint8_t* src,
+                                      int src_stride,
+                                      uint8_t* dst,
+                                      int dst_stride,
+                                      int w,
+                                      int h,
+                                      const InterpFilterParams* filter_params_x,
+                                      const int subpel_x_qn,
+                                      ConvolveParams* conv_params);
 
 void av1_convolve_y_sr_c(const uint8_t* src,
                          int src_stride,
@@ -1503,7 +1562,42 @@ void av1_warp_affine_neon(const int32_t* mat,
                           int16_t beta,
                           int16_t gamma,
                           int16_t delta);
-#define av1_warp_affine av1_warp_affine_neon
+void av1_warp_affine_neon_i8mm(const int32_t* mat,
+                               const uint8_t* ref,
+                               int width,
+                               int height,
+                               int stride,
+                               uint8_t* pred,
+                               int p_col,
+                               int p_row,
+                               int p_width,
+                               int p_height,
+                               int p_stride,
+                               int subsampling_x,
+                               int subsampling_y,
+                               ConvolveParams* conv_params,
+                               int16_t alpha,
+                               int16_t beta,
+                               int16_t gamma,
+                               int16_t delta);
+RTCD_EXTERN void (*av1_warp_affine)(const int32_t* mat,
+                                    const uint8_t* ref,
+                                    int width,
+                                    int height,
+                                    int stride,
+                                    uint8_t* pred,
+                                    int p_col,
+                                    int p_row,
+                                    int p_width,
+                                    int p_height,
+                                    int p_stride,
+                                    int subsampling_x,
+                                    int subsampling_y,
+                                    ConvolveParams* conv_params,
+                                    int16_t alpha,
+                                    int16_t beta,
+                                    int16_t gamma,
+                                    int16_t delta);
 
 void av1_wedge_compute_delta_squares_c(int16_t* d,
                                        const int16_t* a,
@@ -1830,6 +1924,20 @@ static void setup_rtcd_internal(void) {
 
   (void)flags;
 
+  av1_convolve_2d_sr = av1_convolve_2d_sr_neon;
+  if (flags & HAS_NEON_DOTPROD) {
+    av1_convolve_2d_sr = av1_convolve_2d_sr_neon_dotprod;
+  }
+  if (flags & HAS_NEON_I8MM) {
+    av1_convolve_2d_sr = av1_convolve_2d_sr_neon_i8mm;
+  }
+  av1_convolve_x_sr = av1_convolve_x_sr_neon;
+  if (flags & HAS_NEON_DOTPROD) {
+    av1_convolve_x_sr = av1_convolve_x_sr_neon_dotprod;
+  }
+  if (flags & HAS_NEON_I8MM) {
+    av1_convolve_x_sr = av1_convolve_x_sr_neon_i8mm;
+  }
   av1_dist_wtd_convolve_2d = av1_dist_wtd_convolve_2d_neon;
   if (flags & HAS_NEON_DOTPROD) {
     av1_dist_wtd_convolve_2d = av1_dist_wtd_convolve_2d_neon_dotprod;
@@ -1847,6 +1955,10 @@ static void setup_rtcd_internal(void) {
   av1_get_crc32c_value = av1_get_crc32c_value_c;
   if (flags & HAS_ARM_CRC32) {
     av1_get_crc32c_value = av1_get_crc32c_value_arm_crc32;
+  }
+  av1_warp_affine = av1_warp_affine_neon;
+  if (flags & HAS_NEON_I8MM) {
+    av1_warp_affine = av1_warp_affine_neon_i8mm;
   }
 }
 #endif

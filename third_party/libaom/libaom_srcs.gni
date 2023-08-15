@@ -35,9 +35,16 @@ aom_av1_common_intrin_neon = [
   "//third_party/libaom/source/libaom/av1/common/arm/wiener_convolve_neon.c",
 ]
 
-aom_av1_common_intrin_neon_dotprod = [ "//third_party/libaom/source/libaom/av1/common/arm/compound_convolve_neon_dotprod.c" ]
+aom_av1_common_intrin_neon_dotprod = [
+  "//third_party/libaom/source/libaom/av1/common/arm/compound_convolve_neon_dotprod.c",
+  "//third_party/libaom/source/libaom/av1/common/arm/convolve_neon_dotprod.c",
+]
 
-aom_av1_common_intrin_neon_i8mm = [ "//third_party/libaom/source/libaom/av1/common/arm/compound_convolve_neon_i8mm.c" ]
+aom_av1_common_intrin_neon_i8mm = [
+  "//third_party/libaom/source/libaom/av1/common/arm/compound_convolve_neon_i8mm.c",
+  "//third_party/libaom/source/libaom/av1/common/arm/convolve_neon_i8mm.c",
+  "//third_party/libaom/source/libaom/av1/common/arm/warp_plane_neon_i8mm.c",
+]
 
 aom_av1_common_intrin_sse2 = [
   "//third_party/libaom/source/libaom/av1/common/x86/av1_txfm_sse2.h",
@@ -71,6 +78,9 @@ aom_av1_common_intrin_ssse3 = [
   "//third_party/libaom/source/libaom/av1/common/x86/jnt_convolve_ssse3.c",
   "//third_party/libaom/source/libaom/av1/common/x86/resize_ssse3.c",
 ]
+
+aom_av1_common_intrin_sve =
+    [ "//third_party/libaom/source/libaom/av1/common/arm/warp_plane_sve.c" ]
 
 aom_av1_common_intrin_vsx =
     [ "//third_party/libaom/source/libaom/av1/common/ppc/cfl_ppc.c" ]
