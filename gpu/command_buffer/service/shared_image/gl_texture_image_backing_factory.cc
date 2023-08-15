@@ -193,7 +193,9 @@ bool GLTextureImageBackingFactory::IsSupported(
 
   // Only supports WebGPU usages on Dawn's OpenGLES backend.
   if (usage & kWebGPUUsages) {
-    if (use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES) {
+    if (use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES ||
+        gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE ||
+        gl::GetANGLEImplementation() != gl::ANGLEImplementation::kOpenGL) {
       return false;
     }
   }
