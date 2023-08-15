@@ -689,10 +689,10 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
 
   params->initial_browser_action = initial_browser_action.action;
 
-  // TODO(crbug.com/1448575): These three are equivalent, remove two.
-  params->web_apps_enabled = web_app::IsWebAppsCrosapiEnabled();
-  params->standalone_browser_is_primary = IsLacrosEnabled();
-  params->standalone_browser_is_only_browser = !IsAshWebBrowserEnabled();
+  // TODO(crbug.com/1448575): These three are redundant. Remove them in M120.
+  params->web_apps_enabled = true;
+  params->standalone_browser_is_primary = true;
+  params->standalone_browser_is_only_browser = true;
 
   params->publish_chrome_apps = browser_util::IsLacrosChromeAppsEnabled();
   params->publish_hosted_apps = crosapi::IsStandaloneBrowserHostedAppsEnabled();
