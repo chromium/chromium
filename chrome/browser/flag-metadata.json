@@ -6998,7 +6998,7 @@
   {
     "name": "restore-tabs-on-fre",
     "owners": [ "bjfong", "ckitagawa", "fredmello" ],
-    "expiry_milestone": 117
+    "expiry_milestone": 121
   },
   {
     "name": "restrict-gamepad-access",
