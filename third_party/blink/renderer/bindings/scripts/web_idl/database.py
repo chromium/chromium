@@ -26,6 +26,7 @@ class DatabaseBody(object):
     """
 
     class Kind(object):
+        ASYNC_ITERATOR = 'async iterator'
         CALLBACK_FUNCTION = 'callback function'
         CALLBACK_INTERFACE = 'callback interface'
         DICTIONARY = 'dictionary'
@@ -39,6 +40,7 @@ class DatabaseBody(object):
         UNION = 'union'
 
         _ALL_ENTRIES = (
+            ASYNC_ITERATOR,
             CALLBACK_FUNCTION,
             CALLBACK_INTERFACE,
             DICTIONARY,
@@ -111,6 +113,11 @@ class Database(object):
         if not found.
         """
         return self._impl.find_by_identifier(identifier)
+
+    @property
+    def async_iterators(self):
+        """Returns all async iterators."""
+        return self._view_by_kind(Database._Kind.ASYNC_ITERATOR)
 
     @property
     def callback_functions(self):

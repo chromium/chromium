@@ -37,6 +37,7 @@ _setup_sys_path()
 from . import file_io
 from .argument import Argument
 from .ast_group import AstGroup
+from .async_iterator import AsyncIterator
 from .attribute import Attribute
 from .callback_function import CallbackFunction
 from .callback_interface import CallbackInterface

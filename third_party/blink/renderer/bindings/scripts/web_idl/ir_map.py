@@ -52,6 +52,7 @@ class IRMap(object):
             "interface", "typedef", or "partial dictionary".
             """
 
+            ASYNC_ITERATOR = 'async iterator'
             CALLBACK_FUNCTION = 'callback function'
             CALLBACK_INTERFACE = 'callback interface'
             DICTIONARY = 'dictionary'
