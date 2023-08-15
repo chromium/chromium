@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -91,6 +92,13 @@ void ReadAnythingUntrustedPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
 
 void ReadAnythingUntrustedPageHandler::OnCopy() {
   web_contents()->Copy();
+}
+
+void ReadAnythingUntrustedPageHandler::OnLineSpaceChange(
+    read_anything::mojom::LineSpacing line_spacing) {
+  browser_->profile()->GetPrefs()->SetInteger(
+      prefs::kAccessibilityReadAnythingLineSpacing,
+      static_cast<size_t>(line_spacing));
 }
 
 void ReadAnythingUntrustedPageHandler::OnLinkClicked(

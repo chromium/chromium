@@ -140,25 +140,25 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     menuToOpen.showAt(button, this.showAtPositionConfig_);
   }
 
-  // TODO(b/1465029): While there is a toolbar in both WebUI and View,
-  // investigate if there's an easy way to keep the line and letter spacing
-  // numbers consistent with the numbers defined for View in
-  // ReadAnythingAppModel#GetLineSpacingValue.
   private onLineSpacingStandardClick_() {
-    this.onLineSpacingClick_('1.35');
+    chrome.readingMode.onStandardLineSpacing();
+    this.onLineSpacingClick_(chrome.readingMode.standardLineSpacing);
   }
 
   private onLineSpacingLooseClick_() {
-    this.onLineSpacingClick_('1.5');
+    chrome.readingMode.onLooseLineSpacing();
+    this.onLineSpacingClick_(chrome.readingMode.looseLineSpacing);
   }
 
   private onLineSpacingVeryLooseClick_() {
-    this.onLineSpacingClick_('2');
+    chrome.readingMode.onVeryLooseLineSpacing();
+    this.onLineSpacingClick_(chrome.readingMode.veryLooseLineSpacing);
   }
 
-  private onLineSpacingClick_(lineSpacing: string) {
+  private onLineSpacingClick_(lineSpacing: number) {
     if (this.contentPage) {
-      this.contentPage.updateLineSpacing(lineSpacing);
+      this.contentPage.updateLineSpacing(
+          chrome.readingMode.getLineSpacingValue(lineSpacing));
     }
 
     this.closeMenus_();

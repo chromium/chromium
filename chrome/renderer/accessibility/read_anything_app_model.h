@@ -136,14 +136,14 @@ class ReadAnythingAppModel {
 
   void EraseTreeForTesting(ui::AXTreeID tree_id);
 
+  double GetLineSpacingValue(
+      read_anything::mojom::LineSpacing line_spacing) const;
+
  private:
   void EraseTree(ui::AXTreeID tree_id);
 
   double GetLetterSpacingValue(
       read_anything::mojom::LetterSpacing letter_spacing) const;
-  double GetLineSpacingValue(
-      read_anything::mojom::LineSpacing line_spacing) const;
-
   void InsertDisplayNode(ui::AXNodeID node);
   void ResetSelection();
   void InsertSelectionNode(ui::AXNodeID node);

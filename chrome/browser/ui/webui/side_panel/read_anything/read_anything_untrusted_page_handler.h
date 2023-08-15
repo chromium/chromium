@@ -60,6 +60,8 @@ class ReadAnythingUntrustedPageHandler
 
   // read_anything::mojom::UntrustedPageHandler:
   void OnCopy() override;
+  void OnLineSpaceChange(
+      read_anything::mojom::LineSpacing line_spacing) override;
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
                      ui::AXNodeID target_node_id) override;
   void OnSelectionChange(const ui::AXTreeID& target_tree_id,

@@ -79,6 +79,10 @@ interface UntrustedPageHandler {
   // captions, etc that are not shown in reading mode's simplified view.
   OnCopy();
 
+  // Informs the browser controller that the user updated the line spacing via
+  // the webui toolbar.
+  OnLineSpaceChange(read_anything.mojom.LineSpacing line_spacing);
+
   // Informs the browser controller that a link was clicked in the WebUI. The
   // browser controller responds by performing a click action on the link in
   // the target tree, which is in the main frame of the currently active web

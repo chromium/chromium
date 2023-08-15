@@ -45,6 +45,10 @@ class MockReadAnythingUntrustedPageHandler
                int focus_offset),
               (override));
   MOCK_METHOD(void, OnCopy, (), (override));
+  MOCK_METHOD(void,
+              OnLineSpaceChange,
+              (read_anything::mojom::LineSpacing line_spacing),
+              (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {

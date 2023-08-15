@@ -401,7 +401,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  updateLineSpacing(newLineHeight: string) {
+  updateLineSpacing(newLineHeight: number) {
     this.updateStyles({
       '--line-height': newLineHeight,
     });

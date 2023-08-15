@@ -31,6 +31,11 @@ declare namespace chrome {
     let lineSpacing: number;
     let letterSpacing: number;
 
+    // Enum values for various visual theme changes.
+    let standardLineSpacing: number;
+    let looseLineSpacing: number;
+    let veryLooseLineSpacing: number;
+
     // Whether the WebUI toolbar feature flag is enabled.
     let isWebUIToolbarVisible: boolean;
 
@@ -81,6 +86,15 @@ declare namespace chrome {
     // Called when a user clicks a link. NodeID is an AXNodeID which identifies
     // the link's corresponding AXNode in the main pane.
     function onLinkClicked(nodeId: number): void;
+
+    // Called when the line spacing is changed via the webui toolbar.
+    function onStandardLineSpacing(): void;
+    function onLooseLineSpacing(): void;
+    function onVeryLooseLineSpacing(): void;
+
+    // Returns the actual spacing value to use based on the given lineSpacing
+    // category.
+    function getLineSpacingValue(lineSpacing: number): number;
 
     // Called when a user makes a selection change. AnchorNodeID and
     // focusAXNodeID are AXNodeIDs which identify the anchor and focus AXNodes
