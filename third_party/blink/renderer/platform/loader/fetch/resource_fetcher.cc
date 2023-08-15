@@ -1369,19 +1369,13 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   if (client)
     client->SetResource(resource, freezable_task_runner_.get());
 
-  // TODO(yoav): It is not clear why preloads are exempt from this check. Can we
-  // remove the exemption?
-  if (!params.IsSpeculativePreload() || policy != RevalidationPolicy::kUse) {
-    // When issuing another request for a resource that is already in-flight
-    // make sure to not demote the priority of the in-flight request. If the new
-    // request isn't at the same priority as the in-flight request, only allow
-    // promotions. This can happen when a visible image's priority is increased
-    // and then another reference to the image is parsed (which would be at a
-    // lower priority).
-    if (resource_request.Priority() > resource->GetResourceRequest().Priority())
-      resource->DidChangePriority(resource_request.Priority(), 0);
-    // TODO(yoav): I'd expect the stated scenario to not go here, as its policy
-    // would be Use.
+  // Increase the priority of an existing request if the new request is
+  // of a higher priority.
+  // This can happen in a lot of cases but a common one is if a resource is
+  // preloaded at a low priority but then the resource itself requires a
+  // high-priority load.
+  if (resource_request.Priority() > resource->GetResourceRequest().Priority()) {
+    resource->DidChangePriority(resource_request.Priority(), 0);
   }
 
   // If only the fragment identifiers differ, it is the same resource.

@@ -1547,4 +1547,53 @@ TEST_F(ResourceFetcherTest, Detach) {
   EXPECT_TRUE(properties.IsDetached());
 }
 
+TEST_F(ResourceFetcherTest, DuplicatePreloadAllowsPriorityChange) {
+  auto* fetcher = CreateFetcher();
+
+  KURL url("http://127.0.0.1:8000/foo.png");
+  RegisterMockedURLLoad(url);
+
+  FetchParameters fetch_params_for_request =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  FetchParameters fetch_params_for_preload =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  fetch_params_for_preload.SetSpeculativePreloadType(
+      FetchParameters::SpeculativePreloadType::kInDocument);
+  fetch_params_for_preload.SetFetchPriorityHint(
+      mojom::blink::FetchPriorityHint::kLow);
+
+  Resource* resource1 =
+      MockResource::Fetch(fetch_params_for_preload, fetcher, nullptr);
+  ASSERT_TRUE(resource1);
+  EXPECT_TRUE(resource1->IsUnusedPreload());
+  EXPECT_TRUE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_EQ(ResourceLoadPriority::kLow,
+            resource1->GetResourceRequest().Priority());
+
+  // The second preload fetch returns the first preload but boosts the priority.
+  FetchParameters fetch_params_for_preload2 =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  fetch_params_for_preload2.SetSpeculativePreloadType(
+      FetchParameters::SpeculativePreloadType::kInDocument);
+  fetch_params_for_preload2.SetFetchPriorityHint(
+      mojom::blink::FetchPriorityHint::kHigh);
+  Resource* resource2 =
+      MockResource::Fetch(fetch_params_for_preload2, fetcher, nullptr);
+
+  EXPECT_TRUE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_TRUE(resource1->IsUnusedPreload());
+  EXPECT_EQ(resource1, resource2);
+  EXPECT_EQ(ResourceLoadPriority::kHigh,
+            resource1->GetResourceRequest().Priority());
+
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+
+  // preload matching
+  Resource* resource3 =
+      MockResource::Fetch(fetch_params_for_request, fetcher, nullptr);
+  EXPECT_EQ(resource1, resource3);
+  EXPECT_FALSE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_FALSE(resource1->IsUnusedPreload());
+}
+
 }  // namespace blink
