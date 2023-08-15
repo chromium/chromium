@@ -671,11 +671,7 @@ MenuItemView* MenuItemView::GetMenuItemByID(int id) {
 void MenuItemView::ChildrenChanged() {
   MenuController* controller = GetMenuController();
   if (controller) {
-    // Handles the case where we were empty and are no longer empty.
-    RemoveEmptyMenus();
-
-    // Handles the case where we were not empty, but now are.
-    AddEmptyMenus();
+    UpdateEmptyMenusAndMetrics();
 
     controller->MenuChildrenChanged(this);
 
@@ -858,15 +854,6 @@ MenuItemView::MenuItemView(MenuItemView* parent,
     SetEnabled(root_delegate->IsCommandEnabled(command));
 }
 
-void MenuItemView::UpdateMenuPartSizes() {
-  submenu_->UpdateMenuPartSizes();
-  for (MenuItemView* item : submenu_->GetMenuItems()) {
-    if (item->HasSubmenu()) {
-      item->UpdateMenuPartSizes();
-    }
-  }
-}
-
 void MenuItemView::PrepareForRun(bool has_mnemonics, bool show_mnemonics) {
   // Currently we only support showing the root.
   DCHECK(!parent_menu_item_);
@@ -879,9 +866,7 @@ void MenuItemView::PrepareForRun(bool has_mnemonics, bool show_mnemonics) {
   has_mnemonics_ = has_mnemonics;
   show_mnemonics_ = has_mnemonics && show_mnemonics;
 
-  AddEmptyMenus();
-
-  UpdateMenuPartSizes();
+  UpdateEmptyMenusAndMetrics();
 }
 
 int MenuItemView::GetDrawStringFlags() {
@@ -922,31 +907,28 @@ const absl::optional<SkColor> MenuItemView::GetMenuLabelColor() const {
   return absl::nullopt;
 }
 
-void MenuItemView::AddEmptyMenus() {
-  DCHECK(HasSubmenu());
-  if (!submenu_->HasVisibleChildren() && !submenu_->HasEmptyMenuItemView()) {
-    submenu_->AddChildViewAt(std::make_unique<EmptyMenuMenuItem>(this), 0);
-  } else {
-    for (MenuItemView* item : submenu_->GetMenuItems()) {
-      if (item->HasSubmenu())
-        item->AddEmptyMenus();
-    }
-  }
-}
+void MenuItemView::UpdateEmptyMenusAndMetrics() {
+  CHECK(HasSubmenu());
 
-void MenuItemView::RemoveEmptyMenus() {
-  DCHECK(HasSubmenu());
-  // Copy the children, since we may mutate them as we go.
+  // Remove any existing empty menu items, and see whether that leaves any other
+  // visible items. Copy the children, since we may mutate them as we go.
   const Views children = submenu_->children();
+  bool has_visible_menu_items = false;
   for (View* child : children) {
     if (IsViewClass<EmptyMenuMenuItem>(child)) {
-      submenu_->RemoveChildView(child);
-      delete child;
-    } else if (MenuItemView* menu_item = AsViewClass<MenuItemView>(child);
-               menu_item && menu_item->HasSubmenu()) {
-      menu_item->RemoveEmptyMenus();
+      submenu_->RemoveChildViewT(child);
+    } else {
+      has_visible_menu_items |=
+          IsViewClass<MenuItemView>(child) && child->GetVisible();
     }
   }
+
+  // Now add back an empty menu item if need be.
+  if (!has_visible_menu_items) {
+    submenu_->AddChildViewAt(std::make_unique<EmptyMenuMenuItem>(this), 0);
+  }
+
+  submenu_->UpdateMenuPartSizes();
 }
 
 void MenuItemView::AdjustBoundsForRTLUI(gfx::Rect* rect) const {

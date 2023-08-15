@@ -66,14 +66,6 @@ SubmenuView::~SubmenuView() {
   delete scroll_view_container_;
 }
 
-bool SubmenuView::HasEmptyMenuItemView() const {
-  return base::ranges::any_of(children(), IsViewClass<EmptyMenuMenuItem>);
-}
-
-bool SubmenuView::HasVisibleChildren() const {
-  return base::ranges::any_of(GetMenuItems(), &MenuItemView::GetVisible);
-}
-
 SubmenuView::MenuItems SubmenuView::GetMenuItems() const {
   MenuItems menu_items;
   for (View* child : children()) {

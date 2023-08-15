@@ -2191,13 +2191,8 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
   // TODO(oshima|sky): Don't show the menu if drag is in progress and
   // this menu doesn't support drag drop. See crbug.com/110495.
   if (show) {
-    size_t old_num_children = item->GetSubmenu()->children().size();
     item->GetDelegate()->WillShowMenu(item);
-    if (old_num_children != item->GetSubmenu()->children().size()) {
-      // If the number of children changed then we may need to add empty items.
-      item->RemoveEmptyMenus();
-      item->AddEmptyMenus();
-    }
+    item->UpdateEmptyMenusAndMetrics();
   }
   const MenuConfig& menu_config = MenuConfig::instance();
   bool prefer_leading =

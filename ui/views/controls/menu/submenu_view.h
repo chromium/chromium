@@ -63,12 +63,6 @@ class VIEWS_EXPORT SubmenuView : public View,
 
   ~SubmenuView() override;
 
-  // Returns true if the submenu has at least one empty menu item.
-  bool HasEmptyMenuItemView() const;
-
-  // Returns true if the submenu has at least one visible child item.
-  bool HasVisibleChildren() const;
-
   // Returns the children which are menu items.
   MenuItems GetMenuItems() const;
 

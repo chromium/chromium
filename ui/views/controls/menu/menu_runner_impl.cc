@@ -207,7 +207,6 @@ void MenuRunnerImpl::OnMenuClosed(NotifyType type,
       parent_widget = controller_->owner()->GetWeakPtr();
   }
 
-  menu_->RemoveEmptyMenus();
   menu_->set_controller(nullptr);
 
   if (owns_controller_ && controller_) {
