@@ -38,7 +38,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT NotificationObserver {
   virtual void DisableNotification() {}
 
   // Called when the notification expand state changed.
-  virtual void ExpandStateChanged() {}
+  virtual void ExpandStateChanged(bool expanded) {}
 };
 
 // Ref counted version of NotificationObserver, required to satisfy
@@ -72,7 +72,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT ThunkNotificationDelegate
              const absl::optional<std::u16string>& reply) override;
   void SettingsClick() override;
   void DisableNotification() override;
-  void ExpandStateChanged() override;
+  void ExpandStateChanged(bool expanded) override;
 
  protected:
   ~ThunkNotificationDelegate() override;

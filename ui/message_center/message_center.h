@@ -231,6 +231,10 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   virtual void SetNotificationExpandState(const std::string& id,
                                           const ExpandState state) = 0;
 
+  // Called when `MessageView::SetExpanded` or the overrides are called. It
+  // will trigger 'ExpandStateChanged' in the notification's delegate.
+  virtual void OnSetExpanded(const std::string& id, bool expanded) = 0;
+
   // Informs the MessageCenter whether there's a bubble anchored to a system
   // tray which holds notifications. If false, only toasts are shown (e.g. on
   // desktop Linux and Windows). When there's no message center view, updated

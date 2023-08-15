@@ -152,11 +152,14 @@ void MessageCenterImpl::SetNotificationExpandState(
   DCHECK(FindVisibleNotificationById(id));
 
   notification_list_->SetNotificationExpandState(id, expand_state);
+}
 
+void MessageCenterImpl::OnSetExpanded(const std::string& id, bool expanded) {
   scoped_refptr<NotificationDelegate> delegate =
       notification_list_->GetNotificationDelegate(id);
+
   if (delegate) {
-    delegate->ExpandStateChanged();
+    delegate->ExpandStateChanged(expanded);
   }
 }
 

@@ -44,6 +44,7 @@ class MockArcNotificationItem : public ArcNotificationItem {
   void Click() override {}
   void ClickButton(const int button_index, const std::string& input) override {}
   void ToggleExpansion() override {}
+  void SetExpandState(bool expanded) override {}
   void OnWindowActivated(bool activated) override {}
   void OpenSettings() override {}
   void OpenSnooze() override {}

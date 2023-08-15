@@ -274,6 +274,21 @@ void ArcNotificationItemImpl::ToggleExpansion() {
   manager_->SendNotificationToggleExpansionOnChrome(notification_key_);
 }
 
+void ArcNotificationItemImpl::SetExpandState(bool expanded) {
+  if (expand_state_ == ArcNotificationExpandState::FIXED_SIZE) {
+    // Fixed size notification does not change state, therefore we do not
+    // need to set corresponding state in ARC through SetExpandState.
+    return;
+  }
+
+  if (expanded && expand_state_ == ArcNotificationExpandState::COLLAPSED) {
+    manager_->SendNotificationToggleExpansionOnChrome(notification_key_);
+  } else if (!expanded &&
+             expand_state_ == ArcNotificationExpandState::EXPANDED) {
+    manager_->SendNotificationToggleExpansionOnChrome(notification_key_);
+  }
+}
+
 void ArcNotificationItemImpl::OnWindowActivated(bool activated) {
   manager_->SendNotificationActivatedInChrome(notification_key_, activated);
 }

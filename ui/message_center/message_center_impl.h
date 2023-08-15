@@ -52,6 +52,7 @@ class MessageCenterImpl : public MessageCenter,
   ExpandState GetNotificationExpandState(const std::string& id) override;
   void SetNotificationExpandState(const std::string& id,
                                   const ExpandState state) override;
+  void OnSetExpanded(const std::string& id, bool expanded) override;
   void SetHasMessageCenterView(bool has_message_center_view) override;
   bool HasMessageCenterView() const override;
   size_t NotificationCount() const override;

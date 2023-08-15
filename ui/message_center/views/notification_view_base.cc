@@ -835,6 +835,7 @@ bool NotificationViewBase::IsExpanded() const {
 }
 
 void NotificationViewBase::SetExpanded(bool expanded) {
+  MessageView::SetExpanded(expanded);
   if (expanded_ == expanded)
     return;
   expanded_ = expanded;

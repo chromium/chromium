@@ -161,7 +161,7 @@ void MessageView::SlideOutAndClose(int direction) {
 }
 
 void MessageView::SetExpanded(bool expanded) {
-  // Not implemented by default.
+  MessageCenter::Get()->OnSetExpanded(notification_id_, expanded);
 }
 
 bool MessageView::IsExpanded() const {
