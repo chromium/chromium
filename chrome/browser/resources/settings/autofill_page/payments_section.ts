@@ -222,7 +222,9 @@ export class SettingsPaymentsSectionElement extends
   private migratableCreditCardsInfo_: string;
   private migrationEnabled_: boolean;
   private virtualCardEnrollmentEnabled_: boolean;
+  // <if expr="is_win or is_macosx">
   private deviceAuthAvailable_: boolean;
+  // </if>
   private cvcStorageAvailable_: boolean;
   private showBulkRemoveCvcConfirmationDialog_: boolean;
   private paymentsManager_: PaymentsManagerProxy =
@@ -276,8 +278,10 @@ export class SettingsPaymentsSectionElement extends
     this.paymentsManager_.setPersonalDataManagerListener(
         setPersonalDataListener);
 
+    // <if expr="is_win or is_macosx">
     this.paymentsManager_.checkIfDeviceAuthAvailable().then(
         result => this.deviceAuthAvailable_ = result);
+    // </if>
 
     // Record that the user opened the payments settings.
     chrome.metricsPrivate.recordUserAction('AutofillCreditCardsViewed');
@@ -607,6 +611,7 @@ export class SettingsPaymentsSectionElement extends
     this.paymentsManager_.removeVirtualCard(event.detail);
   }
 
+  // <if expr="is_win or is_macosx">
   /**
    * Checks if we should disable the mandatory reauth toggle.
    * This method checks that one of the following conditions are met:
@@ -618,6 +623,7 @@ export class SettingsPaymentsSectionElement extends
   private shouldDisableAuthToggle_(creditCardEnabled: boolean): boolean {
     return !creditCardEnabled || !this.deviceAuthAvailable_;
   }
+  // </if>
 
   private focusHeaderControls_(): void {
     const element =
