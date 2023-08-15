@@ -4258,7 +4258,7 @@ TEST_P(WallpaperControllerTest, UpdateDailyRefreshWallpaper) {
   info.collection_id = expected;
   pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
 
-  controller_->UpdateDailyRefreshWallpaperForTesting();
+  controller_->UpdateDailyRefreshWallpaper();
   EXPECT_EQ(expected, client_.get_fetch_daily_refresh_wallpaper_param());
 }
 
@@ -4295,7 +4295,7 @@ TEST_P(WallpaperControllerTest, UpdateDailyRefreshWallpaper_NotEnabled) {
   info.collection_id = "fun_collection";
   pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
 
-  controller_->UpdateDailyRefreshWallpaperForTesting();
+  controller_->UpdateDailyRefreshWallpaper();
   EXPECT_EQ(std::string(), client_.get_fetch_daily_refresh_wallpaper_param());
 }
 
@@ -4306,7 +4306,7 @@ TEST_P(WallpaperControllerTest, UpdateDailyRefreshWallpaper_NoCollectionId) {
       WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER,
                     WallpaperType::kDaily, DayBeforeYesterdayish()));
 
-  controller_->UpdateDailyRefreshWallpaperForTesting();
+  controller_->UpdateDailyRefreshWallpaper();
   EXPECT_EQ(std::string(), client_.get_fetch_daily_refresh_wallpaper_param());
 }
 
@@ -4348,7 +4348,7 @@ TEST_P(WallpaperControllerTest,
   info.collection_id = "fun_collection";
   pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
 
-  controller_->UpdateDailyRefreshWallpaperForTesting();
+  controller_->UpdateDailyRefreshWallpaper();
   Time run_time =
       controller_->GetUpdateWallpaperTimerForTesting().desired_run_time();
   base::TimeDelta delay = run_time - Time::Now();
@@ -4373,7 +4373,7 @@ TEST_P(WallpaperControllerTest,
   test_wallpaper_image_downloader()->set_image_generator(
       base::BindLambdaForTesting([]() { return gfx::ImageSkia(); }));
 
-  controller_->UpdateDailyRefreshWallpaperForTesting();
+  controller_->UpdateDailyRefreshWallpaper();
 
   RunAllTasksUntilIdle();
 
@@ -4847,7 +4847,7 @@ TEST_P(WallpaperControllerTest,
   pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
 
   // Set a new daily wallpaper.
-  controller_->UpdateDailyRefreshWallpaperForTesting();
+  controller_->UpdateDailyRefreshWallpaper();
   RunAllTasksUntilIdle();
 
   Time run_time =
@@ -5580,7 +5580,7 @@ TEST_P(WallpaperControllerTest, UpdateGooglePhotosDailyRefreshWallpaper) {
   WallpaperInfo info(params);
   pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
 
-  controller_->UpdateDailyRefreshWallpaperForTesting();
+  controller_->UpdateDailyRefreshWallpaper();
   RunAllTasksUntilIdle();
 
   WallpaperInfo expected_info;
@@ -5599,7 +5599,7 @@ TEST_P(WallpaperControllerTest, DailyRefreshTimerStartsForDailyGooglePhotos) {
   WallpaperInfo info(params);
   pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
 
-  controller_->UpdateDailyRefreshWallpaperForTesting();
+  controller_->UpdateDailyRefreshWallpaper();
   RunAllTasksUntilIdle();
   auto& timer = controller_->GetUpdateWallpaperTimerForTesting();
   base::TimeDelta run_time =
@@ -5623,7 +5623,7 @@ TEST_P(WallpaperControllerTest, DailyRefreshRetryTimerStartsOnFailedFetch) {
   pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
 
   client_.set_fetch_google_photos_photo_fails(true);
-  controller_->UpdateDailyRefreshWallpaperForTesting();
+  controller_->UpdateDailyRefreshWallpaper();
   RunAllTasksUntilIdle();
 
   base::TimeDelta run_time = controller_->GetUpdateWallpaperTimerForTesting()
@@ -5688,7 +5688,7 @@ TEST_P(WallpaperControllerTest,
   // successful call, which is the sign for a deleted or empty album.
   client_.set_google_photo_has_been_deleted(true);
 
-  controller_->UpdateDailyRefreshWallpaperForTesting();
+  controller_->UpdateDailyRefreshWallpaper();
   RunAllTasksUntilIdle();
 
   pref_manager_->GetUserWallpaperInfo(kAccountId1, &current_info);
@@ -5797,7 +5797,7 @@ TEST_P(
   client_.set_wallpaper_google_photos_integration_enabled_for_account_id(
       kAccountId1, false);
 
-  controller_->UpdateDailyRefreshWallpaperForTesting();
+  controller_->UpdateDailyRefreshWallpaper();
   RunAllTasksUntilIdle();
 
   pref_manager_->GetUserWallpaperInfo(kAccountId1, &current_info);

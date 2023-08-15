@@ -400,7 +400,6 @@ class ASH_EXPORT WallpaperControllerImpl
   void set_allow_shield_for_testing() { allow_shield_for_testing_ = true; }
 
   // Exposed for testing.
-  void UpdateDailyRefreshWallpaperForTesting();
   base::WallClockTimer& GetUpdateWallpaperTimerForTesting();
 
   WallpaperDriveFsDelegate* drivefs_delegate_for_testing() {

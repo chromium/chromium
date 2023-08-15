@@ -1747,10 +1747,6 @@ void WallpaperControllerImpl::ClearPrefChangeObserverForTesting() {
   pref_change_registrar_.reset();
 }
 
-void WallpaperControllerImpl::UpdateDailyRefreshWallpaperForTesting() {
-  UpdateDailyRefreshWallpaper();
-}
-
 base::WallClockTimer&
 WallpaperControllerImpl::GetUpdateWallpaperTimerForTesting() {
   return update_wallpaper_timer_;
