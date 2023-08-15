@@ -8326,6 +8326,24 @@
             ]
         }
     ],
+    "ImageCacheNoCache": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ImageCacheNoCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "ImageControllerWaitOnlyForRunningTask": [
         {
             "platforms": [
