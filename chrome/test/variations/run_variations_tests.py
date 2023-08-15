@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 
 import argparse
-import logging
 import os
 import pytest
 import sys
@@ -37,12 +36,6 @@ if __name__ == "__main__":
                       dest='json_results_file',
                       help='If present, store test results on this path.')
 
-  parser.add_argument('--root-build-dir',
-                      dest='root_build_dir',
-                      help='The path to build output directory. It can be '
-                      'relative to the source root or the absolute path. '
-                      'The path will be added to python search path.')
-
   parser.add_argument('--pytest-path',
                       default=os.path.abspath(os.path.dirname(__file__)),
                       dest='pytest_path',
@@ -56,16 +49,6 @@ if __name__ == "__main__":
                       'more info.')
 
   args, unknown_args = parser.parse_known_args()
-
-  # Adds the output dir to the search path so the generated files can be
-  # imported.
-  if args.root_build_dir:
-    root_build_dir = args.root_build_dir
-    if not os.path.isabs(root_build_dir):
-      root_build_dir = os.path.join(SRC_DIR, root_build_dir)
-    logging.info('setting root dir:', root_build_dir)
-    assert os.path.exists(root_build_dir)
-    sys.path.append(os.path.abspath(root_build_dir))
 
   # Copied from chromeos/test_runner.py, the same logic to activate vm cache.
   # https://crsrc.org/c/build/chromeos/test_runner.py;l=989;drc=32666e4204efdc594c7e3cbaa22f18dbc0966b81
