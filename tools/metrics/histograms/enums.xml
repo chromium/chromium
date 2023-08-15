@@ -18696,6 +18696,14 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Names and Telephone numbers requested"/>
   <int value="6" label="Names and Emails requested"/>
   <int value="7" label="Names, Emails, and Telephone numbers requested"/>
+  <int value="13" label="Addresses, Names, and Telephone numbers requested"/>
+  <int value="15"
+      label="Addresses, Names, Emails, and Telephone numbers requested"/>
+  <int value="21" label="Icons, Names, and Telephone numbers requested"/>
+  <int value="23"
+      label="Icons, Names, Emails, and Telephone numbers requested"/>
+  <int value="31"
+      label="Icons, Addresses, Names, Emails, and Telephone numbers requested"/>
 </enum>
 
 <enum name="ContentEncoding">
