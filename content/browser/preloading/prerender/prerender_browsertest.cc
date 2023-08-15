@@ -7891,6 +7891,102 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kConservative) {
   EXPECT_TRUE(prerender_observer.was_activated());
 }
 
+// Tests the metrics
+// Prerender.Experimental.ReceivedPrerendersPerPrimaryPageChangedCount correctly
+// records the number of prerenders by each category per primary page changed.
+IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest,
+                       EligibleTriggersPerPrimaryPageChangedCount) {
+  auto GetAllSamples = [&](const std::string& eagerness_category) {
+    return histogram_tester().GetAllSamples(
+        "Prerender.Experimental.ReceivedPrerendersPerPrimaryPageChangedCount."
+        "SpeculationRule." +
+        eagerness_category);
+  };
+
+  // Navigate to an initial page,
+  const GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Nothing should have been recoreded yet.
+  EXPECT_THAT(GetAllSamples("Total"), testing::IsEmpty());
+
+  // Start one eager prerender.
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+  AddPrerender(prerendering_url);
+
+  // Navigate to the another url.
+  // Expect that the categories "Total" and "Egaer" record 1 and others record
+  // 0, as there was one eager prerender of the previous page.
+  const GURL next_url = GetUrl("/empty.html?next");
+  ASSERT_TRUE(NavigateToURL(shell(), next_url));
+  EXPECT_THAT(GetAllSamples("Conservative"),
+              base::BucketsAre(base::Bucket(0, 1)));
+  EXPECT_THAT(GetAllSamples("Moderate"), base::BucketsAre(base::Bucket(0, 1)));
+  EXPECT_THAT(GetAllSamples("NonEager"), base::BucketsAre(base::Bucket(0, 1)));
+  EXPECT_THAT(GetAllSamples("Eager"), base::BucketsAre(base::Bucket(1, 1)));
+  EXPECT_THAT(GetAllSamples("Total"), base::BucketsAre(base::Bucket(1, 1)));
+
+  // Next, try to trigger followings:
+  // a) 4 prerenders whose eagerness is eager
+  // b) 2 prerenders whose eagerness is moderate
+  // c) 1 prerenders whose eagerness is conservative
+  // Then, try to activate the one of the URL(choosing conservative one).
+
+  // a)
+  for (int i = 0; i < 4; ++i) {
+    GURL prerendering_url_eager =
+        GetUrl("/empty.html?prerender_eager_" + base::NumberToString(i));
+    AddPrerender(prerendering_url_eager);
+  }
+
+  // b)
+  for (int i = 0; i < 2; ++i) {
+    GURL prerendering_url_moderate =
+        GetUrl("/empty.html?prerender_moderate_" + base::NumberToString(i));
+    InsertAnchor(prerendering_url_moderate);
+    AddPrerenderWithEagernessAsync(
+        prerendering_url_moderate,
+        blink::mojom::SpeculationEagerness::kModerate);
+    PointerHoverToAnchor(prerendering_url_moderate);
+    WaitForPrerenderLoadCompletion(prerendering_url_moderate);
+  }
+
+  // c)
+  const GURL prerendering_url_conservative =
+      GetUrl("/empty.html?prerender_conservative");
+  InsertAnchor(prerendering_url_conservative);
+  AddPrerenderWithEagernessAsync(
+      prerendering_url_conservative,
+      blink::mojom::SpeculationEagerness::kConservative);
+
+  // Try to trigger and activate.
+  TestActivationManager activation_manager(web_contents(),
+                                           prerendering_url_conservative);
+  ClickAnchor(prerendering_url_conservative);
+  activation_manager.WaitForNavigationFinished();
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(),
+            prerendering_url_conservative);
+  ASSERT_TRUE(activation_manager.was_activated());
+
+  // Expect following results:
+  // - For each eagerness category, the number of prerenders triggered with that
+  // eagerness is recorded.
+  // - The sum of moderate and conservative prerenders is recorded to
+  // "NonEager" (2 + 1 = 3).
+  // - Total eligible numbers of prerenders is recorded to "Total" (4 + 2 + 1 =
+  // 7).
+  EXPECT_THAT(GetAllSamples("Eager"),
+              base::BucketsAre(base::Bucket(1, 1), base::Bucket(4, 1)));
+  EXPECT_THAT(GetAllSamples("Moderate"),
+              base::BucketsAre(base::Bucket(0, 1), base::Bucket(2, 1)));
+  EXPECT_THAT(GetAllSamples("Conservative"),
+              base::BucketsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
+  EXPECT_THAT(GetAllSamples("NonEager"),
+              base::BucketsAre(base::Bucket(0, 1), base::Bucket(3, 1)));
+  EXPECT_THAT(GetAllSamples("Total"),
+              base::BucketsAre(base::Bucket(1, 1), base::Bucket(7, 1)));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PrerenderWithBackForwardCacheBrowserTest,
                          testing::Values(BackForwardCacheType::kDisabled,

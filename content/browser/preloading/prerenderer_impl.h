@@ -34,6 +34,10 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer, WebContentsObserver {
  private:
   void CancelStartedPrerenders();
 
+  // This is only used for metrics that count those prerenders per
+  // primary page changed.
+  void RecordReceivedPrerendersCountToMetrics();
+
   // This is kept sorted by URL.
   struct PrerenderInfo;
   std::vector<PrerenderInfo> started_prerenders_;
