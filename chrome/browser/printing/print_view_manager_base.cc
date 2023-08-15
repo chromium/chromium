@@ -1114,6 +1114,10 @@ void PrintViewManagerBase::ReleasePrintJob() {
 
   // Don't close the worker thread.
   print_job_ = nullptr;
+
+  for (auto& observer : GetTestObservers()) {
+    observer.OnReleasePrintJob();
+  }
 }
 
 bool PrintViewManagerBase::RunInnerMessageLoop() {

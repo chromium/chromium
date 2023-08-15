@@ -62,6 +62,8 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
     virtual void OnRegisterSystemPrintClient(bool succeeded) {}
 
     virtual void OnDidPrintDocument() {}
+
+    virtual void OnReleasePrintJob() {}
   };
 
   PrintViewManagerBase(const PrintViewManagerBase&) = delete;

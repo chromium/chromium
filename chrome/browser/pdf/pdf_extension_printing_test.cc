@@ -56,26 +56,19 @@ class PrintObserver : public printing::PrintViewManagerBase::TestObserver {
   ~PrintObserver() override { print_view_manager_->RemoveTestObserver(*this); }
 
   // printing::PrintViewManagerBase::TestObserver:
-  void OnPrintNow(const content::RenderFrameHost* rfh) override {
-    EXPECT_FALSE(print_now_called_);
-    EXPECT_EQ(rfh, rfh_);
+  void OnReleasePrintJob() override {
+    EXPECT_FALSE(print_job_released_);
     run_loop_.Quit();
-    print_now_called_ = true;
+    print_job_released_ = true;
   }
 
-  void WaitForPrintNow() {
-    WaitIfNotAlreadyPrinted();
-    EXPECT_TRUE(print_now_called_);
+  void WaitForPrintJobRelease() {
+    run_loop_.Run();
+    EXPECT_TRUE(print_job_released_);
   }
 
  private:
-  void WaitIfNotAlreadyPrinted() {
-    if (!print_now_called_) {
-      run_loop_.Run();
-    }
-  }
-
-  bool print_now_called_ = false;
+  bool print_job_released_ = false;
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   using PrintViewManagerImpl = printing::PrintViewManager;
@@ -153,7 +146,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, BasicPrintCommand) {
 
   PrintObserver print_observer(frame);
   chrome::BasicPrint(browser());
-  print_observer.WaitForPrintNow();
+  print_observer.WaitForPrintJobRelease();
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -305,8 +298,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
   SetInputFocusOnPlugin(guest);
   plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::MENU_SOURCE_MOUSE);
-  print_observer.WaitForPrintNow();
   menu_interceptor.Wait();
+  print_observer.WaitForPrintJobRelease();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFExtensionBasicPrintingTest, testing::Bool());
