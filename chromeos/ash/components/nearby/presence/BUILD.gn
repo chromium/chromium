@@ -24,6 +24,7 @@ static_library("presence") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/nearby/presence/conversions",
     "//chromeos/ash/components/nearby/presence/credentials",
     "//chromeos/ash/components/nearby/presence/metrics",
     "//chromeos/ash/components/nearby/presence/proto",
@@ -39,10 +40,6 @@ static_library("presence") {
   public_deps = [ "//third_party/nearby:connections_metadata_proto" ]
 }
 
-static_library("test_support") {
-  testonly = true
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [ "nearby_presence_service_impl_unittest.cc" ]
@@ -52,6 +49,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/nearby/presence:presence",
+    "//chromeos/ash/components/nearby/presence/conversions:unit_tests",
     "//chromeos/ash/components/nearby/presence/credentials",
     "//chromeos/ash/components/nearby/presence/credentials:test_support",
     "//chromeos/ash/components/nearby/presence/credentials:unit_tests",

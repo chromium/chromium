@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/nearby/presence/credentials/proto_conversions.h"
+#include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
 
 #include "base/test/gtest_util.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"

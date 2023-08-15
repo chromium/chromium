@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_PROTO_CONVERSIONS_H_
-#define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_PROTO_CONVERSIONS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CONVERSIONS_PROTO_CONVERSIONS_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CONVERSIONS_PROTO_CONVERSIONS_H_
 
 #include "chromeos/ash/components/nearby/common/proto/timestamp.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/update_device_rpc.pb.h"
@@ -59,4 +59,4 @@ int64_t SecondsToMilliseconds(int64_t seconds);
 
 }  // namespace ash::nearby::presence::proto
 
-#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_PROTO_CONVERSIONS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CONVERSIONS_PROTO_CONVERSIONS_H_
