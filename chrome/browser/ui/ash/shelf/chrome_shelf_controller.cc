@@ -1068,6 +1068,10 @@ void ChromeShelfController::OnPromiseAppUpdate(
   if (update.Progress().has_value()) {
     item.progress = update.Progress().value();
   }
+  if (update.StatusChanged()) {
+    item.app_status =
+        ShelfControllerHelper::ConvertPromiseStatusToAppStatus(update.Status());
+  }
   model_->Set(index, item);
 }
 
@@ -1647,11 +1651,8 @@ void ChromeShelfController::ShelfItemAdded(int index) {
     }
 
     if (ash::features::ArePromiseIconsEnabled()) {
-      float progress = ShelfControllerHelper::GetPromiseAppProgress(
+      item.progress = ShelfControllerHelper::GetPromiseAppProgress(
           latest_active_profile_, id.app_id);
-      if (progress >= 0) {
-        item.progress = progress;
-      }
     }
 
     if (needs_update)

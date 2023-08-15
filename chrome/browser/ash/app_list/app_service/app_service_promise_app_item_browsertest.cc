@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -208,6 +209,39 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   // Promise app item should no longer exist in the model.
   item = GetAppListItem(package_id.ToString());
   ASSERT_FALSE(item);
+}
+
+IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
+                       UpdatedFieldsShowInChromeAppListItem) {
+  // Register a promise app in the promise app registry cache.
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<PromiseApp>(kTestPackageId);
+  promise_app->name = "Test";
+  promise_app->status = PromiseStatus::kPending;
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Promise app item should exist in the model.
+  ChromeAppListItem* item = GetChromeAppListItem(kTestPackageId);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(item->name(), "Test");
+  EXPECT_EQ(item->progress(), 0);
+  EXPECT_EQ(item->app_status(), ash::AppStatus::kPending);
+
+  // Update the promise app in the promise app registry cache.
+  apps::PromiseAppPtr update = std::make_unique<PromiseApp>(kTestPackageId);
+  update->name = "Test2";
+  update->progress = 0.3;
+  update->status = PromiseStatus::kInstalling;
+  update->should_show = true;
+  cache()->OnPromiseApp(std::move(update));
+
+  // Promise app item should have updated fields.
+  item = GetChromeAppListItem(kTestPackageId);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(item->name(), "Test2");
+  EXPECT_EQ(item->progress(), 0.3f);
+  EXPECT_EQ(item->app_status(), ash::AppStatus::kInstalling);
 }
 
 }  // namespace apps

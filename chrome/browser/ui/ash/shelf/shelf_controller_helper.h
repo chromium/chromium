@@ -17,6 +17,10 @@ class ArcAppListPrefs;
 class ExtensionEnableFlow;
 class Profile;
 
+namespace apps {
+enum class PromiseStatus;
+}
+
 namespace content {
 class WebContents;
 }
@@ -56,6 +60,10 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   // there isn't a promise app with the specified package ID, return -1.
   static float GetPromiseAppProgress(Profile* profile,
                                      const std::string& string_package_id);
+
+  // Convert promise status into general app status.
+  static ash::AppStatus ConvertPromiseStatusToAppStatus(
+      apps::PromiseStatus promise_status);
 
   // Returns true if |id| is valid for the currently active profile.
   // Used during restore to ignore no longer valid extensions.

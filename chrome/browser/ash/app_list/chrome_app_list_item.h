@@ -72,6 +72,7 @@ class ChromeAppListItem {
   const ash::IconColor& icon_color() const { return metadata_->icon_color; }
   bool is_new_install() const { return metadata_->is_new_install; }
   bool is_ephemeral() const { return metadata_->is_ephemeral; }
+  float progress() const { return metadata_->progress; }
 
   void SetMetadata(std::unique_ptr<ash::AppListItemMetadata> metadata);
   std::unique_ptr<ash::AppListItemMetadata> CloneMetadata() const;
@@ -144,6 +145,7 @@ class ChromeAppListItem {
 
   void SetName(const std::string& name);
   void SetPromisePackageId(const std::string& promise_package_id);
+  void SetProgress(float progress);
   void SetPosition(const syncer::StringOrdinal& position);
 
   void set_model_updater(AppListModelUpdater* model_updater) {

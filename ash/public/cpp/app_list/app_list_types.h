@@ -154,6 +154,9 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   // Whether the item is ephemeral - i.e. an app or a folder that does not
   // persist across sessions.
   bool is_ephemeral = false;
+
+  // Applicable only for promise apps. Percentage of app installation completed.
+  float progress = -1;
 };
 
 // Where an app list item is being shown. Used for context menu.

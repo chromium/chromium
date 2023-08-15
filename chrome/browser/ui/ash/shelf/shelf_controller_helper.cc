@@ -44,6 +44,9 @@
 
 namespace {
 
+constexpr float kProgressNone = 0;
+constexpr float kProgressNotApplicable = -1;
+
 std::string GetSourceFromAppListSource(ash::ShelfLaunchSource source) {
   switch (source) {
     case ash::LAUNCH_FROM_APP_LIST:
@@ -118,6 +121,16 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
     return status;
 
+  if (ash::features::ArePromiseIconsEnabled()) {
+    const apps::PromiseApp* promise_app =
+        apps::AppServiceProxyFactory::GetForProfile(profile)
+            ->PromiseAppRegistryCache()
+            ->GetPromiseAppForStringPackageId(app_id);
+    if (promise_app) {
+      return ConvertPromiseStatusToAppStatus(promise_app->status);
+    }
+  }
+
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&status](const apps::AppUpdate& update) {
@@ -154,21 +167,42 @@ std::u16string ShelfControllerHelper::GetPromiseAppTitle(
   return base::UTF8ToUTF16(promise_app->name.value());
 }
 
+// static
 float ShelfControllerHelper::GetPromiseAppProgress(
     Profile* profile,
     const std::string& string_package_id) {
-  float progress = -1;
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    return progress;
+    return kProgressNotApplicable;
   }
   const apps::PromiseApp* promise_app =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->PromiseAppRegistryCache()
           ->GetPromiseAppForStringPackageId(string_package_id);
-  if (!promise_app || !promise_app->progress.has_value()) {
-    return progress;
+  if (!promise_app) {
+    return kProgressNotApplicable;
+  }
+  if (!promise_app->progress.has_value()) {
+    return kProgressNone;
   }
   return promise_app->progress.value();
+}
+
+// static
+ash::AppStatus ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
+    apps::PromiseStatus promise_status) {
+  switch (promise_status) {
+    case apps::PromiseStatus::kUnknown:
+      // Fallthrough.
+    case apps::PromiseStatus::kPending:
+      return ash::AppStatus::kPending;
+    case apps::PromiseStatus::kInstalling:
+      return ash::AppStatus::kInstalling;
+    case apps::PromiseStatus::kRemove:
+      NOTREACHED();
+      // Set to kInstalling, as that would've been the last valid status before
+      // the promise app was removed.
+      return ash::AppStatus::kInstalling;
+  }
 }
 
 bool ShelfControllerHelper::IsValidIDForCurrentUser(

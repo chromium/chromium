@@ -207,6 +207,11 @@ enum AppStatus {
   kBlocked,
   // The app is paused.
   kPaused,
+  // (For promise apps only) The promise app is pending installation.
+  kPending,
+  // (For promise apps only) The promise app is currently downloading/
+  // installing.
+  kInstalling,
 };
 
 // A unique shelf item id composed of an |app_id| and a |launch_id|.

@@ -4,13 +4,14 @@
 
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 
+#include "ash/public/cpp/shelf_types.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
-#include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/size.h"
@@ -202,17 +203,18 @@ void ScheduleIconFoldersDeletion(const base::FilePath& base_path,
 
 // TODO(b/261907495): Update this method to return the appropriate icon effects
 // for each promise status. These icon effects are currently placeholders.
-IconEffects GetIconEffectsForPromiseStatus(PromiseStatus status) {
+IconEffects GetPromiseIconEffectsForAppStatus(ash::AppStatus status) {
   switch (status) {
-    case PromiseStatus::kUnknown:
-      // Fallthrough.
-    case PromiseStatus::kPending:
-      return IconEffects::kPaused;
-    case PromiseStatus::kInstalling:
-      return IconEffects::kCrOsStandardMask;
-    case PromiseStatus::kRemove:
+    // These statuses are not applicable to promise apps.
+    case ash::AppStatus::kBlocked:
+    case ash::AppStatus::kPaused:
+    case ash::AppStatus::kReady:
       NOTREACHED();
       return IconEffects::kNone;
+    case ash::AppStatus::kPending:
+      return IconEffects::kPaused;
+    case ash::AppStatus::kInstalling:
+      return IconEffects::kCrOsStandardMask;
   }
 }
 

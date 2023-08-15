@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "ash/public/cpp/shelf_types.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -15,8 +16,6 @@
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace apps {
-
-enum class PromiseStatus;
 
 // Returns a shared Data Decoder instance to be used for decoding app icons.
 data_decoder::DataDecoder& GetIconDataDecoder();
@@ -93,7 +92,7 @@ void ScheduleIconFoldersDeletion(const base::FilePath& base_path,
                                  const std::vector<std::string>& app_ids,
                                  base::OnceCallback<void()> callback);
 
-IconEffects GetIconEffectsForPromiseStatus(PromiseStatus status);
+IconEffects GetPromiseIconEffectsForAppStatus(ash::AppStatus status);
 
 }  // namespace apps
 

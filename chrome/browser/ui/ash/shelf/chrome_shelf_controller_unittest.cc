@@ -6254,7 +6254,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, PromiseAppUpdatesShelfItem) {
   apps::PromiseAppPtr promise_app =
       std::make_unique<apps::PromiseApp>(package_id);
   promise_app->name = "Name";
-  promise_app->progress = 0.5;
+  promise_app->status = apps::PromiseStatus::kPending;
   promise_app->should_show = true;
   cache()->OnPromiseApp(std::move(promise_app));
 
@@ -6267,18 +6267,21 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, PromiseAppUpdatesShelfItem) {
   ash::ShelfID id(package_id.ToString());
   const ash::ShelfItem* item = shelf_controller_->GetItem(id);
   EXPECT_EQ(item->title, std::u16string(u"Name"));
-  EXPECT_EQ(item->progress, 0.5f);
+  EXPECT_EQ(item->progress, 0);
+  EXPECT_EQ(item->app_status, ash::AppStatus::kPending);
 
-  // Push an update to the promise app.
+  // Push an progress and status update to the promise app.
   apps::PromiseAppPtr update = std::make_unique<apps::PromiseApp>(package_id);
   update->name = "NewName";
-  update->progress = 0.9;
+  update->progress = 0.3;
+  update->status = apps::PromiseStatus::kInstalling;
   cache()->OnPromiseApp(std::move(update));
 
   // Verify that the shelf item has updated details.
   const ash::ShelfItem* item_after_update = shelf_controller_->GetItem(id);
   EXPECT_EQ(item_after_update->title, std::u16string(u"NewName"));
-  EXPECT_EQ(item_after_update->progress, 0.9f);
+  EXPECT_EQ(item_after_update->progress, 0.3f);
+  EXPECT_EQ(item_after_update->app_status, ash::AppStatus::kInstalling);
 }
 
 TEST_F(ChromeShelfControllerPromiseAppsTest,
@@ -6368,7 +6371,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, ShelfItemFetchesAndUpdatesIcon) {
   SkBitmap result_bitmap = *item->image.bitmap();
   SkBitmap expected_bitmap = ApplyEffectsToBitmap(
       base_bitmap,
-      GetIconEffectsForPromiseStatus(apps::PromiseStatus::kPending));
+      apps::GetPromiseIconEffectsForAppStatus(ash::AppStatus::kPending));
   EXPECT_TRUE(gfx::BitmapsAreEqual(result_bitmap, expected_bitmap));
 
   // Change the status of the promise app.
@@ -6382,7 +6385,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, ShelfItemFetchesAndUpdatesIcon) {
   SkBitmap result_updated_bitmap = *item_after_update->image.bitmap();
   SkBitmap expected_updated_bitmap = ApplyEffectsToBitmap(
       base_bitmap,
-      GetIconEffectsForPromiseStatus(apps::PromiseStatus::kInstalling));
+      apps::GetPromiseIconEffectsForAppStatus(ash::AppStatus::kInstalling));
   EXPECT_TRUE(
       gfx::BitmapsAreEqual(result_updated_bitmap, expected_updated_bitmap));
 
