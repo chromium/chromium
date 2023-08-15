@@ -107,9 +107,10 @@ void FullscreenHandler::ProcessFullscreen(bool fullscreen,
                  SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
   } else {
     // Restore the window style and bounds saved prior to entering fullscreen.
+    // Use WS_VISIBLE for windows shown after SetFullscreen: crbug.com/1062251.
     // Making multiple window adjustments here is ugly, but if SetWindowPos()
     // doesn't redraw, the taskbar won't be repainted.
-    SetWindowLong(hwnd_, GWL_STYLE, saved_window_info_.style);
+    SetWindowLong(hwnd_, GWL_STYLE, saved_window_info_.style | WS_VISIBLE);
     SetWindowLong(hwnd_, GWL_EXSTYLE, saved_window_info_.ex_style);
 
     gfx::Rect window_rect(saved_window_info_.rect);
