@@ -9,6 +9,7 @@
 #include <memory>
 #include <ostream>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -243,6 +244,10 @@ class WaylandWindow : public PlatformWindow,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     WindowTiledEdges tiled_edges;
 #endif
+
+    // Dumps the values of the states that are part of the standard
+    // xdg_toplevel.state enum into a string;
+    std::string ToString() const;
   };
 
   // Configure related:

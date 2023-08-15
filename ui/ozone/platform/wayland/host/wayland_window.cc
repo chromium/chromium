@@ -645,6 +645,47 @@ void WaylandWindow::HandleSurfaceConfigure(uint32_t serial) {
       << "Only shell surfaces must receive HandleSurfaceConfigure calls.";
 }
 
+std::string WaylandWindow::WindowStates::ToString() const {
+  std::string states = "";
+  if (is_maximized) {
+    states += "maximized ";
+  }
+  if (is_fullscreen) {
+    states += "fullscreen ";
+  }
+  if (is_activated) {
+    states += "activated ";
+  }
+  if (states.empty()) {
+    states = "<default>";
+  } else {
+    base::TrimString(states, " ", &states);
+  }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  states += "; tiled_edges: ";
+  std::string tiled = "";
+  if (tiled_edges.left) {
+    tiled += "left ";
+  }
+  if (tiled_edges.right) {
+    tiled += "right ";
+  }
+  if (tiled_edges.top) {
+    tiled += "top ";
+  }
+  if (tiled_edges.bottom) {
+    tiled += "bottom ";
+  }
+  if (tiled.empty()) {
+    tiled = "<none>";
+  } else {
+    base::TrimString(tiled, " ", &tiled);
+  }
+  states += tiled;
+#endif
+  return states;
+}
+
 void WaylandWindow::HandleToplevelConfigure(int32_t widht,
                                             int32_t height,
                                             const WindowStates& window_states) {
