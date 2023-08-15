@@ -3935,6 +3935,11 @@
           'shards': 4,
         },
       },
+      'mac12-arm64-rel-tests': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [
