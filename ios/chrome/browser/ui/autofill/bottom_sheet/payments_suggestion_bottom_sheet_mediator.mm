@@ -60,7 +60,17 @@
                   /* with_prefix=*/false));
     self.accessibleCardName = [self accessibleCardName:creditCard];
     self.backendIdentifier = base::SysUTF8ToNSString(creditCard->guid());
-    self.icon = icon;
+
+    if (icon.size.width > 0.0 && icon.size.width < 40.0 && icon.scale > 1.0) {
+      // If the icon is smaller than desired, but is scaled, reduce the scale
+      // (to a minimum of 1.0) in order to attempt to achieve the desired size.
+      self.icon = [UIImage
+          imageWithCGImage:[icon CGImage]
+                     scale:MAX((icon.scale * icon.size.width / 40.0), 1.0)
+               orientation:(icon.imageOrientation)];
+    } else {
+      self.icon = icon;
+    }
   }
   return self;
 }
