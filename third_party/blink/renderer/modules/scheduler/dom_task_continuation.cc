@@ -45,13 +45,14 @@ void DOMTaskContinuation::Trace(Visitor* visitor) const {
 
 void DOMTaskContinuation::Invoke() {
   CHECK(resolver_);
-  ExecutionContext* context = resolver_->GetExecutionContext();
-  if (!context) {
-    return;
+  if (ExecutionContext* context = resolver_->GetExecutionContext()) {
+    probe::AsyncTask async_task(context, &async_task_context_);
+    resolver_->Resolve();
   }
-
-  probe::AsyncTask async_task(context, &async_task_context_);
-  resolver_->Resolve();
+  if (abort_handle_) {
+    signal_->RemoveAlgorithm(abort_handle_);
+    abort_handle_ = nullptr;
+  }
 }
 
 void DOMTaskContinuation::OnAbort() {
