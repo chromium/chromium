@@ -121,6 +121,10 @@ bool IsDriveEnabledForProfile(const Profile* const profile) {
 
 bool IsDriveFsBulkPinningEnabled(const Profile* const profile) {
   DCHECK(profile);
+  if (!profile->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningVisible)) {
+    return false;
+  }
+
   if (!profile->GetProfilePolicyConnector()->IsManaged()) {
     return ash::features::IsDriveFsBulkPinningEnabled();
   }

@@ -280,6 +280,7 @@ void Preferences::RegisterProfilePrefs(
   // Do not sync kDriveFsBulkPinningEnabled as this maintains files that are
   // locally pinned to this device and should not sync the state across multiple
   // devices.
+  registry->RegisterBooleanPref(drive::prefs::kDriveFsBulkPinningVisible, true);
   registry->RegisterBooleanPref(drive::prefs::kDriveFsBulkPinningEnabled,
                                 false);
   // We don't sync ::prefs::kLanguageCurrentInputMethod and PreviousInputMethod

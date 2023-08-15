@@ -17,6 +17,7 @@ extern const char kDriveFsPinnedMigrated[];
 extern const char kDriveFsWasLaunchedAtLeastOnce[];
 extern const char kDriveFsEnableMirrorSync[];
 extern const char kDriveFsMirrorSyncMachineRootId[];
+extern const char kDriveFsBulkPinningVisible[];
 extern const char kDriveFsBulkPinningEnabled[];
 
 }  // namespace drive::prefs
