@@ -322,16 +322,6 @@ bool ShelfControllerHelper::IsValidIDFromAppService(
     return true;
   }
 
-  if (ash::features::ArePromiseIconsEnabled()) {
-    absl::optional<apps::PackageId> possible_package_id =
-        apps::PackageId::FromString(app_id);
-    if (possible_package_id.has_value()) {
-      return apps::AppServiceProxyFactory::GetForProfile(profile_)
-          ->PromiseAppRegistryCache()
-          ->HasPromiseApp(possible_package_id.value());
-    }
-  }
-
   bool is_valid = false;
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
@@ -347,10 +337,11 @@ bool ShelfControllerHelper::IsValidIDFromAppService(
   if (ash::features::ArePromiseIconsEnabled()) {
     absl::optional<apps::PackageId> possible_package_id =
         apps::PackageId::FromString(app_id);
-    if (possible_package_id.has_value()) {
-      return apps::AppServiceProxyFactory::GetForProfile(profile_)
-          ->PromiseAppRegistryCache()
-          ->HasPromiseApp(possible_package_id.value());
+    if (possible_package_id.has_value() &&
+        apps::AppServiceProxyFactory::GetForProfile(profile_)
+            ->PromiseAppRegistryCache()
+            ->HasPromiseApp(possible_package_id.value())) {
+      is_valid = true;
     }
   }
 
