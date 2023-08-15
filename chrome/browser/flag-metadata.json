@@ -5640,6 +5640,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "ntp-discounts-in-journeys-module",
+    "owners": [ "meiliang", "romanarora", "tiborg", "yuezhanggg" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "ntp-drive-module",
     "owners": [ "mahmadi", "tiborg" ],
     "expiry_milestone": 125

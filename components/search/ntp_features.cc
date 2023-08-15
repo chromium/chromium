@@ -296,6 +296,12 @@ BASE_FEATURE(kNtpHistoryClustersModuleSuggestionChipHeader,
              "NtpHistoryClustersModuleSuggestionChipHeader",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Discounts badge will show on the visit tile in the History
+// clusters module when available.
+BASE_FEATURE(kNtpHistoryClustersModuleDiscounts,
+             "NtpHistoryClustersModuleDiscounts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, ChromeCart tile will show in the History clusters module when
 // available.
 BASE_FEATURE(kNtpChromeCartInHistoryClusterModule,

@@ -63184,6 +63184,7 @@ from previous Chrome versions.
   <int value="-378218969" label="VaapiJpegImageDecodeAcceleration:disabled"/>
   <int value="-378180863" label="disable-panels"/>
   <int value="-378033324" label="disable-win32k-renderer-lockdown"/>
+  <int value="-377883447" label="NtpHistoryClustersModuleDiscounts:disabled"/>
   <int value="-377215262" label="RenderArcNotificationsByChrome:enabled"/>
   <int value="-376571345" label="FillingAcrossGroupedSites:enabled"/>
   <int value="-374657496" label="OmniboxEnableClipboardProvider:enabled"/>
@@ -64091,6 +64092,7 @@ from previous Chrome versions.
   <int value="80036427" label="AutofillEnableCardProductName:disabled"/>
   <int value="82303171" label="AccountIdMigration:disabled"/>
   <int value="82489049" label="AutofillSaveCardUiExperiment:enabled"/>
+  <int value="82922831" label="NtpHistoryClustersModuleDiscounts:enabled"/>
   <int value="82964287" label="AutofillAlwaysParsePlaceholders:enabled"/>
   <int value="83422372"
       label="ChromeHomePersonalizedOmniboxSuggestions:enabled"/>
