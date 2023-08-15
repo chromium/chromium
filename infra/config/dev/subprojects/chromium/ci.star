@@ -62,6 +62,11 @@ defaults.cpu.set(cpu.X86_64)
 defaults.executable.set("recipe:swarming/staging")
 defaults.execution_timeout.set(3 * time.hour)
 defaults.os.set(os.LINUX_DEFAULT)
+defaults.properties.set({
+    "$build/chromium_swarming": {
+        "verbose": True,
+    },
+})
 defaults.service_account.set(
     "chromium-ci-builder-dev@chops-service-accounts.iam.gserviceaccount.com",
 )
