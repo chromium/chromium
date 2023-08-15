@@ -512,6 +512,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/webauthn/authenticator_request_scheduler.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
@@ -7829,19 +7830,28 @@ bool ChromeContentBrowserClient::IsFileSystemURLNavigationAllowed(
 
 bool ChromeContentBrowserClient::AreIsolatedWebAppsEnabled(
     content::BrowserContext* browser_context) {
+#if !BUILDFLAG(IS_ANDROID)
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!web_app::AreWebAppsEnabled(profile)) {
+    return false;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Check if the enterprise policy that regulates Isolated Web Apps force
   // installing is present. If it is there then the IWAs should be enabled.
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (profile) {
-    const base::Value::List& isolated_web_apps =
-        profile->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
-    if (!isolated_web_apps.empty()) {
-      return true;
-    }
+  const base::Value::List& isolated_web_apps =
+      profile->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
+  if (!isolated_web_apps.empty()) {
+    return true;
   }
-#endif
-  return base::FeatureList::IsEnabled(features::kIsolatedWebApps);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
+    return true;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  return false;
 }
 
 bool ChromeContentBrowserClient::IsThirdPartyStoragePartitioningAllowed(

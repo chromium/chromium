@@ -97,6 +97,7 @@
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -104,6 +105,10 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/web_applications/web_app_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/web_applications/web_app.h"
@@ -953,6 +958,9 @@ class ChromeContentBrowserClientStoragePartitionTest
  public:
   void SetUp() override {
     content::SiteIsolationPolicy::DisableFlagCachingForTesting();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    web_app::SetSkipMainProfileCheckForTesting(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
  protected:
@@ -1064,6 +1072,28 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ChromeContentBrowserClientTest, IsolatedWebAppsDisabledOnSignInScreen) {
+  auto set_install_force_list = [](Profile* profile) {
+    base::Value::List list;
+    list.Append("some_value");
+    profile->GetPrefs()->SetList(prefs::kIsolatedWebAppInstallForceList,
+                                 std::move(list));
+  };
+  set_install_force_list(&profile_);
+
+  std::unique_ptr<TestingProfile> sign_in_screen_profile =
+      TestingProfile::Builder()
+          .SetPath(base::FilePath(ash::kSigninBrowserContextBaseName))
+          .Build();
+  set_install_force_list(sign_in_screen_profile.get());
+
+  ChromeContentBrowserClient client;
+  EXPECT_TRUE(client.AreIsolatedWebAppsEnabled(&profile_));
+  EXPECT_FALSE(client.AreIsolatedWebAppsEnabled(sign_in_screen_profile.get()));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ChromeContentBrowserClientSwitchTest
     : public ChromeRenderViewHostTestHarness {
