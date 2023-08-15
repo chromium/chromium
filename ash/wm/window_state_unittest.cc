@@ -10,7 +10,9 @@
 #include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -2117,6 +2119,83 @@ TEST_F(WindowStateTest, SnapWindowMinimumSizePortrait) {
       kWorkAreaBounds.x(), kWorkAreaBounds.height() - kMinimumSize.height(),
       kWorkAreaBounds.width(), kMinimumSize.height());
   EXPECT_EQ(expected_snap, window->GetBoundsInScreen());
+}
+
+// Tests the snapped window states in the external display while removing the
+// internal display.
+TEST_F(WindowStateTest, SnappedWindowsInExternalDisplay) {
+  UpdateDisplay("800x600,1920x1200");
+
+  const auto& displays = display_manager()->active_display_list();
+  const int64_t primary_id = displays[0].id();
+  const int64_t secondary_id = displays[1].id();
+  display::Screen* screen = display::Screen::GetScreen();
+
+  // Create two windows inside the external display.
+  std::unique_ptr<aura::Window> w1 =
+      CreateTestWindow(gfx::Rect(801, 0, 200, 100));
+  std::unique_ptr<aura::Window> w2 =
+      CreateTestWindow(gfx::Rect(1000, 0, 200, 100));
+  ASSERT_EQ(secondary_id, screen->GetDisplayNearestWindow(w1.get()).id());
+  ASSERT_EQ(secondary_id, screen->GetDisplayNearestWindow(w2.get()).id());
+
+  // Put the shelf of the internal display at the bottom while the external
+  // display shelf at the left side.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  SetShelfAlignmentPref(prefs, primary_id, ShelfAlignment::kBottom);
+  SetShelfAlignmentPref(prefs, secondary_id, ShelfAlignment::kLeft);
+  EXPECT_EQ(ShelfAlignment::kBottom,
+            Shell::GetRootWindowControllerWithDisplayId(primary_id)
+                ->shelf()
+                ->alignment());
+  EXPECT_EQ(ShelfAlignment::kLeft,
+            Shell::GetRootWindowControllerWithDisplayId(secondary_id)
+                ->shelf()
+                ->alignment());
+
+  // Make `w1` to be left snapped.
+  WindowState* window_state1 = WindowState::Get(w1.get());
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  window_state1->OnWMEvent(&snap_left);
+  EXPECT_TRUE(window_state1->IsSnapped());
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(w1.get()).id());
+  EXPECT_EQ(0.5f, *window_state1->snap_ratio());
+
+  // Make `w2` to be right snapped.
+  WindowState* window_state2 = WindowState::Get(w2.get());
+  const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  window_state2->OnWMEvent(&snap_right);
+  EXPECT_TRUE(window_state2->IsSnapped());
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(w2.get()).id());
+  EXPECT_EQ(0.5f, *window_state2->snap_ratio());
+
+  // Store the two snapped window bounds with a left aligned shelf.
+  const gfx::Rect w1_local_bounds = w1->bounds();
+  const gfx::Rect w2_local_bounds = w2->bounds();
+
+  display::ManagedDisplayInfo secondary_info =
+      display_manager()->GetDisplayInfo(secondary_id);
+  // Remove the primary display.
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(secondary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  // Verify that both `w1` and `w2` are still snapped in the external display
+  // with unchanged snap ratio, unchanged bounds. There should have no gap
+  // between the two snapped windows.
+  EXPECT_TRUE(window_state1->IsSnapped());
+  EXPECT_TRUE(window_state2->IsSnapped());
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(w1.get()).id());
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(w2.get()).id());
+  EXPECT_EQ(0.5f, *window_state1->snap_ratio());
+  EXPECT_EQ(0.5f, *window_state2->snap_ratio());
+  EXPECT_EQ(w1_local_bounds, w1->bounds());
+  EXPECT_EQ(w2_local_bounds, w2->bounds());
+  EXPECT_EQ(ShelfAlignment::kLeft,
+            Shell::GetRootWindowControllerWithDisplayId(secondary_id)
+                ->shelf()
+                ->alignment());
 }
 
 class WindowStateMetricsTest : public AshTestBase {

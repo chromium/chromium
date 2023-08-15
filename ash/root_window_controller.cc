@@ -206,7 +206,7 @@ void ReparentWindow(aura::Window* window, aura::Window* new_parent) {
   const bool has_restore_bounds = state && state->HasRestoreBounds();
 
   const bool update_bounds =
-      state && (state->IsNormalOrSnapped() || state->IsMinimized());
+      state && (state->IsNormalStateType() || state->IsMinimized());
   gfx::Rect work_area_in_new_parent =
       screen_util::GetDisplayWorkAreaBoundsInParent(new_parent);
 
@@ -225,7 +225,7 @@ void ReparentWindow(aura::Window* window, aura::Window* new_parent) {
 
   new_parent->AddChild(window);
 
-  // Docked windows have bounds handled by the layout manager in AddChild().
+  // Snapped windows have bounds handled by the layout manager in AddChild().
   if (update_bounds) {
     window->SetBounds(local_bounds);
   }
