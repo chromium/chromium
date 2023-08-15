@@ -1686,16 +1686,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.VirtualKeyboard.MultitouchEvent"
-    enum="MultitouchEvent" expires_after="2023-10-08">
-  <owner>michellegc@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The number of times each type of multitouch behavior is triggered. Recorded
-    when a touch event occurs while another key is held down.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.VirtualKeyboard.Paprika.Actions"
     enum="IMEPaprikaActions" expires_after="M110">
   <owner>jopalmer@chromium.org</owner>

@@ -3934,9 +3934,6 @@ extern const char kVirtualKeyboardDescription[];
 extern const char kVirtualKeyboardDisabledName[];
 extern const char kVirtualKeyboardDisabledDescription[];
 
-extern const char kVirtualKeyboardMultitouchName[];
-extern const char kVirtualKeyboardMultitouchDescription[];
-
 extern const char kVirtualKeyboardRoundCornersName[];
 extern const char kVirtualKeyboardRoundCornersDescription[];
 

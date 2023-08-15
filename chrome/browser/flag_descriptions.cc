@@ -6847,10 +6847,6 @@ const char kVirtualKeyboardDisabledDescription[] =
     "Always disable virtual keyboard regardless of device mode. Workaround for "
     "virtual keyboard showing with some external keyboards.";
 
-const char kVirtualKeyboardMultitouchName[] = "Virtual Keyboard Multitouch";
-const char kVirtualKeyboardMultitouchDescription[] =
-    "Enables multitouch on the virtual keyboard.";
-
 const char kVirtualKeyboardRoundCornersName[] =
     "Virtual Keyboard Round Corners";
 const char kVirtualKeyboardRoundCornersDescription[] =

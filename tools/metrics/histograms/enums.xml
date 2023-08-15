@@ -72602,16 +72602,6 @@ Called by update_use_counter_css.py.-->
   <int value="5" label="Accelerator"/>
 </enum>
 
-<enum name="MultitouchEvent">
-  <int value="0" label="Released"/>
-  <int value="1"
-      label="(Obsolete) Canceled. Replaced by more specific cancel events."/>
-  <int value="2" label="Held"/>
-  <int value="3" label="Canceled by other key"/>
-  <int value="4" label="Canceled by reset"/>
-  <int value="5" label="Canceled by popup"/>
-</enum>
-
 <enum name="NaClAppTypeEnum">
   <obsolete>
     Deprecated in favor of NaClEmbedderTypeEnum.

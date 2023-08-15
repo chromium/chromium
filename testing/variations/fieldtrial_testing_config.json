@@ -16355,21 +16355,6 @@
             ]
         }
     ],
-    "VirtualKeyboardMultitouch": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "VirtualKeyboardMultitouch"
-                    ]
-                }
-            ]
-        }
-    ],
     "VirtualKeyboardNewHeader": [
         {
             "platforms": [

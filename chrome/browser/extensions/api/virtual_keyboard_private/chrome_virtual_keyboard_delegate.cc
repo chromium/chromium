@@ -518,9 +518,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "newheader",
       base::FeatureList::IsEnabled(ash::features::kVirtualKeyboardNewHeader)));
   features.Append(GenerateFeatureFlag(
-      "multitouch",
-      base::FeatureList::IsEnabled(ash::features::kVirtualKeyboardMultitouch)));
-  features.Append(GenerateFeatureFlag(
       "roundCorners", base::FeatureList::IsEnabled(
                           ash::features::kVirtualKeyboardRoundCorners)));
   features.Append(
