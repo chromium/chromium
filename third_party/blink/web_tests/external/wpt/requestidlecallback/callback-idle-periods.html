@@ -15,7 +15,6 @@ async_test(function() {
     var now = performance.now();
     var remaining = deadline.timeRemaining();
     var new_deadline = now + remaining;
-    while (now + 2 > performance.now());
     if (previous_deadline != undefined) {
       assert_true(new_deadline >= previous_deadline, "A requestIdleCallback scheduled during an idle period should be called back with a deadline greater than or equal to that in the current idle period.");
     }
@@ -24,8 +23,6 @@ async_test(function() {
     if (--idle_callbacks_remaining > 0) {
       previous_deadline = new_deadline;
       requestIdleCallback(rIC);
-      let now = performance.now();
-      while (now + 2 > performance.now());
     } else {
       this.done();
     }
