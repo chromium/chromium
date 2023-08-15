@@ -231,30 +231,6 @@ void V8Initializer::MessageHandlerInWorker(v8::Local<v8::Message> message,
   }
 }
 
-namespace {
-
-bool IsRejectedPromisesPerWindowAgent() {
-  static bool g_rejected_promises_per_window_agent =
-      base::FeatureList::IsEnabled(scheduler::kRejectedPromisesPerWindowAgent);
-  return g_rejected_promises_per_window_agent;
-}
-
-static RejectedPromises& RejectedPromisesOnMainThread() {
-  DCHECK(IsMainThread());
-  DCHECK(!IsRejectedPromisesPerWindowAgent());
-  DEFINE_STATIC_LOCAL(scoped_refptr<RejectedPromises>, rejected_promises,
-                      (RejectedPromises::Create()));
-  return *rejected_promises;
-}
-
-}  // namespace
-
-void V8Initializer::ReportRejectedPromisesOnMainThread() {
-  if (IsRejectedPromisesPerWindowAgent())
-    return;
-  RejectedPromisesOnMainThread().ProcessQueue();
-}
-
 static void PromiseRejectHandler(v8::PromiseRejectMessage data,
                                  RejectedPromises& rejected_promises,
                                  ScriptState* script_state) {
@@ -332,12 +308,8 @@ static void PromiseRejectHandlerInMainThread(v8::PromiseRejectMessage data) {
   if (!script_state->ContextIsValid())
     return;
 
-  RejectedPromises* rejected_promises;
-  if (IsRejectedPromisesPerWindowAgent()) {
-    rejected_promises = &window->GetAgent()->GetRejectedPromises();
-  } else {
-    rejected_promises = &RejectedPromisesOnMainThread();
-  }
+  RejectedPromises* rejected_promises =
+      &window->GetAgent()->GetRejectedPromises();
   PromiseRejectHandler(data, *rejected_promises, script_state);
 }
 
