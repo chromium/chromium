@@ -230,10 +230,6 @@ class TextFieldView extends FrameLayout implements FieldView {
 
     @Override
     public boolean isValid() {
-        if (mValidator == null) {
-            return true;
-        }
-        mValidator.validate(mEditorFieldModel);
         return mInputLayout.getError() == null;
     }
 

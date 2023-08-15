@@ -281,7 +281,12 @@ public class AddressEditor
                 mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView);
 
         loadAdminAreasForCountry(mCountryField.get(VALUE));
-        mEditorModel.set(FORM_VALID, mAddressErrors == null || validateForm(mEditorModel));
+        boolean formValid = mAddressErrors == null;
+        if (!mAddressNew) {
+            // Form validation must be performed only for non-empty address profiles.
+            formValid |= validateForm(mEditorModel);
+        }
+        mEditorModel.set(FORM_VALID, formValid);
     }
 
     private void onDone() {
