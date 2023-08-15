@@ -35,12 +35,25 @@ void MenuConfig::Init() {
   if (!is_refresh) {
     if (is_win11) {
       corner_radius = 8;
+      menu_horizontal_border_size = 4;
+      submenu_horizontal_overlap = 1;
       rounded_menu_vertical_border_size = 4;
+      item_horizontal_padding = 12;
       between_item_vertical_padding = 2;
+      separator_height = 1;
+      separator_upper_height = 1;
+      separator_lower_height = 1;
       item_corner_radius = 4;
     } else {
+      menu_horizontal_border_size = 3;
+      nonrounded_menu_vertical_border_size = 3;
+      item_vertical_margin = 3;
+      item_horizontal_border_padding = -2;
       icon_label_spacing = 10;
       always_reserve_check_region = true;
+      separator_height = 7;
+      separator_upper_height = 5;
+      separator_lower_height = 5;
     }
   }
 
