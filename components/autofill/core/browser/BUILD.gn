@@ -548,8 +548,6 @@ static_library("browser") {
       "payments/autofill_save_card_infobar_delegate_mobile.cc",
       "payments/autofill_save_card_infobar_delegate_mobile.h",
       "payments/autofill_save_card_infobar_mobile.h",
-      "payments/autofill_save_card_ui_utils_mobile.cc",
-      "payments/autofill_save_card_ui_utils_mobile.h",
       "payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.cc",
       "payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h",
       "payments/autofill_virtual_card_enrollment_infobar_mobile.h",
