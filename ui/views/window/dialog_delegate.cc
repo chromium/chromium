@@ -43,9 +43,6 @@ bool HasCallback(
 
 }  // namespace
 
-// Debug information for https://crbug.com/1215247.
-int g_instance_count = 0;
-
 ////////////////////////////////////////////////////////////////////////////////
 // DialogDelegate::Params:
 DialogDelegate::Params::Params() = default;
@@ -55,8 +52,6 @@ DialogDelegate::Params::~Params() = default;
 // DialogDelegate:
 
 DialogDelegate::DialogDelegate() {
-  ++g_instance_count;
-
   WidgetDelegate::RegisterWindowWillCloseCallback(
       base::BindOnce(&DialogDelegate::WindowWillClose, base::Unretained(this)));
 }
@@ -460,15 +455,6 @@ void DialogDelegate::AcceptDialog() {
   if (already_started_close_ || !Accept())
     return;
 
-  // Check for Accept() deleting `this` but returning false. Empirically the
-  // steady state instance count with no dialogs open is zero, so if it's back
-  // to zero `this` is deleted https://crbug.com/1215247
-  if (g_instance_count <= 0) {
-    // LOG(FATAL) instead of CHECK() to put the widget name into a crash key.
-    // See "Product Data" in the crash tool if a crash report shows this line.
-    LOG(FATAL) << last_widget_name;
-  }
-
   already_started_close_ = true;
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked);
@@ -489,9 +475,7 @@ void DialogDelegate::CancelDialog() {
       views::Widget::ClosedReason::kCancelButtonClicked);
 }
 
-DialogDelegate::~DialogDelegate() {
-  --g_instance_count;
-}
+DialogDelegate::~DialogDelegate() = default;
 
 ax::mojom::Role DialogDelegate::GetAccessibleWindowRole() {
   return ax::mojom::Role::kDialog;

@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -319,9 +318,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // 2) Depending on their return value, close the dialog's widget.
   // Neither of these methods can be called before the dialog has been
   // initialized.
-  // NOT_TAIL_CALLED forces the calling function to appear on the stack in
-  // crash dumps. https://crbug.com/1215247
-  NOT_TAIL_CALLED void AcceptDialog();
+  void AcceptDialog();
   void CancelDialog();
 
   // This method invokes the behavior that *would* happen if this dialog's
