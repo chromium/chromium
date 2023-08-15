@@ -98,6 +98,13 @@ BASE_FEATURE(kV8Turboshaft, "V8Turboshaft", base::FEATURE_DISABLED_BY_DEFAULT);
 // manually overridden; otherwise it defers to whatever the V8 default is.
 BASE_FEATURE(kV8Maglev, "V8Maglev", base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kV8MemoryReducer,
+             "V8MemoryReducer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kV8MemoryReducerGCCount{
+    &kV8MemoryReducer, "V8MemoryReducerGCCount", 3};
+
 // Enables MinorMC young generation garbage collector.
 BASE_FEATURE(kV8MinorMC, "V8MinorMC", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kV8MinorMS, "V8MinorMS", base::FEATURE_DISABLED_BY_DEFAULT);

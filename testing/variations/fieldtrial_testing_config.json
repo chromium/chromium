@@ -15958,6 +15958,54 @@
             ]
         }
     ],
+    "V8MemoryReducer": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "V8MemoryReducer2GCs",
+                    "params": {
+                        "V8MemoryReducerGCCount": "2"
+                    },
+                    "enable_features": [
+                        "kV8MemoryReducer"
+                    ]
+                },
+                {
+                    "name": "V8MemoryReducer1GC",
+                    "params": {
+                        "V8MemoryReducerGCCount": "1"
+                    },
+                    "enable_features": [
+                        "kV8MemoryReducer"
+                    ]
+                },
+                {
+                    "name": "V8MemoryReducer3GCs",
+                    "params": {
+                        "V8MemoryReducerGCCount": "3"
+                    },
+                    "enable_features": [
+                        "kV8MemoryReducer"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "kV8MemoryReducer"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8MidtierRegallocFallback": [
         {
             "platforms": [
