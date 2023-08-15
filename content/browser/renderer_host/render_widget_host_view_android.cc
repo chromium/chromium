@@ -3292,6 +3292,9 @@ void RenderWidgetHostViewAndroid::WasEvicted() {
   } else {
     EvictInternal();
   }
+  if (sync_compositor_) {
+    sync_compositor_->WasEvicted();
+  }
 }
 
 void RenderWidgetHostViewAndroid::OnUpdateScopedSelectionHandles() {
