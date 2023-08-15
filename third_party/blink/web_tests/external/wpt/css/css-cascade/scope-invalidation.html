@@ -62,6 +62,36 @@ test_scope_invalidation(document.currentScript, () => {
 }, 'Element becoming scope root');
 </script>
 
+<template>
+  <style>
+    @scope (.a, .b) {
+      span { background-color: green; }
+    }
+  </style>
+  <div>
+    <span></span>
+  </div>
+</template>
+<script>
+test_scope_invalidation(document.currentScript, () => {
+  let div = main.querySelector('div');
+  let span = main.querySelector('div > span');
+
+  // .a
+  assert_not_green(span);
+  div.classList.add('a');
+  assert_green(span);
+  div.classList.remove('a');
+  assert_not_green(span);
+
+  // .b
+  assert_not_green(span);
+  div.classList.add('b');
+  assert_green(span);
+  div.classList.remove('b');
+  assert_not_green(span);
+}, 'Element becoming scope root (selector list)');
+</script>
 
 <template>
   <style>
@@ -104,6 +134,39 @@ test_scope_invalidation(document.currentScript, () => {
   inner_div.classList.remove('b');
   assert_green(span);
 }, 'Parent element becoming scope limit');
+</script>
+
+<template>
+  <style>
+    @scope (.a) to (.b, .c) {
+      span { background-color: green; }
+    }
+  </style>
+  <div class=a>
+    <div>
+      <span></span>
+    </div>
+  </div>
+</template>
+<script>
+test_scope_invalidation(document.currentScript, () => {
+  let inner_div = main.querySelector('.a > div');
+  let span = main.querySelector('.a > div > span');
+
+  // .b
+  assert_green(span);
+  inner_div.classList.add('b');
+  assert_not_green(span);
+  inner_div.classList.remove('b');
+  assert_green(span);
+
+  // .c
+  assert_green(span);
+  inner_div.classList.add('c');
+  assert_not_green(span);
+  inner_div.classList.remove('c');
+  assert_green(span);
+}, 'Parent element becoming scope limit (selector list)');
 </script>
 
 <template>
