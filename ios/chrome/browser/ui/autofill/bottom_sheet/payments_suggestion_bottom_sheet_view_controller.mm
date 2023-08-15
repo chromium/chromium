@@ -80,6 +80,9 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 // YES if the expanded bottom sheet size takes the whole screen.
 @property(nonatomic, assign) BOOL expandSizeTooLarge;
 
+// Keep track of the minimized state height.
+@property(nonatomic, assign) absl::optional<CGFloat> minimizedStateHeight;
+
 @end
 
 @implementation PaymentsSuggestionBottomSheetViewController
@@ -140,6 +143,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
   if (self.traitCollection.preferredContentSizeCategory !=
       previousTraitCollection.preferredContentSizeCategory) {
+    self.minimizedStateHeight = absl::nullopt;
     [self updateHeight];
   }
 }
@@ -157,6 +161,13 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
     [self.delegate disableBottomSheet];
   }
   [self.handler viewDidDisappear:animated];
+}
+
+- (CGFloat)initialHeight {
+  if (!self.minimizedStateHeight.has_value()) {
+    self.minimizedStateHeight = [super initialHeight];
+  }
+  return self.minimizedStateHeight.value();
 }
 
 #pragma mark - PaymentsSuggestionBottomSheetConsumer
