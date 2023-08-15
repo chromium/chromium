@@ -397,7 +397,9 @@ public class BrowserImpl extends IBrowser.Stub {
 
         mVisibleSecurityStateObservers.clear();
 
-        --sInstanceCount;
+        if (--sInstanceCount == 0) {
+            WebLayerAccessibilityUtil.get().onAllBrowsersDestroyed();
+        }
     }
 
     void updateAllTabsViewAttachedState() {

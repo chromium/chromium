@@ -183,7 +183,6 @@ public class AccessibilityState {
     private static State sState;
     private static boolean sInitialized;
     private static boolean sIsInTestingMode;
-    private static Boolean sPreInitCachedValuePerformGesturesEnabled;
 
     // Observers for various System, Activity, and Settings states relevant to accessibility.
     private static final ApplicationStatus.ActivityStateListener sActivityStateListener =
@@ -250,28 +249,7 @@ public class AccessibilityState {
     }
 
     public static boolean isPerformGesturesEnabled() {
-        if (!sInitialized) {
-            if (sPreInitCachedValuePerformGesturesEnabled != null) {
-                return sPreInitCachedValuePerformGesturesEnabled;
-            }
-
-            fetchAccessibilityManager();
-            if (sAccessibilityManager.isEnabled()) {
-                for (AccessibilityServiceInfo service :
-                        sAccessibilityManager.getEnabledAccessibilityServiceList(
-                                AccessibilityServiceInfo.FEEDBACK_ALL_MASK)) {
-                    if ((service.getCapabilities()
-                                & AccessibilityServiceInfo.CAPABILITY_CAN_PERFORM_GESTURES)
-                            != 0) {
-                        sPreInitCachedValuePerformGesturesEnabled = true;
-                        return true;
-                    }
-                }
-            }
-            sPreInitCachedValuePerformGesturesEnabled = false;
-            return false;
-        }
-
+        if (!sInitialized) updateAccessibilityServices();
         return sState.isPerformGesturesEnabled;
     }
 
@@ -316,25 +294,6 @@ public class AccessibilityState {
     public static boolean isAccessibilitySpeakPasswordEnabled() {
         if (!sInitialized) updateAccessibilityServices();
         return sAccessibilitySpeakPasswordEnabled;
-    }
-
-    /**
-     * Helper method to return the value that is equivalent to the deprecated approach:
-     *     ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-     *
-     * Avoid calling this method at all costs. The naming of this method is misleading and its
-     * usage is tricky. Use the more granular methods of this class.
-     *
-     * Returns true if an accessibility service is running that uses touch exploration OR a service
-     * is running that can perform gestures.
-     *
-     * @return true when touch exploration or gesture performing services are running.
-     */
-    // TODO(mschillaci): Replace all calls of this method with newer approach.
-    @Deprecated
-    public static boolean isAccessibilityEnabled() {
-        return AccessibilityState.isTouchExplorationEnabled()
-                || AccessibilityState.isPerformGesturesEnabled();
     }
 
     /**
