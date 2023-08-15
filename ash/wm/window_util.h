@@ -24,6 +24,10 @@ namespace ui {
 class LocatedEvent;
 }  // namespace ui
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace ash::window_util {
 
 // See ui/wm/core/window_util.h for ActivateWindow(), DeactivateWindow(),
@@ -165,6 +169,15 @@ ASH_EXPORT aura::Window* GetEventHandlerForEvent(const ui::LocatedEvent& event);
 
 // Checks the prefs to see if natural scroll for the touchpad is turned on.
 ASH_EXPORT bool IsNaturalScrollOn();
+
+// The thumbnail window (transformed window for non-minimized state in overview,
+// mirror window for minimized state in overview and alt+tab windows) may need
+// to be rounded depending on the state of the backdrop. This helper takes into
+// account the rounded corners of `backdrop_view`, if it exists. Used for
+// overview and alt+tab.
+ASH_EXPORT bool ShouldRoundThumbnailWindow(
+    views::View* backdrop_view,
+    const gfx::RectF& thumbnail_bounds_in_screen);
 
 }  // namespace ash::window_util
 

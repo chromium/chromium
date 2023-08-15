@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/wm/core/window_util.h"
@@ -323,6 +324,40 @@ TEST_F(WindowUtilTest, PinWindow_TabletMode) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsPinned());
   EXPECT_TRUE(WindowState::Get(window.get())->IsTrustedPinned());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 3);
+}
+
+TEST_F(WindowUtilTest, ShouldRoundThumbnailWindow) {
+  const float rounding = 30.f;
+  auto backdrop_view = std::make_unique<views::View>();
+  backdrop_view->SetPaintToLayer();
+  backdrop_view->layer()->SetRoundedCornerRadius(
+      {rounding, rounding, rounding, rounding});
+
+  // Note that `SetPosition` does nothing since this view is floating. For this
+  // test this is fine, but if we need to have a position, we need to attach
+  // this view to a views tree.
+  backdrop_view->SetBounds(0, 0, 300, 200);
+  ASSERT_EQ(gfx::Rect(300, 200), backdrop_view->GetBoundsInScreen());
+
+  // If the thumbnail covers the backdrop completely, it should be rounded as
+  // well.
+  EXPECT_TRUE(ShouldRoundThumbnailWindow(backdrop_view.get(),
+                                         gfx::RectF(300.f, 200.f)));
+
+  // If the thumbnail is completely within the backdrop's bounds including
+  // rounding, it doesn't need to be rounded.
+  EXPECT_FALSE(ShouldRoundThumbnailWindow(backdrop_view.get(),
+                                          gfx::RectF(0.f, 30.f, 300.f, 140.f)));
+  EXPECT_FALSE(ShouldRoundThumbnailWindow(backdrop_view.get(),
+                                          gfx::RectF(30.f, 0.f, 240.f, 200.f)));
+
+  // The thumbnail partially covers the part of the backdrop that will not get
+  // drawn. We should round the thumbnail as well in this case, otherwise the
+  // corner will be drawn over the rounding.
+  EXPECT_TRUE(ShouldRoundThumbnailWindow(backdrop_view.get(),
+                                         gfx::RectF(0.f, 15.f, 300.f, 170.f)));
+  EXPECT_TRUE(ShouldRoundThumbnailWindow(backdrop_view.get(),
+                                         gfx::RectF(15.f, 0.f, 270.f, 200.f)));
 }
 
 }  // namespace window_util

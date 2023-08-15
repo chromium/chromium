@@ -622,4 +622,23 @@ bool IsNaturalScrollOn() {
          pref->GetBoolean(prefs::kNaturalScroll);
 }
 
+bool ShouldRoundThumbnailWindow(views::View* backdrop_view,
+                                const gfx::RectF& thumbnail_bounds_in_screen) {
+  // If the backdrop is not created or not visible, round the thumbnail.
+  if (!backdrop_view || !backdrop_view->GetVisible()) {
+    return true;
+  }
+
+  CHECK(backdrop_view->layer());
+  // Get the bounds of the backdrop as a rounded rect object. This will allow us
+  // to use `gfx::RRectF::Contains` to check if `thumbnail_bounds_in_screen` is
+  // inside the rounding. For example, if the x,y,w,h all match and the rounding
+  // is non-zero, this will return false as the thumbnails corners will be
+  // considered out of bounds.
+  const gfx::RRectF backdrop_bounds_in_screen(
+      gfx::RRectF(gfx::RectF(backdrop_view->GetBoundsInScreen()),
+                  backdrop_view->layer()->rounded_corner_radii()));
+  return !backdrop_bounds_in_screen.Contains(thumbnail_bounds_in_screen);
+}
+
 }  // namespace ash::window_util

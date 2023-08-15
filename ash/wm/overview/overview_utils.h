@@ -88,6 +88,7 @@ bool ShouldUseTabletModeGridLayout();
 ASH_EXPORT gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect);
 
 void UpdateOverviewHighlightForFocus(OverviewHighlightableView* target_view);
+
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_UTILS_H_

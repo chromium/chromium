@@ -59,10 +59,6 @@ bool immediate_close_for_tests = false;
 // Delay closing window to allow it to shrink and fade out.
 constexpr int kCloseWindowDelayInMilliseconds = 150;
 
-// The maximum difference of the side length between backdrop view and
-// transformed window in order to apply the corner radius on the window.
-constexpr int kLengthDiffToApplyCornerRadiusOnWindow = 24;
-
 // Layer animation observer that is attached to a clip animation. Removes the
 // clip and then self destructs after the animation is finished.
 class RemoveClipObserver : public ui::ImplicitAnimationObserver,
@@ -559,57 +555,24 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
   ui::Layer* layer = window_->layer();
   layer->SetIsFastRoundedCorner(true);
 
-  const float scale = layer->transform().To2dScale().x();
-  const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kLow);
-
   if (!show) {
     layer->SetRoundedCornerRadius(gfx::RoundedCornersF());
     return;
   }
 
+  const float scale = layer->transform().To2dScale().x();
   if (!chromeos::features::IsJellyrollEnabled()) {
+    const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+        views::Emphasis::kLow);
     layer->SetRoundedCornerRadius(gfx::RoundedCornersF(radius / scale));
     return;
   }
 
-  gfx::RoundedCornersF radii(0);
-  // Corner radius is applied to the preview view if the
-  // `backdrop_view_` is not visible or if `backdrop_view_` is visible but
-  // couldn't cover the window with applied corner radius.
+  // Depending on the size of `backdrop_view`, we might not want to round the
+  // window associated with `layer`.
   auto* backdrop_view = overview_item_->overview_item_view()->backdrop_view();
-  const bool is_backdrop_view_visible =
-      backdrop_view && backdrop_view->GetVisible();
-
-  bool has_rounding = false;
-  if (is_backdrop_view_visible) {
-    switch (type_) {
-      case OverviewGridWindowFillMode::kLetterBoxed:
-        has_rounding =
-            backdrop_view->height() - GetTransformedBounds().height() <
-            kLengthDiffToApplyCornerRadiusOnWindow;
-        break;
-      case OverviewGridWindowFillMode::kPillarBoxed:
-        has_rounding = backdrop_view->width() - GetTransformedBounds().width() <
-                       kLengthDiffToApplyCornerRadiusOnWindow;
-        break;
-      case OverviewGridWindowFillMode::kNormal:
-        break;
-    }
-  } else {
-    has_rounding = true;
-  }
-
-  if (!is_backdrop_view_visible ||
-      (type_ == OverviewGridWindowFillMode::kLetterBoxed &&
-       backdrop_view->height() - GetTransformedBounds().height() <
-           kLengthDiffToApplyCornerRadiusOnWindow) ||
-      (type_ == OverviewGridWindowFillMode::kPillarBoxed &&
-       backdrop_view->width() - GetTransformedBounds().width() <
-           kLengthDiffToApplyCornerRadiusOnWindow)) {
-    radii = gfx::RoundedCornersF(0, 0, kOverviewItemCornerRadius / scale,
-                                 kOverviewItemCornerRadius / scale);
-  }
+  const bool has_rounding = window_util::ShouldRoundThumbnailWindow(
+      backdrop_view, GetTransformedBounds());
 
   layer->SetRoundedCornerRadius(
       has_rounding

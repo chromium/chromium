@@ -13,6 +13,7 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
+#include "ash/wm/window_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -40,12 +41,14 @@ constexpr int kFocusRingCornerRadius = 20;
 
 // Returns the rounded corners of the preview view scaled by the given value of
 // `scale` for the preview view with given source `window` if allowed to `show`.
-// Rounded corner is applied to the previw view only if `is_back_drop_visible`
-// is false when feature flag `kJellyroll` is enabled.
-gfx::RoundedCornersF GetRoundedCornerForPreviewView(aura::Window* window,
-                                                    float scale,
-                                                    bool show,
-                                                    bool is_back_drop_visible) {
+// If the preview view is completely inside the rounded bounds of `backdrop`, no
+// need to round its corners.
+gfx::RoundedCornersF GetRoundedCornerForPreviewView(
+    aura::Window* window,
+    views::View* backdrop,
+    const gfx::Rect& preview_bounds_in_screen,
+    float scale,
+    bool show) {
   if (!show) {
     return gfx::RoundedCornersF();
   }
@@ -56,7 +59,8 @@ gfx::RoundedCornersF GetRoundedCornerForPreviewView(aura::Window* window,
     return gfx::RoundedCornersF(rounding / scale);
   }
 
-  if (is_back_drop_visible) {
+  if (!window_util::ShouldRoundThumbnailWindow(
+          backdrop, gfx::RectF(preview_bounds_in_screen))) {
     return gfx::RoundedCornersF();
   }
 
@@ -188,10 +192,9 @@ void WindowMiniView::UpdatePreviewRoundedCorners(bool show) {
   CHECK(layer);
   const float scale = layer->transform().To2dScale().x();
 
-  const bool is_back_drop_visible =
-      backdrop_view_ && backdrop_view_->GetVisible();
   layer->SetRoundedCornerRadius(GetRoundedCornerForPreviewView(
-      source_window_, scale, show, is_back_drop_visible));
+      source_window_, backdrop_view_, preview_view_->GetBoundsInScreen(), scale,
+      show));
   layer->SetIsFastRoundedCorner(true);
 }
 
