@@ -15,6 +15,8 @@ ci.defaults.set(
     cpu = cpu.X86_64,
     free_space = builders.free_space.standard,
     build_numbers = True,
+    shadow_builderless = True,
+    shadow_free_space = None,
     shadow_pool = "luci.chromium.try",
     shadow_reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
 )

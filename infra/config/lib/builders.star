@@ -411,6 +411,8 @@ defaults = args.defaults(
     health_spec = None,
 
     # Variables for modifying builder characteristics in a shadow bucket
+    shadow_builderless = None,
+    shadow_free_space = args.COMPUTE,  # None will clear the non-shadow dimension, so use args.COMPUTE as the default
     shadow_pool = None,
     shadow_service_account = None,
     shadow_reclient_instance = None,
@@ -483,6 +485,8 @@ def builder(
         siso_enable_cloud_trace = args.DEFAULT,
         siso_experiments = args.DEFAULT,
         health_spec = args.DEFAULT,
+        shadow_builderless = args.DEFAULT,
+        shadow_free_space = args.DEFAULT,
         shadow_pool = args.DEFAULT,
         shadow_service_account = args.DEFAULT,
         shadow_reclient_instance = args.DEFAULT,
@@ -673,6 +677,16 @@ def builder(
         siso_enable_cloud_profiler: If True, enable cloud profiler in siso.
         siso_enable_cloud_trace: If True, enable cloud trace in siso.
         siso_experiments: a list of experiment flags for siso.
+        shadow_builderless: If set to True, then led builds created for this
+            builder will have the builderless dimension set and the builder
+            dimension removed. If set to False, then led builds created for this
+            builder will have the builderless dimension removed and the builder
+            dimension set. See description of builderless and
+            auto_builder_dimension for more information.
+        shadow_free_space: If set, then led builds created for this builder will
+            use the specified value for the free_space dimension. None will
+            cause the free_space dimension to be removed for led builds. See
+            description of free_space for more information.
         shadow_pool: If set, then led builds created for this Builder will be
             set to use this alternate pool instead.
         shadow_service_account: If set, then led builds created for this builder
@@ -873,6 +887,23 @@ def builder(
             "project": siso_project,
         }
 
+    shadow_dimensions = {}
+    shadow_builderless = defaults.get_value("shadow_builderless", shadow_builderless)
+    if shadow_builderless:
+        shadow_dimensions["builderless"] = "1"
+        shadow_dimensions["builder"] = None
+    elif shadow_builderless != None:
+        shadow_dimensions["builderless"] = None
+        shadow_dimensions["builder"] = name
+    shadow_free_space = defaults.get_value("shadow_free_space", shadow_free_space)
+    if shadow_free_space != args.COMPUTE:
+        shadow_dimensions["free_space"] = shadow_free_space
+    shadow_pool = defaults.get_value("shadow_pool", shadow_pool)
+    if shadow_pool != None:
+        shadow_dimensions["pool"] = shadow_pool
+
+    shadow_dimensions = {k: v for k, v in shadow_dimensions.items() if dimensions.get(k) != v}
+
     kwargs = dict(kwargs)
     if bucket != args.COMPUTE:
         kwargs["bucket"] = bucket
@@ -903,7 +934,7 @@ def builder(
             resultdb_bigquery_exports = resultdb_bigquery_exports,
             resultdb_index_by_timestamp = resultdb_index_by_timestamp,
         ),
-        shadow_pool = defaults.get_value("shadow_pool", shadow_pool),
+        shadow_dimensions = shadow_dimensions,
         shadow_service_account = defaults.get_value("shadow_service_account", shadow_service_account),
         shadow_properties = shadow_properties,
         **kwargs
