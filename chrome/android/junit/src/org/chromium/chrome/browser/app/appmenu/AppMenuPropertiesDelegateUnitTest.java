@@ -993,6 +993,36 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    public void testShouldShowNewMenu_instanceSwitcherDisabled_isAutomotive_returnsFalse() {
+        assertFalse(doTestShouldShowNewMenu(
+                /* isAutomotive */ true,
+                /* isInstanceSwitcherEnabled */ false,
+                /* currentWindowInstances */ 1,
+                /* isTabletSizeScreen */ true,
+                /* canEnterMultiWindowMode */ false,
+                /* isChromeRunningInAdjacentWindow */ false,
+                /* isInMultiWindowMode */ false,
+                /* isInMultiDisplayMode */ true,
+                /* isMultiInstanceRunning */ false));
+        verify(mAppMenuPropertiesDelegate, never()).isTabletSizeScreen();
+    }
+
+    @Test
+    public void testShouldShowMoveToOtherWindow_isAutomotive_returnsFalse() {
+        assertFalse(doTestShouldShowMoveToOtherWindowMenu(
+                /* isAutomotive */ true,
+                /* isInstanceSwitcherEnabled */ false,
+                /* currentWindowInstances */ 1,
+                /* isTabletSizeScreen */ true,
+                /* canEnterMultiWindowMode */ false,
+                /* isChromeRunningInAdjacentWindow */ false,
+                /* isInMultiWindowMode */ false,
+                /* isInMultiDisplayMode */ true,
+                /* isMultiInstanceRunning */ false));
+        verify(mAppMenuPropertiesDelegate, never()).isTabletSizeScreen();
+    }
+
+    @Test
     public void testShouldShowNewMenu_isTabletSizedScreen_returnsTrue() {
         assertTrue(doTestShouldShowNewMenu(
                 /* isAutomotive */ false,
@@ -1167,6 +1197,32 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .isMultiInstanceRunning();
 
         return mAppMenuPropertiesDelegate.shouldShowNewWindow();
+    }
+
+    private boolean doTestShouldShowMoveToOtherWindowMenu(boolean isAutomotive,
+            boolean isInstanceSwitcherEnabled, int currentWindowInstances,
+            boolean isTabletSizeScreen, boolean canEnterMultiWindowMode,
+            boolean isChromeRunningInAdjacentWindow, boolean isInMultiWindowMode,
+            boolean isInMultiDisplayMode, boolean isMultiInstanceRunning) {
+        mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, isAutomotive);
+        doReturn(isInstanceSwitcherEnabled)
+                .when(mAppMenuPropertiesDelegate)
+                .instanceSwitcherEnabled();
+        doReturn(currentWindowInstances).when(mAppMenuPropertiesDelegate).getInstanceCount();
+        doReturn(isTabletSizeScreen).when(mAppMenuPropertiesDelegate).isTabletSizeScreen();
+        doReturn(canEnterMultiWindowMode)
+                .when(mMultiWindowModeStateDispatcher)
+                .canEnterMultiWindowMode();
+        doReturn(isChromeRunningInAdjacentWindow)
+                .when(mMultiWindowModeStateDispatcher)
+                .isChromeRunningInAdjacentWindow();
+        doReturn(isInMultiWindowMode).when(mMultiWindowModeStateDispatcher).isInMultiWindowMode();
+        doReturn(isInMultiDisplayMode).when(mMultiWindowModeStateDispatcher).isInMultiDisplayMode();
+        doReturn(isMultiInstanceRunning)
+                .when(mMultiWindowModeStateDispatcher)
+                .isMultiInstanceRunning();
+
+        return mAppMenuPropertiesDelegate.shouldShowMoveToOtherWindow();
     }
 
     private void setUpMocksForPageMenu() {

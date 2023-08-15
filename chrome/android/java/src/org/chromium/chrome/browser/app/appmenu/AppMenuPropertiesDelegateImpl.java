@@ -710,6 +710,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * @return Whether the "Move to other window" menu item should be displayed.
      */
     protected boolean shouldShowMoveToOtherWindow() {
+        // Hide the menu on automotive devices.
+        if (BuildInfo.getInstance().isAutomotive) return false;
+
         if (!instanceSwitcherEnabled() && shouldShowNewWindow()) return false;
         boolean hasMoreThanOneTab = mTabModelSelector.getTotalTabCount() > 1;
         boolean showAlsoForSingleTab = !isPartnerHomepageEnabled();
@@ -753,11 +756,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * @return Whether the "New window" menu item should be displayed.
      */
     protected boolean shouldShowNewWindow() {
+        // Hide the menu on automotive devices.
+        if (BuildInfo.getInstance().isAutomotive) return false;
+
         if (instanceSwitcherEnabled()) {
             // Hide the menu if we already have the maximum number of windows.
             if (getInstanceCount() >= MultiWindowUtils.getMaxInstances()) return false;
-            // Hide the menu on automotive devices.
-            if (BuildInfo.getInstance().isAutomotive) return false;
 
             // On phones, show the menu only when in split-screen, with a single instance
             // running on the foreground.
