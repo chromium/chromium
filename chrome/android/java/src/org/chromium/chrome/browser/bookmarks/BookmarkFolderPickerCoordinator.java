@@ -33,16 +33,6 @@ import java.util.List;
 
 /** Coordinates the views/mediators that make up the bookmark folder picker. */
 public class BookmarkFolderPickerCoordinator implements BackPressHandler {
-    private BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver = new BookmarkUiPrefs.Observer() {
-        @Override
-        @SuppressWarnings("NotifyDataSetChanged")
-        public void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {
-            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-                mAdapter.notifyDataSetChanged();
-            }
-        }
-    };
-
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
     private final ModelList mModelList = new ModelList();
@@ -108,13 +98,11 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
         mBackPressStateSupplier.set(true);
 
         mBookmarkUiPrefs = bookmarkUiPrefs;
-        mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
     }
 
     /** Destroys the coordinator. */
     public void destroy() {
         mMediator.destroy();
-        mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
     }
 
     /** Returns the view for display. */

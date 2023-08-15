@@ -27,6 +27,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -36,6 +38,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -122,6 +125,8 @@ public class BookmarkFolderPickerMediatorTest {
     private BookmarkAddNewFolderCoordinator mAddNewFolderCoordinator;
     @Mock
     private ShoppingService mShoppingService;
+    @Captor
+    private ArgumentCaptor<BookmarkUiPrefs.Observer> mBookmarkUiPrefsObserverCaptor;
 
     private Activity mActivity;
     private BookmarkFolderPickerMediator mMediator;
@@ -271,5 +276,19 @@ public class BookmarkFolderPickerMediatorTest {
     public void testOptionsItemSelected_AddNewFolder() {
         mMediator.optionsItemSelected(R.id.create_new_folder_menu_id);
         verify(mAddNewFolderCoordinator).show(any());
+    }
+
+    @Test
+    public void testOnBookmarkRowDisplayPrefChanged() {
+        mMediator.populateFoldersForParentId(mMobileFolderId);
+        assertEquals(2, mModelList.size());
+
+        mModelList.clear();
+        assertEquals(0, mModelList.size());
+
+        verify(mBookmarkUiPrefs).addObserver(mBookmarkUiPrefsObserverCaptor.capture());
+        mBookmarkUiPrefsObserverCaptor.getValue().onBookmarkRowDisplayPrefChanged(
+                BookmarkRowDisplayPref.VISUAL);
+        assertEquals(2, mModelList.size());
     }
 }

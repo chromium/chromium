@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -34,6 +35,13 @@ class BookmarkFolderPickerMediator {
         }
     };
 
+    private BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver = new BookmarkUiPrefs.Observer() {
+        @Override
+        public void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {
+            populateFoldersForParentId(mCurrentParentItem.getId());
+        }
+    };
+
     // Binds properties to the view.
     private final PropertyModel mModel;
     // Binds items to the recycler view.
@@ -47,6 +55,7 @@ class BookmarkFolderPickerMediator {
     private final BookmarkQueryHandler mQueryHandler;
     private final BookmarkAddNewFolderCoordinator mAddNewFolderCoordinator;
     private final ImprovedBookmarkRowCoordinator mImprovedBookmarkRowCoordinator;
+    private final BookmarkUiPrefs mBookmarkUiPrefs;
 
     private boolean mMovingAtLeastOneFolder;
     private boolean mMovingAtLeastOneBookmark;
@@ -70,8 +79,9 @@ class BookmarkFolderPickerMediator {
         mModelList = modelList;
         mAddNewFolderCoordinator = addNewFolderCoordinator;
         mImprovedBookmarkRowCoordinator = improvedBookmarkRowCoordinator;
-
         mInitialParentId = initialParentId;
+        mBookmarkUiPrefs = bookmarkUiPrefs;
+        mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
 
         for (BookmarkId id : mBookmarkIds) {
             BookmarkItem item = mBookmarkModel.getBookmarkById(id);
@@ -91,6 +101,7 @@ class BookmarkFolderPickerMediator {
 
     void destroy() {
         mBookmarkModel.removeObserver(mBookmarkModelObserver);
+        mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
     }
 
     void populateFoldersForParentId(BookmarkId parentId) {

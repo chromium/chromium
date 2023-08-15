@@ -42,10 +42,10 @@ public class BookmarkUiPrefsTest {
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock
-    BookmarkUiPrefs.Observer mObserver;
+    private BookmarkUiPrefs.Observer mObserver;
 
-    SharedPreferencesManager mSharedPreferencesManager;
-    BookmarkUiPrefs mBookmarkUiPrefs;
+    private SharedPreferencesManager mSharedPreferencesManager;
+    private BookmarkUiPrefs mBookmarkUiPrefs;
 
     @Before
     public void setUp() {
@@ -130,5 +130,27 @@ public class BookmarkUiPrefsTest {
         verifyNoInteractions(mObserver);
         Assert.assertEquals(
                 BookmarkRowSortOrder.CHRONOLOGICAL, mBookmarkUiPrefs.getBookmarkRowSortOrder());
+    }
+
+    @Test
+    public void testRowDisplayPref_changesInBackground() {
+        Assert.assertEquals(
+                BookmarkRowDisplayPref.VISUAL, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
+
+        mBookmarkUiPrefs.addObserver(mObserver);
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF, BookmarkRowDisplayPref.COMPACT);
+        verify(mObserver).onBookmarkRowDisplayPrefChanged(BookmarkRowDisplayPref.COMPACT);
+    }
+
+    @Test
+    public void testSortOrderPref_changesInBackground() {
+        Assert.assertEquals(BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL,
+                mBookmarkUiPrefs.getBookmarkRowSortOrder());
+
+        mBookmarkUiPrefs.addObserver(mObserver);
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.BOOKMARKS_SORT_ORDER, BookmarkRowSortOrder.CHRONOLOGICAL);
+        verify(mObserver).onBookmarkRowSortOrderChanged(BookmarkRowSortOrder.CHRONOLOGICAL);
     }
 }

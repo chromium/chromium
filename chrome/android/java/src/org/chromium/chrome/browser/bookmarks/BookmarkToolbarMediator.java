@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -35,6 +36,20 @@ import java.util.List;
 /** Responsible for the business logic for the BookmarkManagerToolbar. */
 class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
                                          SelectionDelegate.SelectionObserver<BookmarkItem> {
+    private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver = new Observer() {
+        @Override
+        public void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {
+            mModel.set(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID,
+                    getMenuIdFromDisplayPref(displayPref));
+        }
+
+        @Override
+        public void onBookmarkRowSortOrderChanged(@BookmarkRowSortOrder int sortOrder) {
+            mModel.set(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID,
+                    getMenuIdFromSortOrder(sortOrder));
+        }
+    };
+
     private final Context mContext;
     private final PropertyModel mModel;
     private final DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
@@ -66,6 +81,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         mBookmarkModel = bookmarkModel;
         mBookmarkOpener = bookmarkOpener;
         mBookmarkUiPrefs = bookmarkUiPrefs;
+        mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
         mBookmarkAddNewFolderCoordinator = bookmarkAddNewFolderCoordinator;
 
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
@@ -208,6 +224,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
     public void onDestroy() {
         mDragReorderableRecyclerViewAdapter.removeDragListener(this);
         mSelectionDelegate.removeObserver(this);
+        mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
 
         if (mBookmarkDelegate != null) {
             mBookmarkDelegate.removeUiObserver(this);
@@ -304,6 +321,16 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         if (!mSelectionDelegate.isSelectionEnabled()) {
             onFolderStateSet(mCurrentFolder);
         }
+    }
+
+    private @IdRes int getMenuIdFromDisplayPref(@BookmarkRowDisplayPref int displayPref) {
+        switch (displayPref) {
+            case BookmarkRowDisplayPref.COMPACT:
+                return R.id.compact_view;
+            case BookmarkRowDisplayPref.VISUAL:
+                return R.id.visual_view;
+        }
+        return ResourcesCompat.ID_NULL;
     }
 
     private @IdRes int getMenuIdFromSortOrder(@BookmarkRowSortOrder int sortOrder) {
