@@ -1527,3 +1527,5 @@ crbug.com/1459575 webexposed/global-interface-listing-dedicated-worker.html [ Sl
 
 crbug.com/1456739 [ Linux Release ] virtual/private-aggregation-developer-mode/wpt_internal/private-aggregation/protected-audience-sends-report.https.html [ Slow ]
 
+crbug.com/1455258 external/wpt/IndexedDB/large-requests-abort.html [ Slow ]
+crbug.com/1466727 external/wpt/IndexedDB/transaction-abort-generator-revert.html [ Slow ]
