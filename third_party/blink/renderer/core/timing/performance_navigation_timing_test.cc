@@ -12,24 +12,26 @@ namespace blink {
 
 class PerformanceNavigationTimingTest : public PageTestBase {
  protected:
-  AtomicString GetNavigationType(WebNavigationType type) {
-    return PerformanceNavigationTiming::GetNavigationType(type);
+  AtomicString GetNavigationTimingType(WebNavigationType type) {
+    return PerformanceNavigationTiming::GetNavigationTimingType(type);
   }
 };
 
-TEST_F(PerformanceNavigationTimingTest, GetNavigationType) {
+TEST_F(PerformanceNavigationTimingTest, GetNavigationTimingType) {
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                /*is_initial_state=*/false);
-  AtomicString returned_type = GetNavigationType(kWebNavigationTypeBackForward);
+  AtomicString returned_type =
+      GetNavigationTimingType(kWebNavigationTypeBackForward);
   EXPECT_EQ(returned_type, "back_forward");
 
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
                                /*is_initial_state=*/false);
   returned_type =
-      GetNavigationType(kWebNavigationTypeFormResubmittedBackForward);
+      GetNavigationTimingType(kWebNavigationTypeFormResubmittedBackForward);
   EXPECT_EQ(returned_type, "back_forward");
 
-  returned_type = GetNavigationType(kWebNavigationTypeFormResubmittedReload);
+  returned_type =
+      GetNavigationTimingType(kWebNavigationTypeFormResubmittedReload);
   EXPECT_EQ(returned_type, "reload");
 }
 }  // namespace blink

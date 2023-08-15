@@ -104,7 +104,7 @@ const DocumentTiming* PerformanceNavigationTiming::GetDocumentTiming() const {
   return DomWindow() ? &DomWindow()->document()->GetTiming() : nullptr;
 }
 
-AtomicString PerformanceNavigationTiming::GetNavigationType(
+AtomicString PerformanceNavigationTiming::GetNavigationTimingType(
     WebNavigationType type) {
   switch (type) {
     case kWebNavigationTypeReload:
@@ -209,7 +209,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::loadEventEnd() const {
 
 AtomicString PerformanceNavigationTiming::type() const {
   if (DomWindow()) {
-    return GetNavigationType(GetDocumentLoader()->GetNavigationType());
+    return GetNavigationTimingType(GetDocumentLoader()->GetNavigationType());
   }
   return AtomicString("navigate");
 }
