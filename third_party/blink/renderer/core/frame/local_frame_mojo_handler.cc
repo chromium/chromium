@@ -168,7 +168,7 @@ HitTestResult HitTestResultForRootFramePos(
       frame->View()->ConvertFromRootFrame(pos_in_root_frame));
   HitTestResult result = frame->GetEventHandler().HitTestResultAtLocation(
       location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
-  result.SetToShadowHostIfInRestrictedShadowRoot();
+  result.SetToShadowHostIfInUAShadowRoot();
   return result;
 }
 

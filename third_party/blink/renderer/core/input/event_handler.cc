@@ -911,7 +911,7 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
       mouse_event.button == WebPointerProperties::Button::kLeft) {
     DCHECK_EQ(WebInputEvent::Type::kMouseDown, mouse_event.GetType());
     HitTestResult result = mev.GetHitTestResult();
-    result.SetToShadowHostIfInRestrictedShadowRoot();
+    result.SetToShadowHostIfInUAShadowRoot();
     frame_->GetChromeClient().OnMouseDown(*result.InnerNode());
   }
 
@@ -941,7 +941,7 @@ WebInputEventResult EventHandler::HandleMouseMoveEvent(
       layer_scrollable_area->MouseMovedInContentArea();
   }
 
-  hovered_node_result.SetToShadowHostIfInRestrictedShadowRoot();
+  hovered_node_result.SetToShadowHostIfInUAShadowRoot();
   page->GetChromeClient().MouseDidMoveOverElement(*frame_, location,
                                                   hovered_node_result);
 

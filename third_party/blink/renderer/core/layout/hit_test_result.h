@@ -140,7 +140,7 @@ class CORE_EXPORT HitTestResult {
   PositionWithAffinity GetPosition() const;
   PositionWithAffinity GetPositionForInnerNodeOrImageMapImage() const;
 
-  void SetToShadowHostIfInRestrictedShadowRoot();
+  void SetToShadowHostIfInUAShadowRoot();
 
   const HitTestRequest& GetHitTestRequest() const { return hit_test_request_; }
 

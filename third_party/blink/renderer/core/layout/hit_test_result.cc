@@ -223,7 +223,7 @@ PositionWithAffinity HitTestResult::GetPositionForInnerNodeOrImageMapImage()
   return position;
 }
 
-void HitTestResult::SetToShadowHostIfInRestrictedShadowRoot() {
+void HitTestResult::SetToShadowHostIfInUAShadowRoot() {
   Node* node = InnerNode();
   if (!node)
     return;
@@ -233,9 +233,7 @@ void HitTestResult::SetToShadowHostIfInRestrictedShadowRoot() {
 
   // Consider a closed shadow tree of SVG's <use> element as a special
   // case so that a toolip title in the shadow tree works.
-  while (containing_shadow_root &&
-         (containing_shadow_root->IsUserAgent() ||
-          IsA<SVGUseElement>(containing_shadow_root->host()))) {
+  while (containing_shadow_root && containing_shadow_root->IsUserAgent()) {
     shadow_host = &containing_shadow_root->host();
     containing_shadow_root = shadow_host->ContainingShadowRoot();
     // TODO(layout-dev): Not updating local_point_ here seems like a mistake?

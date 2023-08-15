@@ -479,7 +479,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   image_selection_cached_result_ = nullptr;
 
   hit_test_result_ = result;
-  result.SetToShadowHostIfInRestrictedShadowRoot();
+  result.SetToShadowHostIfInUAShadowRoot();
 
   LocalFrame* selected_frame = result.InnerNodeFrame();
   // Tests that do not require selection pass mouse_event = nullptr

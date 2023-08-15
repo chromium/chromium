@@ -657,7 +657,7 @@ class TouchStartEventListener : public NativeEventListener {
                 tap_event, HitTestRequest::kReadOnly | HitTestRequest::kActive)
             .GetHitTestResult();
 
-    result.SetToShadowHostIfInRestrictedShadowRoot();
+    result.SetToShadowHostIfInUAShadowRoot();
 
     callback_.Run(result);
   }
@@ -1190,7 +1190,7 @@ void WebLocalFrameImpl::ReloadImage(const WebNode& web_node) {
   Node* node = web_node;  // Use implicit WebNode->Node* cast.
   HitTestResult hit_test_result;
   hit_test_result.SetInnerNode(node);
-  hit_test_result.SetToShadowHostIfInRestrictedShadowRoot();
+  hit_test_result.SetToShadowHostIfInUAShadowRoot();
   node = hit_test_result.InnerNodeOrImageMapImage();
   if (auto* image_element = DynamicTo<HTMLImageElement>(*node))
     image_element->ForceReload();
@@ -2619,7 +2619,7 @@ HitTestResult WebLocalFrameImpl::HitTestResultForVisualViewportPos(
       GetFrame()->View()->ConvertFromRootFrame(root_frame_point));
   HitTestResult result = GetFrame()->GetEventHandler().HitTestResultAtLocation(
       location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
-  result.SetToShadowHostIfInRestrictedShadowRoot();
+  result.SetToShadowHostIfInUAShadowRoot();
   return result;
 }
 
