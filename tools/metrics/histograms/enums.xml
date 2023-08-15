@@ -112494,6 +112494,41 @@ others/histograms.xml -->
   <int value="5" label="Android Accessory"/>
 </enum>
 
+<enum name="WebAuthenticationMacOSPlatformAuthenticatorAction">
+  <int value="0"
+      label="Started create() for profile authenticator with iCloud Drive
+             enabled"/>
+  <int value="1"
+      label="Started create() for profile authenticator with iCloud Drive
+             disabled"/>
+  <int value="2"
+      label="Started create() for iCloud Keychain with iCloud Drive enabled"/>
+  <int value="3"
+      label="Started create() for iCloud Keychain with iCloud Drive disabled"/>
+  <int value="4"
+      label="Successful create() for profile authenticator with iCloud Drive
+             enabled"/>
+  <int value="5"
+      label="Successful create() for profile authenticator with iCloud Drive
+             disabled"/>
+  <int value="6"
+      label="Successful create() for iCloud Keychain with iCloud Drive
+             enabled"/>
+  <int value="7"
+      label="Successful create() for iCloud Keychain with iCloud Drive
+             disabled"/>
+  <int value="8"
+      label="Started get() where the profile authenticator recognised a
+             credential"/>
+  <int value="9"
+      label="Started get() where iCloud Keychain recognised a credential"/>
+  <int value="10"
+      label="Started get() where both the profile authenticator and iCloud
+             Keychain recognised a credential"/>
+  <int value="11" label="Successful get() from the profile authenticator"/>
+  <int value="12" label="Successful get() from iCloud Keychain"/>
+</enum>
+
 <enum name="WebAuthenticationRelyingPartySecurityCheckFailure">
   <int value="0" label="Opaque or Non-Secure Origin"/>
   <int value="1" label="Relying Party Id Invalid"/>

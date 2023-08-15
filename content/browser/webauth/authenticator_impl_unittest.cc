@@ -3571,7 +3571,8 @@ class FakeAuthenticatorCommonImpl : public AuthenticatorCommonImpl {
   explicit FakeAuthenticatorCommonImpl(
       RenderFrameHost* render_frame_host,
       std::unique_ptr<MockAuthenticatorRequestDelegateObserver> mock_delegate)
-      : AuthenticatorCommonImpl(render_frame_host),
+      : AuthenticatorCommonImpl(render_frame_host,
+                                ServingRequestsFor::kWebContents),
         mock_delegate_(std::move(mock_delegate)) {}
   ~FakeAuthenticatorCommonImpl() override = default;
 

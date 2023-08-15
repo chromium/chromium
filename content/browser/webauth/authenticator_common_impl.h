@@ -52,9 +52,20 @@ enum class AttestationErasureOption;
 // Common code for any WebAuthn Authenticator interfaces.
 class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
  public:
+  // ServingRequestsFor enumerates the sources of WebAuthn requests.
+  enum class ServingRequestsFor {
+    // kInternalUses is for synthesized requests that don't originate from
+    // any Javascript call.
+    kInternalUses,
+    // kWebContents is for typical cases where Javascript is making a
+    // `navigator.credentials` call.
+    kWebContents,
+  };
+
   // Creates a new AuthenticatorCommonImpl. Callers must ensure that this
   // instance outlives the RenderFrameHost.
-  explicit AuthenticatorCommonImpl(RenderFrameHost* render_frame_host);
+  explicit AuthenticatorCommonImpl(RenderFrameHost* render_frame_host,
+                                   ServingRequestsFor serving_requests_for);
 
   AuthenticatorCommonImpl(const AuthenticatorCommonImpl&) = delete;
   AuthenticatorCommonImpl& operator=(const AuthenticatorCommonImpl&) = delete;
@@ -140,7 +151,8 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   void OnSignResponse(
       device::GetAssertionStatus status_code,
       absl::optional<std::vector<device::AuthenticatorGetAssertionResponse>>
-          response_data);
+          response_data,
+      device::FidoAuthenticator* authenticator);
 
   // Begins a timeout at the beginning of a request.
   void BeginRequestTimeout(absl::optional<base::TimeDelta> timeout);
@@ -191,6 +203,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details =
           nullptr);
 
+  AuthenticatorRequestClientDelegate::RequestSource RequestSource() const;
   BrowserContext* GetBrowserContext() const;
 
   // Returns the FidoDiscoveryFactory for the current request. This may be a
@@ -214,6 +227,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::GetAssertionAuthenticatorResponsePtr response);
 
   const GlobalRenderFrameHostId render_frame_host_id_;
+  const ServingRequestsFor serving_requests_for_;
   const scoped_refptr<WebAuthRequestSecurityChecker> security_checker_;
 
   // These members hold state that spans different requests. All

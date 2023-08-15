@@ -5,6 +5,7 @@
 #include "device/fido/mac/icloud_keychain.h"
 
 #import <AuthenticationServices/AuthenticationServices.h>
+#import <Foundation/Foundation.h>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -366,6 +367,10 @@ bool IsSupported() {
     return GetSystemInterface()->IsAvailable();
   }
   return false;
+}
+
+bool IsICloudDriveEnabled() {
+  return [NSFileManager defaultManager].ubiquityIdentityToken != nil;
 }
 
 std::unique_ptr<FidoDiscoveryBase> NewDiscovery(uintptr_t ns_window) {

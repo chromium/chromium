@@ -385,10 +385,12 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
       ChromeAuthenticatorRequestDelegate delegate(main_rfh());
       delegate.SetRelyingPartyId(/*rp_id=*/"example.com");
       delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
-      delegate.ConfigureDiscoveries(url::Origin::Create(GURL(test.origin)),
-                                    test.origin, test.request_type,
-                                    test.resident_key_requirement,
-                                    test.extensions, &discovery_factory);
+      delegate.ConfigureDiscoveries(
+          url::Origin::Create(GURL(test.origin)), test.origin,
+          content::AuthenticatorRequestClientDelegate::RequestSource::
+              kWebAuthentication,
+          test.request_type, test.resident_key_requirement, test.extensions,
+          &discovery_factory);
 
       switch (windows_has_hybrid ? test.expected_result_with_system_hybrid
                                  : test.expected_result) {
@@ -540,6 +542,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
   MockCableDiscoveryFactory discovery_factory;
   delegate.ConfigureDiscoveries(
       url::Origin::Create(url), relying_party,
+      content::AuthenticatorRequestClientDelegate::RequestSource::
+          kWebAuthentication,
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/absl::nullopt,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
@@ -600,6 +604,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_NoSyncPairedPhones) {
   MockCableDiscoveryFactory discovery_factory;
   delegate.ConfigureDiscoveries(
       url::Origin::Create(url), relying_party,
+      content::AuthenticatorRequestClientDelegate::RequestSource::
+          kWebAuthentication,
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/absl::nullopt,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
@@ -651,6 +657,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
   MockCableDiscoveryFactory discovery_factory;
   delegate.ConfigureDiscoveries(
       url::Origin::Create(url), relying_party,
+      content::AuthenticatorRequestClientDelegate::RequestSource::
+          kWebAuthentication,
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/absl::nullopt,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),

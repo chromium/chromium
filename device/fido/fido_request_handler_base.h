@@ -178,6 +178,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // this request.
     ConditionalUITreatment conditional_ui_treatment =
         ConditionalUITreatment::kDefault;
+
+    // has_icloud_drive_enabled returns true if we believe that the user is
+    // current syncing with iCloud Drive. This is used as an approximation to
+    // "has iCloud Keychain" enabled, which is what we would like to know but
+    // cannot easily learn.
+    bool has_icloud_drive_enabled = false;
   };
 
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer {

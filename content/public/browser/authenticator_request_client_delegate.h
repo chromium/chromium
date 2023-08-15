@@ -205,6 +205,17 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     kHybridTransportError,
   };
 
+  // RequestSource enumerates the source of a request, which is either the Web
+  // Authentication API (https://www.w3.org/TR/webauthn-2/), the Secure Payment
+  // Authentication API (https://www.w3.org/TR/secure-payment-confirmation), or
+  // a browser-internal use (which applies whenever
+  // `AuthenticatorCommon::Create` is used).
+  enum class RequestSource {
+    kWebAuthentication,
+    kSecurePaymentConfirmation,
+    kInternal,
+  };
+
   AuthenticatorRequestClientDelegate();
 
   AuthenticatorRequestClientDelegate(
@@ -231,6 +242,13 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // resolve the request. Returning false causes AuthenticatorImpl to resolve
   // the request with the error right away.
   virtual bool DoesBlockRequestOnFailure(InterestingFailureReason reason);
+
+  // TransactionSuccessful is called when any WebAuthn get() or create() call
+  // completes successfully.
+  virtual void OnTransactionSuccessful(
+      RequestSource request_source,
+      device::FidoRequestType request_type,
+      device::AuthenticatorType authenticator_type);
 
   // Supplies callbacks that the embedder can invoke to initiate certain
   // actions, namely: cancel the request, start the request over, preselect an
@@ -276,6 +294,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   virtual void ConfigureDiscoveries(
       const url::Origin& origin,
       const std::string& rp_id,
+      RequestSource request_source,
       device::FidoRequestType request_type,
       absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
       base::span<const device::CableDiscoveryData> pairings_from_extension,

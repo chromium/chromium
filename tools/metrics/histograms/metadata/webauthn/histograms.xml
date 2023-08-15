@@ -217,6 +217,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.MacOS.PlatformAuthenticatorAction"
+    enum="WebAuthenticationMacOSPlatformAuthenticatorAction"
+    expires_after="2024-06-14">
+  <owner>agl@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records events from the macOS platform authenticator. Note that
+    &quot;success&quot; events are only recorded for transactions that
+    previously recorded a &quot;start&quot; event.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.MakeCredentialResponseTransport"
     enum="WebAuthenticationFidoTransport" expires_after="2024-01-14">
   <owner>kenrb@chromium.org</owner>
