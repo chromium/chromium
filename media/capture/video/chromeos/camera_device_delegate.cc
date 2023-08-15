@@ -310,6 +310,14 @@ void CameraDeviceDelegate::AllocateAndStart(
     CameraDeviceContext* device_context) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
 
+  if (device_context->GetState() != CameraDeviceContext::State::kStopped) {
+    // kError indicates that the device is in use but with some errors, or the
+    // device failed to open, or the mojo channel terminated unexpectedly.
+    // Therefore, the device does not need to be opened again when the
+    // state == kError either.
+    return;
+  }
+
   result_metadata_frame_number_for_photo_state_ = 0;
   result_metadata_frame_number_ = 0;
   is_set_awb_mode_ = false;
