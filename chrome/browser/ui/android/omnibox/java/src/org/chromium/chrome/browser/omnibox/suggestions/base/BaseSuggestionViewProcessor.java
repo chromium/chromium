@@ -75,6 +75,13 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         return mDecorationImageSizePx;
     }
 
+    /**
+     * Return whether this suggestion can host OmniboxAction chips.
+     */
+    protected boolean allowOmniboxActions() {
+        return true;
+    }
+
     @Override
     public int getMinimumViewHeight() {
         return mSuggestionSizePx;

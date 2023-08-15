@@ -69,7 +69,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public boolean allowOmniboxActions() {
+    protected boolean allowOmniboxActions() {
         return false;
     }
 

@@ -95,7 +95,7 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
     }
 
     @Override
-    public boolean allowOmniboxActions() {
+    protected boolean allowOmniboxActions() {
         return false;
     }
 
