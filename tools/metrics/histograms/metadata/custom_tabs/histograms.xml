@@ -371,6 +371,9 @@ chromium-metrics-reviews@google.com.
     CustomTabs.WarmupStateOnLaunch for the buckets &quot;Session, No Warmup,
     Warmup called from another UID&quot;, &quot;Session, No Warmup&quot; and
     &quot;Session, Warmup&quot;.
+
+    Before M118, unlike CustomTabs.WarmupStateOnLaunch, this metric was only
+    recorded with a valid session.
   </summary>
 </histogram>
 

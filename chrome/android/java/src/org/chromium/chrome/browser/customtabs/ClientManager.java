@@ -62,7 +62,8 @@ import java.util.Set;
 class ClientManager {
     // Values for the "CustomTabs.MayLaunchUrlType" UMA histogram. Append-only.
     @IntDef({MayLaunchUrlType.NO_MAY_LAUNCH_URL, MayLaunchUrlType.LOW_CONFIDENCE,
-            MayLaunchUrlType.HIGH_CONFIDENCE, MayLaunchUrlType.BOTH})
+            MayLaunchUrlType.HIGH_CONFIDENCE, MayLaunchUrlType.BOTH,
+            MayLaunchUrlType.INVALID_SESSION, MayLaunchUrlType.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     @interface MayLaunchUrlType {
         @VisibleForTesting
@@ -73,7 +74,8 @@ class ClientManager {
         int HIGH_CONFIDENCE = 2;
         @VisibleForTesting
         int BOTH = 3; // LOW + HIGH.
-        int NUM_ENTRIES = 4;
+        int INVALID_SESSION = 4;
+        int NUM_ENTRIES = 5;
     }
 
     // Values for the "CustomTabs.PredictionStatus" UMA histogram. Append-only.
@@ -501,7 +503,11 @@ class ClientManager {
         RecordHistogram.recordEnumeratedHistogram("CustomTabs.WarmupStateOnLaunch",
                 getWarmupState(session), CalledWarmup.NUM_ENTRIES);
 
-        if (params == null) return;
+        if (params == null) {
+            RecordHistogram.recordEnumeratedHistogram("CustomTabs.MayLaunchUrlType",
+                    MayLaunchUrlType.INVALID_SESSION, MayLaunchUrlType.NUM_ENTRIES);
+            return;
+        }
 
         @MayLaunchUrlType
         int value = (params.lowConfidencePrediction ? MayLaunchUrlType.LOW_CONFIDENCE : 0)

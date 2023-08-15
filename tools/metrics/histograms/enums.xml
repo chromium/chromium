@@ -70090,6 +70090,7 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="Low confidence."/>
   <int value="2" label="High confidence."/>
   <int value="3" label="Low and High confidence."/>
+  <int value="4" label="Invalid session."/>
 </enum>
 
 <enum name="MBOSupport">
