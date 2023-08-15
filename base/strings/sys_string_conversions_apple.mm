@@ -28,8 +28,9 @@ template <typename StringType>
 StringType CFStringToStringWithEncodingT(CFStringRef cfstring,
                                          CFStringEncoding encoding) {
   CFIndex length = CFStringGetLength(cfstring);
-  if (length == 0)
+  if (length == 0) {
     return StringType();
+  }
 
   CFRange whole_string = CFRangeMake(0, length);
   CFIndex out_size;
@@ -38,8 +39,9 @@ StringType CFStringToStringWithEncodingT(CFStringRef cfstring,
                                        /*isExternalRepresentation=*/false,
                                        /*buffer=*/nullptr,
                                        /*maxBufLen=*/0, &out_size);
-  if (converted == 0 || out_size <= 0)
+  if (converted == 0 || out_size <= 0) {
     return StringType();
+  }
 
   // `out_size` is the number of UInt8-sized units needed in the destination.
   // A buffer allocated as UInt8 units might not be properly aligned to
@@ -57,8 +59,9 @@ StringType CFStringToStringWithEncodingT(CFStringRef cfstring,
                        /*isExternalRepresentation=*/false,
                        reinterpret_cast<UInt8*>(&out_buffer[0]), out_size,
                        /*usedBufLen=*/nullptr);
-  if (converted == 0)
+  if (converted == 0) {
     return StringType();
+  }
 
   out_buffer[elements - 1] = '\0';
   return StringType(&out_buffer[0], elements - 1);
@@ -74,8 +77,9 @@ OutStringType StringToStringWithEncodingsT(const InStringType& in,
                                            CFStringEncoding in_encoding,
                                            CFStringEncoding out_encoding) {
   typename InStringType::size_type in_length = in.length();
-  if (in_length == 0)
+  if (in_length == 0) {
     return OutStringType();
+  }
 
   base::ScopedCFTypeRef<CFStringRef> cfstring(CFStringCreateWithBytesNoCopy(
       kCFAllocatorDefault, reinterpret_cast<const UInt8*>(in.data()),
@@ -83,8 +87,9 @@ OutStringType StringToStringWithEncodingsT(const InStringType& in,
                             sizeof(typename InStringType::value_type)),
       in_encoding,
       /*isExternalRepresentation=*/false, kCFAllocatorNull));
-  if (!cfstring)
+  if (!cfstring) {
     return OutStringType();
+  }
 
   return CFStringToStringWithEncodingT<OutStringType>(cfstring, out_encoding);
 }
@@ -96,8 +101,9 @@ ScopedCFTypeRef<CFStringRef> StringPieceToCFStringWithEncodingsT(
     BasicStringPiece<CharT> in,
     CFStringEncoding in_encoding) {
   const auto in_length = in.length();
-  if (in_length == 0)
+  if (in_length == 0) {
     return ScopedCFTypeRef<CFStringRef>(CFSTR(""), base::scoped_policy::RETAIN);
+  }
 
   return ScopedCFTypeRef<CFStringRef>(CFStringCreateWithBytes(
       kCFAllocatorDefault, reinterpret_cast<const UInt8*>(in.data()),
@@ -157,14 +163,16 @@ std::u16string SysCFStringRefToUTF16(CFStringRef ref) {
 }
 
 std::string SysNSStringToUTF8(NSString* nsstring) {
-  if (!nsstring)
+  if (!nsstring) {
     return std::string();
+  }
   return SysCFStringRefToUTF8(apple::NSToCFPtrCast(nsstring));
 }
 
 std::u16string SysNSStringToUTF16(NSString* nsstring) {
-  if (!nsstring)
+  if (!nsstring) {
     return std::u16string();
+  }
   return SysCFStringRefToUTF16(apple::NSToCFPtrCast(nsstring));
 }
 

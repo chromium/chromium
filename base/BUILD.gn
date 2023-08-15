@@ -1980,7 +1980,7 @@ component("base") {
       "message_loop/message_pump_mac.mm",
       "process/process_metrics_apple.cc",
       "profiler/module_cache_mac.cc",
-      "strings/sys_string_conversions_mac.mm",
+      "strings/sys_string_conversions_apple.mm",
       "synchronization/waitable_event_mac.cc",
       "system/sys_info_apple.mm",
       "threading/platform_thread_mac.mm",
@@ -3716,7 +3716,7 @@ test("base_unittests") {
       "apple/bind_objc_block_unittest.mm",
       "apple/dispatch_source_mach_unittest.cc",
       "apple/foundation_util_unittest.mm",
-      "strings/sys_string_conversions_mac_unittest.mm",
+      "strings/sys_string_conversions_apple_unittest.mm",
     ]
   }
 
