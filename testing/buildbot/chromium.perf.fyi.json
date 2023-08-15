@@ -34,15 +34,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "O",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android",
-              "pool": "chrome.tests.perf-fyi"
-            }
-          ],
+          "dimensions": {
+            "device_os": "O",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chrome.tests.perf-fyi"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -87,15 +85,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "O",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android",
-              "pool": "chrome.tests.perf-fyi"
-            }
-          ],
+          "dimensions": {
+            "device_os": "O",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chrome.tests.perf-fyi"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -153,14 +149,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_type": "kevin",
-              "gpu": null,
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "device_type": "kevin",
+            "gpu": null,
+            "os": "ChromeOS",
+            "pool": "chrome.tests"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -222,14 +216,12 @@
               "revision": "build_id:8787350426829126785"
             }
           ],
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "device_type": "Nelson",
-              "os": "Fuchsia",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "device_type": "Nelson",
+            "os": "Fuchsia",
+            "pool": "chrome.tests"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -283,14 +275,12 @@
               "revision": "build_id:8787350426829126785"
             }
           ],
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "device_type": "Sherlock",
-              "os": "Fuchsia",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": null,
+            "device_type": "Sherlock",
+            "os": "Fuchsia",
+            "pool": "chrome.tests"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -333,14 +323,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "10de",
-              "id": "build186-b7",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests.perf-fyi"
-            }
-          ],
+          "dimensions": {
+            "gpu": "10de",
+            "id": "build186-b7",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests.perf-fyi"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -383,14 +371,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": null,
-              "id": "build370-a7",
-              "os": "Windows-10",
-              "pool": "chrome.tests.perf-fyi"
-            }
-          ],
+          "dimensions": {
+            "gpu": null,
+            "id": "build370-a7",
+            "os": "Windows-10",
+            "pool": "chrome.tests.perf-fyi"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,

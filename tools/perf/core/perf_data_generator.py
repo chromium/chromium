@@ -1898,7 +1898,7 @@ def generate_performance_test(tester_config, test, builder_name):
       # subprocess output to the task stdout.
       # TODO(crbug.com/865538): Reduce this once we can reduce hard_timeout.
       'io_timeout': test.get('timeout', 6 * 60 * 60),
-      'dimension_sets': [tester_config['dimension']],
+      'dimensions': tester_config['dimension'],
       'service_account': _TESTER_SERVICE_ACCOUNT,
   }
   if shards:

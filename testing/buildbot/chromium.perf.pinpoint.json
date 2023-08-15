@@ -30,15 +30,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "OMB1.180119.001",
-              "device_os_flavor": "google",
-              "device_type": "gobo",
-              "os": "Android",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_os": "OMB1.180119.001",
+            "device_os_flavor": "google",
+            "device_type": "gobo",
+            "os": "Android",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -79,15 +77,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "OMB1.180119.001",
-              "device_os_flavor": "google",
-              "device_type": "gobo",
-              "os": "Android",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_os": "OMB1.180119.001",
+            "device_os_flavor": "google",
+            "device_type": "gobo",
+            "os": "Android",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -136,14 +132,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os_flavor": "google",
-              "device_type": "wembley_2GB",
-              "os": "Android",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_os_flavor": "google",
+            "device_type": "wembley_2GB",
+            "os": "Android",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -184,15 +178,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "OMB1.180119.001",
-              "device_os_flavor": "google",
-              "device_type": "gobo",
-              "os": "Android",
-              "pool": "chrome.tests.perf-webview"
-            }
-          ],
+          "dimensions": {
+            "device_os": "OMB1.180119.001",
+            "device_os_flavor": "google",
+            "device_type": "gobo",
+            "os": "Android",
+            "pool": "chrome.tests.perf-webview"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -233,9 +225,7 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {}
-          ],
+          "dimensions": {},
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -276,9 +266,7 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {}
-          ],
+          "dimensions": {},
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -319,9 +307,7 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {}
-          ],
+          "dimensions": {},
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -362,9 +348,7 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {}
-          ],
+          "dimensions": {},
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -409,15 +393,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "OPM1.171019.021",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_os": "OPM1.171019.021",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -459,15 +441,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "OPM1.171019.021",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_os": "OPM1.171019.021",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -520,15 +500,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "OPM1.171019.021",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android",
-              "pool": "chrome.tests.perf-webview"
-            }
-          ],
+          "dimensions": {
+            "device_os": "OPM1.171019.021",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chrome.tests.perf-webview"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -569,15 +547,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "OPM1.171019.021",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android",
-              "pool": "chrome.tests.perf-webview"
-            }
-          ],
+          "dimensions": {
+            "device_os": "OPM1.171019.021",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chrome.tests.perf-webview"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -626,15 +602,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "RP1A.201105.002",
-              "device_os_flavor": "google",
-              "device_type": "flame",
-              "os": "Android",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_os": "RP1A.201105.002",
+            "device_os_flavor": "google",
+            "device_type": "flame",
+            "os": "Android",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -675,15 +649,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "RP1A.201105.002",
-              "device_os_flavor": "google",
-              "device_type": "flame",
-              "os": "Android",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_os": "RP1A.201105.002",
+            "device_os_flavor": "google",
+            "device_type": "flame",
+            "os": "Android",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -724,15 +696,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "RP1A.201105.002",
-              "device_os_flavor": "google",
-              "device_type": "flame",
-              "os": "Android",
-              "pool": "chrome.tests.perf-webview"
-            }
-          ],
+          "dimensions": {
+            "device_os": "RP1A.201105.002",
+            "device_os_flavor": "google",
+            "device_type": "flame",
+            "os": "Android",
+            "pool": "chrome.tests.perf-webview"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -773,15 +743,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "TP1A.220624.021",
-              "device_os_flavor": "google",
-              "device_type": "oriole",
-              "os": "Android",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_os": "TP1A.220624.021",
+            "device_os_flavor": "google",
+            "device_type": "oriole",
+            "os": "Android",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -822,15 +790,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "TP1A.220624.021",
-              "device_os_flavor": "google",
-              "device_type": "oriole",
-              "os": "Android",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_os": "TP1A.220624.021",
+            "device_os_flavor": "google",
+            "device_type": "oriole",
+            "os": "Android",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -871,15 +837,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "TP1A.220624.021",
-              "device_os_flavor": "google",
-              "device_type": "raven",
-              "os": "Android",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_os": "TP1A.220624.021",
+            "device_os_flavor": "google",
+            "device_type": "raven",
+            "os": "Android",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -920,15 +884,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "TP1A.220624.021",
-              "device_os_flavor": "google",
-              "device_type": "raven",
-              "os": "Android",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_os": "TP1A.220624.021",
+            "device_os_flavor": "google",
+            "device_type": "raven",
+            "os": "Android",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -992,15 +954,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_status": "available",
-              "device_type": "eve",
-              "gpu": null,
-              "os": "ChromeOS",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_status": "available",
+            "device_type": "eve",
+            "gpu": null,
+            "os": "ChromeOS",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 43200,
           "io_timeout": 43200,
@@ -1042,15 +1002,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_status": "available",
-              "device_type": "octopus",
-              "gpu": null,
-              "os": "ChromeOS",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_status": "available",
+            "device_type": "octopus",
+            "gpu": null,
+            "os": "ChromeOS",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1098,14 +1056,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-440.100",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests.perf",
-              "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
-            }
-          ],
+          "dimensions": {
+            "gpu": "10de:1cb3-440.100",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1147,14 +1103,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-440.100",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests.perf",
-              "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
-            }
-          ],
+          "dimensions": {
+            "gpu": "10de:1cb3-440.100",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1196,14 +1150,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-440.100",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests.perf",
-              "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
-            }
-          ],
+          "dimensions": {
+            "gpu": "10de:1cb3-440.100",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1261,15 +1213,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "gpu": "1002:6821-4.0.20-3.2.8",
-              "os": "Mac-12.6.1",
-              "pool": "chrome.tests.perf",
-              "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "gpu": "1002:6821-4.0.20-3.2.8",
+            "os": "Mac-12.6.1",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1311,15 +1261,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "gpu": "1002:6821-4.0.20-3.2.8",
-              "os": "Mac-12.6.1",
-              "pool": "chrome.tests.perf",
-              "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "gpu": "1002:6821-4.0.20-3.2.8",
+            "os": "Mac-12.6.1",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1373,15 +1321,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "gpu": "8086:1626",
-              "os": "Mac-12.6.1",
-              "pool": "chrome.tests.perf",
-              "synthetic_product_name": "MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "gpu": "8086:1626",
+            "os": "Mac-12.6.1",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1423,15 +1369,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "gpu": "8086:1626",
-              "os": "Mac-12.6.1",
-              "pool": "chrome.tests.perf",
-              "synthetic_product_name": "MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "gpu": "8086:1626",
+            "os": "Mac-12.6.1",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1481,14 +1425,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm",
-              "mac_model": "MacBookPro18,3",
-              "os": "Mac",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "cpu": "arm",
+            "mac_model": "MacBookPro18,3",
+            "os": "Mac",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1530,14 +1472,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm",
-              "mac_model": "Macmini9,1",
-              "os": "Mac",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "cpu": "arm",
+            "mac_model": "Macmini9,1",
+            "os": "Mac",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1579,14 +1519,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm",
-              "mac_model": "Macmini9,1",
-              "os": "Mac",
-              "pool": "chrome.tests.perf-pgo"
-            }
-          ],
+          "dimensions": {
+            "cpu": "arm",
+            "mac_model": "Macmini9,1",
+            "os": "Mac",
+            "pool": "chrome.tests.perf-pgo"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1632,14 +1570,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-27.20.100.8681",
-              "os": "Windows-10-18363.476",
-              "pool": "chrome.tests.perf",
-              "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
-            }
-          ],
+          "dimensions": {
+            "gpu": "8086:5912-27.20.100.8681",
+            "os": "Windows-10-18363.476",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1681,14 +1617,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-27.20.100.8681",
-              "os": "Windows-10-18363.476",
-              "pool": "chrome.tests.perf",
-              "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
-            }
-          ],
+          "dimensions": {
+            "gpu": "8086:5912-27.20.100.8681",
+            "os": "Windows-10-18363.476",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1738,14 +1672,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "1002:1638-30.0.13033.1000",
-              "os": "Windows-10-19043.1052",
-              "pool": "chrome.tests.perf",
-              "synthetic_product_name": "OMEN by HP Laptop 16-c0xxx [ ] (HP)"
-            }
-          ],
+          "dimensions": {
+            "gpu": "1002:1638-30.0.13033.1000",
+            "os": "Windows-10-19043.1052",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "OMEN by HP Laptop 16-c0xxx [ ] (HP)"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1787,14 +1719,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "1002:1638-30.0.13033.1000",
-              "os": "Windows-10-19043.1052",
-              "pool": "chrome.tests.perf",
-              "synthetic_product_name": "OMEN by HP Laptop 16-c0xxx [ ] (HP)"
-            }
-          ],
+          "dimensions": {
+            "gpu": "1002:1638-30.0.13033.1000",
+            "os": "Windows-10-19043.1052",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "OMEN by HP Laptop 16-c0xxx [ ] (HP)"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1840,13 +1770,11 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:1616-20.19.15.5070",
-              "os": "Windows-10-18363.476",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "gpu": "8086:1616-20.19.15.5070",
+            "os": "Windows-10-18363.476",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -1888,13 +1816,11 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:1616-20.19.15.5070",
-              "os": "Windows-10-18363.476",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "gpu": "8086:1616-20.19.15.5070",
+            "os": "Windows-10-18363.476",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
