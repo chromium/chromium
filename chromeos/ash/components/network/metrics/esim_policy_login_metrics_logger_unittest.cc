@@ -68,7 +68,8 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
         network_state_test_helper_.network_state_handler(),
         network_profile_handler_.get(), network_config_handler_.get(),
         /*network_device_handler=*/nullptr,
-        /*prohibited_technologies_handler=*/nullptr);
+        /*prohibited_technologies_handler=*/nullptr,
+        /*hotspot_controller=*/nullptr);
 
     esim_policy_login_metrics_logger_ =
         std::make_unique<ESimPolicyLoginMetricsLogger>();

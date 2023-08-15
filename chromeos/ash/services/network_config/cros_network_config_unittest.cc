@@ -3490,6 +3490,7 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
 
   base::Value::Dict global_config;
   global_config.Set(::onc::global_network_config::kAllowCellularSimLock, false);
+  global_config.Set(::onc::global_network_config::kAllowCellularHotspot, false);
   global_config.Set(
       ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks, true);
   global_config.Set(::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
@@ -3501,6 +3502,7 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
   EXPECT_FALSE(policy->allow_cellular_sim_lock);
+  EXPECT_FALSE(policy->allow_cellular_hotspot);
   EXPECT_TRUE(policy->allow_only_policy_cellular_networks);
   EXPECT_FALSE(policy->allow_only_policy_networks_to_autoconnect);
   EXPECT_FALSE(policy->allow_only_policy_wifi_networks_to_connect);

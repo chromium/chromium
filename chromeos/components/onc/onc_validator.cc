@@ -1082,13 +1082,15 @@ bool Validator::ValidateGlobalNetworkConfiguration(base::Value::Dict* result) {
   }
 
   // Validate that kAllowTextMessages, kAllowCellularSimLock,
-  // kDisableNetworkTypes, kAllowOnlyPolicyWiFiToConnect,
+  // kAllowCellularHotspot, kDisableNetworkTypes, kAllowOnlyPolicyWiFiToConnect,
   // kAllowOnlyPolicyCellularNetworks and kBlockedHexSSIDs are only allowed in
   // device policy.
   if (!IsInDevicePolicy(result,
                         ::onc ::global_network_config::kAllowTextMessages) ||
       !IsInDevicePolicy(result,
                         ::onc ::global_network_config::kAllowCellularSimLock) ||
+      !IsInDevicePolicy(result,
+                        ::onc ::global_network_config::kAllowCellularHotspot) ||
       !IsInDevicePolicy(result,
                         ::onc::global_network_config::kDisableNetworkTypes) ||
       !IsInDevicePolicy(

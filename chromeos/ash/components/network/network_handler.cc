@@ -130,7 +130,7 @@ void NetworkHandler::Init() {
       cellular_policy_handler_.get(), managed_cellular_pref_handler_.get(),
       network_state_handler_.get(), network_profile_handler_.get(),
       network_configuration_handler_.get(), network_device_handler_.get(),
-      prohibited_technologies_handler_.get());
+      prohibited_technologies_handler_.get(), hotspot_controller_.get());
   network_connection_handler_->Init(
       network_state_handler_.get(), network_configuration_handler_.get(),
       managed_network_configuration_handler_.get(),

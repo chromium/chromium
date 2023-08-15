@@ -2974,6 +2974,9 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
   result->allow_cellular_sim_lock = GetBoolean(
       global_policy_dict, ::onc::global_network_config::kAllowCellularSimLock,
       /*value_if_key_missing_from_dict=*/result->allow_cellular_sim_lock);
+  result->allow_cellular_hotspot = GetBoolean(
+      global_policy_dict, ::onc::global_network_config::kAllowCellularHotspot,
+      /*value_if_key_missing_from_dict=*/result->allow_cellular_hotspot);
   result->allow_only_policy_cellular_networks =
       GetBoolean(global_policy_dict,
                  ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,

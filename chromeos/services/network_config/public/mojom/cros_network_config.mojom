@@ -1048,6 +1048,9 @@ struct GlobalPolicy {
   // If false, PIN locking is prohibited.
   bool allow_cellular_sim_lock = true;
 
+  // If true, users will be allowed to turn on cellular hotspot.
+  bool allow_cellular_hotspot = true;
+
   // If true, only cellular networks present in policy may be connected to and
   // no new networks may be added or configured.
   bool allow_only_policy_cellular_networks = false;

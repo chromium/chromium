@@ -158,6 +158,13 @@ fetching new policy or logging in.
 A [Help Center article](https://support.google.com/chrome/a/answer/6326250)
 warns admins of the implications of mis-using this policy for Chrome OS.
 
+* **AllowCellularHotspot**
+    * (optional, defaults to true) - **boolean**
+    * When this field is present and set to true, chromebook users will be allowed to
+      turn on hotspot on their devices. If there is an active hotspot and this field
+      is set to false, hotspot will be turned off and a notification will be
+      displayed to the user.
+
 * **AllowCellularSimLock**
     * (optional, defaults to true) - **boolean**
     * When this field is present and set to false, a SIM cannot be PIM Locked on

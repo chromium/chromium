@@ -62,7 +62,7 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
         /*managed_cellular_pref_handler=*/nullptr,
         helper_.network_state_handler(), network_profile_handler_.get(),
         network_config_handler_.get(), nullptr /* network_device_handler */,
-        prohibited_technologies_handler_.get());
+        prohibited_technologies_handler_.get(), /*hotspot_controller=*/nullptr);
 
     prohibited_technologies_handler_->Init(managed_config_handler_.get(),
                                            helper_.network_state_handler(),

@@ -155,7 +155,8 @@ class AutoConnectHandlerTest : public testing::Test {
         /*managed_cellular_pref_handler=*/nullptr,
         helper_.network_state_handler(), network_profile_handler_.get(),
         network_config_handler_.get(), nullptr /* network_device_handler */,
-        nullptr /* prohibited_technologies_handler */);
+        nullptr /* prohibited_technologies_handler */,
+        /*hotspot_controller=*/nullptr);
 
     test_network_connection_handler_ =
         std::make_unique<TestNetworkConnectionHandler>(base::BindRepeating(
