@@ -335,6 +335,14 @@ const CGFloat kFaviconBadgeSideLength = 24;
             UIFontTextStyleHeadline,
             self.traitCollection.preferredContentSizeCategory,
             UIContentSizeCategoryExtraExtraExtraLarge);
+    if (self.secondaryActionString) {
+      self.secondaryActionButton.titleLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    }
+    if (self.tertiaryActionString) {
+      self.tertiaryActionButton.titleLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    }
   }
 
   // Update constraints for different size classes.
