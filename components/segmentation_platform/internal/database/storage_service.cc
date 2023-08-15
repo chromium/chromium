@@ -100,7 +100,6 @@ StorageService::StorageService(
           segment_info_database_.get(),
           signal_database_.get(),
           signal_storage_config_.get(),
-          default_model_manager_.get(),
           profile_prefs)) {
   ukm_data_manager_->AddRef();
 }
