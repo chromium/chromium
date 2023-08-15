@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/user_education/open_page_and_show_help_bubble.h"
+#include "chrome/browser/ui/user_education/show_promo_in_page.h"
 
 #include <memory>
 
@@ -31,7 +31,7 @@ namespace {
 
 constexpr base::TimeDelta kOpenPageAndShowHelpBubbleTimeout = base::Seconds(30);
 
-class OpenPageAndShowHelpBubbleImpl : public OpenPageAndShowHelpBubble {
+class OpenPageAndShowHelpBubbleImpl : public ShowPromoInPage {
  public:
   explicit OpenPageAndShowHelpBubbleImpl(Browser* browser, Params params)
       : browser_(browser->AsWeakPtr()), callback_(std::move(params.callback)) {
@@ -149,18 +149,17 @@ class OpenPageAndShowHelpBubbleImpl : public OpenPageAndShowHelpBubble {
 
 }  // namespace
 
-OpenPageAndShowHelpBubble::Params::Params() = default;
-OpenPageAndShowHelpBubble::Params::~Params() = default;
-OpenPageAndShowHelpBubble::Params::Params(Params&& other) = default;
-OpenPageAndShowHelpBubble::Params& OpenPageAndShowHelpBubble::Params::operator=(
-    Params&& other) = default;
+ShowPromoInPage::Params::Params() = default;
+ShowPromoInPage::Params::~Params() = default;
+ShowPromoInPage::Params::Params(Params&& other) = default;
+ShowPromoInPage::Params& ShowPromoInPage::Params::operator=(Params&& other) =
+    default;
 
-OpenPageAndShowHelpBubble::OpenPageAndShowHelpBubble() = default;
-OpenPageAndShowHelpBubble::~OpenPageAndShowHelpBubble() = default;
+ShowPromoInPage::ShowPromoInPage() = default;
+ShowPromoInPage::~ShowPromoInPage() = default;
 
-base::WeakPtr<OpenPageAndShowHelpBubble> OpenPageAndShowHelpBubble::Start(
-    Browser* browser,
-    Params params) {
+base::WeakPtr<ShowPromoInPage> ShowPromoInPage::Start(Browser* browser,
+                                                      Params params) {
   return (new OpenPageAndShowHelpBubbleImpl(browser, std::move(params)))
       ->GetWeakPtr();
 }

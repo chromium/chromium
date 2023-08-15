@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/user_education/open_page_and_show_help_bubble.h"
+#include "chrome/browser/ui/user_education/show_promo_in_page.h"
 
 #include <string>
 
@@ -41,8 +41,8 @@ constexpr base::TimeDelta kTimeoutForTesting = base::Seconds(3);
 
 // Gets a partially-filled params block with default values. You will still
 // need to specify `target_url` and `callback`.
-OpenPageAndShowHelpBubble::Params GetDefaultParams() {
-  OpenPageAndShowHelpBubble::Params params;
+ShowPromoInPage::Params GetDefaultParams() {
+  ShowPromoInPage::Params params;
   params.bubble_anchor_id = kHelpBubbleAnchorId;
   params.bubble_arrow = user_education::HelpBubbleArrow::kBottomLeft;
   params.bubble_text = kBubbleBodyText;
@@ -51,29 +51,28 @@ OpenPageAndShowHelpBubble::Params GetDefaultParams() {
 
 }  // namespace
 
-using OpenPageAndShowHelpBubbleBrowserTest = InteractiveBrowserTest;
+using ShowPromoInPageBrowserTest = InteractiveBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
-                       OpenPageAndDisplayHelpBubbleInNewPage) {
-  base::MockCallback<OpenPageAndShowHelpBubble::Callback> bubble_shown;
+IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInNewPage) {
+  base::MockCallback<ShowPromoInPage::Callback> bubble_shown;
 
   auto params = GetDefaultParams();
   params.target_url = GURL(kPageWithAnchorURL);
   params.callback = bubble_shown.Get();
 
-  base::WeakPtr<OpenPageAndShowHelpBubble> handle;
+  base::WeakPtr<ShowPromoInPage> handle;
 
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
 
   EXPECT_CALL(bubble_shown, Run)
-      .WillOnce([&](OpenPageAndShowHelpBubble* source, bool success) {
+      .WillOnce([&](ShowPromoInPage* source, bool success) {
         EXPECT_EQ(handle.get(), source);
         EXPECT_TRUE(success);
         quit_closure.Run();
       });
 
-  handle = OpenPageAndShowHelpBubble::Start(browser(), std::move(params));
+  handle = ShowPromoInPage::Start(browser(), std::move(params));
 
   ASSERT_NE(nullptr, handle);
 
@@ -90,28 +89,27 @@ IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
   ASSERT_FALSE(handle);
 }
 
-IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
-                       OpenPageAndDisplayHelpBubbleInSameTab) {
-  base::MockCallback<OpenPageAndShowHelpBubble::Callback> bubble_shown;
+IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInSameTab) {
+  base::MockCallback<ShowPromoInPage::Callback> bubble_shown;
 
   auto params = GetDefaultParams();
   params.target_url = GURL(kPageWithAnchorURL);
   params.callback = bubble_shown.Get();
   params.overwrite_active_tab = true;
 
-  base::WeakPtr<OpenPageAndShowHelpBubble> handle;
+  base::WeakPtr<ShowPromoInPage> handle;
 
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
 
   EXPECT_CALL(bubble_shown, Run)
-      .WillOnce([&](OpenPageAndShowHelpBubble* source, bool success) {
+      .WillOnce([&](ShowPromoInPage* source, bool success) {
         EXPECT_EQ(handle.get(), source);
         EXPECT_TRUE(success);
         quit_closure.Run();
       });
 
-  handle = OpenPageAndShowHelpBubble::Start(browser(), std::move(params));
+  handle = ShowPromoInPage::Start(browser(), std::move(params));
 
   ASSERT_NE(nullptr, handle);
 
@@ -128,27 +126,26 @@ IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
   ASSERT_FALSE(handle);
 }
 
-IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
-                       OpenPageAndDisplayHelpBubbleWithoutNavigation) {
+IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInSamePage) {
   ui_test_utils::NavigateToURL(browser(), GURL(kPageWithAnchorURL));
 
-  base::MockCallback<OpenPageAndShowHelpBubble::Callback> bubble_shown;
+  base::MockCallback<ShowPromoInPage::Callback> bubble_shown;
 
   auto params = GetDefaultParams();
   params.callback = bubble_shown.Get();
 
-  base::WeakPtr<OpenPageAndShowHelpBubble> handle;
+  base::WeakPtr<ShowPromoInPage> handle;
 
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
 
   EXPECT_CALL(bubble_shown, Run)
-      .WillOnce([&](OpenPageAndShowHelpBubble* source, bool success) {
+      .WillOnce([&](ShowPromoInPage* source, bool success) {
         EXPECT_TRUE(success);
         quit_closure.Run();
       });
 
-  handle = OpenPageAndShowHelpBubble::Start(browser(), std::move(params));
+  handle = ShowPromoInPage::Start(browser(), std::move(params));
 
   ASSERT_NE(nullptr, handle);
 
@@ -165,28 +162,28 @@ IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
   ASSERT_FALSE(handle);
 }
 
-IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
-                       OpenPageAndDisplayHelpBubbleFailureCallbackOnTimeout) {
-  base::MockCallback<OpenPageAndShowHelpBubble::Callback> bubble_shown;
+IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest,
+                       ShowPromoInPageFailureCallbackOnTimeout) {
+  base::MockCallback<ShowPromoInPage::Callback> bubble_shown;
 
   auto params = GetDefaultParams();
   params.target_url = GURL(kPageWithoutAnchorURL);
   params.callback = bubble_shown.Get();
   params.timeout_override_for_testing = kTimeoutForTesting;
 
-  base::WeakPtr<OpenPageAndShowHelpBubble> handle;
+  base::WeakPtr<ShowPromoInPage> handle;
 
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
 
   EXPECT_CALL(bubble_shown, Run)
-      .WillOnce([&](OpenPageAndShowHelpBubble* source, bool success) {
+      .WillOnce([&](ShowPromoInPage* source, bool success) {
         EXPECT_EQ(handle.get(), source);
         EXPECT_FALSE(success);
         quit_closure.Run();
       });
 
-  handle = OpenPageAndShowHelpBubble::Start(browser(), std::move(params));
+  handle = ShowPromoInPage::Start(browser(), std::move(params));
 
   ASSERT_NE(nullptr, handle);
 
@@ -196,28 +193,28 @@ IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
   ASSERT_FALSE(handle);
 }
 
-IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest,
                        DestroyBrowserBeforeComplete) {
-  base::MockCallback<OpenPageAndShowHelpBubble::Callback> bubble_shown;
+  base::MockCallback<ShowPromoInPage::Callback> bubble_shown;
 
   auto params = GetDefaultParams();
   params.target_url = GURL(kPageWithoutAnchorURL);
   params.callback = bubble_shown.Get();
   params.timeout_override_for_testing = kTimeoutForTesting;
 
-  base::WeakPtr<OpenPageAndShowHelpBubble> handle;
+  base::WeakPtr<ShowPromoInPage> handle;
 
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
 
   EXPECT_CALL(bubble_shown, Run)
-      .WillOnce([&](OpenPageAndShowHelpBubble* source, bool success) {
+      .WillOnce([&](ShowPromoInPage* source, bool success) {
         EXPECT_EQ(handle.get(), source);
         EXPECT_FALSE(success);
         quit_closure.Run();
       });
 
-  handle = OpenPageAndShowHelpBubble::Start(browser(), std::move(params));
+  handle = ShowPromoInPage::Start(browser(), std::move(params));
 
   ASSERT_NE(nullptr, handle);
 
@@ -229,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
   ASSERT_FALSE(handle);
 }
 
-IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest,
                        HelpBubbleParamsCanConfigureCloseButtonAltText) {
   auto params = GetDefaultParams();
   params.target_url = GURL(kPageWithAnchorURL);
@@ -241,8 +238,8 @@ IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 
   auto help_bubble_start_callback =
-      base::BindOnce(base::IgnoreResult(&OpenPageAndShowHelpBubble::Start),
-                     browser(), std::move(params));
+      base::BindOnce(base::IgnoreResult(&ShowPromoInPage::Start), browser(),
+                     std::move(params));
   static const DeepQuery kPathToHelpBubbleCloseButton = {
       "user-education-internals", "#IPH_WebUiHelpBubbleTest", "help-bubble",
       "#close"};

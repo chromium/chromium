@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "chrome/browser/ui/user_education/open_page_and_show_help_bubble.h"
+#include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -358,14 +358,14 @@ void MaybeRegisterChromeFeaturePromos(
                 if (!browser) {
                   return;
                 }
-                OpenPageAndShowHelpBubble::Params params;
+                ShowPromoInPage::Params params;
                 params.bubble_anchor_id =
                     NewTabPageUI::kCustomizeChromeButtonElementId;
                 params.bubble_arrow =
                     user_education::HelpBubbleArrow::kBottomRight;
                 params.bubble_text = l10n_util::GetStringUTF16(
                     IDS_IPH_CUSTOMIZE_CHROME_REFRESH_POINTER_BODY);
-                OpenPageAndShowHelpBubble::Start(browser, std::move(params));
+                ShowPromoInPage::Start(browser, std::move(params));
               }))
           .SetBubbleArrow(HelpBubbleArrow::kNone)
           .SetCustomActionIsDefault(false)
