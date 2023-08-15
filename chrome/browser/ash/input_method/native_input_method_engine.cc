@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/input_method/native_input_method_engine_observer.h"
 #include "chrome/browser/ash/input_method/suggestions_service_client.h"
 #include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
@@ -80,7 +81,7 @@ void NativeInputMethodEngine::Initialize(
           : nullptr;
 
   EditorMediator* editor_event_sink =
-      features::IsOrcaEnabled() ? EditorMediator::Get() : nullptr;
+      chromeos::features::IsOrcaEnabled() ? EditorMediator::Get() : nullptr;
 
   chrome_keyboard_controller_client_observer_.Observe(
       ChromeKeyboardControllerClient::Get());

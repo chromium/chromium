@@ -83,6 +83,9 @@ BASE_FEATURE(kJelly, "Jelly", base::FEATURE_ENABLED_BY_DEFAULT);
 // controls all system UI updates and new system components. go/jelly-flags
 BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls enabling / disabling the orca feature.
+BASE_FEATURE(kOrca, "Orca", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable quick answers V2 settings sub-toggles.
 BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
              "QuickAnswersV2SettingsSubToggle",
@@ -141,6 +144,10 @@ bool IsJellyrollEnabled() {
   // Only enable Jellyroll if Jelly is also enabled as this is how tests expect
   // this to behave.
   return IsJellyEnabled() && base::FeatureList::IsEnabled(kJellyroll);
+}
+
+bool IsOrcaEnabled() {
+  return base::FeatureList::IsEnabled(kOrca);
 }
 
 bool IsQuickAnswersV2TranslationDisabled() {

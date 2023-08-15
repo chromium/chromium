@@ -81,6 +81,7 @@
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -343,7 +344,7 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();
 
-  if (ash::features::IsOrcaEnabled()) {
+  if (chromeos::features::IsOrcaEnabled()) {
     editor_menu_controller_ =
         std::make_unique<chromeos::editor_menu::EditorMenuControllerImpl>();
   }

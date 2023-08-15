@@ -4,13 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_source.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -54,12 +53,12 @@ MakoUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
 
 bool MakoUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(features::kOrca);
+  return chromeos::features::IsOrcaEnabled();
 }
 
 MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
     : ui::UntrustedBubbleWebUIController(web_ui) {
-  CHECK(base::FeatureList::IsEnabled(features::kOrca));
+  CHECK(chromeos::features::IsOrcaEnabled());
   content::URLDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                               std::make_unique<MakoSource>());
 }

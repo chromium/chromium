@@ -2215,7 +2215,7 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (ash::features::IsOrcaEnabled()) {
+    if (chromeos::features::IsOrcaEnabled()) {
       render_separator = true;
       menu_model_.AddItem(IDC_CONTENT_CONTEXT_ORCA, kContentContextOrca);
     }
@@ -2771,7 +2771,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case IDC_CONTENT_CONTEXT_ORCA:
-      return ash::features::IsOrcaEnabled() && params_.is_editable;
+      return chromeos::features::IsOrcaEnabled() && params_.is_editable;
 #endif
 
     case IDC_FOLLOW:
@@ -3237,7 +3237,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case IDC_CONTENT_CONTEXT_ORCA: {
-      CHECK(ash::features::IsOrcaEnabled());
+      CHECK(chromeos::features::IsOrcaEnabled());
       ash::input_method::EditorMediator::Get()->HandleTrigger();
       break;
     }

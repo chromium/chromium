@@ -34,6 +34,7 @@
 #include "chromeos/ash/services/ime/public/cpp/autocorrect.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/japanese_settings.mojom.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -863,7 +864,7 @@ void NativeInputMethodEngineObserver::OnFocus(
     const TextInputMethod::InputContext& context) {
   text_client_ =
       TextClient{.context_id = context_id, .state = TextClientState::kPending};
-  if (features::IsOrcaEnabled() && editor_event_sink_) {
+  if (chromeos::features::IsOrcaEnabled() && editor_event_sink_) {
     editor_event_sink_->OnFocus(context_id);
   }
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
@@ -961,7 +962,7 @@ void NativeInputMethodEngineObserver::OnBlur(const std::string& engine_id,
 
   text_client_ = absl::nullopt;
 
-  if (features::IsOrcaEnabled() && editor_event_sink_) {
+  if (chromeos::features::IsOrcaEnabled() && editor_event_sink_) {
     editor_event_sink_->OnBlur();
   }
   if (assistive_suggester_->IsAssistiveFeatureEnabled())
