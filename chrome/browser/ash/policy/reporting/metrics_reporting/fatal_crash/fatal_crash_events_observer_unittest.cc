@@ -244,45 +244,30 @@ class FatalCrashEventsObserverWithUserAffiliationParamTest
 };
 
 TEST_P(FatalCrashEventsObserverWithUserAffiliationParamTest,
-       FieldSessionTypeFilledIfAffiliated) {
-  if (!is_user_affiliated()) {
-    GTEST_SKIP();
-  }
+       FieldSessionTypeFilled) {
   // Sample 2 session types. Otherwise it would be repeating `GetSessionType`
   // in fatal_crash_events_observer.cc.
-  static constexpr std::tuple<user_manager::UserType,
-                              FatalCrashTelemetry::SessionType>
-      kSessionTypes[] = {{user_manager::USER_TYPE_CHILD,
-                          FatalCrashTelemetry::SESSION_TYPE_CHILD},
-                         {user_manager::USER_TYPE_GUEST,
-                          FatalCrashTelemetry::SESSION_TYPE_GUEST}};
+  struct TypePairs {
+    user_manager::UserType user_type;
+    FatalCrashTelemetry::SessionType session_type;
+  };
+  static constexpr TypePairs kSessionTypes[] = {
+      {.user_type = user_manager::USER_TYPE_CHILD,
+       .session_type = FatalCrashTelemetry::SESSION_TYPE_CHILD},
+      {.user_type = user_manager::USER_TYPE_GUEST,
+       .session_type = FatalCrashTelemetry::SESSION_TYPE_GUEST}};
 
   for (size_t i = 0; i < std::size(kSessionTypes); ++i) {
-    SimulateUserLogin(kUserEmail, std::get<0>(kSessionTypes[i]),
-                      /*is_user_affiliated=*/true);
+    SimulateUserLogin(kUserEmail, kSessionTypes[i].user_type,
+                      is_user_affiliated());
     auto crash_event_info = NewCrashEventInfo(is_uploaded());
     const auto fatal_crash_telemetry =
         WaitForFatalCrashTelemetry(std::move(crash_event_info));
     ASSERT_TRUE(fatal_crash_telemetry.has_session_type());
     EXPECT_EQ(fatal_crash_telemetry.session_type(),
-              std::get<1>(kSessionTypes[i]));
+              kSessionTypes[i].session_type);
     ClearLogin();
   }
-}
-
-TEST_P(FatalCrashEventsObserverWithUserAffiliationParamTest,
-       FieldSessionTypeUnspecifiedIfUnaffiliated) {
-  if (is_user_affiliated()) {
-    GTEST_SKIP();
-  }
-  SimulateUserLogin(kUserEmail, user_manager::USER_TYPE_REGULAR,
-                    /*is_user_affiliated=*/false);
-  auto crash_event_info = NewCrashEventInfo(is_uploaded());
-  const auto fatal_crash_telemetry =
-      WaitForFatalCrashTelemetry(std::move(crash_event_info));
-  ASSERT_TRUE(fatal_crash_telemetry.has_session_type());
-  EXPECT_EQ(fatal_crash_telemetry.session_type(),
-            FatalCrashTelemetry::SESSION_TYPE_UNSPECIFIED);
 }
 
 INSTANTIATE_TEST_SUITE_P(

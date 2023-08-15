@@ -29,7 +29,7 @@ const ash::UserSession* GetCurrentUserSession() {
 // Get the type of the given session.
 FatalCrashTelemetry::SessionType GetSessionType(
     const ash::UserSession* user_session) {
-  if (!user_session || !user_session->user_info.is_managed) {
+  if (!user_session) {
     return FatalCrashTelemetry::SESSION_TYPE_UNSPECIFIED;
   }
   switch (user_session->user_info.type) {
