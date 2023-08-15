@@ -3,6 +3,7 @@
     background: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
     display: inline-flex;
+    overflow: hidden;
     height: 100%;
     width: 100%;
   }
@@ -33,6 +34,7 @@
 
   #content {
     flex: 1;
+    overflow: hidden;
     position: relative;
   }
 
@@ -62,10 +64,8 @@
       rgba(0, 0, 0, 0.4) 69.79%);
   }
 
-  /*TODO(mfacey): Fix label size */
   #label {
     color: var(--color-new-tab-page-secondary-foreground);
-    max-width: 100px;
   }
 
   :host([images-enabled]) #label {
