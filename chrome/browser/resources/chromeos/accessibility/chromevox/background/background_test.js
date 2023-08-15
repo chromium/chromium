@@ -4164,3 +4164,30 @@ AX_TEST_F(
       mockFeedback.call(doCmd('toggleSpeechOnOrOff')).expectSpeech(/.*off.*/);
       await mockFeedback.replay();
     });
+
+AX_TEST_F('ChromeVoxBackgroundTest', 'CanvasHasImageData', async function() {
+  const site = `
+    <canvas id=myCanvas></canvas>
+    <script>
+      const c = document.getElementById("myCanvas");
+      const ctx = c.getContext("2d");
+      ctx.beginPath();
+      ctx.arc(95, 50, 40, 0, 2 * Math.PI);
+      ctx.stroke();
+    </script>
+  `;
+  const root = await this.runWithLoadedTree(site);
+  const canvas = root.find({role: 'canvas'});
+  canvas.getImageData(0, 0);
+  await new Promise(r => {
+    canvas.addEventListener(EventType.IMAGE_FRAME_UPDATED, r);
+  });
+  assertNotEquals('', canvas.imageDataUrl);
+
+  // Repeated calls should continue to result in events.
+  canvas.getImageData(0, 0);
+  await new Promise(r => {
+    canvas.addEventListener(EventType.IMAGE_FRAME_UPDATED, r);
+  });
+  assertNotEquals('', canvas.imageDataUrl);
+});

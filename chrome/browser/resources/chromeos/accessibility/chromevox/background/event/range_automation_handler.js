@@ -10,6 +10,7 @@ import {AutomationUtil} from '../../../common/automation_util.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {Msgs} from '../../common/msgs.js';
+import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
 import {FocusBounds} from '../focus_bounds.js';
 import {Output} from '../output/output.js';
@@ -102,6 +103,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
         this.onCheckedStateChanged);
     this.addListener_(EventType.COLLAPSED, this.onEventIfInRange);
     this.addListener_(EventType.EXPANDED, this.onEventIfInRange);
+    this.addListener_(EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated);
     this.addListener_(EventType.INVALID_STATUS_CHANGED, this.onEventIfInRange);
     this.addListener_(EventType.LOCATION_CHANGED, this.onLocationChanged);
     this.addListener_(EventType.RELATED_NODE_CHANGED, this.onAttributeChanged);
@@ -243,6 +245,18 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     }
 
     new Output().withLocation(cur, null, evt.type).go();
+  }
+
+  /**
+   * Called when an image frame is received on a node.
+   * @param {!ChromeVoxEvent} evt The event.
+   * @private
+   */
+  onImageFrameUpdated(evt) {
+    const target = evt.target;
+    if (target.imageDataUrl) {
+      ChromeVox.braille.writeRawImage(target.imageDataUrl);
+    }
   }
 
   /**

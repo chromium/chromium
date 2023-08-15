@@ -1469,12 +1469,7 @@ void RenderAccessibilityImpl::OnGetImageData(const ui::AXActionTarget* target,
     return;
   }
   const WebAXObject& obj = blink_target->WebAXObject();
-
   ScopedFreezeAXTreeSource freeze(ax_context_.get());
-  if (obj.ImageDataNodeId() == obj.AxID()) {
-    return;
-  }
-
   obj.SetImageAsDataNodeId(max_size);
 
   const WebDocument& document = GetMainDocument();

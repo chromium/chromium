@@ -171,6 +171,11 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
       const blue = data[i + 2];
       const alpha = data[i + 3];
       const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+
+      // TODO(accessibility): this is a naive way to threshold. Consider
+      // computing a global threshold based on an average of the top two most
+      // frequent values using a histogram.
+
       // Show braille pin if the alpha is greater than the threshold and
       // the luminance is less than the threshold.
       const show =

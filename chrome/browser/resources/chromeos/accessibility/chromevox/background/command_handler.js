@@ -73,12 +73,6 @@ export class CommandHandler extends CommandHandlerInterface {
     super();
 
     /**
-     * To support viewGraphicAsBraille_(), the current image node.
-     * @private {?AutomationNode}
-     */
-    this.imageNode_;
-
-    /**
      * To support Command.SHOW_OPTIONS_PAGE, the state of the ChromeVox Page
      * Migration Flag. (If enabled, should open in Chrome OS Settings App)
      * @private {boolean|undefined}
@@ -825,57 +819,17 @@ export class CommandHandler extends CommandHandlerInterface {
   }
 
   /**
-   * Called when an image frame is received on a node.
-   * @param {!ChromeVoxEvent} event The event.
-   * @private
-   */
-  onImageFrameUpdated_(event) {
-    const target = event.target;
-    if (target !== this.imageNode_) {
-      return;
-    }
-
-    if (!AutomationUtil.isDescendantOf(
-            ChromeVoxRange.current.start.node, this.imageNode_)) {
-      this.imageNode_.removeEventListener(
-          EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated_, false);
-      this.imageNode_ = null;
-      return;
-    }
-
-    if (target.imageDataUrl) {
-      ChromeVox.braille.writeRawImage(target.imageDataUrl);
-      ChromeVox.braille.freeze();
-    }
-  }
-
-  /**
    * Handle the command to view the first graphic within the current range
    * as braille.
    * @param {!CursorRange} currentRange The current range.
    * @private
    */
   viewGraphicAsBraille_(currentRange) {
-    this.imageNode_?.removeEventListener(
-        EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated_, false);
-    this.imageNode_ = null;
-
     // Find the first node within the current range that supports image data.
     const imageNode = AutomationUtil.findNodePost(
         currentRange.start.node, Dir.FORWARD,
         AutomationPredicate.supportsImageData);
-    if (!imageNode) {
-      return;
-    }
-
-    imageNode.addEventListener(
-        EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated_, false);
-    this.imageNode_ = imageNode;
-    if (imageNode.imageDataUrl) {
-      const event = new CustomAutomationEvent(
-          EventType.IMAGE_FRAME_UPDATED, imageNode, {eventFrom: 'page'});
-      this.onImageFrameUpdated_(event);
-    } else {
+    if (imageNode) {
       imageNode.getImageData(0, 0);
     }
   }
