@@ -571,12 +571,12 @@ void AutofillManager::OnSelectOrSelectListFieldOptionsDidChange(
     return;
 
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
-    OnSelectOrSelectMenuFieldOptionsDidChangeImpl(form);
+    OnSelectOrSelectListFieldOptionsDidChangeImpl(form);
     return;
   }
   ParseFormAsync(
       form, ParsingCallback(
-                &AutofillManager::OnSelectOrSelectMenuFieldOptionsDidChangeImpl)
+                &AutofillManager::OnSelectOrSelectListFieldOptionsDidChangeImpl)
                 .Then(NotifyNoObserversCallback()));
 }
 

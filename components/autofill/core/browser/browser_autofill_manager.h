@@ -270,7 +270,7 @@ class BrowserAutofillManager : public AutofillManager,
   void OnDidPreviewAutofillFormDataImpl() override;
   void OnDidEndTextFieldEditingImpl() override;
   void OnHidePopupImpl() override;
-  void OnSelectOrSelectMenuFieldOptionsDidChangeImpl(
+  void OnSelectOrSelectListFieldOptionsDidChangeImpl(
       const FormData& form) override;
   void OnJavaScriptChangedAutofilledValueImpl(
       const FormData& form,

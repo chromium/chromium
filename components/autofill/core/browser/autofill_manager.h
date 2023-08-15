@@ -421,7 +421,7 @@ class AutofillManager
 
   virtual void OnHidePopupImpl() = 0;
 
-  virtual void OnSelectOrSelectMenuFieldOptionsDidChangeImpl(
+  virtual void OnSelectOrSelectListFieldOptionsDidChangeImpl(
       const FormData& form) = 0;
 
   virtual void OnJavaScriptChangedAutofilledValueImpl(

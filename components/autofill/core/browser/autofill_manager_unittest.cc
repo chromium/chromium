@@ -125,7 +125,7 @@ class MockAutofillManager : public AutofillManager {
   MOCK_METHOD(void, OnDidEndTextFieldEditingImpl, (), (override));
   MOCK_METHOD(void, OnHidePopupImpl, (), (override));
   MOCK_METHOD(void,
-              OnSelectOrSelectMenuFieldOptionsDidChangeImpl,
+              OnSelectOrSelectListFieldOptionsDidChangeImpl,
               (const FormData& form),
               (override));
   MOCK_METHOD(void,
@@ -410,7 +410,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(*manager_, OnDidFillAutofillFormDataImpl).Times(AtLeast(0));
   EXPECT_CALL(*manager_, OnDidPreviewAutofillFormDataImpl).Times(AtLeast(0));
   EXPECT_CALL(*manager_, OnDidEndTextFieldEditingImpl).Times(AtLeast(0));
-  EXPECT_CALL(*manager_, OnSelectOrSelectMenuFieldOptionsDidChangeImpl)
+  EXPECT_CALL(*manager_, OnSelectOrSelectListFieldOptionsDidChangeImpl)
       .Times(AtLeast(0));
   EXPECT_CALL(*manager_, OnJavaScriptChangedAutofilledValueImpl)
       .Times(AtLeast(0));
