@@ -186,7 +186,7 @@ public class SimpleAnimationLayout extends Layout {
                 handler, newLayoutTab, LayoutTab.Y, originY, 0f, FOREGROUND_ANIMATION_DURATION);
 
         mTabCreatedForegroundAnimation = new AnimatorSet();
-        mTabCreatedForegroundAnimation.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
+        mTabCreatedForegroundAnimation.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
         mTabCreatedForegroundAnimation.playTogether(
                 scaleAnimation, alphaAnimation, xAnimation, yAnimation);
         mTabCreatedForegroundAnimation.start();
