@@ -456,6 +456,11 @@ bool ContentBrowserClient::AllowSignedExchange(BrowserContext* context) {
   return true;
 }
 
+bool ContentBrowserClient::AllowCompressionDictionaryTransport(
+    BrowserContext* context) {
+  return true;
+}
+
 bool ContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {

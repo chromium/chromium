@@ -3278,7 +3278,9 @@ void StoragePartitionImpl::InitNetworkContext() {
   cors_exempt_header_list_ = context_params->cors_exempt_header_list;
 
   if (base::FeatureList::IsEnabled(
-          network::features::kCompressionDictionaryTransportBackend)) {
+          network::features::kCompressionDictionaryTransportBackend) &&
+      GetContentClient()->browser()->AllowCompressionDictionaryTransport(
+          browser_context_)) {
     context_params->shared_dictionary_enabled = true;
     if (!is_in_memory()) {
       // Some callers may already initialize NetworkContextFilePaths, and we

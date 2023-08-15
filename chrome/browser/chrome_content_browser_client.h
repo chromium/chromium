@@ -294,6 +294,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool DoesSchemeAllowCrossOriginSharedWorker(
       const std::string& scheme) override;
   bool AllowSignedExchange(content::BrowserContext* browser_context) override;
+  bool AllowCompressionDictionaryTransport(
+      content::BrowserContext* context) override;
   void RequestFilesAccess(
       const std::vector<base::FilePath>& files,
       const GURL& destination_url,

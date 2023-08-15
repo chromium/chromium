@@ -1626,6 +1626,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kSandboxExternalProtocolBlocked, true);
   registry->RegisterBooleanPref(prefs::kSSLErrorOverrideAllowed, true);
   registry->RegisterListPref(prefs::kSSLErrorOverrideAllowedForOrigins);
+  registry->RegisterBooleanPref(prefs::kCompressionDictionaryTransportEnabled,
+                                true);
   registry->RegisterBooleanPref(
       prefs::kSuppressDifferentOriginSubframeJSDialogs, true);
 #if BUILDFLAG(IS_ANDROID)
@@ -3194,6 +3196,14 @@ bool ChromeContentBrowserClient::AllowSignedExchange(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return profile->GetPrefs()->GetBoolean(prefs::kSignedHTTPExchangeEnabled);
+}
+
+bool ChromeContentBrowserClient::AllowCompressionDictionaryTransport(
+    content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kCompressionDictionaryTransportEnabled);
 }
 
 void ChromeContentBrowserClient::RequestFilesAccess(

@@ -813,6 +813,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // loaded. This is called on the UI thread.
   virtual bool AllowSignedExchange(BrowserContext* context);
 
+  // Allows the embedder to control whether Compression Dictionary Transport
+  // feature can be used. This is called on the UI thread.
+  virtual bool AllowCompressionDictionaryTransport(BrowserContext* context);
+
   virtual bool IsDataSaverEnabled(BrowserContext* context);
 
   // Updates the given prefs for Service Worker and Shared Worker. The prefs
