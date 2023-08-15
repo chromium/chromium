@@ -2824,6 +2824,7 @@
 <translation id="3267726687589094446">బహుళ ఫైళ్ల ఆటోమేటిక్‌ డౌన్‌లోడ్‌లకు అనుమతిని కొనసాగించండి</translation>
 <translation id="3268451620468152448">ఓపెన్ ట్యాబ్‌లు</translation>
 <translation id="3269093882174072735">చిత్రాన్ని లోడ్ చేయి</translation>
+<translation id="326911502853238749"><ph name="MODULE_NAME" />ను చూపించవద్దు</translation>
 <translation id="3269175001434213183">మీ అంశాలను బ్యాకప్ చేసి, వాటిని ఏదైనా పరికరంలో ఉపయోగించడానికి సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="3269612321104318480">లేత నీలి ఆకుపచ్చ రంగు మరియు తెలుపు</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ఫైల్}other{# ఫైళ్లు}}</translation>
@@ -7716,6 +7717,7 @@
 <translation id="7396017167185131589">షేర్ చేసిన ఫోల్డర్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> సిస్టమ్ ప్రారంభంలో ప్రారంభమవ్వడమే కాక, అన్ని ఇతర <ph name="PRODUCT_NAME" /> విండోలను మీరు మూసివేసిన తర్వాత కూడా బ్యాక్‌గ్రౌండ్‌లో అమలవడం కొనసాగుతుంది.</translation>
 <translation id="7399045143794278225">సింక్‌ను అనుకూలంగా మార్చండి</translation>
+<translation id="7399616692258236448">మీరు అనుమతించే సైట్‌లు మినహా అన్ని సైట్‌లకు లొకేషన్ రిక్వెస్ట్‌లు ఆటోమేటిక్‌గా బ్లాక్ చేయబడతాయి</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">తిరిగి <ph name="OLD_SEARCH_PROVIDER" />కు మార్చాలా?</translation>
 <translation id="7400839060291901923">మీ <ph name="PHONE_NAME" />లో కనెక్షన్‌ని సెటప్ చేయండి</translation>

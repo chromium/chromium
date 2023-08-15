@@ -152,7 +152,7 @@
 <translation id="2225536596944493418">确定要删除这 <ph name="NUMBER_OF_ITEMS" /> 项吗？</translation>
 <translation id="2230062665678605299">无法创建文件夹“<ph name="FOLDER_NAME" />”。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">一个人在喝咖啡</translation>
-<translation id="2247561763838186830">您已退出帐号</translation>
+<translation id="2247561763838186830">您已退出账号</translation>
 <translation id="2251368349685848079">从回收站还原</translation>
 <translation id="2278133026967558505">所有网站和网址都能访问文件</translation>
 <translation id="2282155092769082568">自动配置网址：</translation>
@@ -1028,7 +1028,7 @@
 <translation id="8997962250644902079">中文（繁体）拼音</translation>
 <translation id="8998871447376656508">您的 Google 云端硬盘中的可用空间不足，无法完成上传。</translation>
 <translation id="9003940392834790328">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
-<translation id="9007990314804111233">登录您的 Microsoft 帐号</translation>
+<translation id="9007990314804111233">登录您的 Microsoft 账号</translation>
 <translation id="9017798300203431059">俄语（注音）</translation>
 <translation id="9034924485347205037">Linux 文件</translation>
 <translation id="9035012421917565900">这些内容一旦移出“<ph name="DESTINATION_NAME" />”便无法移回，因此您将无法撤消这项操作。</translation>

@@ -2813,6 +2813,7 @@
 <translation id="3267726687589094446">По-прежнему разрешать автоматическое скачивание нескольких файлов</translation>
 <translation id="3268451620468152448">Вкладки</translation>
 <translation id="3269093882174072735">Загрузить изображение</translation>
+<translation id="326911502853238749">Не показывать <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Включите синхронизацию, чтобы создавать резервные копии своих данных и использовать их на любом устройстве</translation>
 <translation id="3269612321104318480">Светло-бирюзовый с белым</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>

@@ -2813,6 +2813,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3267726687589094446">Naďalej povoľovať automatické sťahovanie viacerých súborov súčasne</translation>
 <translation id="3268451620468152448">Otvorené karty</translation>
 <translation id="3269093882174072735">Načítať obrázok</translation>
+<translation id="326911502853238749">Nezobrazovať <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Zapnite synchronizáciu a zálohujte svoj obsah, pričom ho môžete používať v ľubovoľnom zariadení</translation>
 <translation id="3269612321104318480">Svetlá modrozelená a biela</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Súbor}few{# súbory}many{# files}other{# súborov}}</translation>

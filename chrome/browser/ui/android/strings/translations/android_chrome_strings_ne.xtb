@@ -62,7 +62,6 @@
 <translation id="1283039547216852943">विस्तृत गर्न ट्याप गर्नुहोस्</translation>
 <translation id="1289059016768036948">तपाईंलाई आफ्नो Google खातामा साइन इन गर्न लगाइने छ</translation>
 <translation id="1291207594882862231">इतिहास, कुकी, साइट सम्बन्धी डेटा, क्यासलाई खाली गर्नुहोस्…</translation>
-<translation id="1293898515599432175">Chrome <ph name="CHROME_CHANNEL" /> का हकमा Google पासवर्ड म्यानेजरबाट तपाईंका पासवर्डहरू मेटाइने छन्। तपाईं आफूले भर्खरै डाउनलोड गरेको पासवर्ड फाइल सेभ गर्न सक्नु हुने छ।</translation>
 <translation id="129553762522093515">हालैमा बन्द गरिएको</translation>
 <translation id="1298077576058087471">६०% सम्म डेटा बचत गर्नुहोस्, आजको समाचार पढ्नुहोस्</translation>
 <translation id="1303339473099049190">उक्त पासवर्ड फेला पार्न सकिएन। आफ्नो हिज्जेको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
@@ -820,7 +819,6 @@
 <translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ।</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> मा <ph name="ONE_TIME_CODE" /> पेस गर्ने हो?</translation>
 <translation id="5414836363063783498">प्रमाणीकरण गर्दै...</translation>
-<translation id="542190472198460451">सबै पासवर्डहरू तपाईंको डिभाइसमा डाउनलोड गरिने छन् र Chrome <ph name="CHROME_CHANNEL" /> बाट हटाइने छन्</translation>
 <translation id="5423934151118863508">तपाईँले धेरै भ्रमण गर्नुभएका पृष्ठहरू यहाँ देखिने छन्।</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> जि.बि. उपलब्ध छ</translation>
 <translation id="543338862236136125">पासवर्ड सम्पादन गर्नुहोस्</translation>
@@ -1365,7 +1363,6 @@
 <translation id="8110024788458304985">Chrome का सुविधाको गुणस्तर र यसको पर्फर्मेन्स सुधार्न मद्दत गर्नुहोस्</translation>
 <translation id="8110087112193408731">तपाईंले Chrome मा गर्नुभएका क्रियाकलाप डिजिटल वेलबिइङमा देखाउने हो?</translation>
 <translation id="8118117428362942925">मद्दत चाहिएका खण्डमा आफ्ना अभिभावक (<ph name="PARENT_NAME" />) लाई अनुरोध गर्नुहोस्</translation>
-<translation id="8124758083429256800">Chrome र Chrome <ph name="ERROR_DESCRIPTION" /> मा तपाईंका सेभ गरिएका पासवर्डका सूचीहरू संस्करण १२१ देखि मर्ज हुने छन्। तपाईं आफ्ना सेभ गरिएका सबै पासवर्डहरू दुवै एपमा स्वतः भर्न सक्नु हुने छ।</translation>
 <translation id="8127542551745560481">गृहपृष्ठ सम्पदान गर्नुहोस्</translation>
 <translation id="8130309322784422030">तपाईंले भण्डारण गर्नुभएको युजरनेम र पासवर्ड पुरानो हुन सक्छ</translation>
 <translation id="813082847718468539">साइट जानकारी हेर्नुहोस्</translation>

@@ -2811,6 +2811,7 @@
 <translation id="3267726687589094446">რამდენიმე ფაილის ავტომატური ჩამოტვირთვის დაშვების გაგრძელება</translation>
 <translation id="3268451620468152448">გახსნილი ჩანართები</translation>
 <translation id="3269093882174072735">სურათის ჩატვირთვა</translation>
+<translation id="326911502853238749">არ გამოჩნდეს <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">ჩართეთ სინქრონიზაცია, რომ შექმნათ თქვენი მონაცემების სარეზერვო ასლები და გამოიყენოთ ისინი ნებისმიერ მოწყობილობაზე</translation>
 <translation id="3269612321104318480">ღია ფირუზისფერი და თეთრი</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ფაილი}other{# ფაილი}}</translation>

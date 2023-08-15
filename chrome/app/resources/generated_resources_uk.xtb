@@ -2829,6 +2829,7 @@
 <translation id="3267726687589094446">Надалі дозволяти автоматичне завантаження декількох файлів</translation>
 <translation id="3268451620468152448">Відкриті вкладки</translation>
 <translation id="3269093882174072735">Завантажити зображення</translation>
+<translation id="326911502853238749">Не показувати <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Увімкніть синхронізацію, щоб створювати резервні копії даних і використовувати їх на будь-якому пристрої</translation>
 <translation id="3269612321104318480">Світло-бірюзовий і білий</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>

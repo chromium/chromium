@@ -2813,6 +2813,7 @@
 <translation id="3267726687589094446">Շարունակել թույլ տալ բազմակի ֆայլերի ավտոմատ ներբեռնումը</translation>
 <translation id="3268451620468152448">Բաց ներդիրները</translation>
 <translation id="3269093882174072735">Բեռնել պատկերը</translation>
+<translation id="326911502853238749">Չցուցադրել <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Միացրեք համաժամացումը՝ ձեր տվյալները պահուստավորելու և ցանկացած սարքում օգտագործելու համար</translation>
 <translation id="3269612321104318480">Բաց փիրուզագույն և սպիտակ</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>

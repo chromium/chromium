@@ -2826,6 +2826,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3267726687589094446">Бир нече файл автоматтык түрдө жүктөлүп алына берсин</translation>
 <translation id="3268451620468152448">Ачык өтмөктөр</translation>
 <translation id="3269093882174072735">Сүрөттү жүктөө</translation>
+<translation id="326911502853238749"><ph name="MODULE_NAME" /> көрсөтүлбөсүн</translation>
 <translation id="3269175001434213183">Маалыматтын камдык көчүрмөсүн сактап, башка түзмөктө колдонуу үчүн шайкештирүүнү күйгүзүңүз</translation>
 <translation id="3269612321104318480">Ачык көгүш жашыл жана ак</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}other{# файл}}</translation>

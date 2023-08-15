@@ -62,7 +62,6 @@
 <translation id="1283039547216852943">Докоснете за разгъване</translation>
 <translation id="1289059016768036948">Ще трябва да влезете в профила си в Google</translation>
 <translation id="1291207594882862231">Изчистване на историята, „бисквитките“, данните за сайтове и кеша…</translation>
-<translation id="1293898515599432175">Паролите ви ще бъдат изтрити от Google Мениджър на пароли за Chrome <ph name="CHROME_CHANNEL" />. Ще запазите току-що изтегления файл с пароли.</translation>
 <translation id="129553762522093515">Наскоро затворени</translation>
 <translation id="1298077576058087471">Спестете до 60% данни – прочетете днешните новини</translation>
 <translation id="1303339473099049190">Тази парола не бе намерена. Проверете дали е написана правилно и опитайте отново.</translation>
@@ -821,7 +820,6 @@
 <translation id="5401851137404501592">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт името, имейл адреса и снимката на потребителския ви профил.</translation>
 <translation id="5409881200985013443">Да се изпрати ли еднократният код <ph name="ONE_TIME_CODE" /> до <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Потвърждава се…</translation>
-<translation id="542190472198460451">Всички пароли ще бъдат изтеглени на устройството ви и премахнати от Chrome <ph name="CHROME_CHANNEL" /></translation>
 <translation id="5423934151118863508">Най-посещаваните от вас страници ще се показват тук</translation>
 <translation id="5424588387303617268">Налични: <ph name="GIGABYTES" /> ГБ</translation>
 <translation id="543338862236136125">Редактиране на паролата</translation>
@@ -1366,7 +1364,6 @@
 <translation id="8110024788458304985">Помощ за подобряването на функциите и ефективността на Chrome</translation>
 <translation id="8110087112193408731">Искате ли активността ви в Chrome да се показва в „Дигитално благополучие“?</translation>
 <translation id="8118117428362942925">Ако се нуждаете от помощ, попитайте родителя си (<ph name="PARENT_NAME" />)</translation>
-<translation id="8124758083429256800">Списъците ви със запазени пароли за Chrome и Chrome <ph name="ERROR_DESCRIPTION" /> ще се обединят след версия 121. Ще можете да попълвате автоматично всичките си запазени пароли и в двете приложения.</translation>
 <translation id="8127542551745560481">Редактиране на началната страница</translation>
 <translation id="8130309322784422030">Съхранената ви информация за вход може да не е актуална</translation>
 <translation id="813082847718468539">Преглед на информацията за сайта</translation>
