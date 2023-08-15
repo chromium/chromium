@@ -1234,6 +1234,10 @@ std::string AXNode::GetValueForControl() const {
 
 std::ostream& operator<<(std::ostream& stream, const AXNode& node) {
   stream << node.data().ToString(/*verbose*/ false);
+  if (node.tree()->GetTreeUpdateInProgressState()) {
+    // Prevent calling node traversal methods when it's illegal to do so.
+    return stream;
+  }
   if (node.GetUnignoredChildCountCrossingTreeBoundary()) {
     stream << " unignored_child_ids=";
     bool needs_comma = false;

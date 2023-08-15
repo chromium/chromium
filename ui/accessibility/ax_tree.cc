@@ -2791,8 +2791,9 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
   verbose_error << new_error << "\n** Pending tree update **\n"
                 << update_state.pending_tree_update->ToString(
                        /*verbose*/ false)
-                << "\n** AXTreeData ** \n"
-                << data_.ToString() + "\n** AXTree **"
+                << "** Root **\n"
+                << root() << "\n** AXTreeData **\n"
+                << data_.ToString() + "\n** AXTree **\n"
                 << TreeToStringHelper(root_, 0, false).substr(0, 1000);
 
   if (is_fatal && !disallow_fail_fast_) {
