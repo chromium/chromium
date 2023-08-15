@@ -1662,7 +1662,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.CharactersTranslated"
-    units="count" expires_after="2024-02-01">
+    units="count" expires_after="2024-08-14">
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1672,12 +1672,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.EnableFrom{Entrypoint}"
-    enum="BooleanEnabled" expires_after="2023-06-13">
+    enum="BooleanEnabled" expires_after="2024-08-14">
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records when a user enables or disables the Live Translate feature from
-    {Entrypoint}.
+    {Entrypoint}. Warning: this histogram was expired from 2024-06-13 to
+    2024-08-15; data may be missing.
   </summary>
   <token key="Entrypoint">
     <variant name="GlobalMediaControls"
@@ -1687,7 +1688,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.SourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2024-02-01">
+    enum="LocaleCodeISO639" expires_after="2024-08-14">
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1697,7 +1698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.TargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2024-02-01">
+    enum="LocaleCodeISO639" expires_after="2024-08-14">
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
