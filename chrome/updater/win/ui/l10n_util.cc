@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/win/atl.h"
 #include "base/win/embedded_i18n/language_selector.h"
@@ -26,6 +25,12 @@ constexpr base::win::i18n::LanguageSelector::LangToOffset
 #undef HANDLE_LANGUAGE
 };
 
+size_t GetLanguageOffset(const std::wstring& lang) {
+  return base::win::i18n::LanguageSelector(lang, kLanguageOffsetPairs).offset();
+}
+
+}  // namespace
+
 std::wstring GetPreferredLanguage() {
   std::vector<std::wstring> languages;
   if (!base::win::i18n::GetUserPreferredUILanguageList(&languages) ||
@@ -36,18 +41,11 @@ std::wstring GetPreferredLanguage() {
   return languages[0];
 }
 
-const base::win::i18n::LanguageSelector& GetLanguageSelector() {
-  static base::NoDestructor<base::win::i18n::LanguageSelector> instance(
-      GetPreferredLanguage(), kLanguageOffsetPairs);
-  return *instance;
-}
-
-}  // namespace
-
-std::wstring GetLocalizedString(UINT base_message_id) {
+std::wstring GetLocalizedString(UINT base_message_id,
+                                const std::wstring& lang) {
   // Map `base_message_id` to the base id for the current install mode.
   UINT message_id =
-      static_cast<UINT>(base_message_id + GetLanguageSelector().offset());
+      static_cast<UINT>(base_message_id + GetLanguageOffset(lang));
   const ATLSTRINGRESOURCEIMAGE* image =
       AtlGetStringResourceImage(_AtlBaseModule.GetModuleInstance(), message_id);
   if (image) {
@@ -55,6 +53,10 @@ std::wstring GetLocalizedString(UINT base_message_id) {
   }
   NOTREACHED() << "Unable to find resource id " << message_id;
   return std::wstring();
+}
+
+std::wstring GetLocalizedString(UINT base_message_id) {
+  return GetLocalizedString(base_message_id, GetPreferredLanguage());
 }
 
 std::wstring GetLocalizedStringF(UINT base_message_id,

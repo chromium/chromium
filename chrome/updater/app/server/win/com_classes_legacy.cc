@@ -46,6 +46,8 @@
 #include "chrome/updater/win/app_command_runner.h"
 #include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/setup/setup_util.h"
+#include "chrome/updater/win/ui/l10n_util.h"
+#include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -348,8 +350,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
   HRESULT RuntimeClassInitialize(
       const std::wstring& app_id,
+      const std::wstring& language,
       UpdateService::PolicySameVersionUpdate policy_same_version_update) {
     app_id_ = base::WideToASCII(app_id);
+    language_ = language;
     policy_same_version_update_ = policy_same_version_update;
     return S_OK;
   }
@@ -565,9 +569,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           // installer error to the legacy installer error value, for backward
           // compatibility.
           error_code = GOOPDATEINSTALL_E_INSTALLER_FAILED;
-
-          // TODO(crbug.com/1447293): this string needs localization.
-          completion_message = L"Installer failed.";
+          completion_message =
+              GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE, language_);
           installer_result_code = state_update_->extra_code1;
         }
       }
@@ -630,6 +633,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   std::string app_id_;
+  std::wstring language_;
   UpdateService::PolicySameVersionUpdate policy_same_version_update_ =
       UpdateService::PolicySameVersionUpdate::kNotAllowed;
 
@@ -664,7 +668,8 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
 
     is_install_ = true;
     return MakeAndInitializeComObject<AppWebImpl>(
-        app_web_, app_id, UpdateService::PolicySameVersionUpdate::kAllowed);
+        app_web_, app_id, language,
+        UpdateService::PolicySameVersionUpdate::kAllowed);
   }
 
   IFACEMETHODIMP createInstalledApp(BSTR app_id) override {
@@ -676,7 +681,8 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
 
     is_install_ = false;
     return MakeAndInitializeComObject<AppWebImpl>(
-        app_web_, app_id, UpdateService::PolicySameVersionUpdate::kNotAllowed);
+        app_web_, app_id, GetPreferredLanguage(),
+        UpdateService::PolicySameVersionUpdate::kNotAllowed);
   }
 
   IFACEMETHODIMP createAllInstalledApps() override {
