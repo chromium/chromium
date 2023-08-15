@@ -103,6 +103,16 @@ class AdminTemplateServiceTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  void ResetAdminTemplateService() {
+    admin_template_service_ = std::make_unique<AdminTemplateService>(
+        temp_dir_.GetPath(), account_id_, &pref_service_);
+    WaitForAdminTemplateServiceModel();
+  }
+
+  apps::AppRegistryCache* GetAppsCache() { return cache_.get(); }
+
+  AccountId& GetAccountId() { return account_id_; }
+
  private:
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
@@ -172,6 +182,41 @@ TEST_F(AdminTemplateServiceTest, WaitsForAppsCacheBeforeParsingPolicy) {
 
   // Now we populate the apps cache, which should in turn populate the
   // entries.
+  SetUpAppsCache();
+
+  auto all_entries_result =
+      GetAdminService()->GetFullDeskModel()->GetAllEntries();
+
+  EXPECT_EQ(all_entries_result.status, DeskModel::GetAllEntriesStatus::kOk);
+  std::vector<const ash::DeskTemplate*>& entries = all_entries_result.entries;
+
+  EXPECT_EQ(entries.size(), 2UL);
+
+  // Finally we verify that the restore data is populated.
+  for (const auto* entry : entries) {
+    // When we support other types we will make this check more comprehensive.
+    EXPECT_TRUE(entry->desk_restore_data()->HasBrowser());
+  }
+}
+
+TEST_F(AdminTemplateServiceTest,
+       WaitsToObserveAppsCacheUntilItsAddedToWrapper) {
+  // Set up The environment such that there is currently no AppRegistryCache for
+  // the environments account_id.  Set the pref value to ensure that it doesn't
+  // attempt to parse anyways.
+  apps::AppRegistryCacheWrapper& wrapper = apps::AppRegistryCacheWrapper::Get();
+  wrapper.RemoveAppRegistryCache(GetAppsCache());
+  ResetAdminTemplateService();
+  SetPrefValue(ParsePolicyFromString(desk_test_util::kAdminTemplatePolicy));
+
+  // We will attempt to load the model when the preference is set, however we
+  // will not load because the apps cache is null.
+  EXPECT_EQ(
+      GetAdminService()->GetFullDeskModel()->GetAllEntries().entries.size(),
+      0UL);
+
+  // Add back in the cache and populate it.
+  wrapper.AddAppRegistryCache(GetAccountId(), GetAppsCache());
   SetUpAppsCache();
 
   auto all_entries_result =

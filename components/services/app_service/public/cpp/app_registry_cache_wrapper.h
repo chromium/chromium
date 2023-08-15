@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/component_export.h"
+#include "base/observer_list.h"
 
 class AccountId;
 
@@ -19,6 +20,13 @@ class AppRegistryCache;
 // the method to get the AppRegistryCache per |account_id|.
 class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCacheWrapper {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    virtual void OnAppRegistryCacheAdded(const AccountId& account_id) {}
+  };
+
   // Returns the global AppRegistryCacheWrapper object.
   static AppRegistryCacheWrapper& Get();
 
@@ -39,8 +47,14 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCacheWrapper {
   // Removes the |cache| in |app_registry_caches_|.
   void RemoveAppRegistryCache(AppRegistryCache* cache);
 
+  void AddObserver(Observer* observer);
+
+  void RemoveObserver(Observer* observer);
+
  private:
   std::map<AccountId, AppRegistryCache*> app_registry_caches_;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace apps

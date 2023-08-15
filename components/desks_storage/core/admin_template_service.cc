@@ -15,38 +15,9 @@
 #include "components/app_constants/constants.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/policy/policy_constants.h"
-#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
 namespace desks_storage {
-
-namespace {
-
-bool WillAppRegistryCacheResolveAppIds(const AccountId& account_id) {
-  apps::AppRegistryCache* cache =
-      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
-  // TODO(b/295070373): Fix so we can just have this be a CHECK.
-  if (cache == nullptr) {
-    return false;
-  }
-
-  std::set<apps::AppType> initialized_types = cache->InitializedAppTypes();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (initialized_types.contains(apps::AppType::kStandaloneBrowser)) {
-    return true;
-  }
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (initialized_types.contains(apps::AppType::kChromeApp)) {
-    return true;
-  }
-#endif
-
-  return false;
-}
-
-}  // namespace
 
 AdminTemplateService::AdminTemplateService(
     const base::FilePath& user_data_dir_path,
@@ -59,12 +30,15 @@ AdminTemplateService::AdminTemplateService(
 
   model_obs_.Observe(data_manager_.get());
 
-  auto* apps_cache =
-      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
+  auto& apps_cache_wrapper = apps::AppRegistryCacheWrapper::Get();
+  auto* apps_cache = apps_cache_wrapper.GetAppRegistryCache(account_id_);
 
-  // TODO(b/295070373): Fix so we can just have this be a CHECK.
+  // If we don't have an apps cache then we observe the wrapper to
+  // wait for it to be ready.
   if (apps_cache) {
     app_cache_obs_.Observe(apps_cache);
+  } else {
+    app_cache_wrapper_obs_.Observe(&apps_cache_wrapper);
   }
 
   pref_change_registrar_.Init(pref_service_);
@@ -174,7 +148,7 @@ bool AdminTemplateService::IsReady() {
 }
 
 void AdminTemplateService::DeskModelLoaded() {
-  is_cache_ready_ = WillAppRegistryCacheResolveAppIds(account_id_);
+  is_cache_ready_ = WillAppRegistryCacheResolveAppIds();
   UpdateModelWithPolicy();
 }
 
@@ -192,11 +166,42 @@ void AdminTemplateService::OnAppTypeInitialized(apps::AppType app_type) {
   if (is_cache_ready_) {
     return;
   }
-  is_cache_ready_ = WillAppRegistryCacheResolveAppIds(account_id_);
+  is_cache_ready_ = WillAppRegistryCacheResolveAppIds();
 
   // If we're here it means that we have a policy that needs to be parsed but
   // until this point the AppRegistryCache wasn't ready.
   UpdateModelWithPolicy();
+}
+
+void AdminTemplateService::OnAppRegistryCacheAdded(
+    const AccountId& account_id) {
+  if (account_id != account_id_ || app_cache_obs_.IsObserving()) {
+    return;
+  }
+
+  auto* apps_cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
+  app_cache_obs_.Observe(apps_cache);
+}
+
+bool AdminTemplateService::WillAppRegistryCacheResolveAppIds() {
+  if (!app_cache_obs_.IsObserving()) {
+    return false;
+  }
+
+  apps::AppRegistryCache* cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
+  CHECK(cache);
+
+  const std::set<apps::AppType>& initialized_types =
+      cache->InitializedAppTypes();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return initialized_types.contains(apps::AppType::kStandaloneBrowser);
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return initialized_types.contains(apps::AppType::kChromeApp);
+#endif
 }
 
 }  // namespace desks_storage
