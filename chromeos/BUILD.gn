@@ -173,7 +173,11 @@ if (is_chromeos_ash && is_chromeos_device) {
   # To diagnose tast failures or disable tests, see go/tast-failures
   # For any builders that run this target, it should also build Lacros.
   tast_test("chrome_all_tast_tests") {
-    if (!is_skylab) {
+    if (is_skylab) {
+      # This tast_attr_expr needs to be kept in sync with //testing/buildbot/test_suites.pyl
+      # because the skylab pipeline needs the attr at the build phase. (see b/294778490)
+      tast_attr_expr = "\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !\"dep:lacros\" && !informational)"
+    } else {
       deploy_lacros_chrome = true
     }
 
@@ -188,7 +192,11 @@ if (is_chromeos_ash && is_chromeos_device) {
   }
 
   tast_test("chrome_criticalstaging_tast_tests") {
-    if (!is_skylab) {
+    if (is_skylab) {
+      # This tast_attr_expr needs to be kept in sync with //testing/buildbot/test_suites.pyl
+      # because the skylab pipeline needs the attr at the build phase. (see b/294778490)
+      tast_attr_expr = "\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !\"dep:lacros\" && \"informational\" && \"group:criticalstaging\""
+    } else {
       deploy_lacros_chrome = true
     }
 
