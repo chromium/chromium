@@ -2125,9 +2125,10 @@ void PdfAccessibilityTree::OnOcrDataReceived(
 
     if (tree_update.nodes.empty()) {
       VLOG(1) << "Empty OCR data received.";
-      // TODO(crbug.com/1471392): Create an empty update and continue. This can
-      // happen if OCR returns an empty result, or the image draws nothing.
-      return;
+      // This can happen if OCR returns an empty result, or the image draws
+      // nothing. Need to keep iterating the rest of `tree_updates` as there
+      // can be some updates after this empty update in `tree_updates`.
+      continue;
     }
 
     base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
@@ -2218,7 +2219,8 @@ void PdfAccessibilityTree::OnOcrDataReceived(
                                ocr_request.image_node_id);
       CHECK_EQ(num_erased, 1);
       (*parent_node_iter)->child_ids.push_back(page_node_id);
-      return;
+      // Need to keep iterating the rest of `tree_updates`.
+      continue;
     }
 
     // Create a new `AXTreeUpdate` only after `tree_` has been unserialized in
@@ -2242,9 +2244,9 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   if (ocr_service_->AreAllPagesOcred()) {
     SetOcrCompleteStatus();
   }
-
-  render_accessibility->SetPluginTreeSource(this);
-  nodes_.clear();
+  if (did_unserialize_once) {
+    render_accessibility->SetPluginTreeSource(this);
+  }
 }
 
 void PdfAccessibilityTree::CreateOcrService() {
