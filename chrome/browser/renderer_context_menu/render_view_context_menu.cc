@@ -4011,8 +4011,14 @@ void RenderViewContextMenu::ExecRegionSearch(
     lens_region_search_controller_ =
         std::make_unique<lens::LensRegionSearchController>(browser);
   }
+  const lens::AmbientSearchEntryPoint entry_point =
+      is_google_default_search_provider
+          ? lens::AmbientSearchEntryPoint::
+                CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS
+          : lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_REGION_WITH_WEB;
   lens_region_search_controller_->Start(web_contents, use_fullscreen_capture,
-                                        is_google_default_search_provider);
+                                        is_google_default_search_provider,
+                                        entry_point);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
