@@ -32,7 +32,9 @@ MEDIA_EXPORT extern const char kAudioServiceQuitTimeoutMs[];
 
 MEDIA_EXPORT extern const char kAutoplayPolicy[];
 
+MEDIA_EXPORT extern const char kDisableAudioInput[];
 MEDIA_EXPORT extern const char kDisableAudioOutput[];
+
 MEDIA_EXPORT extern const char kFailAudioStreamCreation[];
 
 MEDIA_EXPORT extern const char kVideoThreads[];
@@ -57,7 +59,6 @@ MEDIA_EXPORT extern const char kWaveOutBuffers[];
 #if BUILDFLAG(IS_FUCHSIA)
 MEDIA_EXPORT extern const char kEnableProtectedVideoBuffers[];
 MEDIA_EXPORT extern const char kForceProtectedVideoOutputBuffers[];
-MEDIA_EXPORT extern const char kDisableAudioInput[];
 MEDIA_EXPORT extern const char kMinVideoDecoderOutputBufferSize[];
 MEDIA_EXPORT extern const char kAudioCapturerWithEchoCancellation[];
 #endif

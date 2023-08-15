@@ -354,6 +354,7 @@ bool UtilityProcessHost::StartProcess() {
       // These flags are used by the audio service:
       switches::kAudioBufferSize,
       switches::kAudioServiceQuitTimeoutMs,
+      switches::kDisableAudioInput,
       switches::kDisableAudioOutput,
       switches::kFailAudioStreamCreation,
       switches::kMuteAudio,

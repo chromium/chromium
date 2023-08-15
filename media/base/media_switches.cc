@@ -41,6 +41,8 @@ const char kAudioServiceQuitTimeoutMs[] = "audio-service-quit-timeout-ms";
 // Command line flag name to set the autoplay policy.
 const char kAutoplayPolicy[] = "autoplay-policy";
 
+// Forces input and output stream creation to use fake audio streams.
+const char kDisableAudioInput[] = "disable-audio-input";
 const char kDisableAudioOutput[] = "disable-audio-output";
 
 // Causes the AudioManager to fail creating audio streams. Used when testing
@@ -99,8 +101,6 @@ const char kEnableProtectedVideoBuffers[] = "enable-protected-video-buffers";
 const char kForceProtectedVideoOutputBuffers[] =
     "force-protected-video-output-buffers";
 
-const char kDisableAudioInput[] = "disable-audio-input";
-
 // Minimum size for buffer size used for output video frames in
 // FuchsiaVideoDecoder. May be set to avoid re-allocating video buffers when an
 // application upgrades video resolution mid-stream.
@@ -148,6 +148,8 @@ const char kUseFileForFakeVideoCapture[] = "use-file-for-fake-video-capture";
 // file is converted to suit Chrome's audio buses if necessary, so most sane
 // .wav files should work. You can pass either <path> to play the file looping
 // or <path>%noloop to stop after playing the file to completion.
+//
+// Must also be used with kDisableAudioInput or kUseFakeDeviceForMediaStream.
 const char kUseFileForFakeAudioCapture[] = "use-file-for-fake-audio-capture";
 
 // Use a fake device for accelerated decoding of MJPEG. This allows, for

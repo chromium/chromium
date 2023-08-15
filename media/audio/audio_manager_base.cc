@@ -258,7 +258,7 @@ AudioOutputStream* AudioManagerBase::MakeBitstreamOutputStream(
 }
 
 AudioInputStream* AudioManagerBase::MakeAudioInputStream(
-    const AudioParameters& params,
+    const AudioParameters& input_params,
     const std::string& device_id,
     const LogCallback& log_callback) {
   CHECK(GetTaskRunner()->BelongsToCurrentThread());
@@ -268,6 +268,13 @@ AudioInputStream* AudioManagerBase::MakeAudioInputStream(
     LogMakeAudioInputStreamResult(
         MakeAudioInputStreamResult::kErrorSwitchFailAudioStreamCreation);
     return nullptr;
+  }
+
+  // If audio has been disabled force usage of a fake audio stream.
+  auto params = input_params;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableAudioInput)) {
+    params.set_format(AudioParameters::AUDIO_FAKE);
   }
 
   SendLogMessage(log_callback, "%s({device_id=%s}, {params=[%s]})", __func__,
