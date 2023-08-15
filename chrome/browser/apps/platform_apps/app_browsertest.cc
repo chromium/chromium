@@ -547,19 +547,6 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_Iframes) {
       << message_;
 }
 
-// Tests that platform apps can perform filesystem: URL navigations.
-IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AllowFileSystemURLNavigation) {
-  // TODO(https://crbug.com/1332598): Remove this test when removing filesystem:
-  // navigation for good.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kFileSystemUrlNavigationForChromeAppsOnly)) {
-    GTEST_SKIP();
-  }
-  ASSERT_TRUE(RunExtensionTest("platform_apps/filesystem_url",
-                               {.launch_as_platform_app = true}))
-      << message_;
-}
-
 // Tests that localStorage and WebSQL are disabled for platform apps.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DisallowStorage) {
   ASSERT_TRUE(RunExtensionTest("platform_apps/storage",
