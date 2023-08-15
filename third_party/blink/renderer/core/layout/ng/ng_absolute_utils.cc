@@ -19,11 +19,9 @@ namespace blink {
 
 namespace {
 
-// A direction agnostic version of |NGLogicalStaticPosition::InlineEdge|, and
-// |NGLogicalStaticPosition::BlockEdge|.
-enum StaticPositionEdge { kStart, kCenter, kEnd };
+enum AxisEdge { kStart, kCenter, kEnd };
 
-inline StaticPositionEdge GetStaticPositionEdge(
+inline AxisEdge GetStaticPositionEdge(
     NGLogicalStaticPosition::InlineEdge inline_edge) {
   switch (inline_edge) {
     case NGLogicalStaticPosition::InlineEdge::kInlineStart:
@@ -35,7 +33,7 @@ inline StaticPositionEdge GetStaticPositionEdge(
   }
 }
 
-inline StaticPositionEdge GetStaticPositionEdge(
+inline AxisEdge GetStaticPositionEdge(
     NGLogicalStaticPosition::BlockEdge block_edge) {
   switch (block_edge) {
     case NGLogicalStaticPosition::BlockEdge::kBlockStart:
@@ -47,7 +45,7 @@ inline StaticPositionEdge GetStaticPositionEdge(
   }
 }
 
-inline LayoutUnit StaticPositionStartInset(StaticPositionEdge edge,
+inline LayoutUnit StaticPositionStartInset(AxisEdge edge,
                                            LayoutUnit static_position_offset,
                                            LayoutUnit size) {
   switch (edge) {
@@ -60,7 +58,7 @@ inline LayoutUnit StaticPositionStartInset(StaticPositionEdge edge,
   }
 }
 
-inline LayoutUnit StaticPositionEndInset(StaticPositionEdge edge,
+inline LayoutUnit StaticPositionEndInset(AxisEdge edge,
                                          LayoutUnit static_position_offset,
                                          LayoutUnit available_size,
                                          LayoutUnit size) {
@@ -81,7 +79,7 @@ std::pair<LayoutUnit, LayoutUnit> ComputeAvailableSpaceInOneAxis(
     const absl::optional<LayoutUnit>& inset_start,
     const absl::optional<LayoutUnit>& inset_end,
     const LayoutUnit static_position_offset,
-    StaticPositionEdge static_position_edge) {
+    AxisEdge static_position_edge) {
   DCHECK_NE(available_size, kIndefiniteSize);
   LayoutUnit computed_offset;
   LayoutUnit computed_available_size;
@@ -137,7 +135,7 @@ void ComputeInsets(const LayoutUnit margin_percentage_resolution_size,
                    absl::optional<LayoutUnit> inset_start,
                    absl::optional<LayoutUnit> inset_end,
                    const LayoutUnit static_position_offset,
-                   StaticPositionEdge static_position_edge,
+                   AxisEdge static_position_edge,
                    bool is_start_dominant,
                    bool is_block_direction,
                    LayoutUnit size,
@@ -230,16 +228,27 @@ void ComputeInsets(const LayoutUnit margin_percentage_resolution_size,
 }
 
 bool CanComputeBlockSizeWithoutLayout(const NGBlockNode& node) {
-  if (node.IsTable())
+  // Tables (even with an explicit size) apply a min-content constraint.
+  if (node.IsTable()) {
     return false;
-  if (node.IsReplaced())
+  }
+  // Replaced elements always have their size computed ahead of time.
+  if (node.IsReplaced()) {
     return true;
+  }
   const auto& style = node.Style();
-  return !style.LogicalHeight().IsContentOrIntrinsic() &&
-         !style.LogicalMinHeight().IsContentOrIntrinsic() &&
-         !style.LogicalMaxHeight().IsContentOrIntrinsic() &&
-         (!style.LogicalHeight().IsAuto() ||
-          (!style.LogicalTop().IsAuto() && !style.LogicalBottom().IsAuto()));
+  if (style.LogicalHeight().IsContentOrIntrinsic() ||
+      style.LogicalMinHeight().IsContentOrIntrinsic() ||
+      style.LogicalMaxHeight().IsContentOrIntrinsic()) {
+    return false;
+  }
+  if (style.LogicalHeight().IsAuto()) {
+    // Any 'auto' inset will trigger shink-to-fit sizing.
+    if (style.LogicalTop().IsAuto() || style.LogicalBottom().IsAuto()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace
