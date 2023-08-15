@@ -55,7 +55,9 @@ class WebsiteMetrics : public BrowserListObserver,
                        public history::HistoryServiceObserver {
  public:
   // Observer that is notified on certain website events like URL opened, URL
-  // closed, etc.
+  // closed, etc. Observers are expected to register themselves on session
+  // initialization so they do not miss out on events that happen before they
+  // are registered.
   class Observer : public base::CheckedObserver {
    public:
     Observer() = default;
@@ -75,6 +77,13 @@ class WebsiteMetrics : public BrowserListObserver,
     // return the URL that was closed.
     virtual void OnUrlClosed(const GURL& url_closed,
                              ::content::WebContents* web_contents) {}
+
+    // Invoked when URL usage metrics are being recorded (per URL that was used,
+    // on a 5 minute interval). `running_time` represents the foreground usage
+    // time in the last 5 minute interval. We do not track usage per
+    // `WebContents` today. There is a possibility of losing out on initial
+    // usage metric records if there are delays in observer registration.
+    virtual void OnUrlUsage(const GURL& url, base::TimeDelta running_time) {}
 
     // Invoked when the `WebsiteMetrics` component (being observed) is being
     // destroyed.
