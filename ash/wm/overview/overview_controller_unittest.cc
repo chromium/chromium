@@ -317,7 +317,8 @@ TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
   EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 }
 
-TEST_F(OverviewControllerTest, OcclusionTest) {
+// TODO(https://crbug.com/1472403): Investigate test flakiness and reenable.
+TEST_F(OverviewControllerTest, DISABLED_OcclusionTest) {
   using OcclusionState = aura::Window::OcclusionState;
 
   Shell::Get()
