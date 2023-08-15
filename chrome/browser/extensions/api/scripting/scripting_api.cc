@@ -55,6 +55,7 @@ constexpr char kExactlyOneOfCssAndFilesError[] =
 constexpr char kFilesExceededSizeLimitError[] =
     "Scripts could not be loaded because '*' exceeds the maximum script size "
     "or the extension's maximum total script size.";
+constexpr char kNonExistentScriptIdError[] = "Nonexistent script ID '*'";
 
 // Note: CSS always injects as soon as possible, so we default to
 // document_start. Because of tab loading, there's no guarantee this will
@@ -1155,48 +1156,46 @@ ScriptingUnregisterContentScriptsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   absl::optional<api::scripting::ContentScriptFilter>& filter = params->filter;
-  std::set<std::string> ids_to_remove;
-
   ExtensionUserScriptLoader* loader =
       ExtensionSystem::Get(browser_context())
           ->user_script_manager()
           ->GetUserScriptLoaderForExtension(extension()->id());
-  std::set<std::string> existing_script_ids = loader->GetDynamicScriptIDs();
-  if (filter && filter->ids) {
-    for (const auto& provided_id : *filter->ids) {
-      std::string error;
-      if (!IsScriptIDValid(provided_id, &error)) {
-        return RespondNow(Error(std::move(error)));
-      }
-
-      // Add the dynamic content script prefix to `provided_id` before checking
-      // against `existing_script_ids`.
-      std::string id_with_prefix =
-          scripting::CreateDynamicScriptID(provided_id);
-      if (!base::Contains(existing_script_ids, id_with_prefix)) {
-        return RespondNow(Error(base::StringPrintf("Nonexistent script ID '%s'",
-                                                   provided_id.c_str())));
-      }
-
-      ids_to_remove.insert(id_with_prefix);
-    }
-  }
 
   // TODO(crbug.com/1300657): Only clear all scripts if `filter` did not specify
   // the list of scripts ids to remove.
-  if (ids_to_remove.empty()) {
+  if (!filter || !filter->ids || filter->ids->empty()) {
     loader->ClearDynamicScripts(
         base::BindOnce(&ScriptingUnregisterContentScriptsFunction::
                            OnContentScriptsUnregistered,
                        this));
-  } else {
-    loader->RemoveDynamicScripts(
-        std::move(ids_to_remove),
-        base::BindOnce(&ScriptingUnregisterContentScriptsFunction::
-                           OnContentScriptsUnregistered,
-                       this));
+    return RespondLater();
   }
 
+  std::set<std::string> ids_to_remove;
+  std::set<std::string> existing_script_ids = loader->GetDynamicScriptIDs();
+  std::string error;
+
+  for (const auto& provided_id : *filter->ids) {
+    if (!IsScriptIDValid(provided_id, &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+
+    // Add the dynamic content script prefix to `provided_id` before checking
+    // against `existing_script_ids`.
+    std::string id_with_prefix = scripting::CreateDynamicScriptID(provided_id);
+    if (!base::Contains(existing_script_ids, id_with_prefix)) {
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          kNonExistentScriptIdError, provided_id.c_str())));
+    }
+
+    ids_to_remove.insert(id_with_prefix);
+  }
+
+  loader->RemoveDynamicScripts(
+      std::move(ids_to_remove),
+      base::BindOnce(&ScriptingUnregisterContentScriptsFunction::
+                         OnContentScriptsUnregistered,
+                     this));
   return RespondLater();
 }
 
