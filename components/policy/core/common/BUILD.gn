@@ -247,6 +247,8 @@ source_set("internal") {
 
   if (is_chromeos_lacros) {
     sources += [
+      "management/platform_management_status_provider_lacros.cc",
+      "management/platform_management_status_provider_lacros.h",
       "policy_loader_lacros.cc",
       "policy_loader_lacros.h",
     ]

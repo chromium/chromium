@@ -69,7 +69,9 @@ class ProfileCloudManagementStatusProvider final
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// This is both a device and browser management status provider for ChromeOS.
+// Returns the platform managment status of ChromeOS Ash devices. For LaCros,
+// see DeviceEnterpriseManagedStatusProvider which needs to be defined under
+// c/policy/core/common/management/platform_management_status_provider_lacros.
 class DeviceManagementStatusProvider final
     : public policy::ManagementStatusProvider {
  public:
