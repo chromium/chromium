@@ -49,7 +49,6 @@ const uint8_t kSubCommandSetInputReportMode = 0x03;
 const uint8_t kSubCommandReadSpi = 0x10;
 const uint8_t kSubCommandSetPlayerLights = 0x30;
 const uint8_t kSubCommand33 = 0x33;
-const uint8_t kSubCommandSetHomeLight = 0x38;
 const uint8_t kSubCommandEnableImu = 0x40;
 const uint8_t kSubCommandSetImuSensitivity = 0x41;
 const uint8_t kSubCommandEnableVibration = 0x48;
@@ -1452,18 +1451,6 @@ void NintendoController::ContinueInitSequence(
     case kPendingEnableVibration:
       if (spi_subcommand == kSubCommandEnableVibration) {
         CancelTimeout();
-        // PowerA controller doesn't have a home light and trying to set it will
-        // fail, so skip this step.
-        if (gamepad_id_ == GamepadId::kPowerALicPro) {
-          MakeInitSequenceRequests(kPendingSetInputReportMode);
-        } else {
-          MakeInitSequenceRequests(kPendingSetHomeLight);
-        }
-      }
-      break;
-    case kPendingSetHomeLight:
-      if (spi_subcommand == kSubCommandSetHomeLight) {
-        CancelTimeout();
         MakeInitSequenceRequests(kPendingSetInputReportMode);
       }
       break;
@@ -1530,9 +1517,6 @@ void NintendoController::MakeInitSequenceRequests(InitializationState state) {
       break;
     case kPendingEnableVibration:
       RequestEnableVibration(true);
-      break;
-    case kPendingSetHomeLight:
-      RequestSetHomeLightIntensity(1.0);  // 100% intensity.
       break;
     case kPendingSetInputReportMode:
       RequestSetInputReportMode(0x30);  // Standard full mode reported at 60Hz.
@@ -1645,41 +1629,6 @@ void NintendoController::RequestEnableVibration(bool enable) {
 
 void NintendoController::RequestSetPlayerLights(uint8_t light_pattern) {
   SubCommand(kSubCommandSetPlayerLights, {light_pattern});
-}
-
-void NintendoController::RequestSetHomeLight(
-    uint8_t minicycle_count,
-    uint8_t minicycle_duration,
-    uint8_t start_intensity,
-    uint8_t cycle_count,
-    const std::vector<uint8_t>& minicycle_data) {
-  DCHECK_LE(minicycle_count, 0xf);
-  DCHECK_LE(minicycle_duration, 0xf);
-  DCHECK_LE(start_intensity, 0xf);
-  DCHECK_LE(cycle_count, 0xf);
-  if ((cycle_count > 0 && minicycle_count == 1) || minicycle_duration == 0)
-    minicycle_count = 0;
-  std::vector<uint8_t> bytes = {
-      static_cast<uint8_t>((minicycle_count << 4) | minicycle_duration),
-      static_cast<uint8_t>((start_intensity << 4) | cycle_count)};
-  bytes.insert(bytes.end(), minicycle_data.begin(), minicycle_data.end());
-  SubCommand(kSubCommandSetHomeLight, bytes);
-}
-
-void NintendoController::RequestSetHomeLightIntensity(double intensity) {
-  intensity = std::clamp(intensity, 0.0, 1.0);
-  uint8_t led_intensity = std::round(intensity * 0x0f);
-  // Each pair of bytes in the minicycle data describes two minicyles.
-  // The first byte holds two 4-bit values encoding minicycle intensities.
-  // The second byte holds two 4-bit multipliers for the duration of each
-  // transition.
-  //
-  // This command encodes one minicycle that transitions to 100% intensity after
-  // 1x minicycle duration. Because |minicycle_count| and |cycle_count| are
-  // both zero, the device will transition to the 1st minicycle and then stay at
-  // |led_intensity|.
-  RequestSetHomeLight(0, 1, led_intensity, 0,
-                      {static_cast<uint8_t>(led_intensity << 4), 0x00});
 }
 
 void NintendoController::RequestSetImuSensitivity(
