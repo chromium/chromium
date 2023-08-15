@@ -46,8 +46,9 @@ class DesktopDriverFactory(DriverFactory):
     try:
       logging.info('Launching Chrome w/ caps: %s',
                    options.to_capabilities())
-      driver = webdriver.Chrome(service=Service(self.chromedriver_path),
-                                options=options)
+      service = Service(self.chromedriver_path,
+                        service_args=['--disable-build-check'])
+      driver = webdriver.Chrome(service=service, options=options)
       yield driver
     except WebDriverException as e:
       # Report this to be part of test result.

@@ -199,7 +199,8 @@ class CrOSDriverFactory(DriverFactory):
 
     with self.tunnel_context(debugging_port, self.server_port):
       driver = webdriver.Chrome(
-        service=service.Service(self.chromedriver_path),
+        service=service.Service(self.chromedriver_path,
+                                service_args=['--disable-build-check']),
         options=options)
       try:
         yield driver

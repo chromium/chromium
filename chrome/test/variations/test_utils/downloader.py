@@ -67,6 +67,44 @@ def _download_chrome(version: str, files: List[str]) -> str:
   return downloaded_dir
 
 
+def download_chromedriver(platform: str) -> str:
+  """Download the latest available chromedriver for the platform.
+
+  Returns the path to the chromedriver executable
+  """
+
+  # Linux doesn't have canary
+  if platform == 'linux':
+    channel = 'dev'
+    release_os = 'linux'
+    driver_pathname = 'linux64/chromedriver_linux64.zip'
+  elif platform == 'win':
+    channel = 'canary'
+    release_os = 'win64'
+    driver_pathname = 'win64-clang/chromedriver_win64.zip'
+  elif platform == 'mac':
+    channel = 'canary'
+    release_os = 'mac_arm64'
+    driver_pathname = 'mac-arm64/chromedriver_mac64.zip'
+  else:
+    assert False, f'Not supported platform {platform}'
+  driver_zip_path = os.path.basename(driver_pathname)[:-4]
+
+  ver = find_version(release_os, channel)
+  downloaded_dir = _download_chrome(str(ver), [driver_pathname])
+
+  hosted_platform = helper.get_hosted_platform()
+  if hosted_platform == 'win':
+    chromedriver_bin = 'chromedriver.exe'
+  else:
+    chromedriver_bin = 'chromedriver'
+  chromedriver_path = os.path.join(downloaded_dir, chromedriver_bin)
+  shutil.move(
+    os.path.join(downloaded_dir, driver_zip_path, chromedriver_bin),
+    chromedriver_path)
+  return chromedriver_path
+
+
 def download_chromedriver_linux_host(channel: str, version: str) -> str:
   """Download the chromedriver that works with the given channel/version."""
 
@@ -84,33 +122,19 @@ def download_chromedriver_linux_host(channel: str, version: str) -> str:
 
 
 def download_chrome_mac(version: str) -> str:
-  files = ["mac-universal/chrome-mac.zip", "mac-arm64/chromedriver_mac64.zip"]
+  files = ['mac-universal/chrome-mac.zip']
   downloaded_dir = _download_chrome(version, files)
-  shutil.move(
-    os.path.join(downloaded_dir, "chromedriver_mac64", "chromedriver"),
-    os.path.join(downloaded_dir, "chrome-mac", "chromedriver"))
-
   return os.path.join(downloaded_dir, "chrome-mac")
 
 def download_chrome_win(version: str) -> str:
-  files = ["win64-clang/chrome-win64-clang.zip",
-           "win64-clang/chromedriver_win64.zip"]
+  files = ['win64-clang/chrome-win64-clang.zip']
   downloaded_dir = _download_chrome(version, files)
-  shutil.move(
-    os.path.join(downloaded_dir, "chromedriver_win64", "chromedriver.exe"),
-    os.path.join(downloaded_dir, "chrome-win64-clang", "chromedriver.exe"))
-
   return os.path.join(downloaded_dir, "chrome-win64-clang")
 
 
 def download_chrome_linux(version: str) -> str:
-  files = ["linux64/chrome-linux64.zip", "linux64/chromedriver_linux64.zip"]
+  files = ["linux64/chrome-linux64.zip"]
   downloaded_dir = _download_chrome(version, files)
-
-  shutil.move(
-    os.path.join(downloaded_dir, "chromedriver_linux64", "chromedriver"),
-    os.path.join(downloaded_dir, "chrome-linux64", "chromedriver"))
-
   return os.path.join(downloaded_dir, "chrome-linux64")
 
 def find_version(release_os: str, channel: str) -> packaging.version.Version:
