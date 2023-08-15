@@ -33,6 +33,13 @@ enum IdentityType {
   kIdentityTypeProvisioned = 4,
 };
 
+// Private Credential encryption key descriptor, representing PrivateKey from
+// //third_party/nearby/src/internal/proto/local_credential.proto.
+struct PrivateKey {
+  string certificate_alias;
+  array<uint8> key;
+};
+
 // Presence filter used in the ScanRequest to specify the types of devices of
 // interest.
 struct PresenceScanFilter {
@@ -114,7 +121,7 @@ struct SharedCredential {
   // The randomly generated unique id of the public credential.
   array<uint8> secret_id;
   // 32 bytes of secure random bytes used to derive any symmetric keys needed.
-   array<uint8, 32> key_seed;
+  array<uint8, 32> key_seed;
   // The time in millis from epoch when this credential becomes effective.
   int64 start_time_millis;
   // The time in millis from epoch when this credential expires.
@@ -138,6 +145,32 @@ struct SharedCredential {
   // The version number of this SharedCredential, matches the corresponding
   // protocol version.
   array<uint8> version;
+};
+
+// Local Credentials are stored on device, and are used to encrypt and salt
+// Nearby Presence advertisements. This struct represents
+// //third_party/nearby/src/internal/proto/local_credential.proto.
+struct LocalCredential {
+  // The unique id of (and hashed based on) a pair of Secret Key and
+  // X509Certificate's public key.
+  array<uint8> secret_id;
+  // Bytes representation of an AES Key owned by local device, to encrypt
+  // local device metadata.
+  array<uint8> key_seed;
+    // The time in millis from epoch when this credential becomes effective.
+  int64 start_time_millis;
+  // The 14 bytes aes key to encrypt metadata in SharedCredential.
+  array<uint8> metadata_encryption_key_v0;
+  // Used for signing advertisement.
+  PrivateKey advertisement_signing_key;
+  // Used for connection authentication.
+  PrivateKey connection_signing_key;
+  // The trust type assigned to the credential.
+  IdentityType identity_type;
+  // The set of 2-byte salts already used to encrypt the metadata key.
+  map<uint32, bool> consumed_salts;
+  // The 16 bytes aes key to encrypt metadata in SharedCredential.
+  array<uint8> metadata_encryption_key_v1;
 };
 
 // Intentionally left empty. The ScanSession remote is used by the client

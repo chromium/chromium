@@ -48,6 +48,13 @@ mojom::PresenceDeviceType DeviceTypeToMojom(
   }
 }
 
+mojom::PrivateKeyPtr PrivateKeyToMojom(
+    ::nearby::internal::LocalCredential::PrivateKey private_key) {
+  return mojom::PrivateKey::New(
+      private_key.certificate_alias(),
+      std::vector<uint8_t>(private_key.key().begin(), private_key.key().end()));
+}
+
 ::nearby::internal::IdentityType IdentityTypeFromMojom(
     mojom::IdentityType identity_type) {
   switch (identity_type) {
@@ -73,6 +80,16 @@ mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata) {
       metadata.device_profile_url(),
       std::vector<uint8_t>(metadata.bluetooth_mac_address().begin(),
                            metadata.bluetooth_mac_address().end()));
+}
+
+::nearby::internal::LocalCredential::PrivateKey PrivateKeyFromMojom(
+    mojom::PrivateKey* private_key) {
+  ::nearby::internal::LocalCredential::PrivateKey proto;
+  proto.set_certificate_alias(
+      std::string(private_key->certificate_alias.begin(),
+                  private_key->certificate_alias.end()));
+  proto.set_key(std::string(private_key->key.begin(), private_key->key.end()));
+  return proto;
 }
 
 ::nearby::internal::SharedCredential SharedCredentialFromMojom(
@@ -103,6 +120,62 @@ mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata) {
   return proto;
 }
 
+::nearby::internal::LocalCredential LocalCredentialFromMojom(
+    mojom::LocalCredential* local_credential) {
+  ::nearby::internal::LocalCredential proto;
+  proto.set_secret_id(std::string(local_credential->secret_id.begin(),
+                                  local_credential->secret_id.end()));
+  proto.set_key_seed(std::string(local_credential->key_seed.begin(),
+                                 local_credential->key_seed.end()));
+  proto.set_start_time_millis(local_credential->start_time_millis);
+  proto.set_metadata_encryption_key_v0(
+      std::string(local_credential->metadata_encryption_key_v0.begin(),
+                  local_credential->metadata_encryption_key_v0.end()));
+
+  auto* advertisement_signing_key =
+      new ::nearby::internal::LocalCredential::PrivateKey(PrivateKeyFromMojom(
+          local_credential->advertisement_signing_key.get()));
+  proto.set_allocated_advertisement_signing_key(advertisement_signing_key);
+
+  auto* connection_signing_key =
+      new ::nearby::internal::LocalCredential::PrivateKey(
+          PrivateKeyFromMojom(local_credential->connection_signing_key.get()));
+  proto.set_allocated_connection_signing_key(connection_signing_key);
+
+  proto.set_identity_type(
+      IdentityTypeFromMojom(local_credential->identity_type));
+
+  for (const auto& pair : local_credential->consumed_salts) {
+    auto map_pair =
+        ::google::protobuf::MapPair<uint32_t, bool>(pair.first, pair.second);
+    proto.mutable_consumed_salts()->insert(map_pair);
+  }
+
+  proto.set_metadata_encryption_key_v1(
+      std::string(local_credential->metadata_encryption_key_v1.begin(),
+                  local_credential->metadata_encryption_key_v1.end()));
+
+  return proto;
+}
+
+mojom::IdentityType IdentityTypeToMojom(
+    ::nearby::internal::IdentityType identity_type) {
+  switch (identity_type) {
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED:
+      return mojom::IdentityType::kIdentityTypeUnspecified;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE:
+      return mojom::IdentityType::kIdentityTypePrivate;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED:
+      return mojom::IdentityType::kIdentityTypeTrusted;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC:
+      return mojom::IdentityType::kIdentityTypePublic;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PROVISIONED:
+      return mojom::IdentityType::kIdentityTypeProvisioned;
+    default:
+      return mojom::IdentityType::kIdentityTypeUnspecified;
+  }
+}
+
 mojom::SharedCredentialPtr SharedCredentialToMojom(
     ::nearby::internal::SharedCredential shared_credential) {
   return mojom::SharedCredential::New(
@@ -129,22 +202,27 @@ mojom::SharedCredentialPtr SharedCredentialToMojom(
                            shared_credential.version().end()));
 }
 
-mojom::IdentityType IdentityTypeToMojom(
-    ::nearby::internal::IdentityType identity_type) {
-  switch (identity_type) {
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED:
-      return mojom::IdentityType::kIdentityTypeUnspecified;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE:
-      return mojom::IdentityType::kIdentityTypePrivate;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED:
-      return mojom::IdentityType::kIdentityTypeTrusted;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC:
-      return mojom::IdentityType::kIdentityTypePublic;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PROVISIONED:
-      return mojom::IdentityType::kIdentityTypeProvisioned;
-    default:
-      return mojom::IdentityType::kIdentityTypeUnspecified;
-  }
+mojom::LocalCredentialPtr LocalCredentialToMojom(
+    ::nearby::internal::LocalCredential local_credential) {
+  base::flat_map<uint32_t, bool> salt_flat_map(
+      local_credential.consumed_salts().begin(),
+      local_credential.consumed_salts().end());
+
+  return mojom::LocalCredential::New(
+      std::vector<uint8_t>(local_credential.secret_id().begin(),
+                           local_credential.secret_id().end()),
+      std::vector<uint8_t>(local_credential.key_seed().begin(),
+                           local_credential.key_seed().end()),
+      local_credential.start_time_millis(),
+      std::vector<uint8_t>(
+          local_credential.metadata_encryption_key_v0().begin(),
+          local_credential.metadata_encryption_key_v0().end()),
+      PrivateKeyToMojom(local_credential.advertisement_signing_key()),
+      PrivateKeyToMojom(local_credential.connection_signing_key()),
+      IdentityTypeToMojom(local_credential.identity_type()), salt_flat_map,
+      std::vector<uint8_t>(
+          local_credential.metadata_encryption_key_v1().begin(),
+          local_credential.metadata_encryption_key_v1().end()));
 }
 
 ash::nearby::proto::PublicCertificate PublicCertificateFromSharedCredential(
