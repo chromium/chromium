@@ -261,7 +261,7 @@ public class AutocompleteEditTextTest {
                 (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE));
         manager.setEnabled(true);
         manager.setTouchExplorationEnabled(true);
-        AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+        AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
         AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
 
         mInOrder = inOrder(mVerifier);
