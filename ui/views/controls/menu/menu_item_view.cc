@@ -917,6 +917,9 @@ void MenuItemView::UpdateEmptyMenusAndMetrics() {
   for (View* child : children) {
     if (IsViewClass<EmptyMenuMenuItem>(child)) {
       submenu_->RemoveChildViewT(child);
+      submenu_
+          ->InvalidateLayout();  // Ideally the submenu would have a layout
+                                 // manager that would do this automatically.
     } else {
       has_visible_menu_items |=
           IsViewClass<MenuItemView>(child) && child->GetVisible();
@@ -926,6 +929,8 @@ void MenuItemView::UpdateEmptyMenusAndMetrics() {
   // Now add back an empty menu item if need be.
   if (!has_visible_menu_items) {
     submenu_->AddChildViewAt(std::make_unique<EmptyMenuMenuItem>(this), 0);
+    submenu_->InvalidateLayout();  // Ideally the submenu would have a layout
+                                   // manager that would do this automatically.
   }
 
   submenu_->UpdateMenuPartSizes();
@@ -990,8 +995,6 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
                                     colors.minor_fg_color, text_bounds, flags);
   }
 
-  PaintMinorIconAndText(canvas, colors.minor_fg_color);
-
   if (ShouldShowNewBadge()) {
     BadgePainter::PaintBadge(canvas, this,
                              label_start +
@@ -999,6 +1002,8 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
                                  BadgePainter::kBadgeHorizontalMargin,
                              top_margin, new_badge_text_, font_list);
   }
+
+  PaintMinorIconAndText(canvas, colors.minor_fg_color);
 }
 
 void MenuItemView::PaintBackground(gfx::Canvas* canvas,
@@ -1072,8 +1077,7 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
 
 void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
   const std::u16string minor_text = GetMinorText();
-  const ui::ImageModel minor_icon = GetMinorIcon();
-  if (minor_text.empty() && minor_icon.IsEmpty()) {
+  if (minor_text.empty() && minor_icon_.IsEmpty()) {
     return;
   }
 
@@ -1098,8 +1102,8 @@ void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
     render_text->Draw(canvas);
   }
 
-  if (!minor_icon.IsEmpty()) {
-    const gfx::ImageSkia image = minor_icon.Rasterize(GetColorProvider());
+  if (!minor_icon_.IsEmpty()) {
+    const gfx::ImageSkia image = minor_icon_.Rasterize(GetColorProvider());
 
     const int image_x =
         GetMirroredRect(minor_text_bounds).right() -
@@ -1237,49 +1241,15 @@ gfx::Size MenuItemView::GetChildPreferredSize() const {
 }
 
 MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
-  gfx::Size child_size = GetChildPreferredSize();
+  const gfx::Size child_size = GetChildPreferredSize();
+  const bool use_ash_system_ui_layout =
+      GetMenuController() && GetMenuController()->use_ash_system_ui_layout();
 
   MenuItemDimensions dimensions;
   dimensions.children_width = child_size.width();
-  const MenuConfig& menu_config = MenuConfig::instance();
-
-  const gfx::FontList& font_list = GetFontList();
-
-  const int standard_width =
-      GetLabelStartForThisItem() + gfx::GetStringWidth(title_, font_list) +
-      parent_menu_item_->GetSubmenu()->trailing_padding();
-  if (GetMenuController() && GetMenuController()->use_ash_system_ui_layout()) {
-    dimensions.height = menu_config.touchable_menu_height;
-
-    // For container MenuItemViews, the width components should only include the
-    // |children_width|. Setting a |standard_width| would result in additional
-    // width being added to the container because the total width used in layout
-    // is |children_width| + |standard_width|.
-    if (!IsContainer()) {
-      // Calculate total item width to make sure the current |title_|
-      // has enough room within the context menu.
-      dimensions.standard_width =
-          std::clamp(standard_width, menu_config.touchable_menu_min_width,
-                     menu_config.touchable_menu_max_width);
-
-      if (icon_view_) {
-        dimensions.height =
-            std::max(dimensions.height,
-                     icon_view_->GetPreferredSize().height() +
-                         2 * menu_config.vertical_touchable_menu_item_padding);
-      }
-    }
-    return dimensions;
-  }
-
-  std::u16string minor_text = GetMinorText();
-
-  dimensions.height = child_size.height();
-  // Adjust item content height if menu has both items with and without icons.
-  // This way all menu items will have the same height.
-  if (!icon_view_ && GetRootMenuItem()->has_icons_) {
-    dimensions.height = std::max(dimensions.height, menu_config.check_height);
-  }
+  const MenuConfig& config = MenuConfig::instance();
+  dimensions.height = use_ash_system_ui_layout ? config.touchable_menu_height
+                                               : child_size.height();
 
   // In the container case, only the child size plus margins need to be
   // considered.
@@ -1291,27 +1261,75 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
     return dimensions;
   }
 
+  const gfx::FontList& font_list = GetFontList();
+  const int title_width = gfx::GetStringWidth(title_, font_list);
+  dimensions.standard_width =
+      GetLabelStartForThisItem() + title_width +
+      parent_menu_item_->GetSubmenu()->trailing_padding();
+  // Add additional padding to ensure that titles have enough space between
+  // themselves and child views.
+  if (title_width && dimensions.children_width) {
+    dimensions.standard_width += LayoutProvider::Get()->GetDistanceMetric(
+        views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  }
+  if (ShouldShowNewBadge()) {
+    dimensions.standard_width +=
+        BadgePainter::kBadgeHorizontalMargin +
+        views::BadgePainter::GetBadgeSize(new_badge_text_, font_list).width();
+  }
+
+  if (use_ash_system_ui_layout) {
+    // Calculate total item width to make sure the current |title_|
+    // has enough room within the context menu.
+    dimensions.standard_width =
+        std::clamp(dimensions.standard_width, config.touchable_menu_min_width,
+                   config.touchable_menu_max_width);
+
+    if (icon_view_) {
+      dimensions.height =
+          std::max(dimensions.height,
+                   icon_view_->GetPreferredSize().height() +
+                       2 * config.vertical_touchable_menu_item_padding);
+    }
+    return dimensions;
+  }
+
+  // Adjust item content height if menu has both items with and without icons.
+  // This way all menu items will have the same height.
+  if (!icon_view_ && GetRootMenuItem()->has_icons_) {
+    dimensions.height = std::max(dimensions.height, config.check_height);
+  }
+
   dimensions.height += GetBottomMargin() + GetTopMargin();
 
-  dimensions.standard_width = standard_width;
-
   // Determine the length of the right-side text.
+  std::u16string minor_text = GetMinorText();
   dimensions.minor_text_width =
       (minor_text.empty() ? 0 : gfx::GetStringWidth(minor_text, font_list));
-
-  if (ShouldShowNewBadge())
+  if (int minor_icon_width = minor_icon_.Size().width()) {
+    if (dimensions.minor_text_width) {
+      dimensions.minor_text_width += config.item_horizontal_padding;
+    }
+    dimensions.minor_text_width += minor_icon_width;
+  }
+  if (!config.reserve_dedicated_arrow_column && HasSubmenu()) {
+    if (dimensions.minor_text_width) {
+      dimensions.minor_text_width += config.item_horizontal_padding;
+    }
     dimensions.minor_text_width +=
-        views::BadgePainter::GetBadgeSize(new_badge_text_, font_list).width() +
-        2 * BadgePainter::kBadgeHorizontalMargin;
+        kSubmenuArrowSize +
+        ((type_ == Type::kActionableSubMenu)
+             ? config.actionable_submenu_arrow_to_edge_padding
+             : config.arrow_to_edge_padding);
+  }
 
   // Determine the height to use.
   int label_text_height = secondary_title().empty() ? font_list.GetHeight()
                                                     : font_list.GetHeight() * 2;
   dimensions.height =
-      std::max(dimensions.height,
-               label_text_height + GetBottomMargin() + GetTopMargin());
-  dimensions.height =
-      std::max(dimensions.height, MenuConfig::instance().item_min_height);
+      std::max({dimensions.height,
+                label_text_height + GetBottomMargin() + GetTopMargin(),
+                config.item_min_height});
 
   ApplyMinimumDimensions(&dimensions);
   return dimensions;

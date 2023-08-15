@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <numeric>
 #include <set>
+#include <tuple>
 
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
@@ -96,6 +97,11 @@ PrefixSelector* SubmenuView::GetPrefixSelector() {
 void SubmenuView::UpdateMenuPartSizes() {
   const MenuConfig& config = MenuConfig::instance();
 
+  const auto get_metrics = [&] {
+    return std::tie(icon_area_width_, label_start_, trailing_padding_);
+  };
+  const auto old_metrics = get_metrics();
+
   trailing_padding_ =
       config.item_horizontal_padding + config.item_horizontal_border_padding;
   const auto& menu_items = GetMenuItems();
@@ -152,6 +158,10 @@ void SubmenuView::UpdateMenuPartSizes() {
 
   if (config.icons_in_label) {
     icon_area_width_ = max_icon_width;
+  }
+
+  if (get_metrics() != old_metrics) {
+    InvalidateLayout();
   }
 }
 
