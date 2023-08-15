@@ -29790,6 +29790,49 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.AddressBar.Back">
+  <owner>christianxu@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    Reported when user clicks the back button on the Address Bar Settings. iOS
+    only.
+  </description>
+</action>
+
+<action name="Settings.AddressBar.BottomAddressBar">
+  <owner>christianxu@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    Reported when user selects bottom address bar in Address Bar Settings. iOS
+    only.
+  </description>
+</action>
+
+<action name="Settings.AddressBar.Dismissed">
+  <owner>christianxu@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    Reported when user dismisses the Address Bar Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.AddressBar.Opened">
+  <owner>christianxu@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    Reported when user navigates to Address Bar Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.AddressBar.TopAddressBar">
+  <owner>christianxu@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    Reported when user selects top address bar in Address Bar Settings. iOS
+    only.
+  </description>
+</action>
+
 <action name="Settings.Bandwidth">
   <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>

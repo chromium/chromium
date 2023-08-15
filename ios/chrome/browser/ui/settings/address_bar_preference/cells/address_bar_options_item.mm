@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_options_item.h"
 
+#import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_option_item_view.h"
 #import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_preference_service_delegate.h"
@@ -121,12 +122,22 @@ const CGFloat kCellTrailingPadding = 31;
 // Notifies the address bar preference service to update the state to top
 // address bar.
 - (void)onSelectTopAddressBar {
+  if (_topAddressBar.selected) {
+    return;
+  }
+  base::RecordAction(
+      base::UserMetricsAction("Settings.AddressBar.TopAddressBar"));
   [_addressBarpreferenceServiceDelegate didSelectTopAddressBarPreference];
 }
 
 // Notifies the address bar preference service to update the state to bottom
 // address bar.
 - (void)onSelectBottomAddressBar {
+  if (_bottomAddressBar.selected) {
+    return;
+  }
+  base::RecordAction(
+      base::UserMetricsAction("Settings.AddressBar.BottomAddressBar"));
   [_addressBarpreferenceServiceDelegate didSelectBottomAddressBarPreference];
 }
 
