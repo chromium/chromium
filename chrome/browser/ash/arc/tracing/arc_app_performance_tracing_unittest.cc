@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/test/arc_task_window_builder.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/metrics/histogram_samples.h"
@@ -16,8 +15,8 @@
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
-#include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"
 #include "chrome/browser/ash/arc/tracing/test/arc_app_performance_tracing_test_helper.h"
+#include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -105,13 +104,10 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
   // Ensures that tracing is active.
   views::Widget* StartArcFocusAppTracing() {
     shell_root_surface_ = std::make_unique<exo::Surface>();
-    views::Widget* arc_widget =
-        ArcTaskWindowBuilder()
-            .SetShellRootSurface(shell_root_surface_.get())
-            .BuildOwnedByNativeWidget();
-    arc_widget->Show();
-    DCHECK(arc_widget->GetNativeWindow());
-
+    views::Widget* const arc_widget =
+        ArcAppPerformanceTracingTestHelper::CreateArcWindow(
+            "org.chromium.arc.1", shell_root_surface_.get());
+    DCHECK(arc_widget && arc_widget->GetNativeWindow());
     tracing_helper().GetTracing()->OnWindowActivated(
         wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
         arc_widget->GetNativeWindow(), arc_widget->GetNativeWindow());
@@ -146,28 +142,20 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {
-  constexpr int kTaskId1 = 999;
-  constexpr int kTaskId2 = 87111;
-
   // By default it is inactive.
   EXPECT_FALSE(tracing_helper().GetTracingSession());
 
   // Report task first.
   tracing_helper().GetTracing()->OnTaskCreated(
-      kTaskId1, kFocusAppPackage, kFocusAppActivity, std::string() /* intent */,
-      0 /* session_id */);
+      1 /* task_Id */, kFocusAppPackage, kFocusAppActivity,
+      std::string() /* intent */, 0 /* session_id */);
   EXPECT_FALSE(tracing_helper().GetTracingSession());
 
   // Create window second.
   exo::Surface shell_root_surface1;
-
   views::Widget* const arc_widget1 =
-      ArcTaskWindowBuilder()
-          .SetTaskId(kTaskId1)
-          .SetShellRootSurface(&shell_root_surface1)
-          .BuildOwnedByNativeWidget();
-  arc_widget1->Show();
-
+      ArcAppPerformanceTracingTestHelper::CreateArcWindow("org.chromium.arc.1",
+                                                          &shell_root_surface1);
   ASSERT_TRUE(arc_widget1);
   ASSERT_TRUE(arc_widget1->GetNativeWindow());
   tracing_helper().GetTracing()->OnWindowActivated(
@@ -180,12 +168,9 @@ TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {
   // Test reverse order, create window first.
   exo::Surface shell_root_surface2;
   views::Widget* const arc_widget2 =
-      ArcTaskWindowBuilder()
-          .SetTaskId(kTaskId2)
-          .SetShellRootSurface(&shell_root_surface2)
-          .BuildOwnedByNativeWidget();
-  arc_widget2->Show();
-
+      ArcAppPerformanceTracingTestHelper::CreateArcWindow("org.chromium.arc.2",
+                                                          &shell_root_surface2);
+  ASSERT_TRUE(arc_widget2);
   ASSERT_TRUE(arc_widget2->GetNativeWindow());
   tracing_helper().GetTracing()->OnWindowActivated(
       wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
@@ -194,8 +179,8 @@ TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {
   EXPECT_FALSE(tracing_helper().GetTracingSession());
   // Report task second.
   tracing_helper().GetTracing()->OnTaskCreated(
-      kTaskId2, kFocusAppPackage, kFocusAppActivity, std::string() /* intent */,
-      0 /* session_id */);
+      2 /* task_Id */, kFocusAppPackage, kFocusAppActivity,
+      std::string() /* intent */, 0 /* session_id */);
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   // Scheduled but not started.
   EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
@@ -206,11 +191,9 @@ TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {
 TEST_F(ArcAppPerformanceTracingTest, TracingNotScheduledForNonFocusApp) {
   exo::Surface shell_root_surface;
   views::Widget* const arc_widget =
-      ArcTaskWindowBuilder()
-          .SetShellRootSurface(&shell_root_surface)
-          .BuildOwnedByNativeWidget();
-  arc_widget->Show();
-
+      ArcAppPerformanceTracingTestHelper::CreateArcWindow("org.chromium.arc.1",
+                                                          &shell_root_surface);
+  ASSERT_TRUE(arc_widget);
   ASSERT_TRUE(arc_widget->GetNativeWindow());
   tracing_helper().GetTracing()->OnWindowActivated(
       wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
@@ -264,10 +247,9 @@ TEST_F(ArcAppPerformanceTracingTest, TracingNotScheduledWhenAppSyncDisabled) {
   tracing_helper().DisableAppSync();
   exo::Surface shell_root_surface;
   views::Widget* const arc_widget =
-      ArcTaskWindowBuilder()
-          .SetShellRootSurface(&shell_root_surface)
-          .BuildOwnedByNativeWidget();
-  arc_widget->Show();
+      ArcAppPerformanceTracingTestHelper::CreateArcWindow("org.chromium.arc.1",
+                                                          &shell_root_surface);
+  ASSERT_TRUE(arc_widget);
   ASSERT_TRUE(arc_widget->GetNativeWindow());
   tracing_helper().GetTracing()->OnWindowActivated(
       wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
@@ -285,11 +267,9 @@ TEST_F(ArcAppPerformanceTracingTest, TimeToFirstFrameRendered) {
       ArcAppListPrefs::GetAppId(kFocusAppPackage, kFocusAppActivity);
   exo::Surface shell_root_surface;
   views::Widget* const arc_widget =
-      ArcTaskWindowBuilder()
-          .SetShellRootSurface(&shell_root_surface)
-          .BuildOwnedByNativeWidget();
-  arc_widget->Show();
-  DCHECK(arc_widget->GetNativeWindow());
+      ArcAppPerformanceTracingTestHelper::CreateArcWindow("org.chromium.arc.1",
+                                                          &shell_root_surface);
+  DCHECK(arc_widget && arc_widget->GetNativeWindow());
 
   tracing_helper().GetTracing()->OnWindowActivated(
       wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,

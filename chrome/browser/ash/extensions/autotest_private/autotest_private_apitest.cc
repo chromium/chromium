@@ -12,7 +12,6 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/connection_holder.h"
-#include "ash/components/arc/test/arc_task_window_builder.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
@@ -474,21 +473,15 @@ class AutotestPrivateArcPerformanceTracing : public AutotestPrivateApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateArcPerformanceTracing, Basic) {
-  exo::Surface root_surface;
-  const auto arc_widget = arc::ArcTaskWindowBuilder()
-                              .SetShellRootSurface(&root_surface)
-                              .BuildOwnsNativeWidget();
-
+  views::Widget* const arc_widget =
+      arc::ArcAppPerformanceTracingTestHelper::CreateArcWindow(
+          "org.chromium.arc.1");
   performance_tracing()->OnWindowActivated(
       wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
-      arc_widget->GetNativeWindow(), nullptr);
+      arc_widget->GetNativeWindow(), arc_widget->GetNativeWindow());
 
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("arcPerformanceTracing"))
       << message_;
-
-  performance_tracing()->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
-      nullptr, arc_widget->GetNativeWindow());
 }
 
 class AutotestPrivateSystemWebAppsTest : public AutotestPrivateApiTest {
