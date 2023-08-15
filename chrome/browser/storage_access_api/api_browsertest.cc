@@ -1056,6 +1056,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
       permissions::PermissionRequestManager::ACCEPT_ALL);
   EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
 }
 
 // Validate that if the iframe is sandboxed and has the Storage Access sandbox
@@ -1074,6 +1075,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest, SandboxTokenResolves) {
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
 }
 
 // Validates that expired grants don't get reused.
