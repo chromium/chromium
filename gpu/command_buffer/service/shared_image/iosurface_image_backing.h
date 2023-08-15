@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_IOSURFACE_IMAGE_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_IOSURFACE_IMAGE_BACKING_H_
 
-#include "base/mac/scoped_nsobject.h"
+#include "base/apple/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"

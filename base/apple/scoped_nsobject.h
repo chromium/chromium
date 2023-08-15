@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_MAC_SCOPED_NSOBJECT_H_
-#define BASE_MAC_SCOPED_NSOBJECT_H_
+#ifndef BASE_APPLE_SCOPED_NSOBJECT_H_
+#define BASE_APPLE_SCOPED_NSOBJECT_H_
 
 // Include NSObject.h directly because Foundation.h pulls in many dependencies.
 // (Approx 100k lines of code versus 1.5k for NSObject.h). scoped_nsobject gets
@@ -91,7 +91,7 @@ class scoped_nsobject : public scoped_nsprotocol<NST*> {
 };
 
 // Specialization to make scoped_nsobject<id> work.
-template<>
+template <>
 class scoped_nsobject<id> : public scoped_nsprotocol<id> {
  public:
   using scoped_nsprotocol<id>::scoped_nsprotocol;
@@ -99,4 +99,4 @@ class scoped_nsobject<id> : public scoped_nsprotocol<id> {
 
 }  // namespace base
 
-#endif  // BASE_MAC_SCOPED_NSOBJECT_H_
+#endif  // BASE_APPLE_SCOPED_NSOBJECT_H_

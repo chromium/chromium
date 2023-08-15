@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
+#include "base/apple/scoped_nsobject.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(__has_feature) && __has_feature(objc_arc)

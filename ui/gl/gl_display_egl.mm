@@ -6,7 +6,7 @@
 
 #import <Metal/Metal.h>
 
-#include "base/mac/scoped_nsobject.h"
+#include "base/apple/scoped_nsobject.h"
 #include "ui/gl/gl_bindings.h"
 
 // From ANGLE's egl/eglext_angle.h.

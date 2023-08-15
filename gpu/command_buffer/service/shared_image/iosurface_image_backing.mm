@@ -7,8 +7,8 @@
 #include <EGL/egl.h>
 #import <Metal/Metal.h>
 
+#include "base/apple/scoped_nsobject.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_policy.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/gpu/metal_context_provider.h"
