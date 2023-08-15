@@ -199,14 +199,23 @@ base::Value::List DisableReasonsToList(int disable_reasons) {
 // The JSON we generate looks like this:
 // Note:
 // - tab_specific permissions can have 0 or more DICT entries with each tab id
-// pointing to the api, explicit_host, manifest and scriptable_host permission
-// lists.
+//   pointing to the api, explicit_host, manifest and scriptable_host permission
+//   lists.
 // - In some cases manifest or api permissions rather than just being a STRING
-// can be a DICT with the name keying a more complex object with detailed
-// information. This is the case for subclasses of ManifestPermission and
-// APIPermission which override the ToValue function.
+//   can be a DICT with the name keying a more complex object with detailed
+//   information. This is the case for subclasses of ManifestPermission and
+//   APIPermission which override the ToValue function.
+// - "background_page_keepalives" and "service_worker_keepalives" are mutually
+//    exclusive.
 //
 // [ {
+//    "background_page_keepalives": {
+//       "activities": [ {
+//          "extra_data": "render-frame",
+//          "type": "PROCESS_MANAGER"
+//       } ],
+//       "count": 1
+//    },
 //    "creation_flags": [ "ALLOW_FILE_ACCESS", "FROM_WEBSTORE" ],
 //    "disable_reasons": ["DISABLE_USER_ACTION"],
 //    "event_listeners": {
@@ -218,13 +227,6 @@ base::Value::List DisableReasonsToList(int disable_reasons) {
 //       } ]
 //    },
 //    "id": "bhloflhklmhfpedakmangadcdofhnnoh",
-//    "keepalive": {
-//       "activities": [ {
-//          "extra_data": "render-frame",
-//          "type": "PROCESS_MANAGER"
-//       } ],
-//       "count": 1
-//    },
 //    "location": "INTERNAL",
 //    "manifest_version": 2,
 //    "name": "Earth View from Google Earth",
@@ -256,6 +258,13 @@ base::Value::List DisableReasonsToList(int disable_reasons) {
 //          "manifest": [ ],
 //          "scriptable_hosts": [ ]
 //       },
+//    "service_worker_keepalives": {
+//      "activities": [ {
+//        "extra_data": "tabs.create",
+//        "type": "API_FUNCTION
+//      } ]
+//      "count": 1
+//    }
 //    "type": "TYPE_EXTENSION",
 //    "version": "2.18.5"
 // } ]
@@ -264,6 +273,12 @@ base::Value::List DisableReasonsToList(int disable_reasons) {
 //
 // LIST
 //  DICT
+//    "background_page_keepalives": DICT
+//      "activities": LIST
+//        DICT
+//          "extra_data": STRING
+//          "type": STRING
+//      "count": INT
 //    "creation_flags": LIST
 //      STRING
 //    "disable_reasons": LIST
@@ -278,12 +293,6 @@ base::Value::List DisableReasonsToList(int disable_reasons) {
 //          "is_lazy": STRING
 //          "url": STRING
 //    "id": STRING
-//    "keepalive": DICT
-//      "activities": LIST
-//        DICT
-//          "extra_data": STRING
-//          "type": STRING
-//      "count": INT
 //    "location": STRING
 //    "manifest_version": INT
 //    "name": STRING
@@ -319,10 +328,18 @@ base::Value::List DisableReasonsToList(int disable_reasons) {
 //          STRING
 //        "scriptable_hosts": LIST
 //          STRING
+//    "service_worker_keepalies": DICT
+//      "activities": LIST
+//        DICT
+//          "extra_data": STRING
+//          "type": STRING
+//      "count": INT
 //    "type": STRING
 //    "version": STRING
 
 constexpr base::StringPiece kActivitesKey = "activites";
+constexpr base::StringPiece kBackgroundPageKeepalivesKey =
+    "background_page_keepalives";
 constexpr base::StringPiece kCountKey = "count";
 constexpr base::StringPiece kEventNameKey = "event_name";
 constexpr base::StringPiece kEventsListenersKey = "event_listeners";
@@ -336,7 +353,6 @@ constexpr base::StringPiece kInternalsVersionKey = "version";
 constexpr base::StringPiece kIsForServiceWorkerKey = "is_for_service_worker";
 constexpr base::StringPiece kIsLazyKey = "is_lazy";
 constexpr base::StringPiece kListenersKey = "listeners";
-constexpr base::StringPiece kKeepaliveKey = "keepalive";
 constexpr base::StringPiece kListenerUrlKey = "url";
 constexpr base::StringPiece kLocationKey = "location";
 constexpr base::StringPiece kManifestVersionKey = "manifest_version";
@@ -350,9 +366,11 @@ constexpr base::StringPiece kPermissionsApiKey = "api";
 constexpr base::StringPiece kPermissionsManifestKey = "manifest";
 constexpr base::StringPiece kPermissionsExplicitHostsKey = "explicit_hosts";
 constexpr base::StringPiece kPermissionsScriptableHostsKey = "scriptable_hosts";
+constexpr base::StringPiece kServiceWorkerKeepalivesKey =
+    "service_worker_keepalives";
 constexpr base::StringPiece kTypeKey = "type";
 
-base::Value::Dict FormatKeepaliveData(
+base::Value::Dict FormatBackgroundPageKeepaliveData(
     extensions::ProcessManager* process_manager,
     const extensions::Extension* extension) {
   base::Value::Dict keepalive_data;
@@ -366,6 +384,25 @@ base::Value::Dict FormatKeepaliveData(
     activities_entry.Set(kTypeKey,
                          extensions::Activity::ToString(activity.first));
     activities_entry.Set(kExtraDataKey, activity.second);
+    activities_data.Append(std::move(activities_entry));
+  }
+  keepalive_data.Set(kActivitesKey, std::move(activities_data));
+  return keepalive_data;
+}
+
+base::Value::Dict FormatServiceWorkerKeepaliveData(
+    extensions::ProcessManager& process_manager,
+    const extensions::ExtensionId& extension_id) {
+  base::Value::Dict keepalive_data;
+  auto keepalives =
+      process_manager.GetServiceWorkerKeepaliveDataForRecords(extension_id);
+  keepalive_data.Set(kCountKey, base::checked_cast<int>(keepalives.size()));
+  base::Value::List activities_data;
+  for (const auto& keepalive : keepalives) {
+    base::Value::Dict activities_entry;
+    activities_entry.Set(
+        kTypeKey, extensions::Activity::ToString(keepalive.activity_type));
+    activities_entry.Set(kExtraDataKey, keepalive.extra_data);
     activities_data.Append(std::move(activities_entry));
   }
   keepalive_data.Set(kActivitesKey, std::move(activities_data));
@@ -526,8 +563,12 @@ std::string ExtensionsInternalsSource::WriteToString() const {
     extension_data.Set(
         kInternalsDisableReasonsKey,
         DisableReasonsToList(prefs->GetDisableReasons(extension->id())));
-    extension_data.Set(kKeepaliveKey,
-                       FormatKeepaliveData(process_manager, extension.get()));
+    extension_data.Set(
+        kBackgroundPageKeepalivesKey,
+        FormatBackgroundPageKeepaliveData(process_manager, extension.get()));
+    extension_data.Set(
+        kServiceWorkerKeepalivesKey,
+        FormatServiceWorkerKeepaliveData(*process_manager, extension->id()));
     extension_data.Set(kLocationKey, LocationToString(extension->location()));
     extension_data.Set(kManifestVersionKey, extension->manifest_version());
     extension_data.Set(kInternalsNameKey, extension->name());
