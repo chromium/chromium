@@ -967,6 +967,8 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
     frame_sink_manager_->DidBeginFrame(frame_sink_id_, adjusted_args);
     frame_timing_details_.clear();
     UpdateNeedsBeginFramesInternal();
+  } else if (begin_frame_source_) {
+    begin_frame_source_->DidFinishFrame(this);
   }
 }
 

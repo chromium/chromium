@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/cancelable_callback.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -58,6 +59,8 @@ class FakeExternalBeginFrameSource : public BeginFrameSource {
 
   size_t num_observers() const { return observers_.size(); }
 
+  bool AllFramesDidFinish();
+
   using BeginFrameSource::RequestCallbackOnGpuAvailable;
 
  private:
@@ -70,6 +73,7 @@ class FakeExternalBeginFrameSource : public BeginFrameSource {
   BeginFrameArgs current_args_;
   uint64_t next_begin_frame_number_ = BeginFrameArgs::kStartingFrameNumber;
   std::set<BeginFrameObserver*> observers_;
+  base::flat_map<BeginFrameObserver*, int64_t> pending_frames_;
   base::CancelableOnceClosure begin_frame_task_;
   BeginFrameSource::BeginFrameArgsGenerator begin_frame_args_generator_;
 

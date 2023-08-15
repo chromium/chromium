@@ -1835,6 +1835,7 @@ TEST_P(ThrottledBeginFrameCompositorFrameSinkSupportTest, BeginFrameInterval) {
   }
   // In total fps x 2 seconds + 1 frame at time 0.
   EXPECT_EQ(sent_frames, 2 * fps + 1);
+  EXPECT_TRUE(begin_frame_source.AllFramesDidFinish());
   support->SetNeedsBeginFrame(false);
 }
 
@@ -1901,6 +1902,7 @@ TEST_P(ThrottledBeginFrameCompositorFrameSinkSupportTest,
       BEGINFRAME_FROM_HERE, 0, sequence_number++, frame_time));
   testing::Mock::VerifyAndClearExpectations(&mock_client);
 
+  EXPECT_TRUE(begin_frame_source.AllFramesDidFinish());
   support->SetNeedsBeginFrame(false);
 }
 
