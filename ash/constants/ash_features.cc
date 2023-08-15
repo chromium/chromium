@@ -2674,6 +2674,12 @@ BASE_FEATURE(kWifiSyncApplyDeletes,
              "WifiSyncApplyDeletes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables an experimental feature that splits windows by dragging one window
+// over another window.
+BASE_FEATURE(kWindowSplitting,
+             "WindowSplitting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables an experimental feature that lets users easily layout, resize and
 // position their windows using only mouse and touch gestures.
 BASE_FEATURE(kWmMode, "WmMode", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -4015,6 +4021,10 @@ bool IsWelcomeTourForceUserEligibilityEnabled() {
 
 bool IsWifiSyncAndroidEnabled() {
   return base::FeatureList::IsEnabled(kWifiSyncAndroid);
+}
+
+bool IsWindowSplittingEnabled() {
+  return base::FeatureList::IsEnabled(kWindowSplitting);
 }
 
 bool IsWmModeEnabled() {
