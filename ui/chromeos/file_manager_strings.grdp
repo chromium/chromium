@@ -700,6 +700,9 @@
   <message name="IDS_FILE_BROWSER_MOVE_FILESYSTEM_ERROR" desc="File Manager error message.">
     Can't move file. <ph name="ERROR_MESSAGE">$1<ex>An error occurred (code: ABORT)</ex></ph>
   </message>
+  <message name="IDS_FILE_BROWSER_MOVE_IN_USE_ERROR" desc="File Manager error message shown when a move operation of a file failed because the file is in use.">
+    Can't move file. File is in use.
+  </message>
   <message name="IDS_FILE_BROWSER_ZIP_FILE_NAME" desc="File Manager status message.">
     Zipping <ph name="FILE_NAME">$1<ex>movie.avi</ex></ph>...
   </message>
@@ -747,6 +750,9 @@
   </message>
   <message name="IDS_FILE_BROWSER_DELETE_ERROR" desc="Message informing about error while deleting an item or items.">
     An error occurred. Some items may not have been deleted.
+  </message>
+  <message name="IDS_FILE_BROWSER_DELETE_IN_USE_ERROR" desc="File Manager error message shown when a delete operation of an item failed because the item is in use.">
+    Can't delete. Item is in use.
   </message>
   <message name="IDS_FILE_BROWSER_RESTORING_FROM_TRASH_FILE_NAME" desc="File Manager status message shown when restoring items from trash / recycle bin.">
     Restoring "<ph name="FILENAME">$1<ex>photo.jpg</ex></ph>"

@@ -273,9 +273,22 @@ function getTypeFromIOTaskType_(type) {
  * @private
  */
 function getMessageFromProgressEvent_(event) {
-  // All the non-error states text is managed directly in the
+  // The non-error states text is managed directly in the
   // ProgressCenterPanel.
-  if (event.state === chrome.fileManagerPrivate.IOTaskState.ERROR) {
+  if (event.state !== chrome.fileManagerPrivate.IOTaskState.ERROR) {
+    return '';
+  }
+  // TODO(b/295438773): Remove this special case for the "in use" error once
+  // the files app error strings are made consistent and an "in use" string is
+  // properly added.
+  if (event.errorName == 'InUseError' && event.itemCount == 1) {
+    switch (event.type) {
+      case chrome.fileManagerPrivate.IOTaskType.MOVE:
+        return str('MOVE_IN_USE_ERROR');
+      case chrome.fileManagerPrivate.IOTaskType.DELETE:
+        return str('DELETE_IN_USE_ERROR');
+    }
+  }
     const detail = util.getFileErrorString(event.errorName);
     switch (event.type) {
       case chrome.fileManagerPrivate.IOTaskType.COPY:
@@ -299,9 +312,6 @@ function getMessageFromProgressEvent_(event) {
         console.warn(`Unexpected operation type: ${event.type}`);
         return strf('FILE_ERROR_GENERIC');
     }
-  }
-
-  return '';
 }
 
 /**

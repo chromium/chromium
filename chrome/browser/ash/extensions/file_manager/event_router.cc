@@ -257,6 +257,8 @@ std::string FileErrorToErrorName(base::File::Error error_code) {
       return "QuotaExceededError";
     case base::File::FILE_ERROR_INVALID_URL:
       return "EncodingError";
+    case base::File::FILE_ERROR_IN_USE:
+      return "InUseError";
     default:
       return "InvalidModificationError";
   }
