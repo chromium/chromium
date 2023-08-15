@@ -341,9 +341,10 @@ MinPurgeableSlotSize() {
 }
 }  // namespace
 
-static size_t PartitionPurgeSlotSpan(internal::SlotSpanMetadata* slot_span,
-                                     bool discard) {
-  auto* root = PartitionRoot::FromSlotSpan(slot_span);
+static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
+                                     internal::SlotSpanMetadata* slot_span,
+                                     bool discard)
+    PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(root)) {
   const internal::PartitionBucket* bucket = slot_span->bucket;
   size_t slot_size = bucket->slot_size;
 
@@ -493,9 +494,22 @@ static size_t PartitionPurgeSlotSpan(internal::SlotSpanMetadata* slot_span,
                           slot_size);
 #endif
 
-      // Discard the memory.
-      ScopedSyscallTimer timer{root};
-      DiscardSystemPages(begin_addr, unprovisioned_bytes);
+      if (!kUseLazyCommit) {
+        // Discard the memory.
+        ScopedSyscallTimer timer{root};
+        DiscardSystemPages(begin_addr, unprovisioned_bytes);
+      } else {
+        // See crbug.com/1431606 to understand the detail. LazyCommit depends
+        // on the design: both used slots and unused slots (=in the freelist)
+        // are committed. However this removes the unused slots from the
+        // freelist. So if using DiscardSystemPages() here, PartitionAlloc may
+        // commit the system pages which has been already committed again.
+        // This will make commited_size and max_committed_size metrics wrong.
+        // PA should use DecommitSystemPagesForData() instead.
+        root->DecommitSystemPagesForData(
+            begin_addr, unprovisioned_bytes,
+            PageAccessibilityDisposition::kAllowKeepForPerf);
+      }
     }
   }
 
@@ -563,20 +577,24 @@ static size_t PartitionPurgeSlotSpan(internal::SlotSpanMetadata* slot_span,
   return discardable_bytes;
 }
 
-static void PartitionPurgeBucket(internal::PartitionBucket* bucket) {
+static void PartitionPurgeBucket(PartitionRoot* root,
+                                 internal::PartitionBucket* bucket)
+    PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(root)) {
   if (bucket->active_slot_spans_head !=
       internal::SlotSpanMetadata::get_sentinel_slot_span()) {
     for (internal::SlotSpanMetadata* slot_span = bucket->active_slot_spans_head;
          slot_span; slot_span = slot_span->next_slot_span) {
       PA_DCHECK(slot_span !=
                 internal::SlotSpanMetadata::get_sentinel_slot_span());
-      PartitionPurgeSlotSpan(slot_span, true);
+      PartitionPurgeSlotSpan(root, slot_span, true);
     }
   }
 }
 
 static void PartitionDumpSlotSpanStats(PartitionBucketMemoryStats* stats_out,
-                                       internal::SlotSpanMetadata* slot_span) {
+                                       PartitionRoot* root,
+                                       internal::SlotSpanMetadata* slot_span)
+    PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(root)) {
   uint16_t bucket_num_slots = slot_span->bucket->get_slots_per_span();
 
   if (slot_span->is_decommitted()) {
@@ -584,7 +602,8 @@ static void PartitionDumpSlotSpanStats(PartitionBucketMemoryStats* stats_out,
     return;
   }
 
-  stats_out->discardable_bytes += PartitionPurgeSlotSpan(slot_span, false);
+  stats_out->discardable_bytes +=
+      PartitionPurgeSlotSpan(root, slot_span, false);
 
   if (slot_span->CanStoreRawSize()) {
     stats_out->active_bytes += static_cast<uint32_t>(slot_span->GetRawSize());
@@ -610,7 +629,9 @@ static void PartitionDumpSlotSpanStats(PartitionBucketMemoryStats* stats_out,
 }
 
 static void PartitionDumpBucketStats(PartitionBucketMemoryStats* stats_out,
-                                     const internal::PartitionBucket* bucket) {
+                                     PartitionRoot* root,
+                                     const internal::PartitionBucket* bucket)
+    PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(root)) {
   PA_DCHECK(!bucket->is_direct_mapped());
   stats_out->is_valid = false;
   // If the active slot span list is empty (==
@@ -641,13 +662,13 @@ static void PartitionDumpBucketStats(PartitionBucketMemoryStats* stats_out,
   for (internal::SlotSpanMetadata* slot_span = bucket->empty_slot_spans_head;
        slot_span; slot_span = slot_span->next_slot_span) {
     PA_DCHECK(slot_span->is_empty() || slot_span->is_decommitted());
-    PartitionDumpSlotSpanStats(stats_out, slot_span);
+    PartitionDumpSlotSpanStats(stats_out, root, slot_span);
   }
   for (internal::SlotSpanMetadata* slot_span =
            bucket->decommitted_slot_spans_head;
        slot_span; slot_span = slot_span->next_slot_span) {
     PA_DCHECK(slot_span->is_decommitted());
-    PartitionDumpSlotSpanStats(stats_out, slot_span);
+    PartitionDumpSlotSpanStats(stats_out, root, slot_span);
   }
 
   if (bucket->active_slot_spans_head !=
@@ -656,7 +677,7 @@ static void PartitionDumpBucketStats(PartitionBucketMemoryStats* stats_out,
          slot_span; slot_span = slot_span->next_slot_span) {
       PA_DCHECK(slot_span !=
                 internal::SlotSpanMetadata::get_sentinel_slot_span());
-      PartitionDumpSlotSpanStats(stats_out, slot_span);
+      PartitionDumpSlotSpanStats(stats_out, root, slot_span);
     }
   }
 }
@@ -1373,7 +1394,7 @@ void PartitionRoot::PurgeMemory(int flags) {
         }
 
         if (bucket.slot_size >= internal::MinPurgeableSlotSize()) {
-          internal::PartitionPurgeBucket(&bucket);
+          internal::PartitionPurgeBucket(this, &bucket);
         } else {
           bucket.SortSlotSpanFreelists();
         }
@@ -1478,7 +1499,7 @@ void PartitionRoot::DumpStats(const char* partition_name,
       if (!bucket->is_valid()) {
         bucket_stats[i].is_valid = false;
       } else {
-        internal::PartitionDumpBucketStats(&bucket_stats[i], bucket);
+        internal::PartitionDumpBucketStats(&bucket_stats[i], this, bucket);
       }
       if (bucket_stats[i].is_valid) {
         stats.total_resident_bytes += bucket_stats[i].resident_bytes;
