@@ -81,7 +81,7 @@ public class OmniboxFeatures {
 
     private static final MutableFlagWithSafeDefault sAvoidRelayoutDuringFocusAnimation =
             new MutableFlagWithSafeDefault(
-                    ChromeFeatureList.AVOID_RELAYOUT_DURING_FOCUS_ANIMATION, false);
+                    ChromeFeatureList.AVOID_RELAYOUT_DURING_FOCUS_ANIMATION, true);
 
     private static final MutableFlagWithSafeDefault sShortCircuitUnfocusAnimation =
             new MutableFlagWithSafeDefault(
