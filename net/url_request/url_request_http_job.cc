@@ -1703,6 +1703,13 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
       if (response_info_->was_ip_protected) {
         UMA_HISTOGRAM_TIMES("Net.HttpJob.IpProtection.TotalTimeNotCached",
                             total_time);
+
+        UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.IpProtection.BytesSent",
+                                    GetTotalSentBytes(), 1, 50000000, 50);
+
+        UMA_HISTOGRAM_CUSTOM_COUNTS(
+            "Net.HttpJob.IpProtection.PrefilterBytesRead.Net",
+            prefilter_bytes_read(), 1, 50000000, 50);
       }
       UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.PrefilterBytesRead.Net",
                                   prefilter_bytes_read(), 1, 50000000, 50);
