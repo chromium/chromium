@@ -8,5 +8,5 @@ JAVA="$DIR_SOURCE_ROOT/third_party/jdk/current/bin/java"
 # Use maven apkanalyzer.jar, but add apkanalyzer.jar from cmdline-tools into
 # the classpath because the maven .jar is missing ApkAnalyzerCli.class.
 exec "$JAVA" -Dcom.android.sdklib.toolsdir="$DIR_CMDLINE_TOOLS" \
-  -cp "$DIR_APK_ANALYZER/overrides.jar:$DIR_APK_ANALYZER/apkanalyzer.jar:$DIR_CMDLINE_TOOLS/lib/apkanalyzer-classpath.jar" \
+  -cp "$DIR_APK_ANALYZER/apkanalyzer.jar:$DIR_CMDLINE_TOOLS/lib/apkanalyzer-classpath.jar" \
   com.android.tools.apk.analyzer.ApkAnalyzerCli "$@"
