@@ -26,7 +26,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCacheImpl
   // If `auth_token_getter` is unbound, no tokens will be provided.
   explicit IpProtectionAuthTokenCacheImpl(
       mojo::PendingRemote<network::mojom::IpProtectionAuthTokenGetter>
-          auth_token_getter);
+          auth_token_getter,
+      bool disable_cache_management_for_testing = false);
   ~IpProtectionAuthTokenCacheImpl() override;
 
   // IpProtectionAuthTokenCache implementation.
@@ -38,14 +39,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCacheImpl
   // `MayNeedAuthTokenSoon()`. Note that this callback won't be called when
   // using `FillCacheForTesting()`, which instead takes a callback as a
   // parameter.
-  void SetOnCacheRefilledForTesting(
-      base::OnceCallback<void()> on_cache_refilled) {
+  void SetOnCacheRefilledForTesting(base::OnceClosure on_cache_refilled) {
     on_cache_refilled_ = std::move(on_cache_refilled);
+  }
+
+  // Enable active cache management in the background, if it was disabled in the
+  // constructor.
+  void EnableCacheManagementForTesting() {
+    disable_cache_management_for_testing_ = false;
+    ScheduleMaybeRefillCache();
   }
 
   // Requests tokens from the browser process and executes the provided callback
   // when tokens are available.
-  void FillCacheForTesting(base::OnceCallback<void()> on_cache_refilled);
+  void FillCacheForTesting(base::OnceClosure on_cache_refilled);
 
  private:
   void OnGotAuthTokens(
@@ -53,20 +60,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCacheImpl
           tokens,
       absl::optional<base::Time> try_again_after);
   void RemoveExpiredTokens();
-  void OnFilledCacheForTesting(
-      base::OnceCallback<void()> on_cache_refilled,
-      absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
-          tokens,
-      absl::optional<base::Time> try_again_after);
   void MeasureTokenRates();
   void MaybeRefillCache();
+  void ScheduleMaybeRefillCache();
 
   // The last time token rates were measured and the counts since then.
   base::TimeTicks last_token_rate_measurement_;
   int64_t tokens_spent_ = 0;
   int64_t tokens_expired_ = 0;
 
-  // Cache of blind-signed auth tokens.
+  // Cache of blind-signed auth tokens. Tokens are sorted by their expiration
+  // time.
   std::deque<network::mojom::BlindSignedAuthTokenPtr> cache_;
 
   // Source of blind-signed auth tokens, when needed.
@@ -80,11 +84,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCacheImpl
   // `TryGetAuthTokens()`, and no calls should be made until this time.
   base::Time try_get_auth_tokens_after_;
 
-  // A callback triggered when the asynchronous cache refill is complete, for
-  // use in testing `IsAuthTokenAvailable()`. Note that this won't be called
-  // when using `FillCacheForTesting()`, which instead takes a callback as a
-  // parameter.
-  base::OnceCallback<void()> on_cache_refilled_;
+  // A timer to run `MaybeRefillCache()` when necessary, such as when the next
+  // token expires or the cache is able to fetch more tokens.
+  base::OneShotTimer next_maybe_refill_cache_;
+
+  // A callback triggered when an asynchronous cache refill is complete, for use
+  // in testing.
+  base::OnceClosure on_cache_refilled_;
+
+  // If true, do not try to automatically refill the cache.
+  bool disable_cache_management_for_testing_ = false;
 
   base::RepeatingTimer measurement_timer_;
 

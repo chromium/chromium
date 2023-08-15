@@ -12,12 +12,6 @@ namespace network {
 
 namespace {
 
-// The first draft of this class gives the behavior planned for phase 0: fetch a
-// batch of tokens on first use, and refresh that batch as necessary.
-//
-// The class API is designed to allow the implementation to get smarter without
-// modifying the consumers of the API.
-
 // Size of a "batch" of tokens to request in one attempt.
 const int kBatchSize = 64;
 
@@ -35,7 +29,10 @@ const base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
 
 IpProtectionAuthTokenCacheImpl::IpProtectionAuthTokenCacheImpl(
     mojo::PendingRemote<network::mojom::IpProtectionAuthTokenGetter>
-        auth_token_getter) {
+        auth_token_getter,
+    bool disable_cache_management_for_testing)
+    : disable_cache_management_for_testing_(
+          disable_cache_management_for_testing) {
   if (auth_token_getter.is_valid()) {
     auth_token_getter_.Bind(std::move(auth_token_getter));
   }
@@ -44,6 +41,12 @@ IpProtectionAuthTokenCacheImpl::IpProtectionAuthTokenCacheImpl(
   // Start the timer. The timer is owned by `this` and thus cannot outlive it.
   measurement_timer_.Start(FROM_HERE, kTokenRateMeasurementInterval, this,
                            &IpProtectionAuthTokenCacheImpl::MeasureTokenRates);
+
+  if (!disable_cache_management_for_testing) {
+    // Schedule a call to `MaybeRefillCache()`. This will occur soon, since the
+    // cache is empty.
+    ScheduleMaybeRefillCache();
+  }
 }
 
 IpProtectionAuthTokenCacheImpl::~IpProtectionAuthTokenCacheImpl() = default;
@@ -51,26 +54,29 @@ IpProtectionAuthTokenCacheImpl::~IpProtectionAuthTokenCacheImpl() = default;
 bool IpProtectionAuthTokenCacheImpl::IsAuthTokenAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Temporarily use this method as a signal to start refilling the cache.
-  // TODO: Prefill the cache.
-  MaybeRefillCache();
-
+  RemoveExpiredTokens();
   return cache_.size() > 0;
 }
 
+// If this is a good time to request another batch of tokens, do so. This
+// method is idempotent, and can be called at any time.
 void IpProtectionAuthTokenCacheImpl::MaybeRefillCache() {
-  if (currently_getting_ || !auth_token_getter_) {
+  RemoveExpiredTokens();
+  if (currently_getting_ || !auth_token_getter_ ||
+      disable_cache_management_for_testing_) {
     return;
   }
 
   if (!try_get_auth_tokens_after_.is_null() &&
       base::Time::Now() < try_get_auth_tokens_after_) {
-    // We must continue to wait before calling `TryGetAuthTokens()` again,
-    // so there is nothing we can do to refill the cache at this time.
+    // We must continue to wait before calling `TryGetAuthTokens()` again, so
+    // there is nothing we can do to refill the cache at this time. The
+    // `next_maybe_refill_cache_` timer is probably already set, but an extra
+    // call to `ScheduleMaybeRefillCache()` doesn't hurt.
+    ScheduleMaybeRefillCache();
     return;
   }
 
-  RemoveExpiredTokens();
   if (cache_.size() < kCacheLowWaterMark) {
     currently_getting_ = true;
     auth_token_getter_->TryGetAuthTokens(
@@ -78,6 +84,44 @@ void IpProtectionAuthTokenCacheImpl::MaybeRefillCache() {
         base::BindOnce(&IpProtectionAuthTokenCacheImpl::OnGotAuthTokens,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  ScheduleMaybeRefillCache();
+}
+
+// Schedule the next timed call to `MaybeRefillCache()`. This method is
+// idempotent, and may be called at any time.
+void IpProtectionAuthTokenCacheImpl::ScheduleMaybeRefillCache() {
+  // If currently getting tokens, the call will be rescheduled when that
+  // completes. If there's no getter, there's nothing to do.
+  if (currently_getting_ || !auth_token_getter_ ||
+      disable_cache_management_for_testing_) {
+    next_maybe_refill_cache_.Stop();
+    return;
+  }
+
+  base::Time now = base::Time::Now();
+  base::TimeDelta delay;
+  if (cache_.size() < kCacheLowWaterMark) {
+    // If the cache is below the low-water mark, call now or (more likely) at
+    // the requested backoff time.
+    if (try_get_auth_tokens_after_.is_null()) {
+      delay = base::TimeDelta();
+    } else {
+      delay = try_get_auth_tokens_after_ - now;
+    }
+  } else {
+    // Call when the next token expires.
+    delay = cache_[0]->expiration - kFreshnessConstant - now;
+  }
+
+  if (delay.is_negative()) {
+    delay = base::TimeDelta();
+  }
+
+  next_maybe_refill_cache_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&IpProtectionAuthTokenCacheImpl::MaybeRefillCache,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IpProtectionAuthTokenCacheImpl::OnGotAuthTokens(
@@ -89,6 +133,11 @@ void IpProtectionAuthTokenCacheImpl::OnGotAuthTokens(
     try_get_auth_tokens_after_ = base::Time();
     cache_.insert(cache_.end(), std::make_move_iterator(tokens->begin()),
                   std::make_move_iterator(tokens->end()));
+    std::sort(cache_.begin(), cache_.end(),
+              [](network::mojom::BlindSignedAuthTokenPtr& a,
+                 network::mojom::BlindSignedAuthTokenPtr& b) {
+                return a->expiration < b->expiration;
+              });
   } else {
     try_get_auth_tokens_after_ = *try_again_after;
   }
@@ -96,6 +145,8 @@ void IpProtectionAuthTokenCacheImpl::OnGotAuthTokens(
   if (on_cache_refilled_) {
     std::move(on_cache_refilled_).Run();
   }
+
+  ScheduleMaybeRefillCache();
 }
 
 absl::optional<network::mojom::BlindSignedAuthTokenPtr>
@@ -106,31 +157,28 @@ IpProtectionAuthTokenCacheImpl::GetAuthToken() {
   base::UmaHistogramBoolean("NetworkService.IpProtection.GetAuthTokenResult",
                             cache_.size() > 0);
 
+  absl::optional<network::mojom::BlindSignedAuthTokenPtr> result;
   if (cache_.size() > 0) {
-    auto result = std::move(cache_.front());
+    result = std::move(cache_.front());
     cache_.pop_front();
     tokens_spent_++;
-    return result;
   }
-  return absl::nullopt;
+  MaybeRefillCache();
+  return result;
 }
 
 void IpProtectionAuthTokenCacheImpl::RemoveExpiredTokens() {
   base::Time fresh_after = base::Time::Now() + kFreshnessConstant;
-  auto size_before = cache_.size();
-  cache_.erase(
-      std::remove_if(
-          cache_.begin(), cache_.end(),
-          [&fresh_after](const network::mojom::BlindSignedAuthTokenPtr& token) {
-            return token->expiration <= fresh_after;
-          }),
-      cache_.end());
-  tokens_expired_ += size_before - cache_.size();
+  // Tokens are sorted, so only the first (soonest to expire) is important.
+  while (cache_.size() > 0 && cache_[0]->expiration <= fresh_after) {
+    cache_.pop_front();
+    tokens_expired_++;
+  }
+  // Note that all uses of this method also generate a call to
+  // `MaybeRefillCache()`, so there is no need to do so here.
 }
 
 void IpProtectionAuthTokenCacheImpl::MeasureTokenRates() {
-  RemoveExpiredTokens();
-
   auto now = base::TimeTicks::Now();
   auto interval = now - last_token_rate_measurement_;
   auto interval_ms = interval.InMilliseconds();
@@ -158,27 +206,18 @@ void IpProtectionAuthTokenCacheImpl::MeasureTokenRates() {
   tokens_expired_ = 0;
 }
 
+// Call the getter's `TryGetAuthTokens()` and handle the result, calling
+// `on_cache_refilled` when complete.
 void IpProtectionAuthTokenCacheImpl::FillCacheForTesting(
-    base::OnceCallback<void()> on_cache_refilled) {
+    base::OnceClosure on_cache_refilled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(auth_token_getter_);
+  CHECK(!on_cache_refilled_);
+  on_cache_refilled_ = std::move(on_cache_refilled);
   auth_token_getter_->TryGetAuthTokens(
       kBatchSize,
-      base::BindOnce(&IpProtectionAuthTokenCacheImpl::OnFilledCacheForTesting,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(on_cache_refilled)));
-}
-
-void IpProtectionAuthTokenCacheImpl::OnFilledCacheForTesting(
-    base::OnceCallback<void()> on_cache_refilled,
-    absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>> tokens,
-    absl::optional<base::Time> try_again_after) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // For testing purposes, tokens should always be supplied.
-  CHECK(tokens);
-  cache_.insert(cache_.end(), std::make_move_iterator(tokens->begin()),
-                std::make_move_iterator(tokens->end()));
-  std::move(on_cache_refilled).Run();
+      base::BindOnce(&IpProtectionAuthTokenCacheImpl::OnGotAuthTokens,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace network
