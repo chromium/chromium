@@ -58,10 +58,6 @@ const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList(
   if (!base::FeatureList::IsEnabled(features::kDeprecateUnload)) {
     return GetPermissionsPolicyFeatureListUnloadAll();
   }
-  if (!base::FeatureList::IsEnabled(
-          features::kDeprecateUnloadByUserAndOrigin)) {
-    return GetPermissionsPolicyFeatureListUnloadNone();
-  }
   if (ShouldUnloadBeNone(origin, features::kDeprecateUnloadPercent.Get(),
                          features::kDeprecateUnloadBucket.Get())) {
     // If the flag is on and the rollout % is high enough, disable unload by

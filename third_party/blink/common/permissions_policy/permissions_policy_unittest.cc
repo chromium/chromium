@@ -3181,8 +3181,7 @@ TEST_F(PermissionsPolicyTest, GetPermissionsPolicyFeatureListForUnload) {
       SCOPED_TRACE(base::StringPrintf("bucket=%d", bucket));
       base::test::ScopedFeatureList feature_list;
       feature_list.InitWithFeaturesAndParameters(
-          {{blink::features::kDeprecateUnload, {}},
-           {blink::features::kDeprecateUnloadByUserAndOrigin,
+          {{blink::features::kDeprecateUnload,
             {{features::kDeprecateUnloadPercent.name,
               base::StringPrintf("%d", percent)},
              {features::kDeprecateUnloadBucket.name,

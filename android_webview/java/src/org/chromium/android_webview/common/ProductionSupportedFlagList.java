@@ -279,10 +279,6 @@ public final class ProductionSupportedFlagList {
                     "Run tasks in queue for 8ms before before sending a system message."),
             Flag.baseFeature(BlinkFeatures.DEPRECATE_UNLOAD,
                     "If false prevents the gradual deprecation of the unload event."),
-            Flag.baseFeature(BlinkFeatures.DEPRECATE_UNLOAD_BY_USER_AND_ORIGIN,
-                    "Controls whether the deprecation of the unload event is rolled out"
-                            + "based on combination of user and origin in each pageload"
-                            + "vs simply by user."),
             Flag.baseFeature(BlinkFeatures.OFFSET_PARENT_NEW_SPEC_BEHAVIOR,
                     "Enables new HTMLElement.offsetParent behavior to match other browsers."),
             Flag.baseFeature(AwFeatures.WEBVIEW_RECORD_APP_DATA_DIRECTORY_SIZE,
