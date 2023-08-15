@@ -450,6 +450,13 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
     // RenderFrameHost is destroyed.
     GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(nullptr);
   }
+
+  // Since FederatedAuthRequestImpl is a subclass of
+  // DocumentService<blink::mojom::FederatedAuthRequest>, it only lives as long
+  // as the current document.
+  if (num_requests_ > 0 && fedcm_metrics_) {
+    fedcm_metrics_->RecordNumRequestsPerDocument(num_requests_);
+  }
 }
 
 // static
@@ -672,6 +679,14 @@ void FederatedAuthRequestImpl::RequestToken(
     CompleteRequestWithError(request_result, *error_token_status,
                              /*should_delay_callback=*/true);
     return;
+  }
+
+  // This counter measures the number of requests made to FedCM in a document to
+  // identify RPs calling FedCM in quick succession. Requests made when FedCM is
+  // disabled, when there is a pending FedCM request or for the purpose of MDocs
+  // or multi-IDP are not counted.
+  if (!IsFedCmMultipleIdentityProvidersEnabled()) {
+    ++num_requests_;
   }
 
   std::set<GURL> unique_idps;

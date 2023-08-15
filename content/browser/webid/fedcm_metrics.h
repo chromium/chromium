@@ -202,6 +202,11 @@ class CONTENT_EXPORT FedCmMetrics {
   // Records a sample when an accounts request is sent.
   void RecordAccountsRequestSent();
 
+  // Records the number of times navigator.credentials.get() is called in a
+  // document. Requests made when FedCM is disabled, when there is a pending
+  // FedCM request or for the purpose of MDocs or multi-IDP are not counted.
+  void RecordNumRequestsPerDocument(const int num_requests);
+
  private:
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
   ukm::SourceId page_source_id_;
