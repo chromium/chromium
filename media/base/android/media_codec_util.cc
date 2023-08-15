@@ -308,12 +308,15 @@ absl::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
     int sdk_int = base::android::SDK_VERSION_NOUGAT;
   };
   using base::android::SDK_VERSION_Q;
+  using base::android::SDK_VERSION_R;
   using base::android::SDK_VERSION_Sv2;
   constexpr CodecAlignment kCodecAlignmentMap[] = {
       // Codec2 software decoders.
       {"c2.android.avc", gfx::Size(128, 2), SDK_VERSION_Sv2},
+      {"c2.android.avc", gfx::Size(32, 2), SDK_VERSION_R},
       {"c2.android.avc", gfx::Size(64, 2)},
       {"c2.android.hevc", gfx::Size(128, 2), SDK_VERSION_Sv2},
+      {"c2.android.hevc", gfx::Size(32, 2), SDK_VERSION_R},
       {"c2.android.hevc", gfx::Size(64, 2)},
       {"c2.android.(vp8|vp9|av1)", gfx::Size(16, 2)},
 
@@ -330,8 +333,10 @@ absl::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
       {"omx.qcom.video.decoder.avc", gfx::Size(1, 1)},
       {"omx.qcom.video.decoder.hevc", gfx::Size(8, 8), SDK_VERSION_Q},
       {"omx.qcom.video.decoder.hevc", gfx::Size(1, 1)},
-      {"omx.qcom.video.decoder.vp8", gfx::Size(16, 16)},
-      {"omx.qcom.video.decoder.vp9", gfx::Size(8, 8)},
+      {"omx.qcom.video.decoder.vp8", gfx::Size(16, 16), SDK_VERSION_R},
+      {"omx.qcom.video.decoder.vp8", gfx::Size(1, 1)},
+      {"omx.qcom.video.decoder.vp9", gfx::Size(8, 8), SDK_VERSION_R},
+      {"omx.qcom.video.decoder.vp9", gfx::Size(1, 1)},
 
       // Samsung
       {"(omx|c2).exynos.h264", gfx::Size(16, 16)},
