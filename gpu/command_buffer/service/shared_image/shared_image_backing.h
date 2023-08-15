@@ -103,15 +103,17 @@ using VideoDecodeDevice = void*;
 // SharedImageRepresentation.
 class GPU_GLES2_EXPORT SharedImageBacking {
  public:
-  SharedImageBacking(const Mailbox& mailbox,
-                     viz::SharedImageFormat format,
-                     const gfx::Size& size,
-                     const gfx::ColorSpace& color_space,
-                     GrSurfaceOrigin surface_origin,
-                     SkAlphaType alpha_type,
-                     uint32_t usage,
-                     size_t estimated_size,
-                     bool is_thread_safe);
+  SharedImageBacking(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      size_t estimated_size,
+      bool is_thread_safe,
+      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
 
   virtual ~SharedImageBacking();
 
@@ -124,6 +126,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   const Mailbox& mailbox() const { return mailbox_; }
   bool is_thread_safe() const { return !!lock_; }
   bool is_ref_counted() const { return is_ref_counted_; }
+  gfx::BufferUsage buffer_usage() const { return buffer_usage_.value(); }
 
   void OnContextLost();
 
@@ -361,6 +364,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   const uint32_t usage_;
   size_t estimated_size_ GUARDED_BY(lock_);
 
+  // Note that this will be eventually removed and merged into SharedImageUsage.
+  const absl::optional<gfx::BufferUsage> buffer_usage_;
+
   bool is_ref_counted_ = true;
 
   raw_ptr<SharedImageFactory> factory_ = nullptr;
@@ -386,15 +392,17 @@ class GPU_GLES2_EXPORT SharedImageBacking {
 class GPU_GLES2_EXPORT ClearTrackingSharedImageBacking
     : public SharedImageBacking {
  public:
-  ClearTrackingSharedImageBacking(const Mailbox& mailbox,
-                                  viz::SharedImageFormat format,
-                                  const gfx::Size& size,
-                                  const gfx::ColorSpace& color_space,
-                                  GrSurfaceOrigin surface_origin,
-                                  SkAlphaType alpha_type,
-                                  uint32_t usage,
-                                  size_t estimated_size,
-                                  bool is_thread_safe);
+  ClearTrackingSharedImageBacking(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      size_t estimated_size,
+      bool is_thread_safe,
+      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
 
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
