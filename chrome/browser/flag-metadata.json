@@ -4418,6 +4418,15 @@
     "expiry_milestone": 130
   },
   {
+    "name": "floating-workspace-v2",
+    "owners": [
+      "zhumatthew",
+      "yzd",
+      "aprilzhou"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "fluent-scrollbars",
     "owners": [
       "gastonr@microsoft.com",

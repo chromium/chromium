@@ -3574,6 +3574,9 @@ extern const char kFirmwareUpdateJellyDescription[];
 extern const char kFirstPartyVietnameseInputName[];
 extern const char kFirstPartyVietnameseInputDescription[];
 
+extern const char kFloatingWorkspaceV2Name[];
+extern const char kFloatingWorkspaceV2Description[];
+
 extern const char kFocusFollowsCursorName[];
 extern const char kFocusFollowsCursorDescription[];
 

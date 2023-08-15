@@ -6219,6 +6219,11 @@ const char kFirstPartyVietnameseInputName[] =
 const char kFirstPartyVietnameseInputDescription[] =
     "Use first party input method for Vietnamese VNI and Telex";
 
+const char kFloatingWorkspaceV2Name[] = "Floating Workspace V2";
+const char kFloatingWorkspaceV2Description[] =
+    "Resume the user's previous workspace by launching windows and apps from "
+    "their last session.";
+
 const char kFocusFollowsCursorName[] = "Focus follows cursor";
 const char kFocusFollowsCursorDescription[] =
     "Enable window focusing by moving the cursor.";
