@@ -1689,7 +1689,8 @@ ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
 #endif
 
   if (IsDetached()) {
-    NOTREACHED();
+    NOTREACHED() << "Do not compute role on detached object: "
+                 << ToString(true, true);
     return ax::mojom::blink::Role::kUnknown;
   }
 

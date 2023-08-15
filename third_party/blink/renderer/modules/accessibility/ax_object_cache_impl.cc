@@ -3990,7 +3990,12 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
     if (!obj->IsDetached()) {
       if (obj->CachedParentObject()) {
         ChildrenChanged(obj->CachedParentObject());
+        // ChildrenChanged() can cause the obj to be detached.
+        if (obj->IsDetached()) {
+          return;
+        }
       }
+
       // The role of an element depends on whether it has an event listener, so
       // check if the role changed, and if so re-create the object.
       if (obj->RoleValue() != obj->DetermineAccessibilityRole()) {
