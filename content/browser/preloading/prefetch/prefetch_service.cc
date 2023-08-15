@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"
 #include "base/location.h"
@@ -788,12 +789,7 @@ void PrefetchService::Prefetch() {
 // Asserts that re-entrancy doesn't happen.
 #if DCHECK_IS_ON()
   DCHECK(!prefetch_reentrancy_guard_);
-  prefetch_reentrancy_guard_ = true;
-  base::ScopedClosureRunner reset_guard(base::BindOnce(
-      [](PrefetchService* prefetch_service) {
-        prefetch_service->prefetch_reentrancy_guard_ = false;
-      },
-      base::Unretained(this)));
+  base::AutoReset reset_guard(&prefetch_reentrancy_guard_, true);
 #endif
 
   if (PrefetchCloseIdleSockets()) {
