@@ -81,7 +81,7 @@ const uint32_t kOpenSSLReasonValues[] = {
     0x10339666,
     0x10341679,
     0x10348f93,
-    0x10350ccc,
+    0x10350cdf,
     0x1035968c,
     0x103616b6,
     0x103696c9,
@@ -103,7 +103,7 @@ const uint32_t kOpenSSLReasonValues[] = {
     0x103e9839,
     0x103f1850,
     0x103f9863,
-    0x10400c90,
+    0x10400ca3,
     0x10409876,
     0x10411894,
     0x104198a7,
@@ -125,11 +125,12 @@ const uint32_t kOpenSSLReasonValues[] = {
     0x104997d7,
     0x104a16a1,
     0x14320c73,
-    0x14328c81,
-    0x14330c90,
-    0x14338ca2,
+    0x14328c94,
+    0x14330ca3,
+    0x14338cb5,
     0x143400b9,
     0x143480f7,
+    0x14350c81,
     0x18320090,
     0x18328fe9,
     0x183300b9,
@@ -163,7 +164,7 @@ const uint32_t kOpenSSLReasonValues[] = {
     0x18411164,
     0x1841912f,
     0x1842114e,
-    0x18428cd8,
+    0x18428c81,
     0x1843110a,
     0x18439176,
     0x18441028,
@@ -185,14 +186,14 @@ const uint32_t kOpenSSLReasonValues[] = {
     0x2438133b,
     0x24389348,
     0x2439135b,
-    0x28320cc0,
+    0x28320cd3,
     0x28328ceb,
-    0x28330c90,
+    0x28330ca3,
     0x28338cfe,
-    0x28340ccc,
+    0x28340cdf,
     0x283480b9,
     0x283500f7,
-    0x28358cd8,
+    0x28358c81,
     0x2836099a,
     0x2c3232d0,
     0x2c329372,
@@ -676,7 +677,7 @@ const uint32_t kOpenSSLReasonValues[] = {
     0x4c3c1574,
     0x4c3c9583,
     0x4c3d159c,
-    0x4c3d8cb3,
+    0x4c3d8cc6,
     0x4c3e1609,
     0x4c3e95ab,
     0x4c3f162b,
@@ -761,12 +762,12 @@ const uint32_t kOpenSSLReasonValues[] = {
     0x683480f7,
     0x6835099a,
     0x6c320f59,
-    0x6c328ca2,
+    0x6c328cb5,
     0x6c330f64,
     0x6c338f7d,
     0x74320a66,
     0x743280b9,
-    0x74330cb3,
+    0x74330cc6,
     0x783209cb,
     0x783289e0,
     0x783309ec,
@@ -981,13 +982,13 @@ const char kOpenSSLReasonStringData[] =
     "VARIABLE_EXPANSION_TOO_LONG\0"
     "VARIABLE_HAS_NO_VALUE\0"
     "BAD_GENERATOR\0"
+    "INVALID_PARAMETERS\0"
     "INVALID_PUBKEY\0"
     "MODULUS_TOO_LARGE\0"
     "NO_PRIVATE_VALUE\0"
     "UNKNOWN_HASH\0"
     "BAD_Q_VALUE\0"
     "BAD_VERSION\0"
-    "INVALID_PARAMETERS\0"
     "MISSING_PARAMETERS\0"
     "NEED_NEW_SETUP_VALUES\0"
     "BIGNUM_OUT_OF_RANGE\0"

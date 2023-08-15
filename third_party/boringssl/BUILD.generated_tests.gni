@@ -89,6 +89,7 @@ crypto_test_sources = [
   "src/crypto/pkcs8/pkcs8_test.cc",
   "src/crypto/poly1305/poly1305_test.cc",
   "src/crypto/pool/pool_test.cc",
+  "src/crypto/rand_extra/getentropy_test.cc",
   "src/crypto/rand_extra/rand_test.cc",
   "src/crypto/refcount_test.cc",
   "src/crypto/rsa_extra/rsa_test.cc",
