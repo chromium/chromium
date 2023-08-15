@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_MAC_SCOPED_CFFILEDESCRIPTORREF_H_
-#define BASE_MAC_SCOPED_CFFILEDESCRIPTORREF_H_
+#ifndef BASE_APPLE_SCOPED_CFFILEDESCRIPTORREF_H_
+#define BASE_APPLE_SCOPED_CFFILEDESCRIPTORREF_H_
 
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "base/scoped_generic.h"
 
-namespace base::mac {
+namespace base::apple {
 
 namespace internal {
 
@@ -32,6 +32,6 @@ using ScopedCFFileDescriptorRef =
     ScopedGeneric<CFFileDescriptorRef,
                   internal::ScopedCFFileDescriptorRefTraits>;
 
-}  // namespace base::mac
+}  // namespace base::apple
 
-#endif  // BASE_MAC_SCOPED_CFFILEDESCRIPTORREF_H_
+#endif  // BASE_APPLE_SCOPED_CFFILEDESCRIPTORREF_H_
