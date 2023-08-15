@@ -345,9 +345,6 @@ class DriveIntegrationService : public KeyedService,
   };
   class DriveFsHolder;
 
-  // Manages passing changes in team drives to the drive notification manager.
-  class NotificationManager;
-
   PrefService* GetPrefs() const;
 
   // Returns true if Drive is enabled.

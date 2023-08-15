@@ -35,8 +35,6 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
-#include "components/drive/drive_notification_manager.h"
-#include "components/drive/drive_notification_observer.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -122,17 +120,11 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
  public:
   TestingDriveFsHostDelegate(signin::IdentityManager* identity_manager,
                              const AccountId& account_id)
-      : identity_manager_(identity_manager),
-        account_id_(account_id),
-        drive_notification_manager_(&invalidation_service_) {}
+      : identity_manager_(identity_manager), account_id_(account_id) {}
 
   TestingDriveFsHostDelegate(const TestingDriveFsHostDelegate&) = delete;
   TestingDriveFsHostDelegate& operator=(const TestingDriveFsHostDelegate&) =
       delete;
-
-  ~TestingDriveFsHostDelegate() override {
-    drive_notification_manager_.Shutdown();
-  }
 
   void set_pending_bootstrap(
       mojo::PendingRemote<mojom::DriveFsBootstrap> pending_bootstrap) {
@@ -153,10 +145,6 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
               OnMountFailed,
               (MountFailure, absl::optional<base::TimeDelta>));
   MOCK_METHOD(void, OnUnmounted, (absl::optional<base::TimeDelta>));
-
-  drive::DriveNotificationManager& GetDriveNotificationManager() override {
-    return drive_notification_manager_;
-  }
 
  private:
   // DriveFsHost::Delegate:
@@ -208,7 +196,6 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
   mojo::PendingRemote<mojom::DriveFsBootstrap> pending_bootstrap_;
   bool verbose_logging_enabled_ = false;
   invalidation::FakeInvalidationService invalidation_service_;
-  drive::DriveNotificationManager drive_notification_manager_;
   mojom::ExtensionConnectionParamsPtr extension_params_;
 };
 
@@ -667,100 +654,6 @@ TEST_F(DriveFsHostTest, DisplayConfirmDialogImpl_IgnoreUnknownReasonTypes) {
       }));
   delegate_.FlushForTesting();
   EXPECT_TRUE(called);
-}
-
-TEST_F(DriveFsHostTest, TeamDriveTracking) {
-  ASSERT_NO_FATAL_FAILURE(DoMount());
-
-  delegate_->OnTeamDrivesListReady({"a", "b"});
-  delegate_.FlushForTesting();
-  EXPECT_EQ(
-      (std::set<std::string>{"a", "b"}),
-      host_delegate_->GetDriveNotificationManager().team_drive_ids_for_test());
-
-  delegate_->OnTeamDriveChanged(
-      "c", mojom::DriveFsDelegate::CreateOrDelete::kCreated);
-  delegate_.FlushForTesting();
-  EXPECT_EQ(
-      (std::set<std::string>{"a", "b", "c"}),
-      host_delegate_->GetDriveNotificationManager().team_drive_ids_for_test());
-
-  delegate_->OnTeamDriveChanged(
-      "b", mojom::DriveFsDelegate::CreateOrDelete::kDeleted);
-  delegate_.FlushForTesting();
-  EXPECT_EQ(
-      (std::set<std::string>{"a", "c"}),
-      host_delegate_->GetDriveNotificationManager().team_drive_ids_for_test());
-}
-
-TEST_F(DriveFsHostTest, TeamDriveTrackingIgnoreChanges) {
-  ASSERT_NO_FATAL_FAILURE(DoMount());
-
-  EXPECT_EQ(
-      std::set<std::string>(),
-      host_delegate_->GetDriveNotificationManager().team_drive_ids_for_test());
-
-  delegate_->OnTeamDriveChanged(
-      "a", mojom::DriveFsDelegate::CreateOrDelete::kCreated);
-  delegate_.FlushForTesting();
-  EXPECT_EQ(
-      std::set<std::string>(),
-      host_delegate_->GetDriveNotificationManager().team_drive_ids_for_test());
-
-  delegate_->OnTeamDriveChanged(
-      "b", mojom::DriveFsDelegate::CreateOrDelete::kDeleted);
-  delegate_.FlushForTesting();
-  EXPECT_EQ(
-      std::set<std::string>(),
-      host_delegate_->GetDriveNotificationManager().team_drive_ids_for_test());
-}
-
-TEST_F(DriveFsHostTest, Invalidation) {
-  ASSERT_NO_FATAL_FAILURE(DoMount());
-
-  delegate_->OnTeamDrivesListReady({"a", "b"});
-  delegate_.FlushForTesting();
-
-  EXPECT_CALL(mock_drivefs_,
-              FetchChangeLogImpl(
-                  std::vector<ChangeLogOptionPair>{{123, ""}, {456, "a"}}));
-
-  for (auto& observer :
-       host_delegate_->GetDriveNotificationManager().observers_for_test()) {
-    observer.OnNotificationReceived({{"", 123}, {"a", 456}});
-  }
-  receiver_.FlushForTesting();
-}
-
-TEST_F(DriveFsHostTest, InvalidateAll) {
-  ASSERT_NO_FATAL_FAILURE(DoMount());
-
-  delegate_->OnTeamDrivesListReady({"a", "b"});
-  delegate_.FlushForTesting();
-
-  EXPECT_CALL(mock_drivefs_, FetchAllChangeLogs());
-
-  for (auto& observer :
-       host_delegate_->GetDriveNotificationManager().observers_for_test()) {
-    observer.OnNotificationTimerFired();
-  }
-  receiver_.FlushForTesting();
-}
-
-TEST_F(DriveFsHostTest, RemoveDriveNotificationObserver) {
-  ASSERT_NO_FATAL_FAILURE(DoMount());
-
-  delegate_->OnTeamDrivesListReady({"a", "b"});
-  delegate_.FlushForTesting();
-  EXPECT_TRUE(!host_delegate_->GetDriveNotificationManager()
-                   .observers_for_test()
-                   .empty());
-
-  host_.reset();
-
-  EXPECT_FALSE(!host_delegate_->GetDriveNotificationManager()
-                    .observers_for_test()
-                    .empty());
 }
 
 TEST_F(DriveFsHostTest, Remount_CachedOnceOnly) {

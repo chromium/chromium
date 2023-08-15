@@ -615,10 +615,6 @@ class DriveIntegrationService::DriveFsHolder
         metrics::prefs::kMetricsReportingEnabled);
   }
 
-  DriveNotificationManager& GetDriveNotificationManager() override {
-    return *DriveNotificationManagerFactory::GetForBrowserContext(profile_);
-  }
-
   void OnMountFailed(MountFailure failure,
                      absl::optional<TimeDelta> remount_delay) override {
     mount_observer_->OnMountFailed(failure, std::move(remount_delay));
@@ -1888,7 +1884,6 @@ DriveIntegrationServiceFactory::DriveIntegrationServiceFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(DriveNotificationManagerFactory::GetInstance());
   DependsOn(DownloadCoreServiceFactory::GetInstance());
 }
 
