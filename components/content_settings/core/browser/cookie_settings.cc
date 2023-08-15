@@ -28,10 +28,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_IOS)
-#include "components/content_settings/core/common/features.h"
-#endif
-
 #if BUILDFLAG(USE_BLINK)
 #include "third_party/blink/public/common/features_generated.h"
 #endif

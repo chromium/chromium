@@ -41,8 +41,10 @@
 #endif
 
 namespace {
+#if !BUILDFLAG(IS_IOS)
 constexpr char kAllowedRequestsHistogram[] =
     "API.StorageAccess.AllowedRequests2";
+#endif
 
 struct TestCase {
   const char* test_name;
@@ -53,10 +55,10 @@ struct TestCase {
 
 static constexpr TestCase kTestCases[] = {
     {"disable_all", false, false, false},
-    {"disable_SAA_disable_TopLevel_enable_3PCD", false, false, true},
     {"disable_SAA_enable_TopLevel_disable_3PCD", false, true, false},
-    {"disable_SAA_enable_TopLevel_enable_3PCD", false, true, true},
 #if !BUILDFLAG(IS_IOS)
+    {"disable_SAA_enable_TopLevel_enable_3PCD", false, true, true},
+    {"disable_SAA_disable_TopLevel_enable_3PCD", false, false, true},
     {"enable_SAA_disable_TopLevel_disable_3PCD", true, false, false},
     {"enable_SAA_disable_TopLevel_enable_3PCD", true, false, true},
     {"enable_SAA_enable_TopLevel_disable_3PCD", true, true, false},
@@ -127,10 +129,12 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     std::vector<base::test::FeatureRef> disabled_features;
     enabled_features.push_back(
         {content_settings::features::kUserBypassUI, {{"expiration", "0d"}}});
-    enabled_features.push_back({net::features::kTpcdSupportSettings, {}});
 #if BUILDFLAG(IS_IOS)
     enabled_features.push_back({kImprovedCookieControls, {}});
+    disabled_features.push_back(net::features::kTpcdSupportSettings);
 #else
+    enabled_features.push_back({net::features::kTpcdSupportSettings, {}});
+
     if (IsStorageAccessGrantEligible()) {
       enabled_features.push_back({blink::features::kStorageAccessAPI, {}});
     } else {
@@ -706,7 +710,6 @@ INSTANTIATE_TEST_SUITE_P(
     // on iOS.
     testing::ValuesIn<TestCase>({
         {"disable_all", false, false, false},
-        {"enable_3PCD", false, false, true},
     }),
     [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
       return info.param.test_name;
@@ -1383,7 +1386,6 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 }
-#endif
 
 TEST_P(CookieSettingsTest, GetCookieSetting3pcdSupport) {
   const GURL top_level_url(kFirstPartySite);
@@ -1423,6 +1425,7 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdSupport) {
                 third_url, top_level_url, GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 }
+#endif
 
 TEST_P(CookieSettingsTest, ExtensionsRegularSettings) {
   cookie_settings_->SetCookieSetting(kBlockedSite, CONTENT_SETTING_BLOCK);
