@@ -6,6 +6,7 @@ package org.chromium.chrome.modules.readaloud;
 
 import androidx.annotation.Nullable;
 
+import java.util.List;
 /**
  * Encapsulates information about the playback tha's requested.
  */
@@ -15,7 +16,7 @@ public class PlaybackArgs {
   @Nullable
   private final String mLanguage;
   @Nullable
-  private final String mVoice;
+  private final List<PlaybackVoice> mVoices;
 
   private final long mDateModifiedMsSinceEpoch;
 
@@ -23,12 +24,43 @@ public class PlaybackArgs {
     this(url, null, null, 0);
   }
 
-  public PlaybackArgs(String url, @Nullable String language, @Nullable String voice,
-      long dateModifiedMsSinceEpoch) {
-    this.mUrl = url;
-    this.mLanguage = language;
-    this.mVoice = voice;
-    this.mDateModifiedMsSinceEpoch = dateModifiedMsSinceEpoch;
+  /**
+   * Encapsulates info about a TTS voice that can be used for playback.
+   * Description is only relevant for the UI, language and voiceId are required
+   * for the server request.
+   */
+  class PlaybackVoice {
+      private final String mLanguage;
+      private final String mVoiceId;
+      @Nullable
+      private final String mDescription;
+
+      public PlaybackVoice(String language, String voiceId, String description) {
+          this.mLanguage = language;
+          this.mVoiceId = voiceId;
+          this.mDescription = description;
+      }
+
+      public String getLanguage() {
+          return mLanguage;
+      }
+
+      public String getVoiceId() {
+          return mVoiceId;
+      }
+
+      @Nullable
+      public String getDescription() {
+          return mDescription;
+      }
+  }
+
+  public PlaybackArgs(String url, @Nullable String language, @Nullable List<PlaybackVoice> voices,
+          long dateModifiedMsSinceEpoch) {
+      this.mUrl = url;
+      this.mLanguage = language;
+      this.mVoices = voices;
+      this.mDateModifiedMsSinceEpoch = dateModifiedMsSinceEpoch;
   }
 
   /** Returns the URL of the playback page. */
@@ -46,11 +78,11 @@ public class PlaybackArgs {
   }
 
   /**
-   * Returns the voice to use for playback audio. If not set, the default is used.
+   * Returns the list of voices that may be used for synthesis.
    */
   @Nullable
-  public String getVoice() {
-    return mVoice;
+  public List<PlaybackVoice> getVoices() {
+      return mVoices;
   }
 
   /**
