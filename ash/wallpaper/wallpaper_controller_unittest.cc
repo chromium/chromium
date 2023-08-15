@@ -4562,6 +4562,7 @@ TEST_P(WallpaperControllerTest, UpdateWallpaperOnScheduleCheckpointChanged) {
     const AccountId active_account_id =
         Shell::Get()->session_controller()->GetActiveAccountId();
     // Enable dark mode by default.
+    Shell::Get()->dark_light_mode_controller()->SetAutoScheduleEnabled(false);
     Shell::Get()->dark_light_mode_controller()->SetDarkModeEnabledForTest(true);
 
     auto run_loop = std::make_unique<base::RunLoop>();
@@ -4668,6 +4669,7 @@ TEST_P(WallpaperControllerTest,
   SimulateUserLogin(kAccountId1);
 
   // Enable dark mode by default.
+  Shell::Get()->dark_light_mode_controller()->SetAutoScheduleEnabled(false);
   Shell::Get()->dark_light_mode_controller()->SetDarkModeEnabledForTest(true);
 
   auto run_loop = std::make_unique<base::RunLoop>();
@@ -4731,6 +4733,7 @@ TEST_P(WallpaperControllerTest,
   SimulateUserLogin(kAccountId1);
 
   // Enable dark mode by default.
+  Shell::Get()->dark_light_mode_controller()->SetAutoScheduleEnabled(false);
   Shell::Get()->dark_light_mode_controller()->SetDarkModeEnabledForTest(true);
 
   auto run_loop = std::make_unique<base::RunLoop>();
