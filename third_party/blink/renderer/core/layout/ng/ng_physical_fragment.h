@@ -84,6 +84,25 @@ class CORE_EXPORT NGPhysicalFragment
     kMinimumFormattingContextRoot = kAtomicInline
   };
 
+  struct PropagatedData : public GarbageCollected<PropagatedData> {
+   public:
+    PropagatedData(
+        const HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants,
+        const HeapHashSet<Member<LayoutBox>>* snap_areas,
+        const ScrollStartTargetCandidates* scroll_start_targets)
+        : sticky_descendants(sticky_descendants),
+          snap_areas(snap_areas),
+          scroll_start_targets(scroll_start_targets) {}
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(sticky_descendants);
+      visitor->Trace(snap_areas);
+      visitor->Trace(scroll_start_targets);
+    }
+    Member<const HeapVector<Member<LayoutBoxModelObject>>> sticky_descendants;
+    Member<const HeapHashSet<Member<LayoutBox>>> snap_areas;
+    Member<const ScrollStartTargetCandidates> scroll_start_targets;
+  };
+
   NGPhysicalFragment(NGFragmentBuilder* builder,
                      WritingMode block_or_line_writing_mode,
                      NGFragmentType type,
@@ -631,25 +650,27 @@ class CORE_EXPORT NGPhysicalFragment
   bool ChildrenValid() const { return children_valid_; }
 
   const HeapVector<Member<LayoutBoxModelObject>>* StickyDescendants() const {
-    return sticky_descendants_.Get();
+    return propagated_data_ ? propagated_data_->sticky_descendants.Get()
+                            : nullptr;
   }
   const HeapVector<Member<LayoutBoxModelObject>>* PropagatedStickyDescendants()
       const {
-    return IsScrollContainer() ? nullptr : sticky_descendants_.Get();
+    return IsScrollContainer() ? nullptr : StickyDescendants();
   }
 
   const ScrollStartTargetCandidates* ScrollStartTargets() const {
-    return scroll_start_targets_;
+    return propagated_data_ ? propagated_data_->scroll_start_targets.Get()
+                            : nullptr;
   }
   const ScrollStartTargetCandidates* PropagatedScrollStartTargets() const {
-    return IsScrollContainer() ? nullptr : scroll_start_targets_.Get();
+    return IsScrollContainer() ? nullptr : ScrollStartTargets();
   }
 
   const HeapHashSet<Member<LayoutBox>>* SnapAreas() const {
-    return snap_areas_.Get();
+    return propagated_data_ ? propagated_data_->snap_areas.Get() : nullptr;
   }
   const HeapHashSet<Member<LayoutBox>>* PropagatedSnapAreas() const {
-    return IsScrollContainer() ? nullptr : snap_areas_.Get();
+    return IsScrollContainer() ? nullptr : SnapAreas();
   }
 
   bool HasPropagatedLayoutObjects() const {
@@ -788,13 +809,9 @@ class CORE_EXPORT NGPhysicalFragment
   // The following are only used by NGPhysicalLineBoxFragment.
   unsigned base_direction_ : 1;  // TextDirection
 
+  Member<const PropagatedData> propagated_data_;
   Member<const NGBreakToken> break_token_;
-  Member<const HeapVector<Member<LayoutBoxModelObject>>> sticky_descendants_;
-  Member<const HeapHashSet<Member<LayoutBox>>> snap_areas_;
   Member<OutOfFlowData> oof_data_;
-  // TODO(awogbemila): Find a better location for this field to avoid paying
-  // the cost of the size of this field for every fragment of a page.
-  Member<ScrollStartTargetCandidates> scroll_start_targets_;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGPhysicalFragment*);
