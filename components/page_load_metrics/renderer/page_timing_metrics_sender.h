@@ -88,7 +88,8 @@ class PageTimingMetricsSender {
                                           const gfx::Rect& image_ad_rect);
 
   void DidObserveInputDelay(base::TimeDelta input_delay);
-  void DidObserveUserInteraction(base::TimeDelta max_event_duration,
+  void DidObserveUserInteraction(base::TimeTicks max_event_start,
+                                 base::TimeTicks max_event_end,
                                  blink::UserInteractionType interaction_type);
   // Updates the timing information. Buffers |timing| to be sent over mojo
   // sometime 'soon'.

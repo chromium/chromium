@@ -745,10 +745,11 @@ void LocalFrameClientImpl::DidObserveInputDelay(base::TimeDelta input_delay) {
 }
 
 void LocalFrameClientImpl::DidObserveUserInteraction(
-    base::TimeDelta max_event_duration,
+    base::TimeTicks max_event_start,
+    base::TimeTicks max_event_end,
     UserInteractionType interaction_type) {
-  web_frame_->Client()->DidObserveUserInteraction(max_event_duration,
-                                                  interaction_type);
+  web_frame_->Client()->DidObserveUserInteraction(
+      max_event_start, max_event_end, interaction_type);
 }
 
 void LocalFrameClientImpl::DidChangeCpuTiming(base::TimeDelta time) {

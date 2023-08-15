@@ -120,13 +120,14 @@ void MetricsRenderFrameObserver::DidObserveInputDelay(
 }
 
 void MetricsRenderFrameObserver::DidObserveUserInteraction(
-    base::TimeDelta max_event_duration,
+    base::TimeTicks max_event_start,
+    base::TimeTicks max_event_end,
     blink::UserInteractionType interaction_type) {
   if (!page_timing_metrics_sender_ || HasNoRenderFrame()) {
     return;
   }
-  page_timing_metrics_sender_->DidObserveUserInteraction(max_event_duration,
-                                                         interaction_type);
+  page_timing_metrics_sender_->DidObserveUserInteraction(
+      max_event_start, max_event_end, interaction_type);
 }
 
 void MetricsRenderFrameObserver::DidChangeCpuTiming(base::TimeDelta time) {

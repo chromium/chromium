@@ -558,8 +558,15 @@ class BLINK_EXPORT WebLocalFrameClient {
   // An Input Event observed.
   virtual void DidObserveInputDelay(base::TimeDelta input_delay) {}
 
-  // A user interaction is observed.
-  virtual void DidObserveUserInteraction(base::TimeDelta max_event_duration,
+  // A user interaction is observed. A user interaction can be built up from
+  // multiple input events (e.g. keydown then keyup). Each of these events has
+  // an input to next frame latency. This reports the timings of the max
+  // input-to-frame latency for each interaction. `max_event_start` is when
+  // input was received, and `max_event_end` is when the next frame was
+  // presented. See https://web.dev/inp/#whats-in-an-interaction for more
+  // detailed motivation and explanation.
+  virtual void DidObserveUserInteraction(base::TimeTicks max_event_start,
+                                         base::TimeTicks max_event_end,
                                          UserInteractionType interaction_type) {
   }
 

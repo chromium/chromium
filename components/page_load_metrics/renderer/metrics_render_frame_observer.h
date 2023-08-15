@@ -58,7 +58,8 @@ class MetricsRenderFrameObserver
   void DidChangePerformanceTiming() override;
   void DidObserveInputDelay(base::TimeDelta input_delay) override;
   void DidObserveUserInteraction(
-      base::TimeDelta max_event_duration,
+      base::TimeTicks max_event_start,
+      base::TimeTicks max_event_end,
       blink::UserInteractionType interaction_type) override;
   void DidChangeCpuTiming(base::TimeDelta time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;

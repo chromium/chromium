@@ -159,4 +159,136 @@ TEST_F(PageTimingMetadataRecorderTest, FirstInputDelayInvalidDuration) {
   EXPECT_EQ(1u, requests.size());
 }
 
+namespace {
+uint32_t ExtractInstanceIdFromKey(int64_t key) {
+  return static_cast<uint32_t>(static_cast<uint64_t>(key) >> 32);
+}
+
+uint32_t ExtractInteractionIdFromKey(int64_t key) {
+  return static_cast<uint32_t>(static_cast<uint64_t>(key) & 0xffffffff);
+}
+}  // namespace
+
+TEST_F(PageTimingMetadataRecorderTest,
+       InteractionDurationMultipleInteractions) {
+  PageTimingMetadataRecorder::MonotonicTiming timing = {};
+  TestPageTimingMetadataRecorder recorder(timing);
+  const std::vector<MetadataTaggingRequest>& requests =
+      recorder.GetMetadataTaggingRequests();
+
+  const base::TimeTicks time_origin = base::TimeTicks::Now();
+
+  const base::TimeTicks interaction1_start =
+      time_origin - base::Milliseconds(500);
+  const base::TimeTicks interaction1_end =
+      time_origin - base::Milliseconds(300);
+  recorder.AddInteractionDurationMetadata(interaction1_start, interaction1_end);
+
+  ASSERT_EQ(1u, requests.size());
+  EXPECT_EQ(interaction1_start, requests.at(0).period_start);
+  EXPECT_EQ(interaction1_end, requests.at(0).period_end);
+
+  const base::TimeTicks interaction2_start =
+      time_origin - base::Milliseconds(200);
+  const base::TimeTicks interaction2_end =
+      time_origin - base::Milliseconds(100);
+  recorder.AddInteractionDurationMetadata(interaction2_start, interaction2_end);
+
+  ASSERT_EQ(2u, requests.size());
+  EXPECT_EQ(interaction2_start, requests.at(1).period_start);
+  EXPECT_EQ(interaction2_end, requests.at(1).period_end);
+
+  const int64_t key1 = requests.at(0).key;
+  const int64_t key2 = requests.at(1).key;
+  EXPECT_EQ(ExtractInstanceIdFromKey(key1), ExtractInstanceIdFromKey(key2));
+  EXPECT_EQ(ExtractInteractionIdFromKey(key1), 1u);
+  EXPECT_EQ(ExtractInteractionIdFromKey(key2), 2u);
+}
+
+TEST_F(PageTimingMetadataRecorderTest, InteractionDurationMultipleRecorders) {
+  const base::TimeTicks time_origin = base::TimeTicks::Now();
+
+  const base::TimeTicks interaction1_start =
+      time_origin - base::Milliseconds(500);
+  const base::TimeTicks interaction1_end =
+      time_origin - base::Milliseconds(300);
+
+  const base::TimeTicks interaction2_start =
+      time_origin - base::Milliseconds(200);
+  const base::TimeTicks interaction2_end =
+      time_origin - base::Milliseconds(100);
+
+  PageTimingMetadataRecorder::MonotonicTiming timing = {};
+  TestPageTimingMetadataRecorder recorder1(timing);
+  TestPageTimingMetadataRecorder recorder2(timing);
+
+  recorder1.AddInteractionDurationMetadata(interaction1_start,
+                                           interaction1_end);
+  recorder2.AddInteractionDurationMetadata(interaction2_start,
+                                           interaction2_end);
+
+  const std::vector<MetadataTaggingRequest>& requests1 =
+      recorder1.GetMetadataTaggingRequests();
+  const std::vector<MetadataTaggingRequest>& requests2 =
+      recorder2.GetMetadataTaggingRequests();
+
+  ASSERT_EQ(1u, requests1.size());
+  ASSERT_EQ(1u, requests2.size());
+
+  const int64_t key1 = requests1.at(0).key;
+  const int64_t key2 = requests2.at(0).key;
+  EXPECT_NE(ExtractInstanceIdFromKey(key1), ExtractInstanceIdFromKey(key2));
+  EXPECT_EQ(ExtractInteractionIdFromKey(key1), 1u);
+  EXPECT_EQ(ExtractInteractionIdFromKey(key2), 1u);
+}
+
+TEST_F(PageTimingMetadataRecorderTest, InteractionDurationInvalidDuration) {
+  PageTimingMetadataRecorder::MonotonicTiming timing = {};
+  TestPageTimingMetadataRecorder recorder(timing);
+  const std::vector<MetadataTaggingRequest>& requests =
+      recorder.GetMetadataTaggingRequests();
+
+  const base::TimeTicks time_origin = base::TimeTicks::Now();
+
+  // End time cannot more than TimeTicks::Now().
+  const base::TimeTicks interaction1_start =
+      time_origin - base::Milliseconds(500);
+  const base::TimeTicks interaction1_end = time_origin + base::Hours(500);
+  recorder.AddInteractionDurationMetadata(interaction1_start, interaction1_end);
+  EXPECT_EQ(0u, requests.size());
+
+  // End time cannot be earlier than start time.
+  const base::TimeTicks interaction2_start =
+      time_origin - base::Milliseconds(500);
+  const base::TimeTicks interaction2_end =
+      time_origin - base::Milliseconds(501);
+  recorder.AddInteractionDurationMetadata(interaction2_start, interaction2_end);
+  EXPECT_EQ(0u, requests.size());
+}
+
+TEST_F(PageTimingMetadataRecorderTest,
+       InteractionDurationMetadataKeySignednessTest) {
+  {
+    // Test that if instance_id has high bit set, interaction_id remains intact.
+    const uint32_t instance_id = 0xffffffff;
+    const uint32_t interaction_id = 1;
+    const int64_t key =
+        PageTimingMetadataRecorder::CreateInteractionDurationMetadataKey(
+            instance_id, interaction_id);
+    EXPECT_EQ(instance_id, ExtractInstanceIdFromKey(key));
+    EXPECT_EQ(interaction_id, ExtractInteractionIdFromKey(key));
+  }
+
+  {
+    // Test that if interaction_id has high bit set, instance_id remains intact.
+    const uint32_t instance_id = 1;
+    const uint32_t interaction_id = 0xffffffff;
+    const int64_t key =
+        PageTimingMetadataRecorder::CreateInteractionDurationMetadataKey(
+            instance_id, interaction_id);
+    EXPECT_EQ(instance_id, ExtractInstanceIdFromKey(key));
+    EXPECT_EQ(interaction_id, ExtractInteractionIdFromKey(key));
+  }
+}
+
 }  // namespace page_load_metrics

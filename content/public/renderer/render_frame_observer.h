@@ -196,15 +196,23 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // Notifications when |PerformanceTiming| data becomes available
   virtual void DidChangePerformanceTiming() {}
 
-  // Notifications When an input delay data becomes available.
+  // Notifications when an input delay data becomes available.
   virtual void DidObserveInputDelay(base::TimeDelta input_delay) {}
 
-  // Notifications When a user interaction latency data becomes available.
+  // Notifications when a user interaction latency data becomes available. A
+  // user interaction can be built up from multiple input events (e.g. keydown
+  // then keyup). Each of these events has an input to next frame latency. This
+  // reports the timings of the max input-to-frame latency for each interaction.
+  // `max_event_start` is when input was received, and `max_event_end` is when
+  // the next frame was presented. See
+  // https://web.dev/inp/#whats-in-an-interaction for more detailed motivation
+  // and explanation.
   virtual void DidObserveUserInteraction(
-      base::TimeDelta max_event_duration,
+      base::TimeTicks max_event_start,
+      base::TimeTicks max_event_end,
       blink::UserInteractionType interaction_type) {}
 
-  // Notification When the First Scroll Delay becomes available.
+  // Notification when the First Scroll Delay becomes available.
   virtual void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay) {}
 
   // Notifications when a cpu timing update becomes available, when a frame
