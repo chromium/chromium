@@ -87,6 +87,7 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnWindowsUIv6);
 
 // List synced GPM passkeys on webauthn credential pickers.
+// Depends on kWebAuthnNewPasskeyUI.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnListSyncedPasskeys);
 
@@ -121,6 +122,14 @@ BASE_DECLARE_FEATURE(kWebAuthnCachePaaSK);
 // on Android.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnDontPrelinkInProfiles);
+
+// Use the new desktop passkey UI that has the following changes:
+// * Display passkeys from multiple sources, including from Windows Hello,
+//   alongside mechanisms on the modal UI.
+// * Merge the QR and USB screens when available.
+// * String tweaks on modal and conditional UI.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnNewPasskeyUI);
 
 }  // namespace device
 

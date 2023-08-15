@@ -155,4 +155,9 @@ BASE_FEATURE(kWebAuthnDontPrelinkInProfiles,
              "WebAuthenticationDontPrelinkInProfiles",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnNewPasskeyUI,
+             "WebAuthenticationNewPasskeyUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

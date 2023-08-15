@@ -824,6 +824,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {
   if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys) &&
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
+      base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
       !IsVirtualEnvironmentEnabled() && can_use_synced_phone_passkeys_) {
     GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);
   }

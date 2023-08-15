@@ -844,7 +844,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     }
 
     if (windows_has_hybrid &&
-        !base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys)) {
+        !base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
       // Before the new synced passkeys UI, caBLEv1 and server-link are the only
       // cases that Windows _doesn't_ handle when it has hybrid support because
       // those are legacy protocol variants.
@@ -886,7 +886,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     }
   }
   base::test::ScopedFeatureList scoped_feature_list{
-      device::kWebAuthnListSyncedPasskeys};
+      device::kWebAuthnNewPasskeyUI};
   for (const auto& test : kListSyncedPasskeysTests) {
     RunTest(test, /*windows_has_hybrid=*/false);
   }
@@ -1702,7 +1702,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
 class ListPasskeysFromSyncTest : public AuthenticatorRequestDialogModelTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnListSyncedPasskeys};
+      device::kWebAuthnNewPasskeyUI};
 };
 
 template <class Value>

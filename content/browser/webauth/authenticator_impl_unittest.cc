@@ -1521,8 +1521,10 @@ TEST_F(AuthenticatorImplTest, GetAssertionResponseWithAttestedCredentialData) {
 TEST_F(AuthenticatorImplTest, GPMPasskeys_IsConditionalMediationAvailable) {
   // Conditional mediation should always be available if gpm passkeys are
   // enabled.
-  base::test::ScopedFeatureList scoped_feature_list{
-      device::kWebAuthnListSyncedPasskeys};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {device::kWebAuthnListSyncedPasskeys, device::kWebAuthnNewPasskeyUI},
+      /*disabled_features=*/{});
   ASSERT_TRUE(AuthenticatorIsConditionalMediationAvailable());
 }
 

@@ -1291,7 +1291,7 @@ std::u16string AuthenticatorQRSheetModel::GetStepDescription() const {
 }
 
 bool AuthenticatorQRSheetModel::ShowSecurityKeyLabel() const {
-  return base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys) &&
+  return base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
          base::Contains(
              dialog_model()->transport_availability()->available_transports,
              device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
@@ -1314,7 +1314,7 @@ std::u16string AuthenticatorQRSheetModel::GetSecurityKeyLabel() const {
 }
 
 std::u16string AuthenticatorQRSheetModel::GetOtherMechanismButtonLabel() const {
-  return base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys)
+  return base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)
              ? u"Back (UNTRANSLATED)"
              : l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_DEVICE);
 }

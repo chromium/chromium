@@ -120,7 +120,7 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
     case Step::kMechanismSelection:
       if (dialog_model->transport_availability()->request_type ==
               device::FidoRequestType::kGetAssertion &&
-          base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys)) {
+          base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
         sheet_view = std::make_unique<AuthenticatorMultiSourcePickerSheetView>(
             std::make_unique<AuthenticatorMultiSourcePickerSheetModel>(
                 dialog_model));

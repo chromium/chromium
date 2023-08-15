@@ -114,7 +114,8 @@ class ChromeAuthenticatorRequestDelegateTest
  public:
   ChromeAuthenticatorRequestDelegateTest() {
     scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnListSyncedPasskeys, syncer::kSyncWebauthnCredentials},
+        {device::kWebAuthnListSyncedPasskeys, syncer::kSyncWebauthnCredentials,
+         device::kWebAuthnNewPasskeyUI},
         /*disabled_features=*/{});
   }
 

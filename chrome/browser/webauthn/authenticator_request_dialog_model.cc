@@ -1366,7 +1366,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
                                 device::FidoRequestType::kGetAssertion;
   const bool is_new_get_assertion_ui =
       is_get_assertion &&
-      base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys);
+      base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI);
   absl::optional<std::u16string> priority_phone_name;
   absl::optional<size_t> priority_phone_index = GetPrioritySyncedPhoneIndex();
   if (priority_phone_index) {
@@ -1408,7 +1408,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
                      AuthenticatorTransport::kInternal)) {
     transports_to_list_if_active.push_back(AuthenticatorTransport::kInternal);
   }
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys)) {
+  if (!base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
     transports_to_list_if_active.push_back(
         AuthenticatorTransport::kUsbHumanInterfaceDevice);
   }
@@ -1516,7 +1516,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
 
   if (include_add_phone_option) {
     std::u16string label;
-    if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys)) {
+    if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
       if (base::Contains(transport_availability_.available_transports,
                          AuthenticatorTransport::kUsbHumanInterfaceDevice)) {
         label = specific_phones_listed
@@ -1540,7 +1540,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
             &AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone,
             base::Unretained(this)));
   }
-  if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys) &&
+  if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
       (!include_add_phone_option || !transport_availability_.is_ble_powered ||
        transport_availability_.ble_access_denied)) {
     // If the new UI is enabled, only show USB as an option if the QR code is
@@ -1566,7 +1566,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
 
 absl::optional<size_t>
 AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
-  if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys)) {
+  if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
     // If there is a single mechanism, go to that.
     if (mechanisms_.size() == 1) {
       return 0;

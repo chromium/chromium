@@ -556,6 +556,12 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_phone_confirmation) {
 // where test_name is the second arg to IN_PROC_BROWSER_TEST_F().
 class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
  public:
+  GPMPasskeysAuthenticatorDialogTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {device::kWebAuthnListSyncedPasskeys, device::kWebAuthnNewPasskeyUI},
+        /*disabled_features=*/{});
+  }
+
   // AuthenticatorDialogTest:
   void ShowUi(const std::string& name) override {
     // Web modal dialogs' bounds may exceed the display's work area.
@@ -682,8 +688,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
 
  private:
   std::unique_ptr<AuthenticatorRequestDialogModel> model_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnListSyncedPasskeys};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
