@@ -1845,6 +1845,11 @@
           'shards': 10, # https://crbug.com/1103330
         },
       },
+      'Linux Chromium OS ASan LSan Tests (1)': {
+        'swarming': {
+          'shards': 10, # https://crbug.com/1471857
+        },
+      },
       'Linux TSan Tests': {
         'swarming': {
           'shards': 30,
