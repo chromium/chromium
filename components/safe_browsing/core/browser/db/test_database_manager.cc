@@ -100,8 +100,15 @@ void TestSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
   std::move(callback).Run(true);
 }
 
-safe_browsing::ThreatSource TestSafeBrowsingDatabaseManager::GetThreatSource()
-    const {
+safe_browsing::ThreatSource
+TestSafeBrowsingDatabaseManager::GetBrowseUrlThreatSource(
+    CheckBrowseUrlType check_type) const {
+  NOTIMPLEMENTED();
+  return safe_browsing::ThreatSource::UNKNOWN;
+}
+
+safe_browsing::ThreatSource
+TestSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
   NOTIMPLEMENTED();
   return safe_browsing::ThreatSource::UNKNOWN;
 }

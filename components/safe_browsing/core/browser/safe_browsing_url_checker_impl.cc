@@ -337,7 +337,8 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
         // anything. The call also uses web_contents-related fields that are
         // populated within the |MakeUnsafeResource| function.
         MakeUnsafeResource(url, SBThreatType::SB_THREAT_TYPE_SAFE, metadata,
-                           database_manager_->GetThreatSource(),
+                           database_manager_->GetBrowseUrlThreatSource(
+                               CheckBrowseUrlType::kHashDatabase),
                            /*rt_lookup_response=*/nullptr, performed_check),
         base::BindOnce(&SafeBrowsingLookupMechanismExperimenter::
                            SetCheckExperimentEligibility,
@@ -504,7 +505,9 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
           base::BindOnce(&SafeBrowsingUrlCheckerImpl::
                              OnUrlResultInternalAndMaybeDeleteSelf,
                          weak_factory_.GetWeakPtr(), url, threat_type,
-                         ThreatMetadata(), database_manager_->GetThreatSource(),
+                         ThreatMetadata(),
+                         database_manager_->GetBrowseUrlThreatSource(
+                             CheckBrowseUrlType::kHashDatabase),
                          /*rt_lookup_response=*/nullptr, /*timed_out=*/false,
                          PerformedCheck::kCheckSkipped));
       break;

@@ -53,7 +53,8 @@ void DatabaseManagerMechanism::OnCheckBrowseUrlResult(
   // is HashRealTime.
   CompleteCheck(std::make_unique<CompleteCheckResult>(
       url, threat_type, metadata,
-      /*threat_source=*/database_manager_->GetThreatSource(),
+      /*threat_source=*/
+      database_manager_->GetBrowseUrlThreatSource(check_type_),
       /*url_real_time_lookup_response=*/nullptr,
       /*matched_high_confidence_allowlist=*/absl::nullopt,
       /*locally_cached_results_threat_type=*/absl::nullopt,

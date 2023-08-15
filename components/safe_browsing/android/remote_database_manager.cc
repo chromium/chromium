@@ -327,8 +327,14 @@ void RemoteSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
                              base::BindOnce(std::move(callback), true));
 }
 
-safe_browsing::ThreatSource RemoteSafeBrowsingDatabaseManager::GetThreatSource()
-    const {
+safe_browsing::ThreatSource
+RemoteSafeBrowsingDatabaseManager::GetBrowseUrlThreatSource(
+    CheckBrowseUrlType check_type) const {
+  return safe_browsing::ThreatSource::REMOTE;
+}
+
+safe_browsing::ThreatSource
+RemoteSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
   return safe_browsing::ThreatSource::REMOTE;
 }
 

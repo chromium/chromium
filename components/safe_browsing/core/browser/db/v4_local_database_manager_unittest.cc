@@ -570,7 +570,10 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
 TEST_F(V4LocalDatabaseManagerTest, TestGetThreatSource) {
   WaitForTasksOnTaskRunner();
   EXPECT_EQ(ThreatSource::LOCAL_PVER4,
-            v4_local_database_manager_->GetThreatSource());
+            v4_local_database_manager_->GetBrowseUrlThreatSource(
+                CheckBrowseUrlType::kHashDatabase));
+  EXPECT_EQ(ThreatSource::LOCAL_PVER4,
+            v4_local_database_manager_->GetNonBrowseUrlThreatSource());
 }
 
 TEST_F(V4LocalDatabaseManagerTest, TestCanCheckUrl) {

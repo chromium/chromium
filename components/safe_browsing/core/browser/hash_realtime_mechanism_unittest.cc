@@ -126,7 +126,12 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
 
   bool ChecksAreAlwaysAsync() const override { return false; }
 
-  ThreatSource GetThreatSource() const override {
+  ThreatSource GetBrowseUrlThreatSource(
+      CheckBrowseUrlType check_type) const override {
+    return ThreatSource::UNKNOWN;
+  }
+
+  ThreatSource GetNonBrowseUrlThreatSource() const override {
     return ThreatSource::UNKNOWN;
   }
 

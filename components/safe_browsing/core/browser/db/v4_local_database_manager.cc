@@ -626,7 +626,14 @@ void V4LocalDatabaseManager::MatchDownloadAllowlistUrl(
   HandleUrl(url, stores_to_check, std::move(callback));
 }
 
-ThreatSource V4LocalDatabaseManager::GetThreatSource() const {
+ThreatSource V4LocalDatabaseManager::GetBrowseUrlThreatSource(
+    CheckBrowseUrlType check_type) const {
+  DCHECK(check_type == CheckBrowseUrlType::kHashDatabase)
+      << "V4 Local database only support hash database check.";
+  return ThreatSource::LOCAL_PVER4;
+}
+
+ThreatSource V4LocalDatabaseManager::GetNonBrowseUrlThreatSource() const {
   return ThreatSource::LOCAL_PVER4;
 }
 

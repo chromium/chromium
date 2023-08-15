@@ -42,7 +42,9 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
-  safe_browsing::ThreatSource GetThreatSource() const override;
+  safe_browsing::ThreatSource GetBrowseUrlThreatSource(
+      CheckBrowseUrlType check_type) const override;
+  safe_browsing::ThreatSource GetNonBrowseUrlThreatSource() const override;
 
  private:
   ~FakeSafeBrowsingDatabaseManager() override;

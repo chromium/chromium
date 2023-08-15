@@ -222,8 +222,15 @@ class SafeBrowsingDatabaseManager
   // syncs.
   virtual std::unique_ptr<StoreStateMap> GetStoreStateMap();
 
-  // Returns the ThreatSource for this implementation.
-  virtual ThreatSource GetThreatSource() const = 0;
+  // Returns the ThreatSource of browse URL check (i.e. URLs checked by the
+  // |CheckBrowseUrl| function) for this implementation.
+  virtual ThreatSource GetBrowseUrlThreatSource(
+      CheckBrowseUrlType check_type) const = 0;
+
+  // Returns the ThreatSource of non-browse URL check (i.e. URLs or other
+  // entities that are not checked by the |CheckBrowseUrl| function) for this
+  // implementation.
+  virtual ThreatSource GetNonBrowseUrlThreatSource() const = 0;
 
   // Returns whether download protection is enabled.
   virtual bool IsDownloadProtectionEnabled() const = 0;

@@ -64,7 +64,9 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   void MatchDownloadAllowlistUrl(
       const GURL& url,
       base::OnceCallback<void(bool)> callback) override;
-  safe_browsing::ThreatSource GetThreatSource() const override;
+  safe_browsing::ThreatSource GetBrowseUrlThreatSource(
+      CheckBrowseUrlType check_type) const override;
+  safe_browsing::ThreatSource GetNonBrowseUrlThreatSource() const override;
   bool IsDownloadProtectionEnabled() const override;
   void StartOnSBThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
