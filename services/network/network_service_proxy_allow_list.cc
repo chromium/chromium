@@ -1,9 +1,13 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
 #include "services/network/network_service_proxy_allow_list.h"
+
 #include <memory>
+
 #include "base/command_line.h"
+#include "base/strings/strcat.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "services/network/public/cpp/features.h"
@@ -39,7 +43,9 @@ NetworkServiceProxyAllowList::NetworkServiceProxyAllowList() {
                 network::switches::kIPAnonymizationProxyServer)
           : net::features::kIpPrivacyProxyServer.Get();
 
-  custom_proxy_config_->rules.ParseFromString(ip_protection_proxy_server);
+  std::string proxy_spec =
+      base::StrCat({ip_protection_proxy_server, ",direct://"});
+  custom_proxy_config_->rules.ParseFromString(proxy_spec);
 
   custom_proxy_config_->rules.restrict_to_network_service_proxy_allow_list =
       true;

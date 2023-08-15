@@ -563,7 +563,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyAllProxiesBad) {
 TEST_F(NetworkServiceProxyDelegateTest,
        OnResolveProxyNetworkServiceProxyAllowListMatch) {
   auto config = mojom::CustomProxyConfig::New();
-  config->rules.ParseFromString("http=foo");
+  config->rules.ParseFromString("http=foo,direct://");
   config->should_override_existing_config = false;
   config->should_replace_direct = true;
   config->rules.restrict_to_network_service_proxy_allow_list = true;
@@ -589,6 +589,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY foo"));
+  expected_proxy_list.AddProxyServer(net::ProxyServer::Direct());
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
   EXPECT_TRUE(result.is_for_ip_protection());
 }
