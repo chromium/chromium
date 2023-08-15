@@ -2459,21 +2459,15 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
   // iHD driver.
   const bool use_drm_prime_2 = false;
 #else
-  if ((GetImplementationType() == VAImplementation::kIntelIHD ||
-       GetImplementationType() == VAImplementation::kMesaGallium) &&
-      pixmap->GetBufferFormatModifier() ==
-          gfx::NativePixmapHandle::kNoModifier) {
-    // Buffers imported into the iHD or Mesa Gallium libva driver should always
-    // have a valid modifier.
-    return nullptr;
-  }
-
   // TODO(b/233924862): use the DRM_PRIME_2 API with protected content.
   // TODO(b/233929647): use the DRM_PRIME_2 API with the i965 driver.
+  // TODO(b/236746283): remove the kNoModifier check once the modifier is
+  // plumbed for JPEG decoding and encoding.
   const bool use_drm_prime_2 =
       (GetImplementationType() == VAImplementation::kIntelIHD ||
        GetImplementationType() == VAImplementation::kMesaGallium) &&
-      !protected_content;
+      !protected_content &&
+      pixmap->GetBufferFormatModifier() != gfx::NativePixmapHandle::kNoModifier;
 #endif
 
   union {
