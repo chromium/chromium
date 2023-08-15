@@ -19,22 +19,6 @@ namespace blink {
 
 namespace {
 
-// Dominant side:
-// htb ltr => top left
-// htb rtl => top right
-// vlr ltr => top left
-// vlr rtl => bottom left
-// vrl ltr => top right
-// vrl rtl => bottom right
-bool IsLeftDominant(const WritingDirectionMode writing_direction) {
-  return (writing_direction.GetWritingMode() != WritingMode::kVerticalRl) &&
-         !(writing_direction.IsHorizontal() && writing_direction.IsRtl());
-}
-
-bool IsTopDominant(const WritingDirectionMode writing_direction) {
-  return writing_direction.IsHorizontal() || writing_direction.IsLtr();
-}
-
 // A direction agnostic version of |NGLogicalStaticPosition::InlineEdge|, and
 // |NGLogicalStaticPosition::BlockEdge|.
 enum StaticPositionEdge { kStart, kCenter, kEnd };
@@ -444,15 +428,12 @@ bool ComputeOutOfFlowInlineDimensions(
 
   dimensions->size.inline_size = inline_size;
 
-  const auto writing_direction = style.GetWritingDirection();
-  bool is_start_dominant;
-  if (writing_direction.IsHorizontal()) {
-    is_start_dominant = IsLeftDominant(container_writing_direction) ==
-                        IsLeftDominant(writing_direction);
-  } else {
-    is_start_dominant = IsTopDominant(container_writing_direction) ==
-                        IsTopDominant(writing_direction);
-  }
+  // Determines if the "start" sides match.
+  const bool is_start_dominant =
+      LogicalToLogical(container_writing_direction, style.GetWritingDirection(),
+                       /* inline_start */ true, /* inline_end */ false,
+                       /* block_start */ true, /* block_end */ false)
+          .InlineStart();
 
   ComputeInsets(
       space.PercentageResolutionInlineSizeForParentWritingMode(),
@@ -572,15 +553,12 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
 
   dimensions->size.block_size = block_size;
 
-  const auto writing_direction = style.GetWritingDirection();
-  bool is_start_dominant;
-  if (writing_direction.IsHorizontal()) {
-    is_start_dominant = IsTopDominant(container_writing_direction) ==
-                        IsTopDominant(writing_direction);
-  } else {
-    is_start_dominant = IsLeftDominant(container_writing_direction) ==
-                        IsLeftDominant(writing_direction);
-  }
+  // Determines if the "start" sides match.
+  const bool is_start_dominant =
+      LogicalToLogical(container_writing_direction, style.GetWritingDirection(),
+                       /* inline_start */ true, /* inline_end */ false,
+                       /* block_start */ true, /* block_end */ false)
+          .BlockStart();
 
   ComputeInsets(
       space.PercentageResolutionInlineSizeForParentWritingMode(),
