@@ -228,10 +228,10 @@ public interface FeedActionsHandler {
     default void triggerManualRefresh() {}
 
     /**
-     * Returns an UrlFetcher to fetch the data asynchronously. Null will be returned if it is
+     * Returns an ResourceFetcher to fetch the data asynchronously. Null will be returned if it is
      * unavailable.
      */
-    default @Nullable UrlFetcher getAsyncDataFetcher() {
+    default @Nullable ResourceFetcher getAsyncDataFetcher() {
         return null;
     }
 }

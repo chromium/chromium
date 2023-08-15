@@ -13,7 +13,7 @@ import java.util.List;
  *
  * Interface to provide network fetching.
  */
-public interface UrlFetcher {
+public interface ResourceFetcher {
     /**
      * Represents the key portion of an http header field. Header keys should be compared
      * case-insensitively.
