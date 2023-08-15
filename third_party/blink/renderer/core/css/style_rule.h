@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
+#include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -42,6 +43,7 @@ class CascadeLayer;
 class CSSRule;
 class CSSStyleSheet;
 class ExecutionContext;
+class StyleSheetContents;
 
 class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
  public:
@@ -413,7 +415,11 @@ class CORE_EXPORT StyleRuleScope : public StyleRuleGroup {
 
   const StyleScope& GetStyleScope() const { return *style_scope_; }
 
-  void SetPreludeText(const ExecutionContext*, String);
+  void SetPreludeText(const ExecutionContext*,
+                      String,
+                      CSSNestingType,
+                      StyleRule* parent_rule_for_nesting,
+                      StyleSheetContents* style_sheet);
 
  private:
   Member<const StyleScope> style_scope_;

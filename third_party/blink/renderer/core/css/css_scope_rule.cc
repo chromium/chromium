@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 
 #include "third_party/blink/renderer/core/css/css_markup.h"
+#include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -67,8 +68,38 @@ String CSSScopeRule::end() const {
 void CSSScopeRule::SetPreludeText(const ExecutionContext* execution_context,
                                   String value) {
   CSSStyleSheet::RuleMutationScope mutation_scope(this);
-  To<StyleRuleScope>(group_rule_.Get())
-      ->SetPreludeText(execution_context, value);
+
+  // Find enclosing style rule or @scope rule, whichever comes first:
+  CSSNestingType nesting_type = CSSNestingType::kNone;
+  StyleRule* parent_rule_for_nesting = nullptr;
+  for (CSSRule* parent = parentRule(); parent; parent = parent->parentRule()) {
+    if (const auto* style_rule = DynamicTo<CSSStyleRule>(parent)) {
+      nesting_type = CSSNestingType::kNesting;
+      parent_rule_for_nesting = style_rule->GetStyleRule();
+      break;
+    }
+    if (const auto* scope_rule = DynamicTo<CSSScopeRule>(parent)) {
+      nesting_type = CSSNestingType::kScope;
+      parent_rule_for_nesting =
+          scope_rule->GetStyleRuleScope().GetStyleScope().RuleForNesting();
+      break;
+    }
+  }
+
+  CSSStyleSheet* style_sheet = parentStyleSheet();
+  StyleSheetContents* contents =
+      style_sheet ? style_sheet->Contents() : nullptr;
+
+  GetStyleRuleScope().SetPreludeText(execution_context, value, nesting_type,
+                                     parent_rule_for_nesting, contents);
+}
+
+StyleRuleScope& CSSScopeRule::GetStyleRuleScope() {
+  return *To<StyleRuleScope>(group_rule_.Get());
+}
+
+const StyleRuleScope& CSSScopeRule::GetStyleRuleScope() const {
+  return *To<StyleRuleScope>(group_rule_.Get());
 }
 
 }  // namespace blink

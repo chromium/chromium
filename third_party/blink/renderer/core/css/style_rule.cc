@@ -605,20 +605,17 @@ void StyleRuleScope::TraceAfterDispatch(blink::Visitor* visitor) const {
 }
 
 void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
-                                    String value) {
+                                    String value,
+                                    CSSNestingType nesting_type,
+                                    StyleRule* parent_rule_for_nesting,
+                                    StyleSheetContents* style_sheet) {
   auto* parser_context =
       MakeGarbageCollected<CSSParserContext>(*execution_context);
   Vector<CSSParserToken, 32> tokens = CSSTokenizer(value).TokenizeToEOF();
 
   StyleRule* old_parent = style_scope_->RuleForNesting();
-  // TODO(crbug.com/1457247): SetPreludeText must retain nesting type,
-  // parent_rule_for_nesting and style_sheet. Otherwise, nesting selectors
-  // (&) present in `value` will not point to the correct rule, and implicit
-  // (prelude) scopes will not get any roots.
-  style_scope_ =
-      StyleScope::Parse(tokens, parser_context, CSSNestingType::kNone,
-                        /* parent_rule_for_nesting */ nullptr,
-                        /* style_sheet */ nullptr);
+  style_scope_ = StyleScope::Parse(tokens, parser_context, nesting_type,
+                                   parent_rule_for_nesting, style_sheet);
 
   // Reparent rules within the @scope's body.
   Reparent(old_parent, style_scope_->RuleForNesting());
