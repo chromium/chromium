@@ -6,11 +6,17 @@ import SwiftUI
 
 /// Collection of constants and styling for the overflow menu `List`.
 struct OverflowMenuListStyle: ViewModifier {
-  static let destinationListHeight: CGFloat = 123
-  // Default height if no other header or footer. This spaces the sections
-  // out properly.
+  /// Height of the destination list
+  static let destinationListHeight: CGFloat = 113
+  /// Extra height of the destination list when displayed in a view with a
+  /// grabber.
+  static let destinationListGrabberHeight: CGFloat = 10
+
+  /// Default height if no other header or footer. This spaces the sections
+  /// out properly.
   static let headerFooterHeight: CGFloat = 20
-  // The minimum row height for any row in the list.
+
+  /// The minimum row height for any row in the list.
   static let minimumRowHeight: CGFloat = 48
 
   func body(content: Content) -> some View {

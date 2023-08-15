@@ -98,48 +98,61 @@ struct OverflowMenuDestinationView: View {
   weak var metricsHandler: PopupMenuMetricsHandler?
 
   var body: some View {
-    Button(
-      action: {
-        // When editing, no actions are performed.
-        if editMode?.wrappedValue.isEditing == true {
-          return
-        }
-        metricsHandler?.popupMenuTookAction()
-        destination.handler()
-      },
-      label: {
-        let destinationWidth = Self.destinationWidth(layoutParameters)
-        Group {
-          switch layoutParameters {
-          case .vertical:
-            VStack {
-              icon
-              text
-            }
-            .frame(width: destinationWidth)
-          case .horizontal:
-            HStack {
-              icon
-              Spacer().frame(width: Dimensions.horizontalLayoutIconSpacing)
-              text
-            }
-            .frame(width: destinationWidth, alignment: .leading)
-            // In horizontal layout, the item itself has leading and trailing
-            // padding.
-            .padding([.leading, .trailing], Dimensions.horizontalLayoutViewPadding)
-          }
-        }
-        .contentShape(Rectangle())
+    button
+      .accessibilityIdentifier(accessibilityIdentifier)
+      .accessibilityLabel(Text(accessibilityLabel))
+      .if(highlighted) { view in
+        view.anchorPreference(
+          key: OverflowMenuDestinationList.HighlightedDestinationBounds.self, value: .bounds
+        ) { $0 }
       }
-    )
-    .accessibilityIdentifier(accessibilityIdentifier)
-    .accessibilityLabel(Text(accessibilityLabel))
-    .buttonStyle(IsPressedStyle(isPressed: $isPressed))
-    .if(highlighted) { view in
-      view.anchorPreference(
-        key: OverflowMenuDestinationList.HighlightedDestinationBounds.self, value: .bounds
-      ) { $0 }
+  }
+
+  // The button view, which is replaced by just a plain view when this is in
+  // edit mode.
+  @ViewBuilder
+  var button: some View {
+    if editMode?.wrappedValue.isEditing == true {
+      buttonContent
+    } else {
+      Button(
+        action: {
+          metricsHandler?.popupMenuTookAction()
+          destination.handler()
+        },
+        label: {
+          buttonContent
+        }
+      )
+      .buttonStyle(IsPressedStyle(isPressed: $isPressed))
     }
+  }
+
+  /// The content of the button view.
+  @ViewBuilder
+  var buttonContent: some View {
+    let destinationWidth = Self.destinationWidth(layoutParameters)
+    Group {
+      switch layoutParameters {
+      case .vertical:
+        VStack {
+          icon
+          text
+        }
+        .frame(width: destinationWidth)
+      case .horizontal:
+        HStack {
+          icon
+          Spacer().frame(width: Dimensions.horizontalLayoutIconSpacing)
+          text
+        }
+        .frame(width: destinationWidth, alignment: .leading)
+        // In horizontal layout, the item itself has leading and trailing
+        // padding.
+        .padding([.leading, .trailing], Dimensions.horizontalLayoutViewPadding)
+      }
+    }
+    .contentShape(Rectangle())
   }
 
   /// Background color for the icon.
@@ -163,19 +176,16 @@ struct OverflowMenuDestinationView: View {
   /// Icon for the destination.
   var icon: some View {
     let interiorPadding: CGFloat
-    let spacing: CGFloat
     switch layoutParameters {
-    case .vertical(let iconSpacing, let iconPadding):
-      spacing = iconSpacing
+    case .vertical(_, let iconPadding):
       interiorPadding = iconPadding
     case .horizontal:
-      spacing = 0
       interiorPadding = Dimensions.horizontalLayoutIconPadding
     }
     let symbolName = destination.symbolName ?? "gearshape"
     let image = (destination.systemSymbol ? Image(systemName: symbolName) : Image(symbolName))
       .renderingMode(.template)
-    return iconBuilder(spacing: spacing, interiorPadding: interiorPadding, image: image)
+    return iconBuilder(interiorPadding: interiorPadding, image: image)
   }
 
   var circleBadge: some View {
@@ -209,7 +219,7 @@ struct OverflowMenuDestinationView: View {
   /// Build the image to be displayed, based on the configuration of the item.
   /// TODO(crbug.com/1315544): Remove this once only the symbols are present.
   @ViewBuilder
-  func iconBuilder(spacing: CGFloat, interiorPadding: CGFloat, image: Image) -> some View {
+  func iconBuilder(interiorPadding: CGFloat, image: Image) -> some View {
     let configuredImage = image.overlay {
       if destination.badge == .error {
         circleBadge.foregroundColor(.red500)
@@ -222,14 +232,17 @@ struct OverflowMenuDestinationView: View {
     .frame(width: Dimensions.imageWidth, height: Dimensions.imageWidth)
     .padding(interiorPadding)
     .background(iconBackground)
-    .padding([.leading, .trailing], spacing)
     // Without explicitly removing the image from accessibility,
     // VoiceOver will occasionally read out icons it thinks it can
     // recognize.
     .accessibilityHidden(true)
 
     configuredImage.foregroundColor(.blue600).imageScale(.medium).font(
-      Font.system(size: Dimensions.iconSymbolSize, weight: .medium))
+      Font.system(size: Dimensions.iconSymbolSize, weight: .medium)
+    )
+    .alignmentGuide(.icon) { $0[VerticalAlignment.center] }
+    .alignmentGuide(HorizontalAlignment.editButton) { $0[.leading] }
+    .alignmentGuide(VerticalAlignment.editButton) { $0[.top] }
   }
 
   /// Text view for the destination.

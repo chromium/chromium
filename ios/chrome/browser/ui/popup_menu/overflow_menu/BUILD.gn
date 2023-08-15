@@ -99,6 +99,7 @@ swift_source_set("overflow_menu_swift") {
     "action_customization_model.swift",
     "destination_customization_model.swift",
     "destination_drag_handler.swift",
+    "destination_edit_button.swift",
     "menu_customization_view.swift",
     "overflow_menu_action.swift",
     "overflow_menu_action_group.swift",

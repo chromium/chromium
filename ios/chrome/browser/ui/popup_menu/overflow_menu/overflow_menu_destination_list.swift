@@ -34,8 +34,8 @@ struct OverflowMenuDestinationList: View {
     /// screen width minus a fixed space.
     static let largeTextSizeSpace: CGFloat = 120
 
-    /// Space above the list pushing them down from the grabber.
-    static let topMargin: CGFloat = 20
+    /// The bottom margin between the destinations and the edge of the list.
+    static let bottomMargin: CGFloat = 5
 
     /// The name for the coordinate space of the scroll view, so children can
     /// find their positioning in the scroll view.
@@ -69,6 +69,8 @@ struct OverflowMenuDestinationList: View {
   /// The current environment layout direction.
   @Environment(\.layoutDirection) var layoutDirection: LayoutDirection
 
+  @Environment(\.editMode) var editMode
+
   /// The destinations for this view.
   @Binding var destinations: [OverflowMenuDestination]
 
@@ -86,13 +88,10 @@ struct OverflowMenuDestinationList: View {
   @State var listOffset: CGFloat? = nil
 
   var body: some View {
-    VStack {
-      Spacer(minLength: Constants.topMargin)
-      GeometryReader { geometry in
-        scrollView(in: geometry)
-          .coordinateSpace(name: Constants.coordinateSpaceName)
-          .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
-      }
+    GeometryReader { geometry in
+      scrollView(in: geometry)
+        .coordinateSpace(name: Constants.coordinateSpaceName)
+        .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
     }
     .background(
       Color("destination_highlight_color").opacity(uiConfiguration.highlightDestinationsRow ? 1 : 0)
@@ -124,9 +123,9 @@ struct OverflowMenuDestinationList: View {
           forScreenWidth: geometry.size.width)
         let layoutParameters = OverflowMenuDestinationList.layoutParameters(
           forScreenWidth: geometry.size.width, forSizeCategory: sizeCategory)
-        let alignment: VerticalAlignment = sizeCategory >= .accessibilityMedium ? .center : .top
+        let alignment: VerticalAlignment = sizeCategory >= .accessibilityMedium ? .center : .icon
 
-        ZStack {
+        ZStack(alignment: .bottom) {
           HStack(alignment: alignment, spacing: 0) {
             // Make sure the space to the first icon is constant, so add extra
             // spacing before the first item.
@@ -140,23 +139,32 @@ struct OverflowMenuDestinationList: View {
               .id(destination.destination)
               .ifLet(dragHandler) { view, dragHandler in
                 view
-                  .opacity(
-                    dragHandler.dragOnDestinations
-                      && dragHandler.currentDrag?.item == destination ? 0.01 : 1
-                  )
                   .onDrag {
                     dragHandler.startDrag(from: destination)
                     return NSItemProvider(object: destination.name as NSString)
+                  } preview: {
+                    OverflowMenuDestinationView(
+                      destination: destination, layoutParameters: layoutParameters,
+                      highlighted: uiConfiguration.highlightDestination == destination.destination,
+                      metricsHandler: nil)
                   }
                   .onDrop(
                     of: [.text],
                     delegate: dragHandler.newDropDelegate(
                       forDestination: destination))
-
+              }
+              .overlay(alignment: .editButton) {
+                if editMode?.wrappedValue.isEditing == true && destination.canBeHidden {
+                  DestinationEditButton(destination: destination)
+                    .alignmentGuide(HorizontalAlignment.editButton) {
+                      $0[HorizontalAlignment.center]
+                    }
+                    .alignmentGuide(VerticalAlignment.editButton) { $0[VerticalAlignment.center] }
+                }
               }
 
             }
-          }
+          }.alignmentGuide(.bottom) { $0[.bottom] + Constants.bottomMargin }
 
           GeometryReader { innerGeometry in
             let frame = innerGeometry.frame(in: .named(Constants.coordinateSpaceName))
@@ -272,4 +280,44 @@ struct OverflowMenuDestinationList: View {
       / (inRange.upperBound - inRange.lowerBound)
     return (number - inRange.lowerBound) * scalingFactor + outRange.lowerBound
   }
+}
+
+extension VerticalAlignment {
+  /// A new custom alignment to align the DestinationViews by their icon
+  /// position.
+  static let icon = VerticalAlignment(Icon.self)
+
+  /// A new custom alignment to allow aligning the edit buttons at specific
+  /// locations.
+  static let editButton = VerticalAlignment(EditButton.self)
+
+  private enum Icon: AlignmentID {
+    static func defaultValue(in d: ViewDimensions) -> CGFloat {
+      return d[.bottom]
+    }
+  }
+
+  private enum EditButton: AlignmentID {
+    static func defaultValue(in d: ViewDimensions) -> CGFloat {
+      return d[.top]
+    }
+  }
+}
+
+extension HorizontalAlignment {
+  /// A new custom alignment to allow aligning the edit buttons at specific
+  /// locations.
+  static let editButton = HorizontalAlignment(EditButton.self)
+
+  private enum EditButton: AlignmentID {
+    static func defaultValue(in d: ViewDimensions) -> CGFloat {
+      return d[.leading]
+    }
+  }
+}
+
+extension Alignment {
+  /// A new custom alignment to allow aligning the edit buttons at specific
+  /// locations.
+  static let editButton = Alignment(horizontal: .editButton, vertical: .editButton)
 }

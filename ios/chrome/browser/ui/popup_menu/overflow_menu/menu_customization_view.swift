@@ -11,6 +11,9 @@ import SwiftUI
 
 /// View for showing the customization screen for overflow menu
 struct MenuCustomizationView: View {
+  /// Leading padding for any views that require it.
+  static let leadingPadding: CGFloat = 16
+
   @ObservedObject var actionCustomizationModel: ActionCustomizationModel
 
   @ObservedObject var destinationCustomizationModel: DestinationCustomizationModel
@@ -38,27 +41,36 @@ struct MenuCustomizationView: View {
 
   var body: some View {
     NavigationView {
-      VStack {
+      VStack(alignment: .leading, spacing: 0) {
         OverflowMenuDestinationList(
           destinations: $destinationCustomizationModel.shownDestinations, metricsHandler: nil,
           uiConfiguration: uiConfiguration, dragHandler: dragHandler
         ).frame(height: OverflowMenuListStyle.destinationListHeight)
+        if destinationCustomizationModel.hiddenDestinations.count > 0 {
+          Text(
+            L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_EDIT_SECTION_HIDDEN_TITLE)
+          )
+          .fontWeight(.semibold)
+          .padding([.leading], Self.leadingPadding)
+          OverflowMenuDestinationList(
+            destinations: $destinationCustomizationModel.hiddenDestinations, metricsHandler: nil,
+            uiConfiguration: uiConfiguration
+          ).frame(height: OverflowMenuListStyle.destinationListHeight)
+        }
         Divider()
         List {
           createDefaultSection {
             HStack {
               VStack(alignment: .leading) {
-                Text("")
-                Text("")
+                Text(L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SORT_TITLE))
+                Text(L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SORT_DESCRIPTION))
                   .font(.caption)
               }
+              Spacer()
               Toggle(isOn: $destinationCustomizationModel.destinationUsageEnabled) {}
                 .labelsHidden()
                 .tint(.chromeBlue)
             }
-          }
-          createDefaultSection {
-            hiddenDestinationsContent
           }
           ForEach([actionCustomizationModel.shownActions, actionCustomizationModel.hiddenActions]) {
             group in
@@ -66,7 +78,6 @@ struct MenuCustomizationView: View {
           }
         }
       }
-      .onDrop(of: [.text], delegate: dragHandler.newDestinationListDropDelegate())
       .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
       .overflowMenuListStyle()
       .environment(\.editMode, .constant(.active))
@@ -94,31 +105,6 @@ struct MenuCustomizationView: View {
             !destinationCustomizationModel.hasChanged && !actionCustomizationModel.hasChanged)
         }
       }
-    }
-  }
-
-  /// Content of the section for hidden destinations. This is a drop target if
-  /// there are no hidden destinations and a list of the hidden destinations
-  /// otherwise.
-  @ViewBuilder
-  var hiddenDestinationsContent: some View {
-    if destinationCustomizationModel.hiddenDestinations.isEmpty {
-      // If the section is empty, then nothing can be dropped on it, so create a
-      // fake single entry to act as a drop target for now.
-      ForEach([1], id: \.self) { _ in
-        ZStack {
-          Spacer()
-            .frame(height: 62)
-          Text("")
-        }
-      }
-      .onInsert(of: [.text], perform: dragHandler.performListDrop(index:providers:))
-    } else {
-      ForEach(destinationCustomizationModel.hiddenDestinations) { destination in
-        // TODO(crbug.com/1463959): Replace with full row.
-        Text(destination.name)
-      }
-      .onInsert(of: [.text], perform: dragHandler.performListDrop(index:providers:))
     }
   }
 

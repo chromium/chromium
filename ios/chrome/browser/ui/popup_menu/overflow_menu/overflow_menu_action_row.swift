@@ -65,12 +65,16 @@ struct OverflowMenuActionRow: View {
       .padding([.trailing], Self.editRowEndPadding)
     } else {
       HStack {
+        // If there is no icon, the text should be centered.
+        if rowIcon == nil {
+          Spacer()
+        }
         name
         if action.displayNewLabelIcon {
           newLabelIconView
         }
+        Spacer()
         if let rowIcon = rowIcon {
-          Spacer()
           rowIcon
         }
       }

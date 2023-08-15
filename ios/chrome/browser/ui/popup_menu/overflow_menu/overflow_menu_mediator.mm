@@ -489,120 +489,36 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   __weak __typeof(self) weakSelf = self;
 
   // Bookmarks destination.
-  self.bookmarksDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_BOOKMARKS
-                              destination:overflow_menu::Destination::Bookmarks
-                               symbolName:kBookmarksSymbol
-                             systemSymbol:YES
-                          accessibilityID:kToolsMenuBookmarksId
-                                  handler:^{
-                                    [weakSelf openBookmarks];
-                                  }];
+  self.bookmarksDestination = [self newBookmarksDestination];
 
   // Downloads destination.
-  self.downloadsDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_DOWNLOADS
-                              destination:overflow_menu::Destination::Downloads
-                               symbolName:kDownloadSymbol
-                             systemSymbol:YES
-                          accessibilityID:kToolsMenuDownloadsId
-                                  handler:^{
-                                    [weakSelf openDownloads];
-                                  }];
+  self.downloadsDestination = [self newDownloadsDestination];
 
   // History destination.
-  self.historyDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_HISTORY
-                              destination:overflow_menu::Destination::History
-                               symbolName:kHistorySymbol
-                             systemSymbol:YES
-                          accessibilityID:kToolsMenuHistoryId
-                                  handler:^{
-                                    [weakSelf openHistory];
-                                  }];
+  self.historyDestination = [self newHistoryDestination];
 
   // Passwords destination.
-  self.passwordsDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
-                              destination:overflow_menu::Destination::Passwords
-                               symbolName:kPasswordSymbol
-                             systemSymbol:NO
-                          accessibilityID:kToolsMenuPasswordsId
-                                  handler:^{
-                                    [weakSelf openPasswords];
-                                  }];
+  self.passwordsDestination = [self newPasswordsDestination];
 
   // Price Tracking destination.
-  self.priceNotificationsDestination =
-      [self createOverflowMenuDestination:
-                IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE
-                              destination:overflow_menu::Destination::
-                                              PriceNotifications
-                               symbolName:kDownTrendSymbol
-                             systemSymbol:NO
-                          accessibilityID:kToolsMenuPriceNotifications
-                                  handler:^{
-                                    [weakSelf openPriceNotifications];
-                                  }];
+  self.priceNotificationsDestination = [self newPriceNotificationsDestination];
 
   // Reading List destination.
-  self.readingListDestination = [self
-      createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_READING_LIST
-                        destination:overflow_menu::Destination::ReadingList
-                         symbolName:kReadingListSymbol
-                       systemSymbol:NO
-                    accessibilityID:kToolsMenuReadingListId
-                            handler:^{
-                              [weakSelf openReadingList];
-                            }];
+  self.readingListDestination = [self newReadingListDestination];
 
   // Recent Tabs destination.
-  self.recentTabsDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_RECENT_TABS
-                              destination:overflow_menu::Destination::RecentTabs
-                               symbolName:kRecentTabsSymbol
-                             systemSymbol:NO
-                          accessibilityID:kToolsMenuOtherDevicesId
-                                  handler:^{
-                                    [weakSelf openRecentTabs];
-                                  }];
+  self.recentTabsDestination = [self newRecentTabsDestination];
 
   // Settings destination.
-  self.settingsDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SETTINGS
-                              destination:overflow_menu::Destination::Settings
-                               symbolName:kSettingsSymbol
-                             systemSymbol:YES
-                          accessibilityID:kToolsMenuSettingsId
-                                  handler:^{
-                                    [weakSelf openSettings];
-                                  }];
+  self.settingsDestination = [self newSettingsDestination];
 
-  self.spotlightDebuggerDestination = [self destinationForSpotlightDebugger:^{
-    [weakSelf openSpotlightDebugger];
-  }];
+  self.spotlightDebuggerDestination = [self newSpotlightDebuggerDestination];
 
   // WhatsNew destination.
-  self.whatsNewDestination =
-      [self createOverflowMenuDestination:IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW
-                              destination:overflow_menu::Destination::WhatsNew
-                               symbolName:kCheckmarkSealSymbol
-                             systemSymbol:YES
-                          accessibilityID:kToolsMenuWhatsNewId
-                                  handler:^{
-                                    [weakSelf openWhatsNew];
-                                  }];
+  self.whatsNewDestination = [self newWhatsNewDestination];
 
   // Site Info destination.
-  self.siteInfoDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SITE_INFORMATION
-                              destination:overflow_menu::Destination::SiteInfo
-                               symbolName:kTunerSymbol
-                             systemSymbol:NO
-                          accessibilityID:kToolsMenuSiteInformation
-                                  handler:^{
-                                    [weakSelf openSiteInformation];
-                                  }];
+  self.siteInfoDestination = [self newSiteInfoDestination];
 
   [self logTranslateAvailability];
 
@@ -735,14 +651,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                  footer:nil];
 
   NSMutableArray* actionGroups = [[NSMutableArray alloc] init];
-  [actionGroups addObjectsFromArray:@[
-    self.appActionsGroup,
-    self.pageActionsGroup,
-    self.helpActionsGroup,
-  ]];
+  [actionGroups
+      addObjectsFromArray:@[ self.appActionsGroup, self.pageActionsGroup ]];
   if (IsOverflowMenuCustomizationEnabled()) {
     [actionGroups addObject:self.editActionsGroup];
   }
+  [actionGroups addObject:self.helpActionsGroup];
 
   self.model.actionGroups = actionGroups;
 }
@@ -827,6 +741,147 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuTextZoom, ^{
         [weakSelf openTextZoom];
       });
+}
+
+- (OverflowMenuDestination*)newBookmarksDestination {
+  __weak __typeof(self) weakSelf = self;
+  return
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_BOOKMARKS
+                              destination:overflow_menu::Destination::Bookmarks
+                               symbolName:kBookmarksSymbol
+                             systemSymbol:YES
+                          accessibilityID:kToolsMenuBookmarksId
+                                  handler:^{
+                                    [weakSelf openBookmarks];
+                                  }];
+}
+
+- (OverflowMenuDestination*)newHistoryDestination {
+  __weak __typeof(self) weakSelf = self;
+  return [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_HISTORY
+                                 destination:overflow_menu::Destination::History
+                                  symbolName:kHistorySymbol
+                                systemSymbol:YES
+                             accessibilityID:kToolsMenuHistoryId
+                                     handler:^{
+                                       [weakSelf openHistory];
+                                     }];
+}
+
+- (OverflowMenuDestination*)newReadingListDestination {
+  __weak __typeof(self) weakSelf = self;
+  return [self
+      createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_READING_LIST
+                        destination:overflow_menu::Destination::ReadingList
+                         symbolName:kReadingListSymbol
+                       systemSymbol:NO
+                    accessibilityID:kToolsMenuReadingListId
+                            handler:^{
+                              [weakSelf openReadingList];
+                            }];
+}
+
+- (OverflowMenuDestination*)newPasswordsDestination {
+  __weak __typeof(self) weakSelf = self;
+  return
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
+                              destination:overflow_menu::Destination::Passwords
+                               symbolName:kPasswordSymbol
+                             systemSymbol:NO
+                          accessibilityID:kToolsMenuPasswordsId
+                                  handler:^{
+                                    [weakSelf openPasswords];
+                                  }];
+}
+
+- (OverflowMenuDestination*)newDownloadsDestination {
+  __weak __typeof(self) weakSelf = self;
+  return
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_DOWNLOADS
+                              destination:overflow_menu::Destination::Downloads
+                               symbolName:kDownloadSymbol
+                             systemSymbol:YES
+                          accessibilityID:kToolsMenuDownloadsId
+                                  handler:^{
+                                    [weakSelf openDownloads];
+                                  }];
+}
+
+- (OverflowMenuDestination*)newRecentTabsDestination {
+  __weak __typeof(self) weakSelf = self;
+  return
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_RECENT_TABS
+                              destination:overflow_menu::Destination::RecentTabs
+                               symbolName:kRecentTabsSymbol
+                             systemSymbol:NO
+                          accessibilityID:kToolsMenuOtherDevicesId
+                                  handler:^{
+                                    [weakSelf openRecentTabs];
+                                  }];
+}
+
+- (OverflowMenuDestination*)newSiteInfoDestination {
+  __weak __typeof(self) weakSelf = self;
+  OverflowMenuDestination* destination =
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SITE_INFORMATION
+                              destination:overflow_menu::Destination::SiteInfo
+                               symbolName:kTunerSymbol
+                             systemSymbol:NO
+                          accessibilityID:kToolsMenuSiteInformation
+                                  handler:^{
+                                    [weakSelf openSiteInformation];
+                                  }];
+  destination.canBeHidden = NO;
+  return destination;
+}
+
+- (OverflowMenuDestination*)newSettingsDestination {
+  __weak __typeof(self) weakSelf = self;
+  OverflowMenuDestination* destination =
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SETTINGS
+                              destination:overflow_menu::Destination::Settings
+                               symbolName:kSettingsSymbol
+                             systemSymbol:YES
+                          accessibilityID:kToolsMenuSettingsId
+                                  handler:^{
+                                    [weakSelf openSettings];
+                                  }];
+  destination.canBeHidden = NO;
+  return destination;
+}
+
+- (OverflowMenuDestination*)newWhatsNewDestination {
+  __weak __typeof(self) weakSelf = self;
+  return
+      [self createOverflowMenuDestination:IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW
+                              destination:overflow_menu::Destination::WhatsNew
+                               symbolName:kCheckmarkSealSymbol
+                             systemSymbol:YES
+                          accessibilityID:kToolsMenuWhatsNewId
+                                  handler:^{
+                                    [weakSelf openWhatsNew];
+                                  }];
+}
+
+- (OverflowMenuDestination*)newSpotlightDebuggerDestination {
+  __weak __typeof(self) weakSelf = self;
+  return [self destinationForSpotlightDebugger:^{
+    [weakSelf openSpotlightDebugger];
+  }];
+}
+
+- (OverflowMenuDestination*)newPriceNotificationsDestination {
+  __weak __typeof(self) weakSelf = self;
+  return [self createOverflowMenuDestination:
+                   IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE
+                                 destination:overflow_menu::Destination::
+                                                 PriceNotifications
+                                  symbolName:kDownTrendSymbol
+                                systemSymbol:NO
+                             accessibilityID:kToolsMenuPriceNotifications
+                                     handler:^{
+                                       [weakSelf openPriceNotifications];
+                                     }];
 }
 
 #pragma mark - Private
@@ -1393,27 +1448,27 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     (overflow_menu::Destination)destinationType {
   switch (destinationType) {
     case overflow_menu::Destination::Bookmarks:
-      return self.bookmarksDestination;
+      return [self newBookmarksDestination];
     case overflow_menu::Destination::History:
-      return self.historyDestination;
+      return [self newHistoryDestination];
     case overflow_menu::Destination::ReadingList:
-      return self.readingListDestination;
+      return [self newReadingListDestination];
     case overflow_menu::Destination::Passwords:
-      return self.passwordsDestination;
+      return [self newPasswordsDestination];
     case overflow_menu::Destination::Downloads:
-      return self.downloadsDestination;
+      return [self newDownloadsDestination];
     case overflow_menu::Destination::RecentTabs:
-      return self.recentTabsDestination;
+      return [self newRecentTabsDestination];
     case overflow_menu::Destination::SiteInfo:
-      return self.siteInfoDestination;
+      return [self newSiteInfoDestination];
     case overflow_menu::Destination::Settings:
-      return self.settingsDestination;
+      return [self newSettingsDestination];
     case overflow_menu::Destination::WhatsNew:
-      return self.whatsNewDestination;
+      return [self newWhatsNewDestination];
     case overflow_menu::Destination::SpotlightDebugger:
-      return self.spotlightDebuggerDestination;
+      return [self newSpotlightDebuggerDestination];
     case overflow_menu::Destination::PriceNotifications:
-      return self.priceNotificationsDestination;
+      return [self newPriceNotificationsDestination];
   }
 }
 

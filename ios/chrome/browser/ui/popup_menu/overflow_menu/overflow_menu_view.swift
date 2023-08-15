@@ -22,8 +22,11 @@ struct OverflowMenuView: View {
       ) {
         OverflowMenuDestinationList(
           destinations: $model.destinations, metricsHandler: metricsHandler,
-          uiConfiguration: uiConfiguration, dragHandler: nil
-        ).frame(height: OverflowMenuListStyle.destinationListHeight)
+          uiConfiguration: uiConfiguration
+        )
+        .frame(
+          height: OverflowMenuListStyle.destinationListHeight
+            + OverflowMenuListStyle.destinationListGrabberHeight)
         Divider()
         OverflowMenuActionList(actionGroups: model.actionGroups, metricsHandler: metricsHandler)
         // Add a spacer on iPad to make sure there's space below the list.
