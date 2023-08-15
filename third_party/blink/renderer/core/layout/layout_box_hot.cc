@@ -77,6 +77,10 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   NOT_DESTROYED();
   *out_cache_status = NGLayoutCacheStatus::kNeedsLayout;
 
+  if (SelfNeedsFullLayout()) {
+    return nullptr;
+  }
+
   const bool use_layout_cache_slot =
       new_space.CacheSlot() == NGCacheSlot::kLayout && !layout_results_.empty();
   const NGLayoutResult* cached_layout_result =
@@ -98,13 +102,6 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   // Set our initial temporary cache status to "hit".
   NGLayoutCacheStatus cache_status = NGLayoutCacheStatus::kHit;
 
-  // If the display-lock blocked child layout, then we don't clear child needs
-  // layout bits. However, we can still use the cached result, since we will
-  // re-layout when unlocking.
-  bool is_blocked_by_display_lock = ChildLayoutBlockedByDisplayLock();
-  bool child_needs_layout_unless_locked =
-      !is_blocked_by_display_lock && ChildNeedsFullLayout();
-
   const NGPhysicalBoxFragment& physical_fragment =
       To<NGPhysicalBoxFragment>(cached_layout_result->PhysicalFragment());
 
@@ -114,49 +111,44 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       (break_token && break_token->IsRepeated()))
     return nullptr;
 
-  if (SelfNeedsFullLayout() || child_needs_layout_unless_locked ||
-      NeedsSimplifiedLayout()) {
+  // If the display-lock blocked child layout, then we don't clear child needs
+  // layout bits. However, we can still use the cached result, since we will
+  // re-layout when unlocking.
+  bool is_blocked_by_display_lock = ChildLayoutBlockedByDisplayLock();
+  bool child_needs_layout =
+      !is_blocked_by_display_lock && ChildNeedsFullLayout();
+
+  if (NeedsSimplifiedLayoutOnly()) {
+    cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
+  } else if (child_needs_layout) {
+    // If we have inline children - we can potentially reuse some of the lines.
     if (!ChildrenInline()) {
-      // Check if we only need "simplified" layout. We don't abort yet, as we
-      // need to check if other things (like floats) will require us to perform
-      // a full layout.
-      if (!NeedsSimplifiedLayoutOnly())
-        return nullptr;
-
-      cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
-    } else if (SelfNeedsFullLayout() || ChildNeedsFullLayout()) {
-      // We don't regenerate any lineboxes during our "simplified" layout pass.
-      // If something needs "simplified" layout within a linebox, (e.g. an
-      // atomic-inline) we miss the cache.
-
-      // Check if some of line boxes are reusable.
-
-      // Only for the layout cache slot. Measure has several special
-      // optimizations that makes reusing lines complicated.
-      if (!use_layout_cache_slot)
-        return nullptr;
-
-      if (SelfNeedsFullLayout()) {
-        return nullptr;
-      }
-
-      if (!physical_fragment.HasItems())
-        return nullptr;
-
-      // Propagating OOF needs re-layout.
-      if (physical_fragment.NeedsOOFPositionedInfoPropagation())
-        return nullptr;
-
-      // Any floats might need to move, causing lines to wrap differently,
-      // needing re-layout, either in cached result or in new constraint space.
-      if (!cached_layout_result->ExclusionSpace().IsEmpty() ||
-          new_space.HasFloats())
-        return nullptr;
-
-      cache_status = NGLayoutCacheStatus::kCanReuseLines;
-    } else {
-      cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
+      return nullptr;
     }
+
+    if (!physical_fragment.HasItems()) {
+      return nullptr;
+    }
+
+    // Only for the layout cache slot. Measure has several special
+    // optimizations that makes reusing lines complicated.
+    if (!use_layout_cache_slot) {
+      return nullptr;
+    }
+
+    // Propagating OOF needs re-layout.
+    if (physical_fragment.NeedsOOFPositionedInfoPropagation()) {
+      return nullptr;
+    }
+
+    // Any floats might need to move, causing lines to wrap differently,
+    // needing re-layout, either in cached result or in new constraint space.
+    if (!cached_layout_result->ExclusionSpace().IsEmpty() ||
+        new_space.HasFloats()) {
+      return nullptr;
+    }
+
+    cache_status = NGLayoutCacheStatus::kCanReuseLines;
   }
 
   NGBlockNode node(this);
