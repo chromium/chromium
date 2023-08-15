@@ -1019,9 +1019,18 @@ DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
   } else {
     Attribute* type_attribute_non_streaming =
         token->GetAttributeItem(html_names::kShadowrootAttr);
-    if (!type_attribute_non_streaming ||
-        !RuntimeEnabledFeatures::
+    if (!type_attribute_non_streaming) {
+      return DeclarativeShadowRootType::kNone;
+    }
+    if (!RuntimeEnabledFeatures::
             DeprecatedNonStreamingDeclarativeShadowDOMEnabled()) {
+      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kDeprecation,
+          mojom::blink::ConsoleMessageLevel::kError,
+          "Found an old-style declarative `shadowroot` attribute on a "
+          "template, but that style was deprecated and has been removed. "
+          "Please use the `shadowrootmode` attribute instead. Please see "
+          "https://chromestatus.com/feature/6239658726391808."));
       return DeclarativeShadowRootType::kNone;
     }
     shadow_mode = type_attribute_non_streaming->Value();
