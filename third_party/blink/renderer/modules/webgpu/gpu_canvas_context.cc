@@ -54,12 +54,7 @@ GPUCanvasContext::GPUCanvasContext(
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attrs)
     : CanvasRenderingContext(host, attrs, CanvasRenderingAPI::kWebgpu) {
-  // Set the default values of the member corresponding to
-  // GPUCanvasContext.[[texture_descriptor]] in the WebGPU spec.
   texture_descriptor_ = {};
-  texture_descriptor_.dimension = WGPUTextureDimension_2D;
-  texture_descriptor_.mipLevelCount = 1;
-  texture_descriptor_.sampleCount = 1;
 }
 
 GPUCanvasContext::~GPUCanvasContext() {
@@ -372,6 +367,15 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // canvas is "configured" and calls to getNextTexture() will return GPUTexture
   // objects (valid or invalid) and not throw.
   configured_ = true;
+
+  // Set the default values of the member corresponding to
+  // GPUCanvasContext.[[texture_descriptor]] in the WebGPU spec.
+  texture_descriptor_ = {};
+  texture_descriptor_.dimension = WGPUTextureDimension_2D;
+  texture_descriptor_.mipLevelCount = 1;
+  texture_descriptor_.sampleCount = 1;
+
+  // Set the values from the configuration descriptor
   texture_descriptor_.format = AsDawnEnum(descriptor->format());
   texture_descriptor_.usage =
       AsDawnFlags<WGPUTextureUsage>(descriptor->usage());
