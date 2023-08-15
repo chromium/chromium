@@ -1250,6 +1250,10 @@
       base_feature: "none",
     },
     {
+      name: "DeprecatedNonStreamingDeclarativeShadowDOM",
+      status: "stable",
+    },
+    {
       name: "DesktopCaptureDisableLocalEchoControl",
       status: "experimental",
       base_feature: "none",

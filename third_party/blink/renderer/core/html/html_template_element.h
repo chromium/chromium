@@ -124,6 +124,8 @@ ALWAYS_INLINE bool HTMLTemplateElement::IsNonStreamingDeclarativeShadowRoot()
     case DeclarativeShadowRootType::kOpen:
     case DeclarativeShadowRootType::kClosed:
       DCHECK(!declarative_shadow_root_);
+      CHECK(RuntimeEnabledFeatures::
+                DeprecatedNonStreamingDeclarativeShadowDOMEnabled());
       return true;
     case DeclarativeShadowRootType::kStreamingOpen:
     case DeclarativeShadowRootType::kStreamingClosed:

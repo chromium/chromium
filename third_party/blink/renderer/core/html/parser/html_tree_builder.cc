@@ -1013,7 +1013,9 @@ DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
   } else {
     Attribute* type_attribute_non_streaming =
         token->GetAttributeItem(html_names::kShadowrootAttr);
-    if (!type_attribute_non_streaming) {
+    if (!type_attribute_non_streaming ||
+        !RuntimeEnabledFeatures::
+            DeprecatedNonStreamingDeclarativeShadowDOMEnabled()) {
       return DeclarativeShadowRootType::kNone;
     }
     shadow_mode = type_attribute_non_streaming->Value();
@@ -1083,32 +1085,36 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
         DynamicTo<HTMLTemplateElement>(template_stack_item->GetElement());
     DocumentFragment* template_content = nullptr;
     if (template_element->IsDeclarativeShadowRoot()) {
-      if (shadow_host_stack_item->GetNode() ==
-          tree_.OpenElements()->RootNode()) {
-        // 10. If the adjusted current node is the topmost element in the stack
-        // of open elements, then stop this algorithm.
-        template_element->SetDeclarativeShadowRootType(
-            DeclarativeShadowRootType::kNone);
-      } else {
-        DCHECK(shadow_host_stack_item);
-        DCHECK(shadow_host_stack_item->IsElementNode());
-        if (template_element->IsNonStreamingDeclarativeShadowRoot()) {
-          template_content = template_element->DeclarativeShadowContent();
-          auto focus_delegation = template_stack_item->GetAttributeItem(
-                                      html_names::kShadowrootdelegatesfocusAttr)
-                                      ? FocusDelegation::kDelegateFocus
-                                      : FocusDelegation::kNone;
-          // TODO(crbug.com/1063157): Add an attribute for imperative slot
-          // assignment.
-          auto slot_assignment_mode = SlotAssignmentMode::kNamed;
-          shadow_host_stack_item->GetElement()
-              ->AttachDeprecatedNonStreamingDeclarativeShadowRoot(
-                  *template_element,
-                  template_element->GetDeclarativeShadowRootType() ==
-                          DeclarativeShadowRootType::kOpen
-                      ? ShadowRootType::kOpen
-                      : ShadowRootType::kClosed,
-                  focus_delegation, slot_assignment_mode);
+      if (RuntimeEnabledFeatures::
+              DeprecatedNonStreamingDeclarativeShadowDOMEnabled()) {
+        if (shadow_host_stack_item->GetNode() ==
+            tree_.OpenElements()->RootNode()) {
+          // 10. If the adjusted current node is the topmost element in the
+          // stack of open elements, then stop this algorithm.
+          template_element->SetDeclarativeShadowRootType(
+              DeclarativeShadowRootType::kNone);
+        } else {
+          DCHECK(shadow_host_stack_item);
+          DCHECK(shadow_host_stack_item->IsElementNode());
+          if (template_element->IsNonStreamingDeclarativeShadowRoot()) {
+            template_content = template_element->DeclarativeShadowContent();
+            auto focus_delegation =
+                template_stack_item->GetAttributeItem(
+                    html_names::kShadowrootdelegatesfocusAttr)
+                    ? FocusDelegation::kDelegateFocus
+                    : FocusDelegation::kNone;
+            // TODO(crbug.com/1063157): Add an attribute for imperative slot
+            // assignment.
+            auto slot_assignment_mode = SlotAssignmentMode::kNamed;
+            shadow_host_stack_item->GetElement()
+                ->AttachDeprecatedNonStreamingDeclarativeShadowRoot(
+                    *template_element,
+                    template_element->GetDeclarativeShadowRootType() ==
+                            DeclarativeShadowRootType::kOpen
+                        ? ShadowRootType::kOpen
+                        : ShadowRootType::kClosed,
+                    focus_delegation, slot_assignment_mode);
+          }
         }
       }
     } else {

@@ -4568,6 +4568,8 @@ bool Element::AttachDeprecatedNonStreamingDeclarativeShadowRoot(
     SlotAssignmentMode slot_assignment) {
   CHECK(type == ShadowRootType::kOpen || type == ShadowRootType::kClosed);
   CHECK(template_element.IsNonStreamingDeclarativeShadowRoot());
+  CHECK(RuntimeEnabledFeatures::
+            DeprecatedNonStreamingDeclarativeShadowDOMEnabled());
 
   Deprecation::CountDeprecation(
       GetDocument().GetExecutionContext(),

@@ -62,6 +62,8 @@ DocumentFragment* HTMLTemplateElement::content() const {
 }
 
 DocumentFragment* HTMLTemplateElement::DeclarativeShadowContent() const {
+  CHECK(RuntimeEnabledFeatures::
+            DeprecatedNonStreamingDeclarativeShadowDOMEnabled());
   CHECK(IsNonStreamingDeclarativeShadowRoot());
   return IsDeclarativeShadowRoot() ? ContentInternal() : nullptr;
 }
