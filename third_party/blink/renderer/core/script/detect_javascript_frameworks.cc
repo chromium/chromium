@@ -219,10 +219,13 @@ void DetectFrameworkVersions(Document& document,
                              const AtomicString& detected_ng_version) {
   v8::Local<v8::Object> global = context->Global();
   static constexpr char kVersionPattern[] = "([0-9]+)\\.([0-9]+)";
-  v8::Local<v8::RegExp> version_regexp =
-      v8::RegExp::New(context, V8AtomicString(isolate, kVersionPattern),
-                      v8::RegExp::kNone)
-          .ToLocalChecked();
+  v8::Local<v8::RegExp> version_regexp;
+
+  if (!v8::RegExp::New(context, V8AtomicString(isolate, kVersionPattern),
+                       v8::RegExp::kNone)
+           .ToLocal(&version_regexp)) {
+    return;
+  }
 
   auto SafeGetProperty = [&](v8::Local<v8::Value> object,
                              const char* prop_name) -> v8::Local<v8::Value> {
