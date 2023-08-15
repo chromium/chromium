@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -14,7 +12,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,8 +55,9 @@ class BookmarkFolderPickerMediator {
 
     BookmarkFolderPickerMediator(Context context, BookmarkModel bookmarkModel,
             BookmarkImageFetcher bookmarkImageFetcher, List<BookmarkId> bookmarkIds,
-            Runnable finishRunnable, BookmarkUiPrefs bookmarkUiPrefs, PropertyModel model,
-            ModelList modelList, BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
+            BookmarkId initialParentId, Runnable finishRunnable, BookmarkUiPrefs bookmarkUiPrefs,
+            PropertyModel model, ModelList modelList,
+            BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
             ImprovedBookmarkRowCoordinator improvedBookmarkRowCoordinator) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
@@ -73,9 +71,7 @@ class BookmarkFolderPickerMediator {
         mAddNewFolderCoordinator = addNewFolderCoordinator;
         mImprovedBookmarkRowCoordinator = improvedBookmarkRowCoordinator;
 
-        mInitialParentId = mBookmarkIds.size() == 1
-                ? mBookmarkModel.getBookmarkById(mBookmarkIds.get(0)).getParentId()
-                : mBookmarkModel.getRootFolderId();
+        mInitialParentId = initialParentId;
 
         for (BookmarkId id : mBookmarkIds) {
             BookmarkItem item = mBookmarkModel.getBookmarkById(id);
@@ -161,23 +157,21 @@ class BookmarkFolderPickerMediator {
     void updateButtonsForCurrentParent() {
         mModel.set(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED,
                 mBookmarkIds.size() > 1 || !mCurrentParentItem.getId().equals(mInitialParentId));
+        updateToolbarButtons();
+    }
+
+    void updateToolbarButtons() {
+        mModel.set(BookmarkFolderPickerProperties.ADD_NEW_FOLDER_BUTTON_ENABLED,
+                BookmarkUtils.canAddFolderToParent(mBookmarkModel, mCurrentParentItem.getId()));
     }
 
     // Delegate methods for embedder.
 
-    void createOptionsMenu(Menu menu) {
-        Drawable icon = UiUtils.getTintedDrawable(mContext, R.drawable.ic_create_new_folder_24dp,
-                R.color.default_icon_color_tint_list);
-        mCreateNewFolderMenu = menu.add(R.string.create_new_folder)
-                                       .setIcon(icon)
-                                       .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
-    }
-
-    boolean optionsItemSelected(MenuItem item) {
-        if (item == mCreateNewFolderMenu) {
+    boolean optionsItemSelected(int menuItemId) {
+        if (menuItemId == R.id.create_new_folder_menu_id) {
             mAddNewFolderCoordinator.show(mCurrentParentItem.getId());
             return true;
-        } else if (item.getItemId() == android.R.id.home) {
+        } else if (menuItemId == android.R.id.home) {
             onBackPressed();
             return true;
         }

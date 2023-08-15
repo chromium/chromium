@@ -242,8 +242,9 @@ public class BookmarkFolderPickerRenderTest {
                     mBookmarkUiPrefs, mShoppingService);
 
             mCoordinator = new BookmarkFolderPickerCoordinator(mActivity, mBookmarkModel,
-                    mBookmarkImageFetcher, Arrays.asList(mUserBookmarkId), mFinishRunnable,
-                    mAddNewFolderCoordinator, mBookmarkUiPrefs, mImprovedBookmarkRowCoordinator);
+                    mBookmarkImageFetcher, Arrays.asList(mUserBookmarkId), mUserFolderId,
+                    mFinishRunnable, mAddNewFolderCoordinator, mBookmarkUiPrefs,
+                    mImprovedBookmarkRowCoordinator);
             mContentView.addView(mCoordinator.getView());
 
             Toolbar toolbar = (Toolbar) mContentView.findViewById(R.id.toolbar);

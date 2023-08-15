@@ -28,7 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -196,8 +195,8 @@ public class BookmarkFolderPickerMediatorTest {
                 .fetchFirstTwoImagesForFolder(any(), any());
 
         mMediator = new BookmarkFolderPickerMediator(mActivity, mBookmarkModel,
-                mBookmarkImageFetcher, Arrays.asList(mUserBookmarkId), mFinishRunnable,
-                mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator,
+                mBookmarkImageFetcher, Arrays.asList(mUserBookmarkId), mUserFolderId,
+                mFinishRunnable, mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator,
                 new ImprovedBookmarkRowCoordinator(mActivity, mBookmarkImageFetcher, mBookmarkModel,
                         mBookmarkUiPrefs, mShoppingService));
     }
@@ -205,7 +204,7 @@ public class BookmarkFolderPickerMediatorTest {
     @Test
     public void testMoveFolder() {
         mMediator = new BookmarkFolderPickerMediator(mActivity, mBookmarkModel,
-                mBookmarkImageFetcher, Arrays.asList(mUserFolderId), mFinishRunnable,
+                mBookmarkImageFetcher, Arrays.asList(mUserFolderId), mUserFolderId, mFinishRunnable,
                 mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator,
                 new ImprovedBookmarkRowCoordinator(mActivity, mBookmarkImageFetcher, mBookmarkModel,
                         mBookmarkUiPrefs, mShoppingService));
@@ -258,31 +257,19 @@ public class BookmarkFolderPickerMediatorTest {
     }
 
     @Test
-    public void testCreateOptionsListMenu() {
-        mMediator.createOptionsMenu(mMenu);
-        verify(mMenu).add(R.string.create_new_folder);
-        verify(mMenuItem).setIcon(any());
-        verify(mMenuItem).setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
-    }
-
-    @Test
     public void testOptionsItemSelected_BackPressed() {
-        MenuItem backButton = Mockito.mock(MenuItem.class);
-        doReturn(android.R.id.home).when(backButton).getItemId();
-
-        mMediator.optionsItemSelected(backButton);
+        mMediator.optionsItemSelected(android.R.id.home);
         assertEquals(mMobileFolderItem.getTitle(),
                 mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
-        mMediator.optionsItemSelected(backButton);
+        mMediator.optionsItemSelected(android.R.id.home);
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
-        mMediator.optionsItemSelected(backButton);
+        mMediator.optionsItemSelected(android.R.id.home);
         verify(mFinishRunnable).run();
     }
 
     @Test
     public void testOptionsItemSelected_AddNewFolder() {
-        mMediator.createOptionsMenu(mMenu);
-        mMediator.optionsItemSelected(mMenuItem);
+        mMediator.optionsItemSelected(R.id.create_new_folder_menu_id);
         verify(mAddNewFolderCoordinator).show(any());
     }
 }

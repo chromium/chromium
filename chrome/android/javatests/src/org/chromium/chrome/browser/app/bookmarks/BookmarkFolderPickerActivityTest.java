@@ -110,11 +110,10 @@ public class BookmarkFolderPickerActivityTest {
         BookmarkId folder = addFolder(sMobileFolderId, 0, "folder");
         BookmarkId bookmark = addBookmark(folder, 0, "bookmark", new GURL("https://google.com"));
         startFolderPickerActivity(bookmark);
-        Toolbar toolbar = (Toolbar) mActivity.findViewById(R.id.toolbar);
 
-        assertEquals("folder", toolbar.getTitle());
+        onView(withText("folder"));
         pressBack();
-        onView(withText("Move to…"));
+        onView(withText("Move to..."));
         onView(withText("Cancel")).perform(click());
 
         BookmarkItem item = getBookmarkItem(folder);

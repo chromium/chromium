@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +65,8 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
 
     public BookmarkFolderPickerCoordinator(Context context, BookmarkModel bookmarkModel,
             BookmarkImageFetcher bookmarkImageFetcher, List<BookmarkId> bookmarkIds,
-            Runnable finishRunnable, BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
+            BookmarkId initialParentId, Runnable finishRunnable,
+            BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
             BookmarkUiPrefs bookmarkUiPrefs,
             ImprovedBookmarkRowCoordinator improvedBookmarkRowCoordinator) {
         mContext = context;
@@ -84,7 +84,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
         PropertyModelChangeProcessor.create(model, mView, BookmarkFolderPickerViewBinder::bind);
 
         mMediator = new BookmarkFolderPickerMediator(context, bookmarkModel, bookmarkImageFetcher,
-                bookmarkIds, finishRunnable,
+                bookmarkIds, initialParentId, finishRunnable,
                 new BookmarkUiPrefs(SharedPreferencesManager.getInstance()), model, mModelList,
                 addNewFolderCoordinator, improvedBookmarkRowCoordinator);
 
@@ -127,16 +127,15 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
         return (Toolbar) mView.findViewById(R.id.toolbar);
     }
 
-    // Delegate setup methods.
-
-    /** Create the options menu. */
-    public void createOptionsMenu(Menu menu) {
-        mMediator.createOptionsMenu(menu);
+    public void updateToolbarButtons() {
+        mMediator.updateToolbarButtons();
     }
+
+    // Delegate setup methods.
 
     /** Handle option menu selections. */
     public boolean optionsItemSelected(MenuItem item) {
-        return mMediator.optionsItemSelected(item);
+        return mMediator.optionsItemSelected(item.getItemId());
     }
 
     public boolean onBackPressed() {
