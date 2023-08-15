@@ -330,7 +330,12 @@ void RemoteSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
 safe_browsing::ThreatSource
 RemoteSafeBrowsingDatabaseManager::GetBrowseUrlThreatSource(
     CheckBrowseUrlType check_type) const {
-  return safe_browsing::ThreatSource::REMOTE;
+  switch (check_type) {
+    case CheckBrowseUrlType::kHashDatabase:
+      return safe_browsing::ThreatSource::REMOTE;
+    case CheckBrowseUrlType::kHashRealTime:
+      return safe_browsing::ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME;
+  }
 }
 
 safe_browsing::ThreatSource

@@ -222,6 +222,9 @@ void SafeBrowsingMetricsCollector::AddBypassEventToPref(
     case ThreatSource::NATIVE_PVER5_REAL_TIME:
       event = EventType::HASH_PREFIX_REAL_TIME_INTERSTITIAL_BYPASS;
       break;
+    case ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
+      event = EventType::ANDROID_SAFEBROWSING_REAL_TIME_INTERSTITIAL_BYPASS;
+      break;
     default:
       NOTREACHED() << "Unexpected threat source.";
       event = EventType::DATABASE_INTERSTITIAL_BYPASS;
@@ -462,6 +465,7 @@ bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {
     case EventType::EXTENSION_ALLOWLIST_INSTALL_BYPASS:
     case EventType::NON_ALLOWLISTED_EXTENSION_RE_ENABLED:
     case EventType::HASH_PREFIX_REAL_TIME_INTERSTITIAL_BYPASS:
+    case EventType::ANDROID_SAFEBROWSING_REAL_TIME_INTERSTITIAL_BYPASS:
       return true;
   }
 }
@@ -479,6 +483,7 @@ bool SafeBrowsingMetricsCollector::IsSecuritySensitiveEventType(
     case EventType::EXTENSION_ALLOWLIST_INSTALL_BYPASS:
     case EventType::NON_ALLOWLISTED_EXTENSION_RE_ENABLED:
     case EventType::HASH_PREFIX_REAL_TIME_INTERSTITIAL_BYPASS:
+    case EventType::ANDROID_SAFEBROWSING_REAL_TIME_INTERSTITIAL_BYPASS:
       return false;
     case EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL:
     case EventType::SECURITY_SENSITIVE_SSL_INTERSTITIAL:

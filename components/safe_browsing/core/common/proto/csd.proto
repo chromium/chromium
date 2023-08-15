@@ -1621,6 +1621,8 @@ message ClientSafeBrowsingReportRequest {
     REAL_TIME = 5;
     // The Safe Browsing API v5 protocol hit in real time (non-Android).
     PVER5_NATIVE_REAL_TIME = 6;
+    // The Android Safe Browsing API hit in real time.
+    ANDROID_SAFEBROWSING_REAL_TIME = 7;
   }
 
   // The information propagated from the client about various environment

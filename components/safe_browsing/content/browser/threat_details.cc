@@ -149,6 +149,8 @@ CSBRR::SafeBrowsingUrlApiType GetUrlApiTypeForThreatSource(
       return CSBRR::REAL_TIME;
     case safe_browsing::ThreatSource::NATIVE_PVER5_REAL_TIME:
       return CSBRR::PVER5_NATIVE_REAL_TIME;
+    case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
+      return CSBRR::ANDROID_SAFEBROWSING_REAL_TIME;
     case safe_browsing::ThreatSource::UNKNOWN:
     case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
       return CSBRR::SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED;

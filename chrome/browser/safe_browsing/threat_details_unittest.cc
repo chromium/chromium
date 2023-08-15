@@ -2022,31 +2022,44 @@ TEST_F(ThreatDetailsTest, CanCancelDuringCollection) {
   base::RunLoop().RunUntilIdle();
 }
 
-// Tests a simple threat report with the NATIVE_PVER5_REAL_TIME threat source.
-TEST_F(ThreatDetailsTest, NativePver5RealTimeThreatSource) {
-  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL(kLandingURL), web_contents());
-  navigation->SetReferrer(blink::mojom::Referrer::New(
-      GURL(kReferrerURL), network::mojom::ReferrerPolicy::kDefault));
-  navigation->Commit();
+// Tests a simple threat report has the correct mapping between ThreatSource and
+// UrlApiType.
+TEST_F(ThreatDetailsTest, ThreatSourceToUrlApiType) {
+  struct TestCase {
+    ThreatSource threat_source;
+    ClientSafeBrowsingReportRequest::SafeBrowsingUrlApiType
+        expected_url_api_type;
+  } test_cases[] = {
+      {ThreatSource::NATIVE_PVER5_REAL_TIME,
+       ClientSafeBrowsingReportRequest::PVER5_NATIVE_REAL_TIME},
+      {ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME,
+       ClientSafeBrowsingReportRequest::ANDROID_SAFEBROWSING_REAL_TIME}};
 
-  UnsafeResource resource;
-  InitResource(SB_THREAT_TYPE_URL_MALWARE, ThreatSource::NATIVE_PVER5_REAL_TIME,
-               /*is_subresource=*/false, GURL(kThreatURL), &resource);
+  for (const auto& test_case : test_cases) {
+    auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+        GURL(kLandingURL), web_contents());
+    navigation->SetReferrer(blink::mojom::Referrer::New(
+        GURL(kReferrerURL), network::mojom::ReferrerPolicy::kDefault));
+    navigation->Commit();
 
-  auto report = std::make_unique<ThreatDetailsWrap>(
-      ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-      referrer_chain_provider_.get());
-  report->StartCollection();
+    UnsafeResource resource;
+    InitResource(SB_THREAT_TYPE_URL_MALWARE, test_case.threat_source,
+                 /*is_subresource=*/false, GURL(kThreatURL), &resource);
 
-  std::string serialized = WaitForThreatDetailsDone(
-      report.get(), /*did_proceed=*/true, /*num_visit=*/1);
+    auto report = std::make_unique<ThreatDetailsWrap>(
+        ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
+        referrer_chain_provider_.get());
+    report->StartCollection();
 
-  ClientSafeBrowsingReportRequest report_pb;
-  report_pb.ParseFromString(serialized);
-  EXPECT_TRUE(report_pb.client_properties().has_url_api_type());
-  EXPECT_EQ(report_pb.client_properties().url_api_type(),
-            ClientSafeBrowsingReportRequest::PVER5_NATIVE_REAL_TIME);
+    std::string serialized = WaitForThreatDetailsDone(
+        report.get(), /*did_proceed=*/true, /*num_visit=*/1);
+
+    ClientSafeBrowsingReportRequest report_pb;
+    report_pb.ParseFromString(serialized);
+    EXPECT_TRUE(report_pb.client_properties().has_url_api_type());
+    EXPECT_EQ(report_pb.client_properties().url_api_type(),
+              test_case.expected_url_api_type);
+  }
 }
 
 }  // namespace safe_browsing

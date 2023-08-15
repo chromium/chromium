@@ -1315,6 +1315,9 @@ base::Value::Dict SerializeSafeBrowsingClientProperties(
     case ClientSafeBrowsingReportRequest::PVER5_NATIVE_REAL_TIME:
       url_api_type = "PVER5_NATIVE_REAL_TIME";
       break;
+    case ClientSafeBrowsingReportRequest::ANDROID_SAFEBROWSING_REAL_TIME:
+      url_api_type = "ANDROID_SAFEBROWSING_REAL_TIME";
+      break;
     case ClientSafeBrowsingReportRequest::PVER3_NATIVE:
     case ClientSafeBrowsingReportRequest::FLYWHEEL:
       NOTREACHED();
@@ -1694,6 +1697,9 @@ std::string SerializeHitReport(const HitReport& hit_report) {
       break;
     case ThreatSource::NATIVE_PVER5_REAL_TIME:
       threat_source = "NATIVE_PVER5_REAL_TIME";
+      break;
+    case ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
+      threat_source = "ANDROID_SAFEBROWSING_REAL_TIME";
       break;
     case ThreatSource::UNKNOWN:
       threat_source = "UNKNOWN";

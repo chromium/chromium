@@ -235,4 +235,12 @@ TEST_F(RemoteDatabaseManagerTest, DestinationsToCheckFromTrial) {
       network::mojom::RequestDestination::kWorker));
 }
 
+TEST_F(RemoteDatabaseManagerTest, ThreatSource) {
+  EXPECT_EQ(ThreatSource::REMOTE,
+            db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashDatabase));
+  EXPECT_EQ(ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME,
+            db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashRealTime));
+  EXPECT_EQ(ThreatSource::REMOTE, db_->GetNonBrowseUrlThreatSource());
+}
+
 }  // namespace safe_browsing

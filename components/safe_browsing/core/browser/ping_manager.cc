@@ -374,6 +374,9 @@ GURL PingManager::SafeBrowsingHitUrl(
     case safe_browsing::ThreatSource::NATIVE_PVER5_REAL_TIME:
       threat_source = "n5rt";
       break;
+    case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
+      threat_source = "asbrt";
+      break;
     case safe_browsing::ThreatSource::UNKNOWN:
       NOTREACHED();
   }

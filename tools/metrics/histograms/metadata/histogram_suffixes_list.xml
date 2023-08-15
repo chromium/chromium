@@ -4740,6 +4740,9 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="SecurityInterstitialSBWithSourceType" separator=".">
+  <suffix name="from_android_safebrowsing_real_time"
+      label="Interstitial for a resource classified as unsafe by the Android
+             Safe Browsing hash-prefix real-time API."/>
   <suffix name="from_client_side_detection"
       label="Interstitial for a resource classified as unsafe by the client
              side detection."/>

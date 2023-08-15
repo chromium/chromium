@@ -178,6 +178,8 @@ std::string BaseBlockingPage::GetExtraMetricsSuffix(
       return "from_real_time_check";
     case safe_browsing::ThreatSource::NATIVE_PVER5_REAL_TIME:
       return "from_hash_prefix_real_time_check_v5";
+    case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
+      return "from_android_safebrowsing_real_time";
     case safe_browsing::ThreatSource::UNKNOWN:
       break;
   }
