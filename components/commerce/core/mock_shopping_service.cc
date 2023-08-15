@@ -209,4 +209,14 @@ void MockShoppingService::SetIsPriceInsightsEligible(bool is_eligible) {
       .WillByDefault(testing::Return(is_eligible));
 }
 
+void MockShoppingService::SetResponseForGetDiscountInfoForUrls(
+    const DiscountsMap& discounts_map) {
+  ON_CALL(*this, GetDiscountInfoForUrls)
+      .WillByDefault([discounts_map](const std::vector<GURL>& urls,
+                                     DiscountInfoCallback callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), discounts_map));
+      });
+}
+
 }  // namespace commerce

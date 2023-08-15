@@ -97,6 +97,11 @@ PriceInsightsInfo& PriceInsightsInfo::operator=(const PriceInsightsInfo&) =
     default;
 PriceInsightsInfo::~PriceInsightsInfo() = default;
 
+DiscountInfo::DiscountInfo() = default;
+DiscountInfo::DiscountInfo(const DiscountInfo&) = default;
+DiscountInfo& DiscountInfo::operator=(const DiscountInfo&) = default;
+DiscountInfo::~DiscountInfo() = default;
+
 ShoppingService::ShoppingService(
     const std::string& country_on_startup,
     const std::string& locale_on_startup,
@@ -586,6 +591,12 @@ void ShoppingService::GetPriceInsightsInfoForUrl(
       url, optimization_guide::proto::OptimizationType::PRICE_INSIGHTS,
       base::BindOnce(&ShoppingService::HandleOptGuidePriceInsightsInfoResponse,
                      weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+}
+
+void ShoppingService::GetDiscountInfoForUrls(const std::vector<GURL>& urls,
+                                             DiscountInfoCallback callback) {
+  // TODO(b:289244075): Implement this method.
+  std::move(callback).Run(DiscountsMap());
 }
 
 bool ShoppingService::IsProductInfoApiEnabled() {
