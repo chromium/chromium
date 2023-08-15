@@ -2313,13 +2313,6 @@ const char kOmniboxCR23SuggestionHoverFillShapeDescription[] =
     "Updates Omnibox suggestion hover fill shape to comply with CR23 "
     "guidelines.";
 
-const char kOmniboxIgnoreIntermediateResultsName[] =
-    "Ignore intermediate Autocomplete results.";
-const char kOmniboxIgnoreIntermediateResultsDescription[] =
-    "When active, reduces number of Autocomplete updates to cover only the "
-    "first (synchronous) and last (final) Autocomplete result. This reduces "
-    "resource utlization (CPU, memory) during active Omnibox input session.";
-
 const char kOmniboxDiscardTemporaryInputOnTabSwitchName[] =
     "Omnibox discard temporary input on tab switch";
 const char kOmniboxDiscardTemporaryInputOnTabSwitchDescription[] =

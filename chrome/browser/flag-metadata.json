@@ -5817,11 +5817,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-adaptive-suggestions-visible-group-eligibility-update",
-    "owners": [ "ender", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "omnibox-bookmark-paths",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 115
@@ -5969,11 +5964,6 @@
     "name": "omnibox-https-upgrades",
     "owners": ["meacer", "trusty-transport@chromium.org" ],
     "expiry_milestone": 110
-  },
-  {
-    "name": "omnibox-ignore-intermediate-results",
-    "owners": [ "ender", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 125
   },
   {
     "name": "omnibox-improved-rtl-suggestions",

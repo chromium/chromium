@@ -5865,11 +5865,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxCacheSuggestionResourcesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kOmniboxCacheSuggestionResources)},
 
-    {"omnibox-ignore-intermediate-results",
-     flag_descriptions::kOmniboxIgnoreIntermediateResultsName,
-     flag_descriptions::kOmniboxIgnoreIntermediateResultsDescription,
-     kOsAndroid, FEATURE_VALUE_TYPE(omnibox::kIgnoreIntermediateResults)},
-
     {"omnibox-match-toolbar-and-status-bar-color",
      flag_descriptions::kOmniboxMatchToolbarAndStatusBarColorName,
      flag_descriptions::kOmniboxMatchToolbarAndStatusBarColorDescription,

@@ -695,14 +695,6 @@ void AutocompleteController::OnProviderUpdate(
 
   CheckIfDone();
 
-  // Do not process or propagate asynchronous events coming from
-  // AutocompleteProviders. This helps us reduce the pressure on CPU and memory
-  // on low-end mobile devices.
-  if (base::FeatureList::IsEnabled(omnibox::kIgnoreIntermediateResults) &&
-      !done_) {
-    return;
-  }
-
   if (updated_matches || done_)
     UpdateResult(false, false);
 }

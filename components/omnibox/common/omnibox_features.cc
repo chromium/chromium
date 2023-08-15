@@ -49,15 +49,6 @@ BASE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard,
              "OmniboxRemoveSuggestionsFromClipboard",
              enabled_by_default_android_only);
 
-// When enabled, intermediate asynchronous updates will not be processed or
-// pushed to AutocompleteListeners. Only the first (synchronous) and the last
-// (final) AutocompleteResult will be pushed to listeners.
-// The change is expected to help help improve latency on low-end (Android)
-// devices.
-BASE_FEATURE(kIgnoreIntermediateResults,
-             "OmniboxIgnoreIntermediateResults",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, uses the grouping framework with zero prefix suggestions (i.e.
 // autocomplete_grouper_sections.h) to limit and group (but not sort) matches.
 BASE_FEATURE(kGroupingFrameworkForZPS,
