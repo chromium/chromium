@@ -13,11 +13,12 @@ ChromeVoxSettingsManagerTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    // Alphabetical based on file path.
-    await importModule('LocalStorage', '/common/local_storage.js');
-    await importModule(
-        'SettingsManager', '/chromevox/common/settings_manager.js');
-    await importModule('Settings', '/common/settings.js');
+    await Promise.all([
+      // Alphabetical based on file path.
+      importModule('LocalStorage', '/common/local_storage.js'),
+      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
+      importModule('Settings', '/common/settings.js'),
+    ]);
   }
 
   async getStoragePrefs(prefNames) {

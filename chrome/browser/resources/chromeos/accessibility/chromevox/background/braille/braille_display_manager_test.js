@@ -16,25 +16,27 @@ ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule(
-        'BrailleCaptionsBackground',
-        '/chromevox/background/braille/braille_captions_background.js');
-    await importModule(
-        'BrailleDisplayManager',
-        '/chromevox/background/braille/braille_display_manager.js');
-    await importModule(
-        'BrailleTranslatorManager',
-        '/chromevox/background/braille/braille_translator_manager.js');
-    await importModule(
-        'CURSOR_DOTS', '/chromevox/background/braille/cursor_dots.js');
-    await importModule(
-        'ExpandingBrailleTranslator',
-        '/chromevox/background/braille/expanding_braille_translator.js');
-    await importModule(
-        'NavBraille', '/chromevox/common/braille/nav_braille.js');
-    await importModule('LocalStorage', '/common/local_storage.js');
-    await importModule(
-        'SettingsManager', '/chromevox/common/settings_manager.js');
+
+    await Promise.all([
+      // Alphabetized by file path.
+      importModule(
+          'BrailleCaptionsBackground',
+          '/chromevox/background/braille/braille_captions_background.js'),
+      importModule(
+          'BrailleDisplayManager',
+          '/chromevox/background/braille/braille_display_manager.js'),
+      importModule(
+          'BrailleTranslatorManager',
+          '/chromevox/background/braille/braille_translator_manager.js'),
+      importModule(
+          'CURSOR_DOTS', '/chromevox/background/braille/cursor_dots.js'),
+      importModule(
+          'ExpandingBrailleTranslator',
+          '/chromevox/background/braille/expanding_braille_translator.js'),
+      importModule('NavBraille', '/chromevox/common/braille/nav_braille.js'),
+      importModule('LocalStorage', '/common/local_storage.js'),
+      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
+    ]);
 
     /** @const */
     this.NAV_BRAILLE = new NavBraille({text: 'Hello, world!'});

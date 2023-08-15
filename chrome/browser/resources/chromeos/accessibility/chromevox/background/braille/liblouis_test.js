@@ -14,11 +14,14 @@ ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule(
-        'BrailleTable', '/chromevox/common/braille/braille_table.js');
-    await importModule('LibLouis', '/chromevox/background/braille/liblouis.js');
-    await importModule(
-        'BrailleKeyEvent', '/chromevox/common/braille/braille_key_types.js');
+    await Promise.all([
+      // Alphabetized by file path.
+      importModule(
+          'BrailleTable', '/chromevox/common/braille/braille_table.js'),
+      importModule('LibLouis', '/chromevox/background/braille/liblouis.js'),
+      importModule(
+          'BrailleKeyEvent', '/chromevox/common/braille/braille_key_types.js'),
+    ]);
 
     const path = chrome.extension.getURL(
         'chromevox/background/braille/liblouis_wrapper.js');

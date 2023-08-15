@@ -14,22 +14,24 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    // Alphabetical based on file path.
-    await importModule(
-        'BackgroundKeyboardHandler',
-        '/chromevox/background/keyboard_handler.js');
-    await importModule(
-        'ChromeVoxRange', '/chromevox/background/chromevox_range.js');
-    await importModule(
-        'CommandHandlerInterface',
-        '/chromevox/background/command_handler_interface.js');
-    await importModule(
-        'UserActionMonitor', '/chromevox/background/user_action_monitor.js');
-    await importModule('EarconId', '/chromevox/common/earcon_id.js');
-    await importModule(
-        ['PanelCommand', 'PanelCommandType'],
-        '/chromevox/common/panel_command.js');
-    await importModule('KeyCode', '/common/key_code.js');
+    await Promise.all([
+      // Alphabetical based on file path.
+      importModule(
+          'BackgroundKeyboardHandler',
+          '/chromevox/background/keyboard_handler.js'),
+      importModule(
+          'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
+      importModule(
+          'CommandHandlerInterface',
+          '/chromevox/background/command_handler_interface.js'),
+      importModule(
+          'UserActionMonitor', '/chromevox/background/user_action_monitor.js'),
+      importModule('EarconId', '/chromevox/common/earcon_id.js'),
+      importModule(
+          ['PanelCommand', 'PanelCommandType'],
+          '/chromevox/common/panel_command.js'),
+      importModule('KeyCode', '/common/key_code.js'),
+    ]);
 
     globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
   }

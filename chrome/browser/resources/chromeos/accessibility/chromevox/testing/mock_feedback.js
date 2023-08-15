@@ -97,18 +97,18 @@ MockFeedback = class {
   }
 
   static async imports() {
-    // Alphabetical based on file path.
-    await importModule(
-        'AbstractEarcons', '/chromevox/background/abstract_earcons.js');
-    await importModule(
-        'BrailleInterface',
-        '/chromevox/background/braille/braille_interface.js');
-    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
-    await importModule(
-        'NavBraille', '/chromevox/common/braille/nav_braille.js');
-    await importModule(
-        'TtsInterface', '/chromevox/background/tts_interface.js');
-    await importModule('QueueMode', '/chromevox/common/tts_types.js');
+    await Promise.all([
+      // Alphabetical based on file path.
+      importModule(
+          'AbstractEarcons', '/chromevox/background/abstract_earcons.js'),
+      importModule(
+          'BrailleInterface',
+          '/chromevox/background/braille/braille_interface.js'),
+      importModule('ChromeVox', '/chromevox/background/chromevox.js'),
+      importModule('NavBraille', '/chromevox/common/braille/nav_braille.js'),
+      importModule('TtsInterface', '/chromevox/background/tts_interface.js'),
+      importModule('QueueMode', '/chromevox/common/tts_types.js'),
+    ]);
   }
 
   /**

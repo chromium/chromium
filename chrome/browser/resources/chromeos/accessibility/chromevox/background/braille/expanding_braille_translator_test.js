@@ -12,14 +12,18 @@ ChromeVoxExpandingBrailleTranslatorUnitTest =
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule(
-        'ExpandingBrailleTranslator',
-        '/chromevox/background/braille/expanding_braille_translator.js');
-    await importModule(
-        ['ExtraCellsSpan', 'ValueSelectionSpan', 'ValueSpan'],
-        '/chromevox/background/braille/spans.js');
-    await importModule('LibLouis', '/chromevox/background/braille/liblouis.js');
-    await importModule('Spannable', '/chromevox/common/spannable.js');
+
+    await Promise.all([
+      // Alphabetical by path.
+      importModule(
+          'ExpandingBrailleTranslator',
+          '/chromevox/background/braille/expanding_braille_translator.js'),
+      importModule(
+          ['ExtraCellsSpan', 'ValueSelectionSpan', 'ValueSpan'],
+          '/chromevox/background/braille/spans.js'),
+      importModule('LibLouis', '/chromevox/background/braille/liblouis.js'),
+      importModule('Spannable', '/chromevox/common/spannable.js'),
+    ]);
   }
 };
 

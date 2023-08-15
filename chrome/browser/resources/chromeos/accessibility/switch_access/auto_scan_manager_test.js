@@ -11,13 +11,14 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule(
-        'BackButtonNode', '/switch_access/nodes/back_button_node.js');
-    await importModule(
-        ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js');
-    await importModule(
-        'AutoScanManager', '/switch_access/auto_scan_manager.js');
-    await importModule('Navigator', '/switch_access/navigator.js');
+    await Promise.all([
+      importModule(
+          'BackButtonNode', '/switch_access/nodes/back_button_node.js'),
+      importModule(
+          ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js'),
+      importModule('AutoScanManager', '/switch_access/auto_scan_manager.js'),
+      importModule('Navigator', '/switch_access/navigator.js'),
+    ]);
     AutoScanManager.instance.primaryScanTime_ = 1000;
     // Use intervalCount and intervalDelay to check how many intervals are
     // currently running (should be no more than 1) and the current delay.
