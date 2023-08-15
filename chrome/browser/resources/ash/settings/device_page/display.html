@@ -48,6 +48,12 @@
     margin-top: 20px;
   }
 
+  #mirrorDisplayToggleButton {
+    display: flex;
+    align-self: stretch;
+    margin-bottom: 20px;
+  }
+
   iron-collapse {
    width: 100%;
   }
@@ -73,16 +79,37 @@
 
     <template is="dom-if"
         if="[[showMirror_(unifiedDesktopMode_, displays)]]" restamp>
-      <div class="secondary self-start">
-        <cr-checkbox id="displayMirrorCheckbox"
-            checked="[[isMirrored_(displays)]]"
-            on-click="onMirroredClick_"
-            aria-label="[[getDisplayMirrorText_(displays)]]"
-            deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
-          <div class="text-area">[[getDisplayMirrorText_(displays)]]</div>
-        </cr-checkbox>
-      </div>
+      <!-- Mirror display toggle button -->
+      <template is="dom-if"
+          if="[[isRevampWayfindingEnabled_]]" restamp>
+        <div id="mirrorDisplayToggleButton" class="text-area">
+          <div id="mirrorDisplayToggleLabel" class="start">
+            [[getDisplayMirrorText_(displays)]]
+          </div>
+          <cr-toggle id="mirrorDisplayToggle"
+              checked="[[isMirrored_(displays)]]"
+              on-click="onMirroredClick_"
+              aria-label="[[getDisplayMirrorText_(displays)]]"
+              deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
+          </cr-toggle>
+        </div>
+      </template>
+
+      <!-- Mirror display checkbox -->
+      <template is="dom-if"
+          if="[[!isRevampWayfindingEnabled_]]" restamp>
+        <div class="secondary self-start">
+          <cr-checkbox id="displayMirrorCheckbox"
+              checked="[[isMirrored_(displays)]]"
+              on-click="onMirroredClick_"
+              aria-label="[[getDisplayMirrorText_(displays)]]"
+              deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
+            <div class="text-area">[[getDisplayMirrorText_(displays)]]</div>
+          </cr-checkbox>
+        </div>
+      </template>
     </template>
+
   </div>
 </template>
 
