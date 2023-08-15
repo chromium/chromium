@@ -22,8 +22,10 @@
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/font.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -212,6 +214,32 @@ TEST_F(TasksBubbleViewTest, ShowsProgressBarWhileLoadingTasks) {
   // After replying to pending callbacks, the progress bar should become hidden.
   EXPECT_EQ(tasks_client()->RunPendingGetTasksCallbacks(), 1u);
   EXPECT_FALSE(GetProgressBar()->GetVisible());
+}
+
+TEST_F(TasksBubbleViewTest, AppliesStrikeThroughStyleAfterMarkingAsComplete) {
+  const auto* const task_view = views::AsViewClass<GlanceablesTaskView>(
+      GetTaskItemsContainerView()->children()[0]);
+  ASSERT_TRUE(task_view);
+
+  const auto* const checkbox = task_view->GetButtonForTest();
+  ASSERT_TRUE(checkbox);
+
+  const auto* const title_label =
+      views::AsViewClass<views::Label>(task_view->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+  ASSERT_TRUE(title_label);
+
+  // No `STRIKE_THROUGH` style applied initially.
+  EXPECT_FALSE(task_view->GetCompletedForTest());
+  EXPECT_FALSE(title_label->font_list().GetFontStyle() &
+               gfx::Font::FontStyle::STRIKE_THROUGH);
+
+  // After pressing on `checkbox`, the label should have `STRIKE_THROUGH` style
+  // applied.
+  GestureTapOn(checkbox);
+  EXPECT_TRUE(task_view->GetCompletedForTest());
+  EXPECT_TRUE(title_label->font_list().GetFontStyle() &
+              gfx::Font::FontStyle::STRIKE_THROUGH);
 }
 
 }  // namespace ash

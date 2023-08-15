@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -17,6 +18,7 @@
 #include "ash/style/typography.h"
 #include "ash/system/time/date_helper.h"
 #include "base/strings/string_util.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -160,6 +162,8 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   tasks_label_->SetText(base::UTF8ToUTF16(task->title));
   tasks_label_->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
       TypographyToken::kCrosButton2));
+  tasks_label_->SetID(
+      base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel));
   SetupTasksLabel(/*completed=*/false);
 
   std::vector<std::u16string> details;
@@ -231,6 +235,7 @@ void GlanceablesTaskView::ButtonPressed() {
 
   // Visually mark the task as completed.
   button_->SetChecked(true);
+  SetupTasksLabel(/*completed=*/true);
 
   ash::Shell::Get()
       ->glanceables_v2_controller()
