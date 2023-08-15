@@ -30,8 +30,11 @@ class LinuxKeyPersistenceDelegate : public KeyPersistenceDelegate {
   bool CheckRotationPermissions() override;
   bool StoreKeyPair(KeyPersistenceDelegate::KeyTrustLevel trust_level,
                     std::vector<uint8_t> wrapped) override;
-  scoped_refptr<SigningKeyPair> LoadKeyPair() override;
+  scoped_refptr<SigningKeyPair> LoadKeyPair(
+      KeyStorageType type = KeyStorageType::kPermanent) override;
   scoped_refptr<SigningKeyPair> CreateKeyPair() override;
+  bool PromoteTemporaryKeyPair() override;
+  bool DeleteKeyPair(KeyStorageType type) override;
 
  private:
   friend class LinuxKeyPersistenceDelegateTest;

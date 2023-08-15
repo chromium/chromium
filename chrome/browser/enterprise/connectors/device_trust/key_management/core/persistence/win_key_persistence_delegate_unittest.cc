@@ -208,4 +208,14 @@ TEST_F(WinKeyPersistenceDelegateTest, ValidHardwareKeyPair_Success) {
       base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"), 0);
 }
 
+// TODO(b/290068551): Add test coverage for this method.
+TEST_F(WinKeyPersistenceDelegateTest, PromoteTemporaryKeyPair) {
+  EXPECT_TRUE(persistence_delegate_->PromoteTemporaryKeyPair());
+}
+
+// TODO(b/290068551): Add test coverage for this method.
+TEST_F(WinKeyPersistenceDelegateTest, DeleteKeyPair) {
+  EXPECT_TRUE(persistence_delegate_->DeleteKeyPair(KeyStorageType::kTemporary));
+}
+
 }  // namespace enterprise_connectors

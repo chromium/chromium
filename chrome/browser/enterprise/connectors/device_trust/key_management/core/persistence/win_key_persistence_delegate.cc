@@ -97,7 +97,8 @@ bool WinKeyPersistenceDelegate::StoreKeyPair(
                        "the signing key storage.");
 }
 
-scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair() {
+scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair(
+    KeyStorageType type) {
   base::win::RegKey key;
   std::wstring signingkey_name;
   std::wstring trustlevel_name;
@@ -140,12 +141,13 @@ scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair() {
   }
 
   std::vector<uint8_t> wrapped;
-  DWORD type = REG_NONE;
+  DWORD reg_type = REG_NONE;
   DWORD size = 0;
-  res = key.ReadValue(signingkey_name.c_str(), nullptr, &size, &type);
-  if (res == ERROR_SUCCESS && type == REG_BINARY) {
+  res = key.ReadValue(signingkey_name.c_str(), nullptr, &size, &reg_type);
+  if (res == ERROR_SUCCESS && reg_type == REG_BINARY) {
     wrapped.resize(size);
-    res = key.ReadValue(signingkey_name.c_str(), wrapped.data(), &size, &type);
+    res = key.ReadValue(signingkey_name.c_str(), wrapped.data(), &size,
+                        &reg_type);
   }
   if (res != ERROR_SUCCESS) {
     RecordFailure(
@@ -155,7 +157,7 @@ scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair() {
         "details from the signing key storage.");
     return nullptr;
 
-  } else if (type != REG_BINARY) {
+  } else if (reg_type != REG_BINARY) {
     RecordFailure(
         KeyPersistenceOperation::kLoadKeyPair,
         KeyPersistenceError::kInvalidSigningKey,
@@ -204,6 +206,16 @@ scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::CreateKeyPair() {
 
   return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),
                                               trust_level);
+}
+
+bool WinKeyPersistenceDelegate::PromoteTemporaryKeyPair() {
+  // TODO(b/290068551): Implement this method.
+  return true;
+}
+
+bool WinKeyPersistenceDelegate::DeleteKeyPair(KeyStorageType type) {
+  // TODO(b/290068551): Implement this method.
+  return true;
 }
 
 }  // namespace enterprise_connectors

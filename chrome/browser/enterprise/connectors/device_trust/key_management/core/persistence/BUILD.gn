@@ -17,6 +17,7 @@ source_set("persistence") {
   deps = [ "//base" ]
 
   public_deps = [
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/common",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
     "//components/policy/proto",
     "//crypto",

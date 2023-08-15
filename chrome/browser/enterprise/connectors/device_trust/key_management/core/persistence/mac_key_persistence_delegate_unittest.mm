@@ -260,4 +260,14 @@ TEST_F(MacKeyPersistenceDelegateTest, CleanupTemporaryKeyData) {
   persistence_delegate_->CleanupTemporaryKeyData();
 }
 
+// TODO(b/290068552): Add test coverage for this method.
+TEST_F(MacKeyPersistenceDelegateTest, PromoteTemporaryKeyPair) {
+  EXPECT_TRUE(persistence_delegate_->PromoteTemporaryKeyPair());
+}
+
+// TODO(b/290068552): Add test coverage for this method.
+TEST_F(MacKeyPersistenceDelegateTest, DeleteKeyPair) {
+  EXPECT_TRUE(persistence_delegate_->DeleteKeyPair(KeyStorageType::kTemporary));
+}
+
 }  // namespace enterprise_connectors

@@ -20,6 +20,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/mock_key_rotation_launcher.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/common/key_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
@@ -67,7 +68,8 @@ class DeviceTrustKeyManagerImplTest : public testing::Test {
     // key.
     auto mock_persistence_delegate =
         persistence_delegate_factory_.CreateMockedHardwareDelegate();
-    EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
+    EXPECT_CALL(*mock_persistence_delegate,
+                LoadKeyPair(KeyStorageType::kPermanent));
 
     persistence_delegate_factory_.set_next_instance(
         std::move(mock_persistence_delegate));
@@ -78,7 +80,8 @@ class DeviceTrustKeyManagerImplTest : public testing::Test {
   void SetUpNoKey() {
     auto mock_persistence_delegate =
         std::make_unique<test::MockKeyPersistenceDelegate>();
-    EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
+    EXPECT_CALL(*mock_persistence_delegate,
+                LoadKeyPair(KeyStorageType::kPermanent))
         .WillOnce(Invoke([]() { return nullptr; }));
 
     persistence_delegate_factory_.set_next_instance(
@@ -845,7 +848,8 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Success) {
   auto mock_persistence_delegate =
       persistence_delegate_factory_
           .CreateMockedHardwareDelegateWithLoadingSideEffect(start_rotate);
-  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate,
+              LoadKeyPair(KeyStorageType::kPermanent));
 
   persistence_delegate_factory_.set_next_instance(
       std::move(mock_persistence_delegate));
@@ -904,7 +908,8 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Fails) {
   auto mock_persistence_delegate =
       persistence_delegate_factory_
           .CreateMockedHardwareDelegateWithLoadingSideEffect(start_rotate);
-  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate,
+              LoadKeyPair(KeyStorageType::kPermanent));
 
   persistence_delegate_factory_.set_next_instance(
       std::move(mock_persistence_delegate));

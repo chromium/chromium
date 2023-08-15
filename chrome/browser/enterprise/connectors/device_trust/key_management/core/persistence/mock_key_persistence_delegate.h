@@ -26,13 +26,15 @@ class MockKeyPersistenceDelegate : public KeyPersistenceDelegate {
               (override));
   MOCK_METHOD(scoped_refptr<enterprise_connectors::SigningKeyPair>,
               LoadKeyPair,
-              (),
+              (KeyStorageType),
               (override));
   MOCK_METHOD(scoped_refptr<enterprise_connectors::SigningKeyPair>,
               CreateKeyPair,
               (),
               (override));
   MOCK_METHOD(void, CleanupTemporaryKeyData, (), (override));
+  MOCK_METHOD(bool, PromoteTemporaryKeyPair, (), (override));
+  MOCK_METHOD(bool, DeleteKeyPair, (KeyStorageType), (override));
 };
 
 }  // namespace test

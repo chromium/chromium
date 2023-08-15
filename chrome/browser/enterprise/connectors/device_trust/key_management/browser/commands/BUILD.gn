@@ -126,6 +126,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser",
       "//chrome/browser/enterprise/connectors/device_trust:prefs",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/common",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",

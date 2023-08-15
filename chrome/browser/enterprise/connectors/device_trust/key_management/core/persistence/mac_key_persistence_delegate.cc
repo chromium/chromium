@@ -57,7 +57,8 @@ bool MacKeyPersistenceDelegate::StoreKeyPair(KeyTrustLevel trust_level,
   return true;
 }
 
-scoped_refptr<SigningKeyPair> MacKeyPersistenceDelegate::LoadKeyPair() {
+scoped_refptr<SigningKeyPair> MacKeyPersistenceDelegate::LoadKeyPair(
+    KeyStorageType type) {
   SecureEnclaveClient::KeyType key_type =
       SecureEnclaveClient::KeyType::kPermanent;
   std::vector<uint8_t> key_label;
@@ -93,6 +94,16 @@ scoped_refptr<SigningKeyPair> MacKeyPersistenceDelegate::CreateKeyPair() {
 
   return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),
                                               BPKUR::CHROME_BROWSER_HW_KEY);
+}
+
+bool MacKeyPersistenceDelegate::PromoteTemporaryKeyPair() {
+  // TODO(b/290068552): Implement this method.
+  return true;
+}
+
+bool MacKeyPersistenceDelegate::DeleteKeyPair(KeyStorageType type) {
+  // TODO(b/290068552): Implement this method.
+  return true;
 }
 
 void MacKeyPersistenceDelegate::CleanupTemporaryKeyData() {

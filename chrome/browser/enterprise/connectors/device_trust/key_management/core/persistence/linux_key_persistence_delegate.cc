@@ -178,7 +178,8 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
                        "the signing key storage.");
 }
 
-scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair() {
+scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
+    KeyStorageType type) {
   std::string file_content;
   if (!base::ReadFileToStringWithMaxSize(GetSigningKeyFilePath(), &file_content,
                                          kMaxBufferSize)) {
@@ -273,6 +274,16 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::CreateKeyPair() {
 
   return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),
                                               BPKUR::CHROME_BROWSER_OS_KEY);
+}
+
+bool LinuxKeyPersistenceDelegate::PromoteTemporaryKeyPair() {
+  // TODO(b/290068350): Implement this method.
+  return true;
+}
+
+bool LinuxKeyPersistenceDelegate::DeleteKeyPair(KeyStorageType type) {
+  // TODO(b/290068350): Implement this method.
+  return true;
 }
 
 // static
