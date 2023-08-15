@@ -85,6 +85,7 @@ class CommerceHintAgent
   absl::optional<bool> should_use_dom_heuristics_;
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
   base::Time add_to_cart_focus_time_;
+  base::Time add_to_cart_heuristics_execution_time_;
   base::WeakPtrFactory<CommerceHintAgent> weak_factory_{this};
 
   // content::RenderFrameObserver overrides
