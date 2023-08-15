@@ -138,6 +138,9 @@
 
 namespace {
 
+// The maximum number of time a "new" IPH badge is shown.
+const NSInteger kMaxShowCountNewIPHBadge = 3;
+
 // Key used for storing NSUserDefault entry to keep track of the last timestamp
 // we've shown the default browser blue dot promo.
 NSString* const kMostRecentTimestampBlueDotPromoShownInSettingsMenu =
@@ -432,6 +435,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [super viewWillAppear:animated];
   // Update the `_safetyCheckItem` icon when returning to this view controller.
   [self updateSafetyCheckItemTrailingIcon];
+  if (IsBottomOmniboxSteadyStateEnabled()) {
+    // Update the address bar new IPH badge here as it depends on the number of
+    // time it's shown.
+    [self updateAddressBarNewIPHBadge];
+  }
 }
 
 #pragma mark SettingsRootTableViewController
@@ -856,8 +864,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                        symbol:DefaultSettingsRootSymbol(kGlobeAmericasSymbol)
         symbolBackgroundColor:[UIColor colorNamed:kPurple500Color]
       accessibilityIdentifier:kSettingsAddressBarCellId];
-  // TODO(crbug.com/1470650): Show the badge when needed.
-  _addressBarPreferenceItem.badgeType = BadgeType::kNone;
   return _addressBarPreferenceItem;
 }
 
@@ -1388,6 +1394,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     case SettingsItemTypeAddressBar:
       base::RecordAction(base::UserMetricsAction("Settings.AddressBar.Opened"));
       [self showAddressBarPreferenceSetting];
+      // Sets the "new" IPH badge shown count to max so it's not shown again.
+      _browserState->GetPrefs()->SetInteger(
+          prefs::kAddressBarSettingsNewBadgeShownCount, INT_MAX);
       break;
     case SettingsItemTypePasswords:
       base::RecordAction(
@@ -1920,6 +1929,33 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       tracker->NotifyEvent(
           feature_engagement::events::kBlueDotPromoSettingsShownNewSession);
     }
+  }
+}
+
+// Add or remove the "new" IPH badge from the address bar settings row. The
+// badge is shown a maximum of `kMaxShowCountNewIPHBadge` times.
+- (void)updateAddressBarNewIPHBadge {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  CHECK(_addressBarPreferenceItem);
+
+  if (!_browserState) {
+    return;
+  }
+
+  PrefService* prefService = _browserState->GetPrefs();
+  NSInteger showCount =
+      prefService->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount);
+
+  BadgeType badgeType = BadgeType::kNone;
+  if (showCount < kMaxShowCountNewIPHBadge) {
+    badgeType = BadgeType::kNew;
+    prefService->SetInteger(prefs::kAddressBarSettingsNewBadgeShownCount,
+                            showCount + 1);
+  }
+
+  if (badgeType != _addressBarPreferenceItem.badgeType) {
+    _addressBarPreferenceItem.badgeType = badgeType;
+    [self reconfigureCellsForItems:@[ _addressBarPreferenceItem ]];
   }
 }
 

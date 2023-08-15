@@ -6,6 +6,11 @@
 
 namespace prefs {
 
+// Number of times the "Address Bar" settings "new" IPH badge has been shown.
+// This is set to INT_MAX when the user visites the "Address Bar" settings page.
+const char kAddressBarSettingsNewBadgeShownCount[] =
+    "ios.address_bar_settings_new_badge_shown_count";
+
 // The application locale.
 const char kApplicationLocale[] = "intl.app_locale";
 
