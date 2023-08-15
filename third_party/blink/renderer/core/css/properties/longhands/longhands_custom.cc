@@ -8799,8 +8799,7 @@ const CSSValue* ViewTimelineInset::CSSValueFromComputedStyleInternal(
 
 const CSSValue* ViewTimelineInset::InitialValue() const {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  list->Append(
-      *CSSNumericLiteralValue::Create(0, CSSPrimitiveValue::UnitType::kPixels));
+  list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
   return list;
 }
 
