@@ -49,6 +49,7 @@ source_set("browser_tests") {
     "side_panel/read_anything/read_anything_browsertest.cc",
     "side_panel/user_notes/user_notes_browsertest.cc",
     "tab_search/tab_search_browsertest.cc",
+    "usb_internals/usb_internals_browsertest.cc",
     "whats_new/whats_new_browsertest.cc",
   ]
 
@@ -287,7 +288,6 @@ if (include_js2gtest_tests) {
       "location_internals/location_internals_browsertest.js",
       "media/media_engagement_browsertest.js",
       "media/media_history_webui_browsertest.js",
-      "usb_internals/usb_internals_browsertest.js",
     ]
     if (is_chromeos_ash) {
       sources += [
