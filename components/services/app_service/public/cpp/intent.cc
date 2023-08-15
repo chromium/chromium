@@ -154,10 +154,6 @@ absl::optional<std::string> Intent::GetIntentConditionValueByType(
       return url.has_value() ? absl::optional<std::string>(url->scheme())
                              : absl::nullopt;
     }
-    case ConditionType::kAuthority: {
-      return url.has_value() ? absl::optional<std::string>(url->host())
-                             : absl::nullopt;
-    }
     case ConditionType::kPath: {
       return url.has_value() ? absl::optional<std::string>(url->path())
                              : absl::nullopt;
@@ -165,12 +161,45 @@ absl::optional<std::string> Intent::GetIntentConditionValueByType(
     case ConditionType::kMimeType: {
       return mime_type;
     }
+    // Handled in MatchAuthorityCondition.
+    case ConditionType::kAuthority:
+    // Handled in MatchFileCondition.
     case ConditionType::kFile: {
-      // Handled in IntentMatchesFileCondition.
       NOTREACHED();
       return absl::nullopt;
     }
   }
+}
+
+bool Intent::MatchAuthorityCondition(const ConditionPtr& condition) {
+  CHECK_EQ(condition->condition_type, ConditionType::kAuthority);
+
+  if (!url.has_value()) {
+    return false;
+  }
+
+  absl::optional<std::string> port =
+      apps_util::AuthorityView::PortToString(url.value());
+  return base::ranges::any_of(
+      condition->condition_values,
+      [this, &port](const ConditionValuePtr& condition_value) {
+        apps_util::AuthorityView match_authority =
+            apps_util::AuthorityView::Decode(condition_value->value);
+        if (!apps_util::PatternMatchValue(url->host(),
+                                          condition_value->match_type,
+                                          match_authority.host)) {
+          return false;
+        }
+        // No port filtering.
+        if (!match_authority.port.has_value()) {
+          return true;
+        }
+        // URL has no port but port is expected.
+        if (!port.has_value()) {
+          return false;
+        }
+        return match_authority.port.value() == port.value();
+      });
 }
 
 bool Intent::MatchFileCondition(const ConditionPtr& condition) {
@@ -183,6 +212,10 @@ bool Intent::MatchFileCondition(const ConditionPtr& condition) {
 }
 
 bool Intent::MatchCondition(const ConditionPtr& condition) {
+  if (condition->condition_type == ConditionType::kAuthority) {
+    return MatchAuthorityCondition(condition);
+  }
+
   if (condition->condition_type == ConditionType::kFile) {
     return MatchFileCondition(condition);
   }

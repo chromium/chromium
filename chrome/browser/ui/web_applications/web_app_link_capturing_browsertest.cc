@@ -257,6 +257,27 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
   ASSERT_TRUE(future.Wait());
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
+                       DifferentPortConsideredDifferent) {
+  net::EmbeddedTestServer other_server;
+  other_server.AddDefaultHandlers(GetChromeTestDataDir());
+  ASSERT_TRUE(other_server.Start());
+  ASSERT_EQ(embedded_test_server()->GetOrigin().scheme(),
+            other_server.GetOrigin().scheme());
+  ASSERT_EQ(embedded_test_server()->GetOrigin().host(),
+            other_server.GetOrigin().host());
+  ASSERT_NE(embedded_test_server()->GetOrigin().port(),
+            other_server.GetOrigin().port());
+
+  InstallTestApp("/web_apps/basic.html");
+  TurnOnLinkCapturing();
+
+  ExpectTabs(browser(), {about_blank_});
+  GURL url = other_server.GetURL("/web_apps/basic.html");
+  Navigate(browser(), url);
+  ExpectTabs(browser(), {url});
+}
+
 // TODO: Run these tests on Chrome OS with both Ash and Lacros processes active.
 class WebAppTabStripLinkCapturingBrowserTest
     : public WebAppLinkCapturingBrowserTest {

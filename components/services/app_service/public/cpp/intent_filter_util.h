@@ -20,7 +20,9 @@ namespace apps_util {
 
 // TODO(crbug.com/1092784): Update/add all related unit tests to test with
 // action view.
-apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url);
+apps::IntentFilterPtr MakeIntentFilterForUrlScope(
+    const GURL& url,
+    bool omit_port_for_testing = false);
 
 // Check if the two intent filters have overlap. i.e. they can handle same
 // intent with same match level.

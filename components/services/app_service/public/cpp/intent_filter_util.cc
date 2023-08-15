@@ -4,47 +4,81 @@
 
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "url/url_constants.h"
 
+namespace apps_util {
+
 namespace {
 
-// Returns true if |value1| has overlapping values with |value2|. This method
-// should be called twice, with |value1| and |value2| swapped.
-bool ConditionValuesHaveOverlap(const apps::ConditionValuePtr& value1,
-                                const apps::ConditionValuePtr& value2) {
-  if (*value1 == *value2) {
-    return true;
+// Assumes that the inputs are already not equal to each other.
+bool ConditionValuesHaveDirectionalOverlap(apps::PatternMatchType match_type1,
+                                           std::string_view value1,
+                                           apps::PatternMatchType match_type2,
+                                           std::string_view value2) {
+  if (match_type1 == apps::PatternMatchType::kSuffix &&
+      (match_type2 == apps::PatternMatchType::kLiteral ||
+       match_type2 == apps::PatternMatchType::kSuffix)) {
+    return base::EndsWith(/*str=*/value2,
+                          /*search_for=*/value1);
   }
 
-  if (value1->match_type == apps::PatternMatchType::kSuffix &&
-      (value2->match_type == apps::PatternMatchType::kLiteral ||
-       value2->match_type == apps::PatternMatchType::kSuffix)) {
-    return base::EndsWith(/*str=*/value2->value,
-                          /*search_for=*/value1->value);
-  }
-
-  else if (value1->match_type == apps::PatternMatchType::kLiteral) {
-    if (value2->match_type == apps::PatternMatchType::kPrefix) {
-      return base::StartsWith(/*str=*/value1->value,
-                              /*search_for=*/value2->value);
-    } else if (value2->match_type == apps::PatternMatchType::kGlob) {
-      return apps_util::MatchGlob(/*value=*/value1->value,
-                                  /*pattern=*/value2->value);
+  else if (match_type1 == apps::PatternMatchType::kLiteral) {
+    if (match_type2 == apps::PatternMatchType::kPrefix) {
+      return base::StartsWith(/*str=*/value1,
+                              /*search_for=*/value2);
+    } else if (match_type2 == apps::PatternMatchType::kGlob) {
+      return MatchGlob(/*value=*/value1,
+                       /*pattern=*/value2);
     }
   }
 
-  else if (value1->match_type == apps::PatternMatchType::kPrefix &&
-           value2->match_type == apps::PatternMatchType::kPrefix) {
-    return base::StartsWith(/*str=*/value1->value,
-                            /*search_for=*/value2->value) ||
-           base::StartsWith(/*str=*/value2->value,
-                            /*search_for=*/value1->value);
+  else if (match_type1 == apps::PatternMatchType::kPrefix &&
+           match_type2 == apps::PatternMatchType::kPrefix) {
+    return base::StartsWith(/*str=*/value1,
+                            /*search_for=*/value2) ||
+           base::StartsWith(/*str=*/value2,
+                            /*search_for=*/value1);
   }
 
   return false;
+}
+
+bool ConditionValuesHaveOverlap(apps::PatternMatchType match_type1,
+                                std::string_view value1,
+                                apps::PatternMatchType match_type2,
+                                std::string_view value2) {
+  if (match_type1 == match_type2 && value1 == value2) {
+    return true;
+  }
+
+  return ConditionValuesHaveDirectionalOverlap(match_type1, value1, match_type2,
+                                               value2) ||
+         ConditionValuesHaveDirectionalOverlap(match_type2, value2, match_type1,
+                                               value1);
+}
+
+bool ConditionValuesHaveOverlap(const apps::ConditionType type,
+                                const apps::ConditionValuePtr& value1,
+                                const apps::ConditionValuePtr& value2) {
+  // kAuthority composes host and optional port in the string and must be
+  // handled specially. match_type only applies to the host component.
+  if (type == apps::ConditionType::kAuthority) {
+    AuthorityView authority1 = AuthorityView::Decode(value1->value);
+    AuthorityView authority2 = AuthorityView::Decode(value2->value);
+    if (authority1.port.has_value() && authority2.port.has_value() &&
+        authority1.port != authority2.port) {
+      return false;
+    }
+    return ConditionValuesHaveOverlap(value1->match_type, authority1.host,
+                                      value2->match_type, authority2.host);
+  }
+
+  return ConditionValuesHaveOverlap(value1->match_type, value1->value,
+                                    value2->match_type, value2->value);
 }
 
 bool ConditionsHaveOverlap(const apps::ConditionPtr& condition1,
@@ -52,12 +86,13 @@ bool ConditionsHaveOverlap(const apps::ConditionPtr& condition1,
   if (condition1->condition_type != condition2->condition_type) {
     return false;
   }
+
   // If there are same |condition_value| exist in the both |condition|s, there
   // is an overlap.
   for (auto& value1 : condition1->condition_values) {
     for (auto& value2 : condition2->condition_values) {
-      if (ConditionValuesHaveOverlap(value1, value2) ||
-          ConditionValuesHaveOverlap(value2, value1)) {
+      if (ConditionValuesHaveOverlap(condition1->condition_type, value1,
+                                     value2)) {
         return true;
       }
     }
@@ -67,13 +102,12 @@ bool ConditionsHaveOverlap(const apps::ConditionPtr& condition1,
 
 }  // namespace
 
-namespace apps_util {
-
-apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url) {
+apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url,
+                                                  bool omit_port_for_testing) {
   auto intent_filter = std::make_unique<apps::IntentFilter>();
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kAction,
-                                         apps_util::kIntentActionView,
+                                         kIntentActionView,
                                          apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme,
@@ -81,7 +115,9 @@ apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url) {
                                          apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority,
-                                         url.host(),
+                                         omit_port_for_testing
+                                             ? std::string(url.host())
+                                             : AuthorityView::Encode(url),
                                          apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, url.path(),
@@ -111,7 +147,7 @@ bool FiltersHaveOverlap(const apps::IntentFilterPtr& filter1,
 void UpgradeFilter(apps::IntentFilterPtr& filter) {
   std::vector<apps::ConditionValuePtr> condition_values;
   condition_values.push_back(std::make_unique<apps::ConditionValue>(
-      apps_util::kIntentActionView, apps::PatternMatchType::kLiteral));
+      kIntentActionView, apps::PatternMatchType::kLiteral));
   auto condition = std::make_unique<apps::Condition>(
       apps::ConditionType::kAction, std::move(condition_values));
   filter->conditions.insert(filter->conditions.begin(), std::move(condition));
@@ -122,7 +158,7 @@ bool IsSupportedLinkForApp(const std::string& app_id,
   // Filters associated with kUseBrowserForLink are a special case. These
   // filters do not "belong" to the app and should not be treated as supported
   // links.
-  if (app_id == apps_util::kUseBrowserForLink) {
+  if (app_id == kUseBrowserForLink) {
     return false;
   }
 
@@ -134,7 +170,7 @@ bool IsSupportedLinkForApp(const std::string& app_id,
     switch (condition->condition_type) {
       case apps::ConditionType::kAction:
         for (auto& condition_value : condition->condition_values) {
-          if (condition_value->value == apps_util::kIntentActionView) {
+          if (condition_value->value == kIntentActionView) {
             action = true;
             break;
           }
@@ -230,12 +266,15 @@ std::set<std::string> GetSupportedLinksForAppManagement(
     // For host conditions we add each value to the |hosts| set.
     if (condition->condition_type == apps::ConditionType::kAuthority) {
       for (auto& condition_value : condition->condition_values) {
+        auto authority = AuthorityView::Decode(condition_value->value);
         // Prepend the wildcard to indicate any subdomain in the hosts
-        std::string host = condition_value->value;
-        if (condition_value->match_type == apps::PatternMatchType::kSuffix) {
-          host = "*" + host;
-        }
-        hosts.insert(host);
+        hosts.insert(base::StrCat(
+            {condition_value->match_type == apps::PatternMatchType::kSuffix
+                 ? "*"
+                 : "",
+             authority.host}));
+        // TODO(crbug.com/1468870): Display authority.port if it is not the
+        // default for the scheme.
       }
     }
 

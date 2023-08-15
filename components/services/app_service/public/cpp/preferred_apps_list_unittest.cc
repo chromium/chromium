@@ -127,8 +127,8 @@ TEST_F(PreferredAppListTest, MultiplePreferredApps) {
 // Test that we can properly add and search for filters that has multiple
 // condition values for a condition type.
 TEST_F(PreferredAppListTest, MultipleConditionValues) {
-  auto intent_filter =
-      apps_util::MakeIntentFilterForUrlScope(GURL("https://www.google.com/"));
+  auto intent_filter = apps_util::MakeIntentFilterForUrlScope(
+      GURL("https://www.google.com/"), /*omit_port_for_testing=*/true);
   apps_util::AddConditionValue(apps::ConditionType::kScheme, "http",
                                apps::PatternMatchType::kLiteral, intent_filter);
 
@@ -388,8 +388,8 @@ TEST_F(PreferredAppListTest, DeleteForTopLayerFilters) {
 // Test that we can properly delete for filters that has multiple
 // condition values for a condition type.
 TEST_F(PreferredAppListTest, DeleteMultipleConditionValues) {
-  auto intent_filter =
-      apps_util::MakeIntentFilterForUrlScope(GURL("https://www.google.com/"));
+  auto intent_filter = apps_util::MakeIntentFilterForUrlScope(
+      GURL("https://www.google.com/"), /*omit_port_for_testing=*/true);
   apps_util::AddConditionValue(apps::ConditionType::kScheme, "http",
                                apps::PatternMatchType::kLiteral, intent_filter);
   preferred_apps_.AddPreferredApp(kAppId1, intent_filter);
@@ -443,8 +443,8 @@ TEST_F(PreferredAppListTest, DeleteForNotCompletedFilter) {
       apps_util::MakeIntentFilterForUrlScope(GURL("https://www.google.com/"));
 
   auto intent_filter_to_delete =
-      apps_util::MakeIntentFilterForUrlScope(GURL("http://www.google.com/"));
-  apps_util::AddConditionValue(apps::ConditionType::kScheme, "https",
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://www.google.com/"));
+  apps_util::AddConditionValue(apps::ConditionType::kScheme, "http",
                                apps::PatternMatchType::kLiteral,
                                intent_filter_to_delete);
 
@@ -565,8 +565,8 @@ TEST_F(PreferredAppListTest, DeleteAppIdForMultipleFilters) {
 // Test that for filter with multiple condition values, DeleteAppId() can
 // delete them all.
 TEST_F(PreferredAppListTest, DeleteAppIdForMultipleConditionValues) {
-  auto intent_filter =
-      apps_util::MakeIntentFilterForUrlScope(GURL("https://www.google.com/"));
+  auto intent_filter = apps_util::MakeIntentFilterForUrlScope(
+      GURL("https://www.google.com/"), /*omit_port_for_testing=*/true);
   apps_util::AddConditionValue(apps::ConditionType::kScheme, "http",
                                apps::PatternMatchType::kLiteral, intent_filter);
 

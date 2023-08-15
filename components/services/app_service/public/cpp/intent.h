@@ -84,6 +84,10 @@ struct Intent {
   absl::optional<std::string> GetIntentConditionValueByType(
       ConditionType condition_type);
 
+  // Returns true if matches the authority `condition`, otherwise, returns
+  // false.
+  bool MatchAuthorityCondition(const ConditionPtr& condition);
+
   // Returns true if matches the file `condition`, otherwise, returns false.
   bool MatchFileCondition(const ConditionPtr& condition);
 

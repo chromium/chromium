@@ -210,7 +210,8 @@ TEST_F(WebAppPublisherHelperTest,
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               apps::PatternMatchType::kLiteral);
-    EXPECT_EQ(condition.condition_values[0]->value, scope.host());
+    EXPECT_EQ(condition.condition_values[0]->value,
+              apps_util::AuthorityView::Encode(scope));
   }
 
   {

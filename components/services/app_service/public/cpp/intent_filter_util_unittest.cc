@@ -58,6 +58,25 @@ class IntentFilterUtilTest : public testing::Test {
 
     return intent_filter;
   }
+
+  void MakeHostSuffixMatching(apps::IntentFilterPtr& intent_filter) {
+    for (apps::ConditionPtr& condition : intent_filter->conditions) {
+      if (condition->condition_type != apps::ConditionType::kAuthority) {
+        continue;
+      }
+      for (apps::ConditionValuePtr& condition_value :
+           condition->condition_values) {
+        condition_value->match_type = apps::PatternMatchType::kSuffix;
+      }
+    }
+  }
+
+  bool TestOverlapInBothDirections(
+      const apps::IntentFilterPtr& intent_filter1,
+      const apps::IntentFilterPtr& intent_filter2) {
+    return apps_util::FiltersHaveOverlap(intent_filter1, intent_filter2) &&
+           apps_util::FiltersHaveOverlap(intent_filter2, intent_filter1);
+  }
 };
 
 TEST_F(IntentFilterUtilTest, EmptyConditionList) {
@@ -372,6 +391,46 @@ TEST_F(IntentFilterUtilTest, HostMatchOverlapSuffix) {
                                             wikipedia_other_wildcard_filter));
   ASSERT_TRUE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
                                             wikipedia_subsubdomain_filter));
+}
+
+TEST_F(IntentFilterUtilTest, AuthorityOverlap) {
+  apps::IntentFilterPtr no_port = apps_util::MakeIntentFilterForUrlScope(
+      GURL("https://www.example.com"), /*omit_port_for_testing=*/true);
+  apps::IntentFilterPtr default_port =
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://www.example.com"));
+  apps::IntentFilterPtr explicit_port = apps_util::MakeIntentFilterForUrlScope(
+      GURL("https://www.example.com:443"));
+  apps::IntentFilterPtr different_port = apps_util::MakeIntentFilterForUrlScope(
+      GURL("https://www.example.com:1234"));
+  EXPECT_TRUE(TestOverlapInBothDirections(no_port, default_port));
+  EXPECT_TRUE(TestOverlapInBothDirections(no_port, explicit_port));
+  EXPECT_TRUE(TestOverlapInBothDirections(no_port, different_port));
+
+  EXPECT_TRUE(TestOverlapInBothDirections(default_port, explicit_port));
+
+  EXPECT_FALSE(TestOverlapInBothDirections(default_port, different_port));
+  EXPECT_FALSE(TestOverlapInBothDirections(explicit_port, different_port));
+
+  apps::IntentFilterPtr suffix_no_port =
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://example.com"),
+                                             /*omit_port_for_testing=*/true);
+  MakeHostSuffixMatching(suffix_no_port);
+
+  apps::IntentFilterPtr suffix_different_port =
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://example.com:1234"));
+  MakeHostSuffixMatching(suffix_different_port);
+
+  apps::IntentFilterPtr subdomain_default_port =
+      apps_util::MakeIntentFilterForUrlScope(
+          GURL("https://subdomain.example.com"));
+
+  EXPECT_TRUE(TestOverlapInBothDirections(suffix_no_port, default_port));
+  EXPECT_TRUE(
+      TestOverlapInBothDirections(suffix_no_port, subdomain_default_port));
+  EXPECT_FALSE(
+      TestOverlapInBothDirections(suffix_different_port, default_port));
+  EXPECT_FALSE(TestOverlapInBothDirections(suffix_different_port,
+                                           subdomain_default_port));
 }
 
 TEST_F(IntentFilterUtilTest, PatternMatchOverlap) {

@@ -776,6 +776,7 @@ TEST_F(ArcAppsPublisherTest, OnlyValidFilterIsPublished) {
   EXPECT_EQ(published_filters.size(), 1u);
 
   apps::IntentFilterPtr expected_filter =
-      apps_util::MakeIntentFilterForUrlScope(kTestUrl);
+      apps_util::MakeIntentFilterForUrlScope(kTestUrl,
+                                             /*omit_port_for_testing=*/true);
   EXPECT_EQ(*published_filters[0], *expected_filter);
 }
