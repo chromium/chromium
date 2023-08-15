@@ -744,26 +744,6 @@ skia_source_set("skia_core_and_effects") {
 
 # Bits that involve special vector-y hardware.
 if (current_cpu == "x86" || current_cpu == "x64") {
-  skia_source_set("skia_opts_sse3") {
-    sources = skia_opts.ssse3_sources
-    if (!is_win || is_clang) {
-      cflags = [ "-mssse3" ]
-    }
-    if (is_win) {
-      defines = [ "SK_CPU_SSE_LEVEL=31" ]
-    }
-    visibility = [ ":skia_opts" ]
-  }
-  skia_source_set("skia_opts_avx") {
-    sources = skia_opts.avx_sources
-    if (!is_win) {
-      cflags = [ "-mavx" ]
-    }
-    if (is_win) {
-      cflags = [ "/arch:AVX" ]
-    }
-    visibility = [ ":skia_opts" ]
-  }
   skia_source_set("skia_opts_hsw") {
     sources = skia_opts.hsw_sources
     if (!is_win) {
@@ -789,11 +769,7 @@ skia_source_set("skia_opts") {
   deps = [ "//base" ]
 
   if (current_cpu == "x86" || current_cpu == "x64") {
-    deps += [
-      ":skia_opts_avx",
-      ":skia_opts_hsw",
-      ":skia_opts_sse3",
-    ]
+    deps += [ ":skia_opts_hsw" ]
   } else if (current_cpu == "arm") {
     # The assembly uses the frame pointer register (r7 in Thumb/r11 in
     # ARM), the compiler doesn't like that.
