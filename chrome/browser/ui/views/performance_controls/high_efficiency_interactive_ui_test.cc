@@ -719,8 +719,9 @@ class HighEfficiencyFaviconTreatmentTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// See crbug.com/1472907
 IN_PROC_BROWSER_TEST_P(HighEfficiencyFaviconTreatmentTest,
-                       FaviconTreatmentOnDiscard) {
+                       DISABLED_FaviconTreatmentOnDiscard) {
   constexpr char kFirstTabFavicon[] = "first_tab_favicon";
 
   RunTestSequence(
