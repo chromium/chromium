@@ -394,6 +394,7 @@ void VP9VaapiVideoEncoderDelegateTest::
   auto va_surface = base::MakeRefCounted<VASurface>(
       kDummyVASurfaceID, layer_size, VA_RT_FORMAT_YUV420, base::DoNothing());
   scoped_refptr<VP9Picture> picture = new VaapiVP9Picture(va_surface);
+  picture->frame_hdr = std::make_unique<Vp9FrameHeader>();
 
   auto encode_job = CreateEncodeJob(is_keyframe, va_surface, picture);
 

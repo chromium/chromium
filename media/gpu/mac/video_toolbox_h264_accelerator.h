@@ -79,7 +79,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH264Accelerator
 
   base::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
 
-  // Accumulated slace data for the current frame.
+  // Accumulated slice data for the current frame.
   std::vector<base::span<const uint8_t>> slice_nalu_data_;
 
   SEQUENCE_CHECKER(sequence_checker_);

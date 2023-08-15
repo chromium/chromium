@@ -4,6 +4,8 @@
 
 #include "media/gpu/mac/video_toolbox_h264_accelerator.h"
 
+#include <utility>
+
 #include "base/mac/mac_logging.h"
 #include "base/sys_byteorder.h"
 #include "media/base/media_log.h"

@@ -31,6 +31,8 @@ source_set("mac") {
     "video_toolbox_output_queue.h",
     "video_toolbox_video_decoder.cc",
     "video_toolbox_video_decoder.h",
+    "video_toolbox_vp9_accelerator.cc",
+    "video_toolbox_vp9_accelerator.h",
     "vp9_super_frame_bitstream_filter.cc",
     "vp9_super_frame_bitstream_filter.h",
     "vt_config_util.h",
@@ -85,6 +87,7 @@ source_set("unit_tests") {
     "video_toolbox_decompression_interface_unittest.cc",
     "video_toolbox_h264_accelerator_unittest.cc",
     "video_toolbox_output_queue_unittest.cc",
+    "video_toolbox_vp9_accelerator_unittest.cc",
     "vp9_super_frame_bitstream_filter_unittest.cc",
     "vt_config_util_unittest.cc",
   ]

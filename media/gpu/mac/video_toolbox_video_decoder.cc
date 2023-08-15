@@ -4,6 +4,7 @@
 
 #include "media/gpu/mac/video_toolbox_video_decoder.h"
 
+#include <CoreMedia/CoreMedia.h>
 #include <VideoToolbox/VideoToolbox.h>
 
 #include <memory>
@@ -22,25 +23,30 @@
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/mac/video_toolbox_decode_metadata.h"
 #include "media/gpu/mac/video_toolbox_h264_accelerator.h"
+#include "media/gpu/mac/video_toolbox_vp9_accelerator.h"
+#include "media/gpu/vp9_decoder.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 
 namespace {
 
-constexpr VideoCodecProfile kSupportedProfiles[] = {
-    H264PROFILE_BASELINE,
-    H264PROFILE_EXTENDED,
-    H264PROFILE_MAIN,
-    H264PROFILE_HIGH,
-};
-
-bool IsSupportedProfile(VideoCodecProfile profile) {
-  for (const auto& supported_profile : kSupportedProfiles) {
-    if (profile == supported_profile) {
-      return true;
-    }
+bool InitializeVP9() {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/1449877): Enable VP9 on iOS.
+  if (__builtin_available(macOS 11.0, *)) {
+    // TODO(crbug.com/1331597): Test whether it is necessary to register VP9
+    // before detecting it.
+    VTRegisterSupplementalVideoDecoderIfAvailable(kCMVideoCodecType_VP9);
+    return VTIsHardwareDecodeSupported(kCMVideoCodecType_VP9);
   }
+#endif
   return false;
+}
+
+bool SupportsVP9() {
+  static const bool initialized = InitializeVP9();
+  return initialized;
 }
 
 }  // namespace
@@ -48,10 +54,12 @@ bool IsSupportedProfile(VideoCodecProfile profile) {
 VideoToolboxVideoDecoder::VideoToolboxVideoDecoder(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<MediaLog> media_log,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
     GetCommandBufferStubCB get_stub_cb)
     : task_runner_(std::move(task_runner)),
       media_log_(std::move(media_log)),
+      gpu_workarounds_(gpu_workarounds),
       gpu_task_runner_(std::move(gpu_task_runner)),
       get_stub_cb_(std::move(get_stub_cb)),
       video_toolbox_(
@@ -102,7 +110,21 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  if (!IsSupportedProfile(config.profile())) {
+  // TODO(crbug.com/1331597): Distinguish unsupported profile from unsupported
+  // codec.
+  // TODO(crbug.com/1331597): Make sure that config.profile() matches
+  // config.codec().
+  // TODO(crbug.com/1331597): Check that the size is supported.
+  bool profile_supported = false;
+  for (const auto& supported_config :
+       GetSupportedVideoDecoderConfigs(gpu_workarounds_)) {
+    if (supported_config.profile_min <= config.profile() &&
+        config.profile() <= supported_config.profile_max) {
+      profile_supported = true;
+      break;
+    }
+  }
+  if (!profile_supported) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(init_cb),
                                   DecoderStatus::Codes::kUnsupportedProfile));
@@ -124,15 +146,39 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
     ResetInternal(DecoderStatus::Codes::kAborted);
   }
 
+  // Create a new Accelerator for the configuration.
+  auto accelerator_decode_cb = base::BindRepeating(
+      &VideoToolboxVideoDecoder::OnAcceleratorDecode, base::Unretained(this));
+  auto accelerator_output_cb = base::BindRepeating(
+      &VideoToolboxVideoDecoder::OnAcceleratorOutput, base::Unretained(this));
+
+  switch (VideoCodecProfileToVideoCodec(config.profile())) {
+    case VideoCodec::kH264:
+      accelerator_ = std::make_unique<H264Decoder>(
+          std::make_unique<VideoToolboxH264Accelerator>(
+              media_log_->Clone(), std::move(accelerator_decode_cb),
+              std::move(accelerator_output_cb)),
+          config.profile(), config.color_space_info());
+      break;
+
+    case VideoCodec::kVP9:
+      accelerator_ = std::make_unique<VP9Decoder>(
+          std::make_unique<VideoToolboxVP9Accelerator>(
+              media_log_->Clone(), std::move(accelerator_decode_cb),
+              std::move(accelerator_output_cb)),
+          config.profile(), config.color_space_info());
+      break;
+
+    default:
+      task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(std::move(init_cb),
+                                    DecoderStatus::Codes::kUnsupportedCodec));
+      NotifyError(DecoderStatus::Codes::kUnsupportedCodec);
+      return;
+  }
+
+  // Save the active configuration.
   config_ = config;
-  accelerator_ = std::make_unique<H264Decoder>(
-      std::make_unique<VideoToolboxH264Accelerator>(
-          media_log_->Clone(),
-          base::BindRepeating(&VideoToolboxVideoDecoder::OnAcceleratorDecode,
-                              base::Unretained(this)),
-          base::BindRepeating(&VideoToolboxVideoDecoder::OnAcceleratorOutput,
-                              base::Unretained(this))),
-      config.profile(), config.color_space_info());
   output_queue_.SetOutputCB(output_cb);
 
   task_runner_->PostTask(
@@ -168,7 +214,7 @@ void VideoToolboxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   decode_cbs_.push(std::move(decode_cb));
   accelerator_->SetStream(-1, *buffer);
   while (true) {
-    // |active_decode_| is used in OnAcceleratorDecode() callbacks to look up
+    // `active_decode_` is used in OnAcceleratorDecode() callbacks to look up
     // decode metadata.
     active_decode_ = buffer;
     AcceleratedVideoDecoder::DecodeResult result = accelerator_->Decode();
@@ -331,6 +377,43 @@ void VideoToolboxVideoDecoder::OnConverterOutput(
   }
 
   output_queue_.FulfillPicture(std::move(metadata->picture), std::move(frame));
+}
+
+// static
+std::vector<SupportedVideoDecoderConfig>
+VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
+  std::vector<SupportedVideoDecoderConfig> supported;
+
+  // TODO(crbug.com/1331597): Test support for other H.264 profiles.
+  // TODO(crbug.com/1331597): Exclude resolutions that are not accelerated.
+  // TODO(crbug.com/1331597): Check if higher resolutions are supported.
+  supported.emplace_back(
+      /*profile_min=*/H264PROFILE_BASELINE,
+      /*profile_max=*/H264PROFILE_HIGH,
+      /*coded_size_min=*/gfx::Size(16, 16),
+      /*coded_size_max=*/gfx::Size(4096, 4096),
+      /*allow_encrypted=*/false,
+      /*require_encrypted=*/false);
+
+  if (!gpu_workarounds.disable_accelerated_vp9_decode && SupportsVP9()) {
+    supported.emplace_back(
+        /*profile_min=*/VP9PROFILE_PROFILE0,
+        /*profile_max=*/VP9PROFILE_PROFILE0,
+        /*coded_size_min=*/gfx::Size(16, 16),
+        /*coded_size_max=*/gfx::Size(4096, 4096),
+        /*allow_encrypted=*/false,
+        /*require_encrypted=*/false);
+    supported.emplace_back(
+        /*profile_min=*/VP9PROFILE_PROFILE2,
+        /*profile_max=*/VP9PROFILE_PROFILE2,
+        /*coded_size_min=*/gfx::Size(16, 16),
+        /*coded_size_max=*/gfx::Size(4096, 4096),
+        /*allow_encrypted=*/false,
+        /*require_encrypted=*/false);
+  }
+
+  return supported;
 }
 
 }  // namespace media

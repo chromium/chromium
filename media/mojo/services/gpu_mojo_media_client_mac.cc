@@ -18,13 +18,21 @@
 
 namespace media {
 
+namespace {
+
+bool UseVTVD() {
+  return base::FeatureList::IsEnabled(kVideoToolboxVideoDecoder) &&
+         IsMultiPlaneFormatForHardwareVideoEnabled();
+}
+
+}  // namespace
+
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     VideoDecoderTraits& traits) {
-  if (base::FeatureList::IsEnabled(kVideoToolboxVideoDecoder) &&
-      IsMultiPlaneFormatForHardwareVideoEnabled()) {
+  if (UseVTVD()) {
     return std::make_unique<VideoToolboxVideoDecoder>(
-        traits.task_runner, traits.media_log->Clone(), traits.gpu_task_runner,
-        traits.get_command_buffer_stub_cb);
+        traits.task_runner, traits.media_log->Clone(), *traits.gpu_workarounds,
+        traits.gpu_task_runner, traits.get_command_buffer_stub_cb);
   }
 
   return VdaVideoDecoder::Create(
@@ -41,7 +49,10 @@ GetPlatformSupportedVideoDecoderConfigs(
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
-  // TODO(crbug.com/1331597): Implement for VideoToolboxVideoDecoder.
+  if (UseVTVD()) {
+    return VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
+        gpu_workarounds);
+  }
   return std::move(get_vda_configs).Run();
 }
 
@@ -71,6 +82,9 @@ VideoDecoderType GetPlatformDecoderImplementationType(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info) {
+  if (UseVTVD()) {
+    return VideoDecoderType::kVideoToolbox;
+  }
   return VideoDecoderType::kVda;
 }
 

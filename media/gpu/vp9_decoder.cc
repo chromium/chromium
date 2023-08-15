@@ -238,18 +238,13 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
       // correct timestamp.
       scoped_refptr<VP9Picture> pic =
           ref_frames_.GetFrame(frame_to_show)->Duplicate();
-      if (pic == nullptr) {
-        DVLOG(1) << "Failed to duplicate the VP9Picture.";
-        SetError();
-        return kDecodeError;
-      }
       pic->set_bitstream_id(stream_id_);
+      pic->frame_hdr = std::move(curr_frame_hdr_);
       if (!accelerator_->OutputPicture(std::move(pic))) {
         SetError();
         return kDecodeError;
       }
 
-      curr_frame_hdr_.reset();
       decrypt_config_.reset();
       continue;
     }
