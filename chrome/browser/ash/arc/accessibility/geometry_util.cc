@@ -14,11 +14,18 @@
 namespace arc {
 gfx::RectF ScaleAndroidPxToChromePx(const gfx::Rect& android_bounds,
                                     aura::Window* window) {
-  DCHECK(exo::WMHelper::HasInstance());
-  DCHECK(window);
+  CHECK(exo::WMHelper::HasInstance());
+  CHECK(window);
 
-  const float chrome_dsf =
-      window->GetToplevelWindow()->layer()->device_scale_factor();
+  if (!exo::WMHelper::GetInstance()->use_default_scale_cancellation()) {
+    return gfx::RectF(android_bounds);
+  }
+
+  const aura::Window* toplevel_window = window->GetToplevelWindow();
+  CHECK(toplevel_window);
+  const ui::Layer* layer = toplevel_window->layer();
+  CHECK(layer);
+  const float chrome_dsf = layer->device_scale_factor();
   const float android_dsf =
       exo::WMHelper::GetInstance()->GetDeviceScaleFactorForWindow(window);
   if (chrome_dsf == android_dsf) {

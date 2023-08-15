@@ -35,9 +35,9 @@ void ArcSerializationDelegate::PopulateBounds(
       // For the root node of application tree, populate the bounds to be
       // relative to its container View.
       views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
-      DCHECK(widget);
-      DCHECK(widget->widget_delegate());
-      DCHECK(widget->widget_delegate()->GetContentsView());
+      CHECK(widget);
+      CHECK(widget->widget_delegate());
+      CHECK(widget->widget_delegate()->GetContentsView());
       gfx::PointF root_origin = gfx::PointF(widget->widget_delegate()
                                                 ->GetContentsView()
                                                 ->GetBoundsInScreen()

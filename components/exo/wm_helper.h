@@ -199,6 +199,9 @@ class WMHelper : public chromeos::PowerManagerClient::Observer,
   bool InTabletMode() const;
   double GetDeviceScaleFactorForWindow(aura::Window* window) const;
   void SetDefaultScaleCancellation(bool default_scale_cancellation);
+  bool use_default_scale_cancellation() const {
+    return default_scale_cancellation_;
+  }
   void AddTabletModeObserver(ash::TabletModeObserver* observer);
   void RemoveTabletModeObserver(ash::TabletModeObserver* observer);
   void AddDisplayConfigurationObserver(

@@ -632,7 +632,7 @@ ArcAccessibilityTreeTracker::OnAccessibilityEvent(
       tree = CreateFromKey(key, input_method_surface->host_window());
       input_method_surface->SetChildAxTreeId(tree->ax_tree_id());
     }
-    DCHECK(tree->window() == input_method_surface->host_window());
+    CHECK(tree->window() == input_method_surface->host_window());
 
     return tree;
   } else {
