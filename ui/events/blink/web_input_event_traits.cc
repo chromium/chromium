@@ -14,7 +14,6 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 
 using base::StringAppendF;
-using base::SStringPrintf;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 using blink::WebKeyboardEvent;
@@ -107,47 +106,37 @@ void ApppendEventDetails(const WebPointerEvent& event, std::string* result) {
       event.rotation_angle, event.tilt_x, event.tilt_y);
 }
 
-struct WebInputEventToString {
-  template <class EventType>
-  bool Execute(const WebInputEvent& event, std::string* result) const {
-    SStringPrintf(result, "%s (Time: %lf, Modifiers: %d)\n",
-                  WebInputEvent::GetName(event.GetType()),
-                  event.TimeStamp().since_origin().InSecondsF(),
-                  event.GetModifiers());
-    const EventType& typed_event = static_cast<const EventType&>(event);
-    ApppendEventDetails(typed_event, result);
-    return true;
-  }
-};
-
-template <typename Operator, typename ArgIn, typename ArgOut>
-bool Apply(Operator op,
-           WebInputEvent::Type type,
-           const ArgIn& arg_in,
-           ArgOut* arg_out) {
-  if (WebInputEvent::IsPointerEventType(type))
-    return op.template Execute<WebPointerEvent>(arg_in, arg_out);
-  else if (WebInputEvent::IsMouseEventType(type))
-    return op.template Execute<WebMouseEvent>(arg_in, arg_out);
-  else if (type == WebInputEvent::Type::kMouseWheel)
-    return op.template Execute<WebMouseWheelEvent>(arg_in, arg_out);
-  else if (WebInputEvent::IsKeyboardEventType(type))
-    return op.template Execute<WebKeyboardEvent>(arg_in, arg_out);
-  else if (WebInputEvent::IsTouchEventType(type))
-    return op.template Execute<WebTouchEvent>(arg_in, arg_out);
-  else if (WebInputEvent::IsGestureEventType(type))
-    return op.template Execute<WebGestureEvent>(arg_in, arg_out);
-
-  NOTREACHED() << "Unknown webkit event type " << type;
-  return false;
+template <typename EventType>
+std::string Execute(const WebInputEvent& event) {
+  std::string result = base::StringPrintf(
+      "%s (Time: %lf, Modifiers: %d)\n",
+      WebInputEvent::GetName(event.GetType()),
+      event.TimeStamp().since_origin().InSecondsF(), event.GetModifiers());
+  ApppendEventDetails(static_cast<const EventType&>(event), &result);
+  return result;
 }
 
 }  // namespace
 
 std::string WebInputEventTraits::ToString(const WebInputEvent& event) {
-  std::string result;
-  Apply(WebInputEventToString(), event.GetType(), event, &result);
-  return result;
+  const WebInputEvent::Type type = event.GetType();
+  if (WebInputEvent::IsPointerEventType(type)) {
+    return Execute<WebPointerEvent>(event);
+  }
+  if (WebInputEvent::IsMouseEventType(type)) {
+    return Execute<WebMouseEvent>(event);
+  }
+  if (type == WebInputEvent::Type::kMouseWheel) {
+    return Execute<WebMouseWheelEvent>(event);
+  }
+  if (WebInputEvent::IsKeyboardEventType(type)) {
+    return Execute<WebKeyboardEvent>(event);
+  }
+  if (WebInputEvent::IsTouchEventType(type)) {
+    return Execute<WebTouchEvent>(event);
+  }
+  CHECK(WebInputEvent::IsGestureEventType(type));
+  return Execute<WebGestureEvent>(event);
 }
 
 bool WebInputEventTraits::ShouldBlockEventStream(const WebInputEvent& event) {

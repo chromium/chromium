@@ -599,9 +599,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, ClamshellLauncher) {
   // page because the bubble launcher apps grid is scrollable, not paged.
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_RIGHT); });
 
-  std::string expected_text;
-  sm_.ExpectSpeech(base::SStringPrintf(
-      &expected_text, "Moved to row 1, column %d.", test_item_index + 2));
+  sm_.ExpectSpeech(
+      base::StringPrintf("Moved to row 1, column %d.", test_item_index + 2));
 
   sm_.Replay();
 }
@@ -627,43 +626,38 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListReordering) {
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_RIGHT); });
   sm_.ExpectNextSpeechIsNot("Alert");
 
-  std::string expected_text;
-  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
-                                       "Moved to row 1, column %d.",
-                                       column_after_horizontal_move));
+  sm_.ExpectSpeech(base::StringPrintf("Moved to row 1, column %d.",
+                                      column_after_horizontal_move));
 
   // Move the focused item down.
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
   sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
-                                       "Moved to row 2, column %d.",
-                                       column_after_horizontal_move));
+  sm_.ExpectSpeech(base::StringPrintf("Moved to row 2, column %d.",
+                                      column_after_horizontal_move));
 
   // Move the focused item down.
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
   sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
-                                       "Moved to row 3, column %d.",
-                                       column_after_horizontal_move));
+  sm_.ExpectSpeech(base::StringPrintf("Moved to row 3, column %d.",
+                                      column_after_horizontal_move));
 
   // Move the focused item down.
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
   sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
-                                       "Moved to row 4, column %d.",
-                                       column_after_horizontal_move));
+  sm_.ExpectSpeech(base::StringPrintf("Moved to row 4, column %d.",
+                                      column_after_horizontal_move));
 
   // Move the focused item left.
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_LEFT); });
   sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech(base::SStringPrintf(
-      &expected_text, "Moved to row 4, column %d.", original_column));
+  sm_.ExpectSpeech(
+      base::StringPrintf("Moved to row 4, column %d.", original_column));
 
   // Move the focused item back up.
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_UP); });
   sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech(base::SStringPrintf(
-      &expected_text, "Moved to row 3, column %d.", original_column));
+  sm_.ExpectSpeech(
+      base::StringPrintf("Moved to row 3, column %d.", original_column));
 
   sm_.Replay();
 }
@@ -693,9 +687,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListFoldering) {
   sm_.ExpectSpeech("Button");
   sm_.ExpectNextSpeechIsNot("Alert");
 
-  std::string expected_text;
-  sm_.ExpectSpeech(base::SStringPrintf(
-      &expected_text, "Moved to row 1, column %d.", test_item_index + 1));
+  sm_.ExpectSpeech(
+      base::StringPrintf("Moved to row 1, column %d.", test_item_index + 1));
 
   sm_.Replay();
 }

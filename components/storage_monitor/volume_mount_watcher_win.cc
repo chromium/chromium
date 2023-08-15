@@ -220,7 +220,6 @@ void EjectDeviceInThreadPool(
     base::OnceCallback<void(StorageMonitor::EjectStatus)> callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     int iteration) {
-  base::FilePath::StringType volume_name;
   base::FilePath::CharType drive_letter = device.value()[0];
   // Don't try to eject if the path isn't a simple one -- we're not
   // sure how to do that yet. Need to figure out how to eject volumes mounted
@@ -232,7 +231,8 @@ void EjectDeviceInThreadPool(
         base::BindOnce(std::move(callback), StorageMonitor::EJECT_FAILURE));
     return;
   }
-  base::SStringPrintf(&volume_name, L"\\\\.\\%lc:", drive_letter);
+  base::FilePath::StringType volume_name =
+      base::StringPrintf(L"\\\\.\\%lc:", drive_letter);
 
   base::win::ScopedHandle volume_handle(CreateFile(
       volume_name.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,

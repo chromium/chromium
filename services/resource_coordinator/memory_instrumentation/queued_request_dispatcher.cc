@@ -93,8 +93,6 @@ void NodeAsValueIntoRecursively(const GlobalNodeGraph::Node& node,
                                 std::vector<base::StringPiece>* path) {
   // Don't dump the root node.
   if (!path->empty()) {
-    std::string string_conversion_buffer;
-
     std::string name = base::JoinString(*path, "/");
     value->BeginDictionaryWithCopiedName(name);
 
@@ -107,10 +105,9 @@ void NodeAsValueIntoRecursively(const GlobalNodeGraph::Node& node,
       value->BeginDictionaryWithCopiedName(name_to_entry.first);
       switch (entry.type) {
         case GlobalNodeGraph::Node::Entry::kUInt64:
-          base::SStringPrintf(&string_conversion_buffer, "%" PRIx64,
-                              entry.value_uint64);
           value->SetString("type", RawMemoryGraphNode::kTypeScalar);
-          value->SetString("value", string_conversion_buffer);
+          value->SetString("value",
+                           base::StringPrintf("%" PRIx64, entry.value_uint64));
           break;
         case GlobalNodeGraph::Node::Entry::kString:
           value->SetString("type", RawMemoryGraphNode::kTypeString);

@@ -146,10 +146,10 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
     size_t frame_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
-  base::FilePath::StringType filename;
   const gfx::Size& visible_size = video_frame->visible_rect().size();
-  base::SStringPrintf(&filename, FILE_PATH_LITERAL("frame_%04zu_%dx%d"),
-                      frame_index, visible_size.width(), visible_size.height());
+  base::FilePath::StringType filename =
+      base::StringPrintf(FILE_PATH_LITERAL("frame_%04zu_%dx%d"), frame_index,
+                         visible_size.width(), visible_size.height());
   if (!output_file_prefix_.empty())
     filename = output_file_prefix_ + FILE_PATH_LITERAL("_") + filename;
 

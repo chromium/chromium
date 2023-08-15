@@ -152,38 +152,6 @@ std::string StringPrintV(const char* format, va_list ap) {
   return result;
 }
 
-const std::string& SStringPrintf(std::string* dst, const char* format, ...) {
-  va_list ap;
-  va_start(ap, format);
-  dst->clear();
-  StringAppendV(dst, format, ap);
-  va_end(ap);
-  return *dst;
-}
-
-#if BUILDFLAG(IS_WIN)
-const std::wstring& SStringPrintf(std::wstring* dst,
-                                  const wchar_t* format, ...) {
-  va_list ap;
-  va_start(ap, format);
-  dst->clear();
-  StringAppendV(dst, format, ap);
-  va_end(ap);
-  return *dst;
-}
-
-const std::u16string& SStringPrintf(std::u16string* dst,
-                                    const char16_t* format,
-                                    ...) {
-  va_list ap;
-  va_start(ap, format);
-  dst->clear();
-  StringAppendV(dst, format, ap);
-  va_end(ap);
-  return *dst;
-}
-#endif
-
 void StringAppendF(std::string* dst, const char* format, ...) {
   va_list ap;
   va_start(ap, format);

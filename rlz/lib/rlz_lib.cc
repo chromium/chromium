@@ -464,11 +464,9 @@ bool ParsePingResponse(Product product, const char* response) {
   if (0 == response_length)
     return true;  // Empty response - no parsing.
 
-  std::string events_variable;
-  std::string stateful_events_variable;
-  base::SStringPrintf(&events_variable, "%s: ", kEventsCgiVariable);
-  base::SStringPrintf(&stateful_events_variable, "%s: ",
-                      kStatefulEventsCgiVariable);
+  std::string events_variable = base::StringPrintf("%s: ", kEventsCgiVariable);
+  std::string stateful_events_variable =
+      base::StringPrintf("%s: ", kStatefulEventsCgiVariable);
 
   int rlz_cgi_length = strlen(kRlzCgiVariable);
 

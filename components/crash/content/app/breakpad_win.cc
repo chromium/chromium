@@ -186,29 +186,29 @@ extern "C" HANDLE __declspec(dllexport) __cdecl InjectDumpForHungInput(
 
 // Returns a string containing a list of all modifiers for the loaded profile.
 std::wstring GetProfileType() {
-  std::wstring profile_type;
   DWORD profile_bits = 0;
-  if (::GetProfileType(&profile_bits)) {
-    static const struct {
-      DWORD bit;
-      const wchar_t* name;
-    } kBitNames[] = {
-      { PT_MANDATORY, L"mandatory" },
-      { PT_ROAMING, L"roaming" },
-      { PT_TEMPORARY, L"temporary" },
-    };
-    for (size_t i = 0; i < std::size(kBitNames); ++i) {
-      const DWORD this_bit = kBitNames[i].bit;
-      if ((profile_bits & this_bit) != 0) {
-        profile_type.append(kBitNames[i].name);
-        profile_bits &= ~this_bit;
-        if (profile_bits != 0)
-          profile_type.append(L", ");
+  if (!::GetProfileType(&profile_bits)) {
+    return base::StringPrintf(L"error %u", ::GetLastError());
+  }
+
+  std::wstring profile_type;
+  static const struct {
+    DWORD bit;
+    const wchar_t* name;
+  } kBitNames[] = {
+      {PT_MANDATORY, L"mandatory"},
+      {PT_ROAMING, L"roaming"},
+      {PT_TEMPORARY, L"temporary"},
+  };
+  for (size_t i = 0; i < std::size(kBitNames); ++i) {
+    const DWORD this_bit = kBitNames[i].bit;
+    if ((profile_bits & this_bit) != 0) {
+      profile_type.append(kBitNames[i].name);
+      profile_bits &= ~this_bit;
+      if (profile_bits != 0) {
+        profile_type.append(L", ");
       }
     }
-  } else {
-    DWORD last_error = ::GetLastError();
-    base::SStringPrintf(&profile_type, L"error %u", last_error);
   }
   return profile_type;
 }

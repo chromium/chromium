@@ -105,22 +105,14 @@ TEST(StringPrintfTest, StringPrintfBounds) {
   for (int i = 1; i < 3; i++) {
     src[kSrcLen - i] = 0;
     std::string out;
-    SStringPrintf(&out, "%s", src);
-    EXPECT_STREQ(src, out.c_str());
+    EXPECT_EQ(src, StringPrintf("%s", src));
 
 #if BUILDFLAG(IS_WIN)
     srcw[kSrcLen - i] = 0;
-    std::wstring outw;
-    SStringPrintf(&outw, L"%ls", srcw);
-    EXPECT_STREQ(srcw, outw.c_str());
+    EXPECT_EQ(srcw, StringPrintf(L"%ls", srcw));
 
     src16[kSrcLen - i] = 0;
-    std::u16string out16;
-    SStringPrintf(&out16, u"%ls", src16);
-    // EXPECT_STREQ does not support const char16_t* strings yet.
-    // Dispatch to the const wchar_t* overload instead.
-    EXPECT_STREQ(reinterpret_cast<const wchar_t*>(src16),
-                 reinterpret_cast<const wchar_t*>(out16.c_str()));
+    EXPECT_EQ(src16, StringPrintf(u"%ls", src16));
 #endif
   }
 }
@@ -134,9 +126,6 @@ TEST(StringPrintfTest, Grow) {
 
   const char fmt[] = "%sB%sB%sB%sB%sB%sB%s";
 
-  std::string out;
-  SStringPrintf(&out, fmt, src, src, src, src, src, src, src);
-
   const int kRefSize = 320000;
   char* ref = new char[kRefSize];
 #if BUILDFLAG(IS_WIN)
@@ -145,7 +134,7 @@ TEST(StringPrintfTest, Grow) {
   snprintf(ref, kRefSize, fmt, src, src, src, src, src, src, src);
 #endif
 
-  EXPECT_STREQ(ref, out.c_str());
+  EXPECT_EQ(ref, StringPrintf(fmt, src, src, src, src, src, src, src));
   delete[] ref;
 }
 
@@ -178,10 +167,7 @@ TEST(StringPrintfTest, GrowBoundary) {
     src[i] = 'a';
   src[kBufLen - 1] = 0;
 
-  std::string out;
-  SStringPrintf(&out, "%s", src);
-
-  EXPECT_STREQ(src, out.c_str());
+  EXPECT_EQ(src, StringPrintf("%s", src));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -190,9 +176,7 @@ TEST(StringPrintfTest, Invalid) {
   invalid[0] = 0xffff;
   invalid[1] = 0;
 
-  std::wstring out;
-  SStringPrintf(&out, L"%ls", invalid);
-  EXPECT_STREQ(invalid, out.c_str());
+  EXPECT_EQ(invalid, StringPrintf(L"%ls", invalid));
 }
 #endif
 
