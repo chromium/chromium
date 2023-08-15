@@ -388,14 +388,15 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
 #endif
   PA_DCHECK(bucket_num_slots <= kMaxSlotCount);
   PA_DCHECK(slot_span->num_unprovisioned_slots < bucket_num_slots);
-  size_t num_slots = bucket_num_slots - slot_span->num_unprovisioned_slots;
+  size_t num_providioned_slots =
+      bucket_num_slots - slot_span->num_unprovisioned_slots;
   char slot_usage[kMaxSlotCount];
 #if !BUILDFLAG(IS_WIN)
   // The last freelist entry should not be discarded when using OS_WIN.
   // DiscardVirtualMemory makes the contents of discarded memory undefined.
   size_t last_slot = static_cast<size_t>(-1);
 #endif
-  memset(slot_usage, 1, num_slots);
+  memset(slot_usage, 1, num_providioned_slots);
   uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
   // First, walk the freelist for this slot span and make a bitmap of which
   // slots are not in use.
@@ -403,7 +404,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
        /**/) {
     size_t slot_number =
         bucket->GetSlotNumber(SlotStartPtr2Addr(entry) - slot_span_start);
-    PA_DCHECK(slot_number < num_slots);
+    PA_DCHECK(slot_number < num_providioned_slots);
     slot_usage[slot_number] = 0;
 #if !BUILDFLAG(IS_WIN)
     // If we have a slot where the encoded next pointer is 0, we can actually
@@ -421,28 +422,29 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
   // If the slot(s) at the end of the slot span are not in used, we can truncate
   // them entirely and rewrite the freelist.
   size_t truncated_slots = 0;
-  while (!slot_usage[num_slots - 1]) {
+  while (!slot_usage[num_providioned_slots - 1]) {
     truncated_slots++;
-    num_slots--;
-    PA_DCHECK(num_slots);
+    num_providioned_slots--;
+    PA_DCHECK(num_providioned_slots);
   }
   // First, do the work of calculating the discardable bytes. Don't actually
   // discard anything unless the discard flag was passed in.
   if (truncated_slots) {
     size_t unprovisioned_bytes = 0;
-    uintptr_t begin_addr = slot_span_start + (num_slots * slot_size);
+    uintptr_t begin_addr =
+        slot_span_start + (num_providioned_slots * slot_size);
     uintptr_t end_addr = begin_addr + (slot_size * truncated_slots);
 
     // The slots that do not contain discarded pages should not be included to
     // |truncated_slots|. Detects those slots and fixes |truncated_slots| and
-    // |num_slots| accordingly.
+    // |num_providioned_slots| accordingly.
     uintptr_t rounded_up_truncatation_begin_addr =
         RoundUpToSystemPage(begin_addr);
     while (begin_addr + slot_size <= rounded_up_truncatation_begin_addr) {
       begin_addr += slot_size;
       PA_DCHECK(truncated_slots);
       --truncated_slots;
-      ++num_slots;
+      ++num_providioned_slots;
     }
     begin_addr = rounded_up_truncatation_begin_addr;
 
@@ -464,8 +466,9 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
       // Rewrite the freelist.
       internal::PartitionFreelistEntry* head = nullptr;
       internal::PartitionFreelistEntry* back = head;
-      size_t num_new_entries = 0;
-      for (size_t slot_index = 0; slot_index < num_slots; ++slot_index) {
+      size_t num_new_freelist_entries = 0;
+      for (size_t slot_index = 0; slot_index < num_providioned_slots;
+           ++slot_index) {
         if (slot_usage[slot_index]) {
           continue;
         }
@@ -479,7 +482,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
           back->SetNext(entry);
           back = entry;
         }
-        num_new_entries++;
+        num_new_freelist_entries++;
 #if !BUILDFLAG(IS_WIN)
         last_slot = slot_index;
 #endif
@@ -487,11 +490,12 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
 
       slot_span->SetFreelistHead(head);
 
-      PA_DCHECK(num_new_entries == num_slots - slot_span->num_allocated_slots);
+      PA_DCHECK(num_new_freelist_entries ==
+                num_providioned_slots - slot_span->num_allocated_slots);
 
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
-      FreeSlotBitmapReset(slot_span_start + (slot_size * num_slots), end_addr,
-                          slot_size);
+      FreeSlotBitmapReset(slot_span_start + (slot_size * num_providioned_slots),
+                          end_addr, slot_size);
 #endif
 
       if (!kUseLazyCommit) {
@@ -523,14 +527,14 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
   // are no longer needed. We can release any system pages back to the system as
   // long as we don't interfere with a freelist pointer or an adjacent used
   // slot.
-  for (size_t i = 0; i < num_slots; ++i) {
+  for (size_t i = 0; i < num_providioned_slots; ++i) {
     if (slot_usage[i]) {
       continue;
     }
 
     // The first address we can safely discard is just after the freelist
     // pointer. There's one quirk: if the freelist pointer is actually nullptr,
-    // we can discard that pointer value too.
+    // we can discard that pointer value too (except on Windows).
     uintptr_t begin_addr = slot_span_start + (i * slot_size);
     uintptr_t end_addr = begin_addr + slot_size;
 
