@@ -64,6 +64,7 @@ TEST_F(APILastErrorTest, TestLastError) {
                           base::DoNothing());
 
   EXPECT_FALSE(last_error.HasError(context));
+  EXPECT_FALSE(last_error.GetErrorMessage(context));
   EXPECT_EQ("undefined", GetLastErrorMessage(parent_object, context));
   // Check that the key isn't present on the object (as opposed to simply being
   // undefined).
@@ -73,10 +74,16 @@ TEST_F(APILastErrorTest, TestLastError) {
 
   last_error.SetError(context, "Some last error");
   EXPECT_TRUE(last_error.HasError(context));
-  EXPECT_EQ("\"Some last error\"", GetLastErrorMessage(parent_object, context));
+  EXPECT_EQ(R"("Some last error")",
+            GetLastErrorMessage(parent_object, context));
+  absl::optional<std::string> error_message =
+      last_error.GetErrorMessage(context);
+  EXPECT_TRUE(error_message);
+  EXPECT_EQ("Some last error", error_message);
 
   last_error.ClearError(context, false);
   EXPECT_FALSE(last_error.HasError(context));
+  EXPECT_FALSE(last_error.GetErrorMessage(context));
   EXPECT_EQ("undefined", GetLastErrorMessage(parent_object, context));
   EXPECT_FALSE(
       parent_object->Has(context, gin::StringToV8(isolate(), "lastError"))
@@ -141,6 +148,20 @@ TEST_F(APILastErrorTest, ReportIfUnchecked) {
     last_error.SetError(context, "A last error");
     // Access through the internal HasError() should not count as access.
     EXPECT_TRUE(last_error.HasError(context));
+    last_error.ClearError(context, true);
+    ASSERT_TRUE(console_error);
+    EXPECT_EQ("Unchecked runtime.lastError: A last error", *console_error);
+    EXPECT_FALSE(try_catch.HasCaught());
+  }
+
+  {
+    v8::TryCatch try_catch(isolate());
+    last_error.SetError(context, "A last error");
+    // Access through the internal GetErrorMessage() should not count as access.
+    absl::optional<std::string> error_message =
+        last_error.GetErrorMessage(context);
+    EXPECT_TRUE(error_message);
+    EXPECT_EQ("A last error", error_message);
     last_error.ClearError(context, true);
     ASSERT_TRUE(console_error);
     EXPECT_EQ("Unchecked runtime.lastError: A last error", *console_error);
