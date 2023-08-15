@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/mac/call_with_eh_frame.h"
+#include "base/apple/call_with_eh_frame.h"
 
 #import <Foundation/Foundation.h>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base::mac {
+namespace base::apple {
 namespace {
 
 class CallWithEHFrameTest : public testing::Test {
@@ -23,7 +23,7 @@ class CallWithEHFrameTest : public testing::Test {
 // Catching from within the EHFrame is allowed.
 TEST_F(CallWithEHFrameTest, CatchExceptionHigher) {
   bool __block saw_exception = false;
-  base::mac::CallWithEHFrame(^{
+  base::apple::CallWithEHFrame(^{
     @try {
       ThrowException();
     } @catch (NSException* exception) {
@@ -38,7 +38,7 @@ TEST_F(CallWithEHFrameTest, CatchExceptionLower) {
   auto catch_exception_lower = ^{
     bool saw_exception = false;
     @try {
-      base::mac::CallWithEHFrame(^{
+      base::apple::CallWithEHFrame(^{
         ThrowException();
       });
     } @catch (NSException* exception) {
@@ -50,4 +50,4 @@ TEST_F(CallWithEHFrameTest, CatchExceptionLower) {
 }
 
 }  // namespace
-}  // namespace base::mac
+}  // namespace base::apple

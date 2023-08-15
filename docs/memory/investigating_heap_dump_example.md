@@ -49,7 +49,7 @@ base::debug::TaskAnnotator::RunTask(char const*, base::PendingTask*)
 base::MessageLoop::RunTask(base::PendingTask*)
 base::MessageLoop::DoWork()
 base::MessagePumpCFRunLoopBase::RunWork()
-base::mac::CallWithEHFrame(void () block_pointer)
+base::apple::CallWithEHFrame(void () block_pointer)
 base::MessagePumpCFRunLoopBase::RunWorkSource(void*)
 <???>
 <???>
@@ -61,7 +61,7 @@ base::MessagePumpCFRunLoopBase::RunWorkSource(void*)
 <???>
 <???>
 __71-[BrowserCrApplication nextEventMatchingMask:untilDate:inMode:dequeue:]_block_invoke
-base::mac::CallWithEHFrame(void () block_pointer)
+base::apple::CallWithEHFrame(void () block_pointer)
 -[BrowserCrApplication nextEventMatchingMask:untilDate:inMode:dequeue:]
 <???>
 base::MessagePumpNSApplication::DoRun(base::MessagePump::Delegate*)
@@ -151,7 +151,7 @@ base::debug::TaskAnnotator::RunTask(char const*, base::PendingTask*)
 base::MessageLoop::RunTask(base::PendingTask*)
 base::MessageLoop::DoWork()
 base::MessagePumpCFRunLoopBase::RunWork()
-base::mac::CallWithEHFrame(void () block_pointer)
+base::apple::CallWithEHFrame(void () block_pointer)
 base::MessagePumpCFRunLoopBase::RunWorkSource(void*)
 ```
 

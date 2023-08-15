@@ -4,8 +4,8 @@
 
 #if defined(__x86_64__) || defined(__aarch64__)
 
-// base::mac::CallWithEHFrame(void () block_pointer)
-#define CALL_WITH_EH_FRAME __ZN4base3mac15CallWithEHFrameEU13block_pointerFvvE
+// base::apple::CallWithEHFrame(void () block_pointer)
+#define CALL_WITH_EH_FRAME __ZN4base5apple15CallWithEHFrameEU13block_pointerFvvE
 
   .section __TEXT,__text,regular,pure_instructions
 #if !defined(COMPONENT_BUILD)
@@ -20,7 +20,7 @@ CALL_WITH_EH_FRAME:
   // Configure the C++ exception handler personality routine. Normally the
   // compiler would emit ___gxx_personality_v0 here. The purpose of this
   // function is to use a custom personality routine.
-  .cfi_personality 155, __ZN4base3mac21CxxPersonalityRoutineEi14_Unwind_ActionyP17_Unwind_ExceptionP15_Unwind_Context
+  .cfi_personality 155, __ZN4base5apple21CxxPersonalityRoutineEi14_Unwind_ActionyP17_Unwind_ExceptionP15_Unwind_Context
   .cfi_lsda 16, CallWithEHFrame_exception_table
 
 #if defined(__x86_64__)

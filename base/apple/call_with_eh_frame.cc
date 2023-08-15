@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/mac/call_with_eh_frame.h"
+#include "base/apple/call_with_eh_frame.h"
 
 #include <stdint.h>
 #include <unwind.h>
 
-#include "build/build_config.h"
-
-namespace base::mac {
+namespace base::apple {
 
 #if defined(__x86_64__) || defined(__aarch64__)
 extern "C" _Unwind_Reason_Code __gxx_personality_v0(int,
@@ -42,10 +40,10 @@ _Unwind_Reason_Code CxxPersonalityRoutine(
   return __gxx_personality_v0(version, actions, exception_class,
                               exception_object, context);
 }
-#else  // !defined(__x86_64__) && !defined(__aarch64__)
+#else   // !defined(__x86_64__) && !defined(__aarch64__)
 // No implementation exists, so just call the block directly.
 void CallWithEHFrame(void (^block)(void)) {
   block();
 }
 #endif  // defined(__x86_64__) || defined(__aarch64__)
-}  // namespace base::mac
+}  // namespace base::apple
