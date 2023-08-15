@@ -13,7 +13,7 @@ node:  value= name=#text shadowRootType=undefined
 node:  value=undefined name=HOST-ELEMENT shadowRootType=undefined
 node:  value= name=#text shadowRootType=closed
 node:  value=undefined name=H2 shadowRootType=closed
-node:  value=Closes shadow root name=#text shadowRootType=closed
+node:  value=Closed shadow root name=#text shadowRootType=closed
 node:  value= name=#text shadowRootType=closed
 node:  value= name=#text shadowRootType=undefined
 node:  value=undefined name=TEXTAREA shadowRootType=undefined

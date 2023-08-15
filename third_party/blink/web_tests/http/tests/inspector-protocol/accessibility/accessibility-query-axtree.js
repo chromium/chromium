@@ -52,7 +52,7 @@
       <div aria-describedby="node30"></div>
       <header id="header">role=[banner] test</header>
       <div id="shadow-host">
-        <template shadowroot="open">
+        <template shadowrootmode="open">
           <input id="shadow-input" placeholder="Shadow input"></input>
         </template>
       </div>
