@@ -60381,6 +60381,7 @@ from previous Chrome versions.
   <int value="-1817209284" label="PayWithGoogleV1:enabled"/>
   <int value="-1816838390"
       label="AllowEapDefaultCasWithoutSubjectVerification:enabled"/>
+  <int value="-1816654207" label="SharedZstd:disabled"/>
   <int value="-1816066138" label="CastAllowAllIPs:enabled"/>
   <int value="-1814266088" label="ContextualPageActionShareModel:enabled"/>
   <int value="-1813088913" label="CCTResizable90MaximumHeight:disabled"/>
@@ -67030,6 +67031,7 @@ from previous Chrome versions.
   <int value="1581002467" label="enable-explicit-dma-fences"/>
   <int value="1582004845" label="ChromeOSAmbientModeAnimation:enabled"/>
   <int value="1582400283" label="VideoTutorials:enabled"/>
+  <int value="1582661177" label="SharedZstd:enabled"/>
   <int value="1582771017" label="kDiagnosticsAppJelly:disabled"/>
   <int value="1583543236" label="QuickSettingsNetworkRevamp:disabled"/>
   <int value="1584039096" label="highlight-all-webviews"/>

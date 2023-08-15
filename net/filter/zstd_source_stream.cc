@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#define ZSTD_STATIC_LINKING_ONLY
+
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/base/io_buffer.h"
@@ -26,14 +28,24 @@ struct FreeContextDeleter {
 // Zstd format speciication: https://datatracker.ietf.org/doc/html/rfc8878
 class ZstdSourceStream : public FilterSourceStream {
  public:
-  explicit ZstdSourceStream(std::unique_ptr<SourceStream> upstream)
-      : FilterSourceStream(SourceStream::TYPE_ZSTD, std::move(upstream)) {
+  explicit ZstdSourceStream(std::unique_ptr<SourceStream> upstream,
+                            scoped_refptr<IOBuffer> dictionary = nullptr,
+                            size_t dictionary_size = 0u)
+      : FilterSourceStream(SourceStream::TYPE_ZSTD, std::move(upstream)),
+        dictionary_(std::move(dictionary)),
+        dictionary_size_(dictionary_size) {
     dctx_.reset(ZSTD_createDCtx());
     CHECK(dctx_);
     // Following RFC 8878 recommendation (see section 3.1.1.1.2 Window
     // Descriptor) of using a maximum 8MB memory buffer to decompress frames
     // to '... protect decoders from unreasonable memory requirements'.
     ZSTD_DCtx_setParameter(dctx_.get(), ZSTD_d_windowLogMax, 23);
+    if (dictionary_) {
+      size_t result = ZSTD_DCtx_loadDictionary_advanced(
+          dctx_.get(), reinterpret_cast<const void*>(dictionary_->data()),
+          dictionary_size_, ZSTD_dlm_byRef, ZSTD_dct_rawContent);
+      DCHECK(!ZSTD_isError(result));
+    }
   }
 
   ZstdSourceStream(const ZstdSourceStream&) = delete;
@@ -110,6 +122,9 @@ class ZstdSourceStream : public FilterSourceStream {
     }
   }
 
+  const scoped_refptr<IOBuffer> dictionary_;
+  const size_t dictionary_size_;
+
   std::unique_ptr<ZSTD_DCtx, FreeContextDeleter> dctx_;
 
   ZstdDecodingStatus decoding_status_ = ZstdDecodingStatus::kDecodingInProgress;
@@ -124,6 +139,14 @@ class ZstdSourceStream : public FilterSourceStream {
 std::unique_ptr<FilterSourceStream> CreateZstdSourceStream(
     std::unique_ptr<SourceStream> previous) {
   return std::make_unique<ZstdSourceStream>(std::move(previous));
+}
+
+std::unique_ptr<FilterSourceStream> CreateZstdSourceStreamWithDictionary(
+    std::unique_ptr<SourceStream> previous,
+    scoped_refptr<IOBuffer> dictionary,
+    size_t dictionary_size) {
+  return std::make_unique<ZstdSourceStream>(
+      std::move(previous), std::move(dictionary), dictionary_size);
 }
 
 }  // namespace net

@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
+#include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
 #include "net/filter/filter_source_stream.h"
 #include "net/filter/source_stream.h"
@@ -15,6 +17,11 @@ namespace net {
 
 NET_EXPORT_PRIVATE std::unique_ptr<FilterSourceStream> CreateZstdSourceStream(
     std::unique_ptr<SourceStream> previous);
+
+NET_EXPORT_PRIVATE std::unique_ptr<FilterSourceStream>
+CreateZstdSourceStreamWithDictionary(std::unique_ptr<SourceStream> upstream,
+                                     scoped_refptr<IOBuffer> dictionary,
+                                     size_t dictionary_size);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

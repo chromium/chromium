@@ -259,4 +259,42 @@ TEST_F(ZstdSourceStreamTest, DecodeTwoConcatenatedFrames) {
   EXPECT_EQ(source_data, actual_output);
 }
 
+TEST_F(ZstdSourceStreamTest, WithDictionary) {
+  std::string encoded_buffer;
+  std::string dictionary_data;
+
+  base::FilePath data_dir = GetTestDataDir();
+  // Read data from the encoded file into buffer.
+  base::FilePath encoded_file_path;
+  encoded_file_path = data_dir.AppendASCII("google.szst");
+  ASSERT_TRUE(base::ReadFileToString(encoded_file_path, &encoded_buffer));
+
+  // Read data from the dictionary file into buffer.
+  base::FilePath dictionary_file_path;
+  dictionary_file_path = data_dir.AppendASCII("test.dict");
+  ASSERT_TRUE(base::ReadFileToString(dictionary_file_path, &dictionary_data));
+
+  scoped_refptr<net::IOBuffer> dictionary_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(dictionary_data);
+
+  scoped_refptr<IOBufferWithSize> out_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+
+  auto source = std::make_unique<MockSourceStream>();
+  source->AddReadResult(encoded_buffer.c_str(), encoded_buffer.size(), OK,
+                        MockSourceStream::SYNC);
+
+  std::unique_ptr<SourceStream> zstd_stream =
+      CreateZstdSourceStreamWithDictionary(std::move(source), dictionary_buffer,
+                                           dictionary_data.size());
+
+  TestCompletionCallback callback;
+  int bytes_read = zstd_stream->Read(out_buffer.get(), kDefaultBufferSize,
+                                     callback.callback());
+
+  EXPECT_EQ(static_cast<int>(source_data_len()), bytes_read);
+  EXPECT_EQ(
+      0, memcmp(out_buffer->data(), source_data().c_str(), source_data_len()));
+}
+
 }  // namespace net

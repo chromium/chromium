@@ -159,6 +159,10 @@ BASE_DECLARE_FEATURE(kCompressionDictionaryTransport);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kVisibilityAwareResourceScheduler);
 
+// Enables Compression Dictionary Transport with Zstandard (aka Shared Zstd).
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kSharedZstd);
+
 }  // namespace features
 }  // namespace network
 

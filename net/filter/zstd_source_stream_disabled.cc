@@ -11,4 +11,11 @@ std::unique_ptr<FilterSourceStream> CreateZstdSourceStream(
   return nullptr;
 }
 
+std::unique_ptr<FilterSourceStream> CreateZstdSourceStreamWithDictionary(
+    std::unique_ptr<SourceStream> previous,
+    scoped_refptr<IOBuffer> dictionary,
+    size_t dictionary_size) {
+  return nullptr;
+}
+
 }  // namespace net

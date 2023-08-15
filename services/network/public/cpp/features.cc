@@ -374,4 +374,6 @@ BASE_FEATURE(kVisibilityAwareResourceScheduler,
              "VisibilityAwareResourceScheduler",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSharedZstd, "SharedZstd", base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

@@ -105,6 +105,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
     kFailed,
   };
 
+  enum class SharedDictionaryEncodingType {
+    kNotUsed,
+    kSharedBrotli,
+    kSharedZstd,
+  };
+
   class PendingReadTask {
    public:
     PendingReadTask(net::IOBuffer* buf,
@@ -121,6 +127,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
     net::CompletionOnceCallback callback;
   };
 
+  SharedDictionaryEncodingType ParseSharedDictionaryEncodingType(
+      const net::HttpResponseHeaders& headers);
+
   void OnStartCompleted(net::CompletionOnceCallback callback, int result);
 
   void ModifyRequestHeaders(const GURL& request_url,
@@ -134,6 +143,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
 
   DictionaryStatus dictionary_status_ = DictionaryStatus::kNoDictionary;
 
+  SharedDictionaryEncodingType shared_dictionary_encoding_type_ =
+      SharedDictionaryEncodingType::kNotUsed;
+
   std::unique_ptr<PendingReadTask> pending_read_task_;
 
   base::RepeatingCallback<bool()> is_shared_dictionary_read_allowed_callback_;
@@ -141,7 +153,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
   // The network side transaction.
   std::unique_ptr<net::HttpTransaction> network_transaction_;
 
-  std::unique_ptr<net::SourceStream> shared_brotli_stream_;
+  std::unique_ptr<net::SourceStream> shared_compression_stream_;
 
   // This is set only when a shared dictionary is used for decoding the body.
   std::unique_ptr<net::HttpResponseInfo> shared_dictionary_used_response_info_;

@@ -1755,6 +1755,9 @@ extern const char kSidePanelJourneysQuerylessFlagId[];
 extern const char kSidePanelJourneysQuerylessName[];
 extern const char kSidePanelJourneysQuerylessDescription[];
 
+extern const char kSharedZstdName[];
+extern const char kSharedZstdDescription[];
+
 extern const char kSharingDesktopScreenshotsName[];
 extern const char kSharingDesktopScreenshotsDescription[];
 

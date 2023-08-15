@@ -22,8 +22,10 @@
 #include "net/filter/brotli_source_stream.h"
 #include "net/filter/filter_source_stream.h"
 #include "net/filter/source_stream.h"
+#include "net/filter/zstd_source_stream.h"
 #include "net/http/http_request_info.h"
 #include "net/ssl/ssl_private_key.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/shared_dictionary/shared_dictionary.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
@@ -60,13 +62,15 @@ class ProxyingSourceStream : public net::SourceStream {
   const raw_ptr<net::HttpTransaction> transaction_;
 };
 
-bool ContentEncodingIsSbrOnly(const net::HttpResponseHeaders& headers) {
-  std::string content_encoding;
-  if (!headers.GetNormalizedHeader("Content-Encoding", &content_encoding)) {
-    return false;
-  }
-  return content_encoding ==
-         network::shared_dictionary::kSbrContentEncodingName;
+void AddAcceptEncoding(net::HttpRequestHeaders* request_headers,
+                       base::StringPiece encoding_header) {
+  std::string accept_encoding;
+  request_headers->SetHeader(
+      net::HttpRequestHeaders::kAcceptEncoding,
+      request_headers->GetHeader(net::HttpRequestHeaders::kAcceptEncoding,
+                                 &accept_encoding)
+          ? base::StrCat({accept_encoding, ", ", encoding_header})
+          : std::string(encoding_header));
 }
 
 }  // namespace
@@ -117,16 +121,36 @@ int SharedDictionaryNetworkTransaction::Start(
       net_log);
 }
 
+SharedDictionaryNetworkTransaction::SharedDictionaryEncodingType
+SharedDictionaryNetworkTransaction::ParseSharedDictionaryEncodingType(
+    const net::HttpResponseHeaders& headers) {
+  std::string content_encoding;
+  if (!headers.GetNormalizedHeader("Content-Encoding", &content_encoding)) {
+    return SharedDictionaryEncodingType::kNotUsed;
+  }
+  if (content_encoding == network::shared_dictionary::kSbrContentEncodingName) {
+    return SharedDictionaryEncodingType::kSharedBrotli;
+  } else if (base::FeatureList::IsEnabled(network::features::kSharedZstd) &&
+             content_encoding ==
+                 network::shared_dictionary::kZstdDContentEncodingName) {
+    return SharedDictionaryEncodingType::kSharedZstd;
+  }
+  return SharedDictionaryEncodingType::kNotUsed;
+}
+
 void SharedDictionaryNetworkTransaction::OnStartCompleted(
     net::CompletionOnceCallback callback,
     int result) {
-  if (result == net::OK && shared_dictionary_ &&
-      ContentEncodingIsSbrOnly(
-          *network_transaction_->GetResponseInfo()->headers)) {
-    shared_dictionary_used_response_info_ =
-        std::make_unique<net::HttpResponseInfo>(
-            *network_transaction_->GetResponseInfo());
-    shared_dictionary_used_response_info_->did_use_shared_dictionary = true;
+  if (result == net::OK && shared_dictionary_) {
+    shared_dictionary_encoding_type_ = ParseSharedDictionaryEncodingType(
+        *network_transaction_->GetResponseInfo()->headers);
+    if (shared_dictionary_encoding_type_ !=
+        SharedDictionaryEncodingType::kNotUsed) {
+      shared_dictionary_used_response_info_ =
+          std::make_unique<net::HttpResponseInfo>(
+              *network_transaction_->GetResponseInfo());
+      shared_dictionary_used_response_info_->did_use_shared_dictionary = true;
+    }
   }
   std::move(callback).Run(result);
 }
@@ -161,13 +185,11 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
           base::HexEncode(shared_dictionary_->hash().data,
                           sizeof(shared_dictionary_->hash().data))));
 
-  std::string accept_encoding;
-  request_headers->SetHeader(
-      net::HttpRequestHeaders::kAcceptEncoding,
-      request_headers->GetHeader(net::HttpRequestHeaders::kAcceptEncoding,
-                                 &accept_encoding)
-          ? accept_encoding + ", sbr"
-          : "sbr");
+  if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
+    AddAcceptEncoding(request_headers, "sbr, zstd-d");
+  } else {
+    AddAcceptEncoding(request_headers, "sbr");
+  }
 
   if (dictionary_status_ == DictionaryStatus::kNoDictionary) {
     dictionary_status_ = DictionaryStatus::kReading;
@@ -257,12 +279,25 @@ int SharedDictionaryNetworkTransaction::Read(
           std::make_unique<PendingReadTask>(buf, buf_len, std::move(callback));
       return net::ERR_IO_PENDING;
     case DictionaryStatus::kFinished:
-      if (!shared_brotli_stream_) {
-        shared_brotli_stream_ = net::CreateBrotliSourceStreamWithDictionary(
-            std::make_unique<ProxyingSourceStream>(network_transaction_.get()),
-            shared_dictionary_->data(), shared_dictionary_->size());
+      if (!shared_compression_stream_) {
+        if (shared_dictionary_encoding_type_ ==
+            SharedDictionaryEncodingType::kSharedBrotli) {
+          shared_compression_stream_ =
+              net::CreateBrotliSourceStreamWithDictionary(
+                  std::make_unique<ProxyingSourceStream>(
+                      network_transaction_.get()),
+                  shared_dictionary_->data(), shared_dictionary_->size());
+        } else if (shared_dictionary_encoding_type_ ==
+                   SharedDictionaryEncodingType::kSharedZstd) {
+          shared_compression_stream_ =
+              net::CreateZstdSourceStreamWithDictionary(
+                  std::make_unique<ProxyingSourceStream>(
+                      network_transaction_.get()),
+                  shared_dictionary_->data(), shared_dictionary_->size());
+        }
       }
-      return shared_brotli_stream_->Read(buf, buf_len, std::move(callback));
+      return shared_compression_stream_->Read(buf, buf_len,
+                                              std::move(callback));
     case DictionaryStatus::kFailed:
       return net::ERR_DICTIONARY_LOAD_FAILED;
   }

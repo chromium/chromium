@@ -113,19 +113,42 @@ constexpr base::StringPiece kUncompressedDataString =
     "test(\"This is uncompressed.\");";
 constexpr base::StringPiece kErrorInvalidHashString =
     "test(\"Invalid dictionary hash.\");";
-constexpr base::StringPiece kErrorNoSbrAcceptEncodingString =
-    "test(\"sbr is not set in accept-encoding header.\");";
+constexpr base::StringPiece kErrorNoSharedDictionaryAcceptEncodingString =
+    "test(\"sbr or zstd-d is not set in accept-encoding header.\");";
 
 constexpr base::StringPiece kCompressedDataOriginalString =
     "test(\"This is compressed test data using a test dictionary\");";
-constexpr uint8_t kCompressedData[] = {
+
+// kBrotliCompressedData is generated using the following commands:
+// $ echo "This is a test dictionary." > /tmp/dict
+// $ echo -n "test(\"This is compressed test data using a test dictionary\");" \
+//     > /tmp/data
+// $ brotli -o /tmp/out.sbr -D /tmp/dict /tmp/data
+// $ xxd -i /tmp/out.sbr
+constexpr uint8_t kBrotliCompressedData[] = {
     0xa1, 0xe0, 0x01, 0x00, 0x64, 0x9c, 0xa4, 0xaa, 0xd7, 0x47, 0xe0, 0x26,
     0x4b, 0x95, 0x91, 0xb4, 0x46, 0x36, 0x09, 0xc9, 0xc7, 0x0e, 0x38, 0xe4,
     0x44, 0xe8, 0x72, 0x0d, 0x3c, 0x6e, 0xab, 0x35, 0x9b, 0x0f, 0x4b, 0xd1,
     0x67, 0x0c, 0xec, 0x7f, 0x9d, 0x1e, 0x99, 0x10, 0xf5, 0x1e, 0x57, 0x2f};
-const std::string kCompressedDataString =
-    std::string(reinterpret_cast<const char*>(kCompressedData),
-                sizeof(kCompressedData));
+const std::string kBrotliCompressedDataString =
+    std::string(reinterpret_cast<const char*>(kBrotliCompressedData),
+                sizeof(kBrotliCompressedData));
+
+// kZstdCompressedData is generated using the following commands:
+// $ echo "This is a test dictionary." > /tmp/dict
+// $ echo -n "test(\"This is compressed test data using a test dictionary\");" \
+//     > /tmp/data
+// $ zstd -o /tmp/out.szst -D /tmp/dict /tmp/data
+// $ xxd -i /tmp/out.szst
+constexpr uint8_t kZstdCompressedData[] = {
+    0x28, 0xb5, 0x2f, 0xfd, 0x24, 0x3d, 0x35, 0x01, 0x00, 0xe0, 0x74,
+    0x65, 0x73, 0x74, 0x28, 0x22, 0x63, 0x6f, 0x6d, 0x70, 0x72, 0x65,
+    0x73, 0x73, 0x65, 0x64, 0x61, 0x74, 0x61, 0x20, 0x75, 0x73, 0x69,
+    0x6e, 0x67, 0x22, 0x29, 0x3b, 0x03, 0x10, 0x05, 0xdf, 0x9f, 0x96,
+    0x11, 0x21, 0x8a, 0x48, 0x20, 0xef, 0xeb};
+const std::string kZstdCompressedDataString =
+    std::string(reinterpret_cast<const char*>(kZstdCompressedData),
+                sizeof(kZstdCompressedData));
 
 constexpr base::StringPiece kUncompressedDataResultString =
     "This is uncompressed.";
@@ -180,7 +203,12 @@ bool WaitForHistogram(const std::string& histogram_name,
   return true;
 }
 
-enum class FeatureState { kDisabled, kBackendOnly, kFullyEnabled };
+enum class FeatureState {
+  kDisabled,
+  kBackendOnly,
+  kFullyEnabled,
+  kFullyEnabledWithZstd
+};
 enum class BrowserType { kNormal, kOffTheRecord };
 enum class FetchType {
   kLinkRelDictionary,
@@ -345,13 +373,18 @@ absl::optional<std::string> GetSecAvailableDictionary(
   return it->second;
 }
 
-bool HasSbrAcceptEncoding(
+bool HasSharedDictionaryAcceptEncoding(
     const net::test_server::HttpRequest::HeaderMap& headers) {
   auto it = headers.find(net::HttpRequestHeaders::kAcceptEncoding);
   if (it == headers.end()) {
     return false;
   }
-  return it->second == "sbr" || base::EndsWith(it->second, ", sbr");
+  if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
+    return it->second == "sbr, zstd-d" ||
+           base::EndsWith(it->second, ", sbr, zstd-d");
+  } else {
+    return it->second == "sbr" || base::EndsWith(it->second, ", sbr");
+  }
 }
 
 // A dummy ContentBrowserClient for testing HTTP Auth.
@@ -685,11 +718,16 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
         GetSecAvailableDictionary(request.headers);
     if (dict_hash) {
       if (*dict_hash == kExpectedDictionaryHash) {
-        if (HasSbrAcceptEncoding(request.headers)) {
-          response->AddCustomHeader("content-encoding", "sbr");
-          response->set_content(kCompressedDataString);
+        if (HasSharedDictionaryAcceptEncoding(request.headers)) {
+          if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
+            response->AddCustomHeader("content-encoding", "zstd-d");
+            response->set_content(kZstdCompressedDataString);
+          } else {
+            response->AddCustomHeader("content-encoding", "sbr");
+            response->set_content(kBrotliCompressedDataString);
+          }
         } else {
-          response->set_content(kErrorNoSbrAcceptEncodingString);
+          response->set_content(kErrorNoSharedDictionaryAcceptEncodingString);
         }
       } else {
         response->set_content(kErrorInvalidHashString);
@@ -718,18 +756,28 @@ class SharedDictionaryFeatureStateBrowserTest
             network::features::kCompressionDictionaryTransportBackend);
         disabled_features.emplace_back(
             network::features::kCompressionDictionaryTransport);
+        disabled_features.emplace_back(network::features::kSharedZstd);
         break;
       case FeatureState::kBackendOnly:
         enabled_features.emplace_back(
             network::features::kCompressionDictionaryTransportBackend);
         disabled_features.emplace_back(
             network::features::kCompressionDictionaryTransport);
+        disabled_features.emplace_back(network::features::kSharedZstd);
         break;
       case FeatureState::kFullyEnabled:
         enabled_features.emplace_back(
             network::features::kCompressionDictionaryTransportBackend);
         enabled_features.emplace_back(
             network::features::kCompressionDictionaryTransport);
+        disabled_features.emplace_back(network::features::kSharedZstd);
+        break;
+      case FeatureState::kFullyEnabledWithZstd:
+        enabled_features.emplace_back(
+            network::features::kCompressionDictionaryTransportBackend);
+        enabled_features.emplace_back(
+            network::features::kCompressionDictionaryTransport);
+        enabled_features.emplace_back(network::features::kSharedZstd);
         break;
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -760,6 +808,11 @@ class SharedDictionaryFeatureStateBrowserTest
  protected:
   FeatureState GetFeatureState() const { return GetParam(); }
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
+
+  bool FeatureIsFullyEnabled() const {
+    return GetFeatureState() == FeatureState::kFullyEnabled ||
+           GetFeatureState() == FeatureState::kFullyEnabledWithZstd;
+  }
 
   void RunWriteDictionaryTest(FetchType fetch_type,
                               const GURL& page_url,
@@ -870,7 +923,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SharedDictionaryFeatureStateBrowserTest,
                          testing::Values(FeatureState::kDisabled,
                                          FeatureState::kBackendOnly,
-                                         FeatureState::kFullyEnabled),
+                                         FeatureState::kFullyEnabled,
+                                         FeatureState::kFullyEnabledWithZstd),
                          [](const testing::TestParamInfo<FeatureState>& info) {
                            switch (info.param) {
                              case FeatureState::kDisabled:
@@ -879,16 +933,17 @@ INSTANTIATE_TEST_SUITE_P(All,
                                return "BackendOnly";
                              case FeatureState::kFullyEnabled:
                                return "FullyEnabled";
+                             case FeatureState::kFullyEnabledWithZstd:
+                               return "FullyEnabledWithZstd";
                            }
                          });
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
                        LinkRelDictionary) {
-  RunWriteDictionaryTest(
-      FetchType::kLinkRelDictionary,
-      GURL("https://shared-dictionary.test/blank.html"),
-      https_server()->GetURL("/shared_dictionary/test.dict"),
-      /*expect_success=*/GetFeatureState() == FeatureState::kFullyEnabled);
+  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+                         GURL("https://shared-dictionary.test/blank.html"),
+                         https_server()->GetURL("/shared_dictionary/test.dict"),
+                         /*expect_success=*/FeatureIsFullyEnabled());
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
@@ -901,10 +956,10 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest, FetchApi) {
-  RunWriteDictionaryTest(
-      FetchType::kFetchApi, GURL("https://shared-dictionary.test/blank.html"),
-      https_server()->GetURL("/shared_dictionary/test.dict"),
-      /*expect_success=*/GetFeatureState() == FeatureState::kFullyEnabled);
+  RunWriteDictionaryTest(FetchType::kFetchApi,
+                         GURL("https://shared-dictionary.test/blank.html"),
+                         https_server()->GetURL("/shared_dictionary/test.dict"),
+                         /*expect_success=*/FeatureIsFullyEnabled());
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
@@ -918,11 +973,10 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
                        FetchApiFromDedicatedWorker) {
-  RunWriteDictionaryTest(
-      FetchType::kFetchApiFromDedicatedWorker,
-      GURL("https://shared-dictionary.test/blank.html"),
-      https_server()->GetURL("/shared_dictionary/test.dict"),
-      /*expect_success=*/GetFeatureState() == FeatureState::kFullyEnabled);
+  RunWriteDictionaryTest(FetchType::kFetchApiFromDedicatedWorker,
+                         GURL("https://shared-dictionary.test/blank.html"),
+                         https_server()->GetURL("/shared_dictionary/test.dict"),
+                         /*expect_success=*/FeatureIsFullyEnabled());
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
@@ -938,11 +992,10 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
 // Shared workers are not supported on Android.
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
                        FetchApiFromSharedWorker) {
-  RunWriteDictionaryTest(
-      FetchType::kFetchApiFromSharedWorker,
-      GURL("https://shared-dictionary.test/blank.html"),
-      https_server()->GetURL("/shared_dictionary/test.dict"),
-      /*expect_success=*/GetFeatureState() == FeatureState::kFullyEnabled);
+  RunWriteDictionaryTest(FetchType::kFetchApiFromSharedWorker,
+                         GURL("https://shared-dictionary.test/blank.html"),
+                         https_server()->GetURL("/shared_dictionary/test.dict"),
+                         /*expect_success=*/FeatureIsFullyEnabled());
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
@@ -957,11 +1010,10 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
                        FetchApiFromServiceWorker) {
-  RunWriteDictionaryTest(
-      FetchType::kFetchApiFromServiceWorker,
-      GURL("https://shared-dictionary.test/blank.html"),
-      https_server()->GetURL("/shared_dictionary/test.dict"),
-      /*expect_success=*/GetFeatureState() == FeatureState::kFullyEnabled);
+  RunWriteDictionaryTest(FetchType::kFetchApiFromServiceWorker,
+                         GURL("https://shared-dictionary.test/blank.html"),
+                         https_server()->GetURL("/shared_dictionary/test.dict"),
+                         /*expect_success=*/FeatureIsFullyEnabled());
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
@@ -1074,6 +1126,9 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
     case FeatureState::kFullyEnabled:
       EXPECT_EQ("true -> true", status_result);
       break;
+    case FeatureState::kFullyEnabledWithZstd:
+      EXPECT_EQ("true -> true", status_result);
+      break;
   }
 
   RunWriteDictionaryTest(
@@ -1094,7 +1149,8 @@ class SharedDictionaryBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {network::features::kCompressionDictionaryTransportBackend,
-         network::features::kCompressionDictionaryTransport},
+         network::features::kCompressionDictionaryTransport,
+         network::features::kSharedZstd},
         /*disabled_features=*/{});
   }
   SharedDictionaryBrowserTest(const SharedDictionaryBrowserTest&) = delete;
@@ -1308,11 +1364,11 @@ class SharedDictionaryBrowserTest
           GetSecAvailableDictionary(request.headers);
       if (dict_hash) {
         if (*dict_hash == kExpectedDictionaryHash) {
-          if (HasSbrAcceptEncoding(request.headers)) {
+          if (HasSharedDictionaryAcceptEncoding(request.headers)) {
             response->AddCustomHeader("content-encoding", "sbr");
-            response->set_content(kCompressedDataString);
+            response->set_content(kBrotliCompressedDataString);
           } else {
-            response->set_content(kErrorNoSbrAcceptEncodingString);
+            response->set_content(kErrorNoSharedDictionaryAcceptEncodingString);
           }
         } else {
           response->set_content(kErrorInvalidHashString);

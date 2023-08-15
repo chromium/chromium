@@ -3072,6 +3072,11 @@ const char kSidePanelJourneysQuerylessName[] = "Side panel journeys queryless";
 const char kSidePanelJourneysQuerylessDescription[] =
     "Enables Journeys queryless view within the side panel.";
 
+const char kSharedZstdName[] = "Shared Zstd";
+const char kSharedZstdDescription[] =
+    "Enables compression dictionary transport with Zstandard (aka Shared "
+    "Zstd).";
+
 const char kSharingDesktopScreenshotsName[] = "Desktop Screenshots";
 const char kSharingDesktopScreenshotsDescription[] =
     "Enables taking"

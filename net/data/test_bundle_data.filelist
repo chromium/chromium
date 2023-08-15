@@ -317,6 +317,7 @@ data/embedded_test_server/mock-headers-without-crlf.html
 data/embedded_test_server/mock-headers-without-crlf.html.mock-http-headers
 data/filter_unittests/google.br
 data/filter_unittests/google.sbr
+data/filter_unittests/google.szst
 data/filter_unittests/google.txt
 data/filter_unittests/google.zst
 data/filter_unittests/test.dict

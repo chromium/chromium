@@ -10459,6 +10459,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kZstdContentEncodingDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kZstdContentEncoding)},
 
+    {"enable-shared-zstd", flag_descriptions::kSharedZstdName,
+     flag_descriptions::kSharedZstdDescription, kOsAll,
+     FEATURE_VALUE_TYPE(network::features::kSharedZstd)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"arc-arc-on-demand", flag_descriptions::kArcArcOnDemandExperimentName,
      flag_descriptions::kArcArcOnDemandExperimentDescription, kOsCrOS,

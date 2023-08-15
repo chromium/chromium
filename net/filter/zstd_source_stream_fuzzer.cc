@@ -20,10 +20,24 @@
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   net::TestCompletionCallback callback;
   FuzzedDataProvider data_provider(data, size);
-  auto fuzzed_source_stream =
-      std::make_unique<net::FuzzedSourceStream>(&data_provider);
-  std::unique_ptr<net::SourceStream> zstd_stream =
-      net::CreateZstdSourceStream(std::move(fuzzed_source_stream));
+
+  const bool is_shared_dictionary = data_provider.ConsumeBool();
+  std::unique_ptr<net::SourceStream> zstd_stream;
+
+  if (is_shared_dictionary) {
+    const std::string dictionary = data_provider.ConsumeRandomLengthString();
+    scoped_refptr<net::IOBuffer> dictionary_buffer =
+        base::MakeRefCounted<net::StringIOBuffer>(dictionary);
+    auto fuzzed_source_stream =
+        std::make_unique<net::FuzzedSourceStream>(&data_provider);
+    zstd_stream = net::CreateZstdSourceStreamWithDictionary(
+        std::move(fuzzed_source_stream), dictionary_buffer, dictionary.size());
+  } else {
+    auto fuzzed_source_stream =
+        std::make_unique<net::FuzzedSourceStream>(&data_provider);
+    zstd_stream = net::CreateZstdSourceStream(std::move(fuzzed_source_stream));
+  }
+
   while (true) {
     scoped_refptr<net::IOBufferWithSize> io_buffer =
         base::MakeRefCounted<net::IOBufferWithSize>(64);
