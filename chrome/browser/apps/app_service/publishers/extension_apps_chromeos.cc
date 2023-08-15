@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/feature_list.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
@@ -166,6 +168,17 @@ ash::ShelfLaunchSource ConvertLaunchSource(apps::LaunchSource launch_source) {
       return ash::LAUNCH_FROM_UNKNOWN;
   }
 }
+
+void MaybeAssociateWebContentsWithArcContext(
+    apps::LaunchSource launch_source,
+    content::WebContents* web_contents) {
+  if (launch_source == apps::LaunchSource::kFromArc && web_contents) {
+    // Add a flag to remember this web_contents originated in the ARC context.
+    web_contents->SetUserData(
+        &arc::ArcWebContentsData::kArcTransitionFlag,
+        std::make_unique<arc::ArcWebContentsData>(web_contents));
+  }
+}
 }  // namespace
 
 namespace apps {
@@ -173,7 +186,10 @@ namespace apps {
 ExtensionAppsChromeOs::ExtensionAppsChromeOs(AppServiceProxy* proxy,
                                              AppType app_type)
     : ExtensionAppsBase(proxy, app_type),
-      instance_registry_(&proxy->InstanceRegistry()) {
+      instance_registry_(&proxy->InstanceRegistry()),
+      web_file_handlers_permission_handler_(
+          std::make_unique<extensions::WebFileHandlersPermissionHandler>(
+              profile())) {
   DCHECK(instance_registry_);
 }
 
@@ -269,13 +285,7 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
   if (extension->is_app() || is_quickoffice) {
     auto launch_source = params.launch_source;
     content::WebContents* web_contents = LaunchImpl(std::move(params));
-
-    if (launch_source == apps::LaunchSource::kFromArc && web_contents) {
-      // Add a flag to remember this web_contents originated in the ARC context.
-      web_contents->SetUserData(
-          &arc::ArcWebContentsData::kArcTransitionFlag,
-          std::make_unique<arc::ArcWebContentsData>(web_contents));
-    }
+    MaybeAssociateWebContentsWithArcContext(launch_source, web_contents);
   } else {
     DCHECK(extension->is_extension());
     // TODO(petermarshall): Set Arc flag as above?
@@ -286,6 +296,26 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
                     std::make_unique<WindowInfo>(params.display_id),
                     base::DoNothing());
   }
+}
+
+void ExtensionAppsChromeOs::LaunchAppWithIntentCallback(
+    LaunchSource launch_source,
+    const std::string& app_id,
+    int32_t event_flags,
+    IntentPtr intent,
+    WindowInfoPtr window_info,
+    LaunchCallback callback,
+    bool should_open) {
+  // Exit early, while notifying, in case `Don't open` was chosen.
+  if (!should_open) {
+    std::move(callback).Run(LaunchResult(State::FAILED));
+    return;
+  }
+
+  content::WebContents* web_contents = LaunchAppWithIntentImpl(
+      app_id, event_flags, std::move(intent), launch_source,
+      std::move(window_info), std::move(callback));
+  MaybeAssociateWebContentsWithArcContext(launch_source, web_contents);
 }
 
 void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
@@ -299,27 +329,61 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
     std::move(callback).Run(LaunchResult(State::FAILED));
     return;
   }
-  bool is_quickoffice = extension_misc::IsQuickOfficeExtension(extension->id());
+
   bool supports_web_file_handlers =
       extensions::WebFileHandlers::SupportsWebFileHandlers(
           extension->manifest_version());
-  if (extension->is_app() || is_quickoffice || supports_web_file_handlers) {
+
+  // Launch Web File Handlers.
+  if (supports_web_file_handlers) {
+    // Get all names that were selected when the intent to open was initiated.
+    std::vector<base::SafeBaseName> base_names;
+    for (const auto& file : intent->files) {
+      auto optional_base_name = base::SafeBaseName::Create(file->url.path());
+      // Launch requires that every file have a base name.
+      if (!optional_base_name.has_value()) {
+        base_names.clear();
+        break;
+      }
+
+      base_names.emplace_back(optional_base_name.value());
+    }
+
+    // This vector cannot be empty because this is reached after explicitly
+    // opening one or more files.
+    if (base_names.empty()) {
+      std::move(callback).Run(LaunchResult(State::FAILED));
+      return;
+    }
+
+    // Confirm that the extension can open the file and then call the callback.
+    web_file_handlers_permission_handler_->Confirm(
+        *extension, base_names,
+        base::BindOnce(&ExtensionAppsChromeOs::LaunchAppWithIntentCallback,
+                       weak_factory_.GetWeakPtr(), launch_source, app_id,
+                       event_flags, std::move(intent), std::move(window_info),
+                       std::move(callback)));
+
+    return;
+  }
+
+  bool is_quickoffice = extension_misc::IsQuickOfficeExtension(extension->id());
+
+  // Launch legacy app.
+  if (extension->is_app() || is_quickoffice) {
     content::WebContents* web_contents = LaunchAppWithIntentImpl(
         app_id, event_flags, std::move(intent), launch_source,
         std::move(window_info), std::move(callback));
 
-    if (launch_source == LaunchSource::kFromArc && web_contents) {
-      // Add a flag to remember this web_contents originated in the ARC context.
-      web_contents->SetUserData(
-          &arc::ArcWebContentsData::kArcTransitionFlag,
-          std::make_unique<arc::ArcWebContentsData>(web_contents));
-    }
-  } else {
-    DCHECK(extension->is_extension());
-    // TODO(petermarshall): Set Arc flag as above?
-    LaunchExtension(app_id, event_flags, std::move(intent), launch_source,
-                    std::move(window_info), std::move(callback));
+    MaybeAssociateWebContentsWithArcContext(launch_source, web_contents);
+    return;
   }
+
+  // Launch extension.
+  DCHECK(extension->is_extension());
+  // TODO(petermarshall): Set Arc flag as above?
+  LaunchExtension(app_id, event_flags, std::move(intent), launch_source,
+                  std::move(window_info), std::move(callback));
 }
 
 void ExtensionAppsChromeOs::GetMenuModel(

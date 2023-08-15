@@ -743,6 +743,13 @@ static_library("extensions") {
     ]
   }
 
+  if (is_chromeos_ash) {
+    sources += [
+      "file_handlers/web_file_handlers_permission_handler.cc",
+      "file_handlers/web_file_handlers_permission_handler.h",
+    ]
+  }
+
   configs += [
     "//build/config:precompiled_headers",
     "//build/config/compiler:wexit_time_destructors",

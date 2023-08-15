@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_base.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/extensions/file_handlers/web_file_handlers_permission_handler.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -188,6 +190,16 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                        WindowInfoPtr window_info,
                        LaunchCallback callback);
 
+  // This is called after maybe presenting a file dialog permission UI to ensure
+  // that the extension is confirmed to be able to open the relevant file type.
+  void LaunchAppWithIntentCallback(LaunchSource launch_source,
+                                   const std::string& app_id,
+                                   int32_t event_flags,
+                                   IntentPtr intent,
+                                   WindowInfoPtr window_info,
+                                   LaunchCallback callback,
+                                   bool should_run);
+
   const raw_ptr<apps::InstanceRegistry, ExperimentalAsh> instance_registry_;
   base::ScopedObservation<extensions::AppWindowRegistry,
                           extensions::AppWindowRegistry::Observer>
@@ -223,6 +235,11 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
       notification_display_service_{this};
 
   AppNotifications app_notifications_;
+
+  std::unique_ptr<extensions::WebFileHandlersPermissionHandler>
+      web_file_handlers_permission_handler_;
+
+  base::WeakPtrFactory<ExtensionAppsChromeOs> weak_factory_{this};
 };
 
 }  // namespace apps

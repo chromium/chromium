@@ -3480,6 +3480,8 @@ if (!is_android) {
       if (is_chromeos_ash && enable_extensions) {
         deps +=
             [ "//chromeos/ash/components/network/portal_detector:test_support" ]
+
+        sources += [ "../browser/ui/views/extensions/web_file_handlers/web_file_handlers_file_launch_browsertest.cc" ]
       }
 
       if (enable_background_mode) {

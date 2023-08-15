@@ -2726,6 +2726,8 @@ static_library("ui") {
       "views/crostini/crostini_uninstaller_view.h",
       "views/crostini/crostini_update_filesystem_view.cc",
       "views/crostini/crostini_update_filesystem_view.h",
+      "views/extensions/web_file_handlers/web_file_handlers_file_launch_dialog.cc",
+      "views/extensions/web_file_handlers/web_file_handlers_file_launch_dialog.h",
       "views/frame/browser_frame_ash.cc",
       "views/frame/browser_frame_ash.h",
       "views/frame/custom_tab_browser_frame.cc",
