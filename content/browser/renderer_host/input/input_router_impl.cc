@@ -466,7 +466,7 @@ void InputRouterImpl::OnTouchEventAck(
     const TouchEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
-  if (WebTouchEventTraits::IsTouchSequenceStart(event.event)) {
+  if (event.event.IsTouchSequenceStart()) {
     touch_action_filter_.AppendToGestureSequenceForDebugging("T");
     touch_action_filter_.AppendToGestureSequenceForDebugging(
         base::NumberToString(static_cast<uint32_t>(ack_result)).c_str());
@@ -476,7 +476,7 @@ void InputRouterImpl::OnTouchEventAck(
   }
   disposition_handler_->OnTouchEventAck(event, ack_source, ack_result);
 
-  if (WebTouchEventTraits::IsTouchSequenceEnd(event.event)) {
+  if (event.event.IsTouchSequenceEnd()) {
     touch_action_filter_.AppendToGestureSequenceForDebugging("E");
     touch_action_filter_.AppendToGestureSequenceForDebugging(
         base::NumberToString(event.event.unique_touch_event_id).c_str());

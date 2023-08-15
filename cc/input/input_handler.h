@@ -418,6 +418,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
                                           BrowserControlsState current,
                                           bool animate);
 
+  virtual void SetIsHandlingTouchSequence(bool is_handling_touch_sequence);
+
   bool CanConsumeDelta(const ScrollState& scroll_state,
                        const ScrollNode& scroll_node);
   // Returns the amount of delta that can be applied to scroll_node, taking
@@ -488,6 +490,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   void SetPrefersReducedMotion(bool prefers_reduced_motion) override;
   bool IsCurrentlyScrolling() const override;
   ActivelyScrollingType GetActivelyScrollingType() const override;
+  bool IsHandlingTouchSequence() const override;
   bool IsCurrentScrollMainRepainted() const override;
 
  private:
@@ -799,6 +802,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   bool has_scrolled_by_scrollbar_ = false;
 
   bool prefers_reduced_motion_ = false;
+
+  bool is_handling_touch_sequence_ = false;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

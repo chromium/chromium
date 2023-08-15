@@ -486,6 +486,17 @@ void InputHandlerProxy::DispatchSingleInputEvent(
       if (!handling_gesture_on_impl_thread_)
         currently_active_gesture_device_ = absl::nullopt;
       break;
+    case WebInputEvent::Type::kTouchStart:
+      if (static_cast<const WebTouchEvent&>(event).IsTouchSequenceStart()) {
+        input_handler_->SetIsHandlingTouchSequence(true);
+      }
+      break;
+    case WebInputEvent::Type::kTouchCancel:
+    case WebInputEvent::Type::kTouchEnd:
+      if (static_cast<const WebTouchEvent&>(event).IsTouchSequenceEnd()) {
+        input_handler_->SetIsHandlingTouchSequence(false);
+      }
+      break;
     default:
       break;
   }

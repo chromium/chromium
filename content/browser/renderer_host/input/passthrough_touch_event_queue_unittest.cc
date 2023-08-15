@@ -126,8 +126,9 @@ class PassthroughTouchEventQueueTest : public testing::Test,
   void SendTouchEvent(WebTouchEvent event) {
     if (slop_length_dips_) {
       event.moved_beyond_slop_region = false;
-      if (WebTouchEventTraits::IsTouchSequenceStart(event))
+      if (event.IsTouchSequenceStart()) {
         anchor_ = event.touches[0].PositionInWidget();
+      }
       if (event.GetType() == WebInputEvent::Type::kTouchMove) {
         gfx::Vector2dF delta = anchor_ - event.touches[0].PositionInWidget();
         if (delta.LengthSquared() > slop_length_dips_ * slop_length_dips_)

@@ -1200,6 +1200,10 @@ ActivelyScrollingType InputHandler::GetActivelyScrollingType() const {
   return ActivelyScrollingType::kPrecise;
 }
 
+bool InputHandler::IsHandlingTouchSequence() const {
+  return is_handling_touch_sequence_;
+}
+
 bool InputHandler::IsCurrentScrollMainRepainted() const {
   const ScrollNode* scroll_node = CurrentlyScrollingNode();
   if (!scroll_node)
@@ -2281,6 +2285,12 @@ void InputHandler::UpdateBrowserControlsState(BrowserControlsState constraints,
                                               bool animate) {
   compositor_delegate_->UpdateBrowserControlsState(constraints, current,
                                                    animate);
+}
+
+void InputHandler::SetIsHandlingTouchSequence(bool is_handling_touch_sequence) {
+  // We should not attempt to start handling a touch sequence twice.
+  DCHECK(!is_handling_touch_sequence || !is_handling_touch_sequence_);
+  is_handling_touch_sequence_ = is_handling_touch_sequence;
 }
 
 bool InputHandler::CurrentScrollNeedsFrameAlignment() const {

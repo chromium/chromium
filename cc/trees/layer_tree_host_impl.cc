@@ -2326,8 +2326,14 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
         actively_scrolling || mutator_host_->NeedsTickAnimations();
   }
 
-  metadata.is_actively_scrolling =
-      GetActivelyScrollingType() != ActivelyScrollingType::kNone;
+  if (input_delegate_) {
+    // TODO(crbug.com/1470329): rename this variable to make it clear that it is
+    // meant to capture an interaction, generally, rather than just active
+    // scrolling.
+    metadata.is_actively_scrolling =
+        GetActivelyScrollingType() != ActivelyScrollingType::kNone ||
+        input_delegate_->IsHandlingTouchSequence();
+  }
 
   const base::flat_set<viz::SurfaceRange>& referenced_surfaces =
       active_tree_->SurfaceRanges();
