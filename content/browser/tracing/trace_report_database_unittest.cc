@@ -238,19 +238,21 @@ TEST_F(TraceReportDatabaseTest, UploadComplete) {
   new_report.proto = "Proto3";
   new_report.skip_reason = TraceReportDatabase::SkipUploadReason::kNoSkip;
 
-  const auto copie_value = new_report.uuid;
+  const auto report_uuid = new_report.uuid;
 
   ASSERT_TRUE(trace_report_.AddTrace(std::move(new_report)));
   EXPECT_EQ(trace_report_.GetAllReports().size(), 1u);
 
   auto uploaded_time = base::Time::Now();
-  ASSERT_TRUE(trace_report_.UploadComplete(copie_value, uploaded_time));
+  ASSERT_TRUE(trace_report_.UploadComplete(report_uuid, uploaded_time));
 
   auto all_traces = trace_report_.GetAllReports();
   EXPECT_EQ(all_traces.size(), 1u);
   EXPECT_EQ(all_traces[0].state,
             TraceReportDatabase::ReportUploadState::kUploaded);
   EXPECT_EQ(all_traces[0].upload_time, uploaded_time);
+
+  EXPECT_FALSE(trace_report_.GetProtoValue(report_uuid));
 }
 
 TEST_F(TraceReportDatabaseTest, GetNextReportPendingUpload) {

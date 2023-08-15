@@ -22,7 +22,7 @@ namespace {
 const base::FilePath::CharType kLocalTracesDatabaseName[] =
     FILE_PATH_LITERAL("LocalTraces.db");
 
-constexpr int kCurrentVersionNumber = 1;
+constexpr int kCurrentVersionNumber = 2;
 
 TraceReportDatabase::ClientReport GetReportFromStatement(
     sql::Statement& statement) {
@@ -61,7 +61,7 @@ constexpr char kLocalTracesTableSql[] = R"sql(
     state INT NOT NULL,
     upload_time DATETIME NULL,
     skip_reason INT NOT NULL,
-    proto BLOB NOT NULL,
+    proto BLOB NULL,
     file_size INTEGER NOT NULL)
 )sql";
 
@@ -174,9 +174,9 @@ bool TraceReportDatabase::UploadComplete(base::Uuid uuid, base::Time time) {
 
   sql::Statement update_local_trace(
       database_.GetCachedStatement(SQL_FROM_HERE,
-                                   "UPDATE local_traces "
-                                   "SET state=?, upload_time=? "
-                                   "WHERE uuid=?"));
+                                   R"sql(UPDATE local_traces
+                                   SET state=?, upload_time=?, proto=NULL
+                                   WHERE uuid=?)sql"));
 
   CHECK(update_local_trace.is_valid());
 
@@ -280,11 +280,30 @@ bool TraceReportDatabase::EnsureTableCreated() {
   DCHECK(database_.is_open());
 
   sql::MetaTable meta_table;
+  bool has_metatable = meta_table.DoesTableExist(&database_);
+  bool has_schema = database_.DoesTableExist("local_traces");
+  if (!has_metatable && has_schema) {
+    // Existing DB with no meta table. Cannot determine DB version.
+    if (!database_.Raze()) {
+      return false;
+    }
+  }
+
   if (!meta_table.Init(&database_, kCurrentVersionNumber,
                        kCurrentVersionNumber)) {
     return false;
   }
-
+  if (meta_table.GetVersionNumber() > kCurrentVersionNumber) {
+    return false;
+  }
+  if (meta_table.GetVersionNumber() < kCurrentVersionNumber) {
+    if (!database_.Execute("DROP TABLE local_traces")) {
+      return false;
+    }
+    if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
+      return false;
+    }
+  }
   return database_.Execute(kLocalTracesTableSql);
 }
 
