@@ -98,11 +98,11 @@ function returnCustomizationId(response: {[customizationId: string]: any}) {
 
 // <if expr="is_chromeos">
 /**
- * Callback from the backend to inform if Lacros is primary or not.
- * @param isPrimary True if it is primary.
+ * Callback from the backend to inform if Lacros is enabled or not.
+ * @param enabled True if it is enabled.
  */
-function returnLacrosPrimary(isPrimary: string) {
-  getRequiredElement('os-link-container').hidden = !isPrimary;
+function returnLacrosEnabled(enabled: string) {
+  getRequiredElement('os-link-container').hidden = !enabled;
 
   const crosUrlRedirectButton = $('os-link-href');
   if (crosUrlRedirectButton) {
@@ -142,7 +142,7 @@ function initialize() {
       returnArcAndArcAndroidSdkVersions);
   // </if>
   // <if expr="is_chromeos">
-  addWebUiListener('return-lacros-primary', returnLacrosPrimary);
+  addWebUiListener('return-lacros-enabled', returnLacrosEnabled);
   // </if>
 
   chrome.send('requestVersionInfo');

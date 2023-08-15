@@ -66,7 +66,7 @@ void VersionHandlerChromeOS::HandleRequestVersionInfo(
   const bool showSystemFlagsLink = true;
 #endif
 
-  FireWebUIListener("return-lacros-primary", base::Value(showSystemFlagsLink));
+  FireWebUIListener("return-lacros-enabled", base::Value(showSystemFlagsLink));
 }
 
 void VersionHandlerChromeOS::RegisterMessages() {
