@@ -517,9 +517,7 @@ TEST_F(FloatingWorkspaceServiceTest, NoSession) {
 
 TEST_F(FloatingWorkspaceServiceTest, RestoreFloatingWorkspaceTemplate) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
 
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
@@ -555,9 +553,7 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreFloatingWorkspaceTemplate) {
 
 TEST_F(FloatingWorkspaceServiceTest, NoNetworkForFloatingWorkspaceTemplate) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   CleanUpTestNetworkDevices();
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
@@ -574,9 +570,7 @@ TEST_F(FloatingWorkspaceServiceTest, NoNetworkForFloatingWorkspaceTemplate) {
 TEST_F(FloatingWorkspaceServiceTest,
        FloatingWorkspaceTemplateRestoreAfterTimeOut) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
   fake_desk_sync_service()->GetDeskModel()->AddOrUpdateEntry(
@@ -625,9 +619,7 @@ TEST_F(FloatingWorkspaceServiceTest,
 TEST_F(FloatingWorkspaceServiceTest,
        FloatingWorkspaceTemplateDiscardAfterTimeOut) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
   fake_desk_sync_service()->GetDeskModel()->AddOrUpdateEntry(
@@ -673,9 +665,7 @@ TEST_F(FloatingWorkspaceServiceTest,
 
 TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLoadMetric) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
   fake_desk_sync_service()->GetDeskModel()->AddOrUpdateEntry(
@@ -712,9 +702,7 @@ TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLoadMetric) {
 
 TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLaunchTimeout) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   base::HistogramTester histogram_tester;
 
   const std::string template_name = "floating_workspace_template";
@@ -756,9 +744,7 @@ TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLaunchTimeout) {
 
 TEST_F(FloatingWorkspaceServiceTest, CaptureFloatingWorkspaceTemplate) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   TestFloatingWorkSpaceService test_floating_workspace_service_v2(
       profile(), fake_desk_sync_service(), test_sync_service(),
       floating_workspace_util::FloatingWorkspaceVersion::
@@ -785,9 +771,7 @@ TEST_F(FloatingWorkspaceServiceTest, CaptureFloatingWorkspaceTemplate) {
 TEST_F(FloatingWorkspaceServiceTest, CaptureSameFloatingWorkspaceTemplate) {
   // Upload should be skipped if two captured templates are the same.
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   TestFloatingWorkSpaceService test_floating_workspace_service_v2(
       profile(), fake_desk_sync_service(), test_sync_service(),
       floating_workspace_util::FloatingWorkspaceVersion::
@@ -834,9 +818,7 @@ TEST_F(FloatingWorkspaceServiceTest,
        CaptureDifferentFloatingWorkspaceTemplate) {
   // Upload should be executed if two captured templates are the different.
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   TestFloatingWorkSpaceService test_floating_workspace_service_v2(
       profile(), fake_desk_sync_service(), test_sync_service(),
       floating_workspace_util::FloatingWorkspaceVersion::
@@ -886,9 +868,7 @@ TEST_F(FloatingWorkspaceServiceTest,
 
 TEST_F(FloatingWorkspaceServiceTest, PopulateFloatingWorkspaceTemplate) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
 
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
@@ -921,9 +901,7 @@ TEST_F(FloatingWorkspaceServiceTest, PopulateFloatingWorkspaceTemplate) {
 TEST_F(FloatingWorkspaceServiceTest,
        PopulateFloatingWorkspaceTemplateWithUpdates) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
 
   std::unique_ptr<ash::DeskTemplate> template_1 =
       MakeTestFloatingWorkspaceDeskTemplate("Template 1", base::Time::Now());
@@ -1000,9 +978,7 @@ TEST_F(FloatingWorkspaceServiceTest,
 TEST_F(FloatingWorkspaceServiceTest,
        DoNotPerformGarbageCollectionOnSingleEntryBeyondThreshold) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
 
   const std::string fws_name = "Template 1";
   std::unique_ptr<ash::DeskTemplate> fws_template =
@@ -1044,9 +1020,7 @@ TEST_F(FloatingWorkspaceServiceTest,
 
 TEST_F(FloatingWorkspaceServiceTest, PerformGarbageCollectionOnStaleEntries) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
 
   const std::string fws_one_name = "Template 1";
   const std::string fws_two_name = "Template 2";
@@ -1104,9 +1078,7 @@ TEST_F(FloatingWorkspaceServiceTest, PerformGarbageCollectionOnStaleEntries) {
 TEST_F(FloatingWorkspaceServiceTest,
        FloatingWorkspaceTemplateHasProgressStatus) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   TestFloatingWorkSpaceService test_floating_workspace_service_v2(
       profile(), fake_desk_sync_service(), test_sync_service(),
       floating_workspace_util::FloatingWorkspaceVersion::
@@ -1128,9 +1100,7 @@ TEST_F(FloatingWorkspaceServiceTest,
 TEST_F(FloatingWorkspaceServiceTest,
        FloatingWorkspaceTemplateProgressStatusGoneAfterTimeOut) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   TestFloatingWorkSpaceService test_floating_workspace_service_v2(
       profile(), fake_desk_sync_service(), test_sync_service(),
       floating_workspace_util::FloatingWorkspaceVersion::
@@ -1151,9 +1121,7 @@ TEST_F(FloatingWorkspaceServiceTest,
 TEST_F(FloatingWorkspaceServiceTest,
        FloatingWorkspaceTemplateProgressStatusGoneAfterSyncError) {
   scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
-       features::kDeskTemplateSync},
-      {});
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   TestFloatingWorkSpaceService test_floating_workspace_service_v2(
       profile(), fake_desk_sync_service(), test_sync_service(),
       floating_workspace_util::FloatingWorkspaceVersion::

@@ -137,8 +137,6 @@ void FloatingWorkspaceService::Init(
 
   if (version_ == floating_workspace_util::FloatingWorkspaceVersion::
                       kFloatingWorkspaceV2Enabled &&
-      saved_desk_util::AreDesksTemplatesEnabled() &&
-      features::IsDeskTemplateSyncEnabled() &&
       floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
     InitForV2(sync_service, desk_sync_service);
   }
