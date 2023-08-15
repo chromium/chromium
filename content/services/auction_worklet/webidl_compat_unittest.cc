@@ -21,6 +21,7 @@
 #include "v8/include/v8-function.h"
 
 using testing::ElementsAre;
+using testing::Pair;
 
 namespace auction_worklet {
 
@@ -774,6 +775,297 @@ TEST_F(WebIDLCompatTest, PropagateErrorsToV8Exception) {
       AuctionV8Helper::FormatExceptionMessage(context, try_catch.Message()));
   EXPECT_EQ("undefined:0 Uncaught SyntaxError: typo.",
             status.ConvertToErrorString(isolate));
+}
+
+TEST_F(WebIDLCompatTest, RecordBasic) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, R"(
+    make = () => {
+      return {e:1, 2:"b", c: undefined, 3: {}}
+    }
+  )");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1", {"a"},
+                           in_value, out);
+  EXPECT_TRUE(res.is_success());
+  // Array index keys go first, and then others in insertion order.
+  EXPECT_THAT(out, ElementsAre(Pair("2", "b"), Pair("3", "[object Object]"),
+                               Pair("e", "1"), Pair("c", "undefined")));
+}
+
+TEST_F(WebIDLCompatTest, RecordArray) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, R"(
+    make = () => {
+      return ['a', 4, 'b'];
+    }
+  )");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1", {"a"},
+                           in_value, out);
+  EXPECT_TRUE(res.is_success());
+  // Array index keys go first, and then others in insertion order.
+  EXPECT_THAT(out, ElementsAre(Pair("0", "a"), Pair("1", "4"), Pair("2", "b")));
+}
+
+TEST_F(WebIDLCompatTest, RecordNonObject) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, "make = () => 42");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1 ",
+                           {"'a'"}, in_value, out);
+  ASSERT_FALSE(res.is_success());
+  EXPECT_EQ("test1 Cannot convert 'a' to a record since it's not an Object.",
+            res.ConvertToErrorString(v8_helper_->isolate()));
+}
+
+TEST_F(WebIDLCompatTest, RecordGetOwnPropertyNamesFailure) {
+  // GetOwnPropertyNames only fails in case of a proxy object.
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, R"(
+    make = () => {
+      let o = { a: 1, b: 2};
+      let handler = {
+          ownKeys(target) {
+            return ["a", "a"];
+          }
+      }
+      return new Proxy(o, handler);
+    }
+  )");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1", {"a"},
+                           in_value, out);
+  ASSERT_FALSE(res.is_success());
+  EXPECT_EQ(
+      "undefined:0 Uncaught TypeError: 'ownKeys' on proxy: trap returned "
+      "duplicate entries.",
+      res.ConvertToErrorString(v8_helper_->isolate()));
+}
+
+TEST_F(WebIDLCompatTest, RecordGetFieldFailure) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, R"(
+    make = () => {
+      let o = {
+        a: 1,
+        b: 2,
+        get c() { throw "No C for you!"; }
+      };
+      return o;
+    }
+  )");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1", {"a"},
+                           in_value, out);
+  ASSERT_FALSE(res.is_success());
+  EXPECT_EQ("https://example.org/:6 Uncaught No C for you!.",
+            res.ConvertToErrorString(v8_helper_->isolate()));
+}
+
+TEST_F(WebIDLCompatTest, RecordGetOwnPropertyDescriptorFailure) {
+  // Proxies are an easy way of injecting failures in GetOwnPropertyDescriptor.
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, R"(
+    make = () => {
+      let o = { a: 1, b: 2};
+      let handler = {
+          getOwnPropertyDescriptor(target, prop) {
+            return 50;
+          }
+      }
+      return new Proxy(o, handler);
+    }
+  )");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1", {"a"},
+                           in_value, out);
+  ASSERT_FALSE(res.is_success());
+  EXPECT_EQ(
+      "undefined:0 Uncaught TypeError: 'getOwnPropertyDescriptor' on proxy: "
+      "trap returned neither object nor undefined for property 'a'.",
+      res.ConvertToErrorString(v8_helper_->isolate()));
+}
+
+TEST_F(WebIDLCompatTest, RecordSkips) {
+  // Skip things with undefined descriptors or non-enumerable properties.
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, R"(
+    make = () => {
+      let o = { a: 1, b: 2, c: 3, d: 4, e: 5};
+      let handler = {
+          getOwnPropertyDescriptor(target, prop) {
+            if (prop === 'b')
+              return undefined;
+            let desc = Reflect.getOwnPropertyDescriptor(target, prop);
+            if (prop == 'd')
+              desc.enumerable = false;
+            return desc;
+          }
+      }
+      return new Proxy(o, handler);
+    }
+  )");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1", {"a"},
+                           in_value, out);
+  EXPECT_TRUE(res.is_success());
+  EXPECT_THAT(out, ElementsAre(Pair("a", "1"), Pair("c", "3"), Pair("e", "5")));
+}
+
+TEST_F(WebIDLCompatTest, RecordKeyConvertFailure) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, R"(
+    make = () => {
+      let o = { a: 1, b: 2};
+      o[Symbol('c')] = 3;
+      return o;
+    }
+  )");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1", {"a"},
+                           in_value, out);
+  ASSERT_FALSE(res.is_success());
+  EXPECT_EQ(
+      "undefined:0 Uncaught TypeError: Cannot convert a Symbol value to a "
+      "string.",
+      res.ConvertToErrorString(v8_helper_->isolate()));
+}
+
+TEST_F(WebIDLCompatTest, RecordKeyConvertFailureOrder) {
+  // Make sure that we do key conversion before the Get.
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, R"(
+    make = () => {
+      let o = {};
+      Object.defineProperty(o, Symbol('c'), {
+        enumerable: true,
+        get: () => { throw "get failure"; }
+      })
+      return o;
+    }
+  )");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1", {"a"},
+                           in_value, out);
+  ASSERT_FALSE(res.is_success());
+  EXPECT_EQ(
+      "undefined:0 Uncaught TypeError: Cannot convert a Symbol value to a "
+      "string.",
+      res.ConvertToErrorString(v8_helper_->isolate()));
+}
+
+TEST_F(WebIDLCompatTest, RecordValConvertFailure) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, R"(
+    make = () => {
+      let o = { a: 1, b: 2, c: Symbol(3)};
+      return o;
+    }
+  )");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1", {"a"},
+                           in_value, out);
+  ASSERT_FALSE(res.is_success());
+  EXPECT_EQ(
+      "undefined:0 Uncaught TypeError: Cannot convert a Symbol value to a "
+      "string.",
+      res.ConvertToErrorString(v8_helper_->isolate()));
+}
+
+TEST_F(WebIDLCompatTest, RecordGetFailue) {
+  // Make sure that we do key conversion before the Get.
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, R"(
+    make = () => {
+      let o = {};
+      Object.defineProperty(o, 'a', {
+        enumerable: true,
+        get: () => { throw "get failure"; }
+      })
+      return o;
+    }
+  )");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1", {"a"},
+                           in_value, out);
+  ASSERT_FALSE(res.is_success());
+  EXPECT_EQ("https://example.org/:6 Uncaught get failure.",
+            res.ConvertToErrorString(v8_helper_->isolate()));
+}
+
+TEST_F(WebIDLCompatTest, RecordValidUTF16) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, R"(
+    make = () => {
+      return {'\ud835\udd39' : '\ud835\udca9'}
+    }
+  )");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1", {"a"},
+                           in_value, out);
+  EXPECT_TRUE(res.is_success());
+  EXPECT_THAT(out, ElementsAre(Pair("\xf0\x9d\x94\xb9", "\xf0\x9d\x92\xa9")));
+}
+
+TEST_F(WebIDLCompatTest, RecordInvalidUTF16Key) {
+  // We decode keys as DOMString, so they should pass in mis-matched surrogates
+  // as-is.
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, R"(
+    make = () => {
+      return {'\ud835' : 'OK'}
+    }
+  )");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1", {"a"},
+                           in_value, out);
+  EXPECT_TRUE(res.is_success());
+  EXPECT_THAT(out, ElementsAre(Pair("\xED\xA0\xB5", "OK")));
+}
+
+TEST_F(WebIDLCompatTest, RecordInvalidUTF16Val) {
+  // We decode values as USVString, so they should replace mis-matched
+  // surrogates with replacement characters
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, R"(
+    make = () => {
+      return {'key' : '<<\ud835>>'}
+    }
+  )");
+  std::vector<std::pair<std::string, std::string>> out;
+  auto res = ConvertRecord(v8_helper_.get(), *time_limit_scope_, "test1", {"a"},
+                           in_value, out);
+  EXPECT_TRUE(res.is_success());
+  EXPECT_THAT(out, ElementsAre(Pair("key", "<<\xEF\xBF\xBD>>")));
 }
 
 // WebIDL treats undefined as empty dictionary.

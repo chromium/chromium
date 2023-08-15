@@ -5,6 +5,7 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_WEBIDL_COMPAT_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_WEBIDL_COMPAT_H_
 
+#include <initializer_list>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -185,7 +186,6 @@ class CONTENT_EXPORT IdlConvert {
                         v8::Local<v8::Value> value,
                         v8::Local<v8::Value>& out);
 
- private:
   // Makes a failure result based on state of `catcher`. If nothing is set on
   // `catcher`, will report a conversion failure.
   static Status MakeConversionFailure(
@@ -194,6 +194,16 @@ class CONTENT_EXPORT IdlConvert {
       std::initializer_list<std::string_view> error_subject,
       std::string_view type_name);
 };
+
+// Tries to convert to WebIDL Record<DOMString, USVString>.
+// `time_limit_scope` must have a non-null time limit.
+CONTENT_EXPORT IdlConvert::Status ConvertRecord(
+    AuctionV8Helper* v8_helper,
+    AuctionV8Helper::TimeLimitScope& time_limit_scope,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Value> value,
+    std::vector<std::pair<std::string, std::string>>& out);
 
 // DictConverter helps convert a v8::Value that's supposed to be a WebIDL
 // dictionary to C++ values one field at a time, following the appropriate

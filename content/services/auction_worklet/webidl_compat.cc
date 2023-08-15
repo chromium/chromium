@@ -5,18 +5,32 @@
 #include "content/services/auction_worklet/webidl_compat.h"
 
 #include <cmath>
+#include <initializer_list>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "gin/converter.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-primitive.h"
 
 namespace auction_worklet {
+
+namespace {
+
+IdlConvert::Status MakeRecordConversionFailure(
+    const v8::TryCatch& try_catch,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject) {
+  return IdlConvert::MakeConversionFailure(
+      try_catch, error_prefix, error_subject, "record<DOMString, USVString>");
+}
+
+}  // namespace
 
 IdlConvert::Status::Status() : value_(Success::kSuccessTag) {}
 IdlConvert::Status::Status(Status&& other) = default;
@@ -275,6 +289,104 @@ IdlConvert::Status IdlConvert::MakeConversionFailure(
   }
 }
 
+IdlConvert::Status ConvertRecord(
+    AuctionV8Helper* v8_helper,
+    AuctionV8Helper::TimeLimitScope& time_limit_scope,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Value> in_val,
+    std::vector<std::pair<std::string, std::string>>& out) {
+  DCHECK(time_limit_scope.has_time_limit());
+  v8::Isolate* isolate = v8_helper->isolate();
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
+  // This follows https://webidl.spec.whatwg.org/#es-record, and is heavily
+  // based on NativeValueTraits<IDLRecord<K, V>>::NativeValue in
+  // third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h
+  if (!in_val->IsObject()) {
+    return IdlConvert::Status::MakeErrorMessage(base::StrCat(
+        {error_prefix, "Cannot convert ", base::StrCat(error_subject),
+         " to a record since it's not an Object."}));
+  }
+
+  v8::Local<v8::Object> in = in_val.As<v8::Object>();
+
+  v8::TryCatch try_catch(isolate);
+  v8::Local<v8::String> enumerable_name =
+      v8_helper->CreateStringFromLiteral("enumerable");
+
+  v8::Local<v8::Array> keys;
+  if (!in->GetOwnPropertyNames(context, v8::PropertyFilter::ALL_PROPERTIES,
+                               v8::KeyConversionMode::kConvertToString)
+           .ToLocal(&keys)) {
+    return MakeRecordConversionFailure(try_catch, error_prefix, error_subject);
+  }
+
+  out.clear();
+  for (size_t i = 0; i < keys->Length(); i++) {
+    v8::Local<v8::Value> key;
+    if (!keys->Get(context, i).ToLocal(&key)) {
+      return MakeRecordConversionFailure(try_catch, error_prefix,
+                                         error_subject);
+    }
+
+    v8::Local<v8::Value> desc;
+    if (!in->GetOwnPropertyDescriptor(context, key.As<v8::Name>())
+             .ToLocal(&desc)) {
+      return MakeRecordConversionFailure(try_catch, error_prefix,
+                                         error_subject);
+    }
+
+    // Undefined `desc` gets skipped.
+    if (desc->IsUndefined()) {
+      continue;
+    }
+
+    v8::Local<v8::Value> enumerable;
+    if (!desc->IsObject() || !desc.As<v8::Object>()
+                                  ->Get(context, enumerable_name)
+                                  .ToLocal(&enumerable)) {
+      return MakeRecordConversionFailure(try_catch, error_prefix,
+                                         error_subject);
+    }
+
+    // As do things which are not actually enumerable.
+    if (!enumerable->BooleanValue(isolate)) {
+      continue;
+    }
+
+    std::string typed_key;
+    IdlConvert::Status key_status = IdlConvert::Convert(
+        isolate, error_prefix, error_subject, key, typed_key);
+    if (!key_status.is_success()) {
+      return key_status;
+    }
+
+    v8::Local<v8::Value> value;
+    if (!in->Get(context, key).ToLocal(&value)) {
+      return MakeRecordConversionFailure(try_catch, error_prefix,
+                                         error_subject);
+    }
+
+    // For USVString, we are supposed to replace mismatched surrogates with
+    // U+FFFD. Luckily, UTF16ToUTF8 does it, so we just get a 16-bit value
+    // from v8 and feed it to that.
+    std::u16string typed_value16;
+    IdlConvert::Status value_status = IdlConvert::Convert(
+        isolate, error_prefix, error_subject, value, typed_value16);
+    if (!value_status.is_success()) {
+      return value_status;
+    }
+    std::string typed_value = base::UTF16ToUTF8(typed_value16);
+
+    // Since our keys are DOMString, and not USVString, we don't actually have
+    // to worry about duplicates.
+    out.emplace_back(std::move(typed_key), std::move(typed_value));
+  }
+
+  return IdlConvert::Status::MakeSuccess();
+}
+
 const size_t DictConverter::kSequenceLengthLimit;
 
 DictConverter::DictConverter(AuctionV8Helper* v8_helper,
@@ -390,13 +502,10 @@ bool DictConverter::ConvertSequence(
   }
   v8::Local<v8::Object> iterable = value.As<v8::Object>();
 
-  v8::Local<v8::String> next_name, done_name, value_name;
-  if (!v8_helper_->CreateUtf8String("next").ToLocal(&next_name) ||
-      !v8_helper_->CreateUtf8String("done").ToLocal(&done_name) ||
-      !v8_helper_->CreateUtf8String("value").ToLocal(&value_name)) {
-    MarkFailedIter(field, try_catch);
-    return false;
-  }
+  v8::Local<v8::String> next_name = v8_helper_->CreateStringFromLiteral("next");
+  v8::Local<v8::String> done_name = v8_helper_->CreateStringFromLiteral("done");
+  v8::Local<v8::String> value_name =
+      v8_helper_->CreateStringFromLiteral("value");
 
   // Let method be ? GetMethod(V, @@iterator).
   // If method is undefined, throw a TypeError.
