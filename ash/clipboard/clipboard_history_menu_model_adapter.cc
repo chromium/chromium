@@ -124,6 +124,7 @@ void InsertHeaderContent(views::MenuItemView* container) {
                             l10n_util::GetStringUTF16(
                                 IDS_ASH_CLIPBOARD_HISTORY_HEADER_TITLE),
                             cros_tokens::kCrosSysOnSurface))
+                        .SetAccessibleRole(ax::mojom::Role::kHeading)
                         .SetHorizontalAlignment(gfx::ALIGN_LEFT))
           .Build());
 }
