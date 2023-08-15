@@ -30,7 +30,6 @@
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
 #include "chrome/browser/ash/printing/printer_event_tracker_factory.h"
 #include "chrome/browser/ash/printing/printer_info.h"
-#include "chrome/browser/ash/printing/printer_setup_util.h"
 #include "chrome/browser/ash/printing/server_printers_fetcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -458,18 +457,24 @@ void CupsPrintersHandler::HandleRetrieveCupsPrinterPpd(
     return;
   }
 
-  ash::printing::SetUpPrinter(
-      printers_manager_, *printer,
+  printers_manager_->SetUpPrinter(
+      *printer, /*is_automatic_installation=*/true,
       base::BindOnce(&CupsPrintersHandler::OnSetUpPrinter,
                      weak_factory_.GetWeakPtr(), printer_id, printer_name,
                      eula));
 }
 
-void CupsPrintersHandler::OnSetUpPrinter(
-    const std::string& printer_id,
-    const std::string& printer_name,
-    const std::string& eula,
-    const absl::optional<::printing::PrinterSemanticCapsAndDefaults>& caps) {
+void CupsPrintersHandler::OnSetUpPrinter(const std::string& printer_id,
+                                         const std::string& printer_name,
+                                         const std::string& eula,
+                                         PrinterSetupResult result) {
+  if (result != PrinterSetupResult::kSuccess) {
+    PRINTER_LOG(ERROR) << "Cannot setup a printer " << printer_id << " ("
+                       << printer_name << ")";
+    OnRetrievePpdError(printer_name);
+    return;
+  }
+
   // Once the printer has been setup we can request the PPD.
   const std::vector<uint8_t> empty_ppd;
 
