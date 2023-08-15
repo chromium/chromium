@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ import org.chromium.components.commerce.core.ShoppingService;
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
         ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, ChromeFeatureList.SHOPPING_LIST})
-public class ContextualPageActionControllerTest {
+public class ContextualPageActionControllerUnitTest {
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private ObservableSupplierImpl<Tab> mTabSupplier;
 
@@ -122,8 +122,7 @@ public class ContextualPageActionControllerTest {
 
         when(mMockTab.isLoading()).thenReturn(true);
 
-        ContextualPageActionController contextualPageActionController =
-                createContextualPageActionController();
+        createContextualPageActionController();
 
         mTabSupplier.set(mMockTab);
 
@@ -137,8 +136,7 @@ public class ContextualPageActionControllerTest {
 
         when(mMockTab.isIncognito()).thenReturn(true);
 
-        ContextualPageActionController contextualPageActionController =
-                createContextualPageActionController();
+        createContextualPageActionController();
 
         mTabSupplier.set(mMockTab);
 
@@ -159,8 +157,7 @@ public class ContextualPageActionControllerTest {
         testValues.addFeatureFlagOverride(ChromeFeatureList.SHOPPING_LIST, true);
         FeatureList.setTestValues(testValues);
 
-        ContextualPageActionController contextualPageActionController =
-                createContextualPageActionController();
+        createContextualPageActionController();
         mTabSupplier.set(mMockTab);
 
         verify(mMockAdaptiveToolbarController, never()).showDynamicAction(anyInt());

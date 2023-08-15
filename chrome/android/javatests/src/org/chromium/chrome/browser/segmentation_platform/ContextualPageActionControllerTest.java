@@ -1,0 +1,55 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.segmentation_platform;
+
+import androidx.test.filters.MediumTest;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features;
+
+@RunWith(BaseJUnit4ClassRunner.class)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
+public class ContextualPageActionControllerTest {
+    private static final String CONTEXTUAL_PAGE_ACTION_DEFAULT_MODEL_HISTOGRAM =
+            "SegmentationPlatform.ModelExecution.DefaultProvider.Status."
+            + "ContextualPageActionPriceTracking";
+
+    @Rule
+    public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
+
+    @Rule
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+            ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
+    public void
+    testContextualPageModelExecution() {
+        LibraryLoader.getInstance().ensureInitialized();
+
+        // Expect the default model to be executed successfully.
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                CONTEXTUAL_PAGE_ACTION_DEFAULT_MODEL_HISTOGRAM,
+                /* value= kSuccess*/ 0);
+
+        // Load a blank page, model should execute for every page load.
+        mActivityTestRule.startMainActivityOnBlankPage();
+
+        histogram.pollInstrumentationThreadUntilSatisfied();
+    }
+}
