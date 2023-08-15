@@ -10,6 +10,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -80,6 +81,7 @@ ArcProvisionNotificationService::~ArcProvisionNotificationService() {
 }
 
 void ArcProvisionNotificationService::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "ArcProvisionNotificationService::OnSessionStateChanged");
   if (session_manager::SessionManager::Get()->session_state() !=
           session_manager::SessionState::ACTIVE ||
       !show_on_session_starts_) {
