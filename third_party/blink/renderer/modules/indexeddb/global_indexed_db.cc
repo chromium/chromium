@@ -34,9 +34,9 @@ class GlobalIndexedDBImpl final
   explicit GlobalIndexedDBImpl(T& supplementable)
       : Supplement<T>(supplementable) {}
 
-  IDBFactory* IdbFactory(ExecutionContext* context) {
+  IDBFactory* IdbFactory(ContextLifecycleNotifier* notifier) {
     if (!idb_factory_)
-      idb_factory_ = MakeGarbageCollected<IDBFactory>(context);
+      idb_factory_ = MakeGarbageCollected<IDBFactory>(notifier);
     return idb_factory_;
   }
 
