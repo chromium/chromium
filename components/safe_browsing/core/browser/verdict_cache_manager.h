@@ -26,6 +26,7 @@
 #include "url/gurl.h"
 
 class HostContentSettingsMap;
+class SafeBrowsingServiceTest;
 
 namespace safe_browsing {
 
@@ -140,6 +141,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
                                   ChromeUserPopulation::PageLoadToken token);
 
  private:
+  friend class ::SafeBrowsingServiceTest;
   friend class SafeBrowsingBlockingPageRealTimeUrlCheckTest;
   friend class SafeBrowsingBlockingPageHashRealTimeCheckTest;
   friend class VerdictCacheManagerTest;
