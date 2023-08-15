@@ -50,6 +50,7 @@ android_resources("java_resources") {
     "java/res/drawable/baseline_more_horiz_24.xml",
     "java/res/drawable/baseline_replay_10_24.xml",
     "java/res/drawable/forward_30_button.xml",
+    "java/res/drawable/pause_button.xml",
     "java/res/drawable/play_button.xml",
     "java/res/drawable/primary_gray_rounded.xml",
     "java/res/drawable/replay_10_button.xml",
@@ -97,6 +98,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/expandedplayer/ExpandedPlayerCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/expandedplayer/ExpandedPlayerMediatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/expandedplayer/ExpandedPlayerSheetContentUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerMediatorUnitTest.java",
   ]

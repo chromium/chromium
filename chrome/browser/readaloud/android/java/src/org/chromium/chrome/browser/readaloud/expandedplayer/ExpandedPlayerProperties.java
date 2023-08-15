@@ -11,5 +11,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 public class ExpandedPlayerProperties {
     public static final WritableObjectPropertyKey<Integer> STATE_KEY =
             new WritableObjectPropertyKey<>();
-    public static final PropertyKey[] ALL_KEYS = {STATE_KEY};
+    public static final WritableObjectPropertyKey<Float> SPEED_KEY =
+            new WritableObjectPropertyKey<>();
+    public static final PropertyKey[] ALL_KEYS = {STATE_KEY, SPEED_KEY};
 }

@@ -24,6 +24,8 @@ public class ExpandedPlayerViewBinder {
             } else if (state == State.HIDING) {
                 content.hide();
             }
+        } else if (key == ExpandedPlayerProperties.SPEED_KEY) {
+            content.setSpeed(model.get(ExpandedPlayerProperties.SPEED_KEY));
         }
     }
 }

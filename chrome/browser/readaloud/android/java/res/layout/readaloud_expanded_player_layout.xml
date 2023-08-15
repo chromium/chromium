@@ -142,20 +142,20 @@ found in the LICENSE file.
                 android:layout_width="@dimen/readaloud_control_button_diameter"
                 android:layout_height="@dimen/readaloud_control_button_diameter"
                 android:src="@drawable/replay_10_button"
-                tools:ignore="ContentDescription"/>
+                android:contentDescription="@string/readaloud_replay"/>
             <ImageView
                 android:id="@+id/readaloud_play_pause_button"
                 android:layout_width="@dimen/readaloud_play_button_width"
                 android:layout_height="@dimen/readaloud_control_button_diameter"
                 android:layout_marginHorizontal="@dimen/readaloud_control_button_spacing"
                 android:src="@drawable/play_button"
-                tools:ignore="ContentDescription"/>
+                android:contentDescription="@string/readaloud_play"/>
             <ImageView
                 android:id="@+id/readaloud_seek_forward_button"
                 android:layout_width="@dimen/readaloud_control_button_diameter"
                 android:layout_height="@dimen/readaloud_control_button_diameter"
                 android:src="@drawable/forward_30_button"
-                tools:ignore="ContentDescription"/>
+                android:contentDescription="@string/readaloud_forward"/>
         </LinearLayout>
 
         <!-- Speed and overflow menu. -->
@@ -181,7 +181,7 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:src="@drawable/baseline_more_horiz_24"
-                tools:ignore="ContentDescription"/>
+                android:contentDescription="@string/readaloud_options_menu_button"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

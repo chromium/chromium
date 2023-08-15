@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.readaloud.expandedplayer;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -17,13 +19,21 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private static final String TAG = "RAPlayerSheet";
+    private static final float DEFAULT_INITIAL_SPEED = 1f;
+    // Note: if these times need to change, the "back 10" and "forward 30" icons
+    // should also be changed.
+    private static final int BACK_SECONDS = 10;
+    private static final int FORWARD_SECONDS = 30;
+
+    private final Context mContext;
     private final BottomSheetController mBottomSheetController;
-    private final View mContentView;
+    private View mContentView;
 
     // TODO remove hard-coded strings
     @SuppressWarnings("SetTextI18n")
     public ExpandedPlayerSheetContent(
             Context context, BottomSheetController bottomSheetController) {
+        mContext = context;
         mBottomSheetController = bottomSheetController;
         mContentView = LayoutInflater.from(context).inflate(
                 R.layout.readaloud_expanded_player_layout, null);
@@ -31,9 +41,14 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
                 .setText("Page title");
         ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_publisher))
                 .setText("Site");
+        Resources res = mContext.getResources();
+        mContentView.findViewById(R.id.readaloud_seek_back_button)
+                .setContentDescription(res.getString(R.string.readaloud_replay, BACK_SECONDS));
+        mContentView.findViewById(R.id.readaloud_seek_forward_button)
+                .setContentDescription(res.getString(R.string.readaloud_forward, FORWARD_SECONDS));
         ((TextView) mContentView.findViewById(R.id.readaloud_player_time)).setText("00:00");
         ((TextView) mContentView.findViewById(R.id.readaloud_player_duration)).setText("00:00");
-        ((TextView) mContentView.findViewById(R.id.readaloud_playback_speed)).setText("1.0x");
+        setSpeed(DEFAULT_INITIAL_SPEED);
     }
 
     public void show() {
@@ -41,8 +56,29 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     public void hide() {
-        if (mBottomSheetController.getCurrentSheetContent() == this) {
-            mBottomSheetController.collapseSheet(/*animate=*/true);
+        mBottomSheetController.hideContent(this, /*animate=*/true);
+    }
+
+    @SuppressWarnings({"SetTextI18n", "DefaultLocale"})
+    public void setSpeed(float speed) {
+        TextView speedButton = (TextView) mContentView.findViewById(R.id.readaloud_playback_speed);
+        speedButton.setText(String.format("%.1fx", speed));
+        speedButton.setContentDescription(mContext.getResources().getString(
+                R.string.readaloud_speed_menu_button, String.format("%.1f", speed)));
+    }
+
+    public void setPlaying(boolean playing) {
+        ImageView playButton =
+                (ImageView) mContentView.findViewById(R.id.readaloud_play_pause_button);
+        // If playing, update to show the pause button.
+        if (playing) {
+            playButton.setImageResource(R.drawable.pause_button);
+            playButton.setContentDescription(
+                    mContext.getResources().getString(R.string.readaloud_pause));
+        } else {
+            playButton.setImageResource(R.drawable.play_button);
+            playButton.setContentDescription(
+                    mContext.getResources().getString(R.string.readaloud_play));
         }
     }
 
