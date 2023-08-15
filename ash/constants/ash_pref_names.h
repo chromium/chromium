@@ -48,6 +48,14 @@ inline constexpr char kManagedPhysicalKeyboardAutocorrectAllowed[] =
 inline constexpr char kManagedPhysicalKeyboardPredictiveWritingAllowed[] =
     "settings.ime.managed.physical_keyboard.predictive_writing_enabled";
 
+// An integer pref which indicates the orca consent status from the user.
+inline constexpr char kOrcaConsentStatus[] = "ash.orca.consent_status";
+
+// An integer pref which indicates the number of times the orca consent window
+// has been dismissed by the user.
+inline constexpr char kOrcaConsentWindowDismissCount[] =
+    "ash.orca.consent_window_dismiss_count";
+
 // A boolean pref of whether GIF support is enabled in emoji picker.
 inline constexpr char kEmojiPickerGifSupportEnabled[] =
     "emoji_picker.gif_support_enabled";

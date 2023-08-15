@@ -26,11 +26,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
 #include "chrome/browser/ash/input_method/input_method_syncer.h"
 #include "chrome/browser/ash/login/hid_detection_revamp_field_trial.h"
@@ -303,6 +305,10 @@ void Preferences::RegisterProfilePrefs(
       prefs::kManagedPhysicalKeyboardAutocorrectAllowed, true);
   registry->RegisterBooleanPref(
       prefs::kManagedPhysicalKeyboardPredictiveWritingAllowed, true);
+  registry->RegisterIntegerPref(
+      prefs::kOrcaConsentStatus,
+      base::to_underlying(input_method::ConsentStatus::kUnset));
+  registry->RegisterIntegerPref(prefs::kOrcaConsentWindowDismissCount, 0);
   registry->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled, true);
   registry->RegisterDictionaryPref(
       ::prefs::kLanguageInputMethodSpecificSettings);
