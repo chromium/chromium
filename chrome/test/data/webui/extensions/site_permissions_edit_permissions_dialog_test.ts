@@ -42,8 +42,12 @@ suite('SitePermissionsEditPermissionsDialog', function() {
   ];
 
   const matchingExtensionsInfo = [
-    {id: 'test_1', siteAccess: HostAccess.ON_CLICK},
-    {id: 'test_2', siteAccess: HostAccess.ON_SPECIFIC_SITES},
+    {id: 'test_1', siteAccess: HostAccess.ON_CLICK, canRequestAllSites: true},
+    {
+      id: 'test_2',
+      siteAccess: HostAccess.ON_SPECIFIC_SITES,
+      canRequestAllSites: true,
+    },
   ];
 
   const changeHostAccess =
@@ -199,8 +203,16 @@ suite('SitePermissionsEditPermissionsDialog', function() {
         assertEquals(HostAccess.ON_CLICK, extensionSiteAccessSelects[0]!.value);
 
         delegate.matchingExtensionsInfo = [
-          {id: 'test_1', siteAccess: HostAccess.ON_ALL_SITES},
-          {id: 'test_2', siteAccess: HostAccess.ON_SPECIFIC_SITES},
+          {
+            id: 'test_1',
+            siteAccess: HostAccess.ON_ALL_SITES,
+            canRequestAllSites: true,
+          },
+          {
+            id: 'test_2',
+            siteAccess: HostAccess.ON_SPECIFIC_SITES,
+            canRequestAllSites: true,
+          },
         ];
 
         element.extensions = [
@@ -236,7 +248,11 @@ suite('SitePermissionsEditPermissionsDialog', function() {
     element.site = 'example.com';
     delegate.matchingExtensionsInfo = [
       ...matchingExtensionsInfo,
-      {id: 'test_3', siteAccess: HostAccess.ON_ALL_SITES},
+      {
+        id: 'test_3',
+        siteAccess: HostAccess.ON_ALL_SITES,
+        canRequestAllSites: true,
+      },
     ];
 
     flush();
@@ -298,7 +314,11 @@ suite('SitePermissionsEditPermissionsDialog', function() {
         element.site = 'http://example.com';
         delegate.matchingExtensionsInfo = [
           ...matchingExtensionsInfo,
-          {id: 'test_3', siteAccess: HostAccess.ON_ALL_SITES},
+          {
+            id: 'test_3',
+            siteAccess: HostAccess.ON_ALL_SITES,
+            canRequestAllSites: true,
+          },
         ];
 
         flush();
@@ -327,8 +347,16 @@ suite('SitePermissionsEditPermissionsDialog', function() {
         // `test_1` is now the same as what was edited and `test_3` no longer
         // exists.
         delegate.matchingExtensionsInfo = [
-          {id: 'test_1', siteAccess: HostAccess.ON_SPECIFIC_SITES},
-          {id: 'test_2', siteAccess: HostAccess.ON_SPECIFIC_SITES},
+          {
+            id: 'test_1',
+            siteAccess: HostAccess.ON_SPECIFIC_SITES,
+            canRequestAllSites: true,
+          },
+          {
+            id: 'test_2',
+            siteAccess: HostAccess.ON_SPECIFIC_SITES,
+            canRequestAllSites: true,
+          },
         ];
 
         element.extensions = [
@@ -437,5 +465,52 @@ suite('SitePermissionsEditPermissionsDialog', function() {
         // since it's installed by policy.
         assertFalse(siteAccessSelectMenus[0]!.disabled);
         assertTrue(siteAccessSelectMenus[1]!.disabled);
+      });
+
+  test(
+      'all sites option hidden for extensions that do not request to all sites',
+      async function() {
+        delegate.matchingExtensionsInfo = [
+          {
+            id: 'test_1',
+            siteAccess: HostAccess.ON_SPECIFIC_SITES,
+            canRequestAllSites: true,
+          },
+          {
+            id: 'test_2',
+            siteAccess: HostAccess.ON_SPECIFIC_SITES,
+            canRequestAllSites: false,
+          },
+        ];
+
+        flush();
+
+        const extensionSpecifiedRadioButton =
+            element.shadowRoot!.querySelector<HTMLElement>(
+                `cr-radio-button[name=${SiteSet.EXTENSION_SPECIFIED}]`);
+        assertTrue(!!extensionSpecifiedRadioButton);
+        extensionSpecifiedRadioButton.click();
+
+        // Changing `element.extensions` causes a call to
+        // getMatchingExtensionsForSite.
+        const site = await delegate.whenCalled('getMatchingExtensionsForSite');
+        assertEquals('http://example.com/', site);
+        flush();
+
+        const siteAccessSelectMenus =
+            element.shadowRoot!.querySelectorAll<HTMLSelectElement>(
+                '.extension-host-access');
+        assertEquals(2, siteAccessSelectMenus.length);
+
+        // First select menu should have all options enabled, second menu
+        // should have `ON_ALL_SITES` disabled.
+        assertFalse(
+            siteAccessSelectMenus[0]!
+                .querySelector<HTMLSelectElement>(
+                    `option[value=${HostAccess.ON_ALL_SITES}]`)!.disabled);
+        assertTrue(
+            siteAccessSelectMenus[1]!
+                .querySelector<HTMLSelectElement>(
+                    `option[value=${HostAccess.ON_ALL_SITES}]`)!.disabled);
       });
 });

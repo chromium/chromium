@@ -423,6 +423,7 @@ declare global {
       export interface MatchingExtensionInfo {
         id: string;
         siteAccess: HostAccess;
+        canRequestAllSites: boolean;
       }
 
       export interface ExtensionSiteAccessUpdate {

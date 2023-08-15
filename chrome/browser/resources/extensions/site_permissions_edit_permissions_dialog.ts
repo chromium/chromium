@@ -28,6 +28,7 @@ interface ExtensionSiteAccessInfo {
   iconUrl: string;
   siteAccess: string;
   addedByPolicy: boolean;
+  canRequestAllSites: boolean;
 }
 
 export interface SitePermissionsEditPermissionsDialogElement {
@@ -202,13 +203,13 @@ export class SitePermissionsEditPermissionsDialogElement extends
         await this.delegate.getMatchingExtensionsForSite(siteToCheck);
 
     const extensionSiteAccessData: ExtensionSiteAccessInfo[] = [];
-    matchingExtensionsInfo.forEach(({id, siteAccess}) => {
+    matchingExtensionsInfo.forEach(({id, siteAccess, canRequestAllSites}) => {
       assert(this.extensionsIdToInfo_.has(id));
       const {name, iconUrl} = this.extensionsIdToInfo_.get(id)!;
       const addedByPolicy = getItemSource(this.extensionsIdToInfo_.get(id)!) ===
           SourceType.POLICY;
       extensionSiteAccessData.push(
-          {id, name, iconUrl, siteAccess, addedByPolicy});
+          {id, name, iconUrl, siteAccess, addedByPolicy, canRequestAllSites});
 
       // Remove the unsaved HostAccess from `unsavedExtensionsIdToHostAccess_`
       // if it is now the same as `siteAccess`.
@@ -310,6 +311,12 @@ export class SitePermissionsEditPermissionsDialogElement extends
     const originalSiteAccess = e.model.item.siteAccess;
     const newSiteAccess =
         selectMenu.value as chrome.developerPrivate.HostAccess;
+
+    // Sanity check that extensions that don't request all sites access cannot
+    // request all sites access from the dialog.
+    assert(
+        e.model.item.canRequestAllSites ||
+        newSiteAccess !== chrome.developerPrivate.HostAccess.ON_ALL_SITES);
 
     if (originalSiteAccess === newSiteAccess) {
       this.unsavedExtensionsIdToHostAccess_.delete(e.model.item.id);

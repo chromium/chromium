@@ -227,13 +227,17 @@ void GetMatchingExtensionsForSite(
 
 auto MatchMatchingExtensionInfo(
     const std::string& extension_id,
-    const api::developer_private::HostAccess& host_access) {
+    const api::developer_private::HostAccess& host_access,
+    bool can_request_all_sites) {
   return testing::AllOf(
       testing::Field(&api::developer_private::MatchingExtensionInfo::id,
                      extension_id),
       testing::Field(
           &api::developer_private::MatchingExtensionInfo::site_access,
-          host_access));
+          host_access),
+      testing::Field(
+          &api::developer_private::MatchingExtensionInfo::can_request_all_sites,
+          can_request_all_sites));
 }
 
 api::developer_private::ExtensionSiteAccessUpdate CreateSiteAccessUpdate(
@@ -2557,7 +2561,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // "http://images.google.com/" should only match with `extension_2`.
   EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
                          extension_2->id(),
-                         developer::HostAccess::HOST_ACCESS_ON_ALL_SITES)));
+                         developer::HostAccess::HOST_ACCESS_ON_SPECIFIC_SITES,
+                         /*can_request_all_sites=*/false)));
 
   service()->DisableExtension(extension_2->id(),
                               disable_reason::DISABLE_USER_ACTION);
@@ -2567,7 +2572,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // since it is disabled.
   EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
                          extension_1->id(),
-                         developer::HostAccess::HOST_ACCESS_ON_ALL_SITES)));
+                         developer::HostAccess::HOST_ACCESS_ON_SPECIFIC_SITES,
+                         /*can_request_all_sites=*/false)));
 }
 
 // Test that the host access returned by GetMatchingExtensionsForSite reflects
@@ -2586,7 +2592,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
                          extension->id(),
-                         developer::HostAccess::HOST_ACCESS_ON_ALL_SITES)));
+                         developer::HostAccess::HOST_ACCESS_ON_ALL_SITES,
+                         /*can_request_all_sites=*/true)));
   EXPECT_FALSE(PermissionsManager::Get(browser()->profile())
                    ->HasWithheldHostPermissions(*extension));
 
@@ -2594,23 +2601,25 @@ TEST_F(DeveloperPrivateApiUnitTest,
   modifier.SetWithholdHostPermissions(true);
 
   GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
-  EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
-                         extension->id(),
-                         developer::HostAccess::HOST_ACCESS_ON_CLICK)));
+  EXPECT_THAT(infos,
+              testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                  extension->id(), developer::HostAccess::HOST_ACCESS_ON_CLICK,
+                  /*can_request_all_sites=*/true)));
 
   RunAddHostPermission(profile(), *extension, "*://*.google.com/*",
                        /*should_succeed=*/true, nullptr);
 
   GetMatchingExtensionsForSite(profile(), "http://google.com/", &infos);
-  EXPECT_THAT(infos,
-              testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
-                  extension->id(),
-                  developer::HostAccess::HOST_ACCESS_ON_SPECIFIC_SITES)));
-
-  GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
   EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
                          extension->id(),
-                         developer::HostAccess::HOST_ACCESS_ON_CLICK)));
+                         developer::HostAccess::HOST_ACCESS_ON_SPECIFIC_SITES,
+                         /*can_request_all_sites=*/true)));
+
+  GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
+  EXPECT_THAT(infos,
+              testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                  extension->id(), developer::HostAccess::HOST_ACCESS_ON_CLICK,
+                  /*can_request_all_sites=*/true)));
 }
 
 // Tests the UpdateSiteAccess function when called on an extension with no

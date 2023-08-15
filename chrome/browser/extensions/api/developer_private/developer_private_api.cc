@@ -2498,6 +2498,8 @@ DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
   if (parsed_site.Parse(params->site) != URLPattern::ParseResult::kSuccess)
     return RespondNow(Error("Invalid site: " + params->site));
 
+  constexpr bool kIncludeApiPermissions = false;
+
   std::vector<developer::MatchingExtensionInfo> matching_extensions;
   URLPatternSet site_pattern({parsed_site});
   const ExtensionSet& enabled_extensions =
@@ -2525,18 +2527,25 @@ DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
     // have access to any sites that match `site_pattern`.
     developer::HostAccess host_access = developer::HOST_ACCESS_ON_CLICK;
 
+    // TODO(crbug.com/1472899): Add a version of CanUserSelectSiteAccess to
+    // PermissionsManager which takes in a URLPattern.
+    bool can_request_all_sites =
+        granted_permissions->ShouldWarnAllHosts(kIncludeApiPermissions) ||
+        extension->permissions_data()
+            ->withheld_permissions()
+            .ShouldWarnAllHosts(kIncludeApiPermissions);
+
     // If the extension has access to at least one site that matches
-    // `site_pattern`, return ON_ALL_SITES or ON_SPECIFIC_SITES depending on
-    // if the extension has any withheld sites.
-    // TODO(crbug.com/1459291): Return HOST_ACCESS_ON_ALL_SITES only if the
-    // extension has been granted access to all sites.
+    // `site_pattern`, return ON_ALL_SITES if the extension can request all
+    // sites and has no withheld sites, or ON_SPECIFIC_SITES otherwise.
     if (!granted_intersection.is_empty()) {
-      host_access = extension_withheld_sites.is_empty()
+      host_access = can_request_all_sites && extension_withheld_sites.is_empty()
                         ? developer::HOST_ACCESS_ON_ALL_SITES
                         : developer::HOST_ACCESS_ON_SPECIFIC_SITES;
     }
 
     developer::MatchingExtensionInfo matching_info;
+    matching_info.can_request_all_sites = can_request_all_sites;
     matching_info.site_access = host_access;
     matching_info.id = extension->id();
     matching_extensions.push_back(std::move(matching_info));
