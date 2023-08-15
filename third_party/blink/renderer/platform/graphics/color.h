@@ -287,6 +287,15 @@ class PLATFORM_EXPORT Color {
   float Param2() const { return param2_; }
   float Alpha() const { return alpha_; }
 
+  // Gradient interpolation needs to know if parameters are "none".
+  bool Param0IsNone() const { return param0_is_none_; }
+  bool Param1IsNone() const { return param1_is_none_; }
+  bool Param2IsNone() const { return param2_is_none_; }
+  bool AlphaIsNone() const { return alpha_is_none_; }
+  bool HasNoneParams() const {
+    return Param0IsNone() || Param1IsNone() || Param2IsNone() || AlphaIsNone();
+  }
+
   void SetAlpha(float alpha) { alpha_ = alpha; }
 
   // Access the color as though it were created using rgba syntax. This will
