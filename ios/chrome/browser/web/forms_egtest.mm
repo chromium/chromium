@@ -339,7 +339,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
   NSString* title =
       base::SysUTF16ToNSString(url_formatter::FormatUrl(destinationURL));
   id<GREYMatcher> historyItem =
-      chrome_test_util::ButtonWithAccessibilityLabel(title);
+      chrome_test_util::ContextMenuItemWithAccessibilityLabel(title);
   [[EarlGrey selectElementWithMatcher:historyItem]
       assertWithMatcher:grey_sufficientlyVisible()];
 

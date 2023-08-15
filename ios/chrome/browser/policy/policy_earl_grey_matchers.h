@@ -16,6 +16,12 @@ void AssertButtonInCollectionEnabled(int label_id);
 // Tests if a button in a collection is disabled.
 void AssertButtonInCollectionDisabled(int label_id);
 
+// Tests if a context menu item is enabled.
+void AssertContextMenuItemEnabled(int label_id);
+
+// Tests if a context menu item is disabled.
+void AssertContextMenuItemDisabled(int label_id);
+
 // Tests if an overflow menu element of `toolsMenuView` is enabled.
 void AssertOverflowMenuElementEnabled(NSString* accessibilityID);
 

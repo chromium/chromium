@@ -364,7 +364,7 @@ BOOL WaitForHistoryToDisappear() {
 
   id<GREYMatcher> menuNewTabButtonMatcher;
   menuNewTabButtonMatcher =
-      grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+      grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
                      IDS_IOS_TOOLS_MENU_NEW_TAB),
                  grey_ancestor(grey_kindOfClassName(@"UICollectionView")), nil);
   [[EarlGrey selectElementWithMatcher:menuNewTabButtonMatcher]

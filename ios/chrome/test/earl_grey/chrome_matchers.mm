@@ -39,6 +39,16 @@ id<GREYMatcher> ButtonWithAccessibilityLabelId(int message_id) {
   return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:message_id];
 }
 
+id<GREYMatcher> ContextMenuItemWithAccessibilityLabel(NSString* label) {
+  return
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabel:label];
+}
+
+id<GREYMatcher> ContextMenuItemWithAccessibilityLabelId(int message_id) {
+  return [ChromeMatchersAppInterface
+      contextMenuItemWithAccessibilityLabelID:message_id];
+}
+
 id<GREYMatcher> ImageViewWithImageNamed(NSString* imageName) {
   return [ChromeMatchersAppInterface imageViewWithImageNamed:imageName];
 }

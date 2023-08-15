@@ -14,27 +14,40 @@ namespace policy {
 
 namespace {
 
-void AssertButtonInCollectionWithMatcher(int label_id,
-                                         id<GREYMatcher> assertion_matcher) {
+void AssertElementInCollectionWithMatcher(id<GREYMatcher> element_matcher,
+                                          id<GREYMatcher> assertion_matcher) {
   [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(label_id),
-                     grey_ancestor(grey_kindOfClassName(@"UICollectionView")),
-                     grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:grey_allOf(element_matcher,
+                                          grey_ancestor(grey_kindOfClassName(
+                                              @"UICollectionView")),
+                                          grey_sufficientlyVisible(), nil)]
       assertWithMatcher:assertion_matcher];
 }
 
 }  // namespace
 
 void AssertButtonInCollectionEnabled(int label_id) {
-  AssertButtonInCollectionWithMatcher(
-      label_id,
+  AssertElementInCollectionWithMatcher(
+      chrome_test_util::ButtonWithAccessibilityLabelId(label_id),
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)));
 }
 
 void AssertButtonInCollectionDisabled(int label_id) {
-  AssertButtonInCollectionWithMatcher(
-      label_id, grey_accessibilityTrait(UIAccessibilityTraitNotEnabled));
+  AssertElementInCollectionWithMatcher(
+      chrome_test_util::ButtonWithAccessibilityLabelId(label_id),
+      grey_accessibilityTrait(UIAccessibilityTraitNotEnabled));
+}
+
+void AssertContextMenuItemEnabled(int label_id) {
+  AssertElementInCollectionWithMatcher(
+      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(label_id),
+      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)));
+}
+
+void AssertContextMenuItemDisabled(int label_id) {
+  AssertElementInCollectionWithMatcher(
+      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(label_id),
+      grey_accessibilityTrait(UIAccessibilityTraitNotEnabled));
 }
 
 void AssertOverflowMenuElementEnabled(NSString* accessibilityID) {

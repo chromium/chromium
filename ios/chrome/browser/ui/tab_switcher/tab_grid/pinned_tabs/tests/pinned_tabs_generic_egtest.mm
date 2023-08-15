@@ -26,7 +26,7 @@
 
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
-using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 
 namespace {
 
@@ -336,7 +336,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
       performAction:grey_longPress()];
 
   // Tap on "Close Tab" context menu action.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                           IDS_IOS_CONTENT_CONTEXT_CLOSETAB)]
       performAction:grey_tap()];
 
@@ -358,7 +358,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 
   // Tap on "Close Pinned Tab" context menu action.
   [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB)]
       performAction:grey_tap()];
 
@@ -372,7 +372,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 
   // Tap on "Close Pinned Tab" context menu action.
   [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB)]
       performAction:grey_tap()];
 
@@ -417,7 +417,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 
   // Tap on "Close Pinned Tab" context menu action.
   [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB)]
       performAction:grey_tap()];
 
@@ -431,7 +431,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 
   // Tap on "Close Pinned Tab" context menu action.
   [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB)]
       performAction:grey_tap()];
 
@@ -452,7 +452,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
       performAction:grey_longPress()];
 
   // Tap on "Close Tab" context menu action.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                           IDS_IOS_CONTENT_CONTEXT_CLOSETAB)]
       performAction:grey_tap()];
 
@@ -498,7 +498,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
       performAction:grey_tap()];
 
   // Tap on "Close All Tabs" menu action.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                           IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS)]
       performAction:grey_tap()];
 

@@ -21,8 +21,8 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 
 using chrome_test_util::ToolsMenuView;
-using policy::AssertButtonInCollectionDisabled;
-using policy::AssertButtonInCollectionEnabled;
+using policy::AssertContextMenuItemDisabled;
+using policy::AssertContextMenuItemEnabled;
 using policy::AssertOverflowMenuElementDisabled;
 using policy::AssertOverflowMenuElementEnabled;
 
@@ -113,8 +113,8 @@ id<GREYMatcher> TabGridButton() {
   [[EarlGrey selectElementWithMatcher:TabGridButton()]
       performAction:grey_longPress()];
 
-  AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
-  AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
+  AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
+  AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
 
 // When the IncognitoModeAvailability policy is set to disabled, the "New
@@ -126,8 +126,8 @@ id<GREYMatcher> TabGridButton() {
   [[EarlGrey selectElementWithMatcher:TabGridButton()]
       performAction:grey_longPress()];
 
-  AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
-  AssertButtonInCollectionDisabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
+  AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
+  AssertContextMenuItemDisabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
 
 // When the IncognitoModeAvailability policy is set to forced, the "New Tab"
@@ -139,8 +139,8 @@ id<GREYMatcher> TabGridButton() {
   [[EarlGrey selectElementWithMatcher:TabGridButton()]
       performAction:grey_longPress()];
 
-  AssertButtonInCollectionDisabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
-  AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
+  AssertContextMenuItemDisabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
+  AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
 
 // Tests that when the IncognitoModeAvailability policy is set to forced, the

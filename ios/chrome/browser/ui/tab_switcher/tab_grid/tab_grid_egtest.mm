@@ -238,7 +238,7 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
 }
 // Matcher for the select tabs button in the context menu.
 id<GREYMatcher> SelectTabsContextMenuItem() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(
+  return chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
       IDS_IOS_CONTENT_CONTEXT_SELECTTABS);
 }
 
@@ -646,9 +646,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [self longPressTabWithTitle:kTitle1];
 
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK)]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:
@@ -2068,9 +2068,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [self longPressTabWithTitle:kTitle2];
 
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK)]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:
