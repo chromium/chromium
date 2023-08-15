@@ -1060,6 +1060,7 @@ void ScriptingRegisterContentScriptsFunction::OnContentScriptFilesValidated(
   // We cannot proceed if the `browser_context` is not valid as the
   // `ExtensionSystem` will not exist.
   if (!browser_context()) {
+    Release();  // Matches the `AddRef()` in `Run()`.
     return;
   }
 
@@ -1343,6 +1344,7 @@ void ScriptingUpdateContentScriptsFunction::OnContentScriptFilesValidated(
   // We cannot proceed if the `browser_context` is not valid as the
   // `ExtensionSystem` will not exist.
   if (!browser_context()) {
+    Release();  // Matches the `AddRef()` in `Run()`.
     return;
   }
 
