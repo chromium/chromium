@@ -4,9 +4,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/app_list/app_list_client_impl.h"
+#include "chrome/browser/ash/app_list/app_list_model_updater.h"
+#include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -16,6 +20,8 @@
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
@@ -41,6 +47,14 @@ using TestEnvironment =
 using UserSessionType =
     ::ash::CustomizableTestEnvBrowserTestBase::UserSessionType;
 
+bool IsGoogleChrome() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
 void LockAndUnlockSession() {
   const AccountId account_id =
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
@@ -58,6 +72,44 @@ void SendSuspendDone() {
       power_manager::SuspendImminent::IDLE);
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
 }
+
+class AppListItemWaiter : public AppListModelUpdaterObserver {
+ public:
+  AppListItemWaiter(std::string app_id,
+                    AppListModelUpdater* app_list_model_updater)
+      : app_id_(app_id), app_list_model_updater_(app_list_model_updater) {}
+
+  void Wait() {
+    if (app_list_model_updater_->FindItem(app_id_)) {
+      return;
+    }
+
+    app_list_model_updater_observation_.Observe(app_list_model_updater_);
+    run_loop_.Run();
+  }
+
+  void OnAppListItemAdded(ChromeAppListItem* item) override {
+    if (item->id() == app_id_) {
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  const std::string app_id_;
+  raw_ptr<AppListModelUpdater> app_list_model_updater_;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<AppListModelUpdater, AppListModelUpdaterObserver>
+      app_list_model_updater_observation_{this};
+};
+
+class ScalableIphBrowserTestPreinstallApps : public ScalableIphBrowserTest {
+ public:
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    ScalableIphBrowserTest::SetUpDefaultCommandLine(command_line);
+
+    command_line->RemoveSwitch(switches::kDisableDefaultApps);
+  }
+};
 
 class ScalableIphBrowserTestOobe : public ScalableIphBrowserTest {
  public:
@@ -488,6 +540,39 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, AppListShown) {
   ash::AppListController* app_list_controller = ash::AppListController::Get();
   CHECK(app_list_controller);
   app_list_controller->ShowAppList(ash::AppListShowSource::kSearchKey);
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
+                       AppListItemActivationWebApp) {
+  if (!IsGoogleChrome()) {
+    GTEST_SKIP()
+        << "Google Chrome is required for preinstall apps used by this test";
+    return;
+  }
+
+  // Those constants in `scalable_iph` must be synced with ones in `web_app`.
+  // Test them in this test case.
+  EXPECT_EQ(std::string(scalable_iph::kWebAppYouTubeAppId),
+            std::string(web_app::kYoutubeAppId));
+  EXPECT_EQ(std::string(scalable_iph::kWebAppGoogleDocsAppId),
+            std::string(web_app::kGoogleDocsAppId));
+
+  AppListClientImpl* app_list_client_impl = AppListClientImpl::GetInstance();
+  AppListModelUpdater* app_list_model_updater =
+      test::GetModelUpdater(app_list_client_impl);
+
+  AppListItemWaiter app_list_item_waiter(web_app::kYoutubeAppId,
+                                         app_list_model_updater);
+  app_list_item_waiter.Wait();
+
+  app_list_client_impl->ShowAppList(ash::AppListShowSource::kSearchKey);
+
+  EXPECT_CALL(
+      *mock_tracker(),
+      NotifyEvent(scalable_iph::kEventNameAppListItemActivationYouTube));
+  app_list_client_impl->ActivateItem(
+      /*profile_id=*/0, web_app::kYoutubeAppId, /*event_flags=*/0,
+      ash::AppListLaunchedFrom::kLaunchedFromGrid);
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestOobe, SessionState) {

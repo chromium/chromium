@@ -5,9 +5,12 @@
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -35,6 +38,11 @@ using BubbleIcon = ::scalable_iph::ScalableIphDelegate::BubbleIcon;
 constexpr char kFunctionCallAfterKeyedServiceShutdown[] =
     "Function call after keyed service shutdown.";
 
+// A set of ScalableIph events which can trigger an IPH.
+constexpr auto kIphTriggeringEvents =
+    base::MakeFixedFlatSet<ScalableIph::Event>(
+        {ScalableIph::Event::kFiveMinTick, ScalableIph::Event::kUnlocked});
+
 const base::flat_map<ScalableIph::Event, std::string>& GetEventNamesMap() {
   // IPH events are put in a global namespace. Prefix with ScalableIph for all
   // events.
@@ -44,6 +52,10 @@ const base::flat_map<ScalableIph::Event, std::string>& GetEventNamesMap() {
           {ScalableIph::Event::kFiveMinTick, kEventNameFiveMinTick},
           {ScalableIph::Event::kUnlocked, kEventNameUnlocked},
           {ScalableIph::Event::kAppListShown, kEventNameAppListShown},
+          {ScalableIph::Event::kAppListItemActivationYouTube,
+           kEventNameAppListItemActivationYouTube},
+          {ScalableIph::Event::kAppListItemActivationGoogleDocs,
+           kEventNameAppListItemActivationGoogleDocs},
       });
   return *event_names_map;
 }
@@ -153,6 +165,14 @@ const base::flat_map<std::string, BubbleIcon>& GetBubbleIconsMap() {
       });
   return *bubble_icons_map;
 }
+
+constexpr auto kAppListItemActivationEventsMap =
+    base::MakeFixedFlatMap<std::string_view, ScalableIph::Event>({
+        {kWebAppGoogleDocsAppId,
+         ScalableIph::Event::kAppListItemActivationGoogleDocs},
+        {kWebAppYouTubeAppId,
+         ScalableIph::Event::kAppListItemActivationYouTube},
+    });
 
 constexpr base::TimeDelta kTimeTickEventInterval = base::Minutes(5);
 
@@ -431,6 +451,18 @@ void ScalableIph::PerformActionForIphSession(ActionType action_type) {
   PerformAction(action_type);
 }
 
+void ScalableIph::MaybeRecordAppListItemActivation(const std::string& id) {
+  auto* it = kAppListItemActivationEventsMap.find(id);
+  if (it == kAppListItemActivationEventsMap.end()) {
+    return;
+  }
+
+  // Record an event via `RecordEvent` instead of directly notifying an event to
+  // `tracker_` as `RecordEvent` can do common tasks, e.g. Making sure that a
+  // `tracker_` is initialized, etc.
+  RecordEvent(it->second);
+}
+
 void ScalableIph::OverrideFeatureListForTesting(
     const std::vector<const base::Feature*> feature_list) {
   CHECK(feature_list_for_testing_.size() == 0)
@@ -514,6 +546,12 @@ void ScalableIph::RecordEventInternal(ScalableIph::Event event,
     return;
   }
 
+  if (session_state_ != ScalableIphDelegate::SessionState::kActive) {
+    DLOG(WARNING)
+        << "No event is expected to be recorded outside of an active session.";
+    return;
+  }
+
   auto it = GetEventNamesMap().find(event);
   if (it == GetEventNamesMap().end()) {
     DCHECK(false) << "Missing ScalableIph::Event to event name string mapping.";
@@ -522,7 +560,9 @@ void ScalableIph::RecordEventInternal(ScalableIph::Event event,
 
   tracker_->NotifyEvent(it->second);
 
-  CheckTriggerConditions();
+  if (kIphTriggeringEvents.contains(event)) {
+    CheckTriggerConditions();
+  }
 }
 
 void ScalableIph::CheckTriggerConditionsOnInitSuccess(bool init_success) {

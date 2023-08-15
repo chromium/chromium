@@ -78,7 +78,13 @@ class ScalableIph : public KeyedService,
                     public IphSession::Delegate {
  public:
   // List of events ScalableIph supports.
-  enum class Event { kFiveMinTick = 0, kUnlocked, kAppListShown };
+  enum class Event {
+    kFiveMinTick = 0,
+    kUnlocked,
+    kAppListShown,
+    kAppListItemActivationYouTube,
+    kAppListItemActivationGoogleDocs
+  };
 
   ScalableIph(feature_engagement::Tracker* tracker,
               std::unique_ptr<ScalableIphDelegate> delegate);
@@ -128,6 +134,9 @@ class ScalableIph : public KeyedService,
   // order of calls.
   void SetHasSavedPrintersChangedClosureForTesting(
       base::RepeatingClosure has_saved_printers_closure);
+
+  // Maybe record an app list item activation of `id`.
+  void MaybeRecordAppListItemActivation(const std::string& id);
 
  private:
   void EnsureTimerStarted();

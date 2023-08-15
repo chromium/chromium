@@ -7,6 +7,14 @@
 
 namespace scalable_iph {
 
+// Those ids are from //chrome/browser/web_applications/web_app_id_constants.h.
+// We cannot include the file from this component as //chromeos should not
+// depend on //chrome/browser. Those values are tested against values in
+// web_app_id_constants.h in `AppListItemActivationWebApp` test. Remember to add
+// one if you add new one.
+constexpr char kWebAppYouTubeAppId[] = "agimnkijcaahngcdmfeangaknmldooml";
+constexpr char kWebAppGoogleDocsAppId[] = "mpnpojknpmmopombnjdcgaaiekajbnjb";
+
 enum class ActionType {
   // `kInvalid` is reserved to be used as an initial value or when the server
   // side config cannot be parsed.
@@ -63,6 +71,12 @@ constexpr char kEventNameHelpAppActionTypeOpenYouTube[] =
     "ScalableIphHelpAppActionOpenYouTube";
 constexpr char kEventNameHelpAppActionTypeOpenFileManager[] =
     "ScalableIphHelpAppActionOpenFileManager";
+
+// Constants for app list item activation in the launcher.
+constexpr char kEventNameAppListItemActivationYouTube[] =
+    "ScalableIphAppListItemActivationYouTube";
+constexpr char kEventNameAppListItemActivationGoogleDocs[] =
+    "ScalableIphAppListItemActivationGoogleDocs";
 
 // `FiveMinTick` event is recorded every five minutes after OOBE completion.
 constexpr char kEventNameFiveMinTick[] = "ScalableIphFiveMinTick";
