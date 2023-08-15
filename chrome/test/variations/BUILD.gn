@@ -87,9 +87,13 @@ python_library("variations_desktop_smoke_tests_lib") {
 
 script_test("variations_desktop_smoke_tests") {
   script = "//testing/xvfb.py"
-  args = [ "@WrappedPath(" +
-           rebase_path("//chrome/test/variations/run_variations_tests.py",
-                       root_build_dir) + ")" ]
+  args = [
+    "@WrappedPath(" +
+        rebase_path("//chrome/test/variations/run_variations_tests.py",
+                    root_build_dir) + ")",
+    "--root-build-dir",
+    "@WrappedPath(" + rebase_path(root_build_dir, "//.") + ")",
+  ]
 
   data_deps = [
     ":variations_desktop_smoke_tests_lib",
