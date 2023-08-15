@@ -363,8 +363,6 @@ crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_Video_Context_Loss_VP9 [ Skip
 crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_WebGLContextRestored [ Skip ]
 crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_WebGLPreservedAfterTabSwitch [ Skip ]
 
-# Lacros on jacuzzi produces the wrong aspect ratio image
-crbug.com/1392806 [ chromeos lacros-chrome chromeos-board-jacuzzi ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 
 # Pixel 4 shifted images
 crbug.com/1444804 [ android-pixel-4 android-r angle-disabled no-passthrough ] Pixel_Video_VP9 [ Failure ]
