@@ -91207,15 +91207,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Restore Group"/>
 </enum>
 
-<enum name="RecommendAppsResponseParseResult">
-  <int value="0" label="No Error"/>
-  <int value="1" label="Invalid JSON"/>
-  <int value="2" label="No App"/>
-  <int value="3" label="User already owns a Chromebook"/>
-  <int value="4" label="Unknown error code"/>
-  <int value="5" label="Invalid error code"/>
-</enum>
-
 <enum name="RecommendAppsScreenAction">
   <int value="0" label="Skipped"/>
   <int value="1" label="Retried"/>

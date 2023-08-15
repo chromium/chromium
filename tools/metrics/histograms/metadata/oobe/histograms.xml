@@ -714,14 +714,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OOBE.RecommendApps.Fetcher.AppCount" units="apps"
-    expires_after="2023-12-01">
-  <owner>dkuzmin@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <owner>chromesky-eng@google.com</owner>
-  <summary>The number of recommended apps.</summary>
-</histogram>
-
 <histogram name="OOBE.RecommendApps.Fetcher.DownloadTime" units="ms"
     expires_after="2024-02-04">
   <owner>dkuzmin@google.com</owner>
@@ -736,14 +728,6 @@ chromium-metrics-reviews@google.com.
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
   <summary>The response code of fetching the recommended apps.</summary>
-</histogram>
-
-<histogram name="OOBE.RecommendApps.Fetcher.ResponseParseResult"
-    enum="RecommendAppsResponseParseResult" expires_after="2023-12-01">
-  <owner>dkuzmin@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <owner>chromesky-eng@google.com</owner>
-  <summary>The result of parsing the recommend-apps response.</summary>
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.Action"

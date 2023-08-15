@@ -6,7 +6,6 @@
 
 #include "base/base64url.h"
 #include "base/functional/bind.h"
-#include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -14,7 +13,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/about_flags.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "extensions/common/api/system_display.h"
@@ -39,31 +37,12 @@ namespace {
 constexpr const char kGetRevisedAppListUrl[] =
     "https://android.clients.google.com/fdfe/chrome/getSetupAppRecommendations";
 
-constexpr int kResponseErrorNotEnoughApps = 5;
-
-constexpr int kResponseErrorNotFirstTimeChromebookUser = 6;
-
 constexpr base::TimeDelta kDownloadTimeOut = base::Minutes(1);
 
 constexpr const int64_t kMaxDownloadBytes = 1024 * 1024;  // 1Mb
 
-constexpr const int kMaxAppCount = 21;
-
 // Fake gpu info for test.
 const gpu::GPUInfo* g_gpu_info_for_test = nullptr;
-
-enum RecommendAppsResponseParseResult {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_ERROR = 0,
-  RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON = 1,
-  RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_APP = 2,
-  RECOMMEND_APPS_RESPONSE_PARSE_RESULT_OWNS_CHROMEBOOK_ALREADY = 3,
-  RECOMMEND_APPS_RESPONSE_PARSE_RESULT_UNKNOWN_ERROR_CODE = 4,
-  RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_ERROR_CODE = 5,
-
-  kMaxValue = RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_ERROR_CODE
-};
 
 bool HasTouchScreen() {
   return !ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices().empty();
@@ -246,22 +225,12 @@ std::string CompressAndEncodeProtoMessageOnBlockingThread(
   return encoded_device_configuration_proto;
 }
 
-void RecordUmaResponseAppCount(int app_count) {
-  UMA_HISTOGRAM_CUSTOM_COUNTS("OOBE.RecommendApps.Fetcher.AppCount", app_count,
-                              0, kMaxAppCount, kMaxAppCount + 1);
-}
-
 void RecordUmaDownloadTime(base::TimeDelta download_time) {
   UMA_HISTOGRAM_TIMES("OOBE.RecommendApps.Fetcher.DownloadTime", download_time);
 }
 
 void RecordUmaResponseCode(int code) {
   base::UmaHistogramSparse("OOBE.RecommendApps.Fetcher.ResponseCode", code);
-}
-
-void RecordUmaResponseParseResult(RecommendAppsResponseParseResult result) {
-  UMA_HISTOGRAM_ENUMERATION("OOBE.RecommendApps.Fetcher.ResponseParseResult",
-                            result);
 }
 
 }  // namespace
@@ -527,103 +496,6 @@ void RecommendAppsFetcherImpl::Start() {
 
 void RecommendAppsFetcherImpl::Retry() {
   StartDownload();
-}
-
-absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
-    const base::Value& parsed_json) {
-  base::Value::List output;
-
-  // If the response is a dictionary, it is an error message in the
-  // following format:
-  //   {"Error code":"error code","Error message":"Error message"}
-  if (parsed_json.is_dict()) {
-    const std::string* response_error_code_str =
-        parsed_json.GetDict().FindString("Error code");
-    if (!response_error_code_str) {
-      LOG(ERROR) << "Unable to find error code";
-      RecordUmaResponseParseResult(
-          RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON);
-      return absl::nullopt;
-    }
-
-    int response_error_code = 0;
-    if (!base::StringToInt(*response_error_code_str, &response_error_code)) {
-      LOG(WARNING) << "Unable to parse error code: " << response_error_code_str;
-      RecordUmaResponseParseResult(
-          RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_ERROR_CODE);
-      return absl::nullopt;
-    }
-
-    if (response_error_code == kResponseErrorNotFirstTimeChromebookUser) {
-      RecordUmaResponseParseResult(
-          RECOMMEND_APPS_RESPONSE_PARSE_RESULT_OWNS_CHROMEBOOK_ALREADY);
-    } else if (response_error_code == kResponseErrorNotEnoughApps) {
-      RecordUmaResponseParseResult(RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_APP);
-    } else {
-      LOG(WARNING) << "Unknown error code: " << response_error_code_str;
-      RecordUmaResponseParseResult(
-          RECOMMEND_APPS_RESPONSE_PARSE_RESULT_UNKNOWN_ERROR_CODE);
-    }
-
-    return absl::nullopt;
-  }
-
-  // Otherwise, the response should return a list of apps.
-  const base::Value::List& app_list = parsed_json.GetList();
-  if (app_list.empty()) {
-    DVLOG(1) << "No app in the response.";
-    RecordUmaResponseParseResult(RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_APP);
-    return absl::nullopt;
-  }
-
-  for (auto& item : app_list) {
-    const base::Value::Dict* item_dict = item.GetIfDict();
-    if (!item_dict) {
-      DVLOG(1) << "Cannot parse item.";
-      continue;
-    }
-
-    base::Value::Dict output_map;
-    // Retrieve the app title.
-    const std::string* title =
-        item_dict->FindStringByDottedPath("title_.name_");
-    if (title) {
-      output_map.Set("name", *title);
-    }
-
-    // Retrieve the package name.
-    const std::string* package_name =
-        item_dict->FindStringByDottedPath("id_.id_");
-    if (package_name) {
-      output_map.Set("package_name", *package_name);
-    }
-
-    // Retrieve the icon URL for the app.
-    //
-    // The name "privateDoNotAccessOrElseSafeUrlWrappedValue_" here is because
-    // it is a direct serialization from the proto message. The value has been
-    // sanitized so it is regarded as a safe URL. In general, if the response is
-    // a protobuf, we should not directly access this field but use the wrapper
-    // method getSafeUrlString() to read it. In our case, we don't have the
-    // option other than access it directly.
-    const std::string* icon_url = item_dict->FindStringByDottedPath(
-        "icon_.url_.privateDoNotAccessOrElseSafeUrlWrappedValue_");
-    if (icon_url) {
-      output_map.Set("icon", *icon_url);
-    }
-
-    if (output_map.empty()) {
-      DVLOG(1) << "Invalid app item.";
-      continue;
-    }
-
-    output.Append(std::move(output_map));
-  }
-
-  RecordUmaResponseParseResult(RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_ERROR);
-  RecordUmaResponseAppCount(static_cast<int>(output.size()));
-
-  return base::Value(std::move(output));
 }
 
 void RecommendAppsFetcherImpl::OnJsonParsed(
