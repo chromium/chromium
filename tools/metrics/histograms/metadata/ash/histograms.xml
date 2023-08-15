@@ -4851,7 +4851,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.OSAuth.{AuthenticationSurface}.NbPasswordAttempts.{AuthenticationOutcome}"
-    units="attempts" expires_after="2023-06-18">
+    units="attempts" expires_after="2024-02-01">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
