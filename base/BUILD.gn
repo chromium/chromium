@@ -4590,6 +4590,7 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/DoNotRevive.java",
       "test/android/javatests/src/org/chromium/base/test/util/DumpThreadsOnFailureRule.java",
       "test/android/javatests/src/org/chromium/base/test/util/EnormousTest.java",
+      "test/android/javatests/src/org/chromium/base/test/util/EspressoIdleTimeoutRule.java",
       "test/android/javatests/src/org/chromium/base/test/util/Feature.java",
       "test/android/javatests/src/org/chromium/base/test/util/Features.java",
       "test/android/javatests/src/org/chromium/base/test/util/FeaturesBase.java",
