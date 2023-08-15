@@ -183,7 +183,7 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
 
     private void notifyAccessibilityService() {
         if (mCurrentState.equals(mPreviouslyNotifiedState)) return;
-        if (!AccessibilityState.isAccessibilityEnabled()) return;
+        if (!AccessibilityState.isAnyAccessibilityServiceEnabled()) return;
         sendAccessibilityEventForUserTextChange(mPreviouslyNotifiedState, mCurrentState);
         // Read autocomplete text separately.
         sendAccessibilityEventForAppendingAutocomplete(mCurrentState);
