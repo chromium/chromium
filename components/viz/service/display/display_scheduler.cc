@@ -430,11 +430,10 @@ DisplayScheduler::DesiredBeginFrameDeadlineMode() const {
   }
 
   // Only wait if we actually have pending surfaces and we're not forcing draw
-  // due to scrolling.
+  // due to an ongoing interaction.
   bool wait_for_pending_surfaces =
-      has_pending_surfaces_ &&
-      !(DrawImmediatelyWhenInteractive() &&
-        damage_tracker_->HasDamageDueToActiveScroller());
+      has_pending_surfaces_ && !(DrawImmediatelyWhenInteractive() &&
+                                 damage_tracker_->HasDamageDueToInteraction());
 
   bool all_surfaces_ready =
       !wait_for_pending_surfaces && damage_tracker_->IsRootSurfaceValid() &&

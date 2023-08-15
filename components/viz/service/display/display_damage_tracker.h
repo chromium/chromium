@@ -66,8 +66,9 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   // replied with Ack yet.
   bool HasPendingSurfaces(const BeginFrameArgs& begin_frame_args);
 
-  // Returns true if any of the damage received was due to an ongoing scroll.
-  bool HasDamageDueToActiveScroller();
+  // Returns true if any of the damage received was due to an ongoing scroll or
+  // touch interaction.
+  bool HasDamageDueToInteraction();
 
   // Called after a frame finishes (may or may not result in a draw).
   void DidFinishFrame();
@@ -87,7 +88,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   void OnSurfaceMarkedForDestruction(const SurfaceId& surface_id) override;
   bool OnSurfaceDamaged(const SurfaceId& surface_id,
                         const BeginFrameAck& ack,
-                        bool is_actively_scrolling) override;
+                        bool is_handling_interaction) override;
   void OnSurfaceDamageExpected(const SurfaceId& surface_id,
                                const BeginFrameArgs& args) override;
 
@@ -113,7 +114,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   void ProcessSurfaceDamage(const SurfaceId& surface_id,
                             const BeginFrameAck& ack,
                             bool display_damaged,
-                            bool is_actively_scrolling);
+                            bool is_handling_interaction);
 
   // Used to send corresponding notifications to observers.
   void NotifyDisplayDamaged(SurfaceId surface_id);
@@ -129,7 +130,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
 
   bool expecting_root_surface_damage_because_of_resize_ = false;
 
-  bool has_surface_damage_due_to_scroll_ = false;
+  bool has_surface_damage_due_to_interaction_ = false;
 
   base::flat_map<SurfaceId, SurfaceBeginFrameState> surface_states_;
   std::vector<SurfaceId> surfaces_to_ack_on_next_draw_;

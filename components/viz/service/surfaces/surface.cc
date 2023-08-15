@@ -658,7 +658,7 @@ void Surface::UpdateActivationDependencies(
 
   bool should_block_on_dependencies =
       ShouldBlockActivationOnDependenciesWhenInteractive() ||
-      !current_frame.metadata.is_actively_scrolling;
+      !current_frame.metadata.is_handling_interaction;
 
   if (!should_block_on_dependencies) {
     return;

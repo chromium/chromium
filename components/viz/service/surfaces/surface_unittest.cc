@@ -397,7 +397,7 @@ TEST_P(ImmediateActivationSurfaceTest, WithInteraction) {
     frame.metadata.activation_dependencies.push_back(child_surface_id);
     frame.metadata.deadline =
         FrameDeadline(Now(), 4u, BeginFrameArgs::DefaultInterval(), false);
-    frame.metadata.is_actively_scrolling = true;
+    frame.metadata.is_handling_interaction = true;
     EXPECT_THAT(frame.metadata.referenced_surfaces,
                 testing::ElementsAre(surface_range));
     root_support->SubmitCompositorFrame(root_surface_id.local_surface_id(),

@@ -450,12 +450,12 @@ Surface* SurfaceManager::GetSurfaceForId(const SurfaceId& surface_id) const {
 
 bool SurfaceManager::SurfaceModified(const SurfaceId& surface_id,
                                      const BeginFrameAck& ack,
-                                     bool is_actively_scrolling) {
+                                     bool is_handling_interaction) {
   CHECK(thread_checker_.CalledOnValidThread());
   bool changed = false;
   for (auto& observer : observer_list_)
     changed |=
-        observer.OnSurfaceDamaged(surface_id, ack, is_actively_scrolling);
+        observer.OnSurfaceDamaged(surface_id, ack, is_handling_interaction);
   return changed;
 }
 
@@ -475,7 +475,7 @@ void SurfaceManager::SurfaceActivated(Surface* surface) {
   // Trigger a display frame if necessary.
   const CompositorFrameMetadata& metadata = surface->GetActiveFrameMetadata();
   if (!SurfaceModified(surface->surface_id(), metadata.begin_frame_ack,
-                       metadata.is_actively_scrolling)) {
+                       metadata.is_handling_interaction)) {
     TRACE_EVENT_INSTANT0("viz", "Damage not visible.",
                          TRACE_EVENT_SCOPE_THREAD);
     surface->SendAckToClient();

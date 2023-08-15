@@ -168,7 +168,7 @@ void VideoDetector::OnFrameSinkIdInvalidated(const FrameSinkId& frame_sink_id) {
 
 bool VideoDetector::OnSurfaceDamaged(const SurfaceId& surface_id,
                                      const BeginFrameAck& ack,
-                                     bool is_actively_scrolling) {
+                                     bool is_handling_interaction) {
   return false;
 }
 

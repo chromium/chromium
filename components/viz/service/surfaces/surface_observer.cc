@@ -8,7 +8,7 @@ namespace viz {
 
 bool SurfaceObserver::OnSurfaceDamaged(const SurfaceId& surface_id,
                                        const BeginFrameAck& ack,
-                                       bool is_actively_scrolling) {
+                                       bool is_handling_interaction) {
   return false;
 }
 

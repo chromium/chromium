@@ -45,7 +45,7 @@ class VIZ_SERVICE_EXPORT SurfaceObserver {
   // Should return true if this causes a Display to be damaged.
   virtual bool OnSurfaceDamaged(const SurfaceId& surface_id,
                                 const BeginFrameAck& ack,
-                                bool is_actively_scrolling);
+                                bool is_handling_interaction);
 
   // Called when a Surface's CompositorFrame producer has received a BeginFrame
   // and, thus, is expected to produce damage soon.

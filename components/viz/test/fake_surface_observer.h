@@ -42,7 +42,7 @@ class FakeSurfaceObserver : public SurfaceObserver {
   // SurfaceObserver implementation:
   bool OnSurfaceDamaged(const SurfaceId& surface_id,
                         const BeginFrameAck& ack,
-                        bool is_actively_scrolling) override;
+                        bool is_handling_interaction) override;
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override;
   void OnSurfaceActivated(const SurfaceId& surface_id) override;
 

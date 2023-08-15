@@ -31,7 +31,7 @@ struct CompositorFrameMetadata {
   bool may_contain_video;
   bool may_throttle_if_undrawn_frames;
   bool is_resourceless_software_draw_with_scroll_or_animation;
-  bool is_actively_scrolling;
+  bool is_handling_interaction;
   skia.mojom.SkColor4f root_background_color;
   array<ui.mojom.LatencyInfo> latency_info;
   array<SurfaceRange> referenced_surfaces;

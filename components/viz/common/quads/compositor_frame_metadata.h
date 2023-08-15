@@ -91,7 +91,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   bool is_resourceless_software_draw_with_scroll_or_animation = false;
 
   // True if this compositor frame is related to an animated or precise scroll.
-  bool is_actively_scrolling = false;
+  // This includes during the touch interaction just prior to the initiation of
+  // gesture scroll events.
+  bool is_handling_interaction = false;
 
   // This color is usually obtained from the background color of the <body>
   // element. It can be used for filling in gutter areas around the frame when
