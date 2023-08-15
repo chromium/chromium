@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/tests/validation_test_input_parser.h"
+
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 
@@ -325,9 +327,9 @@ bool ValidationTestInputParser::ParseBinarySequence(
 
 bool ValidationTestInputParser::ParseDistance(const DataType& type,
                                               const std::string& value_string) {
-  if (pending_distance_items_.find(value_string) !=
-      pending_distance_items_.end())
+  if (base::Contains(pending_distance_items_, value_string)) {
     return false;
+  }
 
   PendingDistanceItem item = {data_->size(), type.data_size};
   data_->resize(data_->size() + type.data_size);

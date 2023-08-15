@@ -10,6 +10,7 @@
 #include "base/base_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -582,11 +583,12 @@ class RemoteProcessState {
   void NotifyError(const std::string& error_message, bool disconnected) {
     base::AutoLock lock(lock_);
     CHECK(!disconnected_);
-    EXPECT_NE(error_message.find(expected_error_message_), std::string::npos);
+    EXPECT_TRUE(base::Contains(error_message, expected_error_message_));
     disconnected_ = disconnected;
     ++call_count_;
-    if (error_callback_)
+    if (error_callback_) {
       callback_task_runner_->PostTask(FROM_HERE, error_callback_);
+    }
   }
 
  private:
