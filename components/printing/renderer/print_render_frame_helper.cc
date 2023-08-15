@@ -1130,7 +1130,7 @@ void PrepareFrameAndViewForPrint::ComputeScalingAndPrintParams(
 
 void PrepareFrameAndViewForPrint::DidStopLoading() {
   DCHECK(!on_ready_.is_null());
-  // Don't call callback here, because it can delete |this| and WebView that is
+  // Don't call callback here, because it can delete `this` and WebView that is
   // called didStopLoading.
   frame()
       ->GetTaskRunner(blink::TaskType::kInternalDefault)
@@ -1177,7 +1177,7 @@ PrepareFrameAndViewForPrint::GetURLLoaderFactory() {
 
 void PrepareFrameAndViewForPrint::CallOnReady() {
   if (on_ready_)
-    std::move(on_ready_).Run();  // Can delete |this|.
+    std::move(on_ready_).Run();  // Can delete `this`.
 }
 
 void PrepareFrameAndViewForPrint::FinishPrinting() {
@@ -1373,10 +1373,12 @@ void PrintRenderFrameHelper::PrintRequestedPages() {
 
   Print(frame, plugin, PrintRequestType::kRegular);
 
-  if (!render_frame_gone_) {
-    frame->DispatchAfterPrintEvent();
+  if (render_frame_gone_) {
+    return;
   }
-  // WARNING: |this| may be gone at this point. Do not do any more work here and
+
+  frame->DispatchAfterPrintEvent();
+  // WARNING: `this` may be gone at this point. Do not do any more work here and
   // just return.
 }
 
@@ -1424,9 +1426,13 @@ void PrintRenderFrameHelper::PrintWithParams(
   PrintPages();
   FinishFramePrinting();
 
-  if (!render_frame_gone_) {
-    frame->DispatchAfterPrintEvent();
+  if (render_frame_gone_) {
+    return;
   }
+
+  frame->DispatchAfterPrintEvent();
+  // WARNING: `this` may be gone at this point. Do not do any more work here and
+  // just return.
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -1459,7 +1465,7 @@ void PrintRenderFrameHelper::PrintForSystemDialog() {
 
   print_in_progress_ = false;
   print_preview_context_.DispatchAfterPrintEvent();
-  // WARNING: |this| may be gone at this point. Do not do any more work here and
+  // WARNING: `this` may be gone at this point. Do not do any more work here and
   // just return.
 }
 
@@ -1570,7 +1576,7 @@ void PrintRenderFrameHelper::OnPrintPreviewDialogClosed() {
 
   print_in_progress_ = false;
   print_preview_context_.DispatchAfterPrintEvent();
-  // WARNING: |this| may be gone at this point. Do not do any more work here and
+  // WARNING: `this` may be gone at this point. Do not do any more work here and
   // just return.
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -1646,9 +1652,13 @@ void PrintRenderFrameHelper::PrintFrameContent(
     DLOG(ERROR) << "CopyMetafileDataToSharedMem failed";
   }
 
-  if (!render_frame_gone_) {
-    frame->DispatchAfterPrintEvent();
+  if (render_frame_gone_) {
+    return;
   }
+
+  frame->DispatchAfterPrintEvent();
+  // WARNING: `this` may be gone at this point. Do not do any more work here and
+  // just return.
 }
 
 void PrintRenderFrameHelper::PrintingDone(bool success) {
@@ -2146,7 +2156,7 @@ void PrintRenderFrameHelper::PrintNode(const blink::WebNode& node) {
 
   Print(duplicate_node.GetDocument().GetFrame(), duplicate_node,
         PrintRequestType::kRegular);
-  // Check if |this| is still valid.
+  // Check if `this` is still valid.
   if (!weak_this) {
     return;
   }
@@ -2190,7 +2200,7 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
     auto self = weak_ptr_factory_.GetWeakPtr();
     mojom::PrintPagesParamsPtr print_settings = GetPrintSettingsFromUser(
         frame_ref.GetFrame(), node, expected_page_count, print_request_type);
-    // Check if |this| is still valid.
+    // Check if `this` is still valid.
     if (!self)
       return;
 
@@ -2577,7 +2587,7 @@ mojom::PrintPagesParamsPtr PrintRenderFrameHelper::GetPrintSettingsFromUser(
   // Runs the nested run loop until ScriptedPrint() gets the reply.
   loop.Run();
   return print_settings;
-  // WARNING: |this| may be gone at this point. Do not do any more work here
+  // WARNING: `this` may be gone at this point. Do not do any more work here
   // and just return.
 }
 
@@ -2691,11 +2701,10 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
   if (!already_notified_frame) {
     print_preview_context_.DispatchBeforePrintEvent(weak_this);
-  }
-  if (!weak_this)
-    return;
+    if (!weak_this) {
+      return;
+    }
 
-  if (!already_notified_frame) {
     is_loading_ = print_preview_context_.source_frame()->WillPrintSoon();
   }
 
@@ -2741,7 +2750,7 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
           closures_for_mojo_responses_));
       loop.Run();
 
-      // Check if |this| is still valid.
+      // Check if `this` is still valid.
       if (weak_this) {
         is_scripted_preview_delayed_ = false;
 
@@ -2750,7 +2759,7 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
           // nested loops. Resume PrintForSystemDialog().
           do_deferred_print_for_system_dialog_ = false;
           PrintForSystemDialog();
-          // WARNING: |this| may be gone at this point. Do not do any more work
+          // WARNING: `this` may be gone at this point. Do not do any more work
           // here and just return.
         }
       }
