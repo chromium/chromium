@@ -47,7 +47,8 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
 
     // Register sigin prefs but not connected to pref service yet. This allows
     // us set pref values before ash connects to pref service for testing.
-    RegisterSigninProfilePrefs(prefs_->registry(), true /* for_test */);
+    RegisterSigninProfilePrefs(prefs_->registry(), /*country=*/"",
+                               /*for_test=*/true);
 
     restorer_ = Shell::Get()->policy_recommendation_restorer();
   }

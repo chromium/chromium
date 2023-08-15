@@ -120,7 +120,8 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
                                  user_manager::UserType user_type) {
     // Create a fake user prefs map.
     auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_prefs->registry(), /*for_test=*/true);
+    RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
+                             /*for_test=*/true);
 
     // Keep a raw pointer to the user prefs before transferring ownership.
     active_prefs_ = user_prefs.get();
@@ -226,7 +227,8 @@ class ScreensaverImagesPolicyHandlerForAnySessionTest
       case ScreensaverImagesPolicyHandler::HandlerType::kSignin: {
         auto pref_service = std::make_unique<TestingPrefServiceSimple>();
         active_prefs_ = pref_service.get();
-        RegisterSigninProfilePrefs(pref_service->registry(), /*for_test=*/true);
+        RegisterSigninProfilePrefs(pref_service->registry(), /*country=*/"",
+                                   /*for_test=*/true);
         TestSessionControllerClient* client = GetSessionControllerClient();
         client->SetSigninScreenPrefService(std::move(pref_service));
       } break;

@@ -943,7 +943,8 @@ TEST_F(KeyboardTest, KeyRepeatSettingsUninitialized) {
   // Then, when the pref is initialized, key repeat setting event should be
   // triggered.
   TestingPrefServiceSimple pref_service;
-  ash::KeyboardControllerImpl::RegisterProfilePrefs(pref_service.registry());
+  ash::KeyboardControllerImpl::RegisterProfilePrefs(pref_service.registry(),
+                                                    /*country=*/"");
 
   EXPECT_CALL(*delegate_ptr,
               OnKeyRepeatSettingsChanged(testing::_, testing::_, testing::_));

@@ -303,7 +303,8 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
                                            kTestCustomStartTimeOffsetMinutes);
     prefs->registry()->RegisterIntegerPref(kTestCustomEndTimePref,
                                            kTestCustomEndTimeOffsetMinutes);
-    RegisterUserProfilePrefs(prefs->registry(), /*for_test=*/true);
+    RegisterUserProfilePrefs(prefs->registry(), /*country=*/"",
+                             /*for_test=*/true);
     auto* const session_controller_client = GetSessionControllerClient();
     session_controller_client->AddUserSession(user_email,
                                               user_manager::USER_TYPE_REGULAR,

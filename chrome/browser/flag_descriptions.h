@@ -3611,9 +3611,6 @@ extern const char kHelpAppWelcomeTipsDescription[];
 extern const char kDiacriticsOnPhysicalKeyboardLongpressName[];
 extern const char kDiacriticsOnPhysicalKeyboardLongpressDescription[];
 
-extern const char kDiacriticsOnPhysicalKeyboardLongpressDefaultOnName[];
-extern const char kDiacriticsOnPhysicalKeyboardLongpressDefaultOnDescription[];
-
 extern const char kDiacriticsUseReplaceSurroundingTextName[];
 extern const char kDiacriticsUseReplaceSurroundingTextDescription[];
 

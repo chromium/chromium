@@ -166,7 +166,8 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
     // desks restore data before the user signs in.
     auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
     user_prefs_ = user_prefs.get();
-    RegisterUserProfilePrefs(user_prefs_->registry(), /*for_test=*/true);
+    RegisterUserProfilePrefs(user_prefs_->registry(), /*country=*/"",
+                             /*for_test=*/true);
 
     auto accountId = AccountId::FromUserEmail(kUserEmail);
     session_controller->AddUserSession(kUserEmail,

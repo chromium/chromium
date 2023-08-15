@@ -91,7 +91,9 @@ namespace ash {
 namespace {
 
 // Registers prefs whose default values are same in user and signin prefs.
-void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
+void RegisterProfilePrefs(PrefRegistrySimple* registry,
+                          std::string_view country,
+                          bool for_test) {
   AccessibilityControllerImpl::RegisterProfilePrefs(registry);
   AppListControllerImpl::RegisterProfilePrefs(registry);
   AppListNudgeController::RegisterProfilePrefs(registry);
@@ -128,7 +130,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   LogoutButtonTray::RegisterProfilePrefs(registry);
   LogoutConfirmationController::RegisterProfilePrefs(registry);
   KeyboardBacklightColorController::RegisterPrefs(registry);
-  KeyboardControllerImpl::RegisterProfilePrefs(registry);
+  KeyboardControllerImpl::RegisterProfilePrefs(registry, country);
   KeyboardModifierMetricsRecorder::RegisterProfilePrefs(registry, for_test);
   MediaControllerImpl::RegisterProfilePrefs(registry);
   MessageCenterController::RegisterProfilePrefs(registry);
@@ -210,13 +212,17 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   }
 }
 
-void RegisterSigninProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
-  RegisterProfilePrefs(registry, for_test);
+void RegisterSigninProfilePrefs(PrefRegistrySimple* registry,
+                                std::string_view country,
+                                bool for_test) {
+  RegisterProfilePrefs(registry, country, for_test);
   PowerPrefs::RegisterSigninProfilePrefs(registry);
 }
 
-void RegisterUserProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
-  RegisterProfilePrefs(registry, for_test);
+void RegisterUserProfilePrefs(PrefRegistrySimple* registry,
+                              std::string_view country,
+                              bool for_test) {
+  RegisterProfilePrefs(registry, country, for_test);
   PowerPrefs::RegisterUserProfilePrefs(registry);
   SessionControllerImpl::RegisterUserProfilePrefs(registry);
 }

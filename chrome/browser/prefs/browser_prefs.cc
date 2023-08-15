@@ -5,6 +5,7 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_constants.h"
 #include "base/time/time.h"
@@ -1392,6 +1393,16 @@ void RegisterProfilePrefsForMigration(
 
 }  // namespace
 
+std::string GetCountry() {
+  if (!g_browser_process || !g_browser_process->variations_service()) {
+    // This should only happen in tests. Ideally this would be guarded by
+    // CHECK_IS_TEST, but that is not set on Android, so no specific guard.
+    return std::string();
+  }
+  return std::string(
+      g_browser_process->variations_service()->GetStoredPermanentCountry());
+}
+
 void RegisterLocalState(PrefRegistrySimple* registry) {
   // Call outs to individual subsystems that register Local State (browser-wide)
   // prefs en masse. See RegisterProfilePrefs for per-profile prefs. Please
@@ -2051,7 +2062,7 @@ void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ::android::RegisterUserProfilePrefs(registry);
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::RegisterUserProfilePrefs(registry);
+  ash::RegisterUserProfilePrefs(registry, locale);
 #endif
 }
 
@@ -2060,9 +2071,10 @@ void RegisterScreenshotPrefs(PrefRegistrySimple* registry) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void RegisterSigninProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+void RegisterSigninProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
+                                std::string_view country) {
   RegisterProfilePrefs(registry, g_browser_process->GetApplicationLocale());
-  ash::RegisterSigninProfilePrefs(registry);
+  ash::RegisterSigninProfilePrefs(registry, country);
 }
 
 #endif

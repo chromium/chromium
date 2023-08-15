@@ -619,11 +619,6 @@ BASE_FEATURE(kDiacriticsOnPhysicalKeyboardLongpress,
              "DiacriticsOnPhysicalKeyboardLongpress",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables diacritics on longpress on the physical keyboard by default.
-BASE_FEATURE(kDiacriticsOnPhysicalKeyboardLongpressDefaultOn,
-             "DiacriticsOnPhysicalKeyboardLongpressDefaultOn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, diacritics on longpress will use |ReplaceSurroundingText| API,
 // which is atomic and compatible with more apps.
 BASE_FEATURE(kDiacriticsUseReplaceSurroundingText,

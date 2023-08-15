@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PREFS_BROWSER_PREFS_H_
 
 #include <string>
+#include <string_view>
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -17,6 +18,10 @@ class Profile;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
+
+// Gets the current country from the browser process. May be empty if the
+// browser process cannot supply the country.
+std::string GetCountry();
 
 // Register all prefs that will be used via the local state PrefService.
 void RegisterLocalState(PrefRegistrySimple* registry);
@@ -34,8 +39,13 @@ void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Register all prefs that will be used via a PrefService attached to the
-// sign-in profile using the locale of |g_browser_process|.
-void RegisterSigninProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+// sign-in profile using the locale of |g_browser_process|. |country| should be
+// the permanent country code stored for this client in lowercase ISO 3166-1
+// alpha-2. It can be used to pick country specific default values. May be
+// empty May be empty in which case country specific preferences will be unable
+// to be set.
+void RegisterSigninProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
+                                std::string_view country);
 #endif
 
 // Migrate/cleanup deprecated prefs in |local_state|. Over time, long deprecated

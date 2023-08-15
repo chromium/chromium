@@ -32,6 +32,7 @@
 #include "components/prefs/pref_value_store.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -70,7 +71,7 @@ void RegisterProfilePrefs(bool is_signin_profile,
                           user_prefs::PrefRegistrySyncable* pref_registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (is_signin_profile)
-    RegisterSigninProfilePrefs(pref_registry);
+    RegisterSigninProfilePrefs(pref_registry, GetCountry());
   else
 #endif
     RegisterUserProfilePrefs(pref_registry, locale);

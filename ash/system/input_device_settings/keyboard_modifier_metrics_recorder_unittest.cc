@@ -227,11 +227,13 @@ TEST_P(KeyboardModifierMetricsRecorderPrefStartedTest, InitializeTest) {
 
   std::unique_ptr<TestingPrefServiceSimple> pref_service1 =
       std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service1->registry(), true);
+  ash::RegisterUserProfilePrefs(pref_service1->registry(), /*country=*/"",
+                                true);
 
   std::unique_ptr<TestingPrefServiceSimple> pref_service2 =
       std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service2->registry(), true);
+  ash::RegisterUserProfilePrefs(pref_service2->registry(), /*country=*/"",
+                                true);
 
   pref_service1->SetInteger(data_.pref_name, static_cast<int>(modifier_key_));
   pref_service2->SetInteger(data_.pref_name, static_cast<int>(modifier_key_));
@@ -367,11 +369,13 @@ TEST_P(KeyboardModifierMetricsRecorderHashTest, HashTest) {
 
   std::unique_ptr<TestingPrefServiceSimple> pref_service1 =
       std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service1->registry(), true);
+  ash::RegisterUserProfilePrefs(pref_service1->registry(), /*country=*/"",
+                                true);
 
   std::unique_ptr<TestingPrefServiceSimple> pref_service2 =
       std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service2->registry(), true);
+  ash::RegisterUserProfilePrefs(pref_service2->registry(), /*country=*/"",
+                                true);
 
   for (const auto& [pref, remapping] : data_.modifier_remappings) {
     pref_service1->SetInteger(pref, static_cast<int>(remapping));

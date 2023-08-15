@@ -5386,13 +5386,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDiacriticsOnPhysicalKeyboardLongpressDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDiacriticsOnPhysicalKeyboardLongpress)},
-    {"enable-cros-diacritics-on-physical-keyboard-longpress-on-by-default",
-     flag_descriptions::kDiacriticsOnPhysicalKeyboardLongpressDefaultOnName,
-     flag_descriptions::
-         kDiacriticsOnPhysicalKeyboardLongpressDefaultOnDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         ash::features::kDiacriticsOnPhysicalKeyboardLongpressDefaultOn)},
     {"enable-cros-diacritics-use-replace-surrounding-text",
      flag_descriptions::kDiacriticsUseReplaceSurroundingTextName,
      flag_descriptions::kDiacriticsUseReplaceSurroundingTextDescription,
