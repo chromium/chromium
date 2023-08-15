@@ -120,6 +120,11 @@ def AddCommandLineOptions(parser):
       action='store_true',
       help='Wether to use the flags file for the apk under test. If set, '
            "the filename will be looked up in the APK's PackageInfo.")
+  parser.add_argument('--variations-test-seed-path',
+                      type=os.path.relpath,
+                      default=None,
+                      help='Path to variations seed file.')
+
   parser.set_defaults(allow_unknown=True)
   parser.set_defaults(command_line_flags=None)
 

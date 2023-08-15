@@ -45,6 +45,7 @@ from pylib.utils import code_coverage_utils
 from pylib.utils import gold_utils
 from pylib.utils import instrumentation_tracing
 from pylib.utils import shared_preference_utils
+from pylib.utils.device_dependencies import DevicePathComponentsFor
 from py_trace_event import trace_event
 from py_trace_event import trace_time
 from py_utils import contextlib_ext
@@ -478,11 +479,20 @@ class LocalDeviceInstrumentationTestRun(
 
       @trace_event.traced
       def create_flag_changer(dev):
-        if self._test_instance.flags:
+        flags = self._test_instance.flags[:]
+        if self._test_instance.variations_test_seed_path:
+          test_data_root_dir = posixpath.join(
+              self._GetDataStorageRootDirectory(dev), 'chromium_tests_root')
+          seed_path_components = DevicePathComponentsFor(
+              self._test_instance.variations_test_seed_path)
+          test_seed_path = local_device_test_run.SubstituteDeviceRoot(
+              seed_path_components, test_data_root_dir)
+          flags.append('--variations-test-seed-path={0}'.format(test_seed_path))
+
+        if flags:
           self._CreateFlagChangerIfNeeded(dev)
-          logging.debug('Attempting to set flags: %r',
-                        self._test_instance.flags)
-          self._flag_changers[str(dev)].AddFlags(self._test_instance.flags)
+          logging.debug('Attempting to set flags: %r', flags)
+          self._flag_changers[str(dev)].AddFlags(flags)
 
         valgrind_tools.SetChromeTimeoutScale(
             dev, self._test_instance.timeout_scale)

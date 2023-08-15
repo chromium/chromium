@@ -608,6 +608,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._data_deps_delegate = None
     self._runtime_deps_path = None
     self._store_data_in_app_directory = False
+    self._variations_test_seed_path = args.variations_test_seed_path
     self._initializeDataDependencyAttributes(args, data_deps_delegate)
 
     self._annotations = None
@@ -1080,6 +1081,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def use_apk_under_test_flags_file(self):
     return self._use_apk_under_test_flags_file
+
+  @property
+  def variations_test_seed_path(self):
+    return self._variations_test_seed_path
 
   @property
   def wait_for_java_debugger(self):
