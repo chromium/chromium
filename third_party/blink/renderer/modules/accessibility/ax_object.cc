@@ -5773,11 +5773,6 @@ bool AXObject::ShouldDestroyWhenDetachingFromParent() const {
     return true;
   }
 
-  if (CachedParentObject() &&
-      CachedParentObject()->RoleValue() == ax::mojom::blink::Role::kImage) {
-    return true;
-  }
-
   return false;
 }
 
