@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/power_monitor/battery_state_sampler.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test_utils.h"
@@ -26,6 +27,7 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPerformanceSettingsPage);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonWasClicked);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRenders);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kIronCollapseContentShows);
 
 constexpr char kCheckJsElementIsChecked[] = "(el) => { return el.checked; }";
 constexpr char kCheckJsElementIsNotChecked[] =
@@ -38,6 +40,17 @@ const WebContentsInteractionTestUtil::DeepQuery kHighEfficiencyToggleQuery = {
     "settings-performance-page",
     "settings-toggle-button",
     "cr-toggle#control"};
+
+const WebContentsInteractionTestUtil::DeepQuery kDiscardOnUsageQuery = {
+    "settings-ui", "settings-main", "settings-basic-page",
+    "settings-performance-page", "controlled-radio-button"};
+
+const WebContentsInteractionTestUtil::DeepQuery kDiscardOnTimerQuery = {
+    "settings-ui", "settings-main", "settings-basic-page",
+    "settings-performance-page",
+    "controlled-radio-button#enabledOnTimerButton"};
+
+}  // namespace
 
 class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
  public:
@@ -144,6 +157,19 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
     return WaitForStateChange(contents_id, element_renders);
   }
 
+  auto WaitForIronListCollapseStateChange(ui::ElementIdentifier webcontents_id,
+                                          DeepQuery query) {
+    StateChange iron_collapse_finish_animating;
+    iron_collapse_finish_animating.event = kIronCollapseContentShows;
+    iron_collapse_finish_animating.where = query;
+    iron_collapse_finish_animating.type =
+        StateChange::Type::kExistsAndConditionTrue;
+    iron_collapse_finish_animating.test_function =
+        "(el) => { return !el.transitioning; }";
+
+    return WaitForStateChange(webcontents_id, iron_collapse_finish_animating);
+  }
+
  private:
   raw_ptr<base::test::TestSamplingEventSource, DanglingUntriaged>
       sampling_source_;
@@ -246,8 +272,6 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                        BatterySaverMetricsShouldLogOnToggle) {
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kIronCollapseContentShows);
-
   const DeepQuery battery_saver_toggle = {
       "settings-ui",           "settings-main",          "settings-basic-page",
       "settings-battery-page", "settings-toggle-button", "cr-toggle#control"};
@@ -264,14 +288,6 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
       "settings-ui", "settings-main", "settings-basic-page",
       "settings-battery-page",
       "controlled-radio-button#enabledOnBatteryButton"};
-
-  StateChange iron_collapse_finish_animating;
-  iron_collapse_finish_animating.event = kIronCollapseContentShows;
-  iron_collapse_finish_animating.where = iron_collapse;
-  iron_collapse_finish_animating.type =
-      StateChange::Type::kExistsAndConditionTrue;
-  iron_collapse_finish_animating.test_function =
-      "(el) => { return !el.transitioning; }";
 
   base::HistogramTester histogram_tester;
   RunTestSequence(
@@ -298,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 
       // Wait for the iron-collapse animation to finish so that the battery
       // saver radio buttons will show on screen
-      WaitForStateChange(kPerformanceSettingsPage,
-                         iron_collapse_finish_animating),
+      WaitForIronListCollapseStateChange(kPerformanceSettingsPage,
+                                         iron_collapse),
 
       // Change Battery Saver Setting to turn on when unplugged
       ClickElement(kPerformanceSettingsPage, turn_on_when_unplugged_button),
@@ -348,4 +364,188 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 }
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}  // namespace
+
+class PerformanceSettingsMultiStateModeInteractiveTest
+    : public PerformanceSettingsInteractiveTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        performance_manager::features::kHighEfficiencyMultistateMode);
+
+    PerformanceSettingsInteractiveTest::SetUp();
+  }
+
+  auto WaitForDisabledStateChange(const ui::ElementIdentifier& contents_id,
+                                  DeepQuery element,
+                                  bool is_disabled) {
+    StateChange toggle_selection_change;
+    toggle_selection_change.event = kButtonWasClicked;
+    toggle_selection_change.where = element;
+    toggle_selection_change.type = StateChange::Type::kExistsAndConditionTrue;
+    toggle_selection_change.test_function =
+        is_disabled ? "(el) => el.disabled === true"
+                    : "(el) => el.disabled === false";
+
+    return WaitForStateChange(contents_id, toggle_selection_change);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
+                       HighEfficiencyPrefChanged) {
+  RunTestSequence(
+      InstrumentTab(kPerformanceSettingsPage),
+      NavigateWebContents(kPerformanceSettingsPage,
+                          GURL(chrome::kChromeUIPerformanceSettingsURL)),
+      WaitForElementToRender(kPerformanceSettingsPage,
+                             kHighEfficiencyToggleQuery),
+      CheckJsResultAt(kPerformanceSettingsPage, kHighEfficiencyToggleQuery,
+                      kCheckJsElementIsChecked),
+
+      // Enable high efficiency mode to discard tabs based on a timer
+      ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
+                               true),
+      CheckHighEfficiencyModePrefState(
+          HighEfficiencyModeState::kEnabledOnTimer),
+
+      // Turn off high efficiency mode
+      ClickElement(kPerformanceSettingsPage, kHighEfficiencyToggleQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               kHighEfficiencyToggleQuery, false),
+      CheckHighEfficiencyModePrefState(HighEfficiencyModeState::kDisabled),
+
+      // Turn high efficiency mode back on
+      ClickElement(kPerformanceSettingsPage, kHighEfficiencyToggleQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               kHighEfficiencyToggleQuery, true),
+      CheckHighEfficiencyModePrefState(HighEfficiencyModeState::kEnabled));
+}
+
+IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
+                       HighEfficiencyMetricsShouldLogOnToggle) {
+  base::HistogramTester histogram_tester;
+
+  const DeepQuery iron_collapse = {
+      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-performance-page", "iron-collapse#radioGroupCollapse"};
+
+  RunTestSequence(
+      InstrumentTab(kPerformanceSettingsPage),
+      NavigateWebContents(kPerformanceSettingsPage,
+                          GURL(chrome::kChromeUIPerformanceSettingsURL)),
+      WaitForElementToRender(kPerformanceSettingsPage,
+                             kHighEfficiencyToggleQuery),
+      CheckJsResultAt(kPerformanceSettingsPage, kHighEfficiencyToggleQuery,
+                      kCheckJsElementIsChecked),
+
+      // Turn Off High Efficiency Mode
+      ClickElement(kPerformanceSettingsPage, kHighEfficiencyToggleQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               kHighEfficiencyToggleQuery, false),
+      CheckHighEfficiencyModeLogged(HighEfficiencyModeState::kDisabled, 1,
+                                    histogram_tester),
+
+      // Turn High Efficiency Mode back on
+      ClickElement(kPerformanceSettingsPage, kHighEfficiencyToggleQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               kHighEfficiencyToggleQuery, true),
+      CheckHighEfficiencyModeLogged(HighEfficiencyModeState::kEnabled, 1,
+                                    histogram_tester),
+
+      // Wait for the iron-collapse animation to finish so that the performance
+      // radio buttons will show on screen
+      WaitForIronListCollapseStateChange(kPerformanceSettingsPage,
+                                         iron_collapse),
+
+      // Change high efficiency setting to discard tabs based on timer
+      ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
+                               true),
+      CheckHighEfficiencyModeLogged(HighEfficiencyModeState::kEnabledOnTimer, 1,
+                                    histogram_tester),
+
+      // Change high efficiency setting to discard tabs based on usage
+      ClickElement(kPerformanceSettingsPage, kDiscardOnUsageQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnUsageQuery,
+                               true),
+      CheckHighEfficiencyModeLogged(HighEfficiencyModeState::kEnabled, 2,
+                                    histogram_tester));
+}
+
+// Checks that the selected discard timer value is preserved as the high
+// efficiency mode gets toggled
+IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
+                       DiscardTimerStateIsPreserved) {
+  const DeepQuery discard_time_menu = {
+      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-performance-page",
+      "settings-dropdown-menu#discardTimeDropdown"};
+
+  const DeepQuery discard_time_drop_down = {
+      "settings-ui",
+      "settings-main",
+      "settings-basic-page",
+      "settings-performance-page",
+      "settings-dropdown-menu#discardTimeDropdown",
+      "select#dropdownMenu"};
+
+  const DeepQuery iron_collapse = {
+      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-performance-page", "iron-collapse#radioGroupCollapse"};
+
+  const std::string discard_timer_value = "5";
+
+  RunTestSequence(
+      InstrumentTab(kPerformanceSettingsPage),
+      NavigateWebContents(kPerformanceSettingsPage,
+                          GURL(chrome::kChromeUIPerformanceSettingsURL)),
+      WaitForElementToRender(kPerformanceSettingsPage,
+                             kHighEfficiencyToggleQuery),
+      CheckJsResultAt(kPerformanceSettingsPage, kHighEfficiencyToggleQuery,
+                      kCheckJsElementIsChecked),
+
+      // Select discard on timer option
+      ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
+                               true),
+      WaitForDisabledStateChange(kPerformanceSettingsPage,
+                                 discard_time_drop_down, false),
+
+      // Change the selected timer value
+      ExecuteJsAt(
+          kPerformanceSettingsPage, discard_time_drop_down,
+          base::ReplaceStringPlaceholders("(el) => { el.value = $1}",
+                                          {discard_timer_value}, nullptr)),
+
+      // Turn off high efficiency mode
+      ClickElement(kPerformanceSettingsPage, kHighEfficiencyToggleQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               kHighEfficiencyToggleQuery, false),
+      // Turn high efficiency mode back on
+      ClickElement(kPerformanceSettingsPage, kHighEfficiencyToggleQuery),
+      WaitForIronListCollapseStateChange(kPerformanceSettingsPage,
+                                         iron_collapse),
+      CheckJsResultAt(kPerformanceSettingsPage, discard_time_drop_down,
+                      "(el) => el.value", discard_timer_value),
+      WaitForDisabledStateChange(kPerformanceSettingsPage, discard_time_menu,
+                                 true),
+      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnUsageQuery,
+                               true),
+
+      // Change discard settings to discard tabs based on timer
+      ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
+                               true),
+      CheckJsResultAt(kPerformanceSettingsPage, discard_time_drop_down,
+                      "(el) => el.value", discard_timer_value),
+
+      // Change discard settings to discard tabs based on usage
+      ClickElement(kPerformanceSettingsPage, kDiscardOnUsageQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnUsageQuery,
+                               true),
+      CheckJsResultAt(kPerformanceSettingsPage, discard_time_drop_down,
+                      "(el) => el.value", discard_timer_value));
+}
