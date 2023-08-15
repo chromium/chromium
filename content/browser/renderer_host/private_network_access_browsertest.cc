@@ -563,9 +563,6 @@ class PrivateNetworkAccessBrowserTest
                 blink::features::kPlzDedicatedWorker,
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessSendPreflights,
-                // TODO(https://crbug.com/1332598): Remove all the filesystem:
-                // URL tests when removing filesystem: navigation for good.
-                blink::features::kFileSystemUrlNavigation,
             },
             {}) {}
 };
@@ -1076,34 +1073,6 @@ GURL CreateBlobURL(RenderFrameHostImpl* frame_host) {
   return GURL(result.ExtractString());
 }
 
-// Writes some dummy HTML to a file, then returns its `filesystem:` URL.
-// Executes javascript to do so in |frame_host|, which must not be nullptr.
-GURL CreateFilesystemURL(RenderFrameHostImpl* frame_host) {
-  // Define a variable to avoid awkward `ExtractString()` indentation.
-  EvalJsResult result = EvalJs(frame_host, R"(
-    // It seems anonymous async functions are not available yet, so we cannot
-    // use an immediately-invoked function expression.
-    async function run() {
-      const fs = await new Promise((resolve, reject) => {
-        window.webkitRequestFileSystem(window.TEMPORARY, 1024, resolve, reject);
-      });
-      const file = await new Promise((resolve, reject) => {
-        fs.root.getFile('hello.html', {create: true}, resolve, reject);
-      });
-      const writer = await new Promise((resolve, reject) => {
-        file.createWriter(resolve, reject);
-      });
-      await new Promise((resolve) => {
-        writer.onwriteend = resolve;
-        writer.write(new Blob(["foo"], {type: "text/html"}));
-      });
-      return file.toURL();
-    }
-    run()
-  )");
-  return GURL(result.ExtractString());
-}
-
 // Executes |script| to add a new child iframe to the given |parent| document.
 //
 // |parent| must not be nullptr.
@@ -1210,11 +1179,6 @@ RenderFrameHostImpl* AddChildFromBlob(RenderFrameHostImpl* parent) {
   return AddChildFromURL(parent, blob_url);
 }
 
-RenderFrameHostImpl* AddChildFromFilesystem(RenderFrameHostImpl* parent) {
-  GURL fs_url = CreateFilesystemURL(parent);
-  return AddChildFromURL(parent, fs_url);
-}
-
 RenderFrameHostImpl* AddSandboxedChildFromURL(RenderFrameHostImpl* parent,
                                               const GURL& url) {
   std::string script_template = R"(
@@ -1264,12 +1228,6 @@ RenderFrameHostImpl* AddSandboxedChildFromDataURL(RenderFrameHostImpl* parent) {
 RenderFrameHostImpl* AddSandboxedChildFromBlob(RenderFrameHostImpl* parent) {
   GURL blob_url = CreateBlobURL(parent);
   return AddSandboxedChildFromURL(parent, blob_url);
-}
-
-RenderFrameHostImpl* AddSandboxedChildFromFilesystem(
-    RenderFrameHostImpl* parent) {
-  GURL fs_url = CreateFilesystemURL(parent);
-  return AddSandboxedChildFromURL(parent, fs_url);
 }
 
 // Returns the main frame RenderFrameHostImpl in the given |shell|.
@@ -1923,70 +1881,6 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
             security_state->ip_address_space);
 }
 
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       IframeInheritsAddressSpaceForFilesystemURLFromPublic) {
-  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
-
-  RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
-  ASSERT_NE(nullptr, child_frame);
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      child_frame->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
-            security_state->ip_address_space);
-}
-
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       IframeInheritsAddressSpaceForFilesystemURLFromLocal) {
-  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
-
-  RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
-  ASSERT_NE(nullptr, child_frame);
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      child_frame->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
-            security_state->ip_address_space);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTest,
-    SandboxedIframeInheritsAddressSpaceForFilesystemURLFromPublic) {
-  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
-
-  RenderFrameHostImpl* child_frame =
-      AddSandboxedChildFromFilesystem(root_frame_host());
-  ASSERT_NE(nullptr, child_frame);
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      child_frame->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
-            security_state->ip_address_space);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTest,
-    SandboxedIframeInheritsAddressSpaceForFilesystemURLFromLocal) {
-  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
-
-  RenderFrameHostImpl* child_frame =
-      AddSandboxedChildFromFilesystem(root_frame_host());
-  ASSERT_NE(nullptr, child_frame);
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      child_frame->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
-            security_state->ip_address_space);
-}
-
 // ================================
 // SECURE CONTEXT INHERITANCE TESTS
 // ================================
@@ -2438,67 +2332,6 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_FALSE(security_state->is_web_secure_context);
-}
-
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       IframeInheritsSecureContextForFilesystemURLFromSecure) {
-  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
-
-  RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
-  ASSERT_NE(nullptr, child_frame);
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      child_frame->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_TRUE(security_state->is_web_secure_context);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTest,
-    IframeInheritsSecureContextForFilesystemURLFromInsecure) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
-
-  RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
-  ASSERT_NE(nullptr, child_frame);
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      child_frame->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_FALSE(security_state->is_web_secure_context);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTest,
-    SandboxedIframeInheritsSecureContextForFilesystemURLFromSecure) {
-  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
-
-  RenderFrameHostImpl* child_frame =
-      AddSandboxedChildFromFilesystem(root_frame_host());
-  ASSERT_NE(nullptr, child_frame);
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      child_frame->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_TRUE(security_state->is_web_secure_context);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTest,
-    SandboxedIframeInheritsSecureContextForFilesystemURLFromInsecure) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
-
-  RenderFrameHostImpl* child_frame =
-      AddSandboxedChildFromFilesystem(root_frame_host());
-  ASSERT_NE(nullptr, child_frame);
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   EXPECT_FALSE(security_state->is_web_secure_context);
