@@ -236,7 +236,7 @@ class OsAboutPageElement extends OsAboutPageBase {
         value() {
           return isRevampWayfindingEnabled();
         },
-        readonly: true,
+        readOnly: true,
       },
     };
   }

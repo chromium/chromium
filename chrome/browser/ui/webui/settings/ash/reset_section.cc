@@ -43,8 +43,12 @@ ResetSection::ResetSection(Profile* profile,
 ResetSection::~ResetSection() = default;
 
 void ResetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"resetPageTitle", IDS_SETTINGS_RESET_TITLE},
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kLocalizedStrings[] = {
+      {"resetPageTitle", kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_RESET_TITLE
+                                          : IDS_SETTINGS_RESET_TITLE},
       {"powerwashTitle", IDS_SETTINGS_FACTORY_RESET},
       {"powerwashDialogTitle", IDS_SETTINGS_FACTORY_RESET_HEADING},
       {"powerwashDialogButton", IDS_SETTINGS_RESTART},
@@ -75,8 +79,11 @@ void ResetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString(
       "powerwashDescription",
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_FACTORY_RESET_DESCRIPTION,
-                                 l10n_util::GetStringUTF16(IDS_PRODUCT_NAME)));
+      kIsRevampEnabled ? l10n_util::GetStringUTF16(
+                             IDS_OS_SETTINGS_REVAMP_FACTORY_RESET_DESCRIPTION)
+                       : l10n_util::GetStringFUTF16(
+                             IDS_SETTINGS_FACTORY_RESET_DESCRIPTION,
+                             l10n_util::GetStringUTF16(IDS_PRODUCT_NAME)));
 }
 
 void ResetSection::AddHandlers(content::WebUI* web_ui) {

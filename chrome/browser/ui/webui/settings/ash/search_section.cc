@@ -291,16 +291,23 @@ SearchSection::~SearchSection() {
 }
 
 void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"osSearchEngineLabel", IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL},
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kLocalizedStrings[] = {
+      {"osSearchEngineLabel", kIsRevampEnabled
+                                  ? IDS_OS_SETTINGS_REVAMP_SEARCH_ENGINE_LABEL
+                                  : IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL},
       {"searchSubpageTitle", IDS_SETTINGS_SEARCH_SUBPAGE_TITLE},
       {"searchGoogleAssistant", IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT},
       {"searchGoogleAssistantEnabled",
-       IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ENABLED},
+       kIsRevampEnabled ? IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ON
+                        : IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ENABLED},
       {"searchGoogleAssistantDisabled",
-       IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_DISABLED},
-      {"searchGoogleAssistantOn", IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ON},
-      {"searchGoogleAssistantOff", IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_OFF},
+       kIsRevampEnabled ? IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_OFF
+                        : IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_DISABLED},
+      {"searchGoogleAssistantOn", IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ON},
+      {"searchGoogleAssistantOff", IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_OFF},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
