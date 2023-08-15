@@ -5461,61 +5461,6 @@
             ]
         }
     ],
-    "EcheNetworkConnectionState": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "EcheNetworkConnectionState"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EcheSWA": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230118",
-                    "enable_features": [
-                        "EcheLauncher",
-                        "EcheSWA"
-                    ]
-                },
-                {
-                    "name": "Enabled_20230216",
-                    "enable_features": [
-                        "EcheLauncher",
-                        "EcheLauncherListView",
-                        "EcheSWA"
-                    ]
-                },
-                {
-                    "name": "Enabled_20230329",
-                    "enable_features": [
-                        "EcheLauncher",
-                        "EcheLauncherListView",
-                        "EcheSWA"
-                    ]
-                },
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "EcheLauncher",
-                        "EcheLauncherListView",
-                        "EcheSWA"
-                    ]
-                }
-            ]
-        }
-    ],
     "En840AndFstDecoderParamsUpdate": [
         {
             "platforms": [
