@@ -94,6 +94,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     uint16_t vendorId;
     uint16_t productId;
     uint16_t version;
+    VendorProductInfo()
+        : vendorIdSrc(
+              device::BluetoothDevice::VendorIDSource::VENDOR_ID_UNKNOWN),
+          vendorId(),
+          productId(),
+          version() {}
   };
 
   class Observer : public base::CheckedObserver {

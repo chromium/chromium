@@ -17,7 +17,8 @@ const int kDelayedTaskMs = 100;
 
 }  // namespace
 
-FakeFlossAdapterClient::FakeFlossAdapterClient() = default;
+FakeFlossAdapterClient::FakeFlossAdapterClient()
+    : is_address1_connected_(false) {}
 
 FakeFlossAdapterClient::~FakeFlossAdapterClient() = default;
 
@@ -48,6 +49,11 @@ void FakeFlossAdapterClient::Init(dbus::Bus* bus,
   adapter_path_ = GenerateAdapterPath(adapter_index);
   service_name_ = service_name;
   std::move(on_ready).Run();
+}
+
+void FakeFlossAdapterClient::SetName(ResponseCallback<Void> callback,
+                                     const std::string& name) {
+  PostDelayedTask(base::BindOnce(std::move(callback), Void{}));
 }
 
 void FakeFlossAdapterClient::StartDiscovery(ResponseCallback<Void> callback) {
@@ -185,7 +191,7 @@ void FakeFlossAdapterClient::GetConnectionState(
 
   // One of the bonded devices is already connected at the beginning.
   // The Paired devices will also have paired states at the beginning.
-  if (device.address == kBondedAddress1) {
+  if (device.address == kBondedAddress1 && is_address1_connected_) {
     conn_state = FlossAdapterClient::ConnectionState::kConnectedOnly;
   } else if (device.address == kPairedAddressBrEdr) {
     conn_state = FlossAdapterClient::ConnectionState::kPairedBREDROnly;
@@ -203,6 +209,13 @@ void FakeFlossAdapterClient::GetRemoteUuids(
     FlossDeviceId device) {
   device::BluetoothDevice::UUIDList uuid_list;
   PostDelayedTask(base::BindOnce(std::move(callback), std::move(uuid_list)));
+}
+
+void FakeFlossAdapterClient::GetRemoteVendorProductInfo(
+    ResponseCallback<FlossAdapterClient::VendorProductInfo> callback,
+    FlossDeviceId device) {
+  FlossAdapterClient::VendorProductInfo info;
+  PostDelayedTask(base::BindOnce(std::move(callback), std::move(info)));
 }
 
 void FakeFlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
@@ -231,6 +244,21 @@ void FakeFlossAdapterClient::DisconnectAllEnabledProfiles(
 void FakeFlossAdapterClient::PostDelayedTask(base::OnceClosure callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, std::move(callback), base::Milliseconds(kDelayedTaskMs));
+}
+
+void FakeFlossAdapterClient::SetAddress1Connected(bool connected) {
+  if (is_address1_connected_ == connected) {
+    return;
+  }
+  is_address1_connected_ = connected;
+  const auto device = FlossDeviceId({.address = kBondedAddress1, .name = ""});
+  for (auto& observer : observers_) {
+    if (connected) {
+      observer.AdapterDeviceConnected(device);
+    } else {
+      observer.AdapterDeviceDisconnected(device);
+    }
+  }
 }
 
 void FakeFlossAdapterClient::NotifyObservers(

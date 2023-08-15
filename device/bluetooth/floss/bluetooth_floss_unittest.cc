@@ -148,6 +148,7 @@ class BluetoothFlossTest : public testing::Test {
         base::BindLambdaForTesting([](FlossManagerClient::Observer* observer) {
           observer->AdapterEnabledChanged(/*adapter=*/0, /*enabled=*/true);
         }));
+    GetFakeAdapterClient()->SetAddress1Connected(true);
     base::RunLoop().RunUntilIdle();
   }
 

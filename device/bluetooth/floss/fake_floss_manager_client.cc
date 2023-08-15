@@ -9,7 +9,9 @@
 
 namespace floss {
 
-FakeFlossManagerClient::FakeFlossManagerClient() = default;
+FakeFlossManagerClient::FakeFlossManagerClient() {
+  adapter_to_enabled_.emplace(GetDefaultAdapter(), true);
+}
 
 FakeFlossManagerClient::~FakeFlossManagerClient() = default;
 
@@ -28,7 +30,7 @@ void FakeFlossManagerClient::NotifyObservers(
 }
 
 void FakeFlossManagerClient::SetDefaultEnabled(bool enabled) {
-  adapter_to_enabled_.insert_or_assign(GetDefaultAdapter(), enabled);
+  adapter_to_enabled_[GetDefaultAdapter()] = enabled;
 }
 
 }  // namespace floss
