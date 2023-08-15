@@ -154,9 +154,15 @@ bool UnregisterUninstallationViaOsSettings(const std::wstring& name) {
   if (result == ERROR_FILE_NOT_FOUND) {
     RecordUninstallationRegistrationOSResult(result);
     return true;
+  } else if (result != ERROR_SUCCESS) {
+    RecordUninstallationRegistrationOSResult(result);
+    return false;
   }
 
   LONG delete_key_result = uninstall_reg_key.DeleteKey(name.c_str());
   RecordUninstallationRegistrationOSResult(delete_key_result);
-  return delete_key_result == ERROR_SUCCESS;
+  // DeleteKey and Open work with different security access attributes, so
+  // ERROR_FILE_NOT_FOUND also needs to be treated as success during deletion.
+  return delete_key_result == ERROR_SUCCESS ||
+         delete_key_result == ERROR_FILE_NOT_FOUND;
 }
