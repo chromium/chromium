@@ -199,8 +199,7 @@ NSAttributedString* Strikethrough(NSString* text) {
 - (NSString*)descriptionText {
   switch (_data.type) {
     case SetUpListItemType::kSignInSync:
-      return l10n_util::GetNSString(
-          IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SEE_MORE_DESCRIPTION);
+      return l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
     case SetUpListItemType::kDefaultBrowser:
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SEE_MORE_DESCRIPTION);
