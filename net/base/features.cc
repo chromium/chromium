@@ -425,22 +425,6 @@ BASE_FEATURE(kEnableWebTransportDraft07,
              "EnableWebTransportDraft07",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebTransportCongestionControl,
-             "WebTransportCongestionControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-constexpr base::FeatureParam<quic::CongestionControlType>::Option
-    kWebTransportCongestionControlAlgorithms[] = {
-        {quic::kCubicBytes, "CUBIC"},
-        {quic::kRenoBytes, "Reno"},
-        {quic::kBBR, "BBRv1"},
-        {quic::kBBRv2, "BBRv2"},
-};
-extern const base::FeatureParam<quic::CongestionControlType>
-    kWebTransportCongestionControlAlgorithm{
-        &kWebTransportCongestionControl, /*name=*/"algorithm",
-        /*default_value=*/quic::kCubicBytes,
-        &kWebTransportCongestionControlAlgorithms};
-
 BASE_FEATURE(kZstdContentEncoding,
              "ZstdContentEncoding",
              base::FEATURE_DISABLED_BY_DEFAULT);

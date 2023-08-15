@@ -6,7 +6,9 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/address_list.h"
@@ -22,6 +24,7 @@
 #include "net/spdy/spdy_http_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/web_transport_http3.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/url_request/url_request_context.h"
 #include "url/scheme_host_port.h"
@@ -29,6 +32,7 @@
 namespace net {
 
 namespace {
+
 // From
 // https://wicg.github.io/web-transport/#dom-quictransportconfiguration-server_certificate_fingerprints
 constexpr int kCustomCertificateMaxValidityDays = 14;
@@ -36,6 +40,23 @@ constexpr int kCustomCertificateMaxValidityDays = 14;
 // The time the client would wait for the server to acknowledge the session
 // being closed.
 constexpr base::TimeDelta kMaxCloseTimeout = base::Seconds(2);
+
+// Enables custom congestion control for WebTransport over HTTP/3.
+BASE_FEATURE(kWebTransportCongestionControl,
+             "WebTransportCongestionControl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<quic::CongestionControlType>::Option
+    kWebTransportCongestionControlAlgorithms[] = {
+        {quic::kCubicBytes, "CUBIC"},
+        {quic::kRenoBytes, "Reno"},
+        {quic::kBBR, "BBRv1"},
+        {quic::kBBRv2, "BBRv2"},
+};
+constexpr base::FeatureParam<quic::CongestionControlType>
+    kWebTransportCongestionControlAlgorithm{
+        &kWebTransportCongestionControl, /*name=*/"algorithm",
+        /*default_value=*/quic::kCubicBytes,
+        &kWebTransportCongestionControlAlgorithms};
 
 std::set<std::string> HostsFromOrigins(std::set<HostPortPair> origins) {
   std::set<std::string> hosts;
@@ -327,11 +348,11 @@ void RecordNegotiatedWebTransportVersion(
 }
 
 void AdjustSendAlgorithm(quic::QuicConnection& connection) {
-  if (!base::FeatureList::IsEnabled(features::kWebTransportCongestionControl)) {
+  if (!base::FeatureList::IsEnabled(kWebTransportCongestionControl)) {
     return;
   }
   connection.sent_packet_manager().SetSendAlgorithm(
-      features::kWebTransportCongestionControlAlgorithm.Get());
+      kWebTransportCongestionControlAlgorithm.Get());
 }
 
 }  // namespace

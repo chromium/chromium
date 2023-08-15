@@ -15,7 +15,6 @@
 #include "crypto/crypto_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/net_buildflags.h"
-#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 
 namespace net::features {
 
@@ -421,11 +420,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableEarlyHintsOnHttp11);
 
 // Enables draft-07 version of WebTransport over HTTP/3.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebTransportDraft07);
-
-// Enables custom congestion control for WebTransport over HTTP/3.
-NET_EXPORT BASE_DECLARE_FEATURE(kWebTransportCongestionControl);
-NET_EXPORT extern const base::FeatureParam<quic::CongestionControlType>
-    kWebTransportCongestionControlAlgorithm;
 
 // Enables Zstandard Content-Encoding support.
 NET_EXPORT BASE_DECLARE_FEATURE(kZstdContentEncoding);
