@@ -43,7 +43,7 @@ class ShelfControlButtonHighlightPathGenerator
     // maximize the click target, but we still want their "visual" size to be
     // the same.
     gfx::RectF visual_bounds = rect;
-    visual_bounds.ClampToCenteredSize(
+    visual_bounds.set_size(
         gfx::SizeF(shelf_config->control_size(), shelf_config->control_size()));
     if (Shell::Get()->IsInTabletMode() && shelf_config->is_in_app()) {
       visual_bounds.Inset(gfx::InsetsF::VH(
