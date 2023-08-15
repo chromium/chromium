@@ -242,8 +242,8 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (IsInitialized()) {
     // Invalidate pointers from and cancel all hypothetical in-flight requests
     // to the WaitOnceForEvents() routine.
-    weak_this_factory_.InvalidateWeakPtrs();
-    weak_this_ = weak_this_factory_.GetWeakPtr();
+    weak_ptr_factory_for_events_.InvalidateWeakPtrs();
+    weak_ptr_factory_for_frame_pool_.InvalidateWeakPtrs();
     cancelable_task_tracker_.TryCancelAll();
 
     // This will also Deallocate() all buffers and issue a VIDIOC_STREAMOFF.
@@ -362,7 +362,44 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(2);
-  NOTIMPLEMENTED();
+
+  // In order to preserve the order of the callbacks between Decode() and
+  // Reset(), we also trampoline |closure|.
+  base::ScopedClosureRunner scoped_trampoline_reset_cb(
+      base::BindOnce(base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
+                     base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
+                     std::move(closure)));
+
+  // Invalidate pointers from and cancel all hypothetical in-flight requests
+  // to the WaitOnceForEvents() routine.
+  weak_ptr_factory_for_events_.InvalidateWeakPtrs();
+  cancelable_task_tracker_.TryCancelAll();
+
+  // Signal any pending work as kAborted.
+  while (!decoder_buffer_and_callbacks_.empty()) {
+    auto media_decode_cb =
+        std::move(decoder_buffer_and_callbacks_.front().second);
+    decoder_buffer_and_callbacks_.pop();
+    std::move(media_decode_cb).Run(DecoderStatus::Codes::kAborted);
+  }
+
+  if (OUTPUT_queue_ && !OUTPUT_queue_->Streamoff()) {
+    LOG(ERROR) << "Failed to stop (VIDIOC_STREAMOFF) |OUTPUT_queue_|.";
+  }
+  if (CAPTURE_queue_ && !CAPTURE_queue_->Streamoff()) {
+    LOG(ERROR) << "Failed to stop (VIDIOC_STREAMOFF) |CAPTURE_queue_|.";
+  }
+
+  if (OUTPUT_queue_ && !OUTPUT_queue_->Streamon()) {
+    LOG(ERROR) << "Failed to start (VIDIOC_STREAMON) |OUTPUT_queue_|.";
+  }
+  if (CAPTURE_queue_ && !CAPTURE_queue_->Streamon()) {
+    LOG(ERROR) << "Failed to start (VIDIOC_STREAMON) |CAPTURE_queue_|.";
+  }
+
+  if (flush_cb_) {
+    std::move(flush_cb_).Run(DecoderStatus::Codes::kAborted);
+  }
 }
 
 bool V4L2StatefulVideoDecoder::NeedsBitstreamConversion() const {
@@ -421,18 +458,19 @@ V4L2StatefulVideoDecoder::V4L2StatefulVideoDecoder(
     : VideoDecoderMixin(std::move(media_log),
                         std::move(task_runner),
                         std::move(client)),
-      weak_this_factory_(this) {
+      weak_ptr_factory_for_events_(this),
+      weak_ptr_factory_for_frame_pool_(this) {
   DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(1);
-  weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
 V4L2StatefulVideoDecoder::~V4L2StatefulVideoDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(1);
 
-  weak_this_factory_.InvalidateWeakPtrs();
+  weak_ptr_factory_for_events_.InvalidateWeakPtrs();
+  weak_ptr_factory_for_frame_pool_.InvalidateWeakPtrs();
   cancelable_task_tracker_.TryCancelAll();  // Not needed, but good explicit.
 
   if (wake_event_.is_valid()) {
@@ -608,7 +646,8 @@ void V4L2StatefulVideoDecoder::RearmCAPTUREQueueMonitoring() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto dequeue_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
-      &V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers, weak_this_));
+      &V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers,
+      weak_ptr_factory_for_events_.GetWeakPtr()));
   // |client_| needs to be told of a hypothetical resolution change (to wait for
   // frames in flight etc). Once that's done they will ping us via
   // ApplyResolutionChange().
@@ -773,7 +812,7 @@ void V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
             base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
             base::BindOnce(
                 &V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers,
-                weak_this_)));
+                weak_ptr_factory_for_frame_pool_.GetWeakPtr())));
         return;
       }
       auto video_frame = client_->GetVideoFramePool()->GetFrame();

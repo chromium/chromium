@@ -173,9 +173,10 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // that with a DCHECK().
   std::unique_ptr<H264Parser> h264_parser_;
 
-  // Weak pointer/factory associated with the main thread (|sequence_checker|).
-  base::WeakPtr<V4L2StatefulVideoDecoder> weak_this_;
-  base::WeakPtrFactory<V4L2StatefulVideoDecoder> weak_this_factory_;
+  // Weak factories associated with the main thread (|sequence_checker|).
+  base::WeakPtrFactory<V4L2StatefulVideoDecoder> weak_ptr_factory_for_events_;
+  base::WeakPtrFactory<V4L2StatefulVideoDecoder>
+      weak_ptr_factory_for_frame_pool_;
 };
 
 }  // namespace media
