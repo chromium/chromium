@@ -77,12 +77,6 @@ class WebAppsCrosapi : public KeyedService,
                            WebAppsCrosapiCapabilityReset);
 
   // apps::AppPublisher overrides.
-  void LoadIcon(const std::string& app_id,
-                const IconKey& icon_key,
-                IconType icon_type,
-                int32_t size_hint_in_dip,
-                bool allow_placeholder_icon,
-                apps::LoadIconCallback callback) override;
   void GetCompressedIconData(const std::string& app_id,
                              int32_t size_in_dip,
                              ui::ResourceScaleFactor scale_factor,
@@ -145,14 +139,6 @@ class WebAppsCrosapi : public KeyedService,
       base::OnceCallback<void(MenuItems)> callback,
       crosapi::mojom::MenuItemsPtr crosapi_menu_items);
 
-  void OnLoadIcon(IconType icon_type,
-                  int size_hint_in_dip,
-                  apps::IconEffects icon_effects,
-                  apps::LoadIconCallback callback,
-                  IconValuePtr icon_value);
-  void OnApplyIconEffects(IconType icon_type,
-                          apps::LoadIconCallback callback,
-                          IconValuePtr icon_value);
   void PublishImpl(std::vector<AppPtr> deltas);
   void PublishCapabilityAccessesImpl(std::vector<CapabilityAccessPtr> deltas);
 

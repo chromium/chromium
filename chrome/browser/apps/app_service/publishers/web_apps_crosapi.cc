@@ -47,35 +47,6 @@ void WebAppsCrosapi::RegisterWebAppsCrosapiHost(
       &WebAppsCrosapi::OnCrosapiDisconnected, base::Unretained(this)));
 }
 
-void WebAppsCrosapi::LoadIcon(const std::string& app_id,
-                              const IconKey& icon_key,
-                              IconType icon_type,
-                              int32_t size_hint_in_dip,
-                              bool allow_placeholder_icon,
-                              apps::LoadIconCallback callback) {
-  if (!LogIfNotConnected(FROM_HERE)) {
-    std::move(callback).Run(std::make_unique<IconValue>());
-    return;
-  }
-
-  const uint32_t icon_effects = icon_key.icon_effects;
-
-  IconType crosapi_icon_type = icon_type;
-  IconKeyPtr crosapi_icon_key = icon_key.Clone();
-  if (crosapi_icon_type == apps::IconType::kCompressed) {
-    // The effects are applied here in Ash.
-    crosapi_icon_type = apps::IconType::kUncompressed;
-    crosapi_icon_key->icon_effects = apps::IconEffects::kNone;
-  }
-
-  controller_->LoadIcon(
-      app_id, std::move(crosapi_icon_key), crosapi_icon_type, size_hint_in_dip,
-      base::BindOnce(&WebAppsCrosapi::OnLoadIcon, weak_factory_.GetWeakPtr(),
-                     icon_type, size_hint_in_dip,
-                     static_cast<apps::IconEffects>(icon_effects),
-                     std::move(callback)));
-}
-
 void WebAppsCrosapi::GetCompressedIconData(const std::string& app_id,
                                            int32_t size_in_dip,
                                            ui::ResourceScaleFactor scale_factor,
@@ -406,41 +377,6 @@ void WebAppsCrosapi::OnControllerDisconnected() {
   // If Lacros stops running (e.g. due to a crash/update), all apps will no
   // longer be accessing capabilities.
   ResetCapabilityAccess(AppType::kWeb);
-}
-
-void WebAppsCrosapi::OnLoadIcon(IconType icon_type,
-                                int size_hint_in_dip,
-                                apps::IconEffects icon_effects,
-                                apps::LoadIconCallback callback,
-                                IconValuePtr icon_value) {
-  if (!icon_value) {
-    std::move(callback).Run(IconValuePtr());
-    return;
-  }
-  if (icon_value->is_maskable_icon) {
-    icon_effects &= ~apps::IconEffects::kCrOsStandardIcon;
-    icon_effects |= apps::IconEffects::kCrOsStandardBackground;
-    icon_effects |= apps::IconEffects::kCrOsStandardMask;
-  }
-  // We apply the masking effect here, as masking is not implemented in Lacros.
-  // (There is no resource file in the Lacros side to apply the icon effects.)
-  ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_effects,
-                   size_hint_in_dip, std::move(icon_value),
-                   base::BindOnce(&WebAppsCrosapi::OnApplyIconEffects,
-                                  weak_factory_.GetWeakPtr(), icon_type,
-                                  std::move(callback)));
-}
-
-void WebAppsCrosapi::OnApplyIconEffects(IconType icon_type,
-                                        apps::LoadIconCallback callback,
-                                        IconValuePtr icon_value) {
-  if (icon_type == apps::IconType::kCompressed) {
-    ConvertUncompressedIconToCompressedIcon(std::move(icon_value),
-                                            std::move(callback));
-    return;
-  }
-
-  std::move(callback).Run(std::move(icon_value));
 }
 
 void WebAppsCrosapi::PublishImpl(std::vector<AppPtr> deltas) {
