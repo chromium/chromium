@@ -54,7 +54,11 @@ public class ImprovedBookmarkRowProperties {
             LIST_MENU_BUTTON_DELEGATE = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> POPUP_LISTENER =
             new WritableObjectPropertyKey<>();
-    public static final WritableBooleanPropertyKey SELECTED = new WritableBooleanPropertyKey();
+    // Selection state can change from BookmarkManagerMediator as well as SelectableItemViewBase.
+    // This means that the model won't necessarily always be up-to-date. Using skipEquality to
+    // push events to the view even if the property is the same.
+    public static final WritableObjectPropertyKey<Boolean> SELECTED =
+            new WritableObjectPropertyKey<>(/*skipEquality=*/true);
     public static final WritableBooleanPropertyKey SELECTION_ACTIVE =
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey DRAG_ENABLED = new WritableBooleanPropertyKey();

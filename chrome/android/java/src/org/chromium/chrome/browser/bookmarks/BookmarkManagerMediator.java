@@ -251,6 +251,11 @@ class BookmarkManagerMediator
         @Override
         public void onSelectionStateChange(List<BookmarkId> selectedBookmarks) {
             clearHighlight();
+
+            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                    && mIsSelectionEnabled != mSelectionDelegate.isSelectionEnabled()) {
+                changeSelectionMode(mSelectionDelegate.isSelectionEnabled());
+            }
         }
     };
 
@@ -332,6 +337,8 @@ class BookmarkManagerMediator
     private BasicNativePage mNativePage;
     // Keep track of the currently highlighted bookmark - used for "show in folder" action.
     private BookmarkId mHighlightedBookmark;
+    // If selection is currently enabled in the bookmarks manager.
+    private boolean mIsSelectionEnabled;
 
     BookmarkManagerMediator(Context context, BookmarkModel bookmarkModel,
             BookmarkOpener bookmarkOpener, SelectableListLayout<BookmarkId> selectableListLayout,
@@ -502,6 +509,8 @@ class BookmarkManagerMediator
 
     public void setOrder() {
         assert !topLevelFoldersShowing() : "Cannot reorder top-level folders!";
+        assert getCurrentFolderId().getType()
+                != BookmarkType.READING_LIST : "Cannot reorder reading list!";
         assert getCurrentFolderId().getType()
                 != BookmarkType.PARTNER : "Cannot reorder partner bookmarks!";
         assert getCurrentUiMode()
@@ -1128,7 +1137,9 @@ class BookmarkManagerMediator
         propertyModel.set(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
                 () -> createListMenuForBookmark(propertyModel));
         propertyModel.set(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
-                (v) -> openBookmarkId(bookmarkId));
+                (v) -> { bookmarkRowClicked(bookmarkId); });
+        propertyModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, mIsSelectionEnabled);
+        propertyModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
 
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
     }
@@ -1253,6 +1264,20 @@ class BookmarkManagerMediator
                 mProfile, callback);
     }
 
+    void toggleSelectionForRow(BookmarkId id) {
+        mSelectionDelegate.toggleSelectionForItem(id);
+        PropertyModel model = mModelList.get(getPositionForBookmark(id)).model;
+        model.set(ImprovedBookmarkRowProperties.SELECTED, mSelectionDelegate.isItemSelected(id));
+    }
+
+    void bookmarkRowClicked(BookmarkId id) {
+        if (mSelectionDelegate.isSelectionEnabled()) {
+            toggleSelectionForRow(id);
+        } else {
+            openBookmarkId(id);
+        }
+    }
+
     void openBookmarkId(BookmarkId id) {
         BookmarkItem item = mBookmarkModel.getBookmarkById(id);
         if (item.isFolder()) {
@@ -1297,6 +1322,19 @@ class BookmarkManagerMediator
 
     private @Nullable BookmarkUiState getCurrentUiState() {
         return mStateStack.isEmpty() ? null : mStateStack.peek();
+    }
+
+    @VisibleForTesting
+    void changeSelectionMode(boolean selectionEnabled) {
+        mIsSelectionEnabled = selectionEnabled;
+
+        for (int i = getBookmarkItemStartIndex(); i <= getBookmarkItemEndIndex(); i++) {
+            // Section headers may be embedded in the list for reading list.
+            // TODO(crbug.com/1473108): Consider using RecyclerView decorations for section headers.
+            if (mModelList.get(i).type == ViewType.SECTION_HEADER) continue;
+            PropertyModel model = mModelList.get(i).model;
+            model.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, mIsSelectionEnabled);
+        }
     }
 
     // Testing methods.

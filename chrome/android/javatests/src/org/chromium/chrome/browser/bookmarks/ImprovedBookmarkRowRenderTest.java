@@ -201,8 +201,10 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testSelected() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mModel.set(ImprovedBookmarkRowProperties.SELECTED, true); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
+            mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
+        });
         mRenderTestRule.render(mContentView, "selected");
     }
 

@@ -89,6 +89,7 @@ import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -185,6 +186,8 @@ public class BookmarkManagerMediatorTest {
 
     @Captor
     private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<SelectionObserver> mSelectionObserver;
     @Captor
     private ArgumentCaptor<DragListener> mDragListenerArgumentCaptor;
     @Captor
@@ -1237,5 +1240,35 @@ public class BookmarkManagerMediatorTest {
         mBookmarkModelObserverArgumentCaptor.getValue().bookmarkNodeChanged(mFolderItem2);
 
         verify(mSelectionDelegate).toggleSelectionForItem(mFolderId2);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testSelection_multiple() {
+        finishLoading();
+
+        mMediator.openFolder(mFolderId1);
+        mMediator.toggleSelectionForRow(mFolderId2);
+
+        verify(mSelectionDelegate).addObserver(mSelectionObserver.capture());
+        mSelectionObserver.getValue().onSelectionStateChange(Arrays.asList(mFolderId2));
+        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
+
+        mMediator.bookmarkRowClicked(mFolderId3);
+
+        verify(mSelectionDelegate).toggleSelectionForItem(mFolderId2);
+        verify(mSelectionDelegate).toggleSelectionForItem(mFolderId3);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testChangeSelectionMode() {
+        finishLoading();
+
+        mMediator.openFolder(mFolderId1);
+        mMediator.changeSelectionMode(true);
+
+        assertTrue(mModelList.get(1).model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
+        assertTrue(mModelList.get(2).model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
     }
 }

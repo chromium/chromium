@@ -52,6 +52,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     private boolean mDragEnabled;
     private boolean mBookmarkIdEditable;
     private boolean mMoreButtonVisible;
+    private boolean mSelectionEnabled;
 
     private Runnable mOpenBookmarkCallback;
 
@@ -168,11 +169,13 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     }
 
     void setSelectionEnabled(boolean selectionEnabled) {
+        mSelectionEnabled = selectionEnabled;
         mMoreButton.setClickable(!selectionEnabled);
         mMoreButton.setEnabled(!selectionEnabled);
         mMoreButton.setImportantForAccessibility(!selectionEnabled
                         ? IMPORTANT_FOR_ACCESSIBILITY_YES
                         : IMPORTANT_FOR_ACCESSIBILITY_NO);
+        updateView(false);
     }
 
     void setDragEnabled(boolean dragEnabled) {
@@ -214,7 +217,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mContainer.setBackgroundResource(selected ? R.drawable.rounded_rectangle_surface_1
                                                   : R.drawable.rounded_rectangle_surface_0);
 
-        boolean checkVisible = selected;
+        boolean checkVisible = mSelectionEnabled && selected;
         boolean moreVisible = mMoreButtonVisible && !selected && mBookmarkIdEditable;
         mCheckImageView.setVisibility(checkVisible ? View.VISIBLE : View.GONE);
         mMoreButton.setVisibility(moreVisible ? View.VISIBLE : View.GONE);

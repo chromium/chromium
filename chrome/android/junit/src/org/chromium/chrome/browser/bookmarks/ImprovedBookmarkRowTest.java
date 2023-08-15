@@ -123,6 +123,7 @@ public class ImprovedBookmarkRowTest {
 
     @Test
     public void testSelectedShowsCheck() {
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
         mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
         Assert.assertEquals(
                 View.VISIBLE, mImprovedBookmarkRow.findViewById(R.id.check_image).getVisibility());
@@ -132,6 +133,7 @@ public class ImprovedBookmarkRowTest {
 
     @Test
     public void testUnselectedShowsMore() {
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
         mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
         Assert.assertEquals(
                 View.GONE, mImprovedBookmarkRow.findViewById(R.id.check_image).getVisibility());
