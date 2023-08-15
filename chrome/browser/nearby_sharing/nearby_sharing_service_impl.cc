@@ -1372,6 +1372,17 @@ void NearbySharingServiceImpl::OnLockStateChanged(bool locked) {
   NS_LOG(VERBOSE) << __func__ << ": Screen lock state changed. (" << locked
                   << ")";
   is_screen_locked_ = locked;
+
+  // Set visibility to 'Your Devices' if the screen is locked.
+  if (features::IsSelfShareEnabled()) {
+    if (locked) {
+      user_visibility_ = settings_.GetVisibility();
+      settings_.SetVisibility(nearby_share::mojom::Visibility::kYourDevices);
+    } else {
+      settings_.SetVisibility(user_visibility_);
+    }
+  }
+
   InvalidateSurfaceState();
 }
 
