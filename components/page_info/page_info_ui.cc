@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info.h"
 #include "components/page_info/page_info_ui_delegate.h"
@@ -546,10 +545,7 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
 
           auto description = CreateSecurityDescription(
               SecuritySummaryColor::GREEN, IDS_PAGE_INFO_SECURE_SUMMARY,
-              base::FeatureList::IsEnabled(
-                  omnibox::kUpdatedConnectionSecurityIndicators)
-                  ? IDS_PAGE_INFO_SECURE_DETAILS_V2
-                  : IDS_PAGE_INFO_SECURE_DETAILS,
+              IDS_PAGE_INFO_SECURE_DETAILS,
               SecurityDescriptionType::CONNECTION);
           if (identity_info.identity_status ==
               PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT) {

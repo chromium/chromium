@@ -26,6 +26,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.EnormousTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
@@ -209,7 +210,11 @@ public class OmniboxTest {
         Assert.assertEquals("location_bar_status_icon with wrong resource-id",
                 R.id.location_bar_status_icon, securityView.getId());
         Assert.assertTrue(securityView.isShown());
-        Assert.assertEquals(R.drawable.omnibox_https_valid,
+        Assert.assertEquals(
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
+                        ? R.drawable.omnibox_https_valid_refresh
+                        : R.drawable.omnibox_https_valid,
                 statusCoordinator.getSecurityIconResourceIdForTesting());
     }
 
@@ -270,7 +275,11 @@ public class OmniboxTest {
             Assert.assertEquals("location_bar_status_icon with wrong resource-id",
                     R.id.location_bar_status_icon, securityView.getId());
             Assert.assertTrue(securityView.isShown());
-            Assert.assertEquals(R.drawable.omnibox_https_valid,
+            Assert.assertEquals(
+                    ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
+                            ? R.drawable.omnibox_https_valid_refresh
+                            : R.drawable.omnibox_https_valid,
                     statusCoordinator.getSecurityIconResourceIdForTesting());
         } finally {
             restoreDefaultSearchEngine();
