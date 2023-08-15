@@ -641,11 +641,6 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  nearby_share::mojom::Visibility GetVisibility() {
-    NearbyShareSettings settings(&prefs_, local_device_data_manager());
-    return settings.GetVisibility();
-  }
-
   void SetIsEnabled(bool is_enabled) {
     NearbyShareSettings settings(&prefs_, local_device_data_manager());
     if (is_enabled) {
@@ -2328,7 +2323,7 @@ TEST_P(NearbySharingServiceImplTest,
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
   EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
-  if (features::IsSelfShareEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   } else {
     EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
@@ -2346,7 +2341,7 @@ TEST_P(NearbySharingServiceImplTest, ScreenLocksDuringAdvertising) {
   EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
 
   session_controller_->SetScreenLocked(true);
-  if (features::IsSelfShareEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   } else {
     EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
@@ -5259,7 +5254,7 @@ TEST_P(NearbySharingServiceImplTest, CreateShareTarget) {
   ASSERT_TRUE(share_target.has_value());
   EXPECT_EQ(kDeviceName, share_target->device_name);
   EXPECT_EQ(kDeviceType, share_target->type);
-  if (features::IsSelfShareEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     EXPECT_EQ(certificate_proto.for_self_share(), share_target->for_self_share);
   }
 
@@ -5289,7 +5284,7 @@ TEST_P(NearbySharingServiceImplTest, SelfShareAutoAccept) {
       SetUpIncomingConnection(callback, /*for_self_share=*/true);
 
   // If Self Share is not enabled, we should just time out.
-  if (!features::IsSelfShareEnabled()) {
+  if (!base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     base::RunLoop run_loop;
     EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
         .WillOnce(testing::Invoke(
@@ -5333,21 +5328,6 @@ TEST_P(NearbySharingServiceImplTest, SelfShareAutoAccept) {
 
   // To avoid UAF in OnIncomingTransferUpdate().
   service_->UnregisterReceiveSurface(&callback);
-}
-
-TEST_P(NearbySharingServiceImplTest, YourDevicesVisibilityOnScreenLock) {
-  if (features::IsSelfShareEnabled()) {
-    SetIsEnabled(true);
-    SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
-
-    // Lock screen, expect Your Devices visibility.
-    session_controller_->SetScreenLocked(true);
-    EXPECT_EQ(GetVisibility(), nearby_share::mojom::Visibility::kYourDevices);
-
-    // Unlock screen, expect visibility to return to All Contacts.
-    session_controller_->SetScreenLocked(false);
-    EXPECT_EQ(GetVisibility(), nearby_share::mojom::Visibility::kAllContacts);
-  }
 }
 
 INSTANTIATE_TEST_SUITE_P(NearbySharingServiceImplTest,
