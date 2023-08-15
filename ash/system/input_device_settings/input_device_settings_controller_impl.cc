@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
@@ -283,7 +284,7 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   }
 
   // If the flag is disabled, clear the new touchpad and keyboard settings from
-  // all settings dictionaries.
+  // all settings dictionaries and reset the notification prefs.
   if (!features::IsAltClickAndSixPackCustomizationEnabled() && pref_service) {
     base::Value::Dict updated_touchpad_dict =
         pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
@@ -303,6 +304,13 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
                           std::move(updated_touchpad_dict));
     pref_service->SetDict(prefs::kKeyboardDeviceSettingsDictPref,
                           std::move(updated_keyboard_dict));
+
+    pref_service->ClearPref(prefs::kSixPackKeyDeleteNotificationsRemaining);
+    pref_service->ClearPref(prefs::kSixPackKeyHomeNotificationsRemaining);
+    pref_service->ClearPref(prefs::kSixPackKeyEndNotificationsRemaining);
+    pref_service->ClearPref(prefs::kSixPackKeyPageUpNotificationsRemaining);
+    pref_service->ClearPref(prefs::kSixPackKeyPageDownNotificationsRemaining);
+    pref_service->ClearPref(prefs::kSixPackKeyInsertNotificationsRemaining);
   }
   active_pref_service_ = pref_service;
   active_account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
