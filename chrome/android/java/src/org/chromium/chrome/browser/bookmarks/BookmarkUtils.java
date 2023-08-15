@@ -750,22 +750,28 @@ public class BookmarkUtils {
     }
 
     /**
-     * Returns whether the given folder being viewed can have a new folder added to it. While in
-     * improved bookmarks, this includes the root folder.
+     * Returns whether the given folder can have a folder added to it. Uses the base implementation
+     * of {@link #canAddBookmarkToParent} with the additional constraint that a folder can't be
+     * added to the reading list.
      */
-    public static boolean canAddFolderToParent(BookmarkModel bookmarkModel, BookmarkId parent) {
-        return !Objects.equals(parent, bookmarkModel.getReadingListFolder())
-                && !Objects.equals(parent, bookmarkModel.getPartnerFolderId())
-                && !Objects.equals(parent, bookmarkModel.getRootFolderId());
+    public static boolean canAddFolderToParent(BookmarkModel bookmarkModel, BookmarkId parentId) {
+        if (!canAddBookmarkToParent(bookmarkModel, parentId)) return false;
+        if (Objects.equals(parentId, bookmarkModel.getReadingListFolder())) return false;
+
+        return true;
     }
 
     /**
-     * Returns whether the given folder being viewed can have a new folder added to it. While in
-     * improved bookmarks, this includes the root folder.
+     * Returns whether the given folder can have a bookmark added to it.
      */
-    public static boolean canAddBookmarkToParent(BookmarkModel bookmarkModel, BookmarkId parent) {
-        return !Objects.equals(parent, bookmarkModel.getPartnerFolderId())
-                && !Objects.equals(parent, bookmarkModel.getRootFolderId());
+    public static boolean canAddBookmarkToParent(BookmarkModel bookmarkModel, BookmarkId parentId) {
+        BookmarkItem parentItem = bookmarkModel.getBookmarkById(parentId);
+        if (parentItem == null) return false;
+        if (parentItem.isManaged()) return false;
+        if (Objects.equals(parentId, bookmarkModel.getPartnerFolderId())) return false;
+        if (Objects.equals(parentId, bookmarkModel.getRootFolderId())) return false;
+
+        return true;
     }
 
     /**

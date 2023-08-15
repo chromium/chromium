@@ -38,6 +38,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 
 import java.util.Arrays;
@@ -68,6 +69,12 @@ public class BookmarkUtilsTest {
         assertTrue(BookmarkUtils.canAddFolderToParent(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
         assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, READING_LIST_BOOKMARK_ID));
         assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, PARTNER_BOOKMARK_ID));
+
+        BookmarkId managedBookmarkId = new BookmarkId(123, BookmarkType.NORMAL);
+        BookmarkItem managedBookmarkItem = new BookmarkItem(managedBookmarkId, "managed", null,
+                true, ROOT_BOOKMARK_ID, false, true, 0, false, 0);
+        doReturn(managedBookmarkItem).when(mBookmarkModel).getBookmarkById(managedBookmarkId);
+        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, managedBookmarkId));
     }
 
     @Test
@@ -77,6 +84,17 @@ public class BookmarkUtilsTest {
         assertTrue(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
         assertTrue(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, READING_LIST_BOOKMARK_ID));
         assertFalse(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, PARTNER_BOOKMARK_ID));
+
+        // Null case
+        BookmarkId nullBookmarkItemId = new BookmarkId(123, BookmarkType.NORMAL);
+        doReturn(null).when(mBookmarkModel).getBookmarkById(nullBookmarkItemId);
+        assertFalse(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, nullBookmarkItemId));
+
+        BookmarkId managedBookmarkId = new BookmarkId(123, BookmarkType.NORMAL);
+        BookmarkItem managedBookmarkItem = new BookmarkItem(managedBookmarkId, "managed", null,
+                true, ROOT_BOOKMARK_ID, false, true, 0, false, 0);
+        doReturn(managedBookmarkItem).when(mBookmarkModel).getBookmarkById(managedBookmarkId);
+        assertFalse(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, managedBookmarkId));
     }
 
     @Test
