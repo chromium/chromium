@@ -260,6 +260,8 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
       std::make_unique<media_message_center::MediaSquigglyProgressView>(
           theme_.primary_container_color_id,
           theme_.secondary_container_color_id, theme_.focus_ring_color_id,
+          base::BindRepeating(&MediaNotificationViewAshImpl::OnProgressDragging,
+                              base::Unretained(this)),
           base::BindRepeating(&MediaNotificationViewAshImpl::SeekTo,
                               base::Unretained(this))));
   controls_row->SetFlexForView(squiggly_progress_view_, 1);
@@ -492,6 +494,18 @@ void MediaNotificationViewAshImpl::UpdateActionButtonsVisibility() {
 
 void MediaNotificationViewAshImpl::ButtonPressed(views::Button* button) {
   const auto action = static_cast<MediaSessionAction>(button->GetID());
+  if (item_) {
+    item_->OnMediaSessionActionButtonPressed(action);
+  } else {
+    // LockScreenMediaView does not have MediaNotificationItem and will handle
+    // the action itself.
+    container_->OnMediaSessionActionButtonPressed(action);
+  }
+}
+
+void MediaNotificationViewAshImpl::OnProgressDragging(bool pause) {
+  const auto action =
+      (pause ? MediaSessionAction::kPause : MediaSessionAction::kPlay);
   if (item_) {
     item_->OnMediaSessionActionButtonPressed(action);
   } else {

@@ -116,6 +116,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
   // Callback for media action buttons.
   void ButtonPressed(views::Button* button);
 
+  // Callback for the user dragging the squiggly progress view. A playing media
+  // should be temporarily paused when the user is dragging the progress line.
+  void OnProgressDragging(bool pause);
+
   // Callback for when the media squiggly progress view wants to update the
   // progress position.
   void SeekTo(double seek_progress);

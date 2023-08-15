@@ -29,6 +29,9 @@ class MediaSquigglyProgressViewTest : public views::ViewsTestBase {
     view_ =
         widget_->SetContentsView(std::make_unique<MediaSquigglyProgressView>(
             id, id, id,
+            base::BindRepeating(
+                &MediaSquigglyProgressViewTest::OnProgressDragging,
+                base::Unretained(this)),
             base::BindRepeating(&MediaSquigglyProgressViewTest::SeekTo,
                                 base::Unretained(this))));
 
@@ -44,6 +47,7 @@ class MediaSquigglyProgressViewTest : public views::ViewsTestBase {
 
   MediaSquigglyProgressView* view() const { return view_; }
 
+  MOCK_METHOD1(OnProgressDragging, void(bool));
   MOCK_METHOD1(SeekTo, void(double));
 
  private:
@@ -78,16 +82,24 @@ TEST_F(MediaSquigglyProgressViewTest, MediaPaused) {
 TEST_F(MediaSquigglyProgressViewTest, SeekTo) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/1, /*duration=*/base::Seconds(600),
-      /*position=*/base::Seconds(300), /*end_of_media=*/false);
+      /*position=*/base::Seconds(100), /*end_of_media=*/false);
   view()->UpdateProgress(media_position);
 
-  // Simulate a mouse click event and SeekTo() should be called.
+  // Simulate mouse click and release events and SeekTo() should be called.
   gfx::Point point(view()->width() / 2, view()->height() / 2);
   ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(*this, SeekTo(0.5));
+  EXPECT_CALL(*this, OnProgressDragging(true));
   view()->OnMousePressed(pressed_event);
+
+  ui::MouseEvent released_event =
+      ui::MouseEvent(ui::ET_MOUSE_RELEASED, point, point, ui::EventTimeForNow(),
+                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(*this, SeekTo(0.5));
+  EXPECT_CALL(*this, OnProgressDragging(false));
+  view()->OnMouseReleased(released_event);
 
   // Simulate a gesture tap event and SeekTo() should be called.
   ui::GestureEvent tapped_event(point.x(), point.y(), 0, ui::EventTimeForNow(),
@@ -103,6 +115,7 @@ TEST_F(MediaSquigglyProgressViewTest, SeekTo) {
 
   // Simulate a mouse click event and SeekTo() should not be called.
   EXPECT_CALL(*this, SeekTo(testing::_)).Times(0);
+  EXPECT_CALL(*this, OnProgressDragging(testing::_)).Times(0);
   view()->OnMousePressed(pressed_event);
   EXPECT_TRUE(view()->is_live_for_testing());
 }
@@ -157,6 +170,63 @@ TEST_F(MediaSquigglyProgressViewTest, KeyEventSeekForwardToEnd) {
                          ui::DomKey::ARROW_UP,  ui::EventTimeForNow()};
   EXPECT_CALL(*this, SeekTo(1));
   view()->OnKeyPressed(key_event);
+}
+
+TEST_F(MediaSquigglyProgressViewTest, DragProgressForPlayingMedia) {
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(100), /*end_of_media=*/false);
+  view()->UpdateProgress(media_position);
+
+  gfx::Point point(view()->width() / 2, view()->height() / 2);
+  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(*this, SeekTo(0.5));
+  EXPECT_CALL(*this, OnProgressDragging(true));
+  view()->OnMousePressed(pressed_event);
+
+  ui::MouseEvent dragged_event(ui::ET_MOUSE_DRAGGED, gfx::Point(), gfx::Point(),
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(*this, SeekTo(0));
+  view()->OnMouseDragged(dragged_event);
+
+  ui::MouseEvent released_event = ui::MouseEvent(
+      ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(*this, SeekTo(0));
+  EXPECT_CALL(*this, OnProgressDragging(false));
+  view()->OnMouseReleased(released_event);
+}
+
+TEST_F(MediaSquigglyProgressViewTest, DragProgressForPausedMedia) {
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(100), /*end_of_media=*/false);
+  view()->UpdateProgress(media_position);
+
+  gfx::Point point(view()->width() / 2, view()->height() / 2);
+  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(*this, SeekTo(0.5));
+  EXPECT_CALL(*this, OnProgressDragging(testing::_)).Times(0);
+  view()->OnMousePressed(pressed_event);
+
+  gfx::Point new_point(view()->width() / 4, view()->height() / 2);
+  ui::MouseEvent dragged_event(ui::ET_MOUSE_DRAGGED, new_point, new_point,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(*this, SeekTo(testing::DoubleNear(0.25, 0.01)));
+  view()->OnMouseDragged(dragged_event);
+
+  ui::MouseEvent released_event = ui::MouseEvent(
+      ui::ET_MOUSE_RELEASED, new_point, new_point, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(*this, SeekTo(testing::DoubleNear(0.25, 0.01)));
+  EXPECT_CALL(*this, OnProgressDragging(testing::_)).Times(0);
+  view()->OnMouseReleased(released_event);
 }
 
 }  // namespace media_message_center

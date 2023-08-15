@@ -74,10 +74,12 @@ MediaSquigglyProgressView::MediaSquigglyProgressView(
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
     ui::ColorId focus_ring_color_id,
+    base::RepeatingCallback<void(bool)> dragging_callback,
     base::RepeatingCallback<void(double)> seek_callback)
     : foreground_color_id_(foreground_color_id),
       background_color_id_(background_color_id),
       focus_ring_color_id_(focus_ring_color_id),
+      dragging_callback_(std::move(dragging_callback)),
       seek_callback_(std::move(seek_callback)),
       slide_animation_(this) {
   SetInsideBorderInsets(kInsideInsets);
@@ -237,8 +239,32 @@ bool MediaSquigglyProgressView::OnMousePressed(const ui::MouseEvent& event) {
     return false;
   }
 
-  HandleSeeking(event.location());
+  HandleSeeking(event.x());
+
+  // Pause the media if it is playing when the user starts dragging the progress
+  // line.
+  if (!is_paused_) {
+    dragging_callback_.Run(/*pause=*/true);
+    paused_for_dragging_ = true;
+  }
+
   return true;
+}
+
+bool MediaSquigglyProgressView::OnMouseDragged(const ui::MouseEvent& event) {
+  HandleSeeking(event.x());
+  return true;
+}
+
+void MediaSquigglyProgressView::OnMouseReleased(const ui::MouseEvent& event) {
+  HandleSeeking(event.x());
+
+  // Un-pause the media when the user finishes dragging the progress line if the
+  // media was playing before dragging.
+  if (paused_for_dragging_) {
+    dragging_callback_.Run(/*pause=*/false);
+    paused_for_dragging_ = false;
+  }
 }
 
 bool MediaSquigglyProgressView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -277,7 +303,7 @@ void MediaSquigglyProgressView::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
 
-  HandleSeeking(event->location());
+  HandleSeeking(event->x());
   event->SetHandled();
 }
 
@@ -341,9 +367,10 @@ void MediaSquigglyProgressView::MaybeNotifyAccessibilityValueChanged() {
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
 }
 
-void MediaSquigglyProgressView::HandleSeeking(const gfx::Point& location) {
-  double seek_to_progress = static_cast<double>(location.x() - kWidthInset) /
-                            (GetContentsBounds().width() - kWidthInset * 2);
+void MediaSquigglyProgressView::HandleSeeking(double location) {
+  double view_width = GetContentsBounds().width() - kWidthInset * 2;
+  double seek_to_progress =
+      std::min(view_width, std::max(0.0, location - kWidthInset)) / view_width;
   seek_callback_.Run(seek_to_progress);
 }
 
