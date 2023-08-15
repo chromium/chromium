@@ -1330,6 +1330,7 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
         descendant_features);
 
     const CSSSelector* compound_in_logical_combination = complex;
+    InvalidationSetFeatures* inner_sibling_features = sibling_features;
     InvalidationSetFeatures last_compound_in_adjacent_chain_features;
     while (compound_in_logical_combination) {
       AddFeaturesToInvalidationSetsForLogicalCombinationInHasContext context(
@@ -1341,14 +1342,14 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
         last_in_compound =
             SkipAddingAndGetLastInCompoundForLogicalCombinationInHas(
                 compound_in_logical_combination, compound_containing_has,
-                sibling_features, descendant_features, previous_combinator,
-                add_features_method);
+                inner_sibling_features, descendant_features,
+                previous_combinator, add_features_method);
       } else {
         last_in_compound =
             AddFeaturesAndGetLastInCompoundForLogicalCombinationInHas(
                 compound_in_logical_combination, compound_containing_has,
-                sibling_features, descendant_features, previous_combinator,
-                add_features_method);
+                inner_sibling_features, descendant_features,
+                previous_combinator, add_features_method);
       }
 
       if (!last_in_compound) {
@@ -1363,7 +1364,7 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
                 ? CSSSelector::kIndirectAdjacent
                 : previous_combinator,
             context.last_compound_in_adjacent_chain,
-            last_compound_in_adjacent_chain_features, sibling_features,
+            last_compound_in_adjacent_chain_features, inner_sibling_features,
             descendant_features);
       }
 
