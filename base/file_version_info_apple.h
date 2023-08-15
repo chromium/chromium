@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_FILE_VERSION_INFO_MAC_H_
-#define BASE_FILE_VERSION_INFO_MAC_H_
+#ifndef BASE_FILE_VERSION_INFO_APPLE_H_
+#define BASE_FILE_VERSION_INFO_APPLE_H_
+
+#include "base/file_version_info.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 
 #include <string>
 
-#include "base/file_version_info.h"
-
 @class NSBundle;
 
-class FileVersionInfoMac : public FileVersionInfo {
+class FileVersionInfoApple : public FileVersionInfo {
  public:
-  explicit FileVersionInfoMac(NSBundle *bundle);
-  FileVersionInfoMac(const FileVersionInfoMac&) = delete;
-  FileVersionInfoMac& operator=(const FileVersionInfoMac&) = delete;
-  ~FileVersionInfoMac() override;
+  explicit FileVersionInfoApple(NSBundle* bundle);
+  FileVersionInfoApple(const FileVersionInfoApple&) = delete;
+  FileVersionInfoApple& operator=(const FileVersionInfoApple&) = delete;
+  ~FileVersionInfoApple() override;
 
   // Accessors to the different version properties.
   // Returns an empty string if the property is not found.
@@ -41,4 +41,4 @@ class FileVersionInfoMac : public FileVersionInfo {
   NSBundle* __strong bundle_;
 };
 
-#endif  // BASE_FILE_VERSION_INFO_MAC_H_
+#endif  // BASE_FILE_VERSION_INFO_APPLE_H_

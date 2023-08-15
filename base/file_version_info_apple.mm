@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/file_version_info_mac.h"
+#include "base/file_version_info_apple.h"
 
 #import <Foundation/Foundation.h>
 
@@ -13,9 +13,10 @@
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 
-FileVersionInfoMac::FileVersionInfoMac(NSBundle* bundle) : bundle_(bundle) {}
+FileVersionInfoApple::FileVersionInfoApple(NSBundle* bundle)
+    : bundle_(bundle) {}
 
-FileVersionInfoMac::~FileVersionInfoMac() = default;
+FileVersionInfoApple::~FileVersionInfoApple() = default;
 
 // static
 std::unique_ptr<FileVersionInfo>
@@ -28,30 +29,30 @@ std::unique_ptr<FileVersionInfo> FileVersionInfo::CreateFileVersionInfo(
     const base::FilePath& file_path) {
   NSString* path = base::SysUTF8ToNSString(file_path.value());
   NSBundle* bundle = [NSBundle bundleWithPath:path];
-  return std::make_unique<FileVersionInfoMac>(bundle);
+  return std::make_unique<FileVersionInfoApple>(bundle);
 }
 
-std::u16string FileVersionInfoMac::company_name() {
+std::u16string FileVersionInfoApple::company_name() {
   return std::u16string();
 }
 
-std::u16string FileVersionInfoMac::company_short_name() {
+std::u16string FileVersionInfoApple::company_short_name() {
   return std::u16string();
 }
 
-std::u16string FileVersionInfoMac::internal_name() {
+std::u16string FileVersionInfoApple::internal_name() {
   return std::u16string();
 }
 
-std::u16string FileVersionInfoMac::product_name() {
+std::u16string FileVersionInfoApple::product_name() {
   return GetString16Value(kCFBundleNameKey);
 }
 
-std::u16string FileVersionInfoMac::product_short_name() {
+std::u16string FileVersionInfoApple::product_short_name() {
   return GetString16Value(kCFBundleNameKey);
 }
 
-std::u16string FileVersionInfoMac::product_version() {
+std::u16string FileVersionInfoApple::product_version() {
   // On macOS, CFBundleVersion is used by LaunchServices, and must follow
   // specific formatting rules, so the four-part Chrome version is in
   // CFBundleShortVersionString. On iOS, both have a policy-enforced limit
@@ -59,31 +60,32 @@ std::u16string FileVersionInfoMac::product_version() {
   // key (CrBundleVersion) falling back to CFBundleVersion if not present.
 #if BUILDFLAG(IS_IOS)
   std::u16string version(GetString16Value(CFSTR("CrBundleVersion")));
-  if (version.length() > 0)
+  if (version.length() > 0) {
     return version;
+  }
   return GetString16Value(CFSTR("CFBundleVersion"));
 #else
   return GetString16Value(CFSTR("CFBundleShortVersionString"));
 #endif  // BUILDFLAG(IS_IOS)
 }
 
-std::u16string FileVersionInfoMac::file_description() {
+std::u16string FileVersionInfoApple::file_description() {
   return std::u16string();
 }
 
-std::u16string FileVersionInfoMac::file_version() {
+std::u16string FileVersionInfoApple::file_version() {
   return product_version();
 }
 
-std::u16string FileVersionInfoMac::original_filename() {
+std::u16string FileVersionInfoApple::original_filename() {
   return GetString16Value(kCFBundleNameKey);
 }
 
-std::u16string FileVersionInfoMac::special_build() {
+std::u16string FileVersionInfoApple::special_build() {
   return std::u16string();
 }
 
-std::u16string FileVersionInfoMac::GetString16Value(CFStringRef name) {
+std::u16string FileVersionInfoApple::GetString16Value(CFStringRef name) {
   if (bundle_) {
     NSString* ns_name = base::apple::CFToNSPtrCast(name);
     NSString* value = [bundle_ objectForInfoDictionaryKey:ns_name];
