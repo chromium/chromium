@@ -490,6 +490,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("enableSafetyHub",
                           base::FeatureList::IsEnabled(features::kSafetyHub));
 
+  html_source->AddBoolean("is3pcdCookieSettingsRedesignEnabled",
+                          base::FeatureList::IsEnabled(
+                              content_settings::features::
+                                  kThirdPartyCookieDeprecationCookieSettings));
+
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(
