@@ -6911,6 +6911,12 @@ New install
       <message name="IDS_GLANCEABLES_CLASSROOM_STUDENT_DONE_LIST_NAME" desc="The glanceable displays classroom items fetched from Google Classroom API. This is the name of the list that contains completed student assignments.">
         Done
       </message>
+      <message name="IDS_GLANCEABLES_CLASSROOM_ASSIGNMENT_DUE_ACCESSIBLE_DESCRIPTION" desc="The classroom glanceable displays classroom items for student and/or teachers fetched from Google Classroom API. This text is the part of a11y description to announce that an assignment has a due date and/or time.">
+        due <ph name="DUE_DATE_AND_TIME">$1<ex>Wed, Aug 23</ex></ph>
+      </message>
+      <message name="IDS_GLANCEABLES_CLASSROOM_ASSIGNMENT_SUBMISSIONS_STATE_ACCESSIBLE_DESCRIPTION" desc="The teacher classroom glanceable shows upcoming/missed/completed assignments from Google Classroom. For each assignment item, this text displays the number of submissions turned in along side the total number of sumbissions. Then this text also displays the number of submissions currently graded.">
+        <ph name="NUM_TURNED_IN">$1<ex>8</ex></ph> of <ph name="TOTAL_NUM_OF_SUBMISSIONS">$2<ex>22</ex></ph> turned in, <ph name="NUM_GRADED">$3<ex>5</ex></ph> graded
+      </message>
 
       <!-- Do Not Disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">

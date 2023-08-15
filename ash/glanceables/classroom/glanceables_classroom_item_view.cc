@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
@@ -24,7 +25,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -131,27 +131,6 @@ std::unique_ptr<views::View> BuildIcon() {
       .Build();
 }
 
-std::u16string GetAssignmentAccessibleDescription(
-    const GlanceablesClassroomAssignment* assignment) {
-  // TODO(b/294681832): Finalize, and then localize strings.
-  std::vector<std::u16string> components;
-  components.push_back(base::UTF8ToUTF16(assignment->course_title));
-
-  if (assignment->due) {
-    components.push_back(u"Due: " + GetFormattedDueDate(*assignment->due) +
-                         u", " + GetFormattedDueTime(*assignment->due));
-  }
-
-  if (assignment->submissions_state.has_value()) {
-    components.push_back(base::UTF8ToUTF16(
-        base::StringPrintf("%d of %d turned in, %d graded",
-                           assignment->submissions_state->number_turned_in,
-                           assignment->submissions_state->total_count,
-                           assignment->submissions_state->number_graded)));
-  }
-  return base::JoinString(components, u", ");
-}
-
 std::unique_ptr<views::BoxLayoutView> BuildAssignmentTitleLabels(
     const GlanceablesClassroomAssignment* assignment) {
   const auto* const typography_provider = TypographyProvider::Get();
@@ -205,7 +184,8 @@ std::unique_ptr<views::BoxLayoutView> BuildAssignmentTitleLabels(
 }
 
 std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
-    const GlanceablesClassroomAssignment* assignment) {
+    const std::u16string& due_date,
+    const std::u16string& due_time) {
   const auto* const typography_provider = TypographyProvider::Get();
 
   return views::Builder<views::BoxLayoutView>()
@@ -214,7 +194,7 @@ std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
       .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kEnd)
       .SetProperty(views::kMarginsKey, kDueLabelsMargin)
       .AddChild(views::Builder<views::Label>()
-                    .SetText(GetFormattedDueDate(assignment->due.value()))
+                    .SetText(due_date)
                     .SetID(base::to_underlying(
                         GlanceablesViewId::kClassroomItemDueDateLabel))
                     .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
@@ -223,7 +203,7 @@ std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
                     .SetLineHeight(typography_provider->ResolveLineHeight(
                         TypographyToken::kCrosAnnotation1)))
       .AddChild(views::Builder<views::Label>()
-                    .SetText(GetFormattedDueTime(assignment->due.value()))
+                    .SetText(due_time)
                     .SetID(base::to_underlying(
                         GlanceablesViewId::kClassroomItemDueTimeLabel))
                     .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
@@ -265,16 +245,34 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
       cros_tokens::kCrosSysSystemOnBase, corner_radii,
       /*for_border_thickness=*/0));
 
+  std::vector<std::u16string> a11y_description_parts{
+      base::UTF8ToUTF16(assignment->course_title)};
+
   AddChildView(BuildIcon());
   AddChildView(BuildAssignmentTitleLabels(assignment));
   if (assignment->due.has_value()) {
-    AddChildView(BuildDueLabels(assignment));
+    const auto due_date = GetFormattedDueDate(assignment->due.value());
+    const auto due_time = GetFormattedDueTime(assignment->due.value());
+    AddChildView(BuildDueLabels(due_date, due_time));
+
+    a11y_description_parts.push_back(l10n_util::GetStringFUTF16(
+        IDS_GLANCEABLES_CLASSROOM_ASSIGNMENT_DUE_ACCESSIBLE_DESCRIPTION,
+        due_time.empty() ? due_date
+                         : base::JoinString({due_date, due_time}, u", ")));
+  }
+
+  if (assignment->submissions_state.has_value()) {
+    a11y_description_parts.push_back(l10n_util::GetStringFUTF16(
+        IDS_GLANCEABLES_CLASSROOM_ASSIGNMENT_SUBMISSIONS_STATE_ACCESSIBLE_DESCRIPTION,
+        base::NumberToString16(assignment->submissions_state->number_turned_in),
+        base::NumberToString16(assignment->submissions_state->total_count),
+        base::NumberToString16(assignment->submissions_state->number_graded)));
   }
 
   SetAccessibleRole(ax::mojom::Role::kListItem);
   GetViewAccessibility().OverrideIsLeaf(true);
   SetAccessibleName(base::UTF8ToUTF16(assignment->course_work_title));
-  SetAccessibleDescription(GetAssignmentAccessibleDescription(assignment));
+  SetAccessibleDescription(base::JoinString(a11y_description_parts, u", "));
 
   views::FocusRing::Install(this);
   views::FocusRing* const focus_ring = views::FocusRing::Get(this);
