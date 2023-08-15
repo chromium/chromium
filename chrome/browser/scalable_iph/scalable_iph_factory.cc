@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_delegate_impl.h"
 #include "chrome/browser/browser_process.h"
@@ -54,6 +55,7 @@ ScalableIphFactory::ScalableIphFactory()
       << "Testing factory must be null at initialization.";
 
   DependsOn(feature_engagement::TrackerFactory::GetInstance());
+  DependsOn(ash::SyncedPrintersManagerFactory::GetInstance());
 }
 
 ScalableIphFactory::~ScalableIphFactory() = default;

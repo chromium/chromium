@@ -36,6 +36,11 @@ class ScalableIphDelegate {
 
     // Called when the visibility of an app list has changed.
     virtual void OnAppListVisibilityChanged(bool shown) {}
+
+    // Called when there is a change in whether there is a saved printer or not.
+    // This method is called only if there is a change in a value. Initial value
+    // is expected to be `false`.
+    virtual void OnHasSavedPrintersChanged(bool has_saved_printers) {}
   };
 
   // Have a virtual destructor as we can put `ScalableIphDelegate` in

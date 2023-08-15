@@ -10,6 +10,8 @@
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/printing/synced_printers_manager.h"
+#include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
@@ -19,6 +21,7 @@
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/printing/printer_configuration.h"
 #include "components/account_id/account_id.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/user_manager/user.h"
@@ -91,16 +94,14 @@ class ScalableIphBrowserTestVersionNumberInvalid
   }
 };
 
-class ScalableIphBrowserTestNetworkConnection : public ScalableIphBrowserTest {
+class ScalableIphBrowserTestCustomConditionBase
+    : public ScalableIphBrowserTest {
  protected:
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;
     AppendVersionNumber(params);
     AppendFakeUiParamsNotification(params);
-    params[FullyQualified(
-        TestIphFeature(),
-        scalable_iph::kCustomConditionNetworkConnectionParamName)] =
-        scalable_iph::kCustomConditionNetworkConnectionOnline;
+    AppendCustomCondition(params);
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
 
     base::test::FeatureRefAndParams scalable_iph_feature(
@@ -108,6 +109,19 @@ class ScalableIphBrowserTestNetworkConnection : public ScalableIphBrowserTest {
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {scalable_iph_feature, test_config}, {});
+  }
+
+  virtual void AppendCustomCondition(base::FieldTrialParams& params) = 0;
+};
+
+class ScalableIphBrowserTestNetworkConnection
+    : public ScalableIphBrowserTestCustomConditionBase {
+ protected:
+  void AppendCustomCondition(base::FieldTrialParams& params) override {
+    params[FullyQualified(
+        TestIphFeature(),
+        scalable_iph::kCustomConditionNetworkConnectionParamName)] =
+        scalable_iph::kCustomConditionNetworkConnectionOnline;
   }
 };
 
@@ -121,23 +135,14 @@ class ScalableIphBrowserTestNetworkConnectionOnline
   }
 };
 
-class ScalableIphBrowserTestClientAgeBase : public ScalableIphBrowserTest {
+class ScalableIphBrowserTestClientAgeBase
+    : public ScalableIphBrowserTestCustomConditionBase {
  protected:
-  void InitializeScopedFeatureList() override {
-    base::FieldTrialParams params;
-    AppendVersionNumber(params);
-    AppendFakeUiParamsNotification(params);
+  void AppendCustomCondition(base::FieldTrialParams& params) override {
     params[FullyQualified(
         TestIphFeature(),
         scalable_iph::kCustomConditionClientAgeInDaysParamName)] =
         GetClientAgeTestValue();
-    base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
-
-    base::test::FeatureRefAndParams scalable_iph_feature(
-        ash::features::kScalableIph, {});
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {scalable_iph_feature, test_config}, {});
   }
 
   void SetUpOnMainThread() override {
@@ -173,6 +178,17 @@ class ScalableIphBrowserTestClientAgeInvalidNumber
     : public ScalableIphBrowserTestClientAgeBase {
  protected:
   std::string GetClientAgeTestValue() override { return "-1"; }
+};
+
+class ScalableIphBrowserTestHasSavedPrinters
+    : public ScalableIphBrowserTestCustomConditionBase {
+ protected:
+  void AppendCustomCondition(base::FieldTrialParams& params) override {
+    params[FullyQualified(
+        TestIphFeature(),
+        scalable_iph::kCustomConditionHasSavedPrintersParamName)] =
+        scalable_iph::kCustomConditionHasSavedPrintersValueFalse;
+  }
 };
 
 class ScalableIphBrowserTestParameterized
@@ -645,6 +661,56 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeInvalidNumber,
 
   TriggerConditionsCheckWithAFakeEvent(
       scalable_iph::ScalableIph::Event::kFiveMinTick);
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestHasSavedPrinters,
+                       ExpectNoSavedPrinters) {
+  EnableTestIphFeature();
+
+  constexpr char kTestPrinterId[] = "test-printer-id";
+
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
+  CHECK(scalable_iph);
+
+  ash::SyncedPrintersManager* synced_printers_manager =
+      ash::SyncedPrintersManagerFactory::GetForBrowserContext(
+          browser()->profile());
+  CHECK(synced_printers_manager);
+
+  // Add a printer. Expect that no IPH gets triggered if there is a saved
+  // printer.
+  {
+    base::RunLoop run_loop;
+    scalable_iph->SetHasSavedPrintersChangedClosureForTesting(
+        run_loop.QuitClosure());
+    synced_printers_manager->UpdateSavedPrinter(
+        chromeos::Printer(kTestPrinterId));
+    run_loop.Run();
+  }
+
+  EXPECT_CALL(*mock_delegate(),
+              ShowNotification(::testing::_, ::testing::NotNull()))
+      .Times(0);
+  TriggerConditionsCheckWithAFakeEvent(
+      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+
+  // Remove the printer and confirm that an IPH gets triggered.
+  {
+    base::RunLoop run_loop;
+    scalable_iph->SetHasSavedPrintersChangedClosureForTesting(
+        run_loop.QuitClosure());
+    synced_printers_manager->RemoveSavedPrinter(kTestPrinterId);
+    run_loop.Run();
+  }
+
+  EXPECT_CALL(*mock_delegate(),
+              ShowNotification(::testing::_, ::testing::NotNull()))
+      .Times(1);
+  TriggerConditionsCheckWithAFakeEvent(
+      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification, ShowNotification) {

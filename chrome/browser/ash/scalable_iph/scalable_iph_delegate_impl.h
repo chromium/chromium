@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
@@ -32,7 +33,8 @@ class ScalableIphDelegateImpl
       public ShellObserver,
       public SessionObserver,
       public chromeos::PowerManagerClient::Observer,
-      public AppListControllerObserver {
+      public AppListControllerObserver,
+      public SyncedPrintersManager::Observer {
  public:
   explicit ScalableIphDelegateImpl(Profile* profile);
   ~ScalableIphDelegateImpl() override;
@@ -70,6 +72,9 @@ class ScalableIphDelegateImpl
   // AppListControllerObserver:
   void OnAppListVisibilityChanged(bool shown, int64_t display_id) override;
 
+  // SyncedPrintersManager::Observer
+  void OnSavedPrintersChanged() override;
+
  private:
   void SetHasOnlineNetwork(bool has_online_network);
   void QueryOnlineNetworkState();
@@ -79,12 +84,15 @@ class ScalableIphDelegateImpl
   void NotifySessionStateChanged(
       ::scalable_iph::ScalableIphDelegate::SessionState session_state);
   void NotifySuspendDoneWithoutLockScreen();
+  void MaybeNotifyHasSavedPrinters();
   void OnNudgeButtonClicked(const std::string& bubble_id,
                             scalable_iph::ScalableIphDelegate::Action action);
   void OnNudgeDismissed(const std::string& bubble_id);
 
   raw_ptr<Profile> profile_;
+  raw_ptr<SyncedPrintersManager> synced_printers_manager_;
   bool has_online_network_ = false;
+  bool has_saved_printers_ = false;
 
   std::unique_ptr<scalable_iph::IphSession> bubble_iph_session_;
   std::string bubble_id_;
@@ -103,6 +111,9 @@ class ScalableIphDelegateImpl
       power_manager_client_observer_{this};
   base::ScopedObservation<AppListController, AppListControllerObserver>
       app_list_controller_observer_{this};
+  base::ScopedObservation<SyncedPrintersManager,
+                          SyncedPrintersManager::Observer>
+      synced_printers_manager_observer_{this};
 
   base::WeakPtrFactory<ScalableIphDelegateImpl> weak_ptr_factory_{this};
 };

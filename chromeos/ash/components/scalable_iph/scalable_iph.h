@@ -96,6 +96,7 @@ class ScalableIph : public KeyedService,
   void OnSessionStateChanged(ScalableIphDelegate::SessionState state) override;
   void OnSuspendDoneWithoutLockScreen() override;
   void OnAppListVisibilityChanged(bool shown) override;
+  void OnHasSavedPrintersChanged(bool has_saved_printers) override;
 
   // IphSession::Delegate:
   void PerformActionForIphSession(ActionType action_type) override;
@@ -117,6 +118,17 @@ class ScalableIph : public KeyedService,
   // should use `IphSession::PerformAction` instead of this method.
   void PerformAction(ActionType action_type);
 
+  // `SyncedPrintersManager` stores its observers in `ObserverListThreadSafe`,
+  // which invokes observers via `TaskRunner`. Test code can set a closure to
+  // this method to wait an observer of `ScalableIph` being called.
+  //
+  // Note:
+  // We cannot wait this by registering another observer in a test and wait it.
+  // Observers are stored in an unordered map. There is no guarantee on the
+  // order of calls.
+  void SetHasSavedPrintersChangedClosureForTesting(
+      base::RepeatingClosure has_saved_printers_closure);
+
  private:
   void EnsureTimerStarted();
   void RecordTimeTickEvent();
@@ -131,6 +143,7 @@ class ScalableIph : public KeyedService,
   bool CheckCustomConditions(const base::Feature& feature);
   bool CheckNetworkConnection(const base::Feature& feature);
   bool CheckClientAge(const base::Feature& feature);
+  bool CheckHasSavedPrinters(const base::Feature& feature);
 
   const std::vector<const base::Feature*>& GetFeatureList() const;
 
@@ -140,7 +153,9 @@ class ScalableIph : public KeyedService,
   bool online_ = false;
   ScalableIphDelegate::SessionState session_state_ =
       ScalableIphDelegate::SessionState::kUnknownInitialValue;
+  bool has_saved_printers_ = false;
 
+  base::RepeatingClosure has_saved_printers_closure_for_testing_;
   std::vector<const base::Feature*> feature_list_for_testing_;
 
   base::ScopedObservation<ScalableIphDelegate, ScalableIph>

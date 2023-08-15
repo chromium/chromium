@@ -37,6 +37,8 @@
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/files_app_launcher.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
+#include "chrome/browser/ash/printing/synced_printers_manager.h"
+#include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -277,6 +279,12 @@ ScalableIphDelegateImpl::ScalableIphDelegateImpl(Profile* profile)
   MessageViewFactory::SetCustomNotificationViewFactory(
       kWallpaperNotificationType,
       base::BindRepeating(&WallpaperAshNotificationView::CreateWithPreview));
+
+  synced_printers_manager_ =
+      SyncedPrintersManagerFactory::GetForBrowserContext(profile);
+  CHECK(synced_printers_manager_);
+  synced_printers_manager_observer_.Observe(synced_printers_manager_);
+  MaybeNotifyHasSavedPrinters();
 }
 
 // Remember NOT to interact with `iph_session` from the destructor. See the
@@ -529,6 +537,10 @@ void ScalableIphDelegateImpl::OnAppListVisibilityChanged(bool shown,
   }
 }
 
+void ScalableIphDelegateImpl::OnSavedPrintersChanged() {
+  MaybeNotifyHasSavedPrinters();
+}
+
 void ScalableIphDelegateImpl::SetHasOnlineNetwork(bool has_online_network) {
   if (has_online_network_ == has_online_network) {
     return;
@@ -563,6 +575,21 @@ void ScalableIphDelegateImpl::NotifySessionStateChanged(
 void ScalableIphDelegateImpl::NotifySuspendDoneWithoutLockScreen() {
   for (DelegateObserver& observer : observers_) {
     observer.OnSuspendDoneWithoutLockScreen();
+  }
+}
+
+void ScalableIphDelegateImpl::MaybeNotifyHasSavedPrinters() {
+  const bool has_saved_printers =
+      !synced_printers_manager_->GetSavedPrinters().empty();
+
+  if (has_saved_printers_ == has_saved_printers) {
+    return;
+  }
+
+  has_saved_printers_ = has_saved_printers;
+
+  for (DelegateObserver& observer : observers_) {
+    observer.OnHasSavedPrintersChanged(has_saved_printers_);
   }
 }
 

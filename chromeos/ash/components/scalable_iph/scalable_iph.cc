@@ -416,6 +416,17 @@ void ScalableIph::OnAppListVisibilityChanged(bool shown) {
   }
 }
 
+void ScalableIph::OnHasSavedPrintersChanged(bool has_saved_printers) {
+  DCHECK_NE(has_saved_printers_, has_saved_printers);
+
+  has_saved_printers_ = has_saved_printers;
+
+  if (!has_saved_printers_closure_for_testing_.is_null()) {
+    has_saved_printers_closure_for_testing_.Run();
+    has_saved_printers_closure_for_testing_.Reset();
+  }
+}
+
 void ScalableIph::PerformActionForIphSession(ActionType action_type) {
   PerformAction(action_type);
 }
@@ -453,6 +464,13 @@ void ScalableIph::PerformActionForHelpApp(ActionType action_type) {
 
 void ScalableIph::PerformAction(ActionType action_type) {
   delegate_->PerformActionForScalableIph(action_type);
+}
+
+void ScalableIph::SetHasSavedPrintersChangedClosureForTesting(
+    base::RepeatingClosure has_saved_printers_closure) {
+  CHECK(has_saved_printers_closure_for_testing_.is_null());
+  has_saved_printers_closure_for_testing_ =
+      std::move(has_saved_printers_closure);
 }
 
 void ScalableIph::RecordEvent(ScalableIph::Event event) {
@@ -561,7 +579,8 @@ void ScalableIph::CheckTriggerConditions() {
 }
 
 bool ScalableIph::CheckCustomConditions(const base::Feature& feature) {
-  return CheckNetworkConnection(feature) && CheckClientAge(feature);
+  return CheckNetworkConnection(feature) && CheckClientAge(feature) &&
+         CheckHasSavedPrinters(feature);
 }
 
 bool ScalableIph::CheckNetworkConnection(const base::Feature& feature) {
@@ -612,6 +631,29 @@ bool ScalableIph::CheckClientAge(const base::Feature& feature) {
   }
 
   return client_age <= max_client_age;
+}
+
+bool ScalableIph::CheckHasSavedPrinters(const base::Feature& feature) {
+  std::string has_saved_printers_condition =
+      GetParamValue(feature, kCustomConditionHasSavedPrintersParamName);
+  if (has_saved_printers_condition.empty()) {
+    return true;
+  }
+
+  if (has_saved_printers_condition !=
+          kCustomConditionHasSavedPrintersValueTrue &&
+      has_saved_printers_condition !=
+          kCustomConditionHasSavedPrintersValueFalse) {
+    DLOG(WARNING)
+        << "Invalid value provided for "
+        << kCustomConditionHasSavedPrintersParamName
+        << ". This condition is not satisfied for a fail-safe behavior.";
+    return false;
+  }
+
+  bool expected_value =
+      has_saved_printers_condition == kCustomConditionHasSavedPrintersValueTrue;
+  return has_saved_printers_ == expected_value;
 }
 
 const std::vector<const base::Feature*>& ScalableIph::GetFeatureList() const {

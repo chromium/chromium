@@ -98,7 +98,7 @@ constexpr int kCurrentVersionNumber = 1;
 //
 // Example:
 // "x_CustomConditionsNetworkConnection": "Online"
-
+//
 // `NetworkConnection` condition is satisfied if a device is online. For now, we
 // only support `Online` as the expected condition.
 constexpr char kCustomConditionNetworkConnectionParamName[] =
@@ -114,6 +114,13 @@ constexpr char kCustomConditionNetworkConnectionOnline[] = "Online";
 //   profile is created at 3 pm on May 1st, the day 0 ends at 3 pm on May 2nd.
 constexpr char kCustomConditionClientAgeInDaysParamName[] =
     "x_CustomConditionClientAgeInDays";
+
+// `HasSavedPrinters` condition is true if there is at least a saved printer.
+// Valid values are either `True` or `False`.
+constexpr char kCustomConditionHasSavedPrintersParamName[] =
+    "x_CustomConditionHasSavedPrinter";
+constexpr char kCustomConditionHasSavedPrintersValueTrue[] = "True";
+constexpr char kCustomConditionHasSavedPrintersValueFalse[] = "False";
 
 // `UiType` param indicates which IPH UI is used for an event config.
 constexpr char kCustomUiTypeParamName[] = "x_CustomUiType";
