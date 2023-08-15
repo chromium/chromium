@@ -438,4 +438,51 @@ TEST_F(ReadingListApiUnitTest, ReadingListOnEntryAdded) {
                              api::reading_list::OnEntryAdded::kEventName));
 }
 
+// Test that removing an entry generates an event.
+TEST_F(ReadingListApiUnitTest, ReadingListOnEntryWillBeRemoved) {
+  ReadingListModel* const reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile());
+
+  ReadingListLoadObserver(reading_list_model).Wait();
+
+  const GURL url = GURL("https://www.example.com");
+
+  AddReadingListEntry(reading_list_model, url, "example of title");
+  EXPECT_EQ(reading_list_model->size(), 1u);
+
+  TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
+
+  reading_list_model->RemoveEntryByURL(url);
+  EXPECT_EQ(reading_list_model->size(), 0u);
+
+  EXPECT_EQ(event_observer.events().size(), 1u);
+  EXPECT_TRUE(
+      base::Contains(event_observer.events(),
+                     api::reading_list::OnEntryWillBeRemoved::kEventName));
+}
+
+// Test that updating an entry generates an event.
+TEST_F(ReadingListApiUnitTest, ReadingListOnEntryUpdated) {
+  ReadingListModel* const reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile());
+
+  ReadingListLoadObserver(reading_list_model).Wait();
+
+  const GURL url = GURL("https://www.example.com");
+
+  AddReadingListEntry(reading_list_model, url, "example of title");
+  EXPECT_EQ(reading_list_model->size(), 1u);
+  EXPECT_EQ(reading_list_model->GetEntryByURL(url)->Title(),
+            "example of title");
+
+  TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
+
+  reading_list_model->SetEntryTitleIfExists(url, "New title");
+  EXPECT_EQ(reading_list_model->GetEntryByURL(url)->Title(), "New title");
+
+  EXPECT_EQ(event_observer.events().size(), 1u);
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::reading_list::OnEntryUpdated::kEventName));
+}
+
 }  // namespace extensions

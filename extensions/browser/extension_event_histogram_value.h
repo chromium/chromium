@@ -556,6 +556,8 @@ enum HistogramValue {
   ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_CONTEXT_MENU_CLICKED = 534,
   DESK_EVENTS_ON_DESK_REMOVAL_UNDONE = 535,
   READING_LIST_ON_ENTRY_ADDED = 536,
+  READING_LIST_ON_ENTRY_WILL_BE_REMOVED = 537,
+  READING_LIST_ON_ENTRY_UPDATED = 538,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

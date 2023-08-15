@@ -35252,6 +35252,8 @@ Called by update_extension_histograms.py.-->
       label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_CONTEXT_MENU_CLICKED"/>
   <int value="535" label="DESK_EVENTS_ON_DESK_REMOVAL_UNDONE"/>
   <int value="536" label="READING_LIST_ON_ENTRY_ADDED"/>
+  <int value="537" label="READING_LIST_ON_ENTRY_WILL_BE_REMOVED"/>
+  <int value="538" label="READING_LIST_ON_ENTRY_UPDATED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

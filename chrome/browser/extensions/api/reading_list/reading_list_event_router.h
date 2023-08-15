@@ -37,6 +37,10 @@ class ReadingListEventRouter : public KeyedService,
   void ReadingListDidAddEntry(const ReadingListModel* model,
                               const GURL& url,
                               reading_list::EntrySource source) override;
+  void ReadingListWillRemoveEntry(const ReadingListModel* model,
+                                  const GURL& url) override;
+  void ReadingListDidUpdateEntry(const ReadingListModel* model,
+                                 const GURL& url) override;
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
