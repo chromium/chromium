@@ -245,8 +245,7 @@ SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope(
     WorkerThread* thread)
     : WorkletGlobalScope(std::move(creation_params),
                          thread->GetWorkerReportingProxy(),
-                         thread,
-                         /*create_microtask_queue=*/true) {
+                         thread) {
   ContextFeatureSettings::From(
       this, ContextFeatureSettings::CreationMode::kCreateIfNotExists)
       ->EnablePrivateAggregationInSharedStorage(

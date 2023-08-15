@@ -218,8 +218,7 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
       base::UnguessableToken::Create() /* agent_cluster_id */);
   creation_params->parent_context_token = GetFrame().GetLocalFrameToken();
   global_scope_ = MakeGarbageCollected<FakeWorkletGlobalScope>(
-      std::move(creation_params), *reporting_proxy_, &GetFrame(),
-      false /* create_microtask_queue */);
+      std::move(creation_params), *reporting_proxy_, &GetFrame());
   global_scope_->ScriptController()->Initialize(NullURL());
   modulator_ = MakeGarbageCollected<ModuleScriptLoaderTestModulator>(
       global_scope_->ScriptController()->GetScriptState());

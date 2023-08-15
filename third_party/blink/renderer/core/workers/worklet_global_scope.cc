@@ -41,28 +41,24 @@ namespace blink {
 WorkletGlobalScope::WorkletGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     WorkerReportingProxy& reporting_proxy,
-    LocalFrame* frame,
-    bool create_microtask_queue)
+    LocalFrame* frame)
     : WorkletGlobalScope(std::move(creation_params),
                          reporting_proxy,
                          ToIsolate(frame),
                          ThreadType::kMainThread,
                          frame,
-                         nullptr /* worker_thread */,
-                         create_microtask_queue) {}
+                         nullptr /* worker_thread */) {}
 
 WorkletGlobalScope::WorkletGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     WorkerReportingProxy& reporting_proxy,
-    WorkerThread* worker_thread,
-    bool create_microtask_queue)
+    WorkerThread* worker_thread)
     : WorkletGlobalScope(std::move(creation_params),
                          reporting_proxy,
                          worker_thread->GetIsolate(),
                          ThreadType::kOffMainThread,
                          nullptr /* frame */,
-                         worker_thread,
-                         create_microtask_queue) {}
+                         worker_thread) {}
 
 // Partial implementation of the "set up a worklet environment settings object"
 // algorithm:
@@ -73,8 +69,7 @@ WorkletGlobalScope::WorkletGlobalScope(
     v8::Isolate* isolate,
     ThreadType thread_type,
     LocalFrame* frame,
-    WorkerThread* worker_thread,
-    bool create_microtask_queue)
+    WorkerThread* worker_thread)
     : WorkerOrWorkletGlobalScope(
           isolate,
           SecurityOrigin::CreateUniqueOpaque(),
@@ -82,10 +77,7 @@ WorkletGlobalScope::WorkletGlobalScope(
           MakeGarbageCollected<Agent>(
               isolate,
               creation_params->agent_cluster_id,
-              create_microtask_queue
-                  ? v8::MicrotaskQueue::New(isolate,
-                                            v8::MicrotasksPolicy::kScoped)
-                  : nullptr),
+              v8::MicrotaskQueue::New(isolate, v8::MicrotasksPolicy::kScoped)),
           creation_params->global_scope_name,
           creation_params->parent_devtools_token,
           creation_params->v8_cache_options,
