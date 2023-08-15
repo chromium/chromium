@@ -83,6 +83,10 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kImprovedSemanticsActivityIndicators);
 
+// Feature to enable redesigned cookie settings for 3PCD.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kThirdPartyCookieDeprecationCookieSettings);
+
 }  // namespace features
 }  // namespace content_settings
 
