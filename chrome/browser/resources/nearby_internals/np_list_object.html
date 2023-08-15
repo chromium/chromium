@@ -10,12 +10,12 @@
     display: flex;
   }
 
-  #device-info {
+  #deviceInfo {
     width: 75%;
     height: 100%;
   }
 
-  #button-container {
+  #buttonContainer {
     width: 15%;
   }
 
@@ -26,18 +26,18 @@
   }
 </style>
 <div id="item">
-  <div id="device-info">
-    <span id="status_text_connectable"
+  <div id="deviceInfo">
+    <span id="statusTextConnectable"
         hidden="[[!device.connectable]]">Connectable Device</span>
-    <span id="status_text_lost"
+    <span id="statusTextLost"
         hidden="[[device.connectable]]">Not Connectable Device</span>
     <span id="type" class="info-text">[[device.type]]</span>
-    <span id="endpoint_id"
+    <span id="endpointId"
         class="info-text">Endpoint ID: [[device.endpoint_id]]</span>
     <span id="actions"
         class="info-text">Associated Actions: [[device.actions]]</span>
   </div>
-  <div id="button-container">
+  <div id="buttonContainer">
     <cr-button class="internals-button"
         on-click="onConnectClicked_">Connect</cr-button>
   </div>

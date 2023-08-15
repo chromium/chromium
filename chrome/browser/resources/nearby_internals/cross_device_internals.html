@@ -21,7 +21,7 @@
     padding: 20px;
   }
 
-  #devices-section {
+  #devicesContainer {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -60,7 +60,7 @@
 </div>
 
 <iron-list items="[[npDiscoveredDevicesList_]]" as="generic-object"
-    id="devices-section">
+    id="devicesContainer">
   <template>
     <np-object device="[[generic-object]]" >
     </np-object>
