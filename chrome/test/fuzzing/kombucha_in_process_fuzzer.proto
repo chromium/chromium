@@ -18,10 +18,13 @@ message Action {
 
 message Step {
   oneof step_choice {
-    SelectTab select_tab = 1;
-    ClickAt click_at = 2;
-    DragFromTo drag_from_to = 3;
-    SendAccelerator send_accelerator = 4;
+    ClickAt click_at = 1;
+    DragFromTo drag_from_to = 2;
+    SendAccelerator send_accelerator = 3;
+    ClickTab click_tab = 4;
+    ClickTabGroupHeader click_tab_group_header = 5;
+    SaveTabGroup save_tab_group = 6;
+    AddNewTabGroup add_new_tab_group = 7;
   }
 
   // Handles DragMouseTo events whenever it generates an empty source
@@ -35,15 +38,28 @@ message Step {
     bool right_click = 2;
   }
 
-  message SelectTab {
-    // We don't actually know how many tabs/which tab to target
-    // Should just function as an index
-    // Use modulo to make sure it doesn't go over
-    uint32 target = 1;
-  }
-
   message SendAccelerator {
     Accelerator target = 1;
+  }
+
+  message ClickTab {
+    uint32 target = 1;
+    bool right_click = 2;
+  }
+
+  message ClickTabGroupHeader {
+    // Targets are indices of tab groups
+    uint32 target = 1;
+    bool right_click = 2;
+  }
+
+  message SaveTabGroup {
+    uint32 target = 1;
+    bool close_editor = 2;
+  }
+
+  message AddNewTabGroup {
+    uint32 target = 1;
   }
 }
 

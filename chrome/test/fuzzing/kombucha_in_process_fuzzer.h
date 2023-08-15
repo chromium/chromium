@@ -5,6 +5,8 @@
 #ifndef CHROME_TEST_FUZZING_KOMBUCHA_IN_PROCESS_FUZZER_H_
 #define CHROME_TEST_FUZZING_KOMBUCHA_IN_PROCESS_FUZZER_H_
 
+#include "chrome/browser/ui/views/tabs/tab_group_header.h"
+
 #include <google/protobuf/descriptor.h>
 #include <stddef.h>
 #include <cstdint>
@@ -55,6 +57,50 @@ class KombuchaInProcessFuzzer
   }
   auto DragFromTo(ElementSpecifier source, ElementSpecifier dest) {
     return Steps(MoveMouseTo(source), DragMouseTo(dest));
+  }
+
+  // Custom verbs copied from saved_tab_groups_interactive_uitest.cc to interact
+  // with tab groups
+  auto SaveGroupLeaveEditorBubbleOpen(tab_groups::TabGroupId group_id) {
+    return Steps(EnsureNotPresent(kTabGroupEditorBubbleId),
+                 ClickTabGroupHeader(group_id, true),
+                 WaitForShow(kTabGroupEditorBubbleId),
+                 PressButton(kTabGroupEditorBubbleSaveToggleId));
+  }
+
+  MultiStep ClickTab(int index, bool right_click) {
+    const char kTabToClick[] = "Tab to Click";
+    return Steps(
+        NameDescendantViewByType<Tab>(kBrowserViewElementId, kTabToClick,
+                                      index),
+        right_click ? ClickRight(kTabToClick) : ClickLeft(kTabToClick));
+  }
+
+  MultiStep ClickTabGroupHeader(tab_groups::TabGroupId group_id,
+                                bool right_click) {
+    const char kTabGroupToClick[] = "Tab group header to click";
+    return Steps(
+        WithView(kTabStripElementId,
+                 [](TabStrip* tab_strip) { tab_strip->StopAnimating(true); }),
+        NameDescendantView(
+            kBrowserViewElementId, kTabGroupToClick,
+            base::BindRepeating(
+                [](tab_groups::TabGroupId group_id, const views::View* view) {
+                  const TabGroupHeader* header =
+                      views::AsViewClass<TabGroupHeader>(view);
+                  if (!header) {
+                    return false;
+                  }
+                  return header->group().value() == group_id;
+                },
+                group_id)),
+        right_click ? ClickRight(kTabGroupToClick)
+                    : ClickLeft(kTabGroupToClick));
+  }
+
+  auto SaveGroupAndCloseEditorBubble(tab_groups::TabGroupId group_id) {
+    return Steps(SaveGroupLeaveEditorBubbleOpen(group_id), FlushEvents(),
+                 ClickTabGroupHeader(group_id, false));
   }
 
   // Enum descriptors for protobuf messages
