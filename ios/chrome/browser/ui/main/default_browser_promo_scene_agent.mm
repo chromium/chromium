@@ -11,13 +11,13 @@
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
-#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
 
 @interface DefaultBrowserPromoSceneAgent ()
 
@@ -37,47 +37,103 @@
   return self;
 }
 
-#pragma mark - SceneStateObserver
+#pragma mark - Private
 
-- (void)sceneState:(SceneState*)sceneState
-    transitionedToActivationLevel:(SceneActivationLevel)level {
-  // Post Restore promo takes priority over other default browser promos.
-  if (level == SceneActivationLevelForegroundActive) {
-    [self maybeRegisterPostRestorePromo];
+// Registers the post restore default browser promo if the user is eligible. To
+// be eligible, they must be in the first session after an iOS restore and have
+// previously set Chrome as their default browser.
+- (void)maybeRegisterPostRestorePromo {
+  if (!_postRestorePromoSeenInCurrentSession &&
+      IsPostRestoreDefaultBrowserEligibleUser()) {
+    // TODO(crbug.com/1453786): register other variations.
+    if (GetPostRestoreDefaultBrowserPromoType() ==
+        PostRestoreDefaultBrowserPromoType::kAlert) {
+      self.promosManager->RegisterPromoForSingleDisplay(
+          promos_manager::Promo::PostRestoreDefaultBrowserAlert);
+      _postRestorePromoSeenInCurrentSession = YES;
+    }
+  } else {
+    self.promosManager->DeregisterPromo(
+        promos_manager::Promo::PostRestoreDefaultBrowserAlert);
   }
+}
+
+// Returns whether the user is signed in.
+- (bool)isSignedIn {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.sceneState.appState.mainBrowserState);
+  DCHECK(authenticationService);
+  DCHECK(authenticationService->initialized());
+  return authenticationService->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
+}
+
+#pragma mark - BaseDefaultBrowserPromoSchedulerSceneAgent
+
+- (bool)promoCanBeDisplayed {
+  return ShouldRegisterPromoWithPromoManager(
+      [self isSignedIn], /*is_omnibox_copy_paste=*/true,
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.sceneState.appState.mainBrowserState));
+}
+
+- (void)resetPromoHandler {
+}
+
+- (void)initPromoHandler:(Browser*)browser {
+}
+
+- (void)notifyHandlerShowPromo {
+  if (!IsDefaultBrowserInPromoManagerEnabled()) {
+    return;
+  }
+  self.promosManager->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::DefaultBrowser);
+
+  [[PromosManagerSceneAgent agentFromScene:self.sceneState]
+      maybeForceDisplayPromo];
+}
+
+- (void)notifyHandlerDismissPromo:(BOOL)animated {
+  if (IsDefaultBrowserInPromoManagerEnabled()) {
+    return;
+  }
+  self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
+}
+
+- (void)onEnteringBackground:(PromoReason)currentPromoReason
+              promoIsShowing:(bool)promoIsShowing {
+}
+
+- (void)onEnteringForeground {
+  // Post Restore promo takes priority over other default browser promos.
+  [self maybeRegisterPostRestorePromo];
+
+  AppState* appState = self.sceneState.appState;
 
   // Register default browser promo manager to the promo manager.
   if (IsDefaultBrowserInPromoManagerEnabled()) {
-    if (level == SceneActivationLevelForegroundActive) {
-      DCHECK(sceneState.appState.mainBrowserState);
-      AuthenticationService* authenticationService =
-          AuthenticationServiceFactory::GetForBrowserState(
-              sceneState.appState.mainBrowserState);
-      DCHECK(authenticationService);
-      DCHECK(authenticationService->initialized());
-      BOOL isSignedIn = authenticationService->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin);
-      DCHECK(self.promosManager);
-      if (ShouldRegisterPromoWithPromoManager(
-              isSignedIn, /*is_omnibox_copy_paste=*/false,
-              feature_engagement::TrackerFactory::GetForBrowserState(
-                  sceneState.appState.mainBrowserState))) {
-        self.promosManager->RegisterPromoForSingleDisplay(
-            promos_manager::Promo::DefaultBrowser);
-      } else {
-        self.promosManager->DeregisterPromo(
-            promos_manager::Promo::DefaultBrowser);
-      }
+    DCHECK(self.sceneState.appState.mainBrowserState);
+
+    DCHECK(self.promosManager);
+    if (ShouldRegisterPromoWithPromoManager(
+            [self isSignedIn], /*is_omnibox_copy_paste=*/false,
+            feature_engagement::TrackerFactory::GetForBrowserState(
+                appState.mainBrowserState))) {
+      self.promosManager->RegisterPromoForSingleDisplay(
+          promos_manager::Promo::DefaultBrowser);
+    } else {
+      self.promosManager->DeregisterPromo(
+          promos_manager::Promo::DefaultBrowser);
     }
     return;
   }
 
-  AppState* appState = self.sceneState.appState;
   // Can only present UI when activation level is
   // SceneActivationLevelForegroundActive. Show the UI if user has met the
   // qualifications to be shown the promo.
-  if (level == SceneActivationLevelForegroundActive &&
-      appState.shouldShowDefaultBrowserPromo && !appState.currentUIBlocker) {
+  if (appState.shouldShowDefaultBrowserPromo && !appState.currentUIBlocker) {
     id<DefaultPromoCommands> defaultPromoHandler =
         HandlerForProtocol(self.dispatcher, DefaultPromoCommands);
     switch (appState.defaultBrowserPromoTypeToShow) {
@@ -101,23 +157,19 @@
   }
 }
 
-// Registers the post restore default browser promo if the user is eligible. To
-// be eligible, they must be in the first session after an iOS restore and have
-// previously set Chrome as their default browser.
-- (void)maybeRegisterPostRestorePromo {
-  if (!_postRestorePromoSeenInCurrentSession &&
-      IsPostRestoreDefaultBrowserEligibleUser()) {
-    // TODO(crbug.com/1453786): register other variations.
-    if (GetPostRestoreDefaultBrowserPromoType() ==
-        PostRestoreDefaultBrowserPromoType::kAlert) {
-      self.promosManager->RegisterPromoForSingleDisplay(
-          promos_manager::Promo::PostRestoreDefaultBrowserAlert);
-      _postRestorePromoSeenInCurrentSession = YES;
-    }
-  } else {
-    self.promosManager->DeregisterPromo(
-        promos_manager::Promo::PostRestoreDefaultBrowserAlert);
-  }
+- (void)logPromoAppear:(PromoReason)currentPromoReason {
+}
+
+- (void)logPromoAction:(PromoReason)currentPromoReason
+        promoShownTime:(base::TimeTicks)promoShownTime {
+}
+
+- (void)logPromoUserDismiss:(PromoReason)currentPromoReason
+             promoShownTime:(base::TimeTicks)promoShownTime {
+}
+
+- (void)logPromoTimeout:(PromoReason)currentPromoReason
+         promoShownTime:(base::TimeTicks)promoShownTime {
 }
 
 @end

@@ -25,6 +25,19 @@ source_set("default_browser_promo") {
   ]
 }
 
+source_set("default_browser_promo_scene_agent_utils") {
+  sources = [
+    "default_browser_promo_scene_agent_utils.h",
+    "default_browser_promo_scene_agent_utils.mm",
+  ]
+  deps = [
+    ":default_browser_promo",
+    "//ios/chrome/browser/default_browser:utils",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
+    "//ios/chrome/browser/ui/main:default_browser_scene_agent",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources =

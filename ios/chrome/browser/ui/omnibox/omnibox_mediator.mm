@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
-#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/default_browser_promo_scene_agent_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
@@ -464,9 +464,7 @@ using base::UserMetricsAction;
     return;
   }
 
-  [[NonModalDefaultBrowserPromoSchedulerSceneAgent
-      agentFromScene:self.sceneState] logUserPastedInOmnibox];
-
+  NotifyDefaultBrowserPromoUserPastedInOmnibox(self.sceneState);
   LogToFETUserPastedURLIntoOmnibox(self.tracker);
 }
 

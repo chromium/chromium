@@ -24,11 +24,11 @@
 @class BrowserActionFactory;
 @class CarouselItem;
 @protocol CarouselItemConsumer;
-@class NonModalDefaultBrowserPromoSchedulerSceneAgent;
 class FaviconLoader;
 @class OmniboxPedalAnnotator;
 @class OmniboxPopupMediator;
 @class OmniboxPopupPresenter;
+@class SceneState;
 @protocol SnackbarCommands;
 class AutocompleteController;
 
@@ -96,9 +96,8 @@ class OmniboxPopupMediatorDelegate {
                               AutocompleteControllerObserver>
     debugInfoConsumer;
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
-/// Scheduler to notify about events happening in this popup.
-@property(nonatomic, weak)
-    NonModalDefaultBrowserPromoSchedulerSceneAgent* promoScheduler;
+/// Browser scene state to notify about events happening in this popup.
+@property(nonatomic, weak) SceneState* sceneState;
 @property(nonatomic, assign, getter=isIncognito) BOOL incognito;
 /// Whether the popup is open.
 @property(nonatomic, assign, getter=isOpen) BOOL open;

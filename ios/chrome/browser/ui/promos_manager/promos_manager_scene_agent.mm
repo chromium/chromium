@@ -29,6 +29,10 @@
   return self;
 }
 
+- (void)maybeForceDisplayPromo {
+  [self maybeNotifyObserver];
+}
+
 #pragma mark - ObservingSceneAgent
 
 - (void)setSceneState:(SceneState*)sceneState {
