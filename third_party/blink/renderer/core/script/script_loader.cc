@@ -1011,7 +1011,7 @@ PendingScript* ScriptLoader::PrepareScript(
         // If the script’s result is not null, append it to the element’s node
         // document's list of speculation rule sets.
         DCHECK(RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window));
-        auto* source = MakeGarbageCollected<SpeculationRuleSet::Source>(
+        auto* source = SpeculationRuleSet::Source::FromInlineScript(
             source_text, element_document, element_->GetDOMNodeId());
         speculation_rule_set_ =
             SpeculationRuleSet::Parse(source, context_window);

@@ -36,7 +36,7 @@ TEST_F(InspectorPreloadAgentTest, OutOfDocumentSpeculationRules) {
     }]
   })";
 
-  auto* source = MakeGarbageCollected<SpeculationRuleSet::Source>(
+  auto* source = SpeculationRuleSet::Source::FromRequest(
       source_text, KURL("https://example.com/speculationrules.js"), 42);
   auto* rule_set = SpeculationRuleSet::Parse(source, execution_context());
   CHECK(rule_set);
@@ -58,7 +58,7 @@ TEST_F(InspectorPreloadAgentTest, NoRequestIdIfInvalidId) {
     }]
   })";
 
-  auto* source = MakeGarbageCollected<SpeculationRuleSet::Source>(
+  auto* source = SpeculationRuleSet::Source::FromRequest(
       source_text, KURL("https://example.com/speculationrules.js"), 0);
   auto* rule_set = SpeculationRuleSet::Parse(source, execution_context());
   CHECK(rule_set);

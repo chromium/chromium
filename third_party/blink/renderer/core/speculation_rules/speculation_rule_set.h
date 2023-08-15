@@ -46,10 +46,20 @@ class CORE_EXPORT SpeculationRuleSet final
   // the document's base URL) used for parsing a rule set.
   class CORE_EXPORT Source : public GarbageCollected<Source> {
    public:
-    Source(const String& source_text, Document&, DOMNodeId node_id);
-    Source(const String& source_text,
-           const KURL& base_url,
-           uint64_t request_id);
+    // Don't call this directly; use the factory methods below instead!
+    Source(base::PassKey<Source>,
+           const String& source_text,
+           Document*,
+           absl::optional<DOMNodeId> node_id,
+           absl::optional<KURL> base_url,
+           absl::optional<uint64_t> request_id);
+
+    static Source* FromInlineScript(const String& source_text,
+                                    Document&,
+                                    DOMNodeId node_id);
+    static Source* FromRequest(const String& source_text,
+                               const KURL& base_url,
+                               uint64_t request_id);
 
     const String& GetSourceText() const;
     const absl::optional<DOMNodeId>& GetNodeId() const;

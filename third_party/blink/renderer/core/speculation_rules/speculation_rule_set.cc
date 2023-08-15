@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_features.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -429,23 +430,35 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
 
 // ---- SpeculationRuleSet::Source implementation ----
 
-SpeculationRuleSet::Source::Source(const String& source_text,
-                                   Document& document,
-                                   DOMNodeId node_id)
+SpeculationRuleSet::Source::Source(base::PassKey<SpeculationRuleSet::Source>,
+                                   const String& source_text,
+                                   Document* document,
+                                   absl::optional<DOMNodeId> node_id,
+                                   absl::optional<KURL> base_url,
+                                   absl::optional<uint64_t> request_id)
     : source_text_(source_text),
       document_(document),
       node_id_(node_id),
-      base_url_(absl::nullopt),
-      request_id_(absl::nullopt) {}
-
-SpeculationRuleSet::Source::Source(const String& source_text,
-                                   const KURL& base_url,
-                                   uint64_t request_id)
-    : source_text_(source_text),
-      document_(nullptr),
-      node_id_(absl::nullopt),
       base_url_(base_url),
       request_id_(request_id) {}
+
+SpeculationRuleSet::Source* SpeculationRuleSet::Source::FromInlineScript(
+    const String& source_text,
+    Document& document,
+    DOMNodeId node_id) {
+  return MakeGarbageCollected<Source>(base::PassKey<Source>(), source_text,
+                                      &document, node_id, absl::nullopt,
+                                      absl::nullopt);
+}
+
+SpeculationRuleSet::Source* SpeculationRuleSet::Source::FromRequest(
+    const String& source_text,
+    const KURL& base_url,
+    uint64_t request_id) {
+  return MakeGarbageCollected<Source>(base::PassKey<Source>(), source_text,
+                                      nullptr, absl::nullopt, base_url,
+                                      request_id);
+}
 
 const String& SpeculationRuleSet::Source::GetSourceText() const {
   return source_text_;
