@@ -5141,19 +5141,26 @@ void LocalFrameView::ExecutePendingStickyUpdates() {
   }
 }
 
-void LocalFrameView::AddPendingSnapUpdate(LayoutBox* object) {
+void LocalFrameView::AddPendingSnapUpdate(PaintLayerScrollableArea* object) {
   if (!pending_snap_updates_) {
     pending_snap_updates_ =
-        MakeGarbageCollected<HeapHashSet<Member<LayoutBox>>>();
+        MakeGarbageCollected<HeapHashSet<Member<PaintLayerScrollableArea>>>();
   }
   pending_snap_updates_->insert(object);
+}
+
+void LocalFrameView::RemovePendingSnapUpdate(PaintLayerScrollableArea* object) {
+  if (pending_snap_updates_) {
+    pending_snap_updates_->erase(object);
+  }
 }
 
 void LocalFrameView::ExecutePendingSnapUpdates() {
   if (pending_snap_updates_) {
     // Iteration order of the objects doesn't matter as the snap-areas are
     // contained within each scroll-container.
-    for (LayoutBox* snap_container : *pending_snap_updates_) {
+    for (PaintLayerScrollableArea* scrollable_area : *pending_snap_updates_) {
+      auto* snap_container = scrollable_area->GetLayoutBox();
       DCHECK(snap_container->IsScrollContainer());
       SnapCoordinator::UpdateSnapContainerData(*snap_container);
     }

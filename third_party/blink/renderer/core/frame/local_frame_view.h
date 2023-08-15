@@ -770,7 +770,8 @@ class CORE_EXPORT LocalFrameView final
   void AddPendingStickyUpdate(PaintLayerScrollableArea*);
   void ExecutePendingStickyUpdates();
 
-  void AddPendingSnapUpdate(LayoutBox*);
+  void AddPendingSnapUpdate(PaintLayerScrollableArea*);
+  void RemovePendingSnapUpdate(PaintLayerScrollableArea*);
   void ExecutePendingSnapUpdates();
 
   void ForAllChildLocalFrameViews(base::FunctionRef<void(LocalFrameView&)>);
@@ -1196,7 +1197,7 @@ class CORE_EXPORT LocalFrameView final
 
   // A set of objects needing snap-area constraint updates. These updates are
   // registered during style/layout, and deferred until the end of layout.
-  Member<HeapHashSet<Member<LayoutBox>>> pending_snap_updates_;
+  Member<HeapHashSet<Member<PaintLayerScrollableArea>>> pending_snap_updates_;
 
   // These are elements that were disconnected while having a remembered
   // size. We need to clear the remembered at resize observer timing,

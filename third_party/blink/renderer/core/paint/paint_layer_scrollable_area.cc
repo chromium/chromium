@@ -199,6 +199,9 @@ void PaintLayerScrollableArea::DisposeImpl() {
       frame_view->RemoveScrollAnchoringScrollableArea(this);
       frame_view->RemoveUserScrollableArea(this);
       frame_view->RemoveAnimatingScrollableArea(this);
+      if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+        frame_view->RemovePendingSnapUpdate(this);
+      }
     }
   }
 
@@ -2222,7 +2225,7 @@ void PaintLayerScrollableArea::EnqueueForSnapUpdateIfNeeded() {
   // currently have snap-data (and it needs to be cleared).
   for (const auto& fragment : box->PhysicalFragments()) {
     if (fragment.SnapAreas() || GetSnapContainerData()) {
-      box->GetFrameView()->AddPendingSnapUpdate(box);
+      box->GetFrameView()->AddPendingSnapUpdate(this);
       break;
     }
   }
