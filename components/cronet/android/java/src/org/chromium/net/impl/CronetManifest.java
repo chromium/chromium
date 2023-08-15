@@ -71,7 +71,6 @@ public final class CronetManifest {
         } catch (PackageManager.NameNotFoundException e) {
             serviceInfo = null;
         }
-        Bundle metaData = serviceInfo != null ? serviceInfo.metaData : null;
-        return metaData != null ? metaData : new Bundle();
+        return serviceInfo != null ? serviceInfo.metaData : new Bundle();
     }
 }

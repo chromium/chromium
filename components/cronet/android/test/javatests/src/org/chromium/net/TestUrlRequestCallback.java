@@ -288,9 +288,9 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         // Shouldn't happen after success.
         assertThat(mResponseStep).isNotEqualTo(ResponseStep.ON_SUCCEEDED);
         // Should happen at most once for a single request.
+        assertThat(mError).isNull();
         assertThat(mOnErrorCalled).isFalse();
         assertThat(mOnCanceledCalled).isFalse();
-        assertThat(mError).isNull();
         if (mCallbackExceptionThrown) {
             assertThat(error).isInstanceOf(CallbackException.class);
             assertThat(error).hasMessageThat().contains(

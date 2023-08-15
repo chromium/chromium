@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
@@ -188,52 +189,44 @@ final class JavaUrlRequest extends UrlRequestBase {
             Executor userExecutor, String url, String userAgent, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, final boolean trafficStatsUidSet,
             final int trafficStatsUid, long networkHandle) {
-        if (url == null) {
-            throw new NullPointerException("URL is required");
-        }
-        if (callback == null) {
-            throw new NullPointerException("Listener is required");
-        }
-        if (executor == null) {
-            throw new NullPointerException("Executor is required");
-        }
-        if (userExecutor == null) {
-            throw new NullPointerException("userExecutor is required");
-        }
+            Objects.requireNonNull(url, "URL is required");
+            Objects.requireNonNull(callback, "Listener is required");
+            Objects.requireNonNull(executor, "Executor is required");
+            Objects.requireNonNull(userExecutor, "userExecutor is required");
 
-        mAllowDirectExecutor = allowDirectExecutor;
-        mCallbackAsync = new AsyncUrlRequestCallback(callback, userExecutor);
-        final int trafficStatsTagToUse =
-                trafficStatsTagSet ? trafficStatsTag : TrafficStats.getThreadStatsTag();
-        mExecutor = new SerializingExecutor(new Executor() {
-            @Override
-            public void execute(final Runnable command) {
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        int oldTag = TrafficStats.getThreadStatsTag();
-                        TrafficStats.setThreadStatsTag(trafficStatsTagToUse);
-                        if (trafficStatsUidSet) {
-                            ThreadStatsUid.set(trafficStatsUid);
-                        }
-                        try {
-                            command.run();
-                        } finally {
+            mAllowDirectExecutor = allowDirectExecutor;
+            mCallbackAsync = new AsyncUrlRequestCallback(callback, userExecutor);
+            final int trafficStatsTagToUse =
+                    trafficStatsTagSet ? trafficStatsTag : TrafficStats.getThreadStatsTag();
+            mExecutor = new SerializingExecutor(new Executor() {
+                @Override
+                public void execute(final Runnable command) {
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            int oldTag = TrafficStats.getThreadStatsTag();
+                            TrafficStats.setThreadStatsTag(trafficStatsTagToUse);
                             if (trafficStatsUidSet) {
-                                ThreadStatsUid.clear();
+                                ThreadStatsUid.set(trafficStatsUid);
                             }
-                            TrafficStats.setThreadStatsTag(oldTag);
+                            try {
+                                command.run();
+                            } finally {
+                                if (trafficStatsUidSet) {
+                                    ThreadStatsUid.clear();
+                                }
+                                TrafficStats.setThreadStatsTag(oldTag);
+                            }
                         }
-                    }
-                });
-            }
-        });
-        mEngine = engine;
-        mCronetEngineId = engine.getCronetEngineId();
-        mLogger = engine.getCronetLogger();
-        mCurrentUrl = url;
-        mUserAgent = userAgent;
-        mNetworkHandle = networkHandle;
+                    });
+                }
+            });
+            mEngine = engine;
+            mCronetEngineId = engine.getCronetEngineId();
+            mLogger = engine.getCronetLogger();
+            mCurrentUrl = url;
+            mUserAgent = userAgent;
+            mNetworkHandle = networkHandle;
     }
 
     @Override
