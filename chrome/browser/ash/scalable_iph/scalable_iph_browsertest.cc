@@ -688,6 +688,11 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification,
       message_center->FindVisibleNotificationById(kTestNotificationId);
   EXPECT_TRUE(notification);
   EXPECT_TRUE(notification->delegate());
+
+  // `PerformActionForScalableIph` should be called with the corresponding CTA
+  // action_type when a notification is clicked.
+  EXPECT_CALL(*mock_delegate(), PerformActionForScalableIph(::testing::Eq(
+                                    scalable_iph::ActionType::kOpenChrome)));
   notification->delegate()->Click(/*button_index=*/0, /*reply=*/absl::nullopt);
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
