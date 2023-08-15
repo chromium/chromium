@@ -4231,6 +4231,22 @@
         "disable_accelerated_vp9_encode",
         "disable_accelerated_vp9_profile2_decode"
       ]
+    },
+    {
+      "id": 417,
+      "description": "Limit D3D11VideoDecoder to 11.0 due to failures on QC chipsets.",
+      "comment": [
+        "On QC chipsets calling ID3D11VideoContext1::SubmitDecoderBuffer1 with ",
+        "non-protected content can result in an E_INVALIDARG result and playback ",
+        "failure. Force the use of 11.0 to create an ID3D11VideoContext instead."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x5143",
+      "features": [
+        "limit_d3d11_video_decoder_to_11_0"
+      ]
     }
   ]
 }
