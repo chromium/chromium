@@ -2111,6 +2111,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             mUrlFocusLayoutAnimator = null;
         }
         if (mOptionalButtonAnimationRunning) mOptionalButtonCoordinator.cancelTransition();
+        if (hasFocus && mBrandColorTransitionActive) {
+            mBrandColorTransitionAnimation.cancel();
+        }
 
         List<Animator> animators = new ArrayList<>();
         if (hasFocus) {
@@ -2235,7 +2238,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         final int initialLocationBarColor = getLocationBarColorForToolbarColor(initialColor);
         final int finalLocationBarColor = getLocationBarColorForToolbarColor(finalColor);
 
-        if (!isVisualStateValidForBrandColorTransition(mVisualState)) return;
+        // Ignore theme color changes while the omnibox is focused, since we want a standard,
+        // app-defined color for the toolbar in this scenario, not the site's color. We'll
+        // transition back to the site's color on unfocus.
+        if (urlHasFocus() || !isVisualStateValidForBrandColorTransition(mVisualState)) return;
 
         if (!shouldAnimate) {
             updateToolbarBackground(finalColor);
