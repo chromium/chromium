@@ -101,8 +101,7 @@ class AndroidDriverFactory(DriverFactory):
     driver = None
     try:
       yield (driver := webdriver.Chrome(
-        service=service.Service(self.chromedriver_path,
-                                service_args=['--disable-build-check']),
+        service=service.Service(self.chromedriver_path),
         options=options))
     finally:
       if driver:
