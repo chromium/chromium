@@ -998,8 +998,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, SpecifiedPageSize1) {
   VerifyPagesPrinted(true);
 }
 
-// TODO(crbug.com/1444579): Fix the remaining issues, and enable this test.
-TEST_F(MAYBE_PrintRenderFrameHelperTest, DISABLED_SpecifiedPageSize2) {
+TEST_F(MAYBE_PrintRenderFrameHelperTest, SpecifiedPageSize2) {
   LoadHTML(R"HTML(
     <style>
       @page {
@@ -1018,8 +1017,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, DISABLED_SpecifiedPageSize2) {
   VerifyPagesPrinted(true);
 }
 
-// TODO(crbug.com/1444579): Fix the remaining issues, and enable this test.
-TEST_F(MAYBE_PrintRenderFrameHelperTest, DISABLED_SpecifiedPageSize3) {
+TEST_F(MAYBE_PrintRenderFrameHelperTest, SpecifiedPageSize3) {
   LoadHTML(R"HTML(
     <style>
       @page {

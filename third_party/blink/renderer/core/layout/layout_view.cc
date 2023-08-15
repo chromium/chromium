@@ -690,12 +690,16 @@ PhysicalSize LayoutView::PageAreaSize(wtf_size_t page_index,
 
   page_size.Scale(page_scale_factor_);
 
-  // Round down to the nearest integer. Although layout itself could have
-  // handled subpixels just fine, the paint code cannot without bleeding across
-  // page boundaries. Furthermore, the printing code (outside Blink) also rounds
-  // down, which means that anything larger than that would end up getting
-  // clipped.
-  return PhysicalSize(gfx::ToFlooredSize(page_size));
+  // Round up to the nearest integer. Although layout itself could have handled
+  // subpixels just fine, the paint code cannot without bleeding across page
+  // boundaries. The printing code (outside Blink) also rounds up. It's
+  // important that all pieces of the machinery agree on which way to round, or
+  // we risk clipping away a pixel or so at the edges. The reason for rounding
+  // up (rather than down, or to the closest integer) is so that any box that
+  // starts exactly at the beginning of a page, and uses a block-size exactly
+  // equal to that of the page area (before rounding) will actually fit on one
+  // page.
+  return PhysicalSize(gfx::ToCeiledSize(page_size));
 }
 
 PhysicalRect LayoutView::DocumentRect() const {

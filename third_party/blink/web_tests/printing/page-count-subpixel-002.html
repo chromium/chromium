@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<style>
+  body { margin: 0; }
+  @page {
+    size: 500px 10.1px;
+    margin: 0;
+  }
+  div { break-inside: avoid; }
+</style>
+<div style="height:10.1px; background:blue;"></div>
+<div style="height:10.1px;"></div>
+<div style="height:10.1px; background:blue;"></div>
+<div style="height:10.1px;"></div>
+<div style="height:10.1px; background:blue;"></div>
+<div style="height:10.1px;"></div>
+<div style="height:10.1px; background:blue;"></div>
+<div style="height:10.1px;"></div>
+<div style="height:10.1px; background:blue;"></div>
+<div style="height:10.1px;"></div>
+<div style="height:10.1px; background:blue;"></div>
+<div style="height:10.1px;"></div>
+<div style="height:10.1px; background:blue;"></div>
+<div style="height:10.1px;"></div>
+<div style="height:10.1px; background:blue;"></div>
+<div style="height:10.1px;"></div>
+<div style="height:10.1px; background:blue;"></div>
+<div style="height:10.1px;"></div>
+<div style="height:10.1px; background:blue;"></div>
+<div style="height:10.1px;"></div>
+<div style="height:10.1px; background:black;"></div>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    assert_equals(internals.numberOfPages(), 21);
+  }, "page count");
+</script>
