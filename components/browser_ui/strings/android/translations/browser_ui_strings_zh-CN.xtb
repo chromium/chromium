@@ -115,7 +115,7 @@
 <translation id="300526633675317032">这会清除全部的网站存储数据 (<ph name="SIZE_IN_KB" />)。</translation>
 <translation id="3008272652534848354">重置权限</translation>
 <translation id="301521992641321250">已被自动禁止</translation>
-<translation id="3069226013421428034">允许使用第三方帐号登录特定网站。</translation>
+<translation id="3069226013421428034">允许使用第三方账号登录特定网站。</translation>
 <translation id="310297983047869047">上一张幻灯片</translation>
 <translation id="3109724472072898302">已收起</translation>
 <translation id="3114012059975132928">视频播放器</translation>
@@ -278,7 +278,7 @@
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6042308850641462728">展开</translation>
 <translation id="6064125863973209585">下载已完成</translation>
-<translation id="6071501408666570960">您可能已从此网站上退出帐号</translation>
+<translation id="6071501408666570960">您可能已从此网站上退出账号</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6177111841848151710">不允许当前搜索引擎使用</translation>
 <translation id="6177128806592000436">您与此网站之间建立的连接不安全</translation>
@@ -293,7 +293,7 @@
 <translation id="6270391203985052864">网站可以询问能否向您发送通知</translation>
 <translation id="6295158916970320988">所有网站</translation>
 <translation id="6320088164292336938">振动</translation>
-<translation id="6367753977865761591">禁止使用第三方帐号登录特定网站。</translation>
+<translation id="6367753977865761591">禁止使用第三方账号登录特定网站。</translation>
 <translation id="6388207532828177975">清除并重置</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
@@ -446,9 +446,9 @@
 <translation id="8958424370300090006">阻止特定网站使用 Cookie。</translation>
 <translation id="8959122750345127698">无法访问 <ph name="URL" /></translation>
 <translation id="8986362086234534611">不保存</translation>
-<translation id="8990043154272859344">您将会从所有网站上自动退出帐号</translation>
+<translation id="8990043154272859344">您将会从所有网站上自动退出账号</translation>
 <translation id="9019902583201351841">由您父母管理</translation>
-<translation id="9039697262778250930">您可能会自动从这些网站上退出帐号</translation>
+<translation id="9039697262778250930">您可能会自动从这些网站上退出账号</translation>
 <translation id="9074739597929991885">蓝牙</translation>
 <translation id="9090268041676521955">此网站属于由 <ph name="FPS_OWNER" /> 定义的群组，因此能查看您的活动记录。</translation>
 <translation id="9106233582039520022">删除 Cookie？</translation>

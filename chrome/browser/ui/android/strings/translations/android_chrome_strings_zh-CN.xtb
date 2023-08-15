@@ -59,7 +59,7 @@
 <translation id="1269129608791067105">您的历史记录会显示在此处</translation>
 <translation id="1273937721055267968">屏蔽 <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">点按即可展开</translation>
-<translation id="1289059016768036948">系统会要求您登录自己的 Google 帐号</translation>
+<translation id="1289059016768036948">系统会要求您登录自己的 Google 账号</translation>
 <translation id="1291207594882862231">清除历史记录、Cookie、网站数据、缓存内容…</translation>
 <translation id="1293898515599432175">系统将从 Chrome <ph name="CHROME_CHANNEL" />的 Google 密码管理工具中删除您的密码。您可以保留刚刚下载的密码文件。</translation>
 <translation id="129553762522093515">最近关闭的标签页</translation>
@@ -78,7 +78,7 @@
 <translation id="1332501820983677155">Google Chrome 功能快捷键</translation>
 <translation id="1344653310988386453">包含指向突出显示的内容的链接</translation>
 <translation id="1347468774581902829">管理我的活动记录</translation>
-<translation id="1360432990279830238">退出帐号并关闭同步功能？</translation>
+<translation id="1360432990279830238">退出账号并关闭同步功能？</translation>
 <translation id="1366525380420346469">处于开启状态时</translation>
 <translation id="1373696734384179344">内存不足，无法下载所选内容。</translation>
 <translation id="1376578503827013741">正在计算…</translation>
@@ -113,7 +113,7 @@
 <translation id="1513858653616922153">删除密码</translation>
 <translation id="1514552811327923157">Privacy Sandbox 提示已全屏打开</translation>
 <translation id="1521774566618522728">今天曾有活动</translation>
-<translation id="1544826120773021464">要管理您的 Google 帐号，请点按“管理帐号”按钮</translation>
+<translation id="1544826120773021464">要管理您的 Google 账号，请点按“管理账号”按钮</translation>
 <translation id="1549000191223877751">移至其他窗口</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1554532453982918912">可协助改进 Chrome，让所有像您这样使用 Chrome 的用户都能够获享更好的体验</translation>
@@ -159,7 +159,7 @@
 <translation id="1883903952484604915">我的文件</translation>
 <translation id="189358972401248634">其他语言</translation>
 <translation id="1900260903084164610">继续操作即表示您同意遵守<ph name="BEGIN_TOS_LINK" />服务条款<ph name="END_TOS_LINK" />。</translation>
-<translation id="1904580727789512086">系统会将您访问的网址保存到您的 Google 帐号中</translation>
+<translation id="1904580727789512086">系统会将您访问的网址保存到您的 Google 账号中</translation>
 <translation id="1910950723001426294">分享选项列表已关闭。</translation>
 <translation id="1919130412786645364">允许登录 Chrome</translation>
 <translation id="1922362554271624559">建议的语言</translation>
@@ -226,8 +226,8 @@
 <translation id="2249635629516220541">自定义要让网站使用什么信息向您展示广告</translation>
 <translation id="2259659629660284697">导出密码…</translation>
 <translation id="2276231040576210443">您随时可在<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />中选择要同步的内容。Google 可能会根据您的历史记录为您提供个性化的 Google 搜索和其他服务。</translation>
-<translation id="2276696007612801991">您需要先登录 Google 帐号才能检查您的密码</translation>
-<translation id="2278052315791335171">删除此密码不会删除您在 <ph name="SITE" /> 上的帐号</translation>
+<translation id="2276696007612801991">您需要先登录 Google 账号才能检查您的密码</translation>
+<translation id="2278052315791335171">删除此密码不会删除您在 <ph name="SITE" /> 上的账号</translation>
 <translation id="2286841657746966508">帐单邮寄地址</translation>
 <translation id="228704530595896923">分享选项列表。</translation>
 <translation id="230115972905494466">未找到任何兼容设备</translation>
@@ -237,15 +237,15 @@
 <translation id="2328985652426384049">无法登录</translation>
 <translation id="2341410551640223969">无法安装 <ph name="WEBAPK_NAME" />。</translation>
 <translation id="234265804618409743">无法打开您的摄像头。出了点问题。</translation>
-<translation id="2349710944427398404">Chrome 所使用的数据总量，包括帐号、书签和已保存的设置</translation>
+<translation id="2349710944427398404">Chrome 所使用的数据总量，包括账号、书签和已保存的设置</translation>
 <translation id="235789365079050412">Google 隐私权政策</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2386938421315164605">隐藏和取消隐藏主题</translation>
 <translation id="2390510615457643724">您想再次下载 <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) 吗？</translation>
 <translation id="2394602618534698961">您下载的文件会显示在此处</translation>
-<translation id="2410754283952462441">选择帐号</translation>
+<translation id="2410754283952462441">选择账号</translation>
 <translation id="2414886740292270097">深色调</translation>
-<translation id="2426805022920575512">选择其他帐号</translation>
+<translation id="2426805022920575512">选择其他账号</translation>
 <translation id="2433507940547922241">外观</translation>
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" />预览</translation>
@@ -280,7 +280,7 @@
 <translation id="257470231920177468">开启此设置后，这里会列出您访问过的哪些网站会推测您的兴趣。</translation>
 <translation id="2580436639406015883">“垃圾内容和欺诈行为削减”功能依靠私密状态令牌来协助网站打击欺诈行为并将机器人与真人区分开来。
 
-网站可以根据您与其进行的互动（例如定期登录帐号）向您的浏览器颁发私密状态令牌。之后，如果您访问的其他网站搜寻并找到有效的私密状态令牌，就更有可能将您视为真人而非机器人。
+网站可以根据您与其进行的互动（例如定期登录账号）向您的浏览器颁发私密状态令牌。之后，如果您访问的其他网站搜寻并找到有效的私密状态令牌，就更有可能将您视为真人而非机器人。
 
 私密状态令牌有助于加强网络隐私保护，而且不会泄露您的身份。</translation>
 <translation id="2581165646603367611">这会清除 Chrome 认为不重要的网站的 Cookie、缓存和其他数据。</translation>
@@ -319,7 +319,7 @@
 <translation id="2779651927720337254">失败</translation>
 <translation id="2781151931089541271">还剩 1 秒</translation>
 <translation id="2800066122460699237">系统将会关闭标签页“<ph name="TAB_TITLE" />”</translation>
-<translation id="281504910091592009">查看和管理您的 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" />中保存的密码</translation>
+<translation id="281504910091592009">查看和管理您的 <ph name="BEGIN_LINK" />Google 账号<ph name="END_LINK" />中保存的密码</translation>
 <translation id="2827278682606527653">动态卡片上的菜单已半屏打开</translation>
 <translation id="2830783625999891985">已隐藏剪贴板内容</translation>
 <translation id="2838367486340230368">隐私保护指南说明已半屏打开</translation>
@@ -389,7 +389,7 @@
 <translation id="3070005020161560471">自动翻译</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。您也必须遵守<ph name="BEGIN_LINK3" />隐私权政策<ph name="END_LINK3" />。</translation>
 <translation id="3080525922482950719">您可保存网页以供日后阅读或离线阅读</translation>
-<translation id="3083194063661536258">已退出帐号。按钮。打开对话框即可登录并开启同步功能。</translation>
+<translation id="3083194063661536258">已退出账号。按钮。打开对话框即可登录并开启同步功能。</translation>
 <translation id="3091010850649238832">显示剪贴板内容</translation>
 <translation id="3098745985164956033">系统会将部分图片发送给 Google 以便为您改进说明</translation>
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
@@ -405,7 +405,7 @@
 <translation id="3207960819495026254">已加书签</translation>
 <translation id="3208584281581115441">立即检查</translation>
 <translation id="3211426585530211793">已删除“<ph name="ITEM_TITLE" />”</translation>
-<translation id="3214996641768123781">当您登录后，系统可能会将<ph name="BEGIN_LINK1" />搜索记录<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活动记录<ph name="END_LINK2" />保存在您的 Google 帐号中。您可以随时删除这些记录。</translation>
+<translation id="3214996641768123781">当您登录后，系统可能会将<ph name="BEGIN_LINK1" />搜索记录<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活动记录<ph name="END_LINK2" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
 <translation id="321773570071367578">如果您忘记了密码或想更改此设置，请<ph name="BEGIN_LINK" />重置同步设置<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">若要同步您的密码，请验证是您本人在操作</translation>
 <translation id="3223522355830797639">银行想确认您的身份。</translation>
@@ -437,7 +437,7 @@
 <translation id="3359667936385849800">使用您当前的服务提供商</translation>
 <translation id="3365271666488085187">Chrome 可能会根据此兴趣来展示广告</translation>
 <translation id="3373979091428520308">如果想将此页分享到其他设备，请在相应设备上的 Chrome 设置中开启同步</translation>
-<translation id="3374023511497244703">您的书签、历史记录、密码和其他 Chrome 数据将不再同步到您的 Google 帐号中</translation>
+<translation id="3374023511497244703">您的书签、历史记录、密码和其他 Chrome 数据将不再同步到您的 Google 账号中</translation>
 <translation id="3384347053049321195">分享图片</translation>
 <translation id="3387650086002190359">未能成功下载 <ph name="FILE_NAME" />，因为文件系统出现了错误。</translation>
 <translation id="3389286852084373014">文本过长</translation>
@@ -530,7 +530,7 @@
 <translation id="3932390316856284148">用于进行登录的底部工作表已全屏打开。</translation>
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">无法启用语音搜索功能</translation>
-<translation id="395377504920307820">在不登录帐号的情况下使用</translation>
+<translation id="395377504920307820">在不登录账号的情况下使用</translation>
 <translation id="3958287878205277013">如需清除您设备中的无痕浏览记录，请关闭所有无痕式标签页。</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{待准备就绪后，Chrome 即会加载您的网页}other{待准备就绪后，Chrome 即会加载您的网页}}</translation>
 <translation id="3962119236270174787">针对已知危险网站、下载内容和扩展程序提供标准保护</translation>
@@ -574,7 +574,7 @@
 <translation id="414128724510021958">默认请求桌面版网站</translation>
 <translation id="4147131678541801076">在试用期间，“垃圾内容和欺诈行为削减”功能依靠私密状态令牌来协助网站打击欺诈行为并将机器人与真人区分开来。
 
-网站可以根据您与其进行的互动（例如定期登录帐号）向您的浏览器颁发私密状态令牌。之后，如果您访问的其他网站搜寻并找到有效的私密状态令牌，就更有可能将您视为真人而非机器人。
+网站可以根据您与其进行的互动（例如定期登录账号）向您的浏览器颁发私密状态令牌。之后，如果您访问的其他网站搜寻并找到有效的私密状态令牌，就更有可能将您视为真人而非机器人。
 
 私密状态令牌有助于加强网络隐私保护，而且不会泄露您的身份。</translation>
 <translation id="4162867837470729563">分享选项列表已全屏打开。</translation>
@@ -623,7 +623,7 @@
 <translation id="4405636711880428279">移除您的虚拟卡？</translation>
 <translation id="4409271659088619928">您所用的搜索引擎是<ph name="DSE" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="441383202534727410">网站列表最多可能需要 1 周的时间才会显示在这里，具体取决于您的浏览记录。</translation>
-<translation id="4415276339145661267">管理您的 Google 帐号</translation>
+<translation id="4415276339145661267">管理您的 Google 账号</translation>
 <translation id="4425140285732600465">正在跟踪价格。当任一网站上的商品降价时，您会收到提醒。</translation>
 <translation id="442518031075347249">您将无法再通过 Google Pay 使用此虚拟卡。<ph name="BEGIN_LINK1" />详细了解虚拟卡<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">广告个性化</translation>
@@ -632,15 +632,15 @@
 <translation id="4461614516424362539">当您使用二维码关联另一部设备后，相应设备便可将此手机用作安全密钥。如果您移除相应设备，则必须扫描二维码才能重新关联它。</translation>
 <translation id="4479972344484327217">正在为 Chrome 安装<ph name="MODULE" />…</translation>
 <translation id="4484496141267039529">无网络连接。请稍后再试。</translation>
-<translation id="4487967297491345095">Chrome 的所有应用数据都将被永久删除，其中包括所有文件、设置、帐号、数据库等。</translation>
-<translation id="449126573531210296">使用您的 Google 帐号加密已同步的密码</translation>
+<translation id="4487967297491345095">Chrome 的所有应用数据都将被永久删除，其中包括所有文件、设置、账号、数据库等。</translation>
+<translation id="449126573531210296">使用您的 Google 账号加密已同步的密码</translation>
 <translation id="4508528996305412043">动态卡片上的菜单已打开</translation>
 <translation id="4509501256689523862">浏览网站时是否会看到个性化广告取决于此设置、<ph name="BEGIN_LINK_1" />广告主题<ph name="END_LINK_1" />、您的 <ph name="BEGIN_LINK_2" />Cookie 设置<ph name="END_LINK_2" />以及您正查看的网站是否会展示个性化广告</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# 天前}other{# 天前}}</translation>
 <translation id="451872707440238414">搜索书签</translation>
 <translation id="4521489764227272523">所选数据已从 Chrome 和同步的设备中移除。
 
-不过，您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能还有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>
+不过，您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能还有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4528638190900283934">登录即可获享更多功能</translation>
 <translation id="4532845899244822526">选择文件夹</translation>
@@ -649,7 +649,7 @@
 <translation id="4558311620361989323">网页快捷键</translation>
 <translation id="4561730552726921821">注册成功</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
-<translation id="4572422548854449519">请登录受管理的帐号</translation>
+<translation id="4572422548854449519">请登录受管理的账号</translation>
 <translation id="4576892426230499203">请尝试另一种验证方式</translation>
 <translation id="4577115723294378384">按从 A 到 Z 排序</translation>
 <translation id="4578289292431526768">开始查看</translation>
@@ -690,7 +690,7 @@
 <translation id="4759238208242260848">下载内容</translation>
 <translation id="4763480195061959176">视频</translation>
 <translation id="4766313118839197559">系统会将密码保存到此设备上的密码管理工具中</translation>
-<translation id="4766678251456904326">向设备添加帐号</translation>
+<translation id="4766678251456904326">向设备添加账号</translation>
 <translation id="4767947714785277816">我们即将推出一项名为“广告效果衡量”的全新广告隐私权功能。Chrome 只会与网站和应用分享非常有限的信息（例如向您展示广告的时段），以帮助衡量广告效果。</translation>
 <translation id="4769095993849849966">新文件名</translation>
 <translation id="4778653490315793244">尚无可显示的内容</translation>
@@ -733,10 +733,10 @@
 <translation id="4925120120285606924">屏幕截图 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">系统会导出您的密码并将其下载为一个文本文件。有权访问目标文件夹的任何人和任何应用都能看到您的密码。</translation>
 <translation id="4926901776383726965">您可保存图片和文件以供离线查看或在其他应用中分享</translation>
-<translation id="4932247056774066048">您将要退出由 <ph name="DOMAIN_NAME" /> 管理的帐号，因此您的 Chrome 数据将会从这部设备中删除，但仍会保留在您的 Google 帐号中。</translation>
+<translation id="4932247056774066048">您将要退出由 <ph name="DOMAIN_NAME" /> 管理的账号，因此您的 Chrome 数据将会从这部设备中删除，但仍会保留在您的 Google 账号中。</translation>
 <translation id="4943703118917034429">虚拟现实</translation>
 <translation id="4943872375798546930">找不到结果</translation>
-<translation id="4950924971025849764">当您登录同一 Google 帐号后，其他设备便可将此手机用作安全密钥。</translation>
+<translation id="4950924971025849764">当您登录同一 Google 账号后，其他设备便可将此手机用作安全密钥。</translation>
 <translation id="4957722034734105353">了解详情...</translation>
 <translation id="4961107849584082341">将此页面翻译成任何语言</translation>
 <translation id="4971735654804503942">为您提供更快速主动的保护措施，免受危险网站、下载内容或扩展程序的威胁。系统会在密码遭泄露时向您发出警告。您需要向 Google 发送浏览数据。</translation>
@@ -756,10 +756,10 @@
 <translation id="5039804452771397117">允许</translation>
 <translation id="5040262127954254034">隐私权</translation>
 <translation id="504456571576643789">注意事项</translation>
-<translation id="5054455334322721892">当您登录后，系统可能会将<ph name="BEGIN_LINK1" />其他形式的活动记录<ph name="END_LINK1" />保存在您的 Google 帐号中。您可以随时删除这些记录。</translation>
+<translation id="5054455334322721892">当您登录后，系统可能会将<ph name="BEGIN_LINK1" />其他形式的活动记录<ph name="END_LINK1" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
 <translation id="506254248375231072">没有任何标签页</translation>
 <translation id="5062960805900435602">已关闭关于密码合并的更新</translation>
-<translation id="5091199029769593641">不久之后，当打开新标签页时，您将看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 帐号中。您可在“探索”设置中管理它们。</translation>
+<translation id="5091199029769593641">不久之后，当打开新标签页时，您将看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 账号中。您可在“探索”设置中管理它们。</translation>
 <translation id="5091249083535528968">扩展的使用情况数据</translation>
 <translation id="509429900233858213">出现错误。</translation>
 <translation id="5097349930204431044">您访问的网站能判断您的喜好，然后在您继续浏览时向您展示建议的广告</translation>
@@ -852,7 +852,7 @@
 <translation id="562289928968387744">管理回应</translation>
 <translation id="5626134646977739690">名字：</translation>
 <translation id="5628604359369369630">未读 - 可离线阅读</translation>
-<translation id="5641456720590409793"><ph name="BEGIN_LINK1" />搜索记录<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活动记录<ph name="END_LINK2" />可能会保存在您的 Google 帐号中</translation>
+<translation id="5641456720590409793"><ph name="BEGIN_LINK1" />搜索记录<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活动记录<ph name="END_LINK2" />可能会保存在您的 Google 账号中</translation>
 <translation id="564667659802381754">隐私保护指南<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">过去 7 天</translation>
 <translation id="5655963694829536461">搜索您的下载内容</translation>
@@ -967,16 +967,16 @@
 <translation id="6232535412751077445">如果您启用了“不跟踪”，您的浏览流量中将会包含一项请求。具体影响取决于网站是否会回应该请求以及如何解读该请求。
 
 例如：某些网站在收到该请求后，可能会向您展示相应的广告（这些广告并不是根据您访问过的其他网站而展示的）。许多网站仍会出于一些目的收集并使用您的浏览数据，例如，为了提高安全性，为了提供相关内容、广告和推荐内容，以及为了生成报告统计信息。</translation>
-<translation id="6233974827872475843">开启同步功能，将此设备上的密码保存到您的 Google 帐号中</translation>
+<translation id="6233974827872475843">开启同步功能，将此设备上的密码保存到您的 Google 账号中</translation>
 <translation id="6255794742848779505">我们即将更改此设备上的密码保存方式</translation>
 <translation id="6264376385120300461">仍然下载</translation>
 <translation id="6277522088822131679">打印该页面时出现问题，请重试。</translation>
 <translation id="6277722725779679269">无法更新“跟踪价格”设置。</translation>
 <translation id="6278428485366576908">主题背景</translation>
-<translation id="6294610283659775533">您可在使用同一 Google 帐号登录的不同设备间发送标签页</translation>
+<translation id="6294610283659775533">您可在使用同一 Google 账号登录的不同设备间发送标签页</translation>
 <translation id="6295158916970320988">所有网站</translation>
 <translation id="6297765934698848803">负责管理您设备的组织已关闭您的摄像头。</translation>
-<translation id="6303969859164067831">退出帐号并关闭同步功能</translation>
+<translation id="6303969859164067831">退出账号并关闭同步功能</translation>
 <translation id="6312687380483398334">Web 应用（安静）</translation>
 <translation id="6316139424528454185">Android 版本不受支持</translation>
 <translation id="6324916366299863871">修改快捷方式</translation>
@@ -1033,7 +1033,7 @@
 <translation id="6560414384669816528">改用搜狗搜索</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6565959834589222080">当 Wi-Fi 可用时使用 Wi-Fi</translation>
-<translation id="6569373978618239158">现在，当打开新标签页时，您会看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 帐号中。您可在“探索”设置中管理它们。</translation>
+<translation id="6569373978618239158">现在，当打开新标签页时，您会看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 账号中。您可在“探索”设置中管理它们。</translation>
 <translation id="6573096386450695060">一律允许</translation>
 <translation id="6573431926118603307">您在其他设备上的 Chrome 中打开的标签页将列在此处。</translation>
 <translation id="6583199322650523874">为当前网页添加书签</translation>
@@ -1135,15 +1135,15 @@
 <translation id="7030304022046916278">会将网址发送给“安全浏览”功能进行检查</translation>
 <translation id="7030585293819777123">继续您的上一项任务？</translation>
 <translation id="7035701931849773472">其他选项</translation>
-<translation id="7037830628447527439">使用您的 Google 帐号登录 Chrome</translation>
+<translation id="7037830628447527439">使用您的 Google 账号登录 Chrome</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">获取图片说明？</translation>
 <translation id="7055152154916055070">已禁止重定向：</translation>
 <translation id="7063006564040364415">无法连接到同步服务器。</translation>
-<translation id="7071521146534760487">管理帐号</translation>
+<translation id="7071521146534760487">管理账号</translation>
 <translation id="707155805709242880">请在下方选择要同步的内容</translation>
 <translation id="7077143737582773186">SD 卡</translation>
-<translation id="7080806333218412752">会将网址发送给“安全浏览”功能进行检查。还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁。而且，会在您登录后暂时将这些数据关联到您的 Google 帐号，以便在各个 Google 应用中为您提供保护。</translation>
+<translation id="7080806333218412752">会将网址发送给“安全浏览”功能进行检查。还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁。而且，会在您登录后暂时将这些数据关联到您的 Google 账号，以便在各个 Google 应用中为您提供保护。</translation>
 <translation id="7085332316435785646">选择是否要包含 Chrome 历史记录以便在各款 Google 服务中获享更个性化的体验</translation>
 <translation id="7088681679121566888">Chrome 已是最新版本</translation>
 <translation id="7105047059074518658">登录即可让跨设备浏览更轻松顺畅</translation>
@@ -1201,14 +1201,14 @@
 <translation id="7388615499319468910">网站和广告主可以了解广告效果。此设置已关闭。</translation>
 <translation id="7400418766976504921">网址</translation>
 <translation id="7403691278183511381">Chrome 首次运行体验</translation>
-<translation id="7411224099004328643">Google 帐号用户</translation>
+<translation id="7411224099004328643">Google 账号用户</translation>
 <translation id="741204030948306876">立即开启</translation>
 <translation id="7419565702166471774">一律使用安全连接</translation>
 <translation id="7431991332293347422">控制 Google 如何利用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="7435356471928173109">已被您的管理员关闭</translation>
 <translation id="7437998757836447326">退出 Chrome</translation>
 <translation id="7443901082822119557">在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能会无法正常运作。</translation>
-<translation id="7453467225369441013">您会从大多数网站退出，但不会退出自己的 Google 帐号。</translation>
+<translation id="7453467225369441013">您会从大多数网站退出，但不会退出自己的 Google 账号。</translation>
 <translation id="7453810262525006706">合拢为侧边视图</translation>
 <translation id="7454641608352164238">空间不足</translation>
 <translation id="7455988709578031708">根据您的浏览记录推测得出。此设置已开启。</translation>
@@ -1226,7 +1226,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" />（上次更新时间：<ph name="TIME_SINCE_UPDATE" />）</translation>
 <translation id="7497755084107113646">已将此主题恢复为潜在的兴趣主题</translation>
 <translation id="7498271377022651285">请稍候…</translation>
-<translation id="7502234197872745058">若要在所有网站上退出您的 Google 帐号，请<ph name="BEGIN_LINK1" />退出 Chrome<ph name="END_LINK1" />。</translation>
+<translation id="7502234197872745058">若要在所有网站上退出您的 Google 账号，请<ph name="BEGIN_LINK1" />退出 Chrome<ph name="END_LINK1" />。</translation>
 <translation id="750228856503700085">无法获取更新</translation>
 <translation id="7507207699631365376">请参阅此提供商的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">下载</translation>
@@ -1244,7 +1244,7 @@
 <translation id="7594687499944811403">让 <ph name="EMBEDDED_ORIGIN" /> 验证是您本人正在访问 <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">操作系统</translation>
 <translation id="7605594153474022051">同步功能无法正常运行</translation>
-<translation id="7612619742409846846">已使用以下帐号登录 Google：</translation>
+<translation id="7612619742409846846">已使用以下账号登录 Google：</translation>
 <translation id="7612989789287281429">正在为您登录…</translation>
 <translation id="7616551326690708776">为突出显示的内容选择一个模板。</translation>
 <translation id="7619072057915878432">未能成功下载 <ph name="FILE_NAME" />，因为出现了网络故障。</translation>
@@ -1257,7 +1257,7 @@
 <translation id="7655900163790317559">正在开启蓝牙…</translation>
 <translation id="7656862631699126784">开启无痕模式锁定</translation>
 <translation id="7658239707568436148">取消</translation>
-<translation id="7665369617277396874">添加帐号</translation>
+<translation id="7665369617277396874">添加账号</translation>
 <translation id="766587987807204883">报道会显示在此处，即使在离线状态下也可以阅读</translation>
 <translation id="768232549260819724">GIF 已复制</translation>
 <translation id="7682724950699840886">请尝试按以下提示操作：确保您的设备上有足够的空间，然后重新尝试导出。</translation>
@@ -1280,11 +1280,11 @@
 <translation id="7772375229873196092">关闭<ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}}</translation>
 <translation id="7778840695157240389">请稍后再回来查看是否有新报道</translation>
-<translation id="7780645209293383778">而且，会在您登录后暂时将这些数据关联到您的 Google 帐号，以便在各款 Google 应用中为您提供保护</translation>
+<translation id="7780645209293383778">而且，会在您登录后暂时将这些数据关联到您的 Google 账号，以便在各款 Google 应用中为您提供保护</translation>
 <translation id="7791543448312431591">添加</translation>
 <translation id="7798392620021911922">已恢复 <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
-<translation id="7808889146555843082">删除此密码不会删除您在 <ph name="SITE" /> 上的帐号。如需保护您在 <ph name="SITE" /> 上的帐号免遭他人盗用，请更改您的密码或删除该帐号。</translation>
+<translation id="7808889146555843082">删除此密码不会删除您在 <ph name="SITE" /> 上的账号。如需保护您在 <ph name="SITE" /> 上的账号免遭他人盗用，请更改您的密码或删除该账号。</translation>
 <translation id="7810647596859435254">打开方式…</translation>
 <translation id="7815484226266492798">长屏幕截图</translation>
 <translation id="78270725016672455">您的计算机希望注册此设备以登录网站</translation>
@@ -1347,7 +1347,7 @@
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8078096376109663956">只能分享文本</translation>
 <translation id="8084114998886531721">保存的密码</translation>
-<translation id="8084285576995584326">控制您的 Google 帐号数据</translation>
+<translation id="8084285576995584326">控制您的 Google 账号数据</translation>
 <translation id="808747664143081553">已连接到设备</translation>
 <translation id="8088176524274673045">若要与附近的人分享，请让他们扫描此二维码</translation>
 <translation id="8090732854597034573">如需帮助，请找家长帮忙</translation>
@@ -1372,14 +1372,14 @@
 <translation id="8200772114523450471">继续</translation>
 <translation id="8209050860603202033">打开图片</translation>
 <translation id="8215740705341534369">侧边动作条</translation>
-<translation id="8218622182176210845">管理您的帐号</translation>
+<translation id="8218622182176210845">管理您的账号</translation>
 <translation id="8221401890884589479">您可根据自己的需要屏蔽一些网站。Chrome 还会从列表中自动删除保留时长超过 30 天的网站。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">动态卡片上的菜单</translation>
 <translation id="8236097722223016103">添加到书签</translation>
 <translation id="8237871086242677046">显示网页数据洞见的底部工作表</translation>
 <translation id="8250920743982581267">文档</translation>
 <translation id="8255617931166444521">网站只能使用 Cookie 查看您在此网站上的浏览活动</translation>
-<translation id="8259179246279078674">由于预加载的网页均已加密，因此 Google 不会得知与预加载的网页内容有关的任何信息。不过，Google 服务器会得知哪些网站是以私密方式预加载的。该信息仅用于预加载网页，不会关联到您 Google 帐号中的其他信息。</translation>
+<translation id="8259179246279078674">由于预加载的网页均已加密，因此 Google 不会得知与预加载的网页内容有关的任何信息。不过，Google 服务器会得知哪些网站是以私密方式预加载的。该信息仅用于预加载网页，不会关联到您 Google 账号中的其他信息。</translation>
 <translation id="8260126382462817229">请尝试重新登录</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="82619448491672958">查看其他标签页</translation>
@@ -1447,12 +1447,12 @@
 <translation id="8570677896027847510">无法安全地下载文件</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8580884231102452214">复制 GIF</translation>
-<translation id="8583805026567836021">清除帐号数据</translation>
+<translation id="8583805026567836021">清除账号数据</translation>
 <translation id="859046281437143747">通过“更多选项”按钮跟踪价格</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8602358303461588329">登录 Chrome，已关闭。</translation>
 <translation id="860282621117673749">降价提醒</translation>
-<translation id="8616006591992756292">您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
+<translation id="8616006591992756292">您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="8617240290563765734">要打开下载的内容中指定的建议网址吗？</translation>
 <translation id="8621068256433641644">手机</translation>
 <translation id="8636825310635137004">要访问您在其他设备上的标签页，请开启同步功能。</translation>
@@ -1504,7 +1504,7 @@
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />您可如何管理自己的数据<ph name="END_BOLD" />：为保护您的隐私，一旦网站的保留时长超过 4 周，系统便会自动从列表中删除相应网站。您再次访问的网站可能会重新出现在列表中。如果您不希望系统（再）根据某个网站来推测您的兴趣，也可自行移除相应网站。</translation>
 <translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="8909135823018751308">分享…</translation>
-<translation id="8912362522468806198">Google 帐号</translation>
+<translation id="8912362522468806198">Google 账号</translation>
 <translation id="8921980840204105660">同步即可获取您在其他设备上保存的书签</translation>
 <translation id="8922289737868596582">通过“更多选项”按钮下载网页以供离线查看</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -1523,7 +1523,7 @@
 <translation id="8993760627012879038">在无痕模式下打开新标签页</translation>
 <translation id="8996847606757455498">另选一个提供商</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
-<translation id="8998729206196772491">您正要登录由 <ph name="MANAGED_DOMAIN" /> 管理的帐号，并要授权其管理员控制您的 Chrome 数据。您的数据将与此帐号永久关联。退出 Chrome 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 帐号中。</translation>
+<translation id="8998729206196772491">您正要登录由 <ph name="MANAGED_DOMAIN" /> 管理的账号，并要授权其管理员控制您的 Chrome 数据。您的数据将与此账号永久关联。退出 Chrome 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 账号中。</translation>
 <translation id="9022774213089566801">经常访问</translation>
 <translation id="9022871169049522985">网站和广告主可以衡量其广告的效果</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# 个视频}other{# 个视频}}</translation>

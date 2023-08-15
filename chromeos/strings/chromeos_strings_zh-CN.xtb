@@ -129,7 +129,7 @@
 <translation id="1871569928317311284">关闭深色主题</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">关闭深色模式</translation>
-<translation id="1881188606372070653">若要依法提出内容更改请求，请前往<ph name="BEGIN_LINK1" />法律帮助页面<ph name="END_LINK1" />。系统可能会将一些帐号信息和系统信息发送给 Google。我们会借助您向我们提供的信息来解决技术问题和提升服务质量，并且会在使用这些信息的过程中严格遵守 Google 的<ph name="BEGIN_LINK2" />隐私权政策<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />服务条款<ph name="END_LINK3" />。</translation>
+<translation id="1881188606372070653">若要依法提出内容更改请求，请前往<ph name="BEGIN_LINK1" />法律帮助页面<ph name="END_LINK1" />。系统可能会将一些账号信息和系统信息发送给 Google。我们会借助您向我们提供的信息来解决技术问题和提升服务质量，并且会在使用这些信息的过程中严格遵守 Google 的<ph name="BEGIN_LINK2" />隐私权政策<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />服务条款<ph name="END_LINK3" />。</translation>
 <translation id="1885577615937958993">让媒体快进</translation>
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="1904932688895783618">以下是一些其他的实用资源：</translation>
@@ -219,7 +219,7 @@
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{已完成扫描。扫描了 1 页}other{已完成扫描。扫描了 {NUMBER_OF_PAGES} 页}}</translation>
 <translation id="2619761439309613843">每日刷新</translation>
 <translation id="2620436844016719705">系统</translation>
-<translation id="2638662041295312666">登录帐号图片</translation>
+<translation id="2638662041295312666">登录账号图片</translation>
 <translation id="2640549051766135490">已选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
 <translation id="267442004702508783">刷新</translation>
 <translation id="268270014981824665">把键盘调暗</translation>
@@ -686,7 +686,7 @@
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">很弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
-<translation id="6447630859861661624">打开帐号设置</translation>
+<translation id="6447630859861661624">打开账号设置</translation>
 <translation id="6456394469623773452">良好</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{重新扫描页面？}=1{重新扫描第 {PAGE_NUMBER} 页？}other{重新扫描第 {PAGE_NUMBER} 页？}}</translation>
 <translation id="6472207088655375767">动态密码</translation>
@@ -914,10 +914,10 @@
 <translation id="8318753676953949627">无图片</translation>
 <translation id="8329018942023753850">计算器应用</translation>
 <translation id="8335869473001018124">打开搜索界面</translation>
-<translation id="8336739000755212683">更改设备帐号图片</translation>
+<translation id="8336739000755212683">更改设备账号图片</translation>
 <translation id="8347227221149377169">打印任务</translation>
 <translation id="8351855506390808906">按键映射接触点</translation>
-<translation id="8352772353338965963">为多帐号登录添加帐号。用户无需使用密码即可访问所有已登录的帐号，因此您应仅通过受信任的帐号使用此功能。</translation>
+<translation id="8352772353338965963">为多账号登录添加账号。用户无需使用密码即可访问所有已登录的账号，因此您应仅通过受信任的账号使用此功能。</translation>
 <translation id="8364946094152050673">未指定域名服务器</translation>
 <translation id="8372477600026034341">多余的主机</translation>
 <translation id="8373046809163484087">使用与您的壁纸相得益彰的颜色组合</translation>
