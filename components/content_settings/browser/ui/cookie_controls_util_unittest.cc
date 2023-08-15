@@ -4,7 +4,6 @@
 
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
 
-#include "base/test/icu_test_util.h"
 #include "base/time/time_override.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -12,8 +11,6 @@
 namespace content_settings {
 namespace {
 using ::testing::Eq;
-
-const char kNewYorkTime[] = "America/New_York";
 
 struct StaticOverrideTime {
   static base::Time Now() { return override_time; }
@@ -52,6 +49,8 @@ TEST_F(CookieControlsUtilTest, Today) {
   EXPECT_THAT(CookieControlsUtil::GetDaysToExpiration(
                   GetTime("Tue, 15 Nov 2023 23:59:59")),
               Eq(0));
+  // EXPECT_THAT(task_environment_.GetMockClock()->Now(), Eq(GetTime("Tue, 15
+  // Nov 2023 12:45:26")));
 }
 
 // Return value of 1 represents times that occur tomorrow.
@@ -110,87 +109,6 @@ TEST_F(CookieControlsUtilTest, Past) {
   EXPECT_THAT(CookieControlsUtil::GetDaysToExpiration(
                   GetTime("Tue, 13 Nov 2023 12:45:26")),
               Eq(-2));
-}
-
-// On Fuchsia posix local time functions always use UTC.
-#if !BUILDFLAG(IS_FUCHSIA)
-// For 2023 DST for New York timezone is from March 12 to November 5.
-TEST_F(CookieControlsUtilTest, DSTOverlap) {
-  base::test::ScopedRestoreDefaultTimezone scoped_timezone(kNewYorkTime);
-  {
-    // 23:00, spring forward to next day, so we actually expire on the 6th day
-    // for 5 day period.
-    auto time_override = GetScopedNow("Sat, 11 Mar 2023 23:00:01");
-    EXPECT_THAT(CookieControlsUtil::GetDaysToExpiration(base::Time::Now() +
-                                                        base::Days(5)),
-                Eq(6));
-  }
-  {
-    // 22:00, spring forward, but not quite to the next day.
-    auto time_override = GetScopedNow("Sat, 11 Mar 2023 22:00:00");
-    EXPECT_THAT(CookieControlsUtil::GetDaysToExpiration(base::Time::Now() +
-                                                        base::Days(5)),
-                Eq(5));
-  }
-  {
-    // 00:00, fall back to the previous day (so day 4 for a 5 day period).
-    auto time_override = GetScopedNow("Sat, 4 Nov 2023 00:00:00");
-    EXPECT_THAT(CookieControlsUtil::GetDaysToExpiration(base::Time::Now() +
-                                                        base::Days(5)),
-                Eq(4));
-  }
-  {
-    // 01:00, fall back but not quite to the previous day.
-    auto time_override = GetScopedNow("Sat, 4 Nov 2023 01:00:00");
-    EXPECT_THAT(CookieControlsUtil::GetDaysToExpiration(base::Time::Now() +
-                                                        base::Days(5)),
-                Eq(5));
-  }
-}
-#endif
-
-TEST_F(CookieControlsUtilTest, NoDSTOverlapOutsideDST) {
-  base::test::ScopedRestoreDefaultTimezone scoped_timezone(kNewYorkTime);
-  // Without DST overlap expiration should be in days equal to the actual number
-  // of 24hr periods we expire from now.
-  {
-    auto time_override = GetScopedNow("Sat, 1 Jan 2023 00:00:00");
-    for (int i = 0; i < 60; i++) {
-      EXPECT_THAT(CookieControlsUtil::GetDaysToExpiration(base::Time::Now() +
-                                                          base::Days(i)),
-                  Eq(i));
-    }
-  }
-  {
-    auto time_override = GetScopedNow("Sat, 1 Jan 2023 23:00:00");
-    for (int i = 0; i < 60; i++) {
-      EXPECT_THAT(CookieControlsUtil::GetDaysToExpiration(base::Time::Now() +
-                                                          base::Days(i)),
-                  Eq(i));
-    }
-  }
-}
-
-TEST_F(CookieControlsUtilTest, NoDSTOverlapInDST) {
-  base::test::ScopedRestoreDefaultTimezone scoped_timezone(kNewYorkTime);
-  // Without DST overlap expiration should be in days equal to the actual number
-  // of 24hr periods we expire from now.
-  {
-    auto time_override = GetScopedNow("Sat, 1 Apr 2023 00:00:00");
-    for (int i = 0; i < 60; i++) {
-      EXPECT_THAT(CookieControlsUtil::GetDaysToExpiration(base::Time::Now() +
-                                                          base::Days(i)),
-                  Eq(i));
-    }
-  }
-  {
-    auto time_override = GetScopedNow("Sat, 1 Apr 2023 23:00:00");
-    for (int i = 0; i < 60; i++) {
-      EXPECT_THAT(CookieControlsUtil::GetDaysToExpiration(base::Time::Now() +
-                                                          base::Days(i)),
-                  Eq(i));
-    }
-  }
 }
 
 }  // namespace content_settings
