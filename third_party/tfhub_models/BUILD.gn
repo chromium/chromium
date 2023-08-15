@@ -1,3 +1,13 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+bundle_data("tfhub_models_testdata") {
+  testonly = true
+  sources = [
+    "models/lite-model_universal-sentence-encoder-qa-ondevice_1.tflite",
+    "models/rehead_embedding_from_mobilebert.tflite",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}

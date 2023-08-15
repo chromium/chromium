@@ -4948,6 +4948,18 @@ hooks = [
                 '-s', 'src/v8/test/fuzzer/wasm_corpus.tar.gz.sha1',
     ],
   },
+  # Download selected models from TFHub as testdata.
+  {
+    'name': 'download_tfhub_models',
+    'pattern': '.',
+    'action': [ 'python3',
+                'src/third_party/depot_tools/download_from_google_storage.py',
+                '--no_resume',
+                '--extract',
+                '--bucket', 'chromium-tfhub-models',
+                '-s', 'src/third_party/tfhub_models/models.tar.gz.sha1',
+    ],
+  },
 
   # Pull down Node binaries for WebUI toolchain.
   {

@@ -283,6 +283,8 @@
 /syzygy
 /syzygy/binaries
 /text-fragments-polyfill/src
+/tfhub_models/*.tar.gz
+/tfhub_models/models/
 /tflite/src
 /tint/src
 /tsan/
