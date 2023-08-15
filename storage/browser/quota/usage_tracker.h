@@ -122,9 +122,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   void DidGetBucketsForType(QuotaErrorOr<std::set<BucketInfo>> result);
   void DidGetBucketsForStorageKey(const blink::StorageKey& storage_key,
                                   QuotaErrorOr<std::set<BucketInfo>> result);
-  void DidGetBucketForUsage(QuotaClientType client_type,
-                            int64_t delta,
-                            QuotaErrorOr<BucketInfo> result);
 
   void AccumulateClientGlobalUsage(base::OnceClosure barrier_callback,
                                    AccumulateInfo* info,

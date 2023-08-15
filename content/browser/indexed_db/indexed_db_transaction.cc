@@ -276,13 +276,6 @@ void IndexedDBTransaction::Start() {
   run_tasks_callback_.Run();
 }
 
-void IndexedDBTransaction::EnsureBackingStoreTransactionBegun() {
-  if (!backing_store_transaction_begun_) {
-    transaction_->Begin(std::move(locks_receiver_.locks));
-    backing_store_transaction_begun_ = true;
-  }
-}
-
 leveldb::Status IndexedDBTransaction::BlobWriteComplete(
     BlobWriteResult result,
     storage::mojom::WriteBlobToFileResult error) {
