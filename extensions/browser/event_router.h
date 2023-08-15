@@ -58,7 +58,6 @@ class ExtensionPrefs;
 
 struct Event;
 struct EventListenerInfo;
-struct ServiceWorkerIdentifier;
 
 // Which flow an event follows when being sent to the event router. Used in
 // UMA histogram logic.
@@ -165,11 +164,10 @@ class EventRouter : public KeyedService,
   void AddListenerForMainThread(mojom::EventListenerParamPtr param,
                                 const std::string& name) override;
 
-  void AddListenerForServiceWorker(const std::string& extension_id,
-                                   const GURL& worker_scope_url,
-                                   const std::string& name,
-                                   int64_t service_worker_version_id,
-                                   int32_t worker_thread_id) override;
+  void AddListenerForServiceWorker(
+      const std::string& extension_id,
+      const std::string& name,
+      mojom::ServiceWorkerContextPtr service_worker_context) override;
 
   void AddLazyListenerForMainThread(const std::string& extension_id,
                                     const std::string& name) override;
@@ -183,22 +181,20 @@ class EventRouter : public KeyedService,
                                         base::Value::Dict filter,
                                         bool add_lazy_listener) override;
 
-  void AddFilteredListenerForServiceWorker(const std::string& extension_id,
-                                           const GURL& worker_scope_url,
-                                           const std::string& name,
-                                           int64_t service_worker_version_id,
-                                           int32_t worker_thread_id,
-                                           base::Value::Dict filter,
-                                           bool add_lazy_listener) override;
+  void AddFilteredListenerForServiceWorker(
+      const std::string& extension_id,
+      const std::string& name,
+      mojom::ServiceWorkerContextPtr service_worker_context,
+      base::Value::Dict filter,
+      bool add_lazy_listener) override;
 
   void RemoveListenerForMainThread(mojom::EventListenerParamPtr param,
                                    const std::string& name) override;
 
-  void RemoveListenerForServiceWorker(const std::string& extension_id,
-                                      const GURL& worker_scope_url,
-                                      const std::string& name,
-                                      int64_t service_worker_version_id,
-                                      int32_t worker_thread_id) override;
+  void RemoveListenerForServiceWorker(
+      const std::string& extension_id,
+      const std::string& event_name,
+      mojom::ServiceWorkerContextPtr service_worker_context) override;
 
   void RemoveLazyListenerForMainThread(const std::string& extension_id,
                                        const std::string& name) override;
@@ -214,10 +210,8 @@ class EventRouter : public KeyedService,
 
   void RemoveFilteredListenerForServiceWorker(
       const std::string& extension_id,
-      const GURL& worker_scope_url,
       const std::string& name,
-      int64_t service_worker_version_id,
-      int32_t worker_thread_id,
+      mojom::ServiceWorkerContextPtr service_worker_context,
       base::Value::Dict filter,
       bool remove_lazy_listener) override;
 
@@ -229,12 +223,11 @@ class EventRouter : public KeyedService,
   void RemoveEventListener(const std::string& event_name,
                            content::RenderProcessHost* process,
                            const ExtensionId& extension_id);
-  void RemoveServiceWorkerEventListener(const std::string& event_name,
-                                        content::RenderProcessHost* process,
-                                        const ExtensionId& extension_id,
-                                        const GURL& service_worker_scope,
-                                        int64_t service_worker_version_id,
-                                        int worker_thread_id);
+  void RemoveServiceWorkerEventListener(
+      const std::string& event_name,
+      content::RenderProcessHost* process,
+      const ExtensionId& extension_id,
+      mojom::ServiceWorkerContextPtr service_worker_context);
 
   // Add or remove a URL as an event listener for |event_name|.
   void AddEventListenerForURL(const std::string& event_name,
@@ -263,7 +256,7 @@ class EventRouter : public KeyedService,
       const std::string& event_name,
       content::RenderProcessHost* process,
       mojom::EventListenerParamPtr param,
-      absl::optional<ServiceWorkerIdentifier> sw_identifier,
+      mojom::ServiceWorkerContext* service_worker_context,
       const base::Value::Dict& filter,
       bool add_lazy_listener);
 
@@ -273,7 +266,7 @@ class EventRouter : public KeyedService,
       const std::string& event_name,
       content::RenderProcessHost* process,
       mojom::EventListenerParamPtr param,
-      absl::optional<ServiceWorkerIdentifier> sw_identifier,
+      mojom::ServiceWorkerContext* service_worker_context,
       const base::Value::Dict& filter,
       bool remove_lazy_listener);
 
@@ -418,12 +411,11 @@ class EventRouter : public KeyedService,
   void AddEventListener(const std::string& event_name,
                         content::RenderProcessHost* process,
                         const ExtensionId& extension_id);
-  void AddServiceWorkerEventListener(const std::string& event_name,
-                                     content::RenderProcessHost* process,
-                                     const ExtensionId& extension_id,
-                                     const GURL& service_worker_scope,
-                                     int64_t service_worker_version_id,
-                                     int worker_thread_id);
+  void AddServiceWorkerEventListener(
+      const std::string& event_name,
+      content::RenderProcessHost* process,
+      const ExtensionId& extension_id,
+      mojom::ServiceWorkerContextPtr service_worker_context);
 
   // Returns or sets the list of events for which the given extension has
   // registered.
@@ -677,12 +669,6 @@ struct EventListenerInfo {
   const int worker_thread_id;
   const int64_t service_worker_version_id;
   const bool is_lazy;
-};
-
-struct ServiceWorkerIdentifier {
-  GURL scope;
-  int64_t version_id;
-  int thread_id;
 };
 
 }  // namespace extensions
