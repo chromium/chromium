@@ -432,6 +432,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/html/html_progress_element.idl",
   "//third_party/blink/renderer/core/html/html_quote_element.idl",
   "//third_party/blink/renderer/core/html/html_script_element.idl",
+  "//third_party/blink/renderer/core/html/html_shared_storage_writable_element_utils.idl",
   "//third_party/blink/renderer/core/html/html_slot_element.idl",
   "//third_party/blink/renderer/core/html/html_source_element.idl",
   "//third_party/blink/renderer/core/html/html_span_element.idl",

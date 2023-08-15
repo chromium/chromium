@@ -345,6 +345,11 @@ class TokenPreloadScanner::StartTagScanner {
       request->SetAttributionReportingEligibleImgOrScript(true);
     }
 
+    if (shared_storage_writable_) {
+      DCHECK(is_img);
+      request->SetSharedStorageWritable(true);
+    }
+
     return request;
   }
 
@@ -425,6 +430,8 @@ class TokenPreloadScanner::StartTagScanner {
       loading_attr_value_ = GetLoadingAttributeValue(attribute_value);
     } else if (Match(attribute_name, html_names::kAttributionsrcAttr)) {
       attributionsrc_attr_set_ = true;
+    } else if (Match(attribute_name, html_names::kSharedstoragewritableAttr)) {
+      shared_storage_writable_ = true;
     }
   }
 
@@ -763,6 +770,7 @@ class TokenPreloadScanner::StartTagScanner {
   // For explanation, see TokenPreloadScanner's declaration.
   const HashSet<String>* disabled_image_types_;
   bool attributionsrc_attr_set_ = false;
+  bool shared_storage_writable_ = false;
   absl::optional<float> resource_width_;
   absl::optional<float> resource_height_;
 };

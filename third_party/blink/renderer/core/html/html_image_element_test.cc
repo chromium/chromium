@@ -7,12 +7,15 @@
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 
 namespace blink {
 
@@ -163,6 +166,49 @@ TEST_F(HTMLImageElementTest, ImageAdRectangleUpdate) {
   EXPECT_EQ(test_frame_client_->observed_image_ad_rects()[3].first, id);
   EXPECT_EQ(test_frame_client_->observed_image_ad_rects()[3].second,
             gfx::Rect());
+}
+
+using HTMLImageElementSimTest = SimTest;
+
+TEST_F(HTMLImageElementSimTest, Sharedstoragewritable_SecureContext_Allowed) {
+  WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
+  WebRuntimeFeaturesBase::EnableSharedStorageAPIM118(true);
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  SimSubresourceRequest image_resource("https://example.com/foo.png",
+                                       "image/png");
+  LoadURL("https://example.com/index.html");
+  main_resource.Complete(R"(
+    <img src="foo.png" id="target"
+      allow="shared-storage"
+      sharedstoragewritable></img>
+  )");
+
+  image_resource.Complete("image data");
+  EXPECT_TRUE(ConsoleMessages().empty());
+}
+
+TEST_F(HTMLImageElementSimTest,
+       Sharedstoragewritable_InsecureContext_NotAllowed) {
+  WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
+  WebRuntimeFeaturesBase::EnableSharedStorageAPIM118(true);
+  SimRequest main_resource("http://example.com/index.html", "text/html");
+  SimSubresourceRequest image_resource("http://example.com/foo.png",
+                                       "image/png");
+  LoadURL("http://example.com/index.html");
+  main_resource.Complete(R"(
+    <img src="foo.png" id="target"
+      allow="shared-storage"
+      sharedstoragewritable></img>
+  )");
+
+  image_resource.Complete("image data");
+  EXPECT_EQ(ConsoleMessages().size(), 1u);
+  EXPECT_TRUE(ConsoleMessages().front().StartsWith(
+      "sharedStorageWritable: sharedStorage operations are only available in "
+      "secure contexts."))
+      << "Expect error that Shared Storage operations are not allowed in "
+         "insecure contexts but got: "
+      << ConsoleMessages().front();
 }
 
 }  // namespace blink

@@ -116,6 +116,13 @@ struct TokenStreamMatcherTestCase {
   const char* potentially_lcp_preload_url;
 };
 
+struct SharedStorageWritableTestCase {
+  bool use_secure_document_url;
+  const char* base_url;
+  const char* input_html;
+  bool expected_shared_storage_writable;
+};
+
 class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
  public:
   explicit HTMLMockHTMLResourcePreloader(const KURL& document_url)
@@ -274,6 +281,17 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
   void IsPotentiallyLCPElementFlagVerification(bool expected) {
     EXPECT_EQ(expected, preload_request_->IsPotentiallyLCPElement())
         << preload_request_->ResourceURL();
+  }
+
+  void SharedStorageWritableRequestVerification(
+      Document* document,
+      bool expected_shared_storage_writable) {
+    ASSERT_TRUE(preload_request_.get());
+    Resource* resource = preload_request_->Start(document);
+    ASSERT_TRUE(resource);
+
+    EXPECT_EQ(expected_shared_storage_writable,
+              resource->GetResourceRequest().GetSharedStorageWritable());
   }
 
  protected:
@@ -482,6 +500,20 @@ class HTMLPreloadScannerTest : public PageTestBase {
       }
     }
     EXPECT_EQ(1, count);
+  }
+
+  void Test(SharedStorageWritableTestCase test_case) {
+    SCOPED_TRACE(base::StringPrintf("Use secure doc URL: %d; HTML: '%s'",
+                                    test_case.use_secure_document_url,
+                                    test_case.input_html));
+
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
+    KURL base_url(test_case.base_url);
+    scanner_->AppendToEnd(String(test_case.input_html));
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
+    preloader.SharedStorageWritableRequestVerification(
+        &GetDocument(), test_case.expected_shared_storage_writable);
   }
 
  private:
@@ -1659,6 +1691,46 @@ TEST_F(HTMLPreloadScannerTest, TokenStreamMatcher) {
     )HTML",
                                           "super-interesting.jpg"};
   Test(test_case);
+}
+
+TEST_F(HTMLPreloadScannerTest, testSharedStorageWritable) {
+  WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
+  WebRuntimeFeaturesBase::EnableSharedStorageAPIM118(true);
+  static constexpr bool kSecureDocumentUrl = true;
+  static constexpr bool kInsecureDocumentUrl = false;
+
+  static constexpr char kSecureBaseURL[] = "https://example.test";
+  static constexpr char kInsecureBaseURL[] = "http://example.test";
+
+  SharedStorageWritableTestCase test_cases[] = {
+      // Insecure context
+      {kInsecureDocumentUrl, kSecureBaseURL,
+       "<img src='/image' sharedstoragewritable>",
+       /*expected_shared_storage_writable=*/false},
+      // No sharedstoragewritable attribute
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>",
+       /*expected_shared_storage_writable=*/false},
+      // Irrelevant element type
+      {kSecureDocumentUrl, kSecureBaseURL,
+       "<video poster='/image' sharedstoragewritable>",
+       /*expected_shared_storage_writable=*/false},
+      // Secure context, sharedstoragewritable attribute
+      // Base (initial) URL does not affect SharedStorageWritable eligibility
+      {kSecureDocumentUrl, kInsecureBaseURL,
+       "<img src='/image' sharedstoragewritable>",
+       /*expected_shared_storage_writable=*/true},
+      // Secure context, sharedstoragewritable attribute
+      {kSecureDocumentUrl, kSecureBaseURL,
+       "<img src='/image' sharedstoragewritable>",
+       /*expected_shared_storage_writable=*/true},
+  };
+
+  for (const auto& test_case : test_cases) {
+    RunSetUp(kViewportDisabled, kPreloadEnabled,
+             network::mojom::ReferrerPolicy::kDefault,
+             /*use_secure_document_url=*/test_case.use_secure_document_url);
+    Test(test_case);
+  }
 }
 
 }  // namespace blink

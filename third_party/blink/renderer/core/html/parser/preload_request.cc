@@ -121,6 +121,13 @@ Resource* PreloadRequest::Start(Document* document) {
         network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger);
   }
 
+  bool shared_storage_writable =
+      shared_storage_writable_ &&
+      RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
+          document->domWindow()) &&
+      document->domWindow()->IsSecureContext();
+  resource_request.SetSharedStorageWritable(shared_storage_writable);
+
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());
   options.initiator_info = initiator_info;
   FetchParameters params(std::move(resource_request), options);
