@@ -91,9 +91,9 @@ class SuppressBubbleSettingRow : public views::View,
         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW));
     checkbox_->SetChecked(
         !download::IsDownloadBubblePartialViewEnabled(browser_->profile()));
-    targeter_ = std::make_unique<CheckboxTargeter>();
+    auto targeter = std::make_unique<CheckboxTargeter>();
     checkbox_->SetEventTargeter(
-        std::make_unique<views::ViewTargeter>(targeter_.get()));
+        std::make_unique<views::ViewTargeter>(std::move(targeter)));
     gfx::Insets insets = GetLayoutInsets(DOWNLOAD_ICON);
     // The label within the checkbox will line up with `main_text` if we don't
     // provide any insets. This is different than the download row view, which
@@ -169,7 +169,6 @@ class SuppressBubbleSettingRow : public views::View,
   base::WeakPtr<DownloadBubbleUIController> bubble_controller_ = nullptr;
   base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
   raw_ptr<views::Checkbox> checkbox_ = nullptr;
-  std::unique_ptr<CheckboxTargeter> targeter_;
   raw_ptr<views::View> labels_wrapper_ = nullptr;
   raw_ptr<views::StyledLabel> settings_text_ = nullptr;
 };
