@@ -1997,6 +1997,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.SharedDictionary.EncodingType"
+    enum="SharedDictionaryEncodingType" expires_after="2024-08-09">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    For each shared dictionary network transaction, record the encoding type.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Cellular.3GPPRegistrationDelayedDrop"
     enum="NetworkCellular3GPPRegistrationDelayedDrop"
     expires_after="2024-02-11">

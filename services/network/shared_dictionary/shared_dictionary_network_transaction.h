@@ -105,10 +105,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
     kFailed,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class SharedDictionaryEncodingType {
-    kNotUsed,
-    kSharedBrotli,
-    kSharedZstd,
+    kNotUsed = 0,
+    kSharedBrotli = 1,
+    kSharedZstd = 2,
+    kMaxValue = kSharedZstd,
   };
 
   class PendingReadTask {

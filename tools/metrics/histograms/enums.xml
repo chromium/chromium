@@ -97191,6 +97191,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="SharedDictionaryEncodingType">
+  <int value="0" label="Not Used"/>
+  <int value="1" label="Shared Brotli"/>
+  <int value="2" label="Shared Zstd"/>
+</enum>
+
 <enum name="SharedDictionaryStoreError">
   <int value="0" label="Ok"/>
   <int value="1" label="FailedToInitializeDatabase"/>

@@ -295,6 +295,9 @@ int SharedDictionaryNetworkTransaction::Read(
                       network_transaction_.get()),
                   shared_dictionary_->data(), shared_dictionary_->size());
         }
+
+        UMA_HISTOGRAM_ENUMERATION("Network.SharedDictionary.EncodingType",
+                                  shared_dictionary_encoding_type_);
       }
       return shared_compression_stream_->Read(buf, buf_len,
                                               std::move(callback));
