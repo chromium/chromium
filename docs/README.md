@@ -100,6 +100,7 @@ used when committed.
 *   [Git Cookbook](git_cookbook.md) - A collection of git recipes for common
     tasks
 *   [Git Tips](git_tips.md) - More git tips
+*   [Git submodules](git_submodules.md) - Git submodule (tips, FAQ)
 
 ### Clang
 *   [Clang Compiler](clang.md) - General information on the clang compiler, used
