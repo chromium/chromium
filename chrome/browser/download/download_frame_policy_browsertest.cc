@@ -132,11 +132,21 @@ class DownloadFramePolicyBrowserTest
  public:
   ~DownloadFramePolicyBrowserTest() override {}
 
+  // Override embedded_test_server() with a variant that uses HTTPS to avoid
+  // insecure download warnings.
+  net::EmbeddedTestServer* embedded_test_server() {
+    return https_test_server_.get();
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     SetRulesetWithRules(
         {subresource_filter::testing::CreateSuffixRule("ad_script.js"),
          subresource_filter::testing::CreateSuffixRule("disallow.zip")});
+    https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    embedded_test_server()->SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "components/test/data/ad_tagging");
     content::SetupCrossSiteRedirector(embedded_test_server());
@@ -175,14 +185,14 @@ class DownloadFramePolicyBrowserTest
   void InitializeOneSubframeSetup(SandboxOption sandbox_option,
                                   bool is_ad_frame,
                                   bool is_cross_origin) {
-    std::string host_name = "foo.com";
+    std::string host_name = "a.test";
     GURL top_frame_url =
         embedded_test_server()->GetURL(host_name, "/frame_factory.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), top_frame_url));
 
     const char* method = is_ad_frame ? "createAdFrame" : "createFrame";
     GURL subframe_url = embedded_test_server()->GetURL(
-        is_cross_origin ? "bar.com" : host_name, "/frame_factory.html");
+        is_cross_origin ? "b.test" : host_name, "/frame_factory.html");
 
     std::string script;
     if (sandbox_option == SandboxOption::kNotSandboxed) {
@@ -215,7 +225,7 @@ class DownloadFramePolicyBrowserTest
   void InitializeOneTopFrameSetup(SandboxOption sandbox_option) {
     InitializeOneSubframeSetup(sandbox_option, false /* is_ad_frame */,
                                false /* is_cross_origin */);
-    std::string host_name = "foo.com";
+    std::string host_name = "a.test";
     GURL main_url =
         embedded_test_server()->GetURL(host_name, "/frame_factory.html");
     web_feature_waiter_.reset();
@@ -280,6 +290,9 @@ class DownloadFramePolicyBrowserTest
   raw_ptr<content::RenderFrameHost, AcrossTasksDanglingUntriaged>
       subframe_rfh_ = nullptr;
   size_t expected_num_downloads_ = 0;
+  // By default, the embedded test server uses HTTP. Keep an HTTPS server
+  // instead so that we don't encounter unexpected insecure download warnings.
+  std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
 };
 
 class SubframeSameFrameDownloadBrowserTest_Sandbox
@@ -654,7 +667,7 @@ IN_PROC_BROWSER_TEST_P(
              content::JsReplace("document.querySelector('iframe').sandbox = $1",
                                 update_to_token)));
 
-  GURL download_url = embedded_test_server()->GetURL("bar.com", "/allow.zip");
+  GURL download_url = embedded_test_server()->GetURL("b.test", "/allow.zip");
   content::TestNavigationManager navigation_observer(web_contents(),
                                                      download_url);
   EXPECT_TRUE(
@@ -697,7 +710,7 @@ IN_PROC_BROWSER_TEST_P(DownloadFramePolicyBrowserTest_UpdateIframeSandboxFlags,
              content::JsReplace("document.querySelector('iframe').sandbox = $1",
                                 update_to_token)));
 
-  GURL download_url = embedded_test_server()->GetURL("bar.com", "/allow.zip");
+  GURL download_url = embedded_test_server()->GetURL("b.test", "/allow.zip");
   content::TestNavigationManager navigation_observer(web_contents(),
                                                      download_url);
   EXPECT_TRUE(ExecJs(GetSubframeRfh(),
