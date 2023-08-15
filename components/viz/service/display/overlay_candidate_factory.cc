@@ -153,34 +153,37 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
   candidate.overlay_damage_index =
       sqs->overlay_damage_index.value_or(OverlayCandidate::kInvalidDamageIndex);
 
+  auto status = CandidateStatus::kFailQuadNotSupported;
   switch (quad->material) {
     case DrawQuad::Material::kTextureContent:
-      return FromTextureQuad(TextureDrawQuad::MaterialCast(quad), candidate);
+      status = FromTextureQuad(TextureDrawQuad::MaterialCast(quad), candidate);
+      break;
     case DrawQuad::Material::kVideoHole:
-      return FromVideoHoleQuad(VideoHoleDrawQuad::MaterialCast(quad),
-                               candidate);
+      status =
+          FromVideoHoleQuad(VideoHoleDrawQuad::MaterialCast(quad), candidate);
+      break;
     case DrawQuad::Material::kSolidColor:
-      if (!context_.is_delegated_context) {
-        return CandidateStatus::kFailQuadNotSupported;
+      if (context_.is_delegated_context) {
+        status = FromSolidColorQuad(SolidColorDrawQuad::MaterialCast(quad),
+                                    candidate);
       }
-      return FromSolidColorQuad(SolidColorDrawQuad::MaterialCast(quad),
-                                candidate);
+      break;
     case DrawQuad::Material::kAggregatedRenderPass:
-      if (!context_.is_delegated_context) {
-        return CandidateStatus::kFailQuadNotSupported;
+      if (context_.is_delegated_context) {
+        status = FromAggregateQuad(
+            AggregatedRenderPassDrawQuad::MaterialCast(quad), candidate);
       }
-      return FromAggregateQuad(AggregatedRenderPassDrawQuad::MaterialCast(quad),
-                               candidate);
+      break;
     case DrawQuad::Material::kTiledContent:
-      if (!context_.is_delegated_context) {
-        return CandidateStatus::kFailQuadNotSupported;
+      if (context_.is_delegated_context) {
+        status = FromTileQuad(TileDrawQuad::MaterialCast(quad), candidate);
       }
-      return FromTileQuad(TileDrawQuad::MaterialCast(quad), candidate);
+      break;
     default:
       break;
   }
 
-  return CandidateStatus::kFailQuadNotSupported;
+  return status;
 }
 
 OverlayCandidateFactory::OverlayCandidateFactory(
