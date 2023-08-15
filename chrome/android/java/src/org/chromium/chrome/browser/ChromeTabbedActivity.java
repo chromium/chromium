@@ -911,6 +911,19 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mIntentHandlingTimeMs = SystemClock.uptimeMillis();
             super.onNewIntent(intent);
 
+            // When onNewIntent() comes, calling launchIntent() may trigger a static layout is
+            // showing without even canceling the overview layout which is about to show. It
+            // leaves the StartSurfaceState to be SHOWING_START instead of NOT_SHOWN, since
+            // hiding the overview layout won't be called. Thus we need to reset the
+            // StartSurfaceState to prevent it being a wrong state. See crbug.com/1298740.
+            if (ReturnToChromeUtil.isStartSurfaceEnabled(this)
+                    && getCurrentTabModel().getCount() > 0 && !isTablet()
+                    && !shouldShowOverviewPageOnStart() && !isInOverviewMode()
+                    && mStartSurfaceSupplier.get() != null) {
+                mStartSurfaceSupplier.get().setStartSurfaceState(
+                        StartSurfaceState.NOT_SHOWN, NewTabPageLaunchOrigin.UNKNOWN);
+            }
+
             boolean shouldShowRegularOverviewMode = IntentUtils.safeGetBooleanExtra(
                     intent, IntentHandler.EXTRA_OPEN_REGULAR_OVERVIEW_MODE, false);
             if (shouldShowRegularOverviewMode && IntentHandler.wasIntentSenderChrome(intent)) {
@@ -1679,11 +1692,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     focus ? OmniboxFocusReason.LAUNCH_NEW_INCOGNITO_TAB
                           : OmniboxFocusReason.UNFOCUS);
 
-            // An overview page shouldn't be shown on URL VIEW intent. Since a new Tab has been
-            // created for loading the URL, it is fine to call hideOverview() which skips hiding
-            // the overview page when there is no Tab.
-            if (tabModel.getCount() > 0 && isInOverviewMode() && !isTablet()) {
-                hideOverview();
+            if (tabModel.getCount() > 0 && isInOverviewMode() && !isTablet()
+                    && !shouldShowOverviewPageOnStart()) {
+                mLayoutManager.showLayout(LayoutType.BROWSING, true);
             }
         }
 
