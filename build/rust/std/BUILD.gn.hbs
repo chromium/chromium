@@ -117,10 +117,6 @@ cargo_crate("{{this.0}}") {
     {{/if}}
   ]
   output_dir = "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
-
-  {{#with extra_kv.raw_gn}}
-  {{this}}
-  {{/with}}
   {{/with}}
 }
 {{/each}}

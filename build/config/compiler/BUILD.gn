@@ -986,10 +986,8 @@ config("compiler") {
   if (rust_abi_target != "") {
     rustflags += [ "--target=$rust_abi_target" ]
   }
-  if (!use_thin_lto && !(is_win && current_cpu == "arm64")) {
+  if (!use_thin_lto) {
     # Don't include bitcode if it won't be used.
-    # TODO(crbug.com/1471310): Always include it on win/arm64 to work around
-    # mysterious link failure.
     rustflags += [ "-Cembed-bitcode=no" ]
   }
   if (is_official_build) {

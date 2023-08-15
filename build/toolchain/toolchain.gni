@@ -38,7 +38,12 @@ if (generate_linker_map) {
 }
 
 declare_args() {
-  clang_version = "18"
+  if (llvm_force_head_revision) {
+    clang_version = "18"
+  } else {
+    # TODO(crbug.com/1467585): Remove in the next clang roll
+    clang_version = "17"
+  }
 }
 
 # Extension for shared library files (including leading dot).
