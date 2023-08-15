@@ -95,6 +95,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillTouchToFillForCreditCardsAndroid,
     &autofill::features::kAutofillVirtualViewStructureAndroid,
     &autofill::features::kAutofillEnablePaymentsMandatoryReauth,
+    &autofill::features::kAutofillEnableMovingGPayLogoToTheRightOnClank,
     &blink::features::kForceWebContentsDarkMode,
     &blink::features::kPrerender2,
     &commerce::kCommerceMerchantViewer,
