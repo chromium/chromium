@@ -469,6 +469,7 @@ def goma_windows_builder(
         name = name,
         goma_enable_ats = goma_enable_ats,
         os = os.WINDOWS_DEFAULT,
+        cores = 16,
         **kwargs
     )
 
