@@ -8081,8 +8081,6 @@ HTMLElement* Document::TopmostPopoverOrHint() const {
 }
 
 void Document::SetPopoverPointerdownTarget(const HTMLElement* popover) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-      GetExecutionContext()));
   DCHECK(!popover || popover->HasPopoverAttribute());
   popover_pointerdown_target_ = popover;
 }

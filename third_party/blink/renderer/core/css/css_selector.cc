@@ -632,20 +632,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  // We enable parsing of the popover pseudo classes in the case that we *don't*
-  // have a document, since that mostly/always occurs when parsing UA
-  // stylesheets.
-  bool popover_attribute_enabled =
-      !document || RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-                       document->GetExecutionContext());
-  if (!popover_attribute_enabled &&
-      (match->type == CSSSelector::kPseudoOpen ||
-       match->type == CSSSelector::kPseudoClosed ||
-       match->type == CSSSelector::kPseudoPopoverOpen ||
-       match->type == CSSSelector::kPseudoPopoverInTopLayer)) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
   if (match->type == CSSSelector::kPseudoHighlight &&
       !RuntimeEnabledFeatures::HighlightAPIEnabled()) {
     return CSSSelector::kPseudoUnknown;

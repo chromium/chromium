@@ -251,8 +251,6 @@ HTMLSelectListElement::HTMLSelectListElement(Document& document)
     : HTMLFormControlElementWithState(html_names::kSelectlistTag, document),
       type_ahead_(this) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
-  DCHECK(RuntimeEnabledFeatures::RuntimeEnabledFeatures::
-             HTMLPopoverAttributeEnabled(document.GetExecutionContext()));
   UseCounter::Count(document, WebFeature::kSelectListElement);
 
   EnsureUserAgentShadowRoot();

@@ -125,7 +125,6 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   text_track_style_sheet_.Clear();
   forced_colors_style_sheet_.Clear();
   fullscreen_style_sheet_.Clear();
-  popover_style_sheet_.Clear();
   selectlist_style_sheet_.Clear();
   marker_style_sheet_.Clear();
   form_controls_not_vertical_style_sheet_.Clear();
@@ -310,17 +309,6 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     }
   }
 
-  if (!popover_style_sheet_ && IsA<HTMLElement>(element) &&
-      To<HTMLElement>(element).HasPopoverAttribute()) {
-    // TODO: We should assert that this sheet only contains rules for popovers.
-    DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-        element.GetDocument().GetExecutionContext()));
-    popover_style_sheet_ =
-        ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_POPOVER_CSS));
-    AddRulesToDefaultStyleSheets(popover_style_sheet_, NamespaceType::kHTML);
-    changed_default_style = true;
-  }
-
   if (!selectlist_style_sheet_ && IsA<HTMLSelectListElement>(element)) {
     // TODO: We should assert that this sheet only contains rules for
     // <selectlist>.
@@ -459,7 +447,6 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(text_track_style_sheet_);
   visitor->Trace(forced_colors_style_sheet_);
   visitor->Trace(fullscreen_style_sheet_);
-  visitor->Trace(popover_style_sheet_);
   visitor->Trace(selectlist_style_sheet_);
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_sheet_);

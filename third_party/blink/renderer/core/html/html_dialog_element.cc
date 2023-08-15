@@ -225,13 +225,10 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
 
   // Showing a <dialog> should hide all open popovers.
   auto& document = GetDocument();
-  if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-          document.GetExecutionContext())) {
-    HTMLElement::HideAllPopoversUntil(
-        nullptr, document, HidePopoverFocusBehavior::kNone,
-        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-        HidePopoverIndependence::kHideUnrelated);
-  }
+  HTMLElement::HideAllPopoversUntil(
+      nullptr, document, HidePopoverFocusBehavior::kNone,
+      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+      HidePopoverIndependence::kHideUnrelated);
 
   if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
     SetFocusForDialog();
@@ -288,9 +285,7 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
         DOMExceptionCode::kInvalidStateError,
         "The element is not in a Document.");
   }
-  if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-          GetDocument().GetExecutionContext()) &&
-      HasPopoverAttribute() && popoverOpen()) {
+  if (HasPopoverAttribute() && popoverOpen()) {
     return exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The dialog is already open as a Popover, and therefore cannot be "
@@ -328,13 +323,10 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   }
 
   // Showing a <dialog> should hide all open popovers.
-  if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-          document.GetExecutionContext())) {
-    HTMLElement::HideAllPopoversUntil(
-        nullptr, document, HidePopoverFocusBehavior::kNone,
-        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-        HidePopoverIndependence::kHideUnrelated);
-  }
+  HTMLElement::HideAllPopoversUntil(
+      nullptr, document, HidePopoverFocusBehavior::kNone,
+      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+      HidePopoverIndependence::kHideUnrelated);
 
   if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
     SetFocusForDialog();

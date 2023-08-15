@@ -436,8 +436,6 @@ TEST_F(HTMLElementTest, ImplicitlyAnchorElementConnected) {
 }
 
 TEST_F(HTMLElementTest, PopoverTopLayerRemovalTiming) {
-  ScopedHTMLPopoverAttributeForTest scoped_feature(true);
-
   SetBodyInnerHTML(R"HTML(
     <div id="target" popover></div>
   )HTML");

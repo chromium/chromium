@@ -66,13 +66,13 @@
     [ImplementedAs=offsetHeightForBinding] readonly attribute long offsetHeight;
 
     // The Popover API
-    [MeasureAs=ElementTogglePopover,RuntimeEnabled=HTMLPopoverAttribute,RaisesException] boolean togglePopover(optional boolean force);
-    [MeasureAs=ElementShowPopover,RuntimeEnabled=HTMLPopoverAttribute,RaisesException] void showPopover();
-    [MeasureAs=ElementHidePopover,RuntimeEnabled=HTMLPopoverAttribute,RaisesException] void hidePopover();
+    [MeasureAs=ElementTogglePopover,RaisesException] boolean togglePopover(optional boolean force);
+    [MeasureAs=ElementShowPopover,RaisesException] void showPopover();
+    [MeasureAs=ElementHidePopover,RaisesException] void hidePopover();
     // See crbug.com/1418144. We need to change ReflectOnly based on a runtime flag, which isn't possible.
-    // See also crbug.com/1307772. When HTMLPopoverAttribute is removed as a flag, we should be able to go back to using [Reflect].
-    // [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popover;
-    [CEReactions,RuntimeEnabled=HTMLPopoverAttribute] attribute DOMString? popover;
+    // See also crbug.com/1416284. When HTMLPopoverHint is removed as a flag, we should be able to go back to using [Reflect].
+    // [CEReactions,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popover;
+    [CEReactions] attribute DOMString? popover;
 
     // Used by both Anchor Positioning and Popover
     [CEReactions,RuntimeEnabled=CSSAnchorPositioning] attribute Element? anchorElement;

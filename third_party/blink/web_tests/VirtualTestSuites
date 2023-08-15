@@ -1551,8 +1551,7 @@
       "external/wpt/html/semantics/popovers/popover-types-with-hints.tentative.html",
       "external/wpt/html/semantics/popovers/popover-types.html"
     ],
-    "args": ["--enable-blink-features=HTMLPopoverAttribute",
-      "--disable-blink-features=HTMLPopoverHint",
+    "args": ["--disable-blink-features=HTMLPopoverHint",
       "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jan 1, 2024"
   },

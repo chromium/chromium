@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 interface mixin PopoverInvokerElement {
-  [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect=popovertarget] attribute Element? popoverTargetElement;
+  [CEReactions,Reflect=popovertarget] attribute Element? popoverTargetElement;
   // See crbug.com/1418144. We need to change ReflectOnly based on a runtime flag, which isn't possible.
   // See also crbug.com/1416284. When HTMLPopoverHint is removed as a flag, we should be able to go back to using [Reflect].
-  // [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect,ReflectOnly=("toggle","show","hide"),ReflectEmpty="toggle",ReflectInvalid="toggle",ReflectMissing="toggle"] attribute DOMString popoverTargetAction;
-  [CEReactions,RuntimeEnabled=HTMLPopoverAttribute] attribute DOMString popoverTargetAction;
+  // [CEReactions,Reflect,ReflectOnly=("toggle","show","hide"),ReflectEmpty="toggle",ReflectInvalid="toggle",ReflectMissing="toggle"] attribute DOMString popoverTargetAction;
+  [CEReactions] attribute DOMString popoverTargetAction;
 };

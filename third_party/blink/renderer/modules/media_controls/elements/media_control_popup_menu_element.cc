@@ -122,16 +122,8 @@ MediaControlPopupMenuElement::~MediaControlPopupMenuElement() = default;
 void MediaControlPopupMenuElement::SetIsWanted(bool wanted) {
   MediaControlDivElement::SetIsWanted(wanted);
 
-  // TODO(crbug.com/1466192) On systems with HTMLPopoverAttribute disabled
-  // manually, popovers will not work. This feature will be removed on
-  // August 9, 2023. Until then, at least don't crash the renderer.
-  bool popover_enabled = RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-      GetDocument().GetExecutionContext());
-
   if (wanted) {
-    if (popover_enabled) {
-      ShowPopoverInternal(/*invoker*/ nullptr, /*exception_state*/ nullptr);
-    }
+    ShowPopoverInternal(/*invoker*/ nullptr, /*exception_state*/ nullptr);
     if (!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
       SetPosition();
     }
@@ -144,7 +136,7 @@ void MediaControlPopupMenuElement::SetIsWanted(bool wanted) {
   } else {
     if (event_listener_)
       event_listener_->StopListening();
-    if (popover_enabled && popoverOpen()) {
+    if (popoverOpen()) {
       HidePopoverInternal(HidePopoverFocusBehavior::kNone,
                           HidePopoverTransitionBehavior::kNoEventsNoWaiting,
                           nullptr);
