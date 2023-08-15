@@ -18316,11 +18316,12 @@ be describing additional metrics about the same event.
   <owner>selya@chromium.org</owner>
   <owner>selya@google.com</owner>
   <summary>
-    Recorded when a page has a partitioned cookie present
+    Recorded when a page has a partitioned cookie present.
   </summary>
   <metric name="PartitionedCookiePresent" enum="Boolean">
     <summary>
-      Records '1' is logged if one or more partitioned cookies are present
+      Records '1' if one or more partitioned cookies are present. This metric is
+      only logged for sites that have partitioned cookies.
     </summary>
   </metric>
 </event>

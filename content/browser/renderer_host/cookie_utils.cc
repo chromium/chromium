@@ -27,6 +27,9 @@ void RecordPartitionedCookieUseUKM(RenderFrameHost* rfh,
   if (rfh->IsInLifecycleState(RenderFrameHost::LifecycleState::kPrerendering)) {
     return;
   }
+  if (!partitioned_cookies_exist) {
+    return;
+  }
   ukm::SourceId source_id = rfh->GetPageUkmSourceId();
 
   ukm::builders::PartitionedCookiePresent(source_id)
