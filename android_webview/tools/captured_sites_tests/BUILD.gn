@@ -67,11 +67,14 @@ instrumentation_test_apk("webview_captured_sites_test_apk") {
   apk_under_test = ":webview_captured_sites_app_apk"
   android_manifest = "javatests/AndroidManifest.xml"
   sources = [
+    "javatests/src/org/chromium/webview_ui_test/test/CapturedSitesTest.java",
     "javatests/src/org/chromium/webview_ui_test/test/TestAutofillService.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/Action.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesInstructions.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesSyncWrapper.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesTestRule.java",
+    "javatests/src/org/chromium/webview_ui_test/test/util/JavaScriptExecutionViewAction.java",
+    "javatests/src/org/chromium/webview_ui_test/test/util/PerformActions.java",
   ]
   deps = [
     ":webview_captured_sites_app_apk_resources",

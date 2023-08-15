@@ -55,4 +55,8 @@ public class CapturedSitesTestRule extends BaseActivityTestRule<WebViewUiTestAct
     public void launchActivity() {
         launchActivity(null);
     }
+
+    public void loadUrlSync(String url) {
+        mSyncWrapper.loadUrlSync(url);
+    }
 }

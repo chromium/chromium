@@ -117,4 +117,15 @@ public class CapturedSitesSyncWrapper {
             getInstrumentation().runOnMainSync(runnable);
         }
     }
+
+    public void loadUrlSync(final String url) {
+        mErrorMessageList.clear();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mWebView.getSettings().setAllowFileAccess(true);
+                mWebView.loadUrl(url);
+            }
+        });
+    }
 }
