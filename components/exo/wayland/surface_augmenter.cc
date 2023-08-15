@@ -78,10 +78,9 @@ class AugmentedSurface : public SurfaceObserver {
 
   void SetClipRect(float x, float y, float width, float height) {
     absl::optional<gfx::RectF> clip_rect;
-    if (x >= 0 && y >= 0 && width >= 0 && height >= 0) {
+    if (width >= 0 && height >= 0) {
       clip_rect = gfx::RectF(x, y, width, height);
     }
-    // TODO(rivr): Should we send a protocol error if there are invalid values?
     surface_->SetClipRect(clip_rect);
   }
 
