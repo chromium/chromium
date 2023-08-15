@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/mac/dispatch_source_mach.h"
+#include "base/apple/dispatch_source_mach.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"

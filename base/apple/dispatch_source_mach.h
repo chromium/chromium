@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_MAC_DISPATCH_SOURCE_MACH_H_
-#define BASE_MAC_DISPATCH_SOURCE_MACH_H_
+#ifndef BASE_APPLE_DISPATCH_SOURCE_MACH_H_
+#define BASE_APPLE_DISPATCH_SOURCE_MACH_H_
 
 #include <dispatch/dispatch.h>
 
@@ -52,4 +52,4 @@ class BASE_EXPORT DispatchSourceMach {
 
 }  // namespace base
 
-#endif  // BASE_MAC_DISPATCH_SOURCE_MACH_H_
+#endif  // BASE_APPLE_DISPATCH_SOURCE_MACH_H_

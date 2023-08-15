@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/mac/dispatch_source_mach.h"
+#include "base/apple/dispatch_source_mach.h"
 
 #include <mach/mach.h>
 
@@ -20,20 +20,21 @@ class DispatchSourceMachTest : public testing::Test {
   void SetUp() override {
     mach_port_t port = MACH_PORT_NULL;
     ASSERT_EQ(KERN_SUCCESS, mach_port_allocate(mach_task_self(),
-        MACH_PORT_RIGHT_RECEIVE, &port));
+                                               MACH_PORT_RIGHT_RECEIVE, &port));
     receive_right_.reset(port);
 
-    ASSERT_EQ(KERN_SUCCESS, mach_port_insert_right(mach_task_self(), port,
-        port, MACH_MSG_TYPE_MAKE_SEND));
+    ASSERT_EQ(KERN_SUCCESS, mach_port_insert_right(mach_task_self(), port, port,
+                                                   MACH_MSG_TYPE_MAKE_SEND));
     send_right_.reset(port);
   }
 
   mach_port_t GetPort() { return receive_right_.get(); }
 
   void WaitForSemaphore(dispatch_semaphore_t semaphore) {
-    dispatch_semaphore_wait(semaphore, dispatch_time(
-        DISPATCH_TIME_NOW,
-        TestTimeouts::action_timeout().InSeconds() * NSEC_PER_SEC));
+    dispatch_semaphore_wait(
+        semaphore, dispatch_time(DISPATCH_TIME_NOW,
+                                 TestTimeouts::action_timeout().InSeconds() *
+                                     NSEC_PER_SEC));
   }
 
  private:
@@ -46,16 +47,16 @@ TEST_F(DispatchSourceMachTest, ReceiveAfterResume) {
   mach_port_t port = GetPort();
 
   bool __block did_receive = false;
-  DispatchSourceMach source("org.chromium.base.test.ReceiveAfterResume",
-      port, ^{
-          mach_msg_empty_rcv_t msg = {{0}};
-          msg.header.msgh_size = sizeof(msg);
-          msg.header.msgh_local_port = port;
-          mach_msg_receive(&msg.header);
-          did_receive = true;
+  DispatchSourceMach source("org.chromium.base.test.ReceiveAfterResume", port,
+                            ^{
+                              mach_msg_empty_rcv_t msg = {{0}};
+                              msg.header.msgh_size = sizeof(msg);
+                              msg.header.msgh_local_port = port;
+                              mach_msg_receive(&msg.header);
+                              did_receive = true;
 
-          dispatch_semaphore_signal(signal);
-      });
+                              dispatch_semaphore_signal(signal);
+                            });
 
   mach_msg_empty_send_t msg = {{0}};
   msg.header.msgh_size = sizeof(msg);
@@ -85,7 +86,7 @@ TEST_F(DispatchSourceMachTest, NoMessagesAfterDestruction) {
         msg.header.msgh_size = sizeof(msg);
         msg.header.msgh_local_port = port;
         mach_msg_receive(&msg.header);
-        LOG(INFO) << "Receieve " << *count_ptr;
+        LOG(INFO) << "Receive " << *count_ptr;
         ++(*count_ptr);
       }));
   source->Resume();
@@ -95,12 +96,11 @@ TEST_F(DispatchSourceMachTest, NoMessagesAfterDestruction) {
   dispatch_semaphore_t signal = dispatch_semaphore_create(0);
   for (int i = 0; i < 30; ++i) {
     dispatch_async(queue, ^{
-        mach_msg_empty_send_t msg = {{0}};
-        msg.header.msgh_size = sizeof(msg);
-        msg.header.msgh_remote_port = port;
-        msg.header.msgh_bits =
-            MACH_MSGH_BITS_REMOTE(MACH_MSG_TYPE_COPY_SEND);
-        mach_msg_send(&msg.header);
+      mach_msg_empty_send_t msg = {{0}};
+      msg.header.msgh_size = sizeof(msg);
+      msg.header.msgh_remote_port = port;
+      msg.header.msgh_bits = MACH_MSGH_BITS_REMOTE(MACH_MSG_TYPE_COPY_SEND);
+      mach_msg_send(&msg.header);
     });
 
     // After sending five messages, shut down the source and taint the
@@ -109,9 +109,9 @@ TEST_F(DispatchSourceMachTest, NoMessagesAfterDestruction) {
     if (i == 5) {
       std::unique_ptr<DispatchSourceMach>* source_ptr = &source;
       dispatch_async(queue, ^{
-          source_ptr->reset();
-          count_ptr = reinterpret_cast<int*>(0xdeaddead);
-          dispatch_semaphore_signal(signal);
+        source_ptr->reset();
+        count_ptr = reinterpret_cast<int*>(0xdeaddead);
+        dispatch_semaphore_signal(signal);
       });
     }
   }
