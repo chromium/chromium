@@ -211,11 +211,6 @@ void RecordBlockedByClientResourceType(
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
-void RecordReceivedPrerendersPerPrimaryPageChangedCount(
-    int number,
-    PrerenderTriggerType trigger_type,
-    const std::string& eagerness_category);
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_METRICS_H_

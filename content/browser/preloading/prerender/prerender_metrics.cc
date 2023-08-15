@@ -474,16 +474,4 @@ void RecordBlockedByClientResourceType(
       request_destination);
 }
 
-void RecordReceivedPrerendersPerPrimaryPageChangedCount(
-    int number,
-    PrerenderTriggerType trigger_type,
-    const std::string& eagerness_category) {
-  base::UmaHistogramCounts100(
-      GenerateHistogramName(
-          "Prerender.Experimental.ReceivedPrerendersPerPrimaryPageChangedCount",
-          trigger_type, /*embedder_suffix=*/"") +
-          "." + eagerness_category,
-      number);
-}
-
 }  // namespace content

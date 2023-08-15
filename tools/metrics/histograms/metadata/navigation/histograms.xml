@@ -1940,31 +1940,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.ReceivedPrerendersPerPrimaryPageChangedCount{PrerenderTriggerType}{EagernessCategory}"
-    units="count" expires_after="2023-11-03">
-  <owner>taiyo@chromium.org</owner>
-  <owner>chrome-prerendering@google.com</owner>
-  <summary>
-    Records the number of eventually received speculation rules prerender
-    triggers with eagerness per primary page changed, classified with their
-    eagerness. This is coutend via started_prerenders_ on PrerendererImpl and
-    recorded when primary page is changed and
-    PrerendererImpl::CancelStartedPrerenders is called.
-
-    Note that this metric only records where PrerenderTriggerType is
-    SpeculationRule and SpeculationRuleFromIsolatedWorld.
-  </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
-  <token key="EagernessCategory">
-    <variant name=".Conservative"/>
-    <variant name=".Eager"/>
-    <variant name=".Moderate"/>
-    <variant name=".NonEager"/>
-    <variant name=".Total"/>
-  </token>
-</histogram>
-
-<histogram
     name="Prerender.Experimental.ResourceLoadingBlockedByClientByType{PrerenderTriggerType}"
     enum="RequestDestination" expires_after="2023-09-03">
   <owner>lingqi@chromium.org</owner>
