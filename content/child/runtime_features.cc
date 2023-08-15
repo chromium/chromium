@@ -233,6 +233,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      raw_ref(features::kPrivacySandboxAdsAPIsOverride), kSetOnlyIfOverridden},
     {wf::EnableSharedStorageAPI,
      raw_ref(features::kPrivacySandboxAdsAPIsM1Override), kSetOnlyIfOverridden},
+    {wf::EnableSharedStorageAPIM118,
+     raw_ref(blink::features::kSharedStorageAPIM118), kSetOnlyIfOverridden},
     {wf::EnableFedCmMultipleIdentityProviders,
      raw_ref(features::kFedCmMultipleIdentityProviders), kDefault},
     {wf::EnableFedCmSelectiveDisclosure,
@@ -241,8 +243,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      kSetOnlyIfOverridden},
     {wf::EnableFencedFrames,
      raw_ref(features::kPrivacySandboxAdsAPIsM1Override), kSetOnlyIfOverridden},
-    {wf::EnableSharedStorageAPI,
-     raw_ref(features::kPrivacySandboxAdsAPIsOverride), kSetOnlyIfOverridden},
     {wf::EnableForcedColors, raw_ref(features::kForcedColors)},
     {wf::EnableFractionalScrollOffsets,
      raw_ref(features::kFractionalScrollOffsets)},
@@ -698,6 +698,17 @@ void ResolveInvalidConfigurations() {
         << switches::kEnableFeatures << "="
         << blink::features::kSharedStorageAPI.name << " in addition.";
     WebRuntimeFeatures::EnableSharedStorageAPI(false);
+  }
+
+  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118) ||
+      !base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    LOG_IF(WARNING, WebRuntimeFeatures::IsSharedStorageAPIM118Enabled())
+        << "SharedStorage for M118+ cannot be enabled in this "
+           "configuration. Use --"
+        << switches::kEnableFeatures << "="
+        << blink::features::kSharedStorageAPI.name << ","
+        << blink::features::kSharedStorageAPIM118.name << " in addition.";
+    WebRuntimeFeatures::EnableSharedStorageAPIM118(false);
   }
 
   if (!base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {

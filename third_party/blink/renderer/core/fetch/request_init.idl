@@ -24,7 +24,7 @@ dictionary RequestInit {
     FetchPriority priority;
     [RuntimeEnabled=TopicsAPI, Exposed=Window] boolean browsingTopics;
     [RuntimeEnabled=AdInterestGroupAPI, Exposed=Window] boolean adAuctionHeaders;
-    [RuntimeEnabled=SharedStorageAPI, Exposed=Window] boolean sharedStorageWritable;
+    [RuntimeEnabled=SharedStorageAPIM118, Exposed=Window] boolean sharedStorageWritable;
     AbortSignal? signal;
     [RuntimeEnabled=FetchUploadStreaming] RequestDuplex duplex;
     [RuntimeEnabled=PrivateNetworkAccessPermissionPrompt] IPAddressSpace targetAddressSpace;
