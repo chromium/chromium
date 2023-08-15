@@ -154,6 +154,7 @@ static_assert(sizeof(void*) != 8, "");
 
 #define PA_CONFIG_HAS_MEMORY_TAGGING()              \
   (defined(ARCH_CPU_ARM64) && defined(__clang__) && \
+   !defined(ADDRESS_SANITIZER) &&                   \
    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)))
 
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
