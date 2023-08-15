@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL e.style.cssText = grid: auto-flow auto / 100px 100px should set grid assert_in_array: grid serialization should be sound value "auto-flow auto / 100px 100px" not in array ["auto-flow / 100px 100px", "none / 100px 100px"]
+FAIL e.style.cssText = grid: auto-flow auto / 100px 100px should set grid assert_equals: grid serialization should be canonical expected "none / 100px 100px" but got "auto-flow auto / 100px 100px"
 PASS e.style.cssText = grid: auto-flow auto / 100px 100px should set grid-template-areas
 PASS e.style.cssText = grid: auto-flow auto / 100px 100px; grid-template-areas: "one two" "three four" should set grid
 PASS e.style.cssText = grid: auto-flow auto / 100px 100px; grid-template-areas: "one two" "three four" should set grid-auto-flow
