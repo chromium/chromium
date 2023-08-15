@@ -50,10 +50,6 @@ const bool kScrollEventChangesTab = true;
 const bool kScrollEventChangesTab = false;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-const bool kPasswordEchoEnabled = false;
-#endif
-
 bool bookmarks_enabled = true;
 
 bool enable_help_app = true;

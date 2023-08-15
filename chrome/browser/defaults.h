@@ -37,9 +37,6 @@ extern const bool kAlwaysCreateTabbedBrowserOnSessionRestore;
 // Should scroll events on the tabstrip change tabs?
 extern const bool kScrollEventChangesTab;
 
-// Last character display for passwords.
-extern const bool kPasswordEchoEnabled;
-
 //=============================================================================
 // Runtime "const" - set only once after parsing command line option and should
 // never be modified after that.

@@ -4125,7 +4125,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   web_prefs->password_echo_enabled =
       prefs->GetBoolean(prefs::kWebKitPasswordEchoEnabled);
 #else
-  web_prefs->password_echo_enabled = browser_defaults::kPasswordEchoEnabled;
+  web_prefs->password_echo_enabled = false;
 #endif
 
   web_prefs->text_areas_are_resizable =
