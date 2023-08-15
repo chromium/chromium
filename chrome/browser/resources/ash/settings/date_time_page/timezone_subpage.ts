@@ -19,6 +19,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isChild} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
@@ -97,7 +98,7 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
     }
 
     // Check if should ask for parent access code.
-    if (loadTimeData.getBoolean('isChild')) {
+    if (isChild()) {
       this.disableTimeZoneSetting_();
       this.addWebUiListener(
           'access-code-validation-complete',

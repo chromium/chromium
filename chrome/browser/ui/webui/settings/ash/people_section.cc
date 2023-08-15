@@ -491,9 +491,6 @@ void AddParentalControlStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean("showParentalControls",
                           are_parental_control_settings_allowed);
-
-  bool is_child = user_manager::UserManager::Get()->IsLoggedInAsChildUser();
-  html_source->AddBoolean("isChild", is_child);
 }
 
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,

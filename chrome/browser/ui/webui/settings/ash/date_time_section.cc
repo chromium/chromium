@@ -17,7 +17,6 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/system_settings_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -148,9 +147,6 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "timeZoneID",
       system::TimezoneSettings::GetInstance()->GetCurrentTimezoneID());
-
-  bool is_child = user_manager::UserManager::Get()->GetActiveUser()->IsChild();
-  html_source->AddBoolean("isChild", is_child);
 }
 
 void DateTimeSection::AddHandlers(content::WebUI* web_ui) {

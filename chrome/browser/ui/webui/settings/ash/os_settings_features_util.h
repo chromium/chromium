@@ -11,7 +11,7 @@ namespace ash::settings {
 
 bool IsGuestModeActive();
 
-bool IsChildSession();
+bool IsChildUser();
 
 bool IsDeviceEnterpriseManaged();
 

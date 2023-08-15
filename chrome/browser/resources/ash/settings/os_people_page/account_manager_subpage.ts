@@ -27,6 +27,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../assert_extras.js';
+import {isChild} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -78,7 +79,7 @@ class SettingsAccountManagerSubpageElement extends
       isChildUser_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isChild');
+          return isChild();
         },
       },
 

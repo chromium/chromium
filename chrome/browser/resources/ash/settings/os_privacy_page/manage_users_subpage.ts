@@ -17,10 +17,10 @@ import '../os_people_page/user_list.js';
 import '../os_people_page/add_user_dialog.js';
 
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import {isChild} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {SettingsUsersAddUserDialogElement} from '../os_people_page/add_user_dialog.js';
@@ -68,7 +68,7 @@ export class SettingsManageUsersSubpageElement extends
       isChild_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isChildAccount');
+          return isChild();
         },
       },
 
