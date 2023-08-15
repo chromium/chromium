@@ -1500,6 +1500,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "customize-chrome-side-panel-extensions-card",
+    "owners": [ "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "cws-info-fast-check",
     "owners": [
       "anunoy"

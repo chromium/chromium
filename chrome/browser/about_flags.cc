@@ -9321,6 +9321,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCustomizeChromeColorExtractionName,
      flag_descriptions::kCustomizeChromeColorExtractionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kCustomizeChromeColorExtraction)},
+
+    {"customize-chrome-side-panel-extensions-card",
+     flag_descriptions::kCustomizeChromeSidePanelExtensionsCardName,
+     flag_descriptions::kCustomizeChromeSidePanelExtensionsCardDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kCustomizeChromeSidePanelExtensionsCard)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

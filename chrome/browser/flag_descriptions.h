@@ -133,6 +133,9 @@ extern const char kCustomizeChromeColorExtractionDescription[];
 extern const char kCustomizeChromeSidePanelName[];
 extern const char KCustomizeChromeSidePanelDescription[];
 
+extern const char kCustomizeChromeSidePanelExtensionsCardName[];
+extern const char kCustomizeChromeSidePanelExtensionsCardDescription[];
+
 extern const char kDeprecateUnloadName[];
 extern const char kDeprecateUnloadDescription[];
 

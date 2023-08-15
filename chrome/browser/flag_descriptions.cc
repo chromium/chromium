@@ -174,6 +174,12 @@ const char KCustomizeChromeSidePanelDescription[] =
     "Enables the ability to use Customize Chrome functionality from the "
     "unified side panel on the New Tab Page.";
 
+const char kCustomizeChromeSidePanelExtensionsCardName[] =
+    "Customize Chrome Side Panel Extension Card";
+const char kCustomizeChromeSidePanelExtensionsCardDescription[] =
+    "If enabled, shows an extension card within the Customize Chrome Side "
+    "Panel for access to the Chrome Web Store extensions.";
+
 const char kDeprecateUnloadName[] = "Deprecate the unload event";
 const char kDeprecateUnloadDescription[] =
     "Controls the default for Permissions-Policy unload. If enabled, unload "

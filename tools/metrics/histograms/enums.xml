@@ -60924,6 +60924,8 @@ from previous Chrome versions.
   <int value="-1526934250" label="BorealisProvision:disabled"/>
   <int value="-1525129540"
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:disabled"/>
+  <int value="-1524510718"
+      label="CustomizeChromeSidePanelExtensionsCard:disabled"/>
   <int value="-1524323669" label="InstalledAppsInCbd:enabled"/>
   <int value="-1522389453" label="AndroidWidgetFullscreenToast:enabled"/>
   <int value="-1522135125" label="DiacriticsUseReplaceSurroundingText:enabled"/>
@@ -65393,6 +65395,8 @@ from previous Chrome versions.
   <int value="731757746" label="ArcEnableDocumentsProviderInFilesApp:disabled"/>
   <int value="731775657" label="DownloadsAutoResumptionNative:disabled"/>
   <int value="731779469" label="BlinkHeapUnifiedGarbageCollection:enabled"/>
+  <int value="731839863"
+      label="CustomizeChromeSidePanelExtensionsCard:enabled"/>
   <int value="732703958" label="enable-gesture-tap-highlight"/>
   <int value="733484229" label="PrivacyGuide3:disabled"/>
   <int value="734900932" label="RecurrentInterstitialFeature:enabled"/>
