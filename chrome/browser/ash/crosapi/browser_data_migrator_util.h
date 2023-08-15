@@ -61,16 +61,16 @@ constexpr char kDryRunFreeDiskSpaceAfterMigration[] =
     "Ash.BrowserDataMigrator.DryRunFreeDiskSpaceAfterMigration";
 
 // Collect extra info for users with low disk space.
-constexpr char kDryRunExtraDiskSpaceOccupiedByMoveLowDiskUser[] =
-    "Ash.BrowserDataMigrator.DryRunExtraDiskSpaceOccupiedByMove.LowDiskUser";
-constexpr char kDryRunFreeDiskSpaceLowDiskUser[] =
-    "Ash.BrowserDataMigrator.DryRunFreeDiskSpace.LowDiskUser";
-constexpr char kDryRunFreeDiskSpaceAfterDeleteLowDiskUser[] =
-    "Ash.BrowserDataMigrator.DryRunFreeDiskSpaceAfterDelete.LowDiskUser";
-constexpr char kDryRunProfileDirSizeLowDiskUser[] =
-    "Ash.BrowserDataMigrator.DryRunProfileDirSize.LowDiskUser";
-constexpr char kDryRunMyFilesDirSizeLowDiskUser[] =
-    "Ash.BrowserDataMigrator.DryRunMyFilesDirSize.LowDiskUser";
+constexpr char kDryRunExtraDiskSpaceOccupiedByMoveLowDiskUser2[] =
+    "Ash.BrowserDataMigrator.DryRunExtraDiskSpaceOccupiedByMove.LowDiskUser2";
+constexpr char kDryRunFreeDiskSpaceLowDiskUser2[] =
+    "Ash.BrowserDataMigrator.DryRunFreeDiskSpace.LowDiskUser2";
+constexpr char kDryRunFreeDiskSpaceAfterDeleteLowDiskUser2[] =
+    "Ash.BrowserDataMigrator.DryRunFreeDiskSpaceAfterDelete.LowDiskUser2";
+constexpr char kDryRunProfileDirSizeLowDiskUser2[] =
+    "Ash.BrowserDataMigrator.DryRunProfileDirSize.LowDiskUser2";
+constexpr char kDryRunMyFilesDirSizeLowDiskUser2[] =
+    "Ash.BrowserDataMigrator.DryRunMyFilesDirSize.LowDiskUser2";
 
 // The base names of files/dirs directly under the original profile
 // data directory that can be deleted if needed because they are temporary
@@ -322,12 +322,14 @@ constexpr char kUserDataStatsRecorderDataSize[] =
 // Files/dirs that is not assigned a unique uma name is given this name.
 constexpr char kUnknownUMAName[] = "Unknown";
 
-constexpr int64_t kBytesInOneMB = 1024 * 1024;
-
-// The size of disk space that should be kept free after migration. This is
-// important since crypotohome conducts an aggressive disk cleanup if free disk
-// space becomes less than 768MB. The buffer is rounded up to 1GB.
-constexpr uint64_t kBuffer = 1024LL * 1024 * 1024;
+// The size of disk space that should be kept free after migration.
+// We currently set this to 100MB. Note that this is smaller than the threshold
+// of 768MB for aggressive disk cleanup by cryptohome thus migration can cause
+// the threshold to be reached triggering aggressive disk cleanup. We allow this
+// because 1. migration does not create much extra data (< 50MB for 99.99% of
+// users) and 2. migration is not unique in that any other Chrome feature can
+// write files to disk resulting in lower disk space.
+constexpr uint64_t kBuffer = 100LL * 1024 * 1024;
 
 // CancelFlag
 class CancelFlag : public base::RefCountedThreadSafe<CancelFlag> {

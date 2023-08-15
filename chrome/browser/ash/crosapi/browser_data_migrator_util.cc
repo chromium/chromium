@@ -515,20 +515,20 @@ void DryRunToCollectUMA(const base::FilePath& profile_data_dir) {
 
   if (free_disk_space_after_migration < (int64_t)kBuffer) {
     base::UmaHistogramCustomCounts(
-        kDryRunExtraDiskSpaceOccupiedByMoveLowDiskUser,
+        kDryRunExtraDiskSpaceOccupiedByMoveLowDiskUser2,
         extra_bytes_created_by_move / 1024 / 1024, 1, 10000, 100);
-    base::UmaHistogramCustomCounts(kDryRunFreeDiskSpaceLowDiskUser,
+    base::UmaHistogramCustomCounts(kDryRunFreeDiskSpaceLowDiskUser2,
                                    free_disk_space / 1024 / 1024, 1, 10000,
                                    100);
-    base::UmaHistogramCustomCounts(kDryRunFreeDiskSpaceAfterDeleteLowDiskUser,
+    base::UmaHistogramCustomCounts(kDryRunFreeDiskSpaceAfterDeleteLowDiskUser2,
                                    free_disk_space_after_delete / 1024 / 1024,
                                    1, 10000, 100);
     base::UmaHistogramCustomCounts(
-        kDryRunProfileDirSizeLowDiskUser,
+        kDryRunProfileDirSizeLowDiskUser2,
         ComputeDirectorySizeWithoutLinks(profile_data_dir) / 1024 / 1024, 1,
         10000, 100);
     base::UmaHistogramCustomCounts(
-        kDryRunMyFilesDirSizeLowDiskUser,
+        kDryRunMyFilesDirSizeLowDiskUser2,
         ComputeDirectorySizeWithoutLinks(profile_data_dir.Append("MyFiles")) /
             1024 / 1024,
         1, 10000, 100);
