@@ -56,9 +56,10 @@ MockPrinter::MockPrinter()
 MockPrinter::~MockPrinter() {
 }
 
-void MockPrinter::ResetPrinter() {
-  printer_status_ = PRINTER_READY;
-  document_cookie_.reset();
+void MockPrinter::Reset() {
+  Finish();
+  pages_.clear();
+  page_count_ = 0;
 }
 
 printing::mojom::PrintParamsPtr MockPrinter::GetDefaultPrintSettings() {
@@ -118,8 +119,7 @@ void MockPrinter::OnDocumentPrinted(
   // RenderViewTest class can verify the this function finishes without errors.
   EXPECT_EQ(PRINTER_PRINTING, printer_status_);
   EXPECT_EQ(document_cookie_, params->document_cookie);
-
-  pages_.clear();
+  EXPECT_TRUE(pages_.empty());
 
 #if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
   if (should_generate_page_images_) {
@@ -164,7 +164,7 @@ void MockPrinter::OnDocumentPrinted(
   }
 #endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
-  ResetPrinter();
+  Finish();
 }
 
 int MockPrinter::GetPageCount() const {
@@ -223,4 +223,9 @@ void MockPrinter::GetPrintParams(printing::mojom::PrintParams* params) const {
   params->title = title_;
   params->url = url_;
   params->prefer_css_page_size = true;
+}
+
+void MockPrinter::Finish() {
+  printer_status_ = PRINTER_READY;
+  document_cookie_.reset();
 }

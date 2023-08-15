@@ -681,7 +681,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, BlockScriptInitiatedPrinting) {
 
   // Unblock script initiated printing and verify printing works.
   GetPrintRenderFrameHelper()->scripting_throttler_.Reset();
-  printer()->ResetPrinter();
+  printer()->Reset();
   print_manager()->SetExpectedPagesCount(1);
   PrintWithJavaScript();
   VerifyPagesPrinted(true);
@@ -704,7 +704,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, AllowUserOriginatedPrinting) {
   VerifyPagesPrinted(false);
 
   // Try again as if user initiated, without resetting the print count.
-  printer()->ResetPrinter();
+  printer()->Reset();
   LoadHTML(kPrintOnUserAction);
   gfx::Size new_size(200, 100);
   Resize(new_size, false);
@@ -908,6 +908,73 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, Pixels) {
   EXPECT_EQ(second_image.pixel_at(0, 17), 0x0000ffU);
   EXPECT_EQ(second_image.pixel_at(2, 15), 0x0000ffU);
   EXPECT_EQ(second_image.pixel_at(3, 14), 0xffffffU);
+}
+
+TEST_F(MAYBE_PrintRenderFrameHelperTest, RoundingAndHeadersAndFooters) {
+  // Use values that end up as fractional values. The output is converted from
+  // CSS pixels (96 DPI) to points (72 DPI), and also via 300 DPI, and some
+  // rounding is applied on the way. See also crbug.com/1466995
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 21px;
+        margin: 4px;
+      }
+      body {
+        margin: 0;
+        background: #0000ff;
+      }
+    </style>
+    <body></body>
+  )HTML");
+
+  // Print without headers and footers.
+  printer()->set_should_print_backgrounds(true);
+  printer()->set_should_generate_page_images(true);
+  printer()->set_should_display_header_footer(false);
+  OnPrintPages();
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  printing::Image image(page->image());
+
+  printer()->Reset();
+
+  // Print again, this time with headers and footers. Note that no headers or
+  // footers will actually be shown, since the page margins are so small, so
+  // this should look identical to the output with headers and footers turned
+  // off.
+  printer()->set_should_display_header_footer(true);
+
+  OnPrintPages();
+
+  page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+
+  // First check that the two results are identical.
+  ASSERT_EQ(image, page->image());
+
+  // Then check the size, and some pixels. Just check the corners. Note that
+  // assumptions about how subpixels are treated are being made here, meaning
+  // that if code changes cause the following expectations to fail, maybe it's
+  // the test that needs to be adjusted.
+
+  ASSERT_EQ(image.size(), gfx::Size(17, 17));
+
+  // Top left corner:
+  EXPECT_EQ(image.pixel_at(2, 2), 0xffffffU);
+  EXPECT_EQ(image.pixel_at(3, 3), 0x0000ffU);
+
+  // Top right corner:
+  EXPECT_EQ(image.pixel_at(13, 2), 0xffffffU);
+  EXPECT_EQ(image.pixel_at(12, 3), 0x0000ffU);
+
+  // Bottom right corner:
+  EXPECT_EQ(image.pixel_at(13, 13), 0xffffffU);
+  EXPECT_EQ(image.pixel_at(12, 12), 0x0000ffU);
+
+  // Bottom left corner:
+  EXPECT_EQ(image.pixel_at(2, 13), 0xffffffU);
+  EXPECT_EQ(image.pixel_at(3, 12), 0x0000ffU);
 }
 
 #endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES

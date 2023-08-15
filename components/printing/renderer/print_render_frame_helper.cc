@@ -324,7 +324,7 @@ void GetPageSizeAndContentAreaFromPageLayout(
   float page_height = page_layout.content_height + page_layout.margin_top +
                       page_layout.margin_bottom;
   *page_size = gfx::ToRoundedSize(gfx::SizeF(page_width, page_height));
-  *content_area = gfx::ToEnclosedRect(
+  *content_area = gfx::ToEnclosingRect(
       gfx::RectF(page_layout.margin_left, page_layout.margin_top,
                  page_layout.content_width, page_layout.content_height));
   *canvas_area =

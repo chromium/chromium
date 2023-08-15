@@ -69,6 +69,9 @@ class MockPrinter {
   void set_should_print_backgrounds(bool val) {
     should_print_backgrounds_ = val;
   }
+  void set_should_display_header_footer(bool val) {
+    display_header_footer_ = val;
+  }
 
 #if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
   void set_should_generate_page_images(bool val) {
@@ -76,8 +79,9 @@ class MockPrinter {
   }
 #endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
-  // Functions that changes settings of a pseudo printer.
-  void ResetPrinter();
+  // Reset the printer, to prepare for another print job.
+  void Reset();
+
   void SetDefaultPrintSettings(const printing::mojom::PrintParams& params);
 
   // Functions that handle mojo messages.
@@ -110,6 +114,9 @@ class MockPrinter {
 
   // Helper function to fill the fields in |params|.
   void GetPrintParams(printing::mojom::PrintParams* params) const;
+
+  // Set the printer in a finished state after printing.
+  void Finish();
 
   // In pixels according to dpi_x and dpi_y.
   gfx::SizeF page_size_;

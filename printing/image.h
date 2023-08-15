@@ -27,6 +27,8 @@ class Image {
 
   ~Image();
 
+  bool operator==(const Image& other) const;
+
   const gfx::Size& size() const { return size_; }
 
   // Returns the 0x0RGB value of the pixel at the given location.

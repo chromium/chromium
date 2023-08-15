@@ -15,4 +15,9 @@ Image::Image(const Image& image) = default;
 
 Image::~Image() = default;
 
+bool Image::operator==(const Image& other) const {
+  return size_ == other.size_ && row_length_ == other.row_length_ &&
+         data_ == other.data_;
+}
+
 }  // namespace printing
