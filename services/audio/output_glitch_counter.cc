@@ -26,22 +26,6 @@ enum class AudioGlitchResult {
   kGlitches = 1,
   kMaxValue = kGlitches
 };
-
-const char* LatencyToString(AudioLatency::Type latency) {
-  switch (latency) {
-    case AudioLatency::Type::kExactMS:
-      return "LatencyExactMs";
-    case AudioLatency::Type::kInteractive:
-      return "LatencyInteractive";
-    case AudioLatency::Type::kRtc:
-      return "LatencyRtc";
-    case AudioLatency::Type::kPlayback:
-      return "LatencyPlayback";
-    case AudioLatency::Type::kUnknown:
-      return "LatencyUnknown";
-  }
-}
-
 }  // namespace
 
 OutputGlitchCounter::OutputGlitchCounter(media::AudioLatency::Type latency_tag)
@@ -57,7 +41,7 @@ OutputGlitchCounter::~OutputGlitchCounter() {
                                               : AudioGlitchResult::kNoGlitches;
   base::UmaHistogramEnumeration(histogram_name, audio_glitch_result);
   base::UmaHistogramEnumeration(
-      histogram_name + "." + LatencyToString(latency_tag_),
+      histogram_name + "." + AudioLatency::ToString(latency_tag_),
       audio_glitch_result);
 }
 
@@ -85,12 +69,13 @@ OutputGlitchCounter::Counter::Counter(media::AudioLatency::Type latency_tag,
     : histogram_name_intervals_(
           base::StrCat({"Media.AudioRendererMissedDeadline3",
                         mixing ? ".Mixing" : "", ".Intervals"})),
-      histogram_name_intervals_with_latency_(histogram_name_intervals_ + "." +
-                                             LatencyToString(latency_tag)),
+      histogram_name_intervals_with_latency_(
+          histogram_name_intervals_ + "." +
+          AudioLatency::ToString(latency_tag)),
       histogram_name_short_(base::StrCat({"Media.AudioRendererMissedDeadline3",
                                           mixing ? ".Mixing" : "", ".Short"})),
       histogram_name_short_with_latency_(histogram_name_short_ + "." +
-                                         LatencyToString(latency_tag)) {
+                                         AudioLatency::ToString(latency_tag)) {
   // Assume a bad case of 192 kHz with 256 sample buffers. One sample represents
   // 1000 buffers, and we want to reserve 60 seconds worth of samples.
   // 60 / (1000 * 256 / 192000) = 45.

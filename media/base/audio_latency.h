@@ -71,6 +71,8 @@ class MEDIA_SHMEM_EXPORT AudioLatency {
                                 int min_hardware_buffer_size,
                                 int max_hardware_buffer_size,
                                 int max_allowed_buffer_size);
+
+  static const char* ToString(Type type);
 };
 
 }  // namespace media

@@ -15,25 +15,6 @@
 #include "base/time/time.h"
 
 namespace media {
-namespace {
-
-const char* LatencyToString(AudioLatency::Type latency) {
-  switch (latency) {
-    case AudioLatency::Type::kExactMS:
-      return "LatencyExactMs";
-    case AudioLatency::Type::kInteractive:
-      return "LatencyInteractive";
-    case AudioLatency::Type::kRtc:
-      return "LatencyRtc";
-    case AudioLatency::Type::kPlayback:
-      return "LatencyPlayback";
-    case AudioLatency::Type::kUnknown:
-      return "LatencyUnknown";
-  }
-}
-
-}  // namespace
-
 AudioDeviceStatsReporter::AudioDeviceStatsReporter(
     const AudioParameters& params,
     Type type)
@@ -144,9 +125,9 @@ AudioDeviceStatsReporter::CreateAggregateCallback(
   }
 
   std::string short_with_latency_name(
-      base::StrCat({short_name, ".", LatencyToString(latency)}));
+      base::StrCat({short_name, ".", AudioLatency::ToString(latency)}));
   std::string intervals_with_latency_name(
-      base::StrCat({intervals_name, ".", LatencyToString(latency)}));
+      base::StrCat({intervals_name, ".", AudioLatency::ToString(latency)}));
 
   return base::BindRepeating(
       [](int max_value, size_t bucket_count, const std::string& short_name,
@@ -187,7 +168,7 @@ AudioDeviceStatsReporter::CreateRealtimeCallback(
                              : "Media.AudioInputDevice.AudioService",
        stat_name}));
   std::string base_with_latency_name(
-      base::StrCat({base_name, ".", LatencyToString(latency)}));
+      base::StrCat({base_name, ".", AudioLatency::ToString(latency)}));
 
   // Since this callback will be called on every call to ReportCallback(), we
   // pre-fetch the histograms for efficiency, like the histogram macros do. Note

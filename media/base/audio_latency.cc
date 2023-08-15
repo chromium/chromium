@@ -252,4 +252,21 @@ int AudioLatency::GetExactBufferSize(base::TimeDelta duration,
 
   return std::min(buffer_size, platform_max_buffer_size);
 }
+
+// static
+// Used for UMA histogram names, do not change the lookup.
+const char* AudioLatency::ToString(Type type) {
+  switch (type) {
+    case Type::kExactMS:
+      return "LatencyExactMs";
+    case Type::kInteractive:
+      return "LatencyInteractive";
+    case Type::kRtc:
+      return "LatencyRtc";
+    case Type::kPlayback:
+      return "LatencyPlayback";
+    case Type::kUnknown:
+      return "LatencyUnknown";
+  }
+}
 }  // namespace media
