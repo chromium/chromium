@@ -2716,12 +2716,12 @@
   {
     "name": "enable-fenced-frames",
     "owners": [ "dom", "shivanisha", "chrome-fenced-frames@google.com" ],
-    "expiry_milestone": 117
+    "expiry_milestone": 130
   },
   {
     "name": "enable-fenced-frames-developer-mode",
     "owners": [ "dom", "shivanisha", "chrome-fenced-frames@google.com" ],
-    "expiry_milestone": 119
+    "expiry_milestone": 130
   },
   {
     "name": "enable-file-backed-blob-factory",
