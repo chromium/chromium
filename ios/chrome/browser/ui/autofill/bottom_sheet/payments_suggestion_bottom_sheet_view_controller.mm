@@ -29,6 +29,12 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 // Default spacing use for the views in the bottom sheet.
 CGFloat const kSpacing = 10;
 
+// Spacing use for the spacing before the logo title in the bottom sheet.
+CGFloat const kSpacingBeforeImage = 16;
+
+// Spacing use for the spacing after the logo title in the bottom sheet.
+CGFloat const kSpacingAfterImage = 4;
+
 // Height of the logo used as the title of the bottom sheet.
 CGFloat const kTitleLogoHeight = 24;
 
@@ -98,7 +104,8 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   _tableViewIsMinimized = _creditCardData.count > 2;
 
   self.image = [self titleImage];
-  self.customSpacingBeforeImageIfNoNavigationBar = kSpacing;
+  self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeImage;
+  self.customSpacingAfterImage = kSpacingAfterImage;
   self.subtitleTextStyle = UIFontTextStyleFootnote;
   std::u16string formattedURL =
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
@@ -245,8 +252,11 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
                 ? NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK)
                 : NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
 
-    CGFloat ratio = kTitleLogoHeight / image.size.height;
-    CGSize imageSize = CGSizeMake(image.size.width * ratio, kTitleLogoHeight);
+    // Using kTitleLogoHeight (24pt) returns a GPay logo too small, so we are
+    // using 28pt to ressemble the mocks.
+    CGFloat gPayLogoSize = 28;
+    CGFloat ratio = gPayLogoSize / image.size.height;
+    CGSize imageSize = CGSizeMake(image.size.width * ratio, gPayLogoSize);
     UIGraphicsImageRenderer* renderer =
         [[UIGraphicsImageRenderer alloc] initWithSize:imageSize];
     image =
@@ -498,6 +508,12 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
                             (selectedDetentIdentifier ==
                                  kCustomDetentIdentifier &&
                              self.expandSizeTooLarge)];
+}
+
+#pragma mark - ConfirmationAlertViewController
+
+- (void)customizeSubtitle:(UITextView*)subtitle {
+  subtitle.textContainerInset = UIEdgeInsetsZero;
 }
 
 @end
