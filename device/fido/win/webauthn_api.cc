@@ -13,7 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -504,14 +504,14 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
       request.hmac_secret,
   };
 
-  WEBAUTHN_CREDENTIAL_ATTESTATION* credential_attestation = nullptr;
-
   FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorMakeCredential("
                   << "rp=" << rp_info << ", user=" << user_info
                   << ", cose_credential_parameters="
                   << cose_credential_parameters
                   << ", client_data=" << client_data << ", options=" << options
                   << ")";
+
+  WEBAUTHN_CREDENTIAL_ATTESTATION* credential_attestation = nullptr;
   HRESULT hresult = webauthn_api->AuthenticatorMakeCredential(
       h_wnd, &rp_info, &user_info, &cose_credential_parameters, &client_data,
       &options, &credential_attestation);
@@ -522,7 +522,6 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
           [webauthn_api](PWEBAUTHN_CREDENTIAL_ATTESTATION ptr) {
             webauthn_api->FreeCredentialAttestation(ptr);
           });
-
   if (hresult != S_OK) {
     FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorMakeCredential()="
                     << HresultToHex(hresult) << " ("
@@ -647,18 +646,17 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
       request_options.is_off_the_record_context,
   };
 
-  WEBAUTHN_ASSERTION* assertion = nullptr;
-
   FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorGetAssertion("
                   << "rp_id=\"" << rp_id16 << "\", client_data=" << client_data
                   << ", options=" << options << ")";
+
+  WEBAUTHN_ASSERTION* assertion = nullptr;
   HRESULT hresult = webauthn_api->AuthenticatorGetAssertion(
       h_wnd, base::as_wcstr(rp_id16), &client_data, &options, &assertion);
   std::unique_ptr<WEBAUTHN_ASSERTION, std::function<void(PWEBAUTHN_ASSERTION)>>
       assertion_deleter(assertion, [webauthn_api](PWEBAUTHN_ASSERTION ptr) {
         webauthn_api->FreeAssertion(ptr);
       });
-
   if (hresult != S_OK) {
     FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorGetAssertion()="
                     << HresultToHex(hresult) << " ("
@@ -667,6 +665,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
                 base::as_u16cstr(webauthn_api->GetErrorName(hresult))),
             absl::nullopt};
   }
+
   FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorGetAssertion()=" << *assertion;
   absl::optional<AuthenticatorGetAssertionResponse> response =
       ToAuthenticatorGetAssertionResponse(*assertion, request_options);
@@ -679,6 +678,49 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   return {response ? CtapDeviceResponseCode::kSuccess
                    : CtapDeviceResponseCode::kCtap2ErrOther,
           std::move(response)};
+}
+
+std::pair<bool, std::vector<DiscoverableCredentialMetadata>>
+AuthenticatorEnumerateCredentialsBlocking(WinWebAuthnApi* webauthn_api,
+                                          base::StringPiece16 rp_id,
+                                          bool is_incognito) {
+  if (!webauthn_api || !webauthn_api->IsAvailable() ||
+      !webauthn_api->SupportsSilentDiscovery()) {
+    FIDO_LOG(DEBUG) << "Silent discovery unavailable";
+    return {false, {}};
+  }
+
+  WEBAUTHN_GET_CREDENTIALS_OPTIONS options{
+      .dwVersion = WEBAUTHN_GET_CREDENTIALS_OPTIONS_VERSION_1,
+      // For a default-initialized StringPiece `pwszRpId` will be nullptr,
+      // which makes the API not filter on RP ID.
+      .pwszRpId = base::as_wcstr(rp_id),
+      .bBrowserInPrivateMode = is_incognito};
+
+  FIDO_LOG(DEBUG) << "WebAuthNGetCredentialList("
+                  << ", options=" << options << ")";
+
+  PWEBAUTHN_CREDENTIAL_DETAILS_LIST credentials = nullptr;
+  HRESULT hresult =
+      webauthn_api->GetPlatformCredentialList(&options, &credentials);
+  std::unique_ptr<WEBAUTHN_CREDENTIAL_DETAILS_LIST,
+                  std::function<void(PWEBAUTHN_CREDENTIAL_DETAILS_LIST)>>
+      credentials_deleter(
+          credentials, [webauthn_api](PWEBAUTHN_CREDENTIAL_DETAILS_LIST ptr) {
+            webauthn_api->FreePlatformCredentialList(ptr);
+          });
+  if (hresult != S_OK) {
+    FIDO_LOG(DEBUG) << "WebAuthNGetPlatformCredentialList()="
+                    << HresultToHex(hresult) << " ("
+                    << webauthn_api->GetErrorName(hresult) << ")";
+    // Indicate failure only if the hresult is unexpected.
+    if (hresult != NTE_NOT_FOUND) {
+      FIDO_LOG(ERROR) << "Windows API returned unknown result: " << hresult;
+      return {false, {}};
+    }
+    return {true, {}};
+  }
+  return {true, WinCredentialDetailsListToCredentialMetadata(*credentials)};
 }
 
 }  // namespace device

@@ -16,6 +16,7 @@
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/microsoft_webauthn/webauthn.h"
@@ -122,6 +123,18 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
                                   GUID cancellation_id,
                                   CtapGetAssertionRequest request,
                                   CtapGetAssertionOptions request_options);
+
+// Returns a list of credentials known to the platform authenticator. If rp_id
+// is non-null, only credentials scoped to a matching RP ID are returned.
+//
+// Returns a boolean indicating success, which will be false if the API doesn't
+// support enumeration or if an unexpected error occurred (but will be true if
+// there are no matching credentials); and the list of matching credentials, if
+// any.
+std::pair<bool, std::vector<DiscoverableCredentialMetadata>>
+AuthenticatorEnumerateCredentialsBlocking(WinWebAuthnApi* webauthn_api,
+                                          base::StringPiece16 rp_id,
+                                          bool is_incognito);
 
 }  // namespace device
 
