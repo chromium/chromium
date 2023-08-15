@@ -169,15 +169,9 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_AAC_ADTS) {
 }
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_Mpeg2Ts) {
-// TODO(crbug.com/1091962): This is actually wrong. We don't support mpeg2ts in
-// src=, only MSE playbacks, so this should actually indicate no support when
-// querying canPlayType().
-#if BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER) && \
-    BUILDFLAG(USE_PROPRIETARY_CODECS)
-  ExecuteTest("testMp2tsVariants(true)");  // has_mp2ts_support=true
-#else
+  // Regardless of mp2t stream parser being enabled, it is _not_ supported for
+  // HTMLMediaElement::canPlayType
   ExecuteTest("testMp2tsVariants(false)");  // has_mp2ts_support=false
-#endif
 }
 
 // See more complete codec string testing in media/base/video_codecs_unittest.cc
