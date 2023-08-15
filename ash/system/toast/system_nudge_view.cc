@@ -85,6 +85,7 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
 
   SetupViewCornerRadius(this, kNudgeCornerRadius);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kNudgeCornerRadius,

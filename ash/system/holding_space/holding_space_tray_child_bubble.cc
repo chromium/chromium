@@ -178,6 +178,7 @@ void HoldingSpaceTrayChildBubble::Init() {
 
   if (!features::IsHoldingSpaceRefreshEnabled()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     layer()->SetIsFastRoundedCorner(true);
     layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
   }
