@@ -176,7 +176,7 @@ if (is_chromeos_ash && is_chromeos_device) {
     if (is_skylab) {
       # This tast_attr_expr needs to be kept in sync with //testing/buildbot/test_suites.pyl
       # because the skylab pipeline needs the attr at the build phase. (see b/294778490)
-      tast_attr_expr = "\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !\"dep:lacros\" && !informational)"
+      tast_attr_expr = "(\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !\"dep:lacros\" && !informational)"
     } else {
       deploy_lacros_chrome = true
     }
@@ -195,7 +195,7 @@ if (is_chromeos_ash && is_chromeos_device) {
     if (is_skylab) {
       # This tast_attr_expr needs to be kept in sync with //testing/buildbot/test_suites.pyl
       # because the skylab pipeline needs the attr at the build phase. (see b/294778490)
-      tast_attr_expr = "\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !\"dep:lacros\" && \"informational\" && \"group:criticalstaging\""
+      tast_attr_expr = "(\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !\"dep:lacros\" && \"informational\" && \"group:criticalstaging\")"
     } else {
       deploy_lacros_chrome = true
     }
