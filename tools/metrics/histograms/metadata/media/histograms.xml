@@ -5959,8 +5959,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS.HasAccessControl" enum="Boolean"
-    expires_after="2023-08-08">
-  <owner>cassew@chromium.org</owner>
+    expires_after="2023-11-30">
+  <owner>tmathmeyer@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5972,8 +5972,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS.IsCorsCrossOrigin" enum="Boolean"
-    expires_after="2023-08-08">
-  <owner>cassew@chromium.org</owner>
+    expires_after="2023-11-30">
+  <owner>tmathmeyer@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5985,7 +5985,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS.IsMixedContent" enum="Boolean"
-    expires_after="2023-10-08">
+    expires_after="2023-11-30">
   <owner>cassew@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -5998,8 +5998,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS{Variant}.MimeType"
-    enum="MimeTypeOfHlsManifest" expires_after="2023-08-08">
-  <owner>cassew@chromium.org</owner>
+    enum="MimeTypeOfHlsManifest" expires_after="2023-11-30">
+  <owner>tmathmeyer@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
