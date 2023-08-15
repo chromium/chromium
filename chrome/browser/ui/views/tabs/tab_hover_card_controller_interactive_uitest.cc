@@ -91,10 +91,7 @@ GetTabHoverCardFooterTestFeatureConfig() {
   return {
       {{{performance_manager::features::kDiscardedTabTreatment, {}},
         {performance_manager::features::kMemoryUsageInHovercards,
-         {{"memory_update_trigger",
-           base::NumberToString(static_cast<int>(
-               performance_manager::features::
-                   MemoryUsageInHovercardsUpdateTrigger::kBackground))}}},
+         {{"memory_update_trigger", "background"}}},
         {features::kChromeRefresh2023, {}}},
        {}},
       {{{performance_manager::features::kDiscardedTabTreatment, {}},
