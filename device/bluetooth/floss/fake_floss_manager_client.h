@@ -31,6 +31,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossManagerClient
             const std::string& service_name,
             const int adapter_index,
             base::OnceClosure on_ready) override;
+  void SetAdapterEnabled(int adapter,
+                         bool enabled,
+                         ResponseCallback<Void> callback) override;
 
  private:
   base::WeakPtrFactory<FakeFlossManagerClient> weak_ptr_factory_{this};

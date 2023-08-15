@@ -22,6 +22,17 @@ void FakeFlossManagerClient::Init(dbus::Bus* bus,
   std::move(on_ready).Run();
 }
 
+void FakeFlossManagerClient::SetAdapterEnabled(
+    int adapter,
+    bool enabled,
+    ResponseCallback<Void> callback) {
+  adapter_to_enabled_[adapter] = enabled;
+  std::move(callback).Run(Void{});
+  for (auto& observer : observers_) {
+    observer.AdapterEnabledChanged(adapter, enabled);
+  }
+}
+
 void FakeFlossManagerClient::NotifyObservers(
     const base::RepeatingCallback<void(Observer*)>& notify) const {
   for (auto& observer : observers_) {
