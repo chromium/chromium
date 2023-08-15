@@ -33,6 +33,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UnownedUserData;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
@@ -48,6 +49,9 @@ public class ShareHelper {
     private static final String TAG = "AndroidShare";
     /** The task ID of the activity that triggered the share action. */
     private static final String EXTRA_TASK_ID = "org.chromium.chrome.extra.TASK_ID";
+    /** The string identifier used as a key to mark the clean up intent. */
+    private static final String EXTRA_CLEAN_SHARE_SHEET =
+            "org.chromium.chrome.extra.CLEAN_SHARE_SHEET";
 
     /** The string identifier used as a key to set the extra stream's alt text */
     private static final String EXTRA_STREAM_ALT_TEXT = "android.intent.extra.STREAM_ALT_TEXT";
@@ -111,6 +115,17 @@ public class ShareHelper {
     public static void recordShareSource(int source) {
         RecordHistogram.recordEnumeratedHistogram(
                 ANY_SHARE_HISTOGRAM_NAME, source, ShareSourceAndroid.COUNT);
+    }
+
+    /**
+     * Whether the intent is a send back clean up intent. This is an workaround for Chrome to clean
+     * the top share sheet activity.
+     * @param intent newIntent received by Chrome activity.
+     * @return Whether the intent can be ignored.
+     */
+    public static boolean isCleanerIntent(Intent intent) {
+        if (!IntentUtils.isTrustedIntentFromSelf(intent)) return false;
+        return IntentUtils.safeGetBooleanExtra(intent, EXTRA_CLEAN_SHARE_SHEET, false);
     }
 
     /**
@@ -251,6 +266,29 @@ public class ShareHelper {
             if (resultCode == Activity.RESULT_CANCELED) {
                 cancel();
             }
+        }
+
+        @Override
+        public void onDetachedFromHost(UnownedUserDataHost host) {
+            // Remove the weak reference to the context and window when it is removed from the
+            // attaching window.
+            if (mAttachedContext.get() != null) {
+                // Issue a cleaner intent so the share sheet is cleared. This is a workaround to
+                // close the top ChooserActivity when share isn't completed.
+                Intent cleanerIntent = createCleanupIntent();
+                mAttachedContext.get().startActivity(cleanerIntent);
+            }
+            cancel();
+        }
+
+        protected Intent createCleanupIntent() {
+            Intent cleanerIntent = new Intent();
+            cleanerIntent.setClass(mAttachedContext.get(), mAttachedContext.get().getClass());
+            cleanerIntent.putExtra(EXTRA_CLEAN_SHARE_SHEET, true);
+            cleanerIntent.setFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            IntentUtils.addTrustedIntentExtras(cleanerIntent);
+            return cleanerIntent;
         }
 
         private boolean isUntrustedIntent(Intent intent) {

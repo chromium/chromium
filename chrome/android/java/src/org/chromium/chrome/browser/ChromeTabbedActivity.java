@@ -140,6 +140,7 @@ import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
@@ -893,6 +894,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public void onNewIntent(Intent intent) {
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onNewIntent")) {
+            // Drop the cleaner intent since it's created in order to clear up the OS share sheet.
+            if (ShareHelper.isCleanerIntent(intent)) {
+                return;
+            }
+
             // The intent to use in maybeDispatchExplicitMainViewIntent(). We're explicitly
             // adding NEW_TASK flag to make sure backing from CCT brings up the caller activity,
             // and not Chrome

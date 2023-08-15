@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.SameTaskWebApkActivity;
 import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
+import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 
@@ -139,6 +140,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     public void onNewIntent(Intent intent) {
+        // Drop the cleaner intent since it's created in order to clear up the OS share sheet.
+        if (ShareHelper.isCleanerIntent(intent)) {
+            return;
+        }
+
         Intent originalIntent = getIntent();
         super.onNewIntent(intent);
         // Currently we can't handle arbitrary updates of intent parameters, so make sure
