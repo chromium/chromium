@@ -354,6 +354,9 @@ tast_disabled_tests_from_chrome_all = [
   # https://b/294004569
   "lacros.CompareVersionWithAsh",
 
+  # https://b/294977915
+  "bruschetta.*@eve",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
