@@ -1,1 +1,3 @@
 rdevlin.cronin@chromium.org
+per-file ts_definition_generator*.py=file://ui/webui/PLATFORM_OWNERS
+per-file ts_definition_generator*.py=francisjp@google.com

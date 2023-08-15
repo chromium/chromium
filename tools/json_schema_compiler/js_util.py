@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import re
+from datetime import datetime
+
 from code_util import Code
 from model import PropertyType
-
-from datetime import datetime
 
 LICENSE = """// Copyright %s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
@@ -29,6 +30,18 @@ class JsUtil(object):
     """Returns text describing how the file was generated.
     """
     return (INFO % tool.replace('\\', '/'))
+
+  def GetPropertyName(self,e):
+    # Enum properties are normified to be in ALL_CAPS_STYLE.
+    # Assume enum '1ring-rulesThemAll'.
+    # Transform to '1ring-rules_Them_All'.
+    e = re.sub(r"([a-z])([A-Z])", r"\1_\2", e)
+    # Transform to '1ring_rules_Them_All'.
+    e = re.sub(r"\W", "_", e)
+    # Transform to '_1ring_rules_Them_All'.
+    e = re.sub(r"^(\d)", r"_\1", e)
+    # Transform to '_1RING_RULES_THEM_ALL'.
+    return e.upper()
 
   def AppendObjectDefinition(self, c, namespace_name, properties,
                                new_line=True):

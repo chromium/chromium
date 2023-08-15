@@ -95,21 +95,8 @@ class _Generator(object):
                                 js_type.simple_name)
     c.Eblock(' */')
     c.Append('%s.%s = {' % (self._GetNamespace(), js_type.name))
-
-    def get_property_name(e):
-      # Enum properties are normified to be in ALL_CAPS_STYLE.
-      # Assume enum '1ring-rulesThemAll'.
-      # Transform to '1ring-rules_Them_All'.
-      e = re.sub(r'([a-z])([A-Z])', r'\1_\2', e)
-      # Transform to '1ring_rules_Them_All'.
-      e = re.sub(r'\W', '_', e)
-      # Transform to '_1ring_rules_Them_All'.
-      e = re.sub(r'^(\d)', r'_\1', e)
-      # Transform to '_1RING_RULES_THEM_ALL'.
-      return e.upper()
-
     c.Append('\n'.join(
-        ["  %s: '%s'," % (get_property_name(v.name), v.name)
+        ["  %s: '%s'," % (self._js_util.GetPropertyName(v.name), v.name)
             for v in js_type.enum_values]))
     c.Append('};')
 

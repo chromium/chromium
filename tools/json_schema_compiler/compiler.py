@@ -32,6 +32,7 @@ import json_schema
 from model import Model
 from namespace_resolver import NamespaceResolver
 from schema_loader import SchemaLoader
+from ts_definition_generator import TsDefinitionGenerator
 
 # Names of supported code generators, as specified on the command-line.
 # First is default.
@@ -40,6 +41,7 @@ GENERATORS = [
     'cpp-bundle-registration',
     'cpp-bundle-schema',
     'externs',
+    'ts_definitions',
     'interface',
 ]
 
@@ -140,6 +142,8 @@ def GenerateSchema(
     ]
   elif generator_name == 'externs':
     generators = [('%s_externs.js' % namespace.unix_name, JsExternsGenerator())]
+  elif generator_name == 'ts_definitions':
+    generators = [('%s.d.ts' % namespace.unix_name, TsDefinitionGenerator())]
   elif generator_name == 'interface':
     generators = [(
         '%s_interface.js' % namespace.unix_name,

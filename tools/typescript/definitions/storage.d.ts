@@ -6,7 +6,7 @@
  * @fileoverview Definitions for chrome.storage API
  * Generated from: extensions/common/api/storage.json
  * run `tools/json_schema_compiler/compiler.py
- * extensions/common/api/storage.json -g definitions` to regenerate.
+ * extensions/common/api/storage.json -g ts_definitions` to regenerate.
  */
 
 import {ChromeEvent} from './chrome_event.js';
