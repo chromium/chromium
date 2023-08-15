@@ -338,17 +338,6 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
 StreamingSearchPrefetchURLLoader::~StreamingSearchPrefetchURLLoader() {
   network_url_loader_.reset();
   url_loader_receiver_.reset();
-
-  // Record the times of serving to prerendering navigation. It should be a
-  // small number (0 or 1 in most cases), so cap it at 9.
-  int bucket_size = 10;
-  base::UmaHistogramCustomCounts(
-      "Prerender.Experimental.Search.ResponseReuseCount",
-      std::min(count_prerender_serving_times_, bucket_size - 1), /* min= */ 0,
-      /* exclusive_max= */ bucket_size, bucket_size);
-  if (on_destruction_callback_for_testing_) {
-    std::move(on_destruction_callback_for_testing_).Run();
-  }
 }
 
 // static
@@ -459,7 +448,7 @@ void StreamingSearchPrefetchURLLoader::CreateResponseReaderForPrerender(
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client) {
   DCHECK(prerender_utils::SearchPreloadShareableCacheIsEnabled());
-  count_prerender_serving_times_++;
+  was_served_to_prerender_reader_ = true;
   response_reader_for_prerender_ = std::make_unique<ResponseReader>(
       std::move(receiver), std::move(forwarding_client),
       base::BindOnce(
@@ -877,7 +866,7 @@ void StreamingSearchPrefetchURLLoader::PostTaskToReleaseOwnership() {
 
   if (forwarding_result_ != ForwardingResult::kNotServed) {
     base::UmaHistogramEnumeration(
-        count_prerender_serving_times_
+        was_served_to_prerender_reader_
             ? "Omnibox.SearchPreload.ForwardingResult.WasServedToPrerender"
             : "Omnibox.SearchPreload.ForwardingResult.NotServedToPrerender",
         forwarding_result_);
