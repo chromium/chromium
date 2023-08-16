@@ -44,6 +44,7 @@
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/wl_output.h"
 #include "components/exo/wayland/xdg_shell.h"
+#include "components/version_info/version_info.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -1172,6 +1173,12 @@ class WaylandAuraShell : public ash::DesksController::Observer,
                              ? ZAURA_SHELL_LAYOUT_MODE_TABLET
                              : ZAURA_SHELL_LAYOUT_MODE_WINDOWED;
       zaura_shell_send_layout_mode(aura_shell_resource_, layout_mode);
+    }
+    if (wl_resource_get_version(aura_shell_resource_) >=
+        ZAURA_SHELL_COMPOSITOR_VERSION_SINCE_VERSION) {
+      const base::StringPiece ash_version = version_info::GetVersionNumber();
+      zaura_shell_send_compositor_version(aura_shell_resource_,
+                                          ash_version.data());
     }
     if (wl_resource_get_version(aura_shell_resource_) >=
         ZAURA_SHELL_BUG_FIX_SINCE_VERSION) {

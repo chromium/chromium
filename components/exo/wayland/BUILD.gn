@@ -149,6 +149,7 @@ source_set("wayland") {
     "//components/exo/wayland/protocol:chrome_color_management_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
     "//components/exo/wayland/protocol:surface_augmenter_protocol",
+    "//components/version_info",
     "//device/gamepad",
     "//services/device/public/mojom",
     "//services/device/wake_lock/power_save_blocker",

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="57">
+  <interface name="zaura_shell" version="58">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -159,7 +159,7 @@
       </description>
     </request>
 
-        <!-- Version 57 additions -->
+    <!-- Version 57 additions -->
     <event name="set_overview_mode" since="57">
       <description summary="entered overview mode">
         Notifies client that the server has entered overview mode. Overview mode
@@ -170,6 +170,14 @@
       <description summary="exited overview mode">
         Notifies client that the server has exited overview mode.
       </description>
+    </event>
+
+    <!-- Version 58 additions -->
+    <event name="compositor_version" since="58">
+      <description summary="sends the server version">
+        Sends the Exo compositor version information.
+      </description>
+      <arg name="version_label" type="string" summary="version string label"/>
     </event>
 
   </interface>
