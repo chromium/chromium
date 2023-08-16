@@ -26,8 +26,10 @@ android_apk("webview_captured_sites_app_apk") {
 robolectric_binary("captured_sites_junit_tests") {
   android_manifest = "java/AndroidManifest.xml"
   sources = [
+    "javatests/src/org/chromium/webview_ui_test/test/robolectric/AutofillProfileTest.java",
     "javatests/src/org/chromium/webview_ui_test/test/robolectric/CapturedSitesInstructionsTest.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/Action.java",
+    "javatests/src/org/chromium/webview_ui_test/test/util/AutofillProfile.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesInstructions.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesSyncWrapper.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesTestRule.java",
@@ -75,6 +77,7 @@ instrumentation_test_apk("webview_captured_sites_test_apk") {
     "javatests/src/org/chromium/webview_ui_test/test/CapturedSitesTest.java",
     "javatests/src/org/chromium/webview_ui_test/test/TestAutofillService.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/Action.java",
+    "javatests/src/org/chromium/webview_ui_test/test/util/AutofillProfile.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesInstructions.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesSyncWrapper.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesTestRule.java",

@@ -16,12 +16,15 @@ import android.service.autofill.FillResponse;
 import android.service.autofill.SaveCallback;
 import android.service.autofill.SaveRequest;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.view.autofill.AutofillId;
 import android.view.autofill.AutofillValue;
 import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
+
+import org.chromium.webview_ui_test.test.util.AutofillProfile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +34,9 @@ import java.util.List;
  */
 public class TestAutofillService extends AutofillService {
     private static final long EPOCH_TIME = 946684800000L; // Jan 1, 2000.
-    private static final String FILL_STRING = "default";
     private static final String TAG = "TestAutofillService";
     private static final String PACKAGE_NAME = "org.chromium.webview_ui_test.test";
+    private static final String DEFAULT_FILL = "default";
 
     // Called by Autofill architecture to fill autofillable fields.
     @Override
@@ -69,7 +72,10 @@ public class TestAutofillService extends AutofillService {
         return nodes;
     }
 
-    // Returns a static response with the same string
+    /*
+     * Returns a response based upon the values stored in the AutofillProfile provided.
+     * For Autofill Types TOGGLE, and DATE, we ignore the field but otherwise fill in the form.
+     */
     private void handleRequest(FillRequest request, FillCallback callback) throws Exception {
         // Grab all ViewNodes.
         List<FillContext> contexts = request.getFillContexts();
@@ -81,6 +87,13 @@ public class TestAutofillService extends AutofillService {
         List<ViewNode> nodes = new ArrayList<>();
         FillContext context = contexts.get(contexts.size() - 1); // Get current context
         AssistStructure struct = context.getStructure();
+
+        if (struct == null || struct.getWindowNodeCount() == 0) {
+            Log.w(TAG, "Request has no ViewNodes");
+            callback.onSuccess(null);
+            return; // Nothing to autofill
+        }
+
         for (int i = 0; i < struct.getWindowNodeCount(); i++) {
             ViewNode rootNode = struct.getWindowNodeAt(i).getRootViewNode();
             nodes.addAll(collectAutofillNodes(rootNode));
@@ -90,15 +103,18 @@ public class TestAutofillService extends AutofillService {
         for (ViewNode node : nodes) {
             AutofillId autofillId = node.getAutofillId();
             AutofillValue value = null;
+
+            String fill = DEFAULT_FILL;
             switch (node.getAutofillType()) {
                 case View.AUTOFILL_TYPE_TEXT:
-                    value = AutofillValue.forText(FILL_STRING);
-                    dataset.setValue(autofillId, value, createRemoteViews(FILL_STRING));
+                    fill = getFillFromProfile(node);
+                    value = AutofillValue.forText(fill);
+                    dataset.setValue(autofillId, value, createRemoteViews(fill));
                     break;
                 case View.AUTOFILL_TYPE_LIST:
-                    // This will not be noticeable, but non-zero could cause issues.
-                    value = AutofillValue.forList(0);
-                    dataset.setValue(autofillId, value, createRemoteViews(FILL_STRING));
+                    fill = getFillFromProfile(node);
+                    value = AutofillValue.forList(findFillIndex(node, fill));
+                    dataset.setValue(autofillId, value, createRemoteViews(fill));
                     break;
                 case View.AUTOFILL_TYPE_TOGGLE:
                     Log.d(TAG, "Ignoring ViewNode: " + autofillId + "because it has type toggle.");
@@ -107,7 +123,7 @@ public class TestAutofillService extends AutofillService {
                     Log.d(TAG, "Ignoring ViewNode: " + autofillId + "because it has type date.");
                     break;
                 default:
-                    throw new Error(
+                    throw new Exception(
                             "TestAutofillService should not fill node with AutofillType NONE");
             }
         }
@@ -120,6 +136,36 @@ public class TestAutofillService extends AutofillService {
             Log.w(TAG, "Dataset contains zero ViewNodes");
             callback.onSuccess(null);
         }
+    }
+    // Takes the AutofillHint from the given ViewNode and returns the matching value from profile.
+    private String getFillFromProfile(ViewNode node) throws Exception {
+        //(crbug/1473156) Move this to initialization of service once 'uber profile' made.
+        AutofillProfile profile = new AutofillProfile("us.profile");
+        List<Pair<String, String>> attributes = node.getHtmlInfo().getAttributes();
+        String hint = DEFAULT_FILL;
+        for (Pair<String, String> attribute : attributes) {
+            if (attribute.first.equals("ua-autofill-hints")) {
+                hint = attribute.second;
+            }
+        }
+        if (hint.equals(DEFAULT_FILL)) {
+            throw new NullPointerException("No ua-autofill-hint for element");
+        }
+        if (profile.profileMap.containsKey(hint)) {
+            return profile.profileMap.get(hint);
+        } else {
+            throw new NullPointerException("Profile has no type with hint " + hint);
+        }
+    }
+    // Finds the index to select in dropdown list.
+    private int findFillIndex(ViewNode node, String fillString) throws Exception {
+        CharSequence[] options = node.getAutofillOptions();
+        for (int i = 0; i < options.length; i++) {
+            if (options[i].toString().equals(fillString)) {
+                return i;
+            }
+        }
+        throw new Exception("No dropdown found with fill string " + fillString);
     }
 
     private void raiseError(
