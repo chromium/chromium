@@ -1816,12 +1816,12 @@
   {
     "name": "download-bubble",
     "owners": [ "chlily", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 117
+    "expiry_milestone": 118
   },
   {
     "name": "download-bubble-v2",
     "owners": [ "chlily", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 117
+    "expiry_milestone": 118
   },
   {
     "name": "download-later",
