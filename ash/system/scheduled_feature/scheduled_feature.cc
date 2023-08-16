@@ -162,6 +162,8 @@ bool ScheduledFeature::IsNowWithinSunsetSunrise() const {
 }
 
 void ScheduledFeature::SetEnabled(bool enabled) {
+  DVLOG(1) << "Setting " << GetFeatureName() << " enabled to " << enabled
+           << " at " << clock_->Now();
   if (active_user_pref_service_)
     active_user_pref_service_->SetBoolean(prefs_path_enabled_, enabled);
 }
@@ -428,15 +430,25 @@ void ScheduledFeature::RefreshScheduleTimer(
     SetEnabled(enable_now);
     return;
   } else {  // enable_now != current_enabled && !did_schedule_change
-    // The user manually toggled the feature status to the opposite of what the
-    // schedule says. In this case, ignore the current `schedule_position` since
-    // it doesn't apply anymore. Just find the next time that the feature will
-    // flip back to a status that matches the schedule, and then normal
-    // scheduling logic (the 2 cases above) will resume.
-    next_feature_status = !current_enabled;
-    const base::Time next_toggle_time = schedule_utils::ShiftWithinOneDayFrom(
-        now, current_enabled ? end_time : start_time);
-    time_until_next_refresh = next_toggle_time - now;
+    // Either of these is true:
+    // 1) The user manually toggled the feature status to the opposite of what
+    //    the schedule says.
+    // 2) Sunrise tomorrow is later in the day than sunrise today. For example:
+    // * Sunrise Today: 6:00 AM
+    // * Now/Sunset Today: 6:00 PM
+    // * Calculated sunrise tomorrow: 6:00 AM + 1 day.
+    // * Actual Sunrise Tomorrow: 6:01 AM
+    // * At 6:00 AM the next day, feature is disabled. `RefreshScheduleTimer()`
+    //   uses the new sunrise time of 6:01 AM. The feature's currently disabled
+    //   even though today's sunrise/sunset times say it should be enabled. This
+    //   effectively acts as a manual toggle.
+    //
+    // Maintain the current enabled status and keep scheduling refresh
+    // operations until the enabled status matches the schedule again. When that
+    // happens, the first case in this branch will be hit and normal scheduling
+    // logic should resume thereafter.
+    next_feature_status = current_enabled;
+    time_until_next_refresh = schedule_position.time_until_next_checkpoint;
     new_checkpoint =
         GetCheckpointForEnabledState(current_enabled, schedule_type);
   }
@@ -484,7 +496,7 @@ void ScheduledFeature::ScheduleNextRefresh(
   }
   VLOG(1) << "Setting " << GetFeatureName() << " to refresh to "
           << (current_snapshot.target_status ? "enabled" : "disabled") << " at "
-          << base::TimeFormatTimeOfDay(current_snapshot.target_time);
+          << current_snapshot.target_time << " in " << delay << " now= " << now;
   timer_->Start(FROM_HERE, delay, std::move(timer_cb));
 }
 
@@ -510,6 +522,9 @@ void ScheduledFeature::SetCurrentCheckpoint(ScheduleCheckpoint new_checkpoint) {
     return;
   }
 
+  DVLOG(1) << "Setting " << GetFeatureName() << " ScheduleCheckpoint from "
+           << current_checkpoint_ << " to " << new_checkpoint << " at "
+           << clock_->Now();
   current_checkpoint_ = new_checkpoint;
   for (CheckpointObserver& obs : checkpoint_observers_) {
     obs.OnCheckpointChanged(this, current_checkpoint_);
