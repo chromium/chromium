@@ -117,8 +117,8 @@ class BookmarkModelMerger {
   // matched by UUID. They are guaranteed to have the same type and URL (if
   // applicable).
   struct GuidMatch {
-    raw_ptr<const bookmarks::BookmarkNode> local_node;
-    raw_ptr<const RemoteTreeNode> remote_node;
+    raw_ptr<const bookmarks::BookmarkNode> local_node = nullptr;
+    raw_ptr<const RemoteTreeNode> remote_node = nullptr;
   };
 
   // Constructs the remote bookmark tree to be merged. Each entry in the
