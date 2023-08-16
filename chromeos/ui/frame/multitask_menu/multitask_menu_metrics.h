@@ -36,6 +36,29 @@ enum class MultitaskMenuActionType {
 constexpr char kPartialSplitDurationHistogramName[] =
     "Ash.Window.PartialSplitDuration";
 
+// Used to record when the user pressed the fullscreen option in the multitask
+// menu.
+constexpr char kFullscreenUserAction[] = "MultitaskMenu_Fullscreen";
+
+// Used to record when the user pressed the exit fullscreen option in the
+// multitask menu.
+constexpr char kExitFullscreenUserAction[] = "MultitaskMenu_Exit_Fullscreen";
+
+// Used to record when the user pressed the float option in the multitask menu.
+constexpr char kFloatUserAction[] = "MultitaskMenu_Float";
+
+// Used to record when the user pressed the unfloat option in the multitask
+// menu.
+constexpr char kUnFloatUserAction[] = "MultitaskMenu_UnFloat";
+
+// Used to record when the user half splits to primary direction.
+constexpr char kHalfSplitPrimaryUserAction[] =
+    "MultitaskMenu_HalfSplit_Primary";
+
+// Used to record when the user half splits to secondary direction.
+constexpr char kHalfSplitSecondaryUserAction[] =
+    "MultitaskMenu_HalfSplit_Secondary";
+
 // Used to record when the user partial splits to one third.
 constexpr char kPartialSplitOneThirdUserAction[] =
     "MultitaskMenu_PartialSplit_OneThird";
