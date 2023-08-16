@@ -6920,6 +6920,21 @@ New install
       <message name="IDS_GLANCEABLES_CLASSROOM_ASSIGNMENT_SUBMISSIONS_STATE_ACCESSIBLE_DESCRIPTION" desc="The teacher classroom glanceable shows upcoming/missed/completed assignments from Google Classroom. For each assignment item, this text displays the number of submissions turned in along side the total number of sumbissions. Then this text also displays the number of submissions currently graded.">
         <ph name="NUM_TURNED_IN">$1<ex>8</ex></ph> of <ph name="TOTAL_NUM_OF_SUBMISSIONS">$2<ex>22</ex></ph> turned in, <ph name="NUM_GRADED">$3<ex>5</ex></ph> graded
       </message>
+      <message name="IDS_GLANCEABLES_CLASSROOM_DROPDOWN_ACCESSIBLE_NAME" desc="The glanceable displays classroom items fetched from Google Classroom API. This is the a11y name announced by ChromeVox for the dropdown menu allowing to switch assignments lists: Due soon, No due date, etc.">
+        Classwork type
+      </message>
+      <message name="IDS_GLANCEABLES_CLASSROOM_SELECTED_LIST_ACCESSIBLE_NAME" desc="The glanceable displays classroom items fetched from Google Classroom API. This is the a11y name announced by ChromeVox for the active assignments list: Due soon, No due date, etc.">
+        Classwork type: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME">$1<ex>Due soon</ex></ph>
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the a11y name announced by ChromeVox for the dropdown menu allowing to switch tasks lists.">
+        Google tasks list
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_SELECTED_LIST_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the a11y name announced by ChromeVox for the active tasks list.">
+        Google tasks list: <ph name="GLANCEABLES_TASKS_LIST_NAME">$1<ex>Task List 1</ex></ph>
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_SELECTED_LIST_EMPTY_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the text announced by ChromeVox in case the selected tasks list is empty.">
+        Selected list empty, navigate down to add a new task
+      </message>
 
       <!-- Do Not Disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">

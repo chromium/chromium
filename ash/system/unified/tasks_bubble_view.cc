@@ -20,6 +20,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ash/system/unified/tasks_combobox_model.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -155,9 +156,9 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
   task_list_combo_box_view_->SetSizeToLargestLabel(false);
   combobox_view_observation_.Observe(task_list_combo_box_view_);
 
-  // TODO(b/294681832): Finalize, and then localize strings.
   task_list_combo_box_view_->SetTooltipTextAndAccessibleName(
-      u"Google tasks list");
+      l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME));
   task_list_combo_box_view_->SetAccessibleDescription(u"");
   task_list_combo_box_view_->SetCallback(base::BindRepeating(
       &TasksBubbleView::SelectedTasksListChanged, base::Unretained(this)));
@@ -234,9 +235,9 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
   list_footer_view_->UpdateItemsCount(num_tasks_shown_, num_tasks_);
   list_footer_view_->SetVisible(num_tasks_shown_ > 0);
 
-  // TODO(b/294681832): Finalize, and then localize strings.
-  task_items_container_view_->SetAccessibleName(base::UTF8ToUTF16(
-      base::StringPrintf("Tasks list: %s", task_list_title.c_str())));
+  task_items_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_GLANCEABLES_TASKS_SELECTED_LIST_ACCESSIBLE_NAME,
+      base::UTF8ToUTF16(task_list_title)));
   task_items_container_view_->SetAccessibleDescription(
       list_footer_view_->items_count_label());
   task_items_container_view_->NotifyAccessibilityEvent(
@@ -252,9 +253,9 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
 
 void TasksBubbleView::AnnounceListStateOnComboBoxAccessibility() {
   if (add_new_task_button_->GetVisible()) {
-    // TODO(b/294681832): Finalize, and then localize strings.
     task_list_combo_box_view_->GetViewAccessibility().AnnounceText(
-        u"Selected list empty, navigate down to add a new task");
+        l10n_util::GetStringUTF16(
+            IDS_GLANCEABLES_TASKS_SELECTED_LIST_EMPTY_ACCESSIBLE_NAME));
   } else if (list_footer_view_->items_count_label()->GetVisible()) {
     task_list_combo_box_view_->GetViewAccessibility().AnnounceText(
         list_footer_view_->items_count_label()->GetText());

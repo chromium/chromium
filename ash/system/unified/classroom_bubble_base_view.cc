@@ -79,8 +79,8 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
   combo_box_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox));
   combo_box_view_->SetSelectedIndex(0);
-  // TODO(b/294681832): Finalize, and then localize strings.
-  combo_box_view_->SetTooltipTextAndAccessibleName(u"Classwork type");
+  combo_box_view_->SetTooltipTextAndAccessibleName(l10n_util::GetStringUTF16(
+      IDS_GLANCEABLES_CLASSROOM_DROPDOWN_ACCESSIBLE_NAME));
   combo_box_view_->SetAccessibleDescription(u"");
   combobox_view_observation_.Observe(combo_box_view_);
 
@@ -158,8 +158,8 @@ void ClassroomBubbleBaseView::OnGetAssignments(
   empty_list_label_->SetVisible(is_list_empty);
   list_footer_view_->SetVisible(!is_list_empty);
 
-  // TODO(b/294681832): Finalize, and then localize strings.
-  list_container_view_->SetAccessibleName(u"Classwork " + list_name);
+  list_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_GLANCEABLES_CLASSROOM_SELECTED_LIST_ACCESSIBLE_NAME, list_name));
   list_container_view_->SetAccessibleDescription(
       list_footer_view_->items_count_label());
   list_container_view_->NotifyAccessibilityEvent(
