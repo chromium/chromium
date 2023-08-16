@@ -1300,6 +1300,62 @@
             ]
         }
     ],
+    "AutofillFallbackForAutocompleteUnrecognized": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Fallbacks",
+                    "params": {
+                        "show_on_all_address_fields": "true"
+                    },
+                    "enable_features": [
+                        "AutofillFallbackForAutocompleteUnrecognized",
+                        "AutofillPredictionsForAutocompleteUnrecognized"
+                    ]
+                },
+                {
+                    "name": "Enabled_PredictionsOnly",
+                    "enable_features": [
+                        "AutofillPredictionsForAutocompleteUnrecognized"
+                    ],
+                    "disable_features": [
+                        "AutofillFallbackForAutocompleteUnrecognized"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_KeyboardAccessoryForUnrecognizedFields",
+                    "enable_features": [
+                        "AutofillPredictionsForAutocompleteUnrecognized",
+                        "AutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile"
+                    ]
+                },
+                {
+                    "name": "Enabled_PredictionsOnly",
+                    "enable_features": [
+                        "AutofillPredictionsForAutocompleteUnrecognized"
+                    ],
+                    "disable_features": [
+                        "AutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillKeyboardAccessory": [
         {
             "platforms": [
