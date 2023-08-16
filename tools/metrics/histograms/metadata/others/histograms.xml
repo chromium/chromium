@@ -4596,7 +4596,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.ActiveApp" enum="DemoModeApp"
     expires_after="2024-02-11">
-  <owner>drcrash@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     The currently active app or window. Sampled during demo sessions and
@@ -4606,7 +4608,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.AppLaunched" enum="DemoModeApp"
     expires_after="2024-02-11">
-  <owner>drcrash@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     Records apps that have been launched by a user using the device during Demo
@@ -4617,7 +4621,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.AppLaunchSource" enum="DemoModeAppLaunchSource"
     expires_after="2023-08-27">
-  <owner>drcrash@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     The source of app launches in demo mode, either the shelf, the app list, or
@@ -4628,6 +4634,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="DemoMode.AttractLoop.Timestamp" units="ms"
     expires_after="2024-05-24">
   <owner>llin@google.com</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     The timestamp (i.e. milliseconds from the beginning of the Attract Loop
@@ -4636,7 +4644,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DemoMode.DwellTime" units="seconds" expires_after="2024-02-11">
-  <owner>drcrash@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     The duration the user spent interacting with the demo session, measured from
@@ -4655,6 +4665,8 @@ chromium-metrics-reviews@google.com.
     name="DemoMode.Highlights.DetailsPageStayDuration.{HighlightsDetailsPageName}"
     units="ms" expires_after="2024-05-24">
   <owner>llin@google.com</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     The duration a user spent on a given details page of the Highlights App.
@@ -4666,7 +4678,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.Highlights.FirstInteraction"
     enum="DemoModeHighlightsAction" expires_after="2024-05-24">
-  <owner>brandonmendez@google.com</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     The first interaction (button clicks) after entering the Highlights app. The
@@ -4677,7 +4691,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.Highlights.PageStayDuration.{HighlightsPageName}"
     units="seconds" expires_after="2024-05-24">
-  <owner>brandonmendez@google.com</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     The time duration a user stays in each page of the Highlights app, e.g. the
@@ -4689,7 +4705,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.IdleLogoutWarningEvent"
     enum="DemoModeIdleLogoutWarningEvent" expires_after="2023-08-27">
-  <owner>drcrash@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     Tracks whether the idle logout warning was canceled or proceeded to logout.
@@ -4701,7 +4719,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.ResourcesRemoval.Reason"
     enum="DemoModeResourcesRemovalReason" expires_after="M121">
-  <owner>drcrash@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     Tracks the reason for removal of pre-install demo resources. To support
@@ -4713,7 +4733,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.ResourcesRemoval.Result"
     enum="DemoModeResourcesRemovalResult" expires_after="M121">
-  <owner>drcrash@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     Tracks the result of requests to remove pre-installed demo resources. To
@@ -4728,7 +4750,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.SessionLength" units="minutes"
     expires_after="2024-02-11">
-  <owner>drcrash@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     A demo session starts when a user signs in using the policy-configured
@@ -4742,7 +4766,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.Setup.DownloadDuration" units="minutes"
     expires_after="2024-02-04">
-  <owner>drcrash@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     This records the time taken to download the demo mode resources when demo
@@ -4752,7 +4778,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.Setup.EnrollDuration" units="minutes"
     expires_after="M121">
-  <owner>drcrash@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     This records the time taken to enterprise-enroll the device when demo mode
@@ -4762,7 +4790,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.Setup.LoadingDuration" units="minutes"
     expires_after="2024-02-04">
-  <owner>drcrash@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     When demo mode is setup for the first time, it must download the demo mode
@@ -4773,7 +4803,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DemoMode.Setup.NumRetries" units="units" expires_after="M121">
-  <owner>drcrash@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     Records the number of times an operator has encountered an error during the
@@ -4784,7 +4816,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.UniqueAppsLaunched" units="units"
     expires_after="2024-02-11">
-  <owner>drcrash@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     Records how many unique apps have been launched by a user using the device
@@ -4794,7 +4828,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.UserClicksAndPresses" units="clicks"
     expires_after="2024-01-28">
-  <owner>brandonmendez@google.com</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     Records how many times the user clicks mouse and presses screen in the demo
