@@ -14,6 +14,7 @@ import {PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resourc
 import {loadTimeData} from '../../i18n_setup.js';
 import {NewTabPageProxy} from '../../new_tab_page_proxy.js';
 import {WindowProxy} from '../../window_proxy.js';
+import {Module} from '../module_descriptor.js';
 import {ModuleRegistry} from '../module_registry.js';
 import {ModuleInstance, ModuleWrapperElement} from '../module_wrapper.js';
 
@@ -43,6 +44,8 @@ const CONTAINER_MAX_WIDTH = 1592;
 const CONTAINER_GAP_WIDTH = 8;
 
 const MARGIN_WIDTH = 48;
+
+const METRIC_NAME_MODULE_DISABLED = 'NewTabPage.Modules.Disabled';
 
 export type UndoActionEvent =
     CustomEvent<{message: string, restoreCallback?: () => void}>;
@@ -230,8 +233,31 @@ export class ModulesV2Element extends PolymerElement {
 
       chrome.metricsPrivate.recordSmallCount(
           'NewTabPage.Modules.LoadedModulesCount', modules.length);
-      // TODO(crbug.com/1444758): Add module instances count metric.
+      modulesIdNames.forEach(({id}) => {
+        chrome.metricsPrivate.recordBoolean(
+            `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
+            !this.disabledModules_.all &&
+                !this.disabledModules_.ids.includes(id));
+      });
+      chrome.metricsPrivate.recordSmallCount(
+          'NewTabPage.Modules.InstanceCount', this.templateInstances_.length);
+      chrome.metricsPrivate.recordBoolean(
+          'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
+      this.recordModuleLoadedWithModules_(modules);
       this.dispatchEvent(new Event('modules-loaded'));
+    }
+  }
+
+  private recordModuleLoadedWithModules_(modules: Module[]) {
+    const moduleDescriptorIds = modules.map(m => m.descriptor.id);
+
+    for (const moduleDescriptorId of moduleDescriptorIds) {
+      moduleDescriptorIds.forEach(id => {
+        if (id !== moduleDescriptorId) {
+          chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+              `NewTabPage.Modules.LoadedWith.${moduleDescriptorId}`, id);
+        }
+      });
     }
   }
 
@@ -311,9 +337,9 @@ export class ModulesV2Element extends PolymerElement {
     NewTabPageProxy.getInstance().handler.setModuleDisabled(id, true);
     this.$.undoToast.show();
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-        'NewTabPage.Modules.Disabled', id);
+        METRIC_NAME_MODULE_DISABLED, id);
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-        'NewTabPage.Modules.Disabled.ModuleRequest', id);
+        `${METRIC_NAME_MODULE_DISABLED}.ModuleRequest`, id);
   }
 
   private onDisabledModulesChange_() {
@@ -337,12 +363,17 @@ export class ModulesV2Element extends PolymerElement {
             this.$.container.insertBefore(
                 wrapper, this.$.container.childNodes[index]);
             restoreCallback();
+            chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+                'NewTabPage.Modules.Restored', wrapper.module.descriptor.id);
           } :
           undefined,
     };
 
     // Notify the user.
     this.$.undoToast.show();
+
+    chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+        'NewTabPage.Modules.Dismissed', wrapper.module.descriptor.id);
   }
 
   private onUndoButtonClick_() {

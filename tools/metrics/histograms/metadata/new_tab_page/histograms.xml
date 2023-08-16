@@ -1237,6 +1237,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Modules.InstanceCount" units="count"
+    expires_after="2024-01-14">
+  <owner>danpeng@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The number of rendered module instances on the NTP. Only logged on the 1P
+    NTP. Note that even if the user has Google as their default search engine,
+    Incognito and Guest mode NTPs are not considered 1P and don't log this
+    histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Modules.LoadDuration" units="ms"
     expires_after="2024-02-04">
   <owner>danpeng@google.com</owner>
