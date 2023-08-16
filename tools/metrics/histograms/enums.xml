@@ -104647,6 +104647,24 @@ would be helpful to identify which type is being sent.
   <int value="5" label="Fastest"/>
 </enum>
 
+<enum name="TouchSelectionDragType">
+  <int value="0" label="Cursor handle drag"/>
+  <int value="1" label="Selection handle drag"/>
+  <int value="2" label="Cursor drag"/>
+  <int value="3" label="Long press drag"/>
+  <int value="4" label="Double press drag"/>
+</enum>
+
+<enum name="TouchSelectionMenuAction">
+  <int value="0" label="Cut"/>
+  <int value="1" label="Copy"/>
+  <int value="2" label="Paste"/>
+  <int value="3" label="Select all"/>
+  <int value="4" label="Select word"/>
+  <int value="5" label="Ellipsis"/>
+  <int value="6" label="Smart action"/>
+</enum>
+
 <enum name="TouchTargetAndDispatchResultType">
   <int value="0"
       label="Non-root-scroller, non-scrollable document, not handled"/>

@@ -29,6 +29,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/touch_selection/touch_selection_magnifier_aura.h"
+#include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/touch_selection/vector_icons/vector_icons.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_delegate.h"
@@ -341,6 +342,10 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
         is_dragging_ = false;
         GetWidget()->ReleaseCapture();
         controller_->OnDragEnd();
+        ui::RecordTouchSelectionDrag(
+            is_cursor_handle_
+                ? ui::TouchSelectionDragType::kCursorHandleDrag
+                : ui::TouchSelectionDragType::kSelectionHandleDrag);
         break;
       }
       default:

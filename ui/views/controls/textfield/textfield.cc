@@ -53,6 +53,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/selection_bound.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -2972,6 +2973,7 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
         SelectWordAt(event->location());
         OnAfterUserAction();
         selection_dragging_state_ = SelectionDraggingState::kSelectedWord;
+        selection_drag_type_ = ui::TouchSelectionDragType::kDoublePressDrag;
       } else if (event->details().tap_down_count() == 3) {
         OnBeforeUserAction();
         SelectAll(false);
@@ -2983,6 +2985,7 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
       return true;
     case ui::ET_GESTURE_LONG_PRESS:
       selection_dragging_state_ = SelectionDraggingState::kSelectedWord;
+      selection_drag_type_ = ui::TouchSelectionDragType::kLongPressDrag;
       DestroyTouchSelection();
       event->SetHandled();
       return true;
@@ -3082,13 +3085,18 @@ bool Textfield::StartSelectionDragging(const ui::GestureEvent& event) {
     DestroyTouchSelection();
     MoveCursorTo(event.location(), false);
     selection_dragging_state_ = SelectionDraggingState::kDraggingCursor;
+    selection_drag_type_ = ui::TouchSelectionDragType::kCursorDrag;
     return true;
   }
   return false;
 }
 
 void Textfield::StopSelectionDragging() {
+  if (IsSelectionDragging() && selection_drag_type_.has_value()) {
+    ui::RecordTouchSelectionDrag(selection_drag_type_.value());
+  }
   selection_dragging_state_ = SelectionDraggingState::kNone;
+  selection_drag_type_ = absl::nullopt;
 }
 
 BEGIN_METADATA(Textfield, View)

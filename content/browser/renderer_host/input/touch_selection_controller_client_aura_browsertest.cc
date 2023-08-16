@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/chromeos_buildflags.h"
@@ -45,6 +46,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/motion_event_test_utils.h"
 #include "ui/touch_selection/touch_selection_controller_test_api.h"
+#include "ui/touch_selection/touch_selection_metrics.h"
 
 namespace content {
 namespace {
@@ -1334,7 +1336,50 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
             ui::TouchSelectionController::INSERTION_ACTIVE);
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that touch selection dragging records a histogram entry.
+IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+                       SelectionDraggingMetrics) {
+  // Set the test page up.
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
+
+  base::HistogramTester histogram_tester;
+  InitSelectionController(false);
+  RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
+  gfx::NativeView native_view = rwhva->GetNativeView();
+  ui::test::EventGenerator generator(native_view->GetRootWindow());
+  gfx::Point point_in_textfield =
+      gfx::ToRoundedPoint(GetPointInsideTextfield());
+  generator.delegate()->ConvertPointFromTarget(native_view,
+                                               &point_in_textfield);
+
+  // Long press drag selection.
+  SelectWithLongPress(generator, point_in_textfield);
+  InitiateTouchSelectionDragging(generator);
+  DragAndWaitForSelectionUpdate(generator, 9 * kCharacterWidth, 0);
+  generator.ReleaseTouch();
+  histogram_tester.ExpectBucketCount(ui::kTouchSelectionDragTypeHistogramName,
+                                     ui::TouchSelectionDragType::kLongPressDrag,
+                                     1);
+  histogram_tester.ExpectTotalCount(ui::kTouchSelectionDragTypeHistogramName,
+                                    1);
+
+  // Double press drag selection. Close the menu if needed so that it doesn't
+  // get in the way of the double press.
+  ui::TouchSelectionMenuRunner::GetInstance()->CloseMenu();
+  SelectWithDoublePress(generator, point_in_textfield);
+  InitiateTouchSelectionDragging(generator);
+  DragAndWaitForSelectionUpdate(generator, 10 * kCharacterWidth, 0);
+  generator.ReleaseTouch();
+  histogram_tester.ExpectBucketCount(
+      ui::kTouchSelectionDragTypeHistogramName,
+      ui::TouchSelectionDragType::kDoublePressDrag, 1);
+  histogram_tester.ExpectTotalCount(ui::kTouchSelectionDragTypeHistogramName,
+                                    2);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that the quick menu is hidden whenever a touch point is active.
 // Flaky: https://crbug.com/803576

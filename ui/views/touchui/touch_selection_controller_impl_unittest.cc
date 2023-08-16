@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -35,6 +36,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
+#include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/test/views_test_base.h"
@@ -1004,7 +1006,72 @@ TEST_F(TouchSelectionControllerImplTest, SelectCommands) {
   EXPECT_FALSE(menu_client->IsCommandIdEnabled(ui::TouchEditable::kSelectAll));
   EXPECT_FALSE(menu_client->IsCommandIdEnabled(ui::TouchEditable::kSelectWord));
 }
-#endif
+
+TEST_F(TouchSelectionControllerImplTest, CursorHandleDraggingMetrics) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  CreateTextfield();
+  textfield_->SetText(u"some text in a textfield");
+  ui::test::EventGenerator generator(
+      textfield_->GetWidget()->GetNativeView()->GetRootWindow());
+
+  // Tap the textfield to make the cursor handle appear.
+  generator.GestureTapAt(gfx::Point(10, 10));
+  EXPECT_TRUE(IsCursorHandleVisible());
+
+  // Drag the cursor handle.
+  const gfx::Point drag_start = GetCursorHandleBounds().CenterPoint();
+  const gfx::Point drag_end = drag_start + gfx::Vector2d(50, 0);
+  generator.GestureScrollSequence(drag_start, drag_end,
+                                  /*duration=*/base::Milliseconds(50),
+                                  /*steps=*/5);
+  histogram_tester.ExpectBucketCount(
+      ui::kTouchSelectionDragTypeHistogramName,
+      ui::TouchSelectionDragType::kCursorHandleDrag, 1);
+}
+
+TEST_F(TouchSelectionControllerImplTest, SelectionHandleDraggingMetrics) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  CreateTextfield();
+  textfield_->SetText(u"some text in a textfield");
+  textfield_->SetSelectedRange(gfx::Range(2, 15));
+  ui::test::EventGenerator generator(
+      textfield_->GetWidget()->GetNativeView()->GetRootWindow());
+
+  // Tap on the selected text to make selection handles appear.
+  generator.GestureTapAt(gfx::Point(30, 15));
+  EXPECT_TRUE(IsSelectionHandle1Visible());
+
+  // Drag selection handle 1.
+  gfx::Point drag_start = GetSelectionHandle1Bounds().CenterPoint();
+  gfx::Point drag_end = drag_start + gfx::Vector2d(50, 0);
+  generator.GestureScrollSequence(drag_start, drag_end,
+                                  /*duration=*/base::Milliseconds(50),
+                                  /*steps=*/5);
+  histogram_tester.ExpectBucketCount(
+      ui::kTouchSelectionDragTypeHistogramName,
+      ui::TouchSelectionDragType::kSelectionHandleDrag, 1);
+
+  // Drag selection handle 2.
+  drag_start = GetSelectionHandle2Bounds().CenterPoint();
+  drag_end = drag_start + gfx::Vector2d(-60, 0);
+  generator.GestureScrollSequence(drag_start, drag_end,
+                                  /*duration=*/base::Milliseconds(50),
+                                  /*steps=*/5);
+  histogram_tester.ExpectBucketCount(
+      ui::kTouchSelectionDragTypeHistogramName,
+      ui::TouchSelectionDragType::kSelectionHandleDrag, 2);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // A simple implementation of TouchEditable that allows faking cursor position
 // inside its boundaries.

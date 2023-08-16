@@ -548,6 +548,7 @@ component("views") {
     "//ui/native_theme:native_theme_browser",
     "//ui/resources",
     "//ui/strings",
+    "//ui/touch_selection",
     "//ui/views/debug:views_debug",
     "//ui/views/resources",
     "//url",
@@ -805,7 +806,6 @@ component("views") {
       "//ui/events",
       "//ui/platform_window",
       "//ui/platform_window/wm",
-      "//ui/touch_selection",
       "//ui/wm",
       "//ui/wm/public",
     ]
@@ -1346,6 +1346,7 @@ test("views_unittests") {
     "//ui/resources",
     "//ui/resources:ui_test_pak",
     "//ui/strings",
+    "//ui/touch_selection",
     "//url",
   ]
 
@@ -1460,7 +1461,6 @@ test("views_unittests") {
       "//ui/aura",
       "//ui/aura:test_support",
       "//ui/base/cursor/mojom:cursor_type",
-      "//ui/touch_selection",
       "//ui/wm",
       "//ui/wm/public",
     ]

@@ -27,6 +27,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
+#include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/views_features.h"
@@ -236,6 +237,7 @@ void TouchSelectionMenuViews::WindowClosing() {
 
 void TouchSelectionMenuViews::ButtonPressed(int command,
                                             const ui::Event& event) {
+  ui::RecordTouchSelectionMenuCommandAction(command);
   CloseMenu();
   if (client_) {
     client_->ExecuteCommand(command, event.flags());
@@ -243,6 +245,7 @@ void TouchSelectionMenuViews::ButtonPressed(int command,
 }
 
 void TouchSelectionMenuViews::EllipsisPressed(const ui::Event& event) {
+  ui::RecordTouchSelectionMenuEllipsisAction();
   CloseMenu();
   if (client_) {
     client_->RunContextMenu();

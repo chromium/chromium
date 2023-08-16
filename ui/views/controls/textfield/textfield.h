@@ -34,6 +34,7 @@
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/selection_model.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/textfield/textfield_model.h"
 #include "ui/views/drag_controller.h"
@@ -795,6 +796,9 @@ class VIEWS_EXPORT Textfield : public View,
   };
   SelectionDraggingState selection_dragging_state_ =
       SelectionDraggingState::kNone;
+
+  // Tracks the type of the current or pending selection drag gesture.
+  absl::optional<ui::TouchSelectionDragType> selection_drag_type_;
 
   // The offset applied to the touch drag location when determining selection
   // updates.

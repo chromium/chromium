@@ -1455,6 +1455,26 @@ chromium-metrics-reviews@google.com.
   <summary>How emojis were inserted.</summary>
 </histogram>
 
+<histogram name="InputMethod.TouchSelection.DragType"
+    enum="TouchSelectionDragType" expires_after="2024-02-02">
+  <owner>michellegc@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Type of dragging gesture used to adjust the selection or cursor position on
+    ChromeOS. Recorded at the end of the drag.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.TouchSelection.MenuAction"
+    enum="TouchSelectionMenuAction" expires_after="2024-02-02">
+  <owner>michellegc@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Action requested by a ChromeOS user from the touch selection menu. Recorded
+    when the menu button is pressed.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.VirtualKeyboard.BackspaceCount" units="units"
     expires_after="2023-12-24">
   <owner>shend@chromium.org</owner>

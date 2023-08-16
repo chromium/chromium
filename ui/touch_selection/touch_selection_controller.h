@@ -166,6 +166,8 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
 
   enum InputEventType { TAP, REPEATED_TAP, LONG_PRESS, INPUT_EVENT_TYPE_NONE };
 
+  enum class DragSelectorInitiatingGesture { kNone, kLongPress, kDoublePress };
+
   bool WillHandleTouchEventImpl(const MotionEvent& event);
 
   // TouchHandleClient implementation.
@@ -215,6 +217,7 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
   TouchHandle::AnimationStyle GetAnimationStyle(bool was_active) const;
 
   void LogSelectionEnd();
+  void LogDragType(const TouchSelectionDraggable& draggable);
 
   const raw_ptr<TouchSelectionControllerClient, DanglingUntriaged> client_;
   const Config config_;
@@ -244,8 +247,14 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
   // between lines.
   bool anchor_drag_to_selection_start_;
 
-  // Longpress drag allows direct manipulation of longpress-initiated selection.
+  // Allows the text selection to be adjusted by touch dragging after a long
+  // press or double press initiated selection.
   LongPressDragSelector longpress_drag_selector_;
+
+  // Used to track whether a selection drag gesture was initiated by a long
+  // press or double press.
+  DragSelectorInitiatingGesture drag_selector_initiating_gesture_ =
+      DragSelectorInitiatingGesture::kNone;
 
   gfx::RectF viewport_rect_;
 
