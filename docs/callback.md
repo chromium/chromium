@@ -304,7 +304,7 @@ void Collect(base::OnceCallback<void(Data)> collect_and_merge) {
 
 CollectAndMerge() {
   const auto collect_and_merge =
-      base::BarrierCallback<Image>(sources_.size(), base::BindOnce(&Merge));
+      base::BarrierCallback<Data>(sources_.size(), base::BindOnce(&Merge));
   for (const auto& source : sources_) {
     // Copy the barrier callback for asynchronous data collection.
     // Once all sources have called `collect_and_merge` with their respective
