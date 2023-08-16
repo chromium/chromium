@@ -8,16 +8,8 @@
 
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_vm.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "build/build_config.h"
 
-namespace base {
-namespace subtle {
-
-namespace {
-
-}  // namespace
+namespace base::subtle {
 
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
@@ -25,14 +17,17 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     Mode mode,
     size_t size,
     const UnguessableToken& guid) {
-  if (!handle.is_valid())
+  if (!handle.is_valid()) {
     return {};
+  }
 
-  if (size == 0)
+  if (size == 0) {
     return {};
+  }
 
-  if (size > static_cast<size_t>(std::numeric_limits<int>::max()))
+  if (size > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return {};
+  }
 
   CHECK(
       CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size));
@@ -49,8 +44,9 @@ bool PlatformSharedMemoryRegion::IsValid() const {
 }
 
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
-  if (!IsValid())
+  if (!IsValid()) {
     return {};
+  }
 
   CHECK_NE(mode_, Mode::kWritable)
       << "Duplicating a writable shared memory region is prohibited";
@@ -72,8 +68,9 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
 }
 
 bool PlatformSharedMemoryRegion::ConvertToReadOnly(void* mapped_addr) {
-  if (!IsValid())
+  if (!IsValid()) {
     return false;
+  }
 
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to read-only";
@@ -115,8 +112,9 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly(void* mapped_addr) {
 }
 
 bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
-  if (!IsValid())
+  if (!IsValid()) {
     return false;
+  }
 
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to unsafe";
@@ -169,7 +167,7 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   if (kr == KERN_SUCCESS) {
     kern_return_t kr_deallocate =
         vm_deallocate(mach_task_self(), temp_addr, size);
-    // TODO(crbug.com/838365): convert to DLOG when bug fixed.
+    // TODO(https://crbug.com/838365): convert to DLOG when bug fixed.
     MACH_LOG_IF(ERROR, kr_deallocate != KERN_SUCCESS, kr_deallocate)
         << "vm_deallocate";
   } else if (kr != KERN_INVALID_RIGHT) {
@@ -181,7 +179,7 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    // TODO(crbug.com/838365): convert to DLOG when bug fixed.
+    // TODO(https://crbug.com/838365): convert to DLOG when bug fixed.
     LOG(ERROR) << "VM region has a wrong protection mask: it is"
                << (is_read_only ? " " : " not ") << "read-only but it should"
                << (expected_read_only ? " " : " not ") << "be";
@@ -198,5 +196,4 @@ PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(
     const UnguessableToken& guid)
     : handle_(std::move(handle)), mode_(mode), size_(size), guid_(guid) {}
 
-}  // namespace subtle
-}  // namespace base
+}  // namespace base::subtle

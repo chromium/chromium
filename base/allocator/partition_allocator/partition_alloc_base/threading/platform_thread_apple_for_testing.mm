@@ -20,14 +20,14 @@
 
 namespace partition_alloc::internal::base {
 
-// If Cocoa is to be used on more than one thread, it must know that the
-// application is multithreaded.  Since it's possible to enter Cocoa code
-// from threads created by pthread_thread_create, Cocoa won't necessarily
+// If Foundation is to be used on more than one thread, it must know that the
+// application is multithreaded.  Since it's possible to enter Foundation code
+// from threads created by pthread_thread_create, Foundation won't necessarily
 // be aware that the application is multithreaded.  Spawning an NSThread is
-// enough to get Cocoa to set up for multithreaded operation, so this is done
-// if necessary before pthread_thread_create spawns any threads.
+// enough to get Foundation to set up for multithreaded operation, so this is
+// done if necessary before pthread_thread_create spawns any threads.
 //
-// http://developer.apple.com/documentation/Cocoa/Conceptual/Multithreading/CreatingThreads/chapter_4_section_4.html
+// https://developer.apple.com/documentation/foundation/nsthread/1410702-ismultithreaded
 void InitThreading() {
   static BOOL multithreaded = [NSThread isMultiThreaded];
   if (!multithreaded) {
@@ -56,7 +56,7 @@ size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
 #if BUILDFLAG(IS_IOS)
   return 0;
 #else
-  // The Mac OS X default for a pthread stack size is 512kB.
+  // The macOS default for a pthread stack size is 512kB.
   // Libc-594.1.4/pthreads/pthread.c's pthread_attr_init uses
   // DEFAULT_STACK_SIZE for this purpose.
   //
@@ -65,13 +65,13 @@ size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
   // glibc's behavior as on Linux, which is to use the current stack size
   // limit (ulimit -s) as the default stack size. See
   // glibc-2.11.1/nptl/nptl-init.c's __pthread_initialize_minimal_internal. To
-  // avoid setting the limit below the Mac OS X default or the minimum usable
+  // avoid setting the limit below the macOS default or the minimum usable
   // stack size, these values are also considered. If any of these values
   // can't be determined, or if stack size is unlimited (ulimit -s unlimited),
   // stack_size is left at 0 to get the system default.
   //
-  // Mac OS X normally only applies ulimit -s to the main thread stack. On
-  // contemporary OS X and Linux systems alike, this value is generally 8MB
+  // macOS normally only applies ulimit -s to the main thread stack. On
+  // contemporary macOS and Linux systems alike, this value is generally 8MB
   // or in that neighborhood.
   size_t default_stack_size = 0;
   struct rlimit stack_rlimit;

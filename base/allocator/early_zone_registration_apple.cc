@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/early_zone_registration_mac.h"
+#include "base/allocator/early_zone_registration_apple.h"
 
 #include <mach/mach.h>
 #include <malloc/malloc.h>
@@ -39,8 +39,8 @@ malloc_zone_t* GetDefaultMallocZone() {
   // array.
   unsigned int zone_count = 0;
   vm_address_t* zones = nullptr;
-  kern_return_t result =
-      malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
+  kern_return_t result = malloc_get_all_zones(
+      mach_task_self(), /*reader=*/nullptr, &zones, &zone_count);
   if (result != KERN_SUCCESS) {
     abort_report_np("Cannot enumerate malloc() zones");
   }
@@ -243,8 +243,8 @@ void EarlyMallocZoneRegistration() {
 void AllowDoublePartitionAllocZoneRegistration() {
   unsigned int zone_count = 0;
   vm_address_t* zones = nullptr;
-  kern_return_t result =
-      malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
+  kern_return_t result = malloc_get_all_zones(
+      mach_task_self(), /*reader=*/nullptr, &zones, &zone_count);
   if (result != KERN_SUCCESS) {
     abort_report_np("Cannot enumerate malloc() zones");
   }

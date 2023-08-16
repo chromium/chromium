@@ -19,8 +19,9 @@ namespace base {
 
 bool CopyFile(const FilePath& from_path, const FilePath& to_path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  if (from_path.ReferencesParent() || to_path.ReferencesParent())
+  if (from_path.ReferencesParent() || to_path.ReferencesParent()) {
     return false;
+  }
   return (copyfile(from_path.value().c_str(), to_path.value().c_str(),
                    /*state=*/nullptr, COPYFILE_DATA) == 0);
 }
@@ -41,8 +42,9 @@ bool GetTempDir(base::FilePath* path) {
 
   // If we didn't find it, fall back to the native function.
   NSString* tmp = NSTemporaryDirectory();
-  if (tmp == nil)
+  if (tmp == nil) {
     return false;
+  }
   *path = base::mac::NSStringToFilePath(tmp);
   return true;
 }
@@ -51,14 +53,16 @@ FilePath GetHomeDir() {
   NSString* tmp = NSHomeDirectory();
   if (tmp != nil) {
     FilePath mac_home_dir = base::mac::NSStringToFilePath(tmp);
-    if (!mac_home_dir.empty())
+    if (!mac_home_dir.empty()) {
       return mac_home_dir;
+    }
   }
 
   // Fall back on temp dir if no home directory is defined.
   FilePath rv;
-  if (GetTempDir(&rv))
+  if (GetTempDir(&rv)) {
     return rv;
+  }
 
   // Last resort.
   return FilePath("/tmp");

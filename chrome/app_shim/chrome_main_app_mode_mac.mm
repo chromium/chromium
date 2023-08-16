@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/early_zone_registration_mac.h"
+#include "base/allocator/early_zone_registration_apple.h"
 #include "base/apple/bundle_locations.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"

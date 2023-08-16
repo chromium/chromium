@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-#include "base/allocator/early_zone_registration_mac.h"
+#include "base/allocator/early_zone_registration_apple.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "ios/chrome/app/chrome_main_module_buildflags.h"
 

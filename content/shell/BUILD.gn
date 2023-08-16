@@ -590,7 +590,7 @@ if (is_android) {
 
       # Despite its path, this does not add a //base dependency, see comments in
       # the .cc file.
-      "//base/allocator:early_zone_registration_mac",
+      "//base/allocator:early_zone_registration_apple",
       "//sandbox/mac:seatbelt",
     ]
     info_plist_target = ":content_shell_plist"
@@ -890,7 +890,7 @@ if (is_mac) {
         "CONTENT_SHELL_HELPER_BUNDLE_ID_SUFFIX=${invoker.helper_bundle_id_suffix}",
       ]
       deps = [
-        "//base/allocator:early_zone_registration_mac",
+        "//base/allocator:early_zone_registration_apple",
         "//sandbox/mac:seatbelt",
       ]
 

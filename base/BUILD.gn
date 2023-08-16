@@ -1118,7 +1118,7 @@ component("base") {
 
   if (use_allocator_shim) {
     if (is_apple) {
-      sources += [ "allocator/early_zone_registration_mac.h" ]
+      sources += [ "allocator/early_zone_registration_apple.h" ]
     }
   }
 
@@ -1959,7 +1959,7 @@ component("base") {
       "apple/scoped_nsobject.h",
       "file_version_info_apple.h",
       "file_version_info_apple.mm",
-      "files/file_util_mac.mm",
+      "files/file_util_apple.mm",
       "mac/foundation_util.h",
       "mac/foundation_util.mm",
       "mac/mac_logging.h",
@@ -1975,16 +1975,16 @@ component("base") {
       "mac/scoped_objc_class_swizzler.h",
       "mac/scoped_objc_class_swizzler.mm",
       "mac/scoped_typeref.h",
-      "memory/platform_shared_memory_mapper_mac.cc",
-      "memory/platform_shared_memory_region_mac.cc",
+      "memory/platform_shared_memory_mapper_apple.cc",
+      "memory/platform_shared_memory_region_apple.cc",
       "message_loop/message_pump_mac.h",
       "message_loop/message_pump_mac.mm",
       "process/process_metrics_apple.cc",
-      "profiler/module_cache_mac.cc",
+      "profiler/module_cache_apple.cc",
       "strings/sys_string_conversions_apple.mm",
-      "synchronization/waitable_event_mac.cc",
+      "synchronization/waitable_event_apple.cc",
       "system/sys_info_apple.mm",
-      "threading/platform_thread_mac.mm",
+      "threading/platform_thread_apple.mm",
       "time/time_apple.mm",
     ]
     frameworks += [
@@ -4966,7 +4966,7 @@ source_set("partition_alloc_test_support") {
     sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_win_for_testing.cc" ]
   }
   if (is_apple) {
-    sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_mac_for_testing.mm" ]
+    sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_apple_for_testing.mm" ]
   }
   if (is_linux || is_chromeos) {
     sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_linux_for_testing.cc" ]

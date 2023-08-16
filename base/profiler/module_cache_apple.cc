@@ -80,8 +80,9 @@ void GetUniqueIdAndTextSize(const void* module_addr,
         unique_id->assign(HexEncode(&uuid_cmd->uuid, sizeof(uuid_cmd->uuid)) +
                           "0");
       }
-      if (found_text_size)
+      if (found_text_size) {
         return;
+      }
       found_uuid = true;
     } else if (load_cmd->cmd == kSegmentCommand) {
       const SegmentCommandType* segment_cmd =
@@ -95,8 +96,9 @@ void GetUniqueIdAndTextSize(const void* module_addr,
         DCHECK(getsegmentdata(mach_header, SEG_TEXT, &text_size_from_libmacho));
         DCHECK_EQ(*text_size, text_size_from_libmacho);
       }
-      if (found_uuid)
+      if (found_uuid) {
         return;
+      }
       found_text_size = true;
     }
     offset += load_cmd->cmdsize;
@@ -114,7 +116,7 @@ void GetUniqueIdAndTextSize(const void* module_addr,
 
 class MacModule : public ModuleCache::Module {
  public:
-  MacModule(const Dl_info& dl_info)
+  explicit MacModule(const Dl_info& dl_info)
       : base_address_(reinterpret_cast<uintptr_t>(dl_info.dli_fbase)),
         debug_basename_(FilePath(dl_info.dli_fname).BaseName()) {
     GetUniqueIdAndTextSize(dl_info.dli_fbase, &id_, &size_);
@@ -141,8 +143,9 @@ class MacModule : public ModuleCache::Module {
 std::unique_ptr<const ModuleCache::Module> ModuleCache::CreateModuleForAddress(
     uintptr_t address) {
   Dl_info info;
-  if (!dladdr(reinterpret_cast<const void*>(address), &info))
+  if (!dladdr(reinterpret_cast<const void*>(address), &info)) {
     return nullptr;
+  }
   return std::make_unique<MacModule>(info);
 }
 

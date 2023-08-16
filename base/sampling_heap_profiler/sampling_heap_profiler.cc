@@ -58,7 +58,7 @@ const char* GetAndLeakThreadName() {
     return thread_name;
 
   // prctl requires 16 bytes, snprintf requires 19, pthread_getname_np requires
-  // 64 on macOS, see PlatformThread::SetName in platform_thread_mac.mm.
+  // 64 on macOS, see PlatformThread::SetName in platform_thread_apple.mm.
   constexpr size_t kBufferLen = 64;
   char name[kBufferLen];
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

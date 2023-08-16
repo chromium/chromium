@@ -16,10 +16,10 @@ buildflag_header("buildflags") {
 }
 
 if (is_apple) {
-  source_set("early_zone_registration_mac") {
+  source_set("early_zone_registration_apple") {
     sources = [
-      "early_zone_registration_mac.cc",
-      "early_zone_registration_mac.h",
+      "early_zone_registration_apple.cc",
+      "early_zone_registration_apple.h",
       "partition_allocator/shim/early_zone_registration_constants.h",
     ]
 

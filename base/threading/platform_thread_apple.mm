@@ -34,14 +34,14 @@ NSString* const kThreadPriorityForTestKey = @"CrThreadPriorityForTestKey";
 NSString* const kRealtimePeriodNsKey = @"CrRealtimePeriodNsKey";
 }  // namespace
 
-// If Cocoa is to be used on more than one thread, it must know that the
-// application is multithreaded.  Since it's possible to enter Cocoa code
-// from threads created by pthread_thread_create, Cocoa won't necessarily
+// If Foundation is to be used on more than one thread, it must know that the
+// application is multithreaded.  Since it's possible to enter Foundation code
+// from threads created by pthread_thread_create, Foundation won't necessarily
 // be aware that the application is multithreaded.  Spawning an NSThread is
-// enough to get Cocoa to set up for multithreaded operation, so this is done
-// if necessary before pthread_thread_create spawns any threads.
+// enough to get Foundation to set up for multithreaded operation, so this is
+// done if necessary before pthread_thread_create spawns any threads.
 //
-// http://developer.apple.com/documentation/Cocoa/Conceptual/Multithreading/CreatingThreads/chapter_4_section_4.html
+// https://developer.apple.com/documentation/foundation/nsthread/1410702-ismultithreaded
 void InitThreading() {
   static BOOL multithreaded = [NSThread isMultiThreaded];
   if (!multithreaded) {
@@ -80,11 +80,11 @@ void PlatformThreadBase::SetName(const std::string& name) {
   const int kMaxNameLength = 63;
   std::string shortened_name = name.substr(0, kMaxNameLength);
   // pthread_setname() fails (harmlessly) in the sandbox, ignore when it does.
-  // See http://crbug.com/47058
+  // See https://crbug.com/47058
   pthread_setname_np(shortened_name.c_str());
 }
 
-// Whether optimized realt-time thread config should be used for audio.
+// Whether optimized real-time thread config should be used for audio.
 BASE_FEATURE(kOptimizedRealtimeThreadingMac,
              "OptimizedRealtimeThreadingMac",
 #if BUILDFLAG(IS_MAC)
@@ -298,8 +298,8 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
   // Changing the priority of the main thread causes performance
   // regressions. https://crbug.com/601270
-  // TODO(1280764): Remove this check. kCompositing is the default on Mac, so
-  // this check is counter intuitive.
+  // TODO(https://crbug.com/1280764): Remove this check. kCompositing is the
+  // default on Mac, so this check is counter intuitive.
   if ([[NSThread currentThread] isMainThread] &&
       thread_type >= ThreadType::kCompositing) {
     DCHECK(thread_type == ThreadType::kDefault ||
@@ -357,8 +357,9 @@ ThreadPriorityForTest PlatformThreadBase::GetCurrentThreadPriorityForTest() {
   NSNumber* priority = base::mac::ObjCCast<NSNumber>(
       NSThread.currentThread.threadDictionary[kThreadPriorityForTestKey]);
 
-  if (!priority)
+  if (!priority) {
     return ThreadPriorityForTest::kNormal;
+  }
 
   ThreadPriorityForTest thread_priority =
       static_cast<ThreadPriorityForTest>(priority.intValue);
@@ -400,16 +401,14 @@ size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
   if (pthread_attr_getstacksize(&attributes, &default_stack_size) == 0 &&
       getrlimit(RLIMIT_STACK, &stack_rlimit) == 0 &&
       stack_rlimit.rlim_cur != RLIM_INFINITY) {
-    default_stack_size =
-        std::max(std::max(default_stack_size,
-                          static_cast<size_t>(PTHREAD_STACK_MIN)),
-                 static_cast<size_t>(stack_rlimit.rlim_cur));
+    default_stack_size = std::max(
+        std::max(default_stack_size, static_cast<size_t>(PTHREAD_STACK_MIN)),
+        static_cast<size_t>(stack_rlimit.rlim_cur));
   }
   return default_stack_size;
 #endif
 }
 
-void TerminateOnThread() {
-}
+void TerminateOnThread() {}
 
 }  // namespace base
