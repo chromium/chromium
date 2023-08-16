@@ -55,6 +55,20 @@ constexpr char kValidFailureTokenResponse[] = R"(
       "error": "invalid_grant"
     })";
 
+constexpr char kRaptRequiredErrorResponse[] = R"(
+    {
+      "error": "invalid_grant",
+      "error_subtype": "rapt_required",
+      "error_description": "reauth related error"
+    })";
+
+constexpr char kInvalidRaptErrorResponse[] = R"(
+    {
+      "error": "invalid_grant",
+      "error_subtype": "invalid_rapt",
+      "error_description": "reauth related error"
+    })";
+
 class MockOAuth2AccessTokenConsumer : public OAuth2AccessTokenConsumer {
  public:
   MockOAuth2AccessTokenConsumer() = default;
@@ -282,17 +296,39 @@ TEST_F(OAuth2AccessTokenFetcherImplTest, ParseGetAccessTokenResponseSuccess) {
 
 TEST_F(OAuth2AccessTokenFetcherImplTest,
        ParseGetAccessTokenFailureInvalidError) {
-  std::string error;
+  std::string error, error_subtype, error_description;
   EXPECT_FALSE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
-      kTokenResponseNoAccessToken, &error));
+      kTokenResponseNoAccessToken, &error, &error_subtype, &error_description));
   EXPECT_TRUE(error.empty());
 }
 
 TEST_F(OAuth2AccessTokenFetcherImplTest, ParseGetAccessTokenFailure) {
-  std::string error;
+  std::string error, error_subtype, error_description;
   EXPECT_TRUE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
-      kValidFailureTokenResponse, &error));
+      kValidFailureTokenResponse, &error, &error_subtype, &error_description));
   EXPECT_EQ("invalid_grant", error);
+  EXPECT_TRUE(error_subtype.empty());
+  EXPECT_TRUE(error_description.empty());
+}
+
+TEST_F(OAuth2AccessTokenFetcherImplTest,
+       ParseGetAccessTokenFailureForMissingRaptError) {
+  std::string error, error_subtype, error_description;
+  EXPECT_TRUE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
+      kRaptRequiredErrorResponse, &error, &error_subtype, &error_description));
+  EXPECT_EQ("invalid_grant", error);
+  EXPECT_EQ("rapt_required", error_subtype);
+  EXPECT_EQ("reauth related error", error_description);
+}
+
+TEST_F(OAuth2AccessTokenFetcherImplTest,
+       ParseGetAccessTokenFailureForInvalidRaptError) {
+  std::string error, error_subtype, error_description;
+  EXPECT_TRUE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
+      kInvalidRaptErrorResponse, &error, &error_subtype, &error_description));
+  EXPECT_EQ("invalid_grant", error);
+  EXPECT_EQ("invalid_rapt", error_subtype);
+  EXPECT_EQ("reauth related error", error_description);
 }
 
 struct OAuth2ErrorCodesTestParam {

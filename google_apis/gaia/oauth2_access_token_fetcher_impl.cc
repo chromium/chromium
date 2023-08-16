@@ -51,6 +51,8 @@ constexpr char krefreshTokenKey[] = "refresh_token";
 constexpr char kExpiresInKey[] = "expires_in";
 constexpr char kIdTokenKey[] = "id_token";
 constexpr char kErrorKey[] = "error";
+constexpr char kErrorSubTypeKey[] = "error_subtype";
+constexpr char kErrorDescriptionKey[] = "error_description";
 
 OAuth2AccessTokenFetcherImpl::OAuth2Response
 OAuth2ResponseErrorToOAuth2Response(const std::string& error) {
@@ -207,8 +209,9 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
   }
 
   // Request failed
-  std::string oauth2_error;
-  ParseGetAccessTokenFailureResponse(response_str, &oauth2_error);
+  std::string oauth2_error, error_subtype, error_description;
+  ParseGetAccessTokenFailureResponse(response_str, &oauth2_error,
+                                     &error_subtype, &error_description);
   OAuth2Response response = OAuth2ResponseErrorToOAuth2Response(oauth2_error);
   RecordOAuth2Response(response);
   absl::optional<GoogleServiceAuthError> error;
@@ -382,8 +385,12 @@ bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenSuccessResponse(
 // static
 bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
     const std::string& response_body,
-    std::string* error) {
+    std::string* error,
+    std::string* error_subtype,
+    std::string* error_description) {
   CHECK(error);
+  CHECK(error_subtype);
+  CHECK(error_description);
   auto value = base::JSONReader::Read(response_body);
   if (!value.has_value() || !value->is_dict())
     return false;
@@ -392,7 +399,20 @@ bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
   const std::string* error_value = dict->FindString(kErrorKey);
   if (!error_value)
     return false;
-
   *error = *error_value;
+
+  // Reset the error subtype and description just to be safe.
+  *error_subtype = *error_description = std::string();
+  const std::string* error_subtype_value = dict->FindString(kErrorSubTypeKey);
+  if (error_subtype_value) {
+    *error_subtype = *error_subtype_value;
+  }
+
+  const std::string* error_description_value =
+      dict->FindString(kErrorDescriptionKey);
+  if (error_description_value) {
+    *error_description = *error_description_value;
+  }
+
   return true;
 }
