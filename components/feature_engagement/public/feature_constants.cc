@@ -42,7 +42,7 @@ BASE_FEATURE(kIPHDesktopTabGroupsNewGroupFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDesktopCustomizeChromeFeature,
              "IPH_DesktopCustomizeChrome",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDesktopCustomizeChromeRefreshFeature,
              "IPH_DesktopCustomizeChromeRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
