@@ -732,7 +732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AffiliationFetcher.FetchHttpResponseCode"
-    enum="HttpResponseCode" expires_after="2023-09-03">
+    enum="HttpResponseCode" expires_after="M121">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1909,7 +1909,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.NotifyIsLeakedTime" units="ms"
-    expires_after="2023-09-10">
+    expires_after="M121">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1929,7 +1929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.ReceiveSingleLeakResponseTime"
-    units="ms" expires_after="2023-09-10">
+    units="ms" expires_after="M121">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1939,7 +1939,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.SingleLeakResponsePrefixes"
-    units="prefixes" expires_after="2023-09-10">
+    units="prefixes" expires_after="M121">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1949,7 +1949,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.SingleLeakResponseSize"
-    units="bytes" expires_after="2023-09-10">
+    units="bytes" expires_after="M121">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2929,7 +2929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ReauthToAccessPasswordInSettings"
-    enum="PasswordManager.ReauthResult" expires_after="M119">
+    enum="PasswordManager.ReauthResult" expires_after="M121">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
