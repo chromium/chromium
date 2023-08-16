@@ -152,6 +152,19 @@ template("cargo_crate") {
   if (defined(invoker.crate_type)) {
     _crate_type = invoker.crate_type
   }
+  if (_crate_type == "cdylib") {
+    # Crates are rarely cdylibs. The example encountered so far aims
+    # to expose a C API to other code. In a Chromium context, we don't
+    # want to build that as a dylib for a couple of reasons:
+    # * rust_shared_library does not work on Mac. rustc does not know
+    #   how to export the __llvm_profile_raw_version symbol.
+    # * even if it did work, this might require us to distribute extra
+    #   binaries (.so/.dylib etc.)
+    # For the only case we've had so far, it makes more sense to build
+    # the code as a static library which we can then link into downstream
+    # binaries.
+    _crate_type = "rlib"
+  }
   if (_crate_type == "bin") {
     _target_type = "rust_executable"
     assert(!defined(invoker.epoch))
@@ -191,6 +204,10 @@ template("cargo_crate") {
                                  "dev_deps",
                                ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    if (defined(crate_type) && crate_type == "cdylib") {
+      # See comments above about cdylib.
+      crate_type = "rlib"
+    }
 
     rustc_metadata = _rustc_metadata
 
