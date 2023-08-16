@@ -347,6 +347,7 @@
 <translation id="1668071460721346172">Имэйл хүлээн авах</translation>
 <translation id="1671391448414634642">Одооноос <ph name="SOURCE_LANGUAGE" /> хэл дээрх хуудсыг <ph name="TARGET_LANGUAGE" /> хэл рүү орчуулна.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> -с <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838"><ph name="BEGIN_LINK" />Уламжлалт технологийн үйл явдлууд<ph name="END_LINK" /> тохиолдож буй таны зочилсон хуудаснуудын URL-н хязгаарлагдмал жагсаалт.</translation>
 <translation id="1682696192498422849">Эхлээд богино зах</translation>
 <translation id="168693727862418163">Энэ бодлогын утгыг схемтэй нь тулгаж баталж чадаагүй тул үүнийг үл хэрэгсэнэ.</translation>
 <translation id="168841957122794586">Серверийн гэрчилгээний криптограф түлхүүр нь аюулгүй байдлын хувьд сул байна.</translation>
@@ -2032,6 +2033,7 @@
 <translation id="5296589789433599000">Хоол, жор</translation>
 <translation id="5299298092464848405">Алдааны шинжлэх журам</translation>
 <translation id="5299638840995777423">Роботик</translation>
+<translation id="5300062471671636390">Дамжуулах төхөөрөмжийн жагсаалтыг нуух</translation>
 <translation id="5300589172476337783">Харуулах</translation>
 <translation id="5306593769196050043">Хүснэгтийн аль алинд нь</translation>
 <translation id="5307166000025436103">OK</translation>
@@ -2618,7 +2620,6 @@
 <translation id="6573200754375280815">Баруун ирмэг дагуу хоёр нүх цоолох</translation>
 <translation id="6578434528542148658">Буруу өргөтгөлийн ID.</translation>
 <translation id="657902945730878902">Зурах, будах</translation>
-<translation id="6579630537141957243">MIDI төхөөрөмжийг холбох уу?</translation>
 <translation id="6579858392010591435">Баяр ёслол, улирлын чанартай арга хэмжээнүүд</translation>
 <translation id="6579990219486187401">Бүдэг ягаан</translation>
 <translation id="6581831440014388355">Бие болон нүүрний илүүдэл үс арилгах</translation>
@@ -3495,6 +3496,7 @@
 <translation id="8368027906805972958">Үл мэдэгдэх эсвэл дэмжигдээгүй төхөөрөмж (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play үйлчилгээ</translation>
 <translation id="8369073279043109617">Шинэ код авах</translation>
+<translation id="8371841335382565017">Дамжуулах төхөөрөмжийн жагсаалтыг харуулах</translation>
 <translation id="8371889962595521444">Захиалгат үндсэн гэрчилгээ</translation>
 <translation id="8374636051559112948">Ялгаатай</translation>
 <translation id="8378714024927312812">Танай байгууллагаас удирддаг</translation>

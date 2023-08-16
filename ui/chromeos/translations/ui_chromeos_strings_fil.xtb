@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Kabuuang bilang ng file</translation>
 <translation id="1755345808328621801">Idinisenyo ang file na ito para sa isang PC na gumagamit ng Windows software. Hindi ito compatible sa iyong device na nagpapatakbo ng ChromeOS. Maghanap sa Chrome Web Store ng naaangkop na pamalit na app.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
+<translation id="1761091787730831947">I-share sa <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Lokal na tinanggihan ang certificate ng pagpapatunay</translation>
 <translation id="1775381402323441512">Impormasyon ng video</translation>
 <translation id="180035236176489073">Kailangan kang mag-online upang ma-access ang mga file na ito.</translation>
@@ -210,6 +211,7 @@
 <translation id="2718540689505416944">I-install ang app gamit ang Linux</translation>
 <translation id="2719020180254996569">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Mga Detalye</translation>
 <translation id="2724954091494693138">Turkish na may F-keyboard</translation>
+<translation id="2732288874651063549">Pamahalaan ang pag-share sa <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnamese VNI</translation>
 <translation id="2735623501230989521">Bigyan ng pahintulot ang Parallels Desktop na ma-access ang mga file sa folder na <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Nagamit mo na ang lahat ng iyong indibidwal na storage sa Google Workspace.</translation>
@@ -304,6 +306,7 @@
 <translation id="3509680540198371098">Network <ph name="NETWORK_INDEX" /> ng <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="3511705761158917664">Inihahandang i-sync ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="3522708245912499433">Portuguese</translation>
+<translation id="3523225005467146490">1 folder ang na-share sa <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Mag-ingat: Ang mga file na ito ay pansamantala lang at puwedeng awtomatikong ma-delete para magbakante ng espasyo sa disk.  <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3548125359243647069">Napakaraming beses nang naglagay ng maling PIN.</translation>
@@ -660,6 +663,7 @@
 <translation id="6164412158936057769">Mga Paru-paro</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6170470584681422115">Sandwich</translation>
+<translation id="6181912134988520389">Bigyan ng pahintulot ang <ph name="VM_NAME" /> na ma-access ang mga file sa iyong Google Drive. Masi-sync sa iba mo pang device ang mga pagbabago.</translation>
 <translation id="6187719147498869044">Hungarian</translation>
 <translation id="6198252989419008588">Palitan ang PIN</translation>
 <translation id="6199801702437275229">Hinihintay ang impormasyon ng espasyo...</translation>
@@ -763,6 +767,7 @@
 <translation id="6989942356279143254">Swedish</translation>
 <translation id="6990081529015358884">Naubusan ka na ng espasyo</translation>
 <translation id="6993826899923627728">Nasa iyong trash ang mga item na ito</translation>
+<translation id="6996593023542748157">I-share ang folder sa <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Kailangan ng iyong organisasyon ng mas malaking storage para makumpleto ang pag-upload.</translation>
 <translation id="7009985720488544166">Na-block ng patakaran ng administrator ang paglipat ng <ph name="COUNT" /> (na) file</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -852,6 +857,7 @@
 <translation id="76959938259365003">Hindi naalis ang laman ng trash.</translation>
 <translation id="770015031906360009">Greko</translation>
 <translation id="7705251383879779343">Nakopya ang <ph name="FILE_NAME" />.</translation>
+<translation id="7707941139430559579">Hindi mailipat ang file. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Para magamit ang network na ito, kailangan mong ilagay ang 8-digit na Personal Unblocking Key (PUK) na ibinigay ng carrier.</translation>
 <translation id="7711920809702896782">Impormasyon ng larawan</translation>
 <translation id="7724603315864178912">I-cut</translation>
@@ -948,6 +954,7 @@
 <translation id="8335837413233998004">Belarusian</translation>
 <translation id="8336153091935557858">Kahapon <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Umiiral na ang isang file o direktoryong may parehong pangalan.</translation>
+<translation id="83651606385705612">Bigyan ng pahintulot ang <ph name="VM_NAME" /> na ma-access ang mga file sa folder na <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Mahinang WEP key</translation>
 <translation id="8372852072747894550">Greek</translation>
 <translation id="8386903983509584791">Nakumpleto ang pag-scan</translation>
@@ -957,6 +964,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> network, kumokonekta</translation>
 <translation id="8425213833346101688">Baguhin</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> (na) folder ang na-share sa <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Palitan ang PIN ng SIM</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">Walang nakalagay na SIM card</translation>

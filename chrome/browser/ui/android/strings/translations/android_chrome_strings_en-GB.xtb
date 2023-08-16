@@ -35,6 +35,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1150263420752757504"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Rename</translation>
 <translation id="1177863135347784049">Customised</translation>
+<translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1181366777303791449">on <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Use strong password?</translation>
@@ -469,6 +470,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3513704683820682405">Augmented Reality</translation>
 <translation id="3518985090088779359">Accept &amp; continue</translation>
 <translation id="3522247891732774234">Update available. More options</translation>
+<translation id="3523426587027570423">Tap to close 'Listen to this page'.</translation>
 <translation id="3524138585025253783">Developer UI</translation>
 <translation id="3524334353996115845">Let <ph name="ORIGIN" /> verify that it's you</translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -673,6 +675,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4637420359569396807">With ad measurement, limited types of data can be shared among sites and apps to measure the performance of their ads, such as the time of day that an ad was shown to you.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 compromised password}other{# compromised passwords}}</translation>
 <translation id="4650364565596261010">System default</translation>
+<translation id="4654641641922242357">'Listen to this page' player.</translation>
 <translation id="465657074423018424">Safe Browsing protects you against deceptive websites. If you turn it off, be extra careful when browsing, especially before entering passwords.</translation>
 <translation id="4662373422909645029">Nickname can’t include numbers</translation>
 <translation id="4663499661119906179">See top sites and stories for you</translation>
@@ -802,6 +805,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5227554086496586518">Tap to see search results</translation>
 <translation id="5233638681132016545">New tab</translation>
+<translation id="5234971936051226002">'Listen to this page' player minimised.</translation>
 <translation id="5235196193381275927">Something went wrong during sign-in</translation>
 <translation id="5246093389635966745">Edit toolbar shortcut</translation>
 <translation id="5271967389191913893">Device cannot open the content to be downloaded.</translation>
@@ -1096,6 +1100,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6770042910635026163">Sites you visit that define your interests</translation>
 <translation id="6770602306803890733">Improves security for you and everyone on the web</translation>
 <translation id="6785476624617658922">Chrome and Chrome OS additional Terms of Service</translation>
+<translation id="6790428901817661496">Play</translation>
 <translation id="6795633245022906657">Quickly open a new tab. To edit this shortcut, go to Settings.</translation>
 <translation id="6802555630140434547">The window will be closed</translation>
 <translation id="6811034713472274749">Page is ready to view</translation>
@@ -1220,7 +1225,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7431991332293347422">Control how your browsing history is used to personalise Search and more</translation>
 <translation id="7435356471928173109">Turned off by your administrator</translation>
 <translation id="7437998757836447326">Sign out of Chrome</translation>
-<translation id="7443901082822119557">While in Incognito, sites can’t use your cookies to see your browsing activity across different sites, for example, to personalise ads. Features on some sites may break.</translation>
 <translation id="7453467225369441013">Signs you out of most sites. You won't be signed out of your Google Account.</translation>
 <translation id="7453810262525006706">Collapse to side view</translation>
 <translation id="7454641608352164238">Not enough space</translation>
@@ -1320,6 +1324,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7926975587469166629">Card nickname</translation>
 <translation id="7929962904089429003">Opening the menu</translation>
 <translation id="7930998711684428189">Warns you if passwords are exposed in a data breach.</translation>
+<translation id="7934668619883965330">Cannot download file. File format not supported.</translation>
 <translation id="7939485076072265087">Create stylised card with highlight</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is out of date.</translation>
 <translation id="7944772052836377867">Sync needs to verify that it's you</translation>
@@ -1337,7 +1342,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="799576009106109668">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
 <translation id="7998918019931843664">Re-open closed tab</translation>
 <translation id="8004582292198964060">Browser</translation>
-<translation id="8006818846907410687">Block while using Incognito</translation>
 <translation id="8013372441983637696">Also clear your Chrome data from this device</translation>
 <translation id="8015452622527143194">Return everything on the page to default size</translation>
 <translation id="8026334261755873520">Clear browsing data</translation>
@@ -1522,6 +1526,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8937772741022875483">Remove your Chrome activity from Digital Wellbeing?</translation>
 <translation id="8942627711005830162">Open in other window</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – This language couldn't be downloaded. Try again later.</translation>
+<translation id="8953618380150219653">'Listen to this page' player opened at full height.</translation>
 <translation id="8955719471735800169">Back to top</translation>
 <translation id="8964479563882643397">To open a new Incognito tab, open the menu</translation>
 <translation id="8965591936373831584">pending</translation>

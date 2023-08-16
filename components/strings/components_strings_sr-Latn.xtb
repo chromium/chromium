@@ -606,6 +606,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2225927550500503913">Virtuelna kartica je uključena</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Prijavljivanje<ph name="END_LINK" /> na WiFi mrežu</translation>
 <translation id="2228057197024893428">Ova adresa je trenutno sačuvana u Chrome-u. Da biste je koristili u svim Google proizvodima, sačuvajte je na Google nalogu, <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> će znati da ste posetili <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Kompaktni disk</translation>
 <translation id="2239100178324503013">Pošalji odmah</translation>
 <translation id="2241693394036365668">Datoteka je preuzeta</translation>
@@ -2093,6 +2094,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5426179911063097041"><ph name="SITE" /> želi da vam šalje obaveštenja</translation>
 <translation id="5430298929874300616">Uklonite obeleživač</translation>
 <translation id="5443468954631487277">Obrnutim redosledom sa odštampanom stranom nagore</translation>
+<translation id="5447235695608032700">Dozvolite da <ph name="SITE" /> koristi informacije koje je sačuvao o vama</translation>
 <translation id="5447765697759493033">Ovaj sajt se neće prevoditi</translation>
 <translation id="5452270690849572955">Nije moguće pronaći ovu stranicu hosta <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Neispravna vremenska oznaka smernica</translation>
@@ -2619,7 +2621,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6573200754375280815">Dvostruko bušenje na desnoj strani</translation>
 <translation id="6578434528542148658">Nevažeći ID dodatka.</translation>
 <translation id="657902945730878902">Crtanje i bojenje</translation>
-<translation id="6579630537141957243">Želite da povežete MIDI uređaj?</translation>
 <translation id="6579858392010591435">Praznici i sezonski događaji</translation>
 <translation id="6579990219486187401">Svetloroze</translation>
 <translation id="6581831440014388355">Uklanjanje neželjenih dlaka sa tela i lica</translation>

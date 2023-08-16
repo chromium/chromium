@@ -351,6 +351,7 @@
 <translation id="1668071460721346172">Ստանալ էլփոստով</translation>
 <translation id="1671391448414634642">Այսուհետ <ph name="SOURCE_LANGUAGE" /> լեզվով էջերը կթարգմանվեն <ph name="TARGET_LANGUAGE" />:</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />ից <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Ձեր այցելած այն էջերի URL-ների սահմանափակ ցանկը, որտեղ տեղի են ունենում <ph name="BEGIN_LINK" />հնացած տեխնոլոգիաների հետ կապված իրադարձություններ<ph name="END_LINK" /></translation>
 <translation id="1682696192498422849">Կարճ եզրից սկսած</translation>
 <translation id="168693727862418163">Կանոնը կանտեսվի, քանի որ դրա արժեքը չի համապատասխանում սխեմային։</translation>
 <translation id="168841957122794586">Սերվերի վկայագիրը թույլ գաղտնագրման բանալի ունի:</translation>
@@ -2629,7 +2630,6 @@
 <translation id="6573200754375280815">Երկու անցք աջ կողմում</translation>
 <translation id="6578434528542148658">Ընդլայնման ID-ն անվավեր է։</translation>
 <translation id="657902945730878902">Նկարչություն և գունավորում</translation>
-<translation id="6579630537141957243">Միացնե՞լ MIDI սարքը</translation>
 <translation id="6579858392010591435">Տոներ և սեզոնային իրադարձություններ</translation>
 <translation id="6579990219486187401">Բաց վարդագույն</translation>
 <translation id="6581831440014388355">Մարմնի և դեմքի անցանկալի մազերի հեռացում</translation>

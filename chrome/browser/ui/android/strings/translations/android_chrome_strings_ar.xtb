@@ -34,6 +34,7 @@
 <translation id="1150263420752757504">‏سيتم فتح تطبيق "<ph name="APP_NAME" />" في Chrome. تعني المتابعة موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">إعادة تسمية</translation>
 <translation id="1177863135347784049">مخصص</translation>
+<translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1181366777303791449">في <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">هل تريد استخدام كلمة مرور قوية؟</translation>
@@ -1093,6 +1094,7 @@
 <translation id="6770042910635026163">المواقع الإلكترونية التي تزورها وتحدّد اهتماماتك</translation>
 <translation id="6770602306803890733">تحسين الأمان من أجلك ومن أجل جميع المستخدمين على الإنترنت</translation>
 <translation id="6785476624617658922">‏بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome</translation>
+<translation id="6790428901817661496">التشغيل</translation>
 <translation id="6795633245022906657">يتيح لك هذا الزر فتح علامة تبويب جديدة بسرعة. ولتعديل هذا الاختصار، انتقِل إلى "الإعدادات".</translation>
 <translation id="6802555630140434547">سيتم إغلاق النافذة.</translation>
 <translation id="6811034713472274749">الصفحة جاهزة للعرض</translation>
@@ -1217,7 +1219,6 @@
 <translation id="7431991332293347422">التحكُّم في كيفية استخدامنا لسِجل التصفُّح لتخصيص البحث والمزيد</translation>
 <translation id="7435356471928173109">أوقَف المشرف وضع "التصفُّح الآمن".</translation>
 <translation id="7437998757836447326">‏تسجيل الخروج من Chrome</translation>
-<translation id="7443901082822119557">في وضع التصفّح المتخفي، لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط للاطّلاع على نشاط تصفّحك على المواقع الإلكترونية المختلفة، بهدف تقديم إعلانات مخصّصة لك مثلاً. وقد تتوقف الميزات على بعض المواقع الإلكترونية.</translation>
 <translation id="7453467225369441013">‏سيتم تسجيل الخروج من معظم المواقع الإلكترونية، لكن لن يتم تسجيل الخروج من حسابك على Google.</translation>
 <translation id="7453810262525006706">التصغير إلى اللوحة الجانبية</translation>
 <translation id="7454641608352164238">مساحة التخزين غير كافية</translation>
@@ -1250,6 +1251,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{تم تنزيل ملف <ph name="FILES_DOWNLOADED_ONE" />}zero{تم تنزيل <ph name="FILES_DOWNLOADED_MANY" /> ملفات}two{تم تنزيل ملفين (<ph name="FILES_DOWNLOADED_MANY" />)}few{تم تنزيل <ph name="FILES_DOWNLOADED_MANY" /> ملفات}many{تم تنزيل <ph name="FILES_DOWNLOADED_MANY" /> ملفًا}other{تم تنزيل <ph name="FILES_DOWNLOADED_MANY" /> ملف}}</translation>
 <translation id="7581273696622423628">المشاركة في استطلاع الرأي</translation>
 <translation id="7583262514280211622">ستظهر لك قائمة القراءة هنا</translation>
+<translation id="7587250070160020374">‏يقرأ Chrome الآن محتوى صفحة</translation>
 <translation id="7588219262685291874">تفعيل "المظهر الداكن" عند تفعيل ميزة "توفير شحن البطارية" للجهاز</translation>
 <translation id="7594687499944811403">السماح للموقع الإلكتروني <ph name="EMBEDDED_ORIGIN" /> بإثبات هويّتك في <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">نظام التشغيل</translation>
@@ -1333,7 +1335,6 @@
 <translation id="799576009106109668">ستتمكّن من التصفُّح بشكلٍ أسرع لأنه يتم تحميل المحتوى مسبقًا استنادًا إلى زيارتك الحالية لصفحة الويب</translation>
 <translation id="7998918019931843664">إعادة فتح علامة التبويب المغلقة</translation>
 <translation id="8004582292198964060">المتصفّح</translation>
-<translation id="8006818846907410687">حظر ملفات تعريف الارتباط أثناء استخدام وضع التصفّح المتخفي</translation>
 <translation id="8013372441983637696">‏محو بيانات Chrome من هذا الجهاز أيضًا</translation>
 <translation id="8015452622527143194">إعادة كامل محتوى الصفحة إلى الحجم التلقائي</translation>
 <translation id="8026334261755873520">محو بيانات التصفُّح</translation>

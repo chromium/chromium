@@ -1758,6 +1758,7 @@
 <translation id="2369058545741334020">Отвори во „Режим на читање“</translation>
 <translation id="236939127352773362">Кога уреди споделуваат во близина</translation>
 <translation id="2371076942591664043">Отвори кога е &amp;готово</translation>
+<translation id="237336063998926520">Користете ја вашата IP-адреса за утврдување на локацијата</translation>
 <translation id="2373666622366160481">Приспособи според листот хартија</translation>
 <translation id="2375406435414127095">Поврзете се со телефонот</translation>
 <translation id="2376056713414548745">Читај наглас</translation>
@@ -8997,7 +8998,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Дозволени: <ph name="PERMISSION" /> и уште <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Дали сакате да го активирате ChromeVox, вградениот читач на екранот за Chrome OS?</translation>
-<translation id="8414065061814811918">Забрзување на лизгањето. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Спомените ќе бидат скриени два дена</translation>
 <translation id="8414396119627470038">Најавете се на <ph name="SITE_ETLD_PLUS_ONE" /> со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Белешки</translation>

@@ -1746,6 +1746,7 @@
 <translation id="2369058545741334020">الفتح في وضع القراءة</translation>
 <translation id="236939127352773362">عندما تشارك الأجهزة المجاورة محتوى</translation>
 <translation id="2371076942591664043">فتح الملفّ عند &amp;انتهاء التحميل</translation>
+<translation id="237336063998926520">‏استخدام عنوان IP لتحديد الموقع</translation>
 <translation id="2373666622366160481">ملاءمة حجم الورقة</translation>
 <translation id="2375406435414127095">الاتصال بهاتفك</translation>
 <translation id="2376056713414548745">القراءة بصوت عالٍ</translation>
@@ -8989,7 +8990,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">تمت الموافقة على إذن <ph name="PERMISSION" /> و<ph name="COUNT" /> إذن آخر.</translation>
 <translation id="8413956290606243087">‏هل تريد تفعيل قارئ الشاشة ChromeVox المضمّن في نظام التشغيل Chrome؟</translation>
-<translation id="8414065061814811918">تسريع الانتقال للأعلى أو للأسفل. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">ذكريات تم إخفاؤها لمدة يومين</translation>
 <translation id="8414396119627470038">يُرجى تسجيل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="8414685983518053656">ملاحظات</translation>

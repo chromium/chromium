@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">ഡാറ്റ എന്‍‌സിഫെര്‍‌മെന്‍റ്</translation>
 <translation id="1072700771426194907">USB ഉപകരണം കണ്ടെത്തി</translation>
 <translation id="107278043869924952">പാസ്‌വേഡിന് പുറമെ പിൻ ഉപയോഗിക്കുക</translation>
+<translation id="107450319332239199">എന്തോ പിശകുണ്ടായി. പകരം നേരിട്ട് വിൻഡോകൾ തുറക്കുക.</translation>
 <translation id="1076176485976385390">ടെക്‌സ്‌റ്റ് കഴ്‌സർ ഉപയോഗിച്ച് പേജുകൾക്കിടയിൽ നാവിഗേറ്റ് ചെയ്യുക</translation>
 <translation id="1076382954055048850">മറ്റ് 'കാസ്റ്റ് ചെയ്യൽ' സെഷനുകൾ കാണിക്കുക</translation>
 <translation id="1076698951459398590">തീം പ്രവർത്തനക്ഷമമാക്കുക</translation>
@@ -1741,6 +1742,7 @@
 <translation id="2369058545741334020">റീഡിംഗ് മോഡിൽ തുറക്കുക</translation>
 <translation id="236939127352773362">സമീപത്ത് ഉപകരണങ്ങൾ പങ്കിടുമ്പോൾ</translation>
 <translation id="2371076942591664043">ചെയ്തുകഴിയുമ്പോള്‍ &amp;തുറക്കുക</translation>
+<translation id="237336063998926520">ലൊക്കേഷൻ നിർണ്ണയിക്കാൻ നിങ്ങളുടെ IP വിലാസം ഉപയോഗിക്കുക</translation>
 <translation id="2373666622366160481">പേപ്പറിന് അനുയോജ്യമാക്കുക</translation>
 <translation id="2375406435414127095">ഫോണിലേക്ക് കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="2376056713414548745">ഉറക്കെ വായിക്കുക</translation>
@@ -7706,6 +7708,7 @@
 <translation id="7396017167185131589">പങ്കിട്ട ഫോൾഡറുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="7396845648024431313">നിങ്ങൾ മറ്റെല്ലാ <ph name="PRODUCT_NAME" /> വിൻഡോകളും അടച്ചുകഴിഞ്ഞാൽപ്പോലും, സിസ്‌റ്റം സ്‌റ്റാർട്ടപ്പിൽ <ph name="APP_NAME" /> സമാരംഭിച്ച് പശ്‌ചാത്തലത്തിൽ പ്രവർത്തിക്കുന്നത് തുടരും</translation>
 <translation id="7399045143794278225">സമന്വയിപ്പിക്കൽ ഇഷ്ടാനുസൃതമാക്കുക</translation>
+<translation id="7399616692258236448">നിങ്ങൾ അനുവദിക്കുന്ന സൈറ്റുകൾക്ക് ഒഴികെ മറ്റ് എല്ലാ സൈറ്റുകൾക്കും ലൊക്കേഷൻ അഭ്യർത്ഥനകൾ സ്വയമേവ ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">തിരികെ <ph name="OLD_SEARCH_PROVIDER" /> എന്നതിലേക്ക് മാറ്റണോ?</translation>
 <translation id="7400839060291901923">നിങ്ങളുടെ <ph name="PHONE_NAME" /> ഫോണിൽ കണക്ഷൻ സജ്ജമാക്കുക</translation>
@@ -8976,7 +8979,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> എന്നതും മറ്റ് <ph name="COUNT" /> എണ്ണവും അനുവദിച്ചു</translation>
 <translation id="8413956290606243087">ChromeOS-നുള്ള ബിൽറ്റ് ഇൻ സ്ക്രീൻ റീഡർ ആയ ChromeVox സജീവമാക്കണോ?</translation>
-<translation id="8414065061814811918">സ്‌ക്രോൾ ചെയ്യൽ ആക്സിലറേഷൻ. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">മനോഹര ഓർമ്മകൾ രണ്ട് ദിവസത്തേക്ക് മറച്ചു</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ഉപയോഗിച്ച് <ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="8414685983518053656">കുറിപ്പുകള്‍</translation>
@@ -9658,9 +9660,11 @@
 <translation id="8986494364107987395">Google ലേക്ക് സ്വയമേവ ഉപയോഗ വിവരക്കണക്കുകളും ക്രാഷ് റിപ്പോര്‍ട്ടുകളും അയയ്ക്കുക</translation>
 <translation id="8987305927843254629">ഓരോ വ്യക്തിക്കും അവരുടെ അനുഭവം വ്യക്തിപരമാക്കാനും ഡാറ്റ സ്വകാര്യമായി സൂക്ഷിക്കാനും കഴിയും.</translation>
 <translation id="8987927404178983737">മാസം</translation>
+<translation id="8988539543012086784">ഈ പേജ് <ph name="BOOKMARK_FOLDER" /> എന്നതിൽ സംരക്ഷിച്ചു</translation>
 <translation id="8989359959810288806">ടെതറിംഗ് നില റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="8991520179165052608">സൈറ്റിന് നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാനാകും</translation>
 <translation id="8991694323904646277">ക്യാമറയില്ല</translation>
+<translation id="8991766915726096402">ലോക്കൽ ഡാറ്റ വീണ്ടെടുക്കൽ</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - മെമ്മറി ഉപയോഗം - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">നിങ്ങൾ <ph name="DEVICE_TYPE" /> പാസ്‌വേഡ് മറന്നാലും നിങ്ങളുടെ ലോക്കൽ ഡാറ്റ പുനഃസ്ഥാപിക്കാനാകും. നിങ്ങൾ Google അക്കൗണ്ടിലേക്ക് സൈൻ ഇൻ ചെയ്യുകയോ അക്കൗണ്ട് വീണ്ടെടുക്കൽ ഉപയോഗിക്കുകയോ ചെയ്യണം.</translation>
 <translation id="8993737615451556423">വായനാ ശബ്ദത്തിന്റെ വേഗത കൂട്ടാനും കുറയ്ക്കാനും താൽക്കാലികമായി നിർത്താനുമുള്ള നിയന്ത്രണങ്ങൾ നൽകുന്നു</translation>

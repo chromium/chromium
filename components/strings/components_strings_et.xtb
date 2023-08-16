@@ -347,6 +347,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1668071460721346172">Laske endale e-kiri saata</translation>
 <translation id="1671391448414634642">Lehed keeles <ph name="SOURCE_LANGUAGE" /> tõlgitakse nüüd keelde <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Piiratud loend külastatud lehtede URL-idest, kus toimuvad <ph name="BEGIN_LINK" />pärandtehnoloogia sündmused<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Lühem serv enne</translation>
 <translation id="168693727862418163">Seda reegli väärtust ei õnnestunud skeemiga võrdluses kinnitada ja seda eiratakse.</translation>
 <translation id="168841957122794586">Serveri sertifikaat sisaldab nõrka krüptograafilist võtit.</translation>
@@ -2618,7 +2619,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6573200754375280815">Kaks auku paremal</translation>
 <translation id="6578434528542148658">Sobimatu laienduse ID.</translation>
 <translation id="657902945730878902">Joonistamine ja värvimine</translation>
-<translation id="6579630537141957243">Kas ühendada MIDI-seade?</translation>
 <translation id="6579858392010591435">Pühad ja hooajalised sündmused</translation>
 <translation id="6579990219486187401">Heleroosa</translation>
 <translation id="6581831440014388355">Soovimatute keha- ja näokarvade eemaldamine</translation>

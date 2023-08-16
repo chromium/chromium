@@ -1744,6 +1744,7 @@
 <translation id="2369058545741334020">Բացել ընթերցման ռեժիմում</translation>
 <translation id="236939127352773362">Երբ մոտակա սարքերը միմյանց հետ տվյալներ են փոխանակում</translation>
 <translation id="2371076942591664043">Բացել ավարտվելուն &amp;պես</translation>
+<translation id="237336063998926520">Օգտագործեք ձեր IP հասցեն՝ տեղորոշման համար</translation>
 <translation id="2373666622366160481">Հարմարեցնել թղթին</translation>
 <translation id="2375406435414127095">Միացրեք ձեր հեռախոսը</translation>
 <translation id="2376056713414548745">Կարդալ բարձրաձայն</translation>
@@ -7709,6 +7710,7 @@
 <translation id="7396017167185131589">Ընդհանուր պանակները կցուցադրվեն այստեղ</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" />-ը կգործարկվի համակարգի մեկնարկի ժամանակ և կշարունակի աշխատել հետնաշերտում, նույնիսկ եթե փակեք <ph name="PRODUCT_NAME" />-ի բոլոր պատուհանները:</translation>
 <translation id="7399045143794278225">Կարգավորել համաժամացումը</translation>
+<translation id="7399616692258236448">Տեղադրության հարցումները ավտոմատ արգելափակվում են բոլոր կայքերի համար՝ բացի ձեր նշած կայքերից:</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Վերադառնա՞լ <ph name="OLD_SEARCH_PROVIDER" /> որոնման համակարգին</translation>
 <translation id="7400839060291901923">Ստեղծեք թեժ կետ <ph name="PHONE_NAME" /> հեռախոսում</translation>
@@ -8978,7 +8980,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Տրված թույլտվություններ՝ <ph name="PERMISSION" /> ու ևս <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Ակտիվացնե՞լ ChromeVox-ը՝ էկրանի ներկառուցված ընթերցիչը ChromeOS-ի համար։</translation>
-<translation id="8414065061814811918">Ոլորման արագացում։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Հիշողությունները երկու օրով թաքցված են</translation>
 <translation id="8414396119627470038">Մուտք գործեք <ph name="SITE_ETLD_PLUS_ONE" /> կայք <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերության տվյալներով</translation>
 <translation id="8414685983518053656">Նշումներ</translation>
@@ -9662,6 +9663,7 @@
 <translation id="8986494364107987395">Ավտոմատ Google-ին ուղարկել օգտագործման վիճակագրությունները և խափանումների մասին հաշվետվությունները</translation>
 <translation id="8987305927843254629">Յուրաքանչյուր օգտատեր կարող է անհատականացնել սարքը և գաղտնի պահել իր տվյալները։</translation>
 <translation id="8987927404178983737">Ամիս</translation>
+<translation id="8988539543012086784">Այս էջը պահվել է «<ph name="BOOKMARK_FOLDER" />» պանակում</translation>
 <translation id="8989359959810288806">Թարմացնել մոդեմի ռեժիմի կարգավիճակը</translation>
 <translation id="8991520179165052608">Կայքը կարող է օգտագործել ձեր խոսափողը</translation>
 <translation id="8991694323904646277">Տեսախցիկ չկա</translation>

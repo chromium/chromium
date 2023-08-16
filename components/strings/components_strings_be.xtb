@@ -347,6 +347,7 @@
 <translation id="1668071460721346172">Атрымаць электронны ліст</translation>
 <translation id="1671391448414634642">Цяпер старонкі на мове <ph name="SOURCE_LANGUAGE" /> будуць перакладацца на мову <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Абмежаваны спіс URL-адрасоў наведаных вамі старонак, дзе адбываюцца <ph name="BEGIN_LINK" />падзеі ўстарэлых тэхналогій<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Спачатку кароткі край</translation>
 <translation id="168693727862418163">Не ўдалося пацвердзіць адпаведнасць значэння палітыкі схеме, таму яно будзе ігнаравацца.</translation>
 <translation id="168841957122794586">У сертыфіката сервера слабы крыптаграфічны ключ.</translation>
@@ -2617,7 +2618,6 @@
 <translation id="6573200754375280815">Дзве дзіркі справа</translation>
 <translation id="6578434528542148658">Недапушчальны ідэнтыфікатар пашырэння.</translation>
 <translation id="657902945730878902">Рысаванне і размалёўванне</translation>
-<translation id="6579630537141957243">Падключыць прыладу MIDI?</translation>
 <translation id="6579858392010591435">Святы і сезонныя мерапрыемствы</translation>
 <translation id="6579990219486187401">Светла-ружовы</translation>
 <translation id="6581831440014388355">Выдаленне непажаданых валасоў на целе і твары</translation>

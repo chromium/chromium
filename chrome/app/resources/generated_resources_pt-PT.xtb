@@ -1082,6 +1082,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1854180393107901205">Parar de transmitir</translation>
 <translation id="1856715684130786728">Adicionar localização...</translation>
 <translation id="1858585891038687145">Confiar neste certificado para identificar fabricantes de software</translation>
+<translation id="1859294693760125695">Já não tenho interesse</translation>
 <translation id="1859339856433307593">Já foi guardada uma palavra-passe para esta conta no seu <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1862311223300693744">Tem alguma VPN, proxy, firewall ou software NAS especial instalado?</translation>
@@ -1743,6 +1744,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2369058545741334020">Abrir em modo de leitura</translation>
 <translation id="236939127352773362">Quando existirem dispositivos a partilhar nas proximidades</translation>
 <translation id="2371076942591664043">Abrir quando estiver concluí&amp;do</translation>
+<translation id="237336063998926520">Usar o seu endereço IP para determinar a localização</translation>
 <translation id="2373666622366160481">Ajustar à folha de papel</translation>
 <translation id="2375406435414127095">Associar ao seu telemóvel</translation>
 <translation id="2376056713414548745">Ler em voz alta</translation>
@@ -2763,6 +2765,7 @@ Quer pará-lo?</translation>
 <translation id="3226487301970807183">Ative/desative o painel lateral alinhado à esquerda</translation>
 <translation id="322708765617468434">Pode sempre adicionar outra pessoa ao dispositivo após a configuração. Cada pessoa pode personalizar a respetiva experiência e manter os dados privados.</translation>
 <translation id="3227137524299004712">Microfone</translation>
+<translation id="3229412050601871341">Palavra-passe do dispositivo</translation>
 <translation id="3232168089952388105">Partilhar informações sobre o seu dispositivo?</translation>
 <translation id="3232558119926886907">Alinhar à direita</translation>
 <translation id="3232754137068452469">App Web</translation>
@@ -2821,6 +2824,7 @@ Quer pará-lo?</translation>
 <translation id="3275778913554317645">Abrir como janela</translation>
 <translation id="3277214528693754078">Navegar com o cursor de texto (Navegação por cursor)</translation>
 <translation id="3277594800340743211">Sombra grande</translation>
+<translation id="3277784185056747463">Palavra-passe do dispositivo ou palavra-passe da Conta Google</translation>
 <translation id="3278001907972365362">A(s) sua(s) Conta(s) Google necessita(m) de atenção</translation>
 <translation id="3279092821516760512">Os contactos selecionados podem partilhar consigo quando estiverem nas proximidades. As transferências só irão começar quando aceitar.</translation>
 <translation id="3279230909244266691">Este processo pode demorar alguns minutos. A iniciar a máquina virtual…</translation>
@@ -3277,6 +3281,7 @@ Quer pará-lo?</translation>
 <translation id="3660234220361471169">Não fidedigno</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 palavra-passe existente encontrada}other{{NUM_PASSWORDS} palavras-passe existentes encontradas}}</translation>
 <translation id="3664511988987167893">Ícone da extensão</translation>
+<translation id="3665301845536101715">Abrir no painel lateral</translation>
 <translation id="3665589677786828986">O Chrome detetou que algumas das suas definições foram danificadas por outro programa e repôs as respetivas predefinições originais.</translation>
 <translation id="3665919494326051362">A versão atual é <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Descarregamento de depuração de NICs Intel WiFi</translation>
@@ -7008,6 +7013,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6805647936811177813">Inicie sessão no <ph name="TOKEN_NAME" /> para importar o certificado de cliente de <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Ativar o controlo RLZ em <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">Não permitir, mas perguntar mais tarde</translation>
+<translation id="680644983456221885">Proteção proativa em tempo real contra sites, transferências e extensões perigosos com base no envio dos seus dados de navegação para a Google</translation>
 <translation id="6808039367995747522">Para continuar, insira e toque na chave de segurança.</translation>
 <translation id="6808166974213191158">Criador de imagem do sistema do ChromeOS Flex</translation>
 <translation id="6808193438228982088">Raposa</translation>
@@ -8653,6 +8659,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="814204052173971714">{COUNT,plural, =1{um vídeo}other{# vídeos}}</translation>
 <translation id="8143442547342702591">Aplicação inválida</translation>
 <translation id="8143609395536282994">Como pode gerir os seus dados:</translation>
+<translation id="8144429778087524791">Marcar como concluído e ocultar</translation>
 <translation id="8145170459658034418">Poupança de memória</translation>
 <translation id="8146177459103116374">Se já estiver registado neste aparelho, pode <ph name="LINK2_START" />iniciar sessão como um utilizador existente<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Adicione e classifique os seus idiomas favoritos. Os Websites serão apresentados nos seus idiomas favoritos, quando tal for possível. Estas preferências serão sincronizadas com as definições do seu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -8981,7 +8988,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Permitiu <ph name="PERMISSION" /> e mais <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o ChromeOS?</translation>
-<translation id="8414065061814811918">Aceleração do deslocamento. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Memórias ocultas durante dois dias</translation>
 <translation id="8414396119627470038">Inicie sessão em <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Notas</translation>
@@ -9144,6 +9150,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8557022314818157177">Continue a tocar na chave de segurança até que a sua impressão digital seja capturada.</translation>
 <translation id="8557180006508471423">Ative o "Google Chrome" nos Serviços de localização do seu Mac</translation>
 <translation id="8557856025359704738">A próxima transferência é a <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8558281414737757274">Palavra-passe da Conta Google</translation>
 <translation id="8559858985063901027">Chaves de acesso</translation>
 <translation id="8559961053328923750">O Chrome limita a quantidade total de dados que os sites podem partilhar através do navegador para medir o desempenho dos anúncios</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Abrir todos numa &amp;nova janela}=1{Abrir numa &amp;nova Janela}other{Abrir todos ({COUNT}) numa &amp;nova janela}}</translation>
@@ -9156,6 +9163,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8569682776816196752">Não foram encontrados destinos</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8571687764447439720">Adicionar permissão Kerberos</translation>
+<translation id="8572052284359771939">Envia os URLs de sites que visita e uma pequena amostra de conteúdo de páginas, transferências, atividade de extensões e informações do sistema para a Navegação Segura do Google de forma a verificar se são prejudiciais.</translation>
 <translation id="8573111744706778015">Escrever "uo7" para obter "ươ"</translation>
 <translation id="8574990355410201600">Permitir sempre som em <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Para sair, mantenha as teclas <ph name="KEY_EQUIVALENT" /> premidas.</translation>

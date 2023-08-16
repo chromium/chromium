@@ -606,6 +606,7 @@
 <translation id="2225927550500503913">ပကတိအသွင်ကတ် ဖွင့်ထားသည်</translation>
 <translation id="2226636330183131181">WiFi ကွန်ရက်သို့ <ph name="BEGIN_LINK" />လက်မှတ်ထိုးဝင်နေသည်<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">ဤလိပ်စာကို Chrome တွင် လောလောဆယ် သိမ်းထားသည်။ Google ထုတ်ကုန်များတွင် ၎င်းကိုသုံးရန် သင်၏ Google Account ဖြစ်သော <ph name="ACCOUNT" /> တွင်သိမ်းပါ။</translation>
+<translation id="2228466771983364669"><ph name="TOP_LEVEL_URL" /> သို့ သင်ဝင်ကြည့်ကြောင်း <ph name="EMBEDDED_URL" /> က သိပါမည်။</translation>
 <translation id="2233745931693710080">စီဒီခွေ</translation>
 <translation id="2239100178324503013">ယခုပို့ရန်</translation>
 <translation id="2241693394036365668">ဖိုင်ကို ဒေါင်းလုဒ်လုပ်လိုက်သည်</translation>
@@ -2093,6 +2094,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> သည် သင့်ထံသို့ အကြောင်းကြားချက်များ ပို့လိုသည်</translation>
 <translation id="5430298929874300616">စာညှပ် ဖယ်ရှားရန်</translation>
 <translation id="5443468954631487277">ပြောင်းပြန်အစဉ်ဖြင့် အပေါ်လှန်ထားရန်</translation>
+<translation id="5447235695608032700">၎င်းတို့သိမ်းထားသော သင့်အကြောင်း အချက်အလက်များကို <ph name="SITE" /> အား သုံးခွင့်ပြုရန်</translation>
 <translation id="5447765697759493033">ဤဝဘ်ဆိုက်ကို ဘာသာပြန်မည် မဟုတ်ပါ</translation>
 <translation id="5452270690849572955">ဤ <ph name="HOST_NAME" /> စာမျက်နှာကို မတွေ့ပါ</translation>
 <translation id="5455374756549232013">ညံ့ဖျင်းသည့် မူဝါဒ အချိန်ဖော်ပြချက်</translation>
@@ -2619,7 +2621,6 @@
 <translation id="6573200754375280815">ညာဘက်တွင် နှစ်ချက်ဖောက်ရန်</translation>
 <translation id="6578434528542148658">နောက်ဆက်တွဲ ID မမှန်ပါ။</translation>
 <translation id="657902945730878902">ပုံဆွဲခြင်းနှင့် ဆေးခြယ်ခြင်း</translation>
-<translation id="6579630537141957243">MIDI ကိရိယာကို ချိတ်ဆက်မလား။</translation>
 <translation id="6579858392010591435">အားလပ်ရက်နှင့် ရာသီအလိုက် အစီအစဉ်</translation>
 <translation id="6579990219486187401">ပန်းရောင်ဖျော့</translation>
 <translation id="6581831440014388355">မလိုချင်သော ကိုယ်ခန္ဓာနှင့် မျက်နှာအမွေးအမှင် ဖယ်ရှားခြင်း</translation>

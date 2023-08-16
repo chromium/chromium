@@ -1086,6 +1086,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Te hemos pasado a una red mejor</translation>
 <translation id="5619862035903135339">La política del administrador inhabilita la captura de pantalla</translation>
+<translation id="5620856676199877916">Ver todo el trabajo de clase en el sitio web de Google Classroom</translation>
 <translation id="5620979661744857819">Esto permite que accedan <ph name="APP_NAME" /> y todas las aplicaciones y sitios web con los permisos de cámara y micrófono. Es posible que tengas que actualizar la página web o reiniciar la aplicación.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">No se ha podido verificar tu contraseña. Inténtalo de nuevo.</translation>
@@ -1215,6 +1216,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6154006699632741460">Periférico no admitido</translation>
 <translation id="6156960295318603523">Configuración de idioma</translation>
 <translation id="615957422585914272">Mostrar teclado en pantalla</translation>
+<translation id="616543563528926612">La combinación de teclas para hacer clic con el botón derecho ha pasado de pulsar la tecla <ph name="LAUNCHER_KEY_NAME" /> + hacer clic a ser Alt + hacer clic.</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6166852626429024716">Busca en el dispositivo, en las aplicaciones, en los ajustes, en la Web…</translation>
 <translation id="6168318496333165060">Abrir aplicación Diagnósticos</translation>
@@ -1502,6 +1504,7 @@ Nueva instalación</translation>
 <translation id="7497767806359279797">Seleccionar idioma y teclado</translation>
 <translation id="7508690557411636492">Abierto hace menos de un mes</translation>
 <translation id="7509246181739783082">Verifica tu identidad</translation>
+<translation id="7512509370370076552">La combinación de teclas para hacer clic con el botón derecho ha pasado de ser Alt + hacer clic a pulsar la tecla <ph name="LAUNCHER_KEY_NAME" /> + hacer clic.</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, no seleccionado</translation>
 <translation id="7513622367902644023">Modo de captura de pantalla seleccionado</translation>
 <translation id="7513922695575567867">Calendario, semana del <ph name="DATE" />, actualmente está seleccionado el <ph name="SELECTED_DATE" />.</translation>
@@ -1605,6 +1608,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7904094684485781019">El administrador de esta cuenta ha inhabilitado el inicio de sesión múltiple.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivos conectados</translation>
+<translation id="7926080067315048321">Ver todas las tareas en Google Tasks en la Web</translation>
 <translation id="7930731167419639574">Ahora la voz se procesa de forma local y el dictado funciona sin conexión.</translation>
 <translation id="7932451802722951285">Abrir en Google Calendar</translation>
 <translation id="7933084174919150729">El Asistente de Google solo está disponible en el perfil principal.</translation>

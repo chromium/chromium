@@ -347,6 +347,7 @@
 <translation id="1668071460721346172">এটা ইমেইল লাভ কৰক</translation>
 <translation id="1671391448414634642">এতিয়াৰ পৰা <ph name="SOURCE_LANGUAGE" />ত থকা পৃষ্ঠাসমূহ <ph name="TARGET_LANGUAGE" />লৈ অনুবাদ কৰা হ’ব।</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />ৰ পৰা <ph name="TARGET_LANGUAGE" />লৈ</translation>
+<translation id="1674542638006317838">আপুনি চোৱা পৃষ্ঠাসমূহৰ URLসমূহৰ এখন সীমিত তালিকা য’ত <ph name="BEGIN_LINK" />লিগেচি প্ৰযুক্তি অনুষ্ঠানসমূহ<ph name="END_LINK" /> সংঘটিত হৈছে।</translation>
 <translation id="1682696192498422849">চুটি কাষটো প্ৰথমে</translation>
 <translation id="168693727862418163">এই নীতিৰ মানটোৱে ইয়াৰ স্কীমাৰ বিৰুদ্ধে সত্যাপন কৰিব নোৱাৰিলে আৰু ইয়াক উপেক্ষা কৰা হ’ব।</translation>
 <translation id="168841957122794586">ছার্ভাৰ প্ৰমাণপত্ৰখনত এটা দুৰ্বল ক্ৰিপ্টগ্ৰাফিক কী আছে।</translation>
@@ -2027,6 +2028,7 @@
 <translation id="5296589789433599000">ৰন্ধন আৰু পাকবিধি</translation>
 <translation id="5299298092464848405">নীতি পাৰ্ছ কৰোঁতে আসোঁৱাহ হৈছে</translation>
 <translation id="5299638840995777423">ৰবটবিজ্ঞান</translation>
+<translation id="5300062471671636390">কাষ্ট কৰিবলৈ ডিভাইচৰ সূচী লুকুৱাওক</translation>
 <translation id="5300589172476337783">দেখুৱাওক</translation>
 <translation id="5306593769196050043">উভয় শ্বীট</translation>
 <translation id="5307166000025436103">ঠিক আছে</translation>
@@ -2613,7 +2615,6 @@
 <translation id="6573200754375280815">সোঁফালে দুবাৰ পাঞ্চ কৰক</translation>
 <translation id="6578434528542148658">এক্সটেনশ্বন আইডি মান্য নহয়।</translation>
 <translation id="657902945730878902">অংকন আৰু ৰং কৰা</translation>
-<translation id="6579630537141957243">MIDI ডিভাইচ সংযোগ কৰিবনে?</translation>
 <translation id="6579858392010591435">বন্ধৰ দিন আৰু ঋতু অনুসৰি হোৱা অনুষ্ঠান</translation>
 <translation id="6579990219486187401">পাতল গুলপীয়া</translation>
 <translation id="6581831440014388355">শৰীৰ আৰু মুখৰ অনাকাংক্ষিত চুলি আঁতৰোৱা</translation>
@@ -3490,6 +3491,7 @@
 <translation id="8368027906805972958">অজ্ঞাত অথবা অসমৰ্থিত ডিভাইচ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play সেৱা</translation>
 <translation id="8369073279043109617">নতুন ক’ড পাওক</translation>
+<translation id="8371841335382565017">কাষ্ট কৰিবলৈ ডিভাইচৰ সূচী দেখুৱাওক</translation>
 <translation id="8371889962595521444">কাষ্টম ৰুট প্ৰমাণপত্ৰ</translation>
 <translation id="8374636051559112948">ভিন্ন হয়</translation>
 <translation id="8378714024927312812">আপোনাৰ প্ৰতিষ্ঠানৰ দ্বাৰা পৰিচালিত</translation>

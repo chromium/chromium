@@ -1085,6 +1085,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Trocamos sua rede por uma melhor</translation>
 <translation id="5619862035903135339">A captura de tela foi desativada pela política do administrador</translation>
+<translation id="5620856676199877916">Mostrar todas as atividades no site do Google Sala de Aula</translation>
 <translation id="5620979661744857819">Essa ação libera o acesso para <ph name="APP_NAME" /> e todos os apps e sites com as permissões de câmera e microfone. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Não foi possível verificar sua senha. Tente de novo.</translation>
@@ -1214,6 +1215,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6154006699632741460">Periférico não compatível</translation>
 <translation id="6156960295318603523">Configurações de idioma</translation>
 <translation id="615957422585914272">Mostrar teclado na tela</translation>
+<translation id="616543563528926612">O atalho de clicar com o botão direito do mouse era <ph name="LAUNCHER_KEY_NAME" /> + clique e foi atualizado para alt + clique</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6166852626429024716">Pesquisar no dispositivo, em apps, nas configurações, na Web…</translation>
 <translation id="6168318496333165060">Abrir o app Diagnóstico</translation>
@@ -1501,6 +1503,7 @@ Nova instalação</translation>
 <translation id="7497767806359279797">Escolher idioma e teclado</translation>
 <translation id="7508690557411636492">Aberto no último mês</translation>
 <translation id="7509246181739783082">Verificar sua identidade</translation>
+<translation id="7512509370370076552">O atalho de clicar com o botão direito do mouse era alt + clique e foi atualizado para <ph name="LAUNCHER_KEY_NAME" /> + clique</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, não selecionado</translation>
 <translation id="7513622367902644023">Modo de captura de tela selecionado</translation>
 <translation id="7513922695575567867">Agenda, semana de <ph name="DATE" />, o dia <ph name="SELECTED_DATE" /> está selecionado.</translation>
@@ -1604,6 +1607,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7904094684485781019">O administrador desta conta bloqueou o login múltiplo.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivos conectados</translation>
+<translation id="7926080067315048321">Mostrar todas as tarefas no Google Tarefas na Web</translation>
 <translation id="7930731167419639574">As falas agora são processadas localmente, e o Ditado funciona off-line</translation>
 <translation id="7932451802722951285">Abrir no Google Agenda</translation>
 <translation id="7933084174919150729">O Google Assistente só está disponível para o perfil principal.</translation>

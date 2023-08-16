@@ -1086,6 +1086,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Cambiámoste a unha rede mellor</translation>
 <translation id="5619862035903135339">A política do administrador desactivou o modo de captura de pantalla</translation>
+<translation id="5620856676199877916">Ver todos os traballos da clase no sitio web de Google Classroom</translation>
 <translation id="5620979661744857819">Desta forma, <ph name="APP_NAME" /> e todas as aplicacións e sitios web que teñan permisos de cámara e micrófono poderán acceder. É posible que teñas que actualizar a páxina web ou reiniciar a aplicación.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Non se puido verificar o teu contrasinal. Téntao de novo.</translation>
@@ -1215,6 +1216,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6154006699632741460">O periférico non é compatible</translation>
 <translation id="6156960295318603523">Configuración de idioma</translation>
 <translation id="615957422585914272">Mostrar teclado en pantalla</translation>
+<translation id="616543563528926612">O atallo para facer clic co botón dereito actualizouse de tecla do <ph name="LAUNCHER_KEY_NAME" /> + clic a Alt + clic</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6166852626429024716">Realiza buscas no teu dispositivo, nas aplicacións, nas opcións de configuración, na Web…</translation>
 <translation id="6168318496333165060">Abre a aplicación Diagnostics</translation>
@@ -1502,6 +1504,7 @@ Nova instalación</translation>
 <translation id="7497767806359279797">Escoller idioma e teclado</translation>
 <translation id="7508690557411636492">Abriuse durante o último mes</translation>
 <translation id="7509246181739783082">Verifica a túa identidade</translation>
+<translation id="7512509370370076552">O atallo para facer clic co botón dereito actualizouse de Alt + clic a tecla do <ph name="LAUNCHER_KEY_NAME" /> + clic</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, botón non seleccionado</translation>
 <translation id="7513622367902644023">Seleccionouse o modo de captura de pantalla</translation>
 <translation id="7513922695575567867">Calendario, semana do <ph name="DATE" />; nestes momentos está seleccionada a data <ph name="SELECTED_DATE" />.</translation>
@@ -1605,6 +1608,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7904094684485781019">O administrador desta conta non permitiu o inicio de sesión múltiple.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivos conectados</translation>
+<translation id="7926080067315048321">Ver na Web todas as tarefas de Tarefas de Google</translation>
 <translation id="7930731167419639574">O que se diga procésase de xeito local e o ditado funciona sen conexión</translation>
 <translation id="7932451802722951285">Abrir en Google Calendar</translation>
 <translation id="7933084174919150729">O Asistente de Google só está dispoñible para o perfil principal.</translation>

@@ -347,6 +347,7 @@
 <translation id="1668071460721346172">接收电子邮件</translation>
 <translation id="1671391448414634642">从现在开始，<ph name="SOURCE_LANGUAGE" />网页一律会被翻译成<ph name="TARGET_LANGUAGE" />。</translation>
 <translation id="1674504678466460478">从<ph name="SOURCE_LANGUAGE" />到<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">被您访问过且发生了<ph name="BEGIN_LINK" />旧版技术事件<ph name="END_LINK" />的部分网页网址的列表。</translation>
 <translation id="1682696192498422849">短边先入</translation>
 <translation id="168693727862418163">此政策值未能根据其架构进行验证，因此会被忽略。</translation>
 <translation id="168841957122794586">服务器证书包含弱加密密钥。</translation>
@@ -2613,7 +2614,6 @@
 <translation id="6573200754375280815">双孔（右侧）</translation>
 <translation id="6578434528542148658">扩展程序 ID 无效。</translation>
 <translation id="657902945730878902">绘画与着色</translation>
-<translation id="6579630537141957243">连接 MIDI 设备？</translation>
 <translation id="6579858392010591435">假日和节庆活动</translation>
 <translation id="6579990219486187401">浅粉色</translation>
 <translation id="6581831440014388355">脱毛</translation>

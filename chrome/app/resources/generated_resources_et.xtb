@@ -1748,6 +1748,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2369058545741334020">Ava lugemisrežiimis</translation>
 <translation id="236939127352773362">Kui seadmed läheduses jagavad</translation>
 <translation id="2371076942591664043">Ava, kui on &amp;valmis</translation>
+<translation id="237336063998926520">Asukoha määramiseks IP-aadressi kasutamine</translation>
 <translation id="2373666622366160481">Sobita paberilehele</translation>
 <translation id="2375406435414127095">Looge ühendus telefoniga</translation>
 <translation id="2376056713414548745">Ettelugemine</translation>
@@ -7712,6 +7713,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7396017167185131589">Jagatud kaustad kuvatakse siin</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> käivitub süsteemi käivitamisel ja jätkab tööd taustal ka siis, kui sulgete kõik muud rakenduse <ph name="PRODUCT_NAME" /> aknad.</translation>
 <translation id="7399045143794278225">Kohanda sünkroonimist</translation>
+<translation id="7399616692258236448">Asukohapäringud blokeeritakse automaatselt kõigi saitide, välja arvatud lubatud saitide puhul</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Kas muuta tagasi teenusepakkujale <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Seadistage ühendus seadmes <ph name="PHONE_NAME" /></translation>
@@ -8983,7 +8985,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Lubatud on <ph name="PERMISSION" /> ja veel <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Kas soovite aktiveerida Chrome OS-i sisseehitatud ekraanilugeja ChromeVox?</translation>
-<translation id="8414065061814811918">Kerimise kiirendus. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Mälestused on kaheks päevaks peidetud</translation>
 <translation id="8414396119627470038">Logige saidile <ph name="SITE_ETLD_PLUS_ONE" /> sisse teenusega <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Märkmed</translation>
@@ -9666,6 +9667,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="8986494364107987395">Saada kasutusstatistika ja krahhiaruanded automaatselt Google'ile</translation>
 <translation id="8987305927843254629">Iga inimene saab oma kasutuskogemuse isikupärastada ja andmed privaatsena hoida.</translation>
 <translation id="8987927404178983737">kuu</translation>
+<translation id="8988539543012086784">See leht on salvestatud kausta <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Värskenda jagamise olekut</translation>
 <translation id="8991520179165052608">Sait saab kasutada teie mikrofoni</translation>
 <translation id="8991694323904646277">Kaamerat pole</translation>

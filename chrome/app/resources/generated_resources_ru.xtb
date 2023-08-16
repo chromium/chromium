@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Шифрование данных</translation>
 <translation id="1072700771426194907">Обнаружено USB-устройство</translation>
 <translation id="107278043869924952">Использовать PIN-код вместе с паролем</translation>
+<translation id="107450319332239199">Произошла ошибка. Откройте окна вручную.</translation>
 <translation id="1076176485976385390">Навигация по страницам с помощью курсора</translation>
 <translation id="1076382954055048850">Показать другие сеансы трансляции</translation>
 <translation id="1076698951459398590">Включить тему</translation>
@@ -1744,6 +1745,7 @@
 <translation id="2369058545741334020">Открыть в Режиме чтения</translation>
 <translation id="236939127352773362">Когда устройства поблизости могут обмениваться контентом</translation>
 <translation id="2371076942591664043">Открыть по &amp;завершении</translation>
+<translation id="237336063998926520">Определение местоположения по вашему IP-адресу</translation>
 <translation id="2373666622366160481">По размеру бумаги</translation>
 <translation id="2375406435414127095">Настройте подключение к телефону</translation>
 <translation id="2376056713414548745">Читать вслух</translation>
@@ -7714,6 +7716,7 @@
 <translation id="7396017167185131589">Здесь будут появляться общие папки.</translation>
 <translation id="7396845648024431313">Приложение <ph name="APP_NAME" /> будет запущено при старте системы и продолжит работу в фоновом режиме даже после закрытия всех окон <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Настроить синхронизацию</translation>
+<translation id="7399616692258236448">Запросы местоположения автоматически блокируются от всех сайтов, кроме тех, которым вы дали разрешение.</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Вернуться к поисковой системе "<ph name="OLD_SEARCH_PROVIDER" />"?</translation>
 <translation id="7400839060291901923">Настройте соединение на устройстве <ph name="PHONE_NAME" /></translation>
@@ -8984,7 +8987,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Предоставлены разрешения: <ph name="PERMISSION" /> и ещё <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Включить встроенную в Chrome OS программу чтения с экрана ChromeVox?</translation>
-<translation id="8414065061814811918">Ускорение прокрутки. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Воспоминания скрыты на два дня.</translation>
 <translation id="8414396119627470038">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с учетными данными <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Примечания</translation>
@@ -9670,9 +9672,11 @@
 <translation id="8986494364107987395">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
 <translation id="8987305927843254629">У каждого пользователя будет возможность персонализировать устройство и обеспечить конфиденциальность своих данных.</translation>
 <translation id="8987927404178983737">Месяц</translation>
+<translation id="8988539543012086784">Страница сохранена в папку "<ph name="BOOKMARK_FOLDER" />".</translation>
 <translation id="8989359959810288806">Обновить статус режима модема</translation>
 <translation id="8991520179165052608">Сайт может использовать микрофон</translation>
 <translation id="8991694323904646277">Камера недоступна</translation>
+<translation id="8991766915726096402">Восстановление локальных данных</translation>
 <translation id="8992671062738341478">Вкладка "<ph name="WINDOW_TITLE" />" использует <ph name="MEMORY_VALUE" /> памяти</translation>
 <translation id="8993059306046735527">Даже если вы забыли пароль для устройства <ph name="DEVICE_TYPE" />, локальные данные можно восстановить. Для этого потребуется войти в аккаунт Google или восстановить доступ к нему.</translation>
 <translation id="8993737615451556423">Использовать элементы управления, которые позволяют ускорять, замедлять и приостанавливать озвучивание</translation>

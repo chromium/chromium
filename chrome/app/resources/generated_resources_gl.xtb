@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Codificación de datos</translation>
 <translation id="1072700771426194907">Detectouse un dispositivo USB</translation>
 <translation id="107278043869924952">Usar PIN ademais do contrasinal</translation>
+<translation id="107450319332239199">Produciuse un erro. Abre as ventás de forma manual.</translation>
 <translation id="1076176485976385390">Navegar por páxinas cun cursor de texto</translation>
 <translation id="1076382954055048850">Mostrar outras sesións de emisión de contido</translation>
 <translation id="1076698951459398590">Activar tema</translation>
@@ -1741,6 +1742,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2369058545741334020">Abrir en modo de lectura</translation>
 <translation id="236939127352773362">Cando haxa dispositivos preto que compartan contido</translation>
 <translation id="2371076942591664043">Abrir ao fi&amp;nalizar</translation>
+<translation id="237336063998926520">Utilizar o enderezo IP para determinar a localización</translation>
 <translation id="2373666622366160481">Axustar ao papel</translation>
 <translation id="2375406435414127095">Conectarse ao teléfono</translation>
 <translation id="2376056713414548745">Ler en voz alta</translation>
@@ -7704,6 +7706,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7396017167185131589">Os cartafoles compartidos aparecerán aquí</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> empezará a executarse cando se inicie o sistema e seguirá executándose en segundo plano aínda que peches todas as demais ventás de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizar sincronización</translation>
+<translation id="7399616692258236448">Bloquéanse automaticamente as solicitudes de localización para todos os sitios, excepto para os que permitas</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Queres volver cambiar ao provedor <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Configura a conexión no teléfono <ph name="PHONE_NAME" /></translation>
@@ -8974,7 +8977,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Permitíronse os seguintes permisos: <ph name="PERMISSION" /> e <ph name="COUNT" /> máis</translation>
 <translation id="8413956290606243087">Queres activar ChromeVox, o lector de pantalla integrado en Chrome OS?</translation>
-<translation id="8414065061814811918">Aceleración do desprazamento. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Ocultáronse as lembranzas durante dous días</translation>
 <translation id="8414396119627470038">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Notas</translation>
@@ -9657,9 +9659,11 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8986494364107987395">Enviar estatísticas de uso e informes de erros a Google automaticamente</translation>
 <translation id="8987305927843254629">Cada persoa pode personalizar a súa experiencia e protexer a privacidade dos seus datos.</translation>
 <translation id="8987927404178983737">Mes</translation>
+<translation id="8988539543012086784">Gardouse esta páxina en <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Actualizar estado da conexión compartida</translation>
 <translation id="8991520179165052608">O sitio pode usar o teu micrófono</translation>
 <translation id="8991694323904646277">Non hai ningunha cámara conectada</translation>
+<translation id="8991766915726096402">Recuperación de datos locais</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Uso da memoria - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Aínda que esqueceras o contrasinal de <ph name="DEVICE_TYPE" />, podes restaurar os teus datos locais igualmente. Terás que iniciar sesión coa túa Conta de Google ou usar a recuperación da conta.</translation>
 <translation id="8993737615451556423">Ofrece controis para aumentar e reducir a velocidade de lectura, así como para poñer a voz en pausa</translation>

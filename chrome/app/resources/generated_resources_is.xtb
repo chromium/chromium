@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Gagnadulritun</translation>
 <translation id="1072700771426194907">USB-tæki greint</translation>
 <translation id="107278043869924952">Nota PIN-númer til viðbótar við aðgangsorð</translation>
+<translation id="107450319332239199">Eitthvað fór úrskeiðis. Opnaðu gluggana handvirkt í staðinn.</translation>
 <translation id="1076176485976385390">Skoða síður með textabendli</translation>
 <translation id="1076382954055048850">Sýna aðrar útsendingarlotur</translation>
 <translation id="1076698951459398590">Virkja þema</translation>
@@ -1758,6 +1759,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2369058545741334020">Opna í lesstillingu</translation>
 <translation id="236939127352773362">Þegar nálæg tæki eru að deila</translation>
 <translation id="2371076942591664043">Opna að þessu loknu</translation>
+<translation id="237336063998926520">Nota IP-töluna þína til að ákvarða staðsetningu</translation>
 <translation id="2373666622366160481">Laga að pappír</translation>
 <translation id="2375406435414127095">Tengstu við símann þinn</translation>
 <translation id="2376056713414548745">Lesa upphátt</translation>
@@ -7724,6 +7726,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7396017167185131589">Sameiginlegar möppur birtast hér</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> verður opnað þegar kerfið er ræst og heldur áfram að keyra í bakgrunni, jafnvel þegar þú hefur lokað öllum öðrum <ph name="PRODUCT_NAME" /> gluggum.</translation>
 <translation id="7399045143794278225">Sérvalin samstilling</translation>
+<translation id="7399616692258236448">Sjálfkrafa er lokað á staðsetningarbeiðnir fyrir öll vefsvæði nema þau sem þú hefur gefið leyfi</translation>
 <translation id="7400418766976504921">Vefslóð</translation>
 <translation id="7400447915166857470">Viltu skipta aftur yfir í <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Settu upp tengingu í <ph name="PHONE_NAME" /></translation>
@@ -8994,7 +8997,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Leyfði <ph name="PERMISSION" /> og <ph name="COUNT" /> í viðbót</translation>
 <translation id="8413956290606243087">Viltu kveikja á ChromeVox sem er innbyggður skjálesari fyrir ChromeOS?</translation>
-<translation id="8414065061814811918">Flettihröðun. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Minningar faldar í tvo daga</translation>
 <translation id="8414396119627470038">Skráðu þig inn á <ph name="SITE_ETLD_PLUS_ONE" /> með <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Glósur</translation>
@@ -9678,9 +9680,11 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8986494364107987395">Senda sjálfkrafa talnagögn um notkun og tilkynningar um hrun til Google</translation>
 <translation id="8987305927843254629">Hver einstaklingur getur sérsniðið upplifun sína og haldið gögnunum sínum lokuðum.</translation>
 <translation id="8987927404178983737">Mánuður</translation>
+<translation id="8988539543012086784">Þessi síða var vistuð í <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Endurnýja tjóðrunarstöðu</translation>
 <translation id="8991520179165052608">Vefsvæði getur notað hljóðnemann þinn</translation>
 <translation id="8991694323904646277">Engin myndavél</translation>
+<translation id="8991766915726096402">Endurheimt staðbundinna gagna</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Minnisnotkun - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Ef þú gleymir aðgangsorðinu að <ph name="DEVICE_TYPE" /> geturðu samt sem áður endurheimt staðbundin gögn. Þú þarft að skrá þig inn á Google-reikninginn þinn eða nota endurheimt reiknings.</translation>
 <translation id="8993737615451556423">Notað til að hraða, hægja á og gera hlé á talröddinni</translation>

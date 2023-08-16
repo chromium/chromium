@@ -1760,6 +1760,7 @@
 <translation id="2369058545741334020">Відкрити в режимі читання</translation>
 <translation id="236939127352773362">Коли пристрої поблизу передають дані</translation>
 <translation id="2371076942591664043">Відкрити коли &amp;виконано</translation>
+<translation id="237336063998926520">Використовуйте свою IP адресу, щоб визначити місцезнаходження</translation>
 <translation id="2373666622366160481">За розміром паперу</translation>
 <translation id="2375406435414127095">Підключіться до телефона</translation>
 <translation id="2376056713414548745">Читати вголос</translation>
@@ -8998,7 +8999,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Дозволено: <ph name="PERMISSION" /> і ще <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome?</translation>
-<translation id="8414065061814811918">Прискорення прокручування. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Спогади приховано на два дні</translation>
 <translation id="8414396119627470038">Увійдіть на сайт <ph name="SITE_ETLD_PLUS_ONE" /> з обліковими даними <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Примітки</translation>

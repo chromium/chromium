@@ -1757,6 +1757,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2369058545741334020">Mở ở chế độ đọc</translation>
 <translation id="236939127352773362">Khi các thiết bị ở gần đang chia sẻ</translation>
 <translation id="2371076942591664043">Mở khi &amp;hoàn tất</translation>
+<translation id="237336063998926520">Sử dụng địa chỉ IP của bạn để xác định vị trí</translation>
 <translation id="2373666622366160481">Vừa với giấy</translation>
 <translation id="2375406435414127095">Kết nối với điện thoại của bạn</translation>
 <translation id="2376056713414548745">Đọc to</translation>
@@ -8994,7 +8995,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Đã cho phép <ph name="PERMISSION" /> và <ph name="COUNT" /> quyền khác</translation>
 <translation id="8413956290606243087">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS) không?</translation>
-<translation id="8414065061814811918">Tăng tốc độ cuộn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Đã ẩn Kỷ niệm trong hai ngày</translation>
 <translation id="8414396119627470038">Đăng nhập vào <ph name="SITE_ETLD_PLUS_ONE" /> bằng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Ghi chú</translation>

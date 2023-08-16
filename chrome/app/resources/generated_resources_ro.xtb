@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Cifrare de date</translation>
 <translation id="1072700771426194907">S-a detectat un dispozitiv USB</translation>
 <translation id="107278043869924952">Folosește codul PIN pe lângă parolă</translation>
+<translation id="107450319332239199">A apărut o eroare. Deschide manual ferestrele.</translation>
 <translation id="1076176485976385390">Navighează în pagini folosind cursorul pentru text</translation>
 <translation id="1076382954055048850">Afișează alte sesiuni Cast</translation>
 <translation id="1076698951459398590">Activează tema</translation>
@@ -1743,6 +1744,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2369058545741334020">Deschide în modul de citire</translation>
 <translation id="236939127352773362">Când există dispozitive în apropiere care trimit fișiere</translation>
 <translation id="2371076942591664043">Deschide când s-a &amp;descărcat</translation>
+<translation id="237336063998926520">Folosește adresa IP pentru a detecta locația</translation>
 <translation id="2373666622366160481">Potrivește în funcție de dimensiunile hârtiei</translation>
 <translation id="2375406435414127095">Conectează-te la telefon</translation>
 <translation id="2376056713414548745">Citește cu voce tare</translation>
@@ -8980,7 +8982,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Permisiuni acordate: <ph name="PERMISSION" /> și încă <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Vrei să activezi ChromeVox, cititorul de ecran încorporat pentru sistemul de operare Chrome?</translation>
-<translation id="8414065061814811918">Accelerare de derulare. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Amintirile sunt ascunse timp de două zile</translation>
 <translation id="8414396119627470038">Conectează-te la <ph name="SITE_ETLD_PLUS_ONE" /> de pe <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Note</translation>
@@ -9667,6 +9668,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8989359959810288806">Actualizează starea tetheringului</translation>
 <translation id="8991520179165052608">Site-ul poate folosi microfonul</translation>
 <translation id="8991694323904646277">Nicio cameră foto</translation>
+<translation id="8991766915726096402">Recuperarea datelor locale</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> – Utilizarea memoriei – <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Dacă uiți parola <ph name="DEVICE_TYPE" />, poți restabili datele locale. Va trebui să te conectezi la Contul Google sau să folosești recuperarea contului.</translation>
 <translation id="8993737615451556423">Oferă comenzi pentru accelerarea, încetinirea și întreruperea vocii care citește</translation>

@@ -347,7 +347,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1668071460721346172">Dobijte e-poruku</translation>
 <translation id="1671391448414634642">Stranice na jeziku <ph name="SOURCE_LANGUAGE" /> od sada će se prevoditi na jezik <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> na <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Ograničeni popis URL-ova stranica koje posjećujete na kojima se odvijaju <ph name="BEGIN_LINK" />događaji naslijeđene tehnologije<ph name="END_LINK" />.</translation>
+<translation id="1674542638006317838">Ograničena lista URL-ova stranica koje posjećujete na kojima se odvijaju <ph name="BEGIN_LINK" />događaji starije tehnologije<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Najprije kratka strana</translation>
 <translation id="168693727862418163">Vrijednost ovog pravila u odnosu na njegovu šemu nije potvrđena pa će biti zanemareno.</translation>
 <translation id="168841957122794586">Potvrda servera sadrži slab kriptografski ključ.</translation>
@@ -2620,7 +2620,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6573200754375280815">Dvostruko bušenje na desnoj strani</translation>
 <translation id="6578434528542148658">Nevažeći ID ekstenzije.</translation>
 <translation id="657902945730878902">Crtanje i bojenje</translation>
-<translation id="6579630537141957243">Povezati MIDI uređaj?</translation>
 <translation id="6579858392010591435">Praznici i sezonski događaji</translation>
 <translation id="6579990219486187401">Svijetlo ružičasta</translation>
 <translation id="6581831440014388355">Uklanjanje neželjenih dlačica s tijela i lica</translation>

@@ -35,6 +35,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1150263420752757504"><ph name="APP_NAME" /> öppnas i Chrome. Genom att fortsätta godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Ändra namn</translation>
 <translation id="1177863135347784049">Anpassat</translation>
+<translation id="1178581264944972037">Paus</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1181366777303791449">på <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Vill du använda ett starkt lösenord?</translation>
@@ -1097,6 +1098,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6770042910635026163">Webbplatser du besöker som definierar intressen</translation>
 <translation id="6770602306803890733">Förbättrar säkerheten för dig och alla andra på webben</translation>
 <translation id="6785476624617658922">Ytterligare villkor för Chrome och Chrome OS</translation>
+<translation id="6790428901817661496">Spela</translation>
 <translation id="6795633245022906657">Öppna en ny flik snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>
 <translation id="6802555630140434547">Fönstret stängs</translation>
 <translation id="6811034713472274749">Sidan är klar att öppna</translation>
@@ -1221,7 +1223,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7431991332293347422">Styr hur webbhistoriken får användas för att anpassa Sök med mera</translation>
 <translation id="7435356471928173109">Inaktiverat av administratören</translation>
 <translation id="7437998757836447326">Logga ut från Chrome</translation>
-<translation id="7443901082822119557">I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplatser med hjälp av cookies, för att till exempel anpassa annonser. Funktioner på vissa webbplatser kan sluta fungera.</translation>
 <translation id="7453467225369441013">Du loggas ut från de flesta webbplatser. Du loggas inte ut från Google-kontot.</translation>
 <translation id="7453810262525006706">Komprimera till sidovy</translation>
 <translation id="7454641608352164238">Utrymmet räcker inte</translation>
@@ -1338,7 +1339,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="799576009106109668">Du surfar snabbare eftersom innehåll läses in proaktivt baserat på den webbsida du besöker för tillfället</translation>
 <translation id="7998918019931843664">Öppna en stängd flik på nytt</translation>
 <translation id="8004582292198964060">Webbläsare</translation>
-<translation id="8006818846907410687">Blockera i inkognitoläget</translation>
 <translation id="8013372441983637696">Rensa även Chrome-data från enheten</translation>
 <translation id="8015452622527143194">Återställ allt på sidan till standardstorlek</translation>
 <translation id="8026334261755873520">Rensa webbinformation</translation>

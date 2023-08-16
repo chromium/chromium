@@ -1757,6 +1757,7 @@
 <translation id="2369058545741334020">வாசிப்புப் பயன்முறையில் திற</translation>
 <translation id="236939127352773362">பகிர முயலும் சாதனங்கள் அருகில் இருக்கும்போது</translation>
 <translation id="2371076942591664043">&amp;முடிந்ததும் திற</translation>
+<translation id="237336063998926520">இருப்பிடத்தைத் தீர்மானிக்க, உங்கள் IP முகவரியைப் பயன்படுத்தவும்</translation>
 <translation id="2373666622366160481">பேப்பரின் அளவிற்குப் பொருத்து</translation>
 <translation id="2375406435414127095">உங்கள் ஃபோனுடன் இணைத்தல்</translation>
 <translation id="2376056713414548745">உரக்கப் படித்தல்</translation>
@@ -7723,6 +7724,7 @@
 <translation id="7396017167185131589">பகிரப்பட்ட ஃபோல்டர்கள் இங்கே தோன்றும்</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ஆனது முறைமை தொடக்கத்தின்போதே தொடங்கப்படும், மேலும் நீங்கள் பிற <ph name="PRODUCT_NAME" /> சாளரங்களை மூடி விட்டாலும் கூட பின்னணியில் தொடர்ந்து இயங்கும்.</translation>
 <translation id="7399045143794278225">ஒத்திசைவைப் பிரத்தியேகமாக்கு</translation>
+<translation id="7399616692258236448">நீங்கள் அனுமதிக்கும் தளங்களைத் தவிர பிற தளங்கள் அனைத்திற்கும் இருப்பிடக் கோரிக்கைகள் தானாகவே முடக்கப்படும்</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470"><ph name="OLD_SEARCH_PROVIDER" />க்கு மீண்டும் மாற்றவா?</translation>
 <translation id="7400839060291901923"><ph name="PHONE_NAME" /> இல் இணைப்பை அமைக்கவும்</translation>
@@ -8994,7 +8996,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" />, மேலும் <ph name="COUNT" /> அனுமதிகள் வழங்கப்பட்டுள்ளன</translation>
 <translation id="8413956290606243087">ChromeOSஸுக்கான ChromeVox எனும் உள்ளமைந்த ஸ்கிரீன் ரீடரை இயக்க விரும்புகிறீர்களா?</translation>
-<translation id="8414065061814811918">ஸ்க்ரோல் ஆக்ஸிலரேஷன். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">இரண்டு நாட்களுக்கு நினைவுகள் மறைக்கப்பட்டுள்ளன</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இல் உள்நுழையுங்கள்</translation>
 <translation id="8414685983518053656">குறிப்புகள்</translation>
@@ -9677,6 +9678,7 @@
 <translation id="8986494364107987395">பயன்பாட்டுப் புள்ளிவிவரங்களையும் சிதைவு அறிக்கைகளையும் தானாகவே Google க்கு அனுப்பு</translation>
 <translation id="8987305927843254629">ஒவ்வொருவரும் தங்களது அனுபவத்தைப் பிரத்தியேகமாக்கலாம், தரவைத் தனிப்பட்டதாக வைத்துக்கொள்ளலாம்.</translation>
 <translation id="8987927404178983737">மாதம்</translation>
+<translation id="8988539543012086784">இந்தப் பக்கம் <ph name="BOOKMARK_FOLDER" /> இல் சேமிக்கப்பட்டுள்ளது</translation>
 <translation id="8989359959810288806">இணைப்புமுறையின் நிலையைப் ரெஃப்ரெஷ் செய்</translation>
 <translation id="8991520179165052608">தளத்தால் உங்கள் மைக்ரோஃபோனைப் பயன்படுத்த முடியும்</translation>
 <translation id="8991694323904646277">கேமரா இல்லை</translation>

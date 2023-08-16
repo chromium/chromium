@@ -2031,6 +2031,7 @@
 <translation id="5296589789433599000">요리 및 조리법</translation>
 <translation id="5299298092464848405">정책을 파싱하는 중 오류 발생</translation>
 <translation id="5299638840995777423">로봇 공학</translation>
+<translation id="5300062471671636390">전송 기기 목록 숨기기</translation>
 <translation id="5300589172476337783">표시</translation>
 <translation id="5306593769196050043">모든 시트</translation>
 <translation id="5307166000025436103">확인</translation>
@@ -2618,7 +2619,6 @@
 <translation id="6573200754375280815">오른쪽 2공 펀칭</translation>
 <translation id="6578434528542148658">확장 프로그램 ID가 잘못되었습니다.</translation>
 <translation id="657902945730878902">그리기 및 색칠하기</translation>
-<translation id="6579630537141957243">MIDI 기기에 연결하시겠습니까?</translation>
 <translation id="6579858392010591435">공휴일 및 시즌 이벤트</translation>
 <translation id="6579990219486187401">연한 분홍색</translation>
 <translation id="6581831440014388355">제모</translation>
@@ -3494,6 +3494,7 @@
 <translation id="8368027906805972958">알 수 없거나 지원되지 않는 기기(<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play 서비스</translation>
 <translation id="8369073279043109617">새 코드 받기</translation>
+<translation id="8371841335382565017">전송 기기 목록 표시</translation>
 <translation id="8371889962595521444">맞춤 루트 인증서</translation>
 <translation id="8374636051559112948">다양함</translation>
 <translation id="8378714024927312812">조직에서 관리</translation>

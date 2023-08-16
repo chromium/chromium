@@ -348,6 +348,7 @@
 <translation id="1668071460721346172">ទទួល​អ៊ីមែល</translation>
 <translation id="1671391448414634642">ទំព័រជា <ph name="SOURCE_LANGUAGE" /> នឹងត្រូវបាន​បកប្រែទៅជា <ph name="TARGET_LANGUAGE" /> ចាប់ពី​ពេលនេះតទៅ។</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ទៅ <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">បញ្ជី URL ទំព័រមួយចំនួនតូច​ដែលអ្នក​ចូលទៅកាន់ដែល<ph name="BEGIN_LINK" />ព្រឹត្តិការណ៍​បច្ចេកវិទ្យាចាស់<ph name="END_LINK" />កំពុង​កើតឡើង។</translation>
 <translation id="1682696192498422849">គែមខ្លី​មុនគេ</translation>
 <translation id="168693727862418163">តម្លៃគោលការណ៍នេះមិនត្រូវនឹងគំនូស​តាងរបស់វាទេ ហើយនឹងមិនត្រូវបានអើពើទេ។</translation>
 <translation id="168841957122794586">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេផ្ទុកសោគ្រីបខ្សោយ។</translation>
@@ -2036,6 +2037,7 @@
 <translation id="5296589789433599000">ការធ្វើម្ហូប និង​រូបមន្ត</translation>
 <translation id="5299298092464848405">កំហុសឆ្គងគោលការណ៍ការវិភាគ</translation>
 <translation id="5299638840995777423">ការបង្កើត​មនុស្សយន្ត</translation>
+<translation id="5300062471671636390">លាក់​បញ្ជីឧបករណ៍​សម្រាប់​បញ្ជូន</translation>
 <translation id="5300589172476337783">បង្ហាញ</translation>
 <translation id="5306593769196050043">សន្លឹក​ទាំងពីរ</translation>
 <translation id="5307166000025436103">យល់ព្រម</translation>
@@ -2624,7 +2626,6 @@
 <translation id="6573200754375280815">ចោះ​ពីររន្ធ​ខាងស្ដាំ</translation>
 <translation id="6578434528542148658">លេខកូដសម្គាល់​កម្មវិធីបន្ថែម​មិនត្រឹមត្រូវទេ។</translation>
 <translation id="657902945730878902">គំនូរ និង​ការផាត់ពណ៌</translation>
-<translation id="6579630537141957243">ភ្ជាប់ឧបករណ៍ MIDI ឬ?</translation>
 <translation id="6579858392010591435">ព្រឹត្តិការណ៍​តាមរដូវកាល និង​ថ្ងៃឈប់សម្រាក</translation>
 <translation id="6579990219486187401">ផ្កាឈូកខ្ចី</translation>
 <translation id="6581831440014388355">ការសម្អាត​រោមមុខ និងខ្លួន​ដែលមិនចង់បាន</translation>
@@ -3503,6 +3504,7 @@
 <translation id="8368027906805972958">ឧបករណ៍ដែល​មិនស្គាល់ ឬ​មិនអាច​ប្រើបាន (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">សេវាកម្ម Google Play</translation>
 <translation id="8369073279043109617">យកលេខកូដថ្មី</translation>
+<translation id="8371841335382565017">បង្ហាញ​បញ្ជីឧបករណ៍​សម្រាប់​បញ្ជូន</translation>
 <translation id="8371889962595521444">វិញ្ញាបនបត្រគោល​ផ្ទាល់ខ្លួន</translation>
 <translation id="8374636051559112948">ខុស​គ្នា</translation>
 <translation id="8378714024927312812">គ្រប់គ្រងដោយ​ស្ថាប័ន​របស់អ្នក</translation>

@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Crittografia dati</translation>
 <translation id="1072700771426194907">È stato rilevato un dispositivo USB</translation>
 <translation id="107278043869924952">Usa il PIN oltre alla password</translation>
+<translation id="107450319332239199">Si è verificato un problema. Apri le finestre manualmente.</translation>
 <translation id="1076176485976385390">Spostati da una pagina all'altra con un cursore di testo</translation>
 <translation id="1076382954055048850">Mostra altre sessioni di trasmissione</translation>
 <translation id="1076698951459398590">Attiva tema</translation>
@@ -1742,6 +1743,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2369058545741334020">Apri in modalità Lettura</translation>
 <translation id="236939127352773362">Quando i dispositivi stanno usando Condivisione nelle vicinanze</translation>
 <translation id="2371076942591664043">Apri al &amp;termine</translation>
+<translation id="237336063998926520">Utilizza l'indirizzo IP per stabilire la posizione</translation>
 <translation id="2373666622366160481">Adatta a dimensioni del foglio</translation>
 <translation id="2375406435414127095">Collegati al telefono</translation>
 <translation id="2376056713414548745">Leggi ad alta voce</translation>
@@ -7703,6 +7705,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7396017167185131589">Le cartelle condivise verranno visualizzate qui</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> si attiverà all'avvio del sistema e continuerà a funzionare in background anche dopo la chiusura di tutte le altre finestre di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizza sincronizzazione</translation>
+<translation id="7399616692258236448">Le richieste di posizione vengono bloccate automaticamente per tutti i siti, tranne per quelli autorizzati da te</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Tornare a <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Configura la connessione sul tuo <ph name="PHONE_NAME" /></translation>
@@ -8974,7 +8977,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Autorizzazioni consentite: <ph name="PERMISSION" /> e altre <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Vuoi attivare ChromeVox, lo screen reader integrato per ChromeOS?</translation>
-<translation id="8414065061814811918">Accelerazione di scorrimento. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Ricordi nascosti per due giorni</translation>
 <translation id="8414396119627470038">Accedi a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Note</translation>
@@ -9657,9 +9659,11 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8986494364107987395">Invia automaticamente a Google statistiche sull'utilizzo e report sugli arresti anomali</translation>
 <translation id="8987305927843254629">Ogni persona può personalizzare la sua esperienza e mantenere privati i dati.</translation>
 <translation id="8987927404178983737">Mese</translation>
+<translation id="8988539543012086784">Questa pagina è salvata in: <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Aggiorna stato tethering</translation>
 <translation id="8991520179165052608">Il sito può usare il microfono</translation>
 <translation id="8991694323904646277">Nessuna fotocamera</translation>
+<translation id="8991766915726096402">Recupero dei dati locali</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Memoria utilizzata - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Se non ricordi la password di <ph name="DEVICE_TYPE" />, puoi comunque ripristinare i dati locali. Dovrai accedere al tuo Account Google o usare il recupero dell'account.</translation>
 <translation id="8993737615451556423">Offre controlli per velocizzare, rallentare e mettere in pausa la voce di lettura</translation>

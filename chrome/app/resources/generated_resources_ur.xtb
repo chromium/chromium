@@ -1745,6 +1745,7 @@
 <translation id="2369058545741334020">‏Reading Mode میں کھولیں</translation>
 <translation id="236939127352773362">آلات کے قریب میں اشتراک کرنے پر</translation>
 <translation id="2371076942591664043">&amp;مکمل ہو جانے پر کھولیں</translation>
+<translation id="237336063998926520">‏مقام کا تعین کرنے کے لیے اپنا IP پتہ استعمال کریں</translation>
 <translation id="2373666622366160481">کاغذ پر فٹ کریں</translation>
 <translation id="2375406435414127095">اپنے فون سے منسلک کریں</translation>
 <translation id="2376056713414548745">بلند آواز سے پڑھیں</translation>
@@ -7707,6 +7708,7 @@
 <translation id="7396017167185131589">اشتراک کردہ فولڈرز یہاں ظاہر ہوں گے</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> سسٹم اسٹارٹ اپ پر شروع ہوگا اور پس منظر میں چلتا رہے گا چاہے آپ نے سبھی دیگر <ph name="PRODUCT_NAME" /> ونڈوز کو بند کر دیا ہو۔</translation>
 <translation id="7399045143794278225">سنک کرنے کو حسب ضرورت بنائیں</translation>
+<translation id="7399616692258236448">مقام کی درخواستیں تمام سائٹس کے لیے خودکار طور پر مسدود ہو جاتی ہیں سوائے ان کے جن کی آپ نے اجازت دی ہے</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">واپس <ph name="OLD_SEARCH_PROVIDER" /> میں تبدیل کریں؟</translation>
 <translation id="7400839060291901923">اپنے <ph name="PHONE_NAME" /> پر کنکشن سیٹ اپ کریں</translation>
@@ -8977,7 +8979,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> اور مزید <ph name="COUNT" /> کی اجازت دی گئی</translation>
 <translation id="8413956290606243087">‏کیا آپ ChromeOS کے لئے پہلے سے موجود اسکرین ریڈر، ChromeVox کو فعال کرنا چاہتے ہیں؟</translation>
-<translation id="8414065061814811918">سکرول ایکسلریشن۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">دو دنوں کے لیے مخفی میموریز</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> میں سائن ان کریں</translation>
 <translation id="8414685983518053656">نوٹس</translation>
@@ -9660,6 +9661,7 @@
 <translation id="8986494364107987395">‏خود کار طریقے سے Google کو استعمال کے اعداد و شمار اور کریش کی رپورٹیں بھیجیں</translation>
 <translation id="8987305927843254629">ہر فرد اپنے تجربہ کو ذاتی نوعیت کا بنا سکتا ہے اور ڈیٹا کو نجی رکھ سکتا ہے۔</translation>
 <translation id="8987927404178983737">ماہ</translation>
+<translation id="8988539543012086784">یہ صفحہ <ph name="BOOKMARK_FOLDER" /> میں محفوظ ہے</translation>
 <translation id="8989359959810288806">ٹیدرنگ کی صورتحال کو ریفریش کریں</translation>
 <translation id="8991520179165052608">سائٹ آپ کا مائیکروفون استعمال کر سکتی ہے</translation>
 <translation id="8991694323904646277">کوئی کیمرا نہیں ہے</translation>

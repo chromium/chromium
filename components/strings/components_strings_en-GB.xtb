@@ -606,6 +606,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2225927550500503913">Virtual card turned on</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Signing in<ph name="END_LINK" /> to the Wi-Fi network</translation>
 <translation id="2228057197024893428">This address is currently saved to Chrome. To use it across Google products, save it in your Google Account, <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> will know that you visited <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Compact disc</translation>
 <translation id="2239100178324503013">Send now</translation>
 <translation id="2241693394036365668">File is downloaded</translation>
@@ -2093,6 +2094,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
 <translation id="5430298929874300616">Remove bookmark</translation>
 <translation id="5443468954631487277">Reverse order face up</translation>
+<translation id="5447235695608032700">Allow <ph name="SITE" /> to use info they've saved about you</translation>
 <translation id="5447765697759493033">This site will not be translated</translation>
 <translation id="5452270690849572955">This <ph name="HOST_NAME" /> page can’t be found</translation>
 <translation id="5455374756549232013">Bad policy timestamp</translation>
@@ -2620,7 +2622,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6573200754375280815">Dual punch right</translation>
 <translation id="6578434528542148658">Invalid extension ID.</translation>
 <translation id="657902945730878902">Drawing and colouring</translation>
-<translation id="6579630537141957243">Connect MIDI device?</translation>
 <translation id="6579858392010591435">Holidays and Seasonal Events</translation>
 <translation id="6579990219486187401">Light pink</translation>
 <translation id="6581831440014388355">Unwanted Body and Facial Hair Removal</translation>

@@ -1086,6 +1086,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5601503069213153581">PIN-kood</translation>
 <translation id="5618148318840095371">Ühendasime teid parema võrguga</translation>
 <translation id="5619862035903135339">Ekraanikuva jäädvustamine on administraatori eeskirjadega keelatud</translation>
+<translation id="5620856676199877916">Vaadake kõiki kursuse töid Google Classroomi veebisaidil</translation>
 <translation id="5620979661744857819">Sisselülitamisel antakse juurdepääsuluba rakendusele <ph name="APP_NAME" /> ning kõikidele kaamerale ja mikrofonile juurdepääsemise loaga rakendustele ning veebisaitidele. Võimalik, et peate veebilehte värskendama või rakenduse taaskäivitama.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Teie parooli ei õnnestunud kinnitada. Proovige uuesti.</translation>
@@ -1215,6 +1216,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6154006699632741460">Välisseadet ei toetata</translation>
 <translation id="6156960295318603523">Keeleseaded</translation>
 <translation id="615957422585914272">Ekraanil kuvatava klaviatuuri kuvamine</translation>
+<translation id="616543563528926612">Paremkliki otsetee klahvikombinatsioon klahv <ph name="LAUNCHER_KEY_NAME" /> + klikk asendatakse klahvikombinatsiooniga alt + klikk</translation>
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6166852626429024716">Otsige oma seadmest, rakendustest, seadetest, veebist …</translation>
 <translation id="6168318496333165060">Ava rakendus Diagnostika</translation>
@@ -1502,6 +1504,7 @@ Uus installimine</translation>
 <translation id="7497767806359279797">Valige keel ja klaviatuur</translation>
 <translation id="7508690557411636492">Avatud viimase kuu jooksul</translation>
 <translation id="7509246181739783082">Kinnitage oma isik</translation>
+<translation id="7512509370370076552">Paremkliki otsetee klahvikombinatsioon alt + klikk asendatakse klahvikombinatsiooniga klahv <ph name="LAUNCHER_KEY_NAME" /> + klikk</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, valimata</translation>
 <translation id="7513622367902644023">Valitud on ekraanipildirežiim</translation>
 <translation id="7513922695575567867">Kalender, kuupäeva <ph name="DATE" /> nädal, <ph name="SELECTED_DATE" /> on praegu valitud.</translation>
@@ -1605,6 +1608,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7904094684485781019">Selle konto administraator on mitmesse kontosse sisselogimise keelanud.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> seadet on ühendatud</translation>
+<translation id="7926080067315048321">Vaadake kõiki Google Tasksi ülesandeid veebis</translation>
 <translation id="7930731167419639574">Kõnet töödeldakse nüüd kohalikult ja dikteerimine töötab võrguühenduseta</translation>
 <translation id="7932451802722951285">Ava Google’i kalendris</translation>
 <translation id="7933084174919150729">Google'i assistent on saadaval ainult peamisel profiilil.</translation>

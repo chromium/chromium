@@ -35,6 +35,7 @@
 <translation id="1150263420752757504">‏<ph name="APP_NAME" /> در Chrome باز می‌شود. درصورت ادامه دادن، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و ChromeOS<ph name="END_LINK2" /> موافقت می‌کنید.</translation>
 <translation id="1173894706177603556">تغییر نام</translation>
 <translation id="1177863135347784049">سفارشی</translation>
+<translation id="1178581264944972037">مکث</translation>
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1181366777303791449">در <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">از گذرواژه قوی استفاده شود؟</translation>
@@ -1096,6 +1097,7 @@
 <translation id="6770042910635026163">سایت‌هایی که با بازدید از آن‌ها علایق شما تعریف می‌شود</translation>
 <translation id="6770602306803890733">امنیت را برای شما و همه کاربران دیگر وب بهبود می‌بخشد</translation>
 <translation id="6785476624617658922">‏شرایط خدمات تکمیلی Chrome و ChromeOS</translation>
+<translation id="6790428901817661496">پخش</translation>
 <translation id="6795633245022906657">به‌سرعت برگه جدیدی باز کنید. برای ویرایش این میان‌بر، به «تنظیمات» بروید.</translation>
 <translation id="6802555630140434547">این پنجره بسته خواهد شد</translation>
 <translation id="6811034713472274749">صفحه آماده مشاهده است</translation>
@@ -1220,7 +1222,6 @@
 <translation id="7431991332293347422">کنترل نحوه استفاده از سابقه مرور برای شخصی‌سازی «جستجو» و موارد دیگر</translation>
 <translation id="7435356471928173109">سرپرستتان آن را خاموش کرده است</translation>
 <translation id="7437998757836447326">‏خروج از سیستم Chrome</translation>
-<translation id="7443901082822119557">وقتی در «حالت ناشناس» هستید، سایت‌ها نمی‌توانند از کوکی‌هایتان برای دیدن فعالیت مرورتان در سایت‌های مختلف (مثلاً برای شخصی کردن آگهی‌ها) استفاده کنند. ویژگی‌ها ممکن است در برخی سایت‌ها کار نکنند.</translation>
 <translation id="7453467225369441013">‏شما را از سیستم اکثر سایت‌ها خارج می‌‌کند. از سیستم حساب Google خارج نمی‌شوید.</translation>
 <translation id="7453810262525006706">جمع کردن در نمای جانبی</translation>
 <translation id="7454641608352164238">فضای کافی وجود ندارد</translation>
@@ -1337,7 +1338,6 @@
 <translation id="799576009106109668">سریع‌تر مرور خواهید کرد چون محتوا به‌صورت پیش‌نگرانه براساس بازدید صفحه وب فعلی‌تان بار می‌شود</translation>
 <translation id="7998918019931843664">بازکردن مجدد برگه‌های بسته شده</translation>
 <translation id="8004582292198964060">مرورگر</translation>
-<translation id="8006818846907410687">هنگام استفاده از «حالت ناشناس» مسدود شود</translation>
 <translation id="8013372441983637696">‏داده‌های این Chrome هم از این دستگاه پاک شود</translation>
 <translation id="8015452622527143194">برگرداندن همه‌چیز در صفحه به‌اندازه پیش‌فرض</translation>
 <translation id="8026334261755873520">پاک کردن داده‌های مرور</translation>

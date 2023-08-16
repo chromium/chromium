@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Encriptació de dades</translation>
 <translation id="1072700771426194907">S'ha detectat un dispositiu USB</translation>
 <translation id="107278043869924952">Utilitza un PIN a més d'una contrasenya</translation>
+<translation id="107450319332239199">S'ha produït un error. Obre les finestres manualment.</translation>
 <translation id="1076176485976385390">Navega per les pàgines amb un cursor de text</translation>
 <translation id="1076382954055048850">Mostra altres sessions d'emissió</translation>
 <translation id="1076698951459398590">Activa el tema</translation>
@@ -1742,6 +1743,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2369058545741334020">Obre en mode de lectura</translation>
 <translation id="236939127352773362">Quan algun dispositiu estigui compartint contingut a prop</translation>
 <translation id="2371076942591664043">Obre quan &amp;acabi</translation>
+<translation id="237336063998926520">Utilitza la teva adreça IP per determinar la ubicació</translation>
 <translation id="2373666622366160481">Ajusta al paper</translation>
 <translation id="2375406435414127095">Connecta't al telèfon</translation>
 <translation id="2376056713414548745">Llegeix en veu alta</translation>
@@ -7704,6 +7706,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7396017167185131589">Les carpetes compartides es mostraran aquí</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> s'iniciarà quan s'iniciï el sistema i continuarà executant-se en segon pla, fins i tot quan hàgiu tancat la resta de finestres de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalitza la sincronització</translation>
+<translation id="7399616692258236448">Les sol·licituds d'ubicació es bloquegen automàticament en tots els llocs web, excepte els que permetis</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Vols tornar a utilitzar <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Configura la connexió al telèfon <ph name="PHONE_NAME" /></translation>
@@ -8976,7 +8979,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Permisos concedits: <ph name="PERMISSION" /> i <ph name="COUNT" /> més</translation>
 <translation id="8413956290606243087">Vols activar ChromeVox, el lector de pantalla integrat per a Chrome OS?</translation>
-<translation id="8414065061814811918">Acceleració de desplaçament. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Els records s'han amagat durant dos dies</translation>
 <translation id="8414396119627470038">Inicia la sessió a <ph name="SITE_ETLD_PLUS_ONE" /> amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Notes</translation>
@@ -9659,9 +9661,11 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8986494364107987395">Envia automàticament estadístiques d'ús i informes d'error a Google</translation>
 <translation id="8987305927843254629">Cada persona pot personalitzar la seva experiència i mantenir la privadesa de les dades.</translation>
 <translation id="8987927404178983737">Mes</translation>
+<translation id="8988539543012086784">Aquesta pàgina s'ha desat a <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Actualitza l'estat de la compartició de xarxa</translation>
 <translation id="8991520179165052608">El lloc web pot utilitzar el micròfon</translation>
 <translation id="8991694323904646277">Càmera no disponible</translation>
+<translation id="8991766915726096402">Recuperació de dades locals</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Ús de memòria - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Encara que oblidis la contrasenya del <ph name="DEVICE_TYPE" />, pots restaurar les dades locals. Hauràs d'iniciar la sessió al Compte de Google o utilitzar la recuperació del compte.</translation>
 <translation id="8993737615451556423">Proporciona controls per augmentar i reduir la velocitat de la veu de lectura o per posar-la en pausa</translation>

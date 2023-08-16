@@ -1735,6 +1735,7 @@
 <translation id="2369058545741334020">在朗读模式下打开</translation>
 <translation id="236939127352773362">当附近的设备正在分享内容时</translation>
 <translation id="2371076942591664043">完成时打开(&amp;D)</translation>
+<translation id="237336063998926520">根据您的 IP 地址确定位置</translation>
 <translation id="2373666622366160481">适合纸张大小</translation>
 <translation id="2375406435414127095">连接到您的手机</translation>
 <translation id="2376056713414548745">大声朗读</translation>
@@ -7692,6 +7693,7 @@
 <translation id="7396017167185131589">共享文件夹将会显示在此处</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> 会在系统启动时启动，即使您将其他所有 <ph name="PRODUCT_NAME" />窗口关闭，它也会继续在后台运行。</translation>
 <translation id="7399045143794278225">自定义同步</translation>
+<translation id="7399616692258236448">系统会自动屏蔽除您允许的网站之外的其他所有网站的位置信息请求</translation>
 <translation id="7400418766976504921">网址</translation>
 <translation id="7400447915166857470">改回 <ph name="OLD_SEARCH_PROVIDER" />？</translation>
 <translation id="7400839060291901923">请在您的 <ph name="PHONE_NAME" /> 设备上设置连接</translation>
@@ -8963,7 +8965,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">授予了“<ph name="PERMISSION" />”权限和另外 <ph name="COUNT" /> 项权限</translation>
 <translation id="8413956290606243087">您想为 Chrome 操作系统启用 ChromeVox（内置屏幕阅读器）吗？</translation>
-<translation id="8414065061814811918">滚动加速。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">回忆已设为隐藏两天</translation>
 <translation id="8414396119627470038">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">备注</translation>
@@ -9646,6 +9647,7 @@
 <translation id="8986494364107987395">将使用情况统计信息和崩溃报告自动发送给 Google</translation>
 <translation id="8987305927843254629">每个人都可对自己的体验进行个性化设置并确保数据的私密性。</translation>
 <translation id="8987927404178983737">月</translation>
+<translation id="8988539543012086784">此网页已保存到“<ph name="BOOKMARK_FOLDER" />”文件夹</translation>
 <translation id="8989359959810288806">刷新网络共享状态</translation>
 <translation id="8991520179165052608">该网站可能会使用您的麦克风</translation>
 <translation id="8991694323904646277">没有摄像头</translation>

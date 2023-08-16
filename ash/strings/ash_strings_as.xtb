@@ -1085,6 +1085,7 @@
 <translation id="5601503069213153581">পিন</translation>
 <translation id="5618148318840095371">আমি আপোনাক এটা উন্নত নেটৱৰ্কৰ সৈতে সংযুক্ত কৰিছোঁ</translation>
 <translation id="5619862035903135339">স্ক্ৰীন কেপচাৰ কৰাটো প্ৰশাসকৰ নীতিয়ে অক্ষম কৰে</translation>
+<translation id="5620856676199877916">Google Classroomৰ ৱেবছাইটত আটাইবোৰ শ্ৰেণীকাৰ্য চাওক</translation>
 <translation id="5620979661744857819">এইটোৱে <ph name="APP_NAME" /> তথা কেমেৰা আৰু মাইক্ৰ’ফ’নৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে এক্সেছৰ অনুমতি দিয়ে। আপুনি ৱেবপৃষ্ঠাখন ৰিফ্ৰেশ্ব কৰিব লাগিব পাৰে বা এপ্‌টো পুনৰাৰম্ভ কৰিব লাগিব পাৰে।</translation>
 <translation id="5625955975703555628">এলটিই+</translation>
 <translation id="5627392655516693966">আপোনাৰ পাছৱৰ্ডটো সত্যাপন কৰিব পৰা নগ‘ল। পুনৰ চেষ্টা কৰক।</translation>
@@ -1214,6 +1215,7 @@
 <translation id="6154006699632741460">আনুষংগিক সামগ্ৰী সমৰ্থিত নহয়</translation>
 <translation id="6156960295318603523">ভাষা ছেটিংসমূহ</translation>
 <translation id="615957422585914272">অন-স্ক্ৰীন কীব’ৰ্ড দেখুৱাওক</translation>
+<translation id="616543563528926612">ৰাইট-ক্লিক শ্বৰ্টকাটটো <ph name="LAUNCHER_KEY_NAME" /> কী + ক্লিকৰ পৰা alt + ক্লিকলৈ আপডে’ট কৰা হৈছে</translation>
 <translation id="6165508094623778733">অধিক জানক</translation>
 <translation id="6166852626429024716">আপোনাৰ ডিভাইচ, এপ্‌, ছেটিংসমূহ, ৱেব সন্ধান কৰক...</translation>
 <translation id="6168318496333165060">Diagnostics এপ্‌টো খোলক</translation>
@@ -1501,6 +1503,7 @@
 <translation id="7497767806359279797">ভাষা আৰু কীব'র্ড বাছনি কৰক</translation>
 <translation id="7508690557411636492">যোৱা মাহত খুলিছিল</translation>
 <translation id="7509246181739783082">আপোনাৰ পৰিচয় সত্যাপন কৰক</translation>
+<translation id="7512509370370076552">ৰাইট-ক্লিক শ্বৰ্টকাটটো alt + ক্লিকৰ পৰা<ph name="LAUNCHER_KEY_NAME" /> কী + ক্লিকলৈ আপডে’ট কৰা হৈছে</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, বাছনি কৰা হোৱা নাই</translation>
 <translation id="7513622367902644023">স্ক্ৰীনশ্বট ম'ডটো বাছনি কৰা হ'ল</translation>
 <translation id="7513922695575567867">কেলেণ্ডাৰ, <ph name="DATE" />ৰ সপ্তাহ, <ph name="SELECTED_DATE" /> বৰ্তমান বাছনি কৰা হৈছে।</translation>
@@ -1604,6 +1607,7 @@
 <translation id="7904094684485781019">এই একাউণ্টটোৰ প্ৰশাসককে একাধিক ছাইন ইন কৰাৰ অনুমতি দিয়া নাই।</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> টা ডিভাইচ সংযোগ কৰা হৈছে</translation>
+<translation id="7926080067315048321">ৱেবত Google Tasksত আটাইবোৰ কাৰ্য চাওক</translation>
 <translation id="7930731167419639574">এতিয়া কথন স্থানীয়ভাৱে প্ৰক্ৰিয়াকৰণ কৰা হৈছে আৰু শ্ৰুতলিপিৰ সুবিধাটোৱে অফলাইনত কাম কৰে</translation>
 <translation id="7932451802722951285">Google calendarত খোলক</translation>
 <translation id="7933084174919150729">Google Assistant কেৱল প্ৰাথমিক প্ৰ’ফাইলৰ বাবে উপলব্ধ।</translation>

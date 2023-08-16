@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Amgryptio Data</translation>
 <translation id="1072700771426194907">Canfuwyd dyfais USB</translation>
 <translation id="107278043869924952">Defnyddio PIN yn ogystal â chyfrinair</translation>
+<translation id="107450319332239199">Aeth rhywbeth o'i le. Yn lle hynny, agor y ffenestri yn bwrpasol.</translation>
 <translation id="1076176485976385390">Llywio tudalennau gyda chyrchwr testun</translation>
 <translation id="1076382954055048850">Dangos sesiynau Cast eraill</translation>
 <translation id="1076698951459398590">Galluogi Thema</translation>
@@ -9000,7 +9001,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Caniatawyd <ph name="PERMISSION" /> a <ph name="COUNT" /> arall</translation>
 <translation id="8413956290606243087">Ydych chi am weithredu ChromeVox, y darllenydd sgrîn integredig ar gyfer ChromeOS?</translation>
-<translation id="8414065061814811918">Cyflymydd sgrolio. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Wedi cuddio atgofion am ddau ddiwrnod</translation>
 <translation id="8414396119627470038">Mewngofnodwch i <ph name="SITE_ETLD_PLUS_ONE" /> gyda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Nodiadau</translation>
@@ -9690,6 +9690,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8989359959810288806">Ail-lwytho Statws Rhannu Cysylltiad</translation>
 <translation id="8991520179165052608">Gall y wefan ddefnyddio eich meicroffon</translation>
 <translation id="8991694323904646277">Dim camera</translation>
+<translation id="8991766915726096402">Adfer Data Lleol</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Defnydd cof - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Os byddwch yn anghofio eich cyfrinair <ph name="DEVICE_TYPE" />, gallwch barhau i adfer eich data lleol. Bydd angen i chi fewngofnodi i'ch Cyfrif Google neu ddefnyddio adferiad cyfrif.</translation>
 <translation id="8993737615451556423">Mae'n darparu rheolyddion i gyflymu, arafu a seibio'r llais darllen</translation>

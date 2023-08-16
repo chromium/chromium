@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">ডেটা এনচাইফাৰমেণ্ট</translation>
 <translation id="1072700771426194907">ইউএছবি ডিভাইচ চিনাক্ত হৈছে</translation>
 <translation id="107278043869924952">পাছৱৰ্ডৰ সলনি পিন ব্যৱহাৰ কৰক</translation>
+<translation id="107450319332239199">কিবা ভুল হ’ল। তাৰ পৰিৱৰ্তে ৱিণ্ড’সমূহ মেনুৱেলভাৱে খোলক।</translation>
 <translation id="1076176485976385390">পাঠৰ এটা কাৰ্ছৰৰ জৰিয়তে পৃষ্ঠাসমূহ নেভিগে’ট কৰক</translation>
 <translation id="1076382954055048850">অন্য কাষ্ট ছেশ্বনসমূহ দেখুৱাওক</translation>
 <translation id="1076698951459398590">থীম সক্ষম কৰক</translation>
@@ -7720,6 +7721,7 @@
 <translation id="7396017167185131589">শ্বেয়াৰ কৰা ফ’ল্ডাৰসমূহ ইয়াত দেখা যাব</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ছিষ্টেমৰ আৰম্ভণিতে লঞ্চ হ'ব আৰু আপুনি <ph name="PRODUCT_NAME" />ৰ অন্য সকলো বিণ্ড' বন্ধ কৰাৰ পাছতো নেপথ্যত চলি থাকিব।</translation>
 <translation id="7399045143794278225">ছিংক কাষ্ট’মাইজ কৰক</translation>
+<translation id="7399616692258236448">আপুনি অনুমতি দিয়াসমূহৰ বাদে আন আটাইবোৰ ছাইটৰ বাবে অৱস্থানৰ অনুৰোধসমূহ স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হয়</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">পুনৰ <ph name="OLD_SEARCH_PROVIDER" />লৈ সলনি কৰিবনে?</translation>
 <translation id="7400839060291901923">আপোনাৰ <ph name="PHONE_NAME" />ত সংযোগ ছেট আপ কৰক</translation>
@@ -8990,7 +8992,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" />ক আৰু <ph name="COUNT" /> টাক অনুমতি দিয়া হৈছে</translation>
 <translation id="8413956290606243087">আপুনি ChromeOSৰ বাবে বিল্ট-ইন স্ক্ৰীন ৰীডাৰ, ChromeVox সক্ৰিয় কৰিবলৈ বিচাৰেনে?</translation>
-<translation id="8414065061814811918">স্ক্ৰ’লৰ এক্সিলাৰেশ্বন। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">মেম’ৰি দুদিনৰ বাবে লুকুওৱা হৈছে</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ জৰিয়তে <ph name="SITE_ETLD_PLUS_ONE" />ত ছাইন ইন কৰক</translation>
 <translation id="8414685983518053656">টোকা</translation>
@@ -9674,9 +9675,11 @@
 <translation id="8986494364107987395">স্বয়ংক্ৰিয়ভাৱে Googleলৈ ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়াওক</translation>
 <translation id="8987305927843254629">প্ৰতিগৰাকী ব্যক্তিয়ে তেওঁৰ অভিজ্ঞতা ব্যক্তিগতকৰণ কৰিব পাৰে আৰু ডেটাখিনি ব্যক্তিগত কৰি ৰাখিব পাৰে।</translation>
 <translation id="8987927404178983737">মাহ</translation>
+<translation id="8988539543012086784">এই পৃষ্ঠাখন <ph name="BOOKMARK_FOLDER" />ত ছেভ কৰা হৈছে</translation>
 <translation id="8989359959810288806">টেডাৰিঙৰ স্থিতি ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="8991520179165052608">ছাইটে আপোনাৰ ডিভাইচৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="8991694323904646277">কোনো কেমেৰা নাই</translation>
+<translation id="8991766915726096402">স্থানীয় ডেটাৰ পুনৰুদ্ধাৰ</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - মেম’ৰীৰ ব্যৱহাৰ - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">যদি আপুনি আপোনাৰ <ph name="DEVICE_TYPE" />ৰ পাছৱৰ্ড পাহৰি যায়, আপুনি তথাপি আপোনাৰ স্থানীয় ডেটা পুনৰুদ্ধাৰ কৰিব পাৰিব। আপুনি আপোনাৰ Google একাউণ্টত ছাইন ইন কৰিব লাগিব অথবা একাউণ্টৰ পুনৰুদ্ধাৰ সুবিধাটো ব্যৱহাৰ কৰিব লাগিব।</translation>
 <translation id="8993737615451556423">এইটোৱে পঢ়াৰ কণ্ঠস্বৰৰ গতি বৃদ্ধি, হ্ৰাস আৰু পজ কৰাৰ নিয়ন্ত্ৰণ প্ৰদান কৰে</translation>

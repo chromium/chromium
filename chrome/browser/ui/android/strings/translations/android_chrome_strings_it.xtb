@@ -3,6 +3,7 @@
 <translationbundle lang="it">
 <translation id="1011749477052068769">Sposta qui</translation>
 <translation id="1016498331642356377">Cerca rapidamente con la tua voce. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Invio a <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Vuoi cancellare anche i dati di questi siti e app?</translation>
 <translation id="1034259925032978114">La finestra è aperta</translation>
@@ -34,6 +35,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1150263420752757504"><ph name="APP_NAME" /> si aprirà in Chrome. Se continui, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Rinomina</translation>
 <translation id="1177863135347784049">Personalizzati</translation>
+<translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1181366777303791449">su <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Vuoi usare una password efficace?</translation>
@@ -51,6 +53,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1240288207750131269">Caricamento della lingua <ph name="LANG" /> in corso…</translation>
 <translation id="1240903469550363138">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK1" />Norme sulla privacy<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio<ph name="END_LINK2" /> del sito.</translation>
 <translation id="124116460088058876">Altre lingue</translation>
+<translation id="1241792820757384812">Le tue password verranno eliminate da Gestore delle password di Google per <ph name="CHROME_CHANNEL" />. Il file delle password che hai appena scaricato verrà mantenuto.</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
 <translation id="1246905108078336582">Rimuovere il suggerimento dagli appunti?</translation>
@@ -431,6 +434,7 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="3303414029551471755">Procedere al download dei contenuti?</translation>
 <translation id="3305130791745726624">Invia a dispositivi</translation>
 <translation id="3305795716056605962">Traduci le pagine dal pulsante Altre opzioni</translation>
+<translation id="3324393723900507254">Modello <ph name="TEMPLATE_TITLE" /> selezionato</translation>
 <translation id="3334729583274622784">Vuoi cambiare l'estensione del file?</translation>
 <translation id="3341262203274374114">Non è possibile non seguire più. Si è verificato un errore.</translation>
 <translation id="3359667936385849800">Usa il tuo attuale fornitore di servizi</translation>
@@ -576,6 +580,7 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="4124152339699379357">Flusso di autorizzazione alle notifiche aperto a schermo intero</translation>
 <translation id="4135200667068010335">L'elenco di dispositivi con cui condividere una scheda è chiuso.</translation>
 <translation id="4137746084635924146">Lingua attuale del dispositivo</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Siti desktop richiesti per impostazione predefinita</translation>
 <translation id="4147131678541801076">Quando sono attive le prove, la riduzione di spam e attività fraudolente è basata su token di stato privati per aiutare i siti a contrastare le attività fraudolente e a distinguere i bot dalle persone.
 
@@ -1069,6 +1074,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6649642165559792194">Anteprima immagine <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Scheda</translation>
+<translation id="6662119761881114773">Al momento, le password salvate su questo dispositivo non possono essere utilizzate su tutti i canali Chrome. Dopo la versione 121 di Chrome, le password salvate sul dispositivo per Chrome e <ph name="CHROME_CHANNEL" /> verranno unite e potranno essere utilizzate in entrambe le app.</translation>
 <translation id="666731172850799929">Apri in <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Copia immagine</translation>
 <translation id="6672917148207387131">Aggiungi <ph name="DOMAIN" /></translation>
@@ -1091,6 +1097,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6770042910635026163">Siti visitati che definiscono i tuoi interessi</translation>
 <translation id="6770602306803890733">Aumenta la sicurezza per te e per tutti gli utenti del Web</translation>
 <translation id="6785476624617658922">Termini di servizio aggiuntivi di Chrome e ChromeOS</translation>
+<translation id="6790428901817661496">Riproduci</translation>
 <translation id="6795633245022906657">Apri rapidamente una nuova scheda. Per modificare questa scorciatoia, vai a Impostazioni.</translation>
 <translation id="6802555630140434547">La finestra verrà chiusa</translation>
 <translation id="6811034713472274749">La pagina è pronta per essere visualizzata</translation>
@@ -1215,7 +1222,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7431991332293347422">Controlla la modalità di utilizzo della cronologia di navigazione per personalizzare la Ricerca e non solo</translation>
 <translation id="7435356471928173109">Disattivata dall'amministratore</translation>
 <translation id="7437998757836447326">Esci da Chrome</translation>
-<translation id="7443901082822119557">Con la modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="7453467225369441013">Verrai disconnesso dalla maggior parte dei siti, ma non dal tuo Account Google.</translation>
 <translation id="7453810262525006706">Comprimi in vista laterale</translation>
 <translation id="7454641608352164238">Spazio insufficiente</translation>
@@ -1320,6 +1326,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7944772052836377867">La sincronizzazione deve verificare la tua identità</translation>
 <translation id="7947953824732555851">Accetta e accedi</translation>
 <translation id="7957413488482743710">Una carta virtuale nasconde la tua carta effettiva per proteggerti meglio da potenziali attività fraudolente. <ph name="BEGIN_LINK1" />Scopri di più sulle carte virtuali<ph name="END_LINK1" /></translation>
+<translation id="7960972236129063347">Pulsante Indietro in Statistiche pagine</translation>
 <translation id="7961926449547174351">Hai disattivato l'accesso allo spazio di archiviazione. Vai alle Impostazioni per attivarlo.</translation>
 <translation id="7963646190083259054">Fornitore:</translation>
 <translation id="7965838025086216108">Puoi usare le password salvate su qualsiasi dispositivo. Sono salvate in Gestore delle password di Google per <ph name="ACCOUNT" />.</translation>
@@ -1331,7 +1338,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="799576009106109668">Navigherai più velocemente perché i contenuti vengono caricati in modo proattivo in base alla pagina web che stai visitando</translation>
 <translation id="7998918019931843664">Riapri la scheda chiusa</translation>
 <translation id="8004582292198964060">Browser</translation>
-<translation id="8006818846907410687">Blocca durante la modalità di navigazione in incognito</translation>
 <translation id="8013372441983637696">Cancella i tuoi dati di Chrome anche da questo dispositivo</translation>
 <translation id="8015452622527143194">Ripristina le dimensioni predefinite della pagina</translation>
 <translation id="8026334261755873520">Cancella dati di navigazione</translation>
@@ -1563,6 +1569,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="9158770349521403363">Condividi solo contenuti</translation>
 <translation id="9159716826369098114">Ripristina il gruppo di <ph name="TAB_COUNT" /> schede come nuovo gruppo di schede in background.</translation>
 <translation id="9169507124922466868">La cronologia di navigazione è aperta fino a metà</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">La tua cronologia sarà disponibile su tutti i dispositivi sincronizzati per poter continuare ciò che stavi facendo</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Eseguito 1 minuto fa}other{Eseguito # minuti fa}}</translation>
 <translation id="9204021776105550328">Eliminazione in corso…</translation>
@@ -1577,6 +1584,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="926205370408745186">Rimuovi la tua attività di Chrome da Benessere digitale</translation>
 <translation id="927968626442779827">Usa la modalità Lite su Google Chrome</translation>
 <translation id="928550791203542716">Stai seguendo <ph name="SITE_NAME" /></translation>
+<translation id="93533588269984624">Tutte le password verranno scaricate sul tuo dispositivo e rimosse da <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Errore: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Inserisci passphrase</translation>
 <translation id="952301137339791907">Il riquadro inferiore Statistiche pagine è aperto</translation>

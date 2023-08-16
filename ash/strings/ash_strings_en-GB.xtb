@@ -182,6 +182,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="174102739345480129">Marker is off.</translation>
 <translation id="1743570585616704562">Not recognised</translation>
 <translation id="1746730358044914197">Input methods are configured by your administrator.</translation>
+<translation id="1747336645387973286">due date <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">On-screen keyboard enabled</translation>
 <translation id="1749109475624620922">Window <ph name="WINDOW_TITLE" /> assigned to all desks</translation>
 <translation id="1750088060796401187">Only <ph name="MAX_DESK_LIMIT" /> desks allowed. Remove a desk to open a new one.</translation>
@@ -474,6 +475,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3081696990447829002">Expand menu</translation>
 <translation id="3087734570205094154">Bottom</translation>
 <translation id="3090989381251959936">Toggle <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
+<translation id="3093423061078042895">Missing</translation>
 <translation id="3095995014811312755">version</translation>
 <translation id="309749186376891736">Move cursor</translation>
 <translation id="3100274880412651815">Dismiss capture mode</translation>
@@ -535,6 +537,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3364721542077212959">Stylus tools</translation>
 <translation id="3365977133351922112">Your phone is too far away. Bring your phone closer.</translation>
 <translation id="3368922792935385530">Connected</translation>
+<translation id="3369111525500416043">Due soon</translation>
 <translation id="3371140690572404006">USB-C device (right-hand-side front port)</translation>
 <translation id="3375634426936648815">Connected</translation>
 <translation id="3378438761594387761">You'll find your recent downloads and screen captures here</translation>
@@ -989,6 +992,7 @@ Connect your device to power.</translation>
 <translation id="5208059991603368177">On</translation>
 <translation id="5216991270656129561">Off until <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Next Desk: <ph name="NEXT_DESK_NAME" />, use Search+Space or keyboard shortcut: Shift+Search+<ph name="NEXT_DESK_INDEX" /> to activate.</translation>
+<translation id="5218064144558110424">Mark as not completed</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5229343007215035173">Turn on/off Privacy Screen</translation>
 <translation id="5234764350956374838">Dismiss</translation>
@@ -1048,6 +1052,7 @@ Connect your device to power.</translation>
 <translation id="5465662442746197494">Need help?</translation>
 <translation id="547979256943495781">Shelf on right</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> or <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
+<translation id="5482873136202102190">, +</translation>
 <translation id="5491186829646618080">Firmware updates available</translation>
 <translation id="5503884284981862082">Open/close Google Assistant</translation>
 <translation id="550391772491508736">Resume casting</translation>
@@ -1174,6 +1179,7 @@ Connect your device to power.</translation>
 <translation id="598882571027504733">To get the update, restart your Chromebook with the keyboard attached.</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> of <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Highlight next item on shelf</translation>
+<translation id="6015573907265691211">Mark completed</translation>
 <translation id="6018164090099858612">Exiting mirror mode</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">Scroll left</translation>
@@ -1316,6 +1322,7 @@ New install</translation>
 <translation id="6597278316891651699">Camera snapped to the bottom-left corner. Conflict with system surface.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="6612802754306526077">Screen recording mode selected</translation>
+<translation id="6612889377159412215">subtask</translation>
 <translation id="6613765291890844037">Storage <ph name="STORAGE_IN_USE_SIZE" /> in use | <ph name="STORAGE_TOTAL_SIZE" /> total</translation>
 <translation id="6614169507485700968">Privacy screen is on</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> and other notifications are hidden because viewing protection is on</translation>
@@ -1359,6 +1366,7 @@ New install</translation>
 <translation id="6786750046913594791">Close folder</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="679368458793552943">Zoom in when magnifier is on</translation>
+<translation id="6794287755901682422">This item has: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6801878137098616817">Recently edited</translation>
 <translation id="6802196538183166658">Open Quick Settings by selecting the time</translation>
 <translation id="6802687695197837794">This allows access for <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> and all apps and websites with the camera and microphone permissions</translation>
@@ -1615,6 +1623,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="793716872548410480">Press <ph name="SHORTCUT_KEY_NAME" /> + V to view your clipboard. The last five items that you've copied are saved to your clipboard.</translation>
 <translation id="7942349550061667556">Red</translation>
 <translation id="7944023924886109030">See all events for today</translation>
+<translation id="7945357288295809525">Show accessibility settings, '<ph name="ENABLED_FEATURES" />' enabled.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> wants to use your <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Dim keyboard</translation>
 <translation id="7963689218131240420">Do Not Disturb is off.</translation>
@@ -1914,6 +1923,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="953431725143473984">Shut down the device?</translation>
 <translation id="954052413789300507">Not enough space for <ph name="FILENAME" />. Free up space.</translation>
 <translation id="974545358917229949">Displaying <ph name="RESULT_COUNT" /> results for <ph name="QUERY" /></translation>
+<translation id="981011780479609956">No due date</translation>
 <translation id="98120814841227350">Go to end of document</translation>
 <translation id="987589956647469042">Mobile data is turned on</translation>
 <translation id="989374776391122812">Camera and audio controls</translation>

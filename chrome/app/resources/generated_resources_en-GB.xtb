@@ -1093,6 +1093,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1856715684130786728">Add location...</translation>
 <translation id="1858585891038687145">Trust this certificate for identifying software makers</translation>
+<translation id="1859294693760125695">No longer interested</translation>
 <translation id="1859339856433307593">A password for this account is already saved to your <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">This folder is empty</translation>
 <translation id="1862311223300693744">Do you have any special VPN, proxy, firewall or NAS software
@@ -1758,6 +1759,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2369058545741334020">Open in Reading mode</translation>
 <translation id="236939127352773362">When devices are sharing nearby</translation>
 <translation id="2371076942591664043">Open when &amp;done</translation>
+<translation id="237336063998926520">Use your IP address to determine location</translation>
 <translation id="2373666622366160481">Fit to paper</translation>
 <translation id="2375406435414127095">Connect to your phone</translation>
 <translation id="2376056713414548745">Read aloud</translation>
@@ -2777,6 +2779,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3226487301970807183">Toggle left-aligned side panel</translation>
 <translation id="322708765617468434">You can always add another person to the device after setup. Each person can personalise their experience and keep data private.</translation>
 <translation id="3227137524299004712">Microphone</translation>
+<translation id="3229412050601871341">Device password</translation>
 <translation id="3232168089952388105">Share information about your device?</translation>
 <translation id="3232558119926886907">Align right</translation>
 <translation id="3232754137068452469">Web App</translation>
@@ -2835,6 +2838,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3275778913554317645">Open as window</translation>
 <translation id="3277214528693754078">Navigate with text cursor (Caret Browsing)</translation>
 <translation id="3277594800340743211">Large shadow</translation>
+<translation id="3277784185056747463">Device password or Google Account password</translation>
 <translation id="3278001907972365362">Your Google Account(s) need attention</translation>
 <translation id="3279092821516760512">Selected contacts can share with you when nearby. Transfers won't start until you accept.</translation>
 <translation id="3279230909244266691">This process may take a few minutes. Starting the virtual machine.</translation>
@@ -3291,6 +3295,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3660234220361471169">Untrusted</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 existing password found}other{{NUM_PASSWORDS} existing passwords found}}</translation>
 <translation id="3664511988987167893">Extension Icon</translation>
+<translation id="3665301845536101715">Open in side panel</translation>
 <translation id="3665589677786828986">Chrome detected that some of your settings were corrupted by another program and reset them to their original defaults.</translation>
 <translation id="3665919494326051362">Current version is <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel WiFi NICs Debug Dump</translation>
@@ -7022,6 +7027,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6805647936811177813">Please sign in to <ph name="TOKEN_NAME" /> to import client certificate from <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Enable RLZ tracking on <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">Don’t allow but ask later</translation>
+<translation id="680644983456221885">Real-time, proactive protection against dangerous sites, downloads and extensions that's based on your browsing data being sent to Google</translation>
 <translation id="6808039367995747522">To continue, insert and touch your security key</translation>
 <translation id="6808166974213191158">Chrome OS Flex system image writer</translation>
 <translation id="6808193438228982088">Fox</translation>
@@ -8667,6 +8673,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="814204052173971714">{COUNT,plural, =1{a video}other{# videos}}</translation>
 <translation id="8143442547342702591">Invalid application</translation>
 <translation id="8143609395536282994">How you can manage your data:</translation>
+<translation id="8144429778087524791">Mark as done and hide</translation>
 <translation id="8145170459658034418">Memory saver</translation>
 <translation id="8146177459103116374">If you've already registered on this device, you can <ph name="LINK2_START" />sign in as an existing user<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Add and rank your preferred languages. Websites will show in your preferred languages, when possible. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -8995,7 +9002,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Allowed <ph name="PERMISSION" /> and <ph name="COUNT" /> more</translation>
 <translation id="8413956290606243087">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS?</translation>
-<translation id="8414065061814811918">Scroll acceleration. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Memories hidden for two days</translation>
 <translation id="8414396119627470038">Sign in to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Notes</translation>
@@ -9158,6 +9164,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8557022314818157177">Keep touching your security key until your fingerprint is captured</translation>
 <translation id="8557180006508471423">Turn on 'Google Chrome' in Location Services on your Mac</translation>
 <translation id="8557856025359704738">Next download is at <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8558281414737757274">Google Account password</translation>
 <translation id="8559858985063901027">Passkeys</translation>
 <translation id="8559961053328923750">Chrome limits the total amount of data that sites can share through the browser to measure ad performance</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Open All in &amp;New Window}=1{Open in &amp;New Window}other{Open All ({COUNT}) in &amp;New Window}}</translation>
@@ -9170,6 +9177,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8569682776816196752">No destinations found</translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>
 <translation id="8571687764447439720">Add Kerberos ticket</translation>
+<translation id="8572052284359771939">Sends the URLs of sites you visit and a small sample of page content, downloads, extension activity and system information to Google Safe Browsing to check if they're harmful.</translation>
 <translation id="8573111744706778015">Type 'uo7' to get 'ươ'</translation>
 <translation id="8574990355410201600">Always allow sound on <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Hold <ph name="KEY_EQUIVALENT" /> to Quit</translation>

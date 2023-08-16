@@ -1751,6 +1751,7 @@
 <translation id="2369058545741334020">ಓದುವ ಮೋಡ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="236939127352773362">ಸಮೀಪದಲ್ಲಿರುವ ಸಾಧನಗಳಿಂದ ಹಂಚಿಕೊಳ್ಳುವಾಗ</translation>
 <translation id="2371076942591664043">&amp;ಮುಗಿಸಿದಾಗ ತೆರೆಯಿರಿ</translation>
+<translation id="237336063998926520">ಸ್ಥಳವನ್ನು ನಿರ್ಧರಿಸಲು ನಿಮ್ಮ ಐಪಿ ವಿಳಾಸವನ್ನು ಬಳಸಿ</translation>
 <translation id="2373666622366160481">ಕಾಗದಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="2375406435414127095">ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="2376056713414548745">ಗಟ್ಟಿಯಾಗಿ ಓದಿ</translation>
@@ -8988,7 +8989,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> ಮತ್ತು <ph name="COUNT" /> ಕ್ಕೂ ಹೆಚ್ಚಿನವುಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="8413956290606243087">ChromeVox, ChromeOS ಗಾಗಿ ಅಂತರ್ನಿರ್ಮಿತ ಸ್ಕ್ರೀನ್ ರೀಡರ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
-<translation id="8414065061814811918">ಸ್ಕ್ರಾಲ್ ವೇಗವರ್ಧನೆ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">ಎರಡು ದಿನಗಳ ಮಟ್ಟಿಗೆ ನೆನಪುಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಮೂಲಕ <ph name="SITE_ETLD_PLUS_ONE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="8414685983518053656">ಟಿಪ್ಪಣಿಗಳು</translation>

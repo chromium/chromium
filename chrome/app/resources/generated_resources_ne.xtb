@@ -1739,6 +1739,7 @@
 <translation id="2369058545741334020">रिडिङ मोडमा खोल्नुहोस्</translation>
 <translation id="236939127352773362">नजिकै रहेका डिभाइससँग सेयर गरिराखिएका बेला</translation>
 <translation id="2371076942591664043">&amp;भएपछि खोल्नुहोस्</translation>
+<translation id="237336063998926520">स्थान निर्धारण गर्न आफ्नो IP एड्रेस प्रयोग गर्नुहोस्</translation>
 <translation id="2373666622366160481">कागजमा ठ्याक्कै अट्ने बनाउनुहोस्</translation>
 <translation id="2375406435414127095">आफ्नो फोनसँग जोड्नुहोस्</translation>
 <translation id="2376056713414548745">ठुलो स्वरमा पढ्नुहोस्</translation>
@@ -8971,7 +8972,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">तपाईंले हालसालै <ph name="PERMISSION" /> सम्बन्धी अनुमति र अन्य <ph name="COUNT" /> वटा अनुमति दिनुभएको छ</translation>
 <translation id="8413956290606243087">तपाईं ChromeOS मा पहिले नै इन्स्टल गरिएको ChromeVox नामक स्क्रिन रिडर एक्टिभेट गर्न चाहनुहुन्छ?</translation>
-<translation id="8414065061814811918">स्क्रोल एक्सिलेरेसन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">"स्मरणीय क्षणहरू" दुई दिनका लागि लुकाइएका छन्</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मार्फत <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="8414685983518053656">टिपोटहरू</translation>

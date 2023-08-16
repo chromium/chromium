@@ -1085,6 +1085,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">T'hem canviat a una xarxa millor</translation>
 <translation id="5619862035903135339">La política de l'administrador desactiva la captura de pantalla</translation>
+<translation id="5620856676199877916">Mostra tot el treball de classe al lloc web de Google Classroom</translation>
 <translation id="5620979661744857819">Permet l'accés a <ph name="APP_NAME" /> i a totes les aplicacions i tots els llocs web amb permís per accedir a la càmera i al micròfon. És possible que hagis d'actualitzar la pàgina web o reiniciar l'aplicació.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">No s'ha pogut verificar la contrasenya. Torna-ho a provar.</translation>
@@ -1214,6 +1215,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6154006699632741460">Perifèric no admès</translation>
 <translation id="6156960295318603523">Configuració d'idioma</translation>
 <translation id="615957422585914272">Mostra el teclat en pantalla</translation>
+<translation id="616543563528926612">La drecera per fer clic amb el botó dret s'ha actualitzat de la tecla <ph name="LAUNCHER_KEY_NAME" />+clic a Alt+clic</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6166852626429024716">Cerca al dispositiu, en aplicacions, a la configuració i al web...</translation>
 <translation id="6168318496333165060">Obre l'aplicació Diagnòstic</translation>
@@ -1498,6 +1500,7 @@ Instal·lació nova</translation>
 <translation id="7497767806359279797">Tria l'idioma i el teclat</translation>
 <translation id="7508690557411636492">Obert durant el darrer mes</translation>
 <translation id="7509246181739783082">Verifica la teva identitat</translation>
+<translation id="7512509370370076552">La drecera per fer clic amb el botó dret s'ha actualitzat d'Alt+clic a la tecla <ph name="LAUNCHER_KEY_NAME" />+clic</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, no seleccionat</translation>
 <translation id="7513622367902644023">S'ha seleccionat el mode de captura de pantalla</translation>
 <translation id="7513922695575567867">Calendari, setmana del <ph name="DATE" />, actualment està seleccionat el dia <ph name="SELECTED_DATE" />.</translation>
@@ -1601,6 +1604,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7904094684485781019">L'administrador d'aquest compte no ha permès l'inici de sessió múltiple.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositius connectats</translation>
+<translation id="7926080067315048321">Mostra totes les tasques a Google Tasks al web</translation>
 <translation id="7930731167419639574">La parla ara es processa localment i l'opció de dictat funciona sense connexió.</translation>
 <translation id="7932451802722951285">Obre a Google Calendar</translation>
 <translation id="7933084174919150729">L'Assistent de Google només està disponible per al perfil principal.</translation>

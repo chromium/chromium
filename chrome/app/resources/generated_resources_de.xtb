@@ -1738,6 +1738,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2369058545741334020">Im Lesemodus öffnen</translation>
 <translation id="236939127352773362">Wenn Geräte in der Nähe etwas teilen</translation>
 <translation id="2371076942591664043">Nach &amp;Download öffnen</translation>
+<translation id="237336063998926520">IP-Adresse zur Standortbestimmung verwenden</translation>
 <translation id="2373666622366160481">An Papierformat anpassen</translation>
 <translation id="2375406435414127095">Mit dem Smartphone verbinden</translation>
 <translation id="2376056713414548745">Vorlesen</translation>
@@ -7696,6 +7697,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7396017167185131589">Freigegebene Ordner erscheinen hier</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> wird beim Systemstart gestartet und auch dann weiter im Hintergrund ausgeführt, wenn du alle anderen <ph name="PRODUCT_NAME" />-Fenster geschlossen hast.</translation>
 <translation id="7399045143794278225">Synchronisierung anpassen</translation>
+<translation id="7399616692258236448">Standortanfragen werden automatisch für alle Websites blockiert, außer bei Websites, bei denen du es zulässt</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Wieder zu <ph name="OLD_SEARCH_PROVIDER" /> wechseln?</translation>
 <translation id="7400839060291901923">Verbindung auf <ph name="PHONE_NAME" /> einrichten</translation>
@@ -9646,6 +9648,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8986494364107987395">Nutzungsstatistiken und Absturzberichte automatisch an Google senden</translation>
 <translation id="8987305927843254629">Jeder Nutzer kann seine Einstellungen personalisieren. Dabei bleiben die Daten der einzelnen Nutzer privat.</translation>
 <translation id="8987927404178983737">Monat</translation>
+<translation id="8988539543012086784">Diese Seite wurde in „<ph name="BOOKMARK_FOLDER" />“ gespeichert.</translation>
 <translation id="8989359959810288806">Tethering-Status aktualisieren</translation>
 <translation id="8991520179165052608">Die Website kann dein Mikrofon verwenden</translation>
 <translation id="8991694323904646277">Keine Kamera</translation>

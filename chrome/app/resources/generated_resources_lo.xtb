@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">​ການ​ປ່ຽນ​ເປັນ​ລະຫັດ​ຂອງ​ຂໍ້​ມູນ</translation>
 <translation id="1072700771426194907">ກວດພົບອຸປະກອນ USB</translation>
 <translation id="107278043869924952">ໃຊ້ PIN ນອກຈາກລະຫັດຜ່ານ</translation>
+<translation id="107450319332239199">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາເປີດໜ້າຈໍດ້ວຍຕົນເອງແທນ.</translation>
 <translation id="1076176485976385390">ໄປຫາໜ້າຕ່າງໆດ້ວຍເຄີເຊີຂໍ້ຄວາມ</translation>
 <translation id="1076382954055048850">ສະແດງເຊດຊັນ Cast ອື່ນໆ</translation>
 <translation id="1076698951459398590">ເປີດນຳໃຊ້ສີສັນໜ້າຕາ</translation>
@@ -1756,6 +1757,7 @@
 <translation id="2369058545741334020">ເປີດໃນໂໝດການອ່ານ</translation>
 <translation id="236939127352773362">ເມື່ອອຸປະກອນກຳລັງແບ່ງປັນໃກ້ຄຽງ</translation>
 <translation id="2371076942591664043">ເປີດເມື່ອສໍາເລັດ</translation>
+<translation id="237336063998926520">ໃຊ້ທີ່ຢູ່ IP ຂອງທ່ານເພື່ອຕັດສິນກຳນົດສະຖານທີ່</translation>
 <translation id="2373666622366160481">ພໍດີກັບເຈ້ຍ</translation>
 <translation id="2375406435414127095">ເຊື່ອມຕໍ່ກັບໂທລະສັບຂອງທ່ານ</translation>
 <translation id="2376056713414548745">ອ່ານອອກສຽງ</translation>
@@ -8987,7 +8989,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">ອະນຸຍາດ <ph name="PERMISSION" /> ແລະ ອີກ <ph name="COUNT" /> ລາຍການແລ້ວ</translation>
 <translation id="8413956290606243087">ທ່ານຕ້ອງການເປີດນຳໃຊ້ ChromeVox, ໂປຣແກຣມອ່ານໜ້າຈໍໃນຕົວສຳລັບ ChromeOS ບໍ?</translation>
-<translation id="8414065061814811918">ການເລັ່ງຄວາມໄວຂອງການເລື່ອນ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">ເຊື່ອງຄວາມຊົງຈຳໄວ້ສອງມື້ແລ້ວ</translation>
 <translation id="8414396119627470038">ເຂົ້າສູ່ລະບົບຫາ <ph name="SITE_ETLD_PLUS_ONE" /> ດ້ວຍ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">ບັນທຶກ</translation>
@@ -9673,6 +9674,7 @@
 <translation id="8989359959810288806">ໂຫຼດສະຖານະການປ່ອຍສັນຍານຄືນໃໝ່</translation>
 <translation id="8991520179165052608">ເວັບໄຊສາມາດໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານໄດ້</translation>
 <translation id="8991694323904646277">ບໍ່ມີກ້ອງຖ່າຍຮູບ</translation>
+<translation id="8991766915726096402">ການກູ້ຄືນຂໍ້ມູນໃນເຄື່ອງ</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - ການໃຊ້ໜ່ວຍຄວາມຈຳ - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">ຫາກທ່ານລືມລະຫັດຜ່ານ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ, ທ່ານຈະຍັງຄົງສາມາດກູ້ຂໍ້ມູນໃນເຄື່ອງຂອງທ່ານຄືນໄດ້. ທ່ານຈະຕ້ອງເຂົ້າສູ່ລະບົບຫາບັນຊີ Google ຂອງທ່ານ ຫຼື ໃຊ້ການກູ້ບັນຊີຄືນ.</translation>
 <translation id="8993737615451556423">ໃຫ້ການຄວບຄຸມເພື່ອເພີ່ມຄວາມໄວ, ຜ່ອນຄວາມໄວ ແລະ ຢຸດສຽງການອ່ານໄວ້ຊົ່ວຄາວ</translation>

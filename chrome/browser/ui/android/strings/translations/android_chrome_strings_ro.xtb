@@ -34,6 +34,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1150263420752757504"><ph name="APP_NAME" /> se va deschide în Chrome. Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Google Chrome și Sistemul de operare Chrome<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Redenumește</translation>
 <translation id="1177863135347784049">Personalizează</translation>
+<translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1181037720776840403">Elimină</translation>
 <translation id="1181366777303791449">pe <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Folosești o parolă puternică?</translation>
@@ -1069,6 +1070,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6649642165559792194">Previzualizează imaginea <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Parolă</translation>
 <translation id="6659594942844771486">Filă</translation>
+<translation id="6662119761881114773">Momentan, parolele salvate pe acest dispozitiv nu pot fi folosite pe canalele Chrome. După versiunea Chrome 121, parolele salvate pe dispozitiv pentru Chrome și <ph name="CHROME_CHANNEL" /> vor fi îmbinate și pot fi folosite în ambele aplicații.</translation>
 <translation id="666731172850799929">Deschide în <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Copiați imaginea</translation>
 <translation id="6672917148207387131">Adaugă <ph name="DOMAIN" /></translation>
@@ -1091,6 +1093,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6770042910635026163">Site-uri pe care le accesezi care definesc categoriile tale de interese</translation>
 <translation id="6770602306803890733">Îmbunătățește securitatea pe web pentru tine și toți ceilalți</translation>
 <translation id="6785476624617658922">Termenii și condițiile suplimentare pentru Google Chrome și Sistemul de operare Chrome</translation>
+<translation id="6790428901817661496">Redă</translation>
 <translation id="6795633245022906657">Deschide rapid o filă nouă. Pentru a edita comanda rapidă, accesează setările.</translation>
 <translation id="6802555630140434547">Fereastra va fi închisă</translation>
 <translation id="6811034713472274749">Pagina este gata de vizualizare</translation>
@@ -1215,7 +1218,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7431991332293347422">Controlează modul în care istoricul de navigare este folosit pentru a personaliza Căutarea și alte servicii</translation>
 <translation id="7435356471928173109">Dezactivată de administrator</translation>
 <translation id="7437998757836447326">Deconectează-te de la Chrome</translation>
-<translation id="7443901082822119557">În modul incognito, site-urile nu pot folosi cookie-urile pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile. Este posibil ca funcțiile de pe anumite site-uri să fie întrerupte.</translation>
 <translation id="7453467225369441013">Te deconectează de pe majoritatea site-urilor. Nu te va deconecta de la Contul Google.</translation>
 <translation id="7453810262525006706">Restrânge pentru a vedea imaginea laterală</translation>
 <translation id="7454641608352164238">Spațiu insuficient</translation>
@@ -1331,7 +1333,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="799576009106109668">Vei naviga mai rapid deoarece conținutul se încarcă proactiv în funcție de pagina web accesată în acel moment</translation>
 <translation id="7998918019931843664">Redeschideți fila închisă</translation>
 <translation id="8004582292198964060">Browser</translation>
-<translation id="8006818846907410687">Blochează în timp ce folosești modul incognito</translation>
 <translation id="8013372441983637696">Șterge și datele Chrome de pe acest dispozitiv</translation>
 <translation id="8015452622527143194">Readuce pagina la dimensiunea prestabilită</translation>
 <translation id="8026334261755873520">Șterge datele de navigare</translation>

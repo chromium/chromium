@@ -1740,6 +1740,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2369058545741334020">Hape në modalitetin e leximit</translation>
 <translation id="236939127352773362">Kur pajisjet shpërndajnë në afërsi</translation>
 <translation id="2371076942591664043">Hape kur të &amp;përfundosh</translation>
+<translation id="237336063998926520">Përdor adresën tënde të IP-së për të përcaktuar vendndodhjen</translation>
 <translation id="2373666622366160481">Përshtate me letrën</translation>
 <translation id="2375406435414127095">Lidhu me telefonin</translation>
 <translation id="2376056713414548745">Lexo me zë të lartë</translation>
@@ -8972,7 +8973,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Të lejuara: <ph name="PERMISSION" /> dhe <ph name="COUNT" /> të tjera</translation>
 <translation id="8413956290606243087">Dëshiron ta aktivizosh ChromeVox, lexuesin e integruar të ekranit për ChromeOS?</translation>
-<translation id="8414065061814811918">Përshpejtimi i lëvizjes. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Kujtimet janë fshehur për dy ditë</translation>
 <translation id="8414396119627470038">Identifikohu në <ph name="SITE_ETLD_PLUS_ONE" /> me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Shënimet</translation>

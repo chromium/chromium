@@ -182,6 +182,7 @@
 <translation id="174102739345480129">Маркер је искључен.</translation>
 <translation id="1743570585616704562">Није препознат</translation>
 <translation id="1746730358044914197">Методе уноса конфигурише администратор.</translation>
+<translation id="1747336645387973286">рок је <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Тастатура на екрану је омогућена</translation>
 <translation id="1749109475624620922">Прозор <ph name="WINDOW_TITLE" /> је додељен свим радним површинама</translation>
 <translation id="1750088060796401187">Максимални број радних површина је <ph name="MAX_DESK_LIMIT" />. Уклоните радну површину да бисте отворили нову.</translation>
@@ -474,6 +475,7 @@
 <translation id="3081696990447829002">Прошири мени</translation>
 <translation id="3087734570205094154">Дно</translation>
 <translation id="3090989381251959936">Укључите/искључите функцију <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
+<translation id="3093423061078042895">Рок је истекао</translation>
 <translation id="3095995014811312755">верзија</translation>
 <translation id="309749186376891736">Померите курсор</translation>
 <translation id="3100274880412651815">Одбаците режим снимања</translation>
@@ -535,6 +537,7 @@
 <translation id="3364721542077212959">Алатке за писаљку</translation>
 <translation id="3365977133351922112">Телефон је превише далеко. Приближите га.</translation>
 <translation id="3368922792935385530">Повезан</translation>
+<translation id="3369111525500416043">Рок ускоро истиче</translation>
 <translation id="3371140690572404006">Уређај са USB прикључком типа C (десни предњи порт)</translation>
 <translation id="3375634426936648815">Повезано</translation>
 <translation id="3378438761594387761">Овде ћете пронаћи недавна преузимања и снимке екрана</translation>
@@ -990,6 +993,7 @@
 <translation id="5208059991603368177">Укључено</translation>
 <translation id="5216991270656129561">Искључено до <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Следећа радна површина: <ph name="NEXT_DESK_NAME" />, користите Претрага + тастер за размак или тастерску пречицу: Shift + Претрага + <ph name="NEXT_DESK_INDEX" /> да бисте активирали.</translation>
+<translation id="5218064144558110424">Означите као незавршено</translation>
 <translation id="5222676887888702881">Одјави ме</translation>
 <translation id="5229343007215035173">Укључи/искључи екран за приватност</translation>
 <translation id="5234764350956374838">Одбаци</translation>
@@ -1049,6 +1053,7 @@
 <translation id="5465662442746197494">Потребна вам је помоћ?</translation>
 <translation id="547979256943495781">Полица на десној страни</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> или <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
+<translation id="5482873136202102190">, +</translation>
 <translation id="5491186829646618080">Доступна су ажурирања фирмвера</translation>
 <translation id="5503884284981862082">Отвори или затвори Google помоћник</translation>
 <translation id="550391772491508736">Настави пребацивање</translation>
@@ -1175,6 +1180,7 @@
 <translation id="598882571027504733">Да бисте преузели ажурирање, рестартујте Chromebook са прикљученом тастастуром.</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. страница од <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Истакните следећу ставку на полици</translation>
+<translation id="6015573907265691211">Означите као завршено</translation>
 <translation id="6018164090099858612">Излазак из режима са пресликавањем</translation>
 <translation id="6019566113895157499">Тастерске пречице</translation>
 <translation id="602001110135236999">Помери налево</translation>
@@ -1317,6 +1323,7 @@
 <translation id="6597278316891651699">Камера је уклопљена у доњи леви угао. Неусаглашеност са површином система.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
 <translation id="6612802754306526077">Режим снимања екрана је изабран</translation>
+<translation id="6612889377159412215">подзадатак</translation>
 <translation id="6613765291890844037">Користи се <ph name="STORAGE_IN_USE_SIZE" /> меморијског простора | Укупно <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Екран за приватност је укључен</translation>
 <translation id="6625718907317144388">Обавештења апликација <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и друга обавештења су скривена јер је заштита од прегледа укључена</translation>
@@ -1360,6 +1367,7 @@
 <translation id="6786750046913594791">Затворите фолдер</translation>
 <translation id="6790428901817661496">Пусти</translation>
 <translation id="679368458793552943">Увећајте када је лупа укључена</translation>
+<translation id="6794287755901682422">Ова ставка има: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6801878137098616817">Недавно измењено</translation>
 <translation id="6802196538183166658">Отворите Брза подешавања избором времена</translation>
 <translation id="6802687695197837794">Ово омогућава приступ апликацијама <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и свим апликацијама и веб-сајтовима који имају дозволе за камеру и микрофон</translation>
@@ -1616,6 +1624,7 @@
 <translation id="793716872548410480">Притисните <ph name="SHORTCUT_KEY_NAME" /> + V да бисте видели привремену меморију. Последњих 5 ставки које сте копирали се чувају у привременој меморији.</translation>
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7944023924886109030">Прегледајте све догађаје за данас</translation>
+<translation id="7945357288295809525">Прикажите подешавања приступачности, „<ph name="ENABLED_FEATURES" />“ је омогућено.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> жели да користи уређај <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Затамни тастатуру</translation>
 <translation id="7963689218131240420">Режим Не узнемиравај је искључен.</translation>
@@ -1915,6 +1924,7 @@
 <translation id="953431725143473984">Желите да искључите уређај?</translation>
 <translation id="954052413789300507">Нема довољно простора за <ph name="FILENAME" />. Ослободите простор.</translation>
 <translation id="974545358917229949">Приказују се резултати (<ph name="RESULT_COUNT" />) за: <ph name="QUERY" /></translation>
+<translation id="981011780479609956">Нема рока</translation>
 <translation id="98120814841227350">Идите на крај документа</translation>
 <translation id="987589956647469042">Мобилни подаци су укључени</translation>
 <translation id="989374776391122812">Контроле камере и звука</translation>

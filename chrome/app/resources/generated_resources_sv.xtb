@@ -1758,6 +1758,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2369058545741334020">Öppna i läsläge</translation>
 <translation id="236939127352773362">När enheter i närheten delar filer</translation>
 <translation id="2371076942591664043">Öppna när nedladdning är &amp;klar</translation>
+<translation id="237336063998926520">Använd IP-adressen för att bestämma plats</translation>
 <translation id="2373666622366160481">Anpassa till papperets storlek</translation>
 <translation id="2375406435414127095">Anslut till mobilen</translation>
 <translation id="2376056713414548745">Läs högt</translation>
@@ -8995,7 +8996,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Behörighet till <ph name="PERMISSION" /> och <ph name="COUNT" /> till har tillåtits</translation>
 <translation id="8413956290606243087">Vill du aktivera ChromeVox, den inbyggda skärmläsaren för Chrome OS?</translation>
-<translation id="8414065061814811918">Scrollningsacceleration. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Minnen döljs i två dagar</translation>
 <translation id="8414396119627470038">Logga in på <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Anteckningar</translation>

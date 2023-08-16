@@ -347,6 +347,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1668071460721346172">Ricevi un'email</translation>
 <translation id="1671391448414634642">D'ora in poi, le pagine in <ph name="SOURCE_LANGUAGE" /> verranno tradotte in <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478">Da <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Un elenco limitato di URL di pagine visitate in cui si verificano <ph name="BEGIN_LINK" />eventi tecnologici legacy<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Prima il lato corto</translation>
 <translation id="168693727862418163">Impossibile convalidare il valore del criterio in base al relativo schema. Il valore verrà ignorato.</translation>
 <translation id="168841957122794586">Il certificato del server contiene una chiave crittografica debole.</translation>
@@ -2028,6 +2029,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5296589789433599000">Cucina e ricette</translation>
 <translation id="5299298092464848405">Errore durante l'analisi del criterio</translation>
 <translation id="5299638840995777423">Robotica</translation>
+<translation id="5300062471671636390">Nascondi l'elenco dei dispositivi per la trasmissione</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5306593769196050043">Entrambi i fogli</translation>
 <translation id="5307166000025436103">OK</translation>
@@ -2614,7 +2616,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6573200754375280815">Perforatura doppia a destra</translation>
 <translation id="6578434528542148658">ID estensione non valido.</translation>
 <translation id="657902945730878902">Disegno e immagini da colorare</translation>
-<translation id="6579630537141957243">Connettere un dispositivo MIDI?</translation>
 <translation id="6579858392010591435">Vacanze ed eventi stagionali</translation>
 <translation id="6579990219486187401">Rosa chiaro</translation>
 <translation id="6581831440014388355">Rimozione della pelosità facciale e corporea in eccesso</translation>
@@ -3491,6 +3492,7 @@ Ulteriori dettagli:
 <translation id="8368027906805972958">Dispositivo sconosciuto o non supportato (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play Services</translation>
 <translation id="8369073279043109617">Ricevi nuovo codice</translation>
+<translation id="8371841335382565017">Mostra l'elenco dei dispositivi per la trasmissione</translation>
 <translation id="8371889962595521444">Certificati radice personalizzati</translation>
 <translation id="8374636051559112948">Varia</translation>
 <translation id="8378714024927312812">Gestito dalla tua organizzazione</translation>

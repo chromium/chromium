@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">การเข้ารหัสข้อมูล</translation>
 <translation id="1072700771426194907">ตรวจพบอุปกรณ์ USB</translation>
 <translation id="107278043869924952">เพิ่ม PIN และรหัสผ่าน</translation>
+<translation id="107450319332239199">เกิดข้อผิดพลาด โปรดเปิดหน้าต่างด้วยตนเอง</translation>
 <translation id="1076176485976385390">ไปยังส่วนต่างๆ ของหน้าได้ด้วยเคอร์เซอร์ข้อความ</translation>
 <translation id="1076382954055048850">แสดงเซสชันการแคสต์อื่นๆ</translation>
 <translation id="1076698951459398590">เปิดใช้ธีม</translation>
@@ -1742,6 +1743,7 @@
 <translation id="2369058545741334020">เปิดในโหมดการอ่าน</translation>
 <translation id="236939127352773362">เมื่อมีอุปกรณ์กำลังแชร์อยู่ใกล้เคียง</translation>
 <translation id="2371076942591664043">เปิดเมื่อเ&amp;สร็จ</translation>
+<translation id="237336063998926520">ใช้ที่อยู่ IP เพื่อกำหนดตำแหน่งที่ตั้ง</translation>
 <translation id="2373666622366160481">พอดีกับหน้ากระดาษ</translation>
 <translation id="2375406435414127095">เชื่อมต่อโทรศัพท์ของคุณ</translation>
 <translation id="2376056713414548745">อ่านออกเสียง</translation>
@@ -7703,6 +7705,7 @@
 <translation id="7396017167185131589">โฟลเดอร์ที่แชร์จะปรากฏที่นี่</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> จะเปิดใช้งานเมื่อเริ่มต้นระบบและทำงานต่อไปในแบบเบื้องหลัง แม้คุณจะปิดหน้าต่าง <ph name="PRODUCT_NAME" /> อื่นๆ จนหมดแล้ว</translation>
 <translation id="7399045143794278225">ปรับแต่งการซิงค์</translation>
+<translation id="7399616692258236448">ระบบจะบล็อกคำขอตำแหน่งจากทุกเว็บไซต์โดยอัตโนมัติ ยกเว้นเว็บไซต์ที่คุณอนุญาต</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">ต้องการเปลี่ยนกลับไปใช้ <ph name="OLD_SEARCH_PROVIDER" /> ไหม</translation>
 <translation id="7400839060291901923">ตั้งค่าการเชื่อมต่อใน <ph name="PHONE_NAME" /></translation>
@@ -8973,7 +8976,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">อนุญาตให้เข้าถึง<ph name="PERMISSION" />และอีก <ph name="COUNT" /> รายการ</translation>
 <translation id="8413956290606243087">คุณต้องการเปิดใช้งาน ChromeVox ซึ่งเป็นโปรแกรมอ่านหน้าจอในตัวสำหรับ Chrome OS ไหม</translation>
-<translation id="8414065061814811918">การเร่งความเร็วของการเลื่อน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">ซ่อนความทรงจำเป็นเวลา 2 วัน</translation>
 <translation id="8414396119627470038">ลงชื่อเข้าใช้ <ph name="SITE_ETLD_PLUS_ONE" /> ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">หมายเหตุ</translation>
@@ -9656,9 +9658,11 @@
 <translation id="8986494364107987395">ส่งสถิติการใช้งานและรายงานข้อขัดข้องไปยัง Google โดยอัตโนมัติ</translation>
 <translation id="8987305927843254629">โดยแต่ละคนจะปรับเปลี่ยนประสบการณ์การใช้งานในแบบของตนและเก็บเป็นข้อมูลส่วนตัวได้</translation>
 <translation id="8987927404178983737">เดือน</translation>
+<translation id="8988539543012086784">บันทึกหน้านี้ใน <ph name="BOOKMARK_FOLDER" /> แล้ว</translation>
 <translation id="8989359959810288806">รีเฟรชสถานะการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ</translation>
 <translation id="8991520179165052608">เว็บไซต์ใช้ไมโครโฟนของคุณได้</translation>
 <translation id="8991694323904646277">ไม่มีกล้อง</translation>
+<translation id="8991766915726096402">การกู้คืนข้อมูลในเครื่อง</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - การใช้งานหน่วยความจำ - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">หากลืมรหัสผ่าน <ph name="DEVICE_TYPE" /> คุณจะยังคงกู้คืนข้อมูลในเครื่องได้ โดยจะต้องลงชื่อเข้าใช้บัญชี Google หรือใช้การกู้คืนบัญชี</translation>
 <translation id="8993737615451556423">ให้ตัวควบคุมเพื่อปรับเสียงที่อ่านให้เร็วขึ้น ช้าลง และหยุดชั่วคราว</translation>

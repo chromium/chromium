@@ -35,6 +35,7 @@
 <translation id="1150263420752757504">「<ph name="APP_NAME" />」將在 Chrome 中開啟。選擇繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。</translation>
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1177863135347784049">自訂</translation>
+<translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1181366777303791449">位於 <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">要使用高強度密碼嗎？</translation>
@@ -1095,6 +1096,7 @@
 <translation id="6770042910635026163">用於推測你興趣喜好的已造訪網站</translation>
 <translation id="6770602306803890733">可為你和所有網路使用者提供更完善的安全防護</translation>
 <translation id="6785476624617658922">Chrome 和 Chrome OS 的《附加服務條款》</translation>
+<translation id="6790428901817661496">播放</translation>
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯這個捷徑，請前往 [設定]。</translation>
 <translation id="6802555630140434547">視窗即將關閉</translation>
 <translation id="6811034713472274749">你可以瀏覽這個網頁了</translation>
@@ -1219,7 +1221,6 @@
 <translation id="7431991332293347422">控制 Google 使用瀏覽記錄提供個人化搜尋服務和其他內容的方式</translation>
 <translation id="7435356471928173109">已由系統管理員停用</translation>
 <translation id="7437998757836447326">登出 Chrome</translation>
-<translation id="7443901082822119557">在無痕模式中，網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法正常運作。</translation>
 <translation id="7453467225369441013">大多數網站都會將你登出，但系統並不會將你登出 Google 帳戶。</translation>
 <translation id="7453810262525006706">收合至側邊面板</translation>
 <translation id="7454641608352164238">空間不足</translation>
@@ -1336,7 +1337,6 @@
 <translation id="799576009106109668">系統會根據你目前造訪的網頁主動載入內容，幫助你加快瀏覽速度</translation>
 <translation id="7998918019931843664">重新開啟先前關閉的分頁</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
-<translation id="8006818846907410687">使用無痕模式時封鎖</translation>
 <translation id="8013372441983637696">一併清除你在這個裝置上的 Chrome 資料</translation>
 <translation id="8015452622527143194">將網頁上的所有內容都回復為預設大小</translation>
 <translation id="8026334261755873520">清除瀏覽資料</translation>

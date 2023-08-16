@@ -347,6 +347,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1668071460721346172">Gauti el. laišką</translation>
 <translation id="1671391448414634642">Puslapiai, parašyti <ph name="SOURCE_LANGUAGE" />, nuo dabar bus verčiami į <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> į <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Ribotas puslapių, kuriuose lankotės ir kuriuose vyksta <ph name="BEGIN_LINK" />įvykiai, susiję su pasenusiomis technologijomis<ph name="END_LINK" />, URL sąrašas.</translation>
 <translation id="1682696192498422849">Pirmiau trumpasis kraštas</translation>
 <translation id="168693727862418163">Šios politikos vertės nepavyko patvirtinti pagal schemą ir jos bus nepaisoma.</translation>
 <translation id="168841957122794586">Serverio sertifikate yra nesudėtingas kriptografinis raktas.</translation>
@@ -2620,7 +2621,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6573200754375280815">Dvi skylės dešinėje</translation>
 <translation id="6578434528542148658">Netinkamas plėtinio ID.</translation>
 <translation id="657902945730878902">Piešimas ir spalvinimas</translation>
-<translation id="6579630537141957243">Prijungti MIDI įrenginį?</translation>
 <translation id="6579858392010591435">Šventės ir sezoniniai renginiai</translation>
 <translation id="6579990219486187401">Šviesiai rausva spalva</translation>
 <translation id="6581831440014388355">Nepageidaujamų kūno ir veido plaukų šalinimas</translation>

@@ -35,6 +35,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1150263420752757504"><ph name="APP_NAME" /> će se otvoriti u Chrome-u. Ako nastavite, prihvatate <ph name="BEGIN_LINK1" />Google uslove korišćenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uslove korišćenja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1177863135347784049">Prilagođeno</translation>
+<translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Želite da koristite jaku lozinku?</translation>
@@ -469,6 +470,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="3513704683820682405">Proširena realnost</translation>
 <translation id="3518985090088779359">Prihvati i nastavi</translation>
 <translation id="3522247891732774234">Ažuriranje je dostupno. Još opcija</translation>
+<translation id="3523426587027570423">Dodirnite da biste zatvorili plejer Slušajte ovu stranicu.</translation>
 <translation id="3524138585025253783">Korisnički interfejs za programere</translation>
 <translation id="3524334353996115845">Omogućite da <ph name="ORIGIN" /> potvrdi da ste to vi</translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -673,6 +675,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4637420359569396807">Pomoću funkcije merenja oglasa ograničeni tipovi podataka, kao što je doba dana kada vam je neki oglas prikazan, mogu dele se između sajtova i aplikacija radi merenja učinka njihovih oglasa.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ugrožena lozinka}one{# ugrožena lozinka}few{# ugrožene lozinke}other{# ugroženih lozinki}}</translation>
 <translation id="4650364565596261010">Podrazumevana sistemska</translation>
+<translation id="4654641641922242357">Plejer Slušajte ovu stranicu.</translation>
 <translation id="465657074423018424">Bezbedno pregledanje vas štiti od obmanjujućih veb-sajtova. Ako ga isključite, budite posebno pažljivi tokom pregledanja, pogotovo pre unosa lozinki.</translation>
 <translation id="4662373422909645029">Nadimak ne sme da sadrži brojeve</translation>
 <translation id="4663499661119906179">Pogledajte sajtove koje najčešće posećujete i vesti koje najčešće čitate</translation>
@@ -802,6 +805,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5222676887888702881">Odjavi me</translation>
 <translation id="5227554086496586518">Dodirnite da biste videli rezultate pretrage</translation>
 <translation id="5233638681132016545">Nova kartica</translation>
+<translation id="5234971936051226002">Plejer Slušajte ovu stranicu je umanjen.</translation>
 <translation id="5235196193381275927">Došlo je do problema pri prijavljivanju</translation>
 <translation id="5246093389635966745">Izmeni prečicu za traku sa alatkama</translation>
 <translation id="5271967389191913893">Uređaj ne može da otvori sadržaj za preuzimanje.</translation>
@@ -1096,6 +1100,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6770042910635026163">Sajtovi koje posećujete, a koji definišu vaša interesovanja</translation>
 <translation id="6770602306803890733">Poboljšava bezbednost za vas i druge na vebu</translation>
 <translation id="6785476624617658922">Dodatni uslovi korišćenja usluge za Chrome i Chrome OS</translation>
+<translation id="6790428901817661496">Pusti</translation>
 <translation id="6795633245022906657">Brzo otvorite novu karticu. Da biste izmenili ovu prečicu, idite u Podešavanja.</translation>
 <translation id="6802555630140434547">Prozor će biti zatvoren</translation>
 <translation id="6811034713472274749">Stranica je spremna za pregled</translation>
@@ -1220,7 +1225,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7431991332293347422">Kontrolišite kako se istorija pregledanja koristi za personalizovanje Pretrage i drugih usluga</translation>
 <translation id="7435356471928173109">Isključio je administrator</translation>
 <translation id="7437998757836447326">Odjavljivanje iz Chrome-a</translation>
-<translation id="7443901082822119557">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da prestanu sa radom.</translation>
 <translation id="7453467225369441013">Odjaviće vas sa većine sajtova. Neće vas odjaviti sa Google naloga.</translation>
 <translation id="7453810262525006706">Skupite u bočni prikaz</translation>
 <translation id="7454641608352164238">Nema dovoljno prostora</translation>
@@ -1320,6 +1324,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7926975587469166629">Nadimak kartice</translation>
 <translation id="7929962904089429003">Otvorite meni</translation>
 <translation id="7930998711684428189">Upozorava vas ako su lozinke otkrivene pri upadu u podatke.</translation>
+<translation id="7934668619883965330">Preuzimanje fajla nije uspelo. Format fajla nije podržan.</translation>
 <translation id="7939485076072265087">Napravite stilizovanu karticu sa isticanjem</translation>
 <translation id="7942131818088350342">Proizvod <ph name="PRODUCT_NAME" /> je zastareo.</translation>
 <translation id="7944772052836377867">Sinhronizacija mora da potvrdi da ste to vi</translation>
@@ -1337,7 +1342,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="799576009106109668">Pregledaćete brže jer se sadržaj proaktivno učitava na osnovu aktuelne posete veb-stranici</translation>
 <translation id="7998918019931843664">Ponovo otvorite zatvorenu karticu</translation>
 <translation id="8004582292198964060">Pregledač</translation>
-<translation id="8006818846907410687">Blokiraj dok se koristi režim bez arhiviranja</translation>
 <translation id="8013372441983637696">Obriši Chrome podatke i sa ovog uređaja</translation>
 <translation id="8015452622527143194">Vraćanje celokupnog prikaza stranice na podrazumevanu veličinu</translation>
 <translation id="8026334261755873520">Obrišite podatke pregledanja</translation>
@@ -1522,6 +1526,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8937772741022875483">Želite li da uklonite Chrome aktivnosti iz Digitalnog blagostanja?</translation>
 <translation id="8942627711005830162">Otvori u drugom prozoru</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Preuzimanje ovog jezika nije uspelo. Probajte ponovo kasnije.</translation>
+<translation id="8953618380150219653">Plejer Slušajte ovu stranicu je otvoren u punoj visini.</translation>
 <translation id="8955719471735800169">Nazad na vrh</translation>
 <translation id="8964479563882643397">Otvorite meni da biste otvorili novu karticu bez arhiviranja</translation>
 <translation id="8965591936373831584">na čekanju</translation>

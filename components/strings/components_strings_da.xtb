@@ -347,6 +347,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1668071460721346172">Få en mail</translation>
 <translation id="1671391448414634642">Sider på <ph name="SOURCE_LANGUAGE" /> oversættes fremover til <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">En begrænset liste over webadresser for sider, du besøger, hvor der forekommer <ph name="BEGIN_LINK" />hændelser relateret til forældet teknologi<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Kort kant først</translation>
 <translation id="168693727862418163">Politikkens værdi blev ikke bekræftet i forhold til dens skema, og den ignoreres derfor.</translation>
 <translation id="168841957122794586">Servercertifikatet indeholder en svag kryptografisk nøgle.</translation>
@@ -2048,6 +2049,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5296589789433599000">Madlavning og opskrifter</translation>
 <translation id="5299298092464848405">Der opstod en fejl ved parsing af politik</translation>
 <translation id="5299638840995777423">Robotter</translation>
+<translation id="5300062471671636390">Skjul listen over enheder til casting</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5306593769196050043">Begge ark</translation>
 <translation id="5307166000025436103">OK</translation>
@@ -2641,7 +2643,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6573200754375280815">To huller i højre side</translation>
 <translation id="6578434528542148658">Ugyldigt udvidelses-id.</translation>
 <translation id="657902945730878902">Tegning og farvelægning</translation>
-<translation id="6579630537141957243">Vil du forbinde MIDI-enheden?</translation>
 <translation id="6579858392010591435">Højtider og årlige begivenheder</translation>
 <translation id="6579990219486187401">Lys pink</translation>
 <translation id="6581831440014388355">Fjernelse af uønsket krops- og ansigtsbehåring</translation>
@@ -3529,6 +3530,7 @@ Yderligere oplysninger:
 <translation id="8368027906805972958">Ukendt eller ikke-understøttet enhed (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play-tjenester</translation>
 <translation id="8369073279043109617">Få en ny kode</translation>
+<translation id="8371841335382565017">Vis listen over enheder til casting</translation>
 <translation id="8371889962595521444">Tilpassede rodcertifikater</translation>
 <translation id="8374636051559112948">Varierer</translation>
 <translation id="8378714024927312812">Administreret af din organisation</translation>

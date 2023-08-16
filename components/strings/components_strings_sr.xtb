@@ -606,6 +606,7 @@
 <translation id="2225927550500503913">Виртуелна картица је укључена</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Пријављивање<ph name="END_LINK" /> на WiFi мрежу</translation>
 <translation id="2228057197024893428">Ова адреса је тренутно сачувана у Chrome-у. Да бисте је користили у свим Google производима, сачувајте је на Google налогу, <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> ће знати да сте посетили <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Компактни диск</translation>
 <translation id="2239100178324503013">Пошаљи одмах</translation>
 <translation id="2241693394036365668">Датотека је преузета</translation>
@@ -2093,6 +2094,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> жели да вам шаље обавештења</translation>
 <translation id="5430298929874300616">Уклоните обележивач</translation>
 <translation id="5443468954631487277">Обрнутим редоследом са одштампаном страном нагоре</translation>
+<translation id="5447235695608032700">Дозволите да <ph name="SITE" /> користи информације које је сачувао о вама</translation>
 <translation id="5447765697759493033">Овај сајт се неће преводити</translation>
 <translation id="5452270690849572955">Није могуће пронаћи ову страницу хоста <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Неисправна временска ознака смерница</translation>
@@ -2619,7 +2621,6 @@
 <translation id="6573200754375280815">Двоструко бушење на десној страни</translation>
 <translation id="6578434528542148658">Неважећи ИД додатка.</translation>
 <translation id="657902945730878902">Цртање и бојење</translation>
-<translation id="6579630537141957243">Желите да повежете MIDI уређај?</translation>
 <translation id="6579858392010591435">Празници и сезонски догађаји</translation>
 <translation id="6579990219486187401">Светлорозе</translation>
 <translation id="6581831440014388355">Уклањање нежељених длака са тела и лица</translation>

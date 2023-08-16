@@ -1743,6 +1743,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2369058545741334020">Abrir en modo Lectura</translation>
 <translation id="236939127352773362">Cuando algún dispositivo cercano esté compartiendo contenido</translation>
 <translation id="2371076942591664043">Abrir al &amp;finalizar</translation>
+<translation id="237336063998926520">Utilizar tu dirección IP para determinar la ubicación</translation>
 <translation id="2373666622366160481">Ajustar al tamaño del papel</translation>
 <translation id="2375406435414127095">Conecta tu teléfono</translation>
 <translation id="2376056713414548745">Leer en voz alta</translation>
@@ -7706,6 +7707,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7396017167185131589">Las carpetas compartidas aparecerán aquí</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> empezará a ejecutarse cuando se inicie el sistema y seguirá ejecutándose en segundo plano aunque cierres todas las demás ventanas de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizar sincronización</translation>
+<translation id="7399616692258236448">Las solicitudes de ubicación se bloquean automáticamente en todos los sitios, excepto los que permitas</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">¿Cambiar de nuevo a <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Configurar la conexión en tu <ph name="PHONE_NAME" /></translation>
@@ -8977,7 +8979,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Con permiso: <ph name="PERMISSION" /> y <ph name="COUNT" /> más</translation>
 <translation id="8413956290606243087">¿Quieres activar ChromeVox, el lector de pantalla integrado de ChromeOS?</translation>
-<translation id="8414065061814811918">Aceleración de desplazamiento. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Recuerdos ocultados durante 2 días</translation>
 <translation id="8414396119627470038">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Notas</translation>
@@ -9660,6 +9661,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8986494364107987395">Enviar automáticamente estadísticas de uso e informes sobre fallos a Google</translation>
 <translation id="8987305927843254629">Cada perfil puede personalizar su experiencia y mantener la privacidad de sus datos.</translation>
 <translation id="8987927404178983737">Mes</translation>
+<translation id="8988539543012086784">Esta página se ha guardado en <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Actualizar estado de la conexión compartida</translation>
 <translation id="8991520179165052608">El sitio web puede usar tu micrófono</translation>
 <translation id="8991694323904646277">No hay cámara</translation>

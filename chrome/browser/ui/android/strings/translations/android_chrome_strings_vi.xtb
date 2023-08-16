@@ -35,6 +35,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="1150263420752757504"><ph name="APP_NAME" /> sẽ mở trong Chrome. Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Đổi tên</translation>
 <translation id="1177863135347784049">Tùy chỉnh</translation>
+<translation id="1178581264944972037">Tạm dừng</translation>
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="1181366777303791449">trên <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Dùng mật khẩu mạnh?</translation>
@@ -1095,6 +1096,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6770042910635026163">Những trang web bạn truy cập giúp xác định mối quan tâm của bạn</translation>
 <translation id="6770602306803890733">Tăng cường bảo mật cho bạn và mọi người trên web</translation>
 <translation id="6785476624617658922">Điều khoản dịch vụ bổ sung của Chrome và ChromeOS</translation>
+<translation id="6790428901817661496">Phát</translation>
 <translation id="6795633245022906657">Mở nhanh một thẻ mới. Để chỉnh sửa lối tắt này, hãy chuyển đến phần Cài đặt.</translation>
 <translation id="6802555630140434547">Cửa sổ này sẽ đóng</translation>
 <translation id="6811034713472274749">Trang hiện đã sẵn sàng cho bạn xem</translation>
@@ -1219,7 +1221,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7431991332293347422">Kiểm soát cách Google sử dụng nhật ký duyệt web của bạn để cá nhân hóa dịch vụ Tìm kiếm và các dịch vụ khác</translation>
 <translation id="7435356471928173109">Quản trị viên đã tắt</translation>
 <translation id="7437998757836447326">Đăng xuất khỏi Chrome</translation>
-<translation id="7443901082822119557">Ở chế độ ẩn danh, các trang web không thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn như để cá nhân hoá quảng cáo. Do đó, các tính năng trên một số trang web có thể hoạt động không đúng cách.</translation>
 <translation id="7453467225369441013">Đăng xuất bạn khỏi hầu hết các trang web. Bạn sẽ không bị đăng xuất khỏi Tài khoản Google của mình.</translation>
 <translation id="7453810262525006706">Thu gọn thành chế độ xem từ một bên</translation>
 <translation id="7454641608352164238">Không đủ dung lượng</translation>
@@ -1336,7 +1337,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="799576009106109668">Bạn sẽ duyệt web nhanh hơn vì nội dung được tải chủ động dựa trên trang web bạn đang truy cập</translation>
 <translation id="7998918019931843664">Mở lại thẻ đã đóng</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
-<translation id="8006818846907410687">Chặn trong khi dùng chế độ ẩn danh</translation>
 <translation id="8013372441983637696">Xóa cả dữ liệu của bạn trên Chrome khỏi thiết bị này</translation>
 <translation id="8015452622527143194">Trả lại mọi nội dung trên trang về kích thước mặc định</translation>
 <translation id="8026334261755873520">Xóa dữ liệu duyệt web</translation>

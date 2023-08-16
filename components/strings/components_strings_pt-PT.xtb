@@ -606,6 +606,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2225927550500503913">Cartão virtual ativado</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Iniciar sessão<ph name="END_LINK" /> na rede Wi-Fi</translation>
 <translation id="2228057197024893428">Esta morada está atualmente guardada no Chrome. Para a usar nos produtos da rede Google, guarde-a na sua Conta Google <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> vai saber que visitou <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
 <translation id="2241693394036365668">É transferido um ficheiro</translation>
@@ -2093,6 +2094,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar-lhe notificações.</translation>
 <translation id="5430298929874300616">Remover marcador</translation>
 <translation id="5443468954631487277">Ordem inversa, com orientação para cima</translation>
+<translation id="5447235695608032700">Permita que o site <ph name="SITE" /> use as informações que guardou sobre si</translation>
 <translation id="5447765697759493033">Este site não será traduzido.</translation>
 <translation id="5452270690849572955">Não é possível encontrar esta página de <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Carimbo de data/hora da política incorreto</translation>
@@ -2620,7 +2622,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6573200754375280815">Perfuração dupla à direita</translation>
 <translation id="6578434528542148658">ID de extensão inválido.</translation>
 <translation id="657902945730878902">Desenhar e colorir</translation>
-<translation id="6579630537141957243">Quer ligar o dispositivo MIDI?</translation>
 <translation id="6579858392010591435">Férias e eventos sazonais</translation>
 <translation id="6579990219486187401">Rosa claro</translation>
 <translation id="6581831440014388355">Depilação corporal e facial</translation>

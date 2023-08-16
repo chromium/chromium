@@ -182,6 +182,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="174102739345480129">O marcador está desativado.</translation>
 <translation id="1743570585616704562">Não reconhecida</translation>
 <translation id="1746730358044914197">Os métodos de introdução são configurados pelo gestor.</translation>
+<translation id="1747336645387973286">data de conclusão: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Teclado no ecrã ativado</translation>
 <translation id="1749109475624620922">Janela <ph name="WINDOW_TITLE" /> atribuída a todos os espaços de trabalho</translation>
 <translation id="1750088060796401187">Apenas são permitidos <ph name="MAX_DESK_LIMIT" /> espaços de trabalho. Remova um espaço de trabalho para abrir um novo.</translation>
@@ -474,6 +475,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3081696990447829002">Expandir menu</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3090989381251959936">Ative/desative a funcionalidade <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
+<translation id="3093423061078042895">Em falta</translation>
 <translation id="3095995014811312755">versão</translation>
 <translation id="309749186376891736">Mover o cursor</translation>
 <translation id="3100274880412651815">Ignorar modo de captura</translation>
@@ -535,6 +537,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3364721542077212959">Ferramentas da caneta stylus</translation>
 <translation id="3365977133351922112">O seu telemóvel está demasiado longe. Aproxime o seu telemóvel.</translation>
 <translation id="3368922792935385530">Ligado</translation>
+<translation id="3369111525500416043">A concluir em breve</translation>
 <translation id="3371140690572404006">Dispositivo USB-C (porta frontal do lado direito)</translation>
 <translation id="3375634426936648815">Ligado</translation>
 <translation id="3378438761594387761">Pode encontrar as transferências e as capturas de ecrã recentes aqui</translation>
@@ -989,6 +992,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5208059991603368177">Ativado</translation>
 <translation id="5216991270656129561">Desativada até à(s) <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Espaço de trabalho seguinte: <ph name="NEXT_DESK_NAME" />, use Pesquisar + Espaço ou o atalho de teclado: Shift + Pesquisar + <ph name="NEXT_DESK_INDEX" /> para ativar.</translation>
+<translation id="5218064144558110424">Marcar como não concluída</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
 <translation id="5229343007215035173">Ativar/desativar o ecrã de privacidade</translation>
 <translation id="5234764350956374838">Ignorar</translation>
@@ -1048,6 +1052,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5465662442746197494">Precisa de ajuda?</translation>
 <translation id="547979256943495781">Prateleira à direita</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> ou <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
+<translation id="5482873136202102190">, +</translation>
 <translation id="5491186829646618080">Atualizações de firmware disponíveis</translation>
 <translation id="5503884284981862082">Abrir/fechar o Assistente Google</translation>
 <translation id="550391772491508736">Retomar transmissão</translation>
@@ -1174,6 +1179,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="598882571027504733">Para obter a atualização, reinicie o Chromebook com o teclado ligado.</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Realçar o item seguinte na prateleira</translation>
+<translation id="6015573907265691211">Marcar como concluída</translation>
 <translation id="6018164090099858612">A sair do modo espelhado</translation>
 <translation id="6019566113895157499">Atalhos de teclas</translation>
 <translation id="602001110135236999">Deslocar para a esquerda</translation>
@@ -1316,6 +1322,7 @@ Nova instalação</translation>
 <translation id="6597278316891651699">Câmara ajustada ao canto inferior esquerdo. Há um conflito com a superfície do sistema.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
 <translation id="6612802754306526077">Modo de gravação de ecrã selecionado</translation>
+<translation id="6612889377159412215">subtarefa</translation>
 <translation id="6613765291890844037">Armazenamento de <ph name="STORAGE_IN_USE_SIZE" /> em utilização | Total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">O ecrã de privacidade está ligado</translation>
 <translation id="6625718907317144388">As notificações das apps <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> estão ocultas porque a proteção da visualização está ativada</translation>
@@ -1359,6 +1366,7 @@ Nova instalação</translation>
 <translation id="6786750046913594791">Fechar pasta</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="679368458793552943">Aumentar o zoom quando a lupa estiver ativada</translation>
+<translation id="6794287755901682422">Este item tem: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6801878137098616817">Editado recentemente</translation>
 <translation id="6802196538183166658">Abrir as Definições rápidas ao selecionar a hora</translation>
 <translation id="6802687695197837794">Isto permite o acesso para a app <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e para todas as apps e Websites com as autorizações da câmara e do microfone</translation>
@@ -1615,6 +1623,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="793716872548410480">Prima <ph name="SHORTCUT_KEY_NAME" /> + V para ver a sua área de transferência. Os últimos 5 itens que copiou são guardados na sua área de transferência.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7944023924886109030">Veja todos os eventos de hoje</translation>
+<translation id="7945357288295809525">Mostrar definições de acessibilidade, funcionalidade "<ph name="ENABLED_FEATURES" />" ativada.</translation>
 <translation id="7947798320695032612">A app <ph name="APP_NAME" /> quer usar o(a) <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Escurecer o teclado</translation>
 <translation id="7963689218131240420">O modo Não incomodar está desativado.</translation>
@@ -1914,6 +1923,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="953431725143473984">Encerrar o dispositivo?</translation>
 <translation id="954052413789300507">Não existe espaço suficiente para o ficheiro <ph name="FILENAME" />. Liberte espaço.</translation>
 <translation id="974545358917229949">A apresentar <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
+<translation id="981011780479609956">Sem data de conclusão</translation>
 <translation id="98120814841227350">Ir para o fim do documento</translation>
 <translation id="987589956647469042">Os dados móveis estão ativados</translation>
 <translation id="989374776391122812">Controlos da câmara e de áudio</translation>

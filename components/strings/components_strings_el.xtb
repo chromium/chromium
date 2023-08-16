@@ -2033,6 +2033,7 @@
 <translation id="5296589789433599000">Μαγειρική και συνταγές</translation>
 <translation id="5299298092464848405">Σφάλμα ανάλυσης πολιτικής</translation>
 <translation id="5299638840995777423">Ρομποτική</translation>
+<translation id="5300062471671636390">Απόκρυψη λίστας συσκευών για μετάδοση</translation>
 <translation id="5300589172476337783">Εμφάνιση</translation>
 <translation id="5306593769196050043">Και τα δύο φύλλα</translation>
 <translation id="5307166000025436103">ΟΚ</translation>
@@ -2620,7 +2621,6 @@
 <translation id="6573200754375280815">Διπλό τρύπημα στα δεξιά</translation>
 <translation id="6578434528542148658">Μη έγκυρο αναγνωριστικό επέκτασης.</translation>
 <translation id="657902945730878902">Σχεδίαση και χρωματισμός</translation>
-<translation id="6579630537141957243">Σύνδεση συσκευής MIDI;</translation>
 <translation id="6579858392010591435">Διακοπές και εποχιακά συμβάντα</translation>
 <translation id="6579990219486187401">Ανοιχτό ροζ</translation>
 <translation id="6581831440014388355">Αφαίρεση ανεπιθύμητης τριχοφυίας προσώπου και σώματος</translation>
@@ -3497,6 +3497,7 @@
 <translation id="8368027906805972958">Άγνωστη ή μη υποστηριζόμενη συσκευή (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Υπηρεσίες Google Play</translation>
 <translation id="8369073279043109617">Λήψη νέου κωδικού</translation>
+<translation id="8371841335382565017">Εμφάνιση λίστας συσκευών για μετάδοση</translation>
 <translation id="8371889962595521444">Προσαρμοσμένα πιστοποιητικά ρίζας</translation>
 <translation id="8374636051559112948">Ποικίλλει</translation>
 <translation id="8378714024927312812">Διαχειριζόμενο από τον οργανισμό σας</translation>

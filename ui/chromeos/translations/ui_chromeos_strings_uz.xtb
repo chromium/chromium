@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">Mobil tarmoqlar qidirilmoqda</translation>
 <translation id="1293556467332435079">Fayllar</translation>
 <translation id="1297922636971898492">Google Disk hozir ish faoliyatida emas. Xizmat ish faoliyatiga qaytishi bilan yuklash amali avtomatik davom ettiriladi.</translation>
+<translation id="1306130176943817227">Oʻchirilmadi. Element band.</translation>
 <translation id="1307931752636661898">Linux fayllari ochilmadi</translation>
 <translation id="1313405956111467313">Proksi-server avtomatik sozlanishi</translation>
 <translation id="134645005685694099">Fayllarni sinxronlash uchun qurilmada joy yetarli emas. Yangi fayllar avtomatik sinxronlanmaydi.</translation>
@@ -537,6 +538,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5218183485292899140">Shveytsar klaviaturasi (Fransuz)</translation>
 <translation id="5234764350956374838">Yopish</translation>
 <translation id="5253070652067921974">Muallif</translation>
+<translation id="5254207638927440400">Fayl koʻchirilmadi. Fayl band.</translation>
 <translation id="5257456363153333584">Ninachi</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Fayllaringizdan hamma joyda foydalana olasiz. Hatto oflayn bo‘lganda ham.<ph name="MARKUP_2" />
     Google Drive xizmatidagi fayllar yap-yangi va har qanday qurilmadan kirish mumkin.<ph name="MARKUP_3" />

@@ -34,6 +34,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макул болосуз.</translation>
 <translation id="1173894706177603556">Атын өзгөртүү</translation>
 <translation id="1177863135347784049">Өзгөчөлөштүрүлгөн</translation>
+<translation id="1178581264944972037">Бир азга токтотуу</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Татаал сырсөздү колдоносузбу?</translation>
@@ -1061,6 +1062,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6649642165559792194">Сүрөттү алдын ала көрүү <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6659594942844771486">Өтмөк</translation>
+<translation id="6662119761881114773">Учурда бул түзмөктө сакталган сырсөздөрдү Chrome каналдарында колдонууга болбойт. Chrome'дун 121-версиясынан кийин Chrome жана <ph name="CHROME_CHANNEL" /> каналы үчүн түзмөгүңүздө сакталган сырсөздөр бириктирилип, эки колдонмодо тең колдонула алышат.</translation>
 <translation id="666731172850799929">Төмөнкүдө ачуу <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Сүрөттү көчүрүү</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> кошуу</translation>
@@ -1083,6 +1085,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6770042910635026163">Кызыккан нерселериңизди аныктай турган сайттар</translation>
 <translation id="6770602306803890733">Сиз жана башкалар үчүн Интернеттеги коопсуздукту арттырат</translation>
 <translation id="6785476624617658922">Chrome менен ChromeOS'тун Кошумча Тейлөө шарттары</translation>
+<translation id="6790428901817661496">Ойнотуу</translation>
 <translation id="6795633245022906657">Жаңы өтмөктү ыкчам ачыңыз. Бул ыкчам баскычты түзөтүү үчүн параметрлерге өтүңүз.</translation>
 <translation id="6802555630140434547">Терезе жабылат</translation>
 <translation id="6811034713472274749">Барак карап чыгууга даяр</translation>
@@ -1207,7 +1210,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7431991332293347422">Издөөнү жана башка кызматтарды жекечелештирүү үчүн серептөө таржымалыңыз кандайча пайдаланыларын көзөмөлдөңүз</translation>
 <translation id="7435356471928173109">Администраторуңуз өчүрүп койду</translation>
 <translation id="7437998757836447326">Chrome'дон чыгуу</translation>
-<translation id="7443901082822119557">Жашыруун режимде сайттар жарнамаларды жекелештирүү максатында башка сайттардагы серептөө аракеттериңизди көрүү үчүн cookie файлдарын колдоно алышпайт. Функциялар айрым сайттарда туура иштебеши мүмкүн.</translation>
 <translation id="7453467225369441013">Сиз көпчүлүк сайттардагы каттоо эсептериңизден чыгарылып, бирок Google аккаунтуңуздан чыкпайсыз.</translation>
 <translation id="7453810262525006706">Капталдагы тилкеге жыйыштыруу</translation>
 <translation id="7454641608352164238">Орун жетишсиз</translation>
@@ -1323,7 +1325,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="799576009106109668">Мазмун учурда ачылып турган веб-баракчанын негизинде жүктөлгөндүктөн, барактарды тезирээк карап чыгасыз</translation>
 <translation id="7998918019931843664">Жабылган кыстырманы кайра ачуу</translation>
 <translation id="8004582292198964060">Серепчи</translation>
-<translation id="8006818846907410687">Жашыруун режимде бөгөттөө</translation>
 <translation id="8013372441983637696">Ошондой эле Chrome дайындары бул түзмөктөн өчүрүлсүн</translation>
 <translation id="8015452622527143194">Баракта бардык нерселерди демейки өлчөмгө кайтаруу</translation>
 <translation id="8026334261755873520">Серепчиден көрүлгөн нерселерди тазалап салуу</translation>

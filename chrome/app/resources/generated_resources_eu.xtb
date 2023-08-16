@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Datuak zifratzea</translation>
 <translation id="1072700771426194907">USB bidezko gailu bat hauteman da</translation>
 <translation id="107278043869924952">Erabili PINa pasahitzaz gain</translation>
+<translation id="107450319332239199">Arazoren bat izan da. Ireki leihoak eskuz.</translation>
 <translation id="1076176485976385390">Nabigatu orrietatik testu-kurtsorea erabilita</translation>
 <translation id="1076382954055048850">Erakutsi beste igorpen-saio batzuk</translation>
 <translation id="1076698951459398590">Gaitu gaia</translation>
@@ -1742,6 +1743,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2369058545741334020">Ireki irakurtzeko moduan</translation>
 <translation id="236939127352773362">Gailuak inguruan edukia partekatzen ari direnean</translation>
 <translation id="2371076942591664043">Ireki &amp;amaitzean</translation>
+<translation id="237336063998926520">Erabili IP helbidea kokapena zehazteko</translation>
 <translation id="2373666622366160481">Egokitu paperera</translation>
 <translation id="2375406435414127095">Konektatu telefonora</translation>
 <translation id="2376056713414548745">Irakurri ozen</translation>
@@ -8971,7 +8973,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Baimendutako <ph name="PERMISSION" /> eta beste <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">ChromeVox (Chrome OS-ren pantaila-irakurgailu integratua) aktibatu nahi duzu?</translation>
-<translation id="8414065061814811918">Gora/Behera egiteko moduaren azelerazioa. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Datozen bi egunetan ez da erakutsiko oroitzapenik</translation>
 <translation id="8414396119627470038">Hasi saioa <ph name="SITE_ETLD_PLUS_ONE" /> webgunean <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
 <translation id="8414685983518053656">Oharrak</translation>
@@ -9657,6 +9658,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8989359959810288806">Freskatu konexioa partekatzeko aukeraren egoera</translation>
 <translation id="8991520179165052608">Webguneak mikrofonoa erabil dezake</translation>
 <translation id="8991694323904646277">Ez dago kamerarik</translation>
+<translation id="8991766915726096402">Gailuko datuak berreskuratzea</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Memoriaren erabilera - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> gailuaren pasahitza ahazten baduzu ere, gailuko datuak lehenera ditzakezu. Horretarako, Google-ko kontuan saioa hasi beharko duzu, edo kontua berreskuratzeko eginbidea erabili.</translation>
 <translation id="8993737615451556423">Kontrolatzeko aukerak eskaintzen ditu hauek egite aldera: irakurketa-ahotsa pausatu eta haren abiadura bizkortu eta moteldu</translation>

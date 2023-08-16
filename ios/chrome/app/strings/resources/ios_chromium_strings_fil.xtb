@@ -12,6 +12,7 @@
 <translation id="1507010443238049608">Tumulong sa Pagpapahusay ng Mga Feature at Performance ng Chromium</translation>
 <translation id="1531155317299575425">Nagpapakita ng mga prompt na mag-sign in sa Chromium.</translation>
 <translation id="1617663976202781617">Data mula sa pag-sync sa Chromium</translation>
+<translation id="1647558790457890304">Mga Setting ng Chromium</translation>
 <translation id="1722370509450468186">Ise-save sa iyong Account (<ph name="EMAIL" />) ang password mo.</translation>
 <translation id="1736662517232558588">Na-clear Chromium data</translation>
 <translation id="1758508597843173586">I-lock ang iyong incognito kapag umalis ka sa Chromium o lumipat ka sa ibang app.</translation>
@@ -54,6 +55,10 @@
 <translation id="3780779443901618967">Babalaan ka tungkol sa mga mapanganib na site, kahit iyong mga hindi alam ng Google noon, sa pamamagitan ng pagsusuri sa higit pang data mula sa mga site kaysa sa karaniwang proteksyon. Puwede mong piliing laktawan ang mga babala ng Chromium.</translation>
 <translation id="3805899903892079518">Walang access ang Chromium sa mga larawan o video mo. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
 <translation id="3827545470516145620">Mayroon kang standard na proteksyon sa seguridad sa device na ito</translation>
+<translation id="3886689467633467988">Mag-sign in sa site na ito at sa Chromium para makuha mo ang iyong mga bookmark at higit pa sa lahat ng device mo.</translation>
+<translation id="394413318816989199">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address.
+
+Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Buksan ang Chromium Mula sa Anumang App</translation>
 <translation id="4043291146360695975">Sine-save ang mga password sa Password Manager sa device lang na ito.</translation>
 <translation id="4099085513035183040">Hindi sinusuportahan sa Chromium Beta</translation>
@@ -65,14 +70,19 @@
 <translation id="4654936625574199632">Para makatulong na mapaganda ang app, nagpapadala ang Chromium ng data ng paggamit at pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">I-on ang scanner ng Chromium</translation>
 <translation id="4736424910885271643">Pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, kaya maki-clear ang data mo sa Chromium sa device na ito</translation>
+<translation id="4790638144988730920">Patuloy na gamitin ang data sa Chromium sa iyong Google Account.</translation>
 <translation id="4828317641996116749">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="4985291216379576555">Naka-offline, hindi matingnan ng Chromium kung may mga update</translation>
 <translation id="4996471330284142407">Makagawa ng mas maraming bagay gamit ang simple, secure, at mas mabilis na ngayong Chromium.</translation>
 <translation id="4999538639245140991">Dahil magsa-sign out ka sa account na pinapamahalaan ng <ph name="SIGNOUT_MANAGED_DOMAIN" />, made-delete ang iyong data sa Chromium sa device na ito. Mananatili ang data mo sa iyong Google Account.</translation>
 <translation id="5042011327527167688">I-tap ang “Tingnan gamit ang Google Maps sa Chromium.”</translation>
 <translation id="5048795749726991615">Para madaling makuha ang iyong mga naka-save na password sa iba mo pang app, gamitin ang Chromium para sa AutoFill</translation>
+<translation id="5131565040785979529">Pinapamahalaan ng iyong organisasyon at <ph name="DOMAIN" /> ang account kung saan ka naka-sign in at kung paano ginagamit ang Chromium.</translation>
 <translation id="5171868502429358653">Mag-sign In sa Chromium</translation>
 <translation id="5224391634244552924">Walang naka-save na password. Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito.</translation>
+<translation id="5242782538551259282">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium.
+
+        Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="5308226104666789935">Hindi matingnan ng Chromium kung may mga update</translation>
 <translation id="5396916991083608703">Itakda ang Chromium bilang Default?</translation>
 <translation id="5453478652154926037">Hindi masuri ng Chromium ang iyong mga password.</translation>
@@ -82,7 +92,17 @@
 <translation id="5688047395118852662">Magpapakita sa iyo ang card na ito ng mga suhestyon sa kung paano masusulit ang Chromium.</translation>
 <translation id="5700709190537129682">Hindi masuri ng Chromium ang iyong mga password</translation>
 <translation id="5777187867430702742">Page ng Chromium</translation>
+<translation id="5889847953983052353">Kapag naka-on:
+<ph name="BEGIN_INDENT" />  • Tumulong na pahusayin ang Chromium para sa mga taong gumagamit nito gaya ng iyong paggamit.<ph name="END_INDENT" />
+
+Mga bagay na dapat isaalang-alang:
+<ph name="BEGIN_INDENT" />  • Ipapadala sa Google ang impormasyon tungkol sa paggamit mo sa Chromium, pero hindi ito nauugnay sa iyo.
+
+  • Kung magka-crash ang Chromium, posibleng kasama sa mga detalye tungkol sa pag-crash ang ilang personal na impormasyon.
+
+  • Kung isi-sync mo ang iyong history sa Google Account mo, posibleng kasama rin sa mga sukatan ang impormasyon tungkol sa mga URL na binibisita mo.<ph name="END_INDENT" /></translation>
 <translation id="5945387852661427312">Nag-sign in ka gamit ang account na pinamamahalaan ng <ph name="DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chromium. Permanenteng mauugnay ang data mo sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chromium, ngunit mananatili itong naka-store sa Google Account mo.</translation>
+<translation id="5951593919357934226">Sulitin ang Chromium.</translation>
 <translation id="5983312940147103417">Pahusayin ang Chromium</translation>
 <translation id="6062449165341879460">Magkakaroon ng access ang <ph name="DOMAIN" /> ng iyong organisasyon sa data, mga bookmark, history, mga password, at iba mo pang setting sa Chromium na iso-store mo sa account na ito. Kapag nag-sign out ka, maki-clear ang iyong data sa device na ito.  Gayunpaman, mananatiling naka-store ang iyong data sa pinapamahalaang Google Account mo at magiging available ito sa iyong organisasyon. Puwede ring magtakda ang iyong organisasyon ng mga patakaran ng user na partikular sa account na iyon na puwedeng makabago sa gawi ng Chromium.</translation>
 <translation id="61109258320235597">Para magamit at ma-save ang data ng Chromium sa iyong Google Account, ilagay ang passphrase mo.</translation>
@@ -94,6 +114,9 @@
 <translation id="6268381023930128611">Mag-sign out sa Chromium?</translation>
 <translation id="632825460376924298">Payagan ang Pag-sign In sa Chromium</translation>
 <translation id="6337530241089703714">Piliin kung iki-clear ang iyong data sa Chromium sa device na ito o kung papanatilihin ito</translation>
+<translation id="6407399265324739055">Hindi mae-encrypt ang mga paraan ng pagbabayad at address. Hindi masi-sync ang history ng pag-browse mula sa Chromium.
+
+Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data. Hindi ipinapadala sa o sino-store ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Naging mas mahusay na ang Chromium! Available na ang bagong bersyon.</translation>
 <translation id="6563921047760808519">Matuto pa tungkol sa kung <ph name="BEGIN_LINK" />paano pinapanatiling pribado ng Chromium ang iyong data<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Suportado na ngayon ng Chromium ang mga patakaran ng user para sa iyong pinamamahalaang account</translation>

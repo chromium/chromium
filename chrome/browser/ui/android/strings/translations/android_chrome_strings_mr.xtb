@@ -34,6 +34,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> हे Chrome मध्ये उघडेल. पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व ChromeOS च्या अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता.</translation>
 <translation id="1173894706177603556">नाव बदला</translation>
 <translation id="1177863135347784049">कस्टम</translation>
+<translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> वर</translation>
 <translation id="1193729455103054076">क्लिष्ट पासवर्ड वापरायचा का?</translation>
@@ -1069,6 +1070,7 @@
 <translation id="6649642165559792194">इमेज <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /> चे पूर्वावलोकन करा</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">ब्राउझर टॅब</translation>
+<translation id="6662119761881114773">या डिव्हाइसवर सेव्ह केलेले पासवर्ड Chrome चॅनलवर सध्या वापरले जाऊ शकत नाहीत. Chrome 121 नंतर, Chrome साठी तुमच्या डिव्हाइसवर सेव्ह केलेले पासवर्ड आणि <ph name="CHROME_CHANNEL" /> मर्ज केले जातील व दोन्ही अ‍ॅप्समध्ये वापरता येऊ शकतील.</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मध्ये उघडा</translation>
 <translation id="6671495933530132209">इमेज कॉपी करा</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> जोडा</translation>
@@ -1091,6 +1093,7 @@
 <translation id="6770042910635026163">तुम्ही भेट देता त्या साइट तुमची स्वारस्ये परिभाषित करतात</translation>
 <translation id="6770602306803890733">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते</translation>
 <translation id="6785476624617658922">Chrome आणि ChromeOS च्या अतिरिक्त सेवा अटी</translation>
+<translation id="6790428901817661496">प्ले करा</translation>
 <translation id="6795633245022906657">झटपट नवीन टॅब उघडा. हा शॉर्टकट संपादित करण्यासाठी, सेटिंग्ज वर जा.</translation>
 <translation id="6802555630140434547">विंडो बंद केली जाईल</translation>
 <translation id="6811034713472274749">पेज पाहाण्यासाठी तयार आहे</translation>
@@ -1215,7 +1218,6 @@
 <translation id="7431991332293347422">शोध पर्सनलाइझ करण्यासाठी तुमचा ब्राउझिंग इतिहास कसा वापरला जातो ते आणि बरेच काही नियंत्रित करा</translation>
 <translation id="7435356471928173109">तुमच्या अ‍ॅडमिनिस्ट्रेटरने बंद केले</translation>
 <translation id="7437998757836447326">Chrome मधून साइन आउट करा</translation>
-<translation id="7443901082822119557">गुप्त मोडमध्ये असताना, वेगवेगळ्या साइटवरील तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी पाहण्यासाठी साइट तुमच्या कुकी वापरू शकत नाहीत. उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी. काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो.</translation>
 <translation id="7453467225369441013">तुम्हाला बहुतांश साइटमधून साइन आउट करते. तुम्हाला तुमच्या Google खात्यामधून साइन आउट केले जाणार नाही.</translation>
 <translation id="7453810262525006706">साइड व्ह्यूवर कोलॅप्स करा</translation>
 <translation id="7454641608352164238">पुरेशी जागा उरलेली नाही</translation>
@@ -1331,7 +1333,6 @@
 <translation id="799576009106109668">तुम्हाला आणखी जलद ब्राउझ करता येईल कारण तुमच्या सध्याच्या वेबपेज भेटीच्या आधारावर आशय प्रोॲक्टिव्हपणे लोड केला जातो</translation>
 <translation id="7998918019931843664">बंद केलेले टॅब पुन्हा उघडा</translation>
 <translation id="8004582292198964060">ब्राउझर</translation>
-<translation id="8006818846907410687">गुप्त मोड वापरताना ब्लॉक करणे</translation>
 <translation id="8013372441983637696">तुमचा या डिव्हाइसवरील Chrome डेटा देखील साफ करा</translation>
 <translation id="8015452622527143194">पेजवरील प्रत्येक गोष्ट डीफॉल्ट आकारमानावर परत करा</translation>
 <translation id="8026334261755873520">ब्राउझिंग डेटा साफ करा</translation>

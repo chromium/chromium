@@ -347,6 +347,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1668071460721346172">Fá tölvupóst</translation>
 <translation id="1671391448414634642">Síður á tungumálinu „<ph name="SOURCE_LANGUAGE" />“ verða héðan í frá þýddar yfir á eftirfarandi tungumál: <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Takmarkaður listi vefslóða síðna sem þú opnar þar sem <ph name="BEGIN_LINK" />tilvik vegna eldri tækni<ph name="END_LINK" /> koma upp.</translation>
 <translation id="1682696192498422849">Skammhlið fyrst</translation>
 <translation id="168693727862418163">Ekki tókst að staðfesta gildi þessarar reglu gagnvart skema hennar og hún verður hunsuð.</translation>
 <translation id="168841957122794586">Vottorð netþjónsins inniheldur ótraustan dulmálslykil.</translation>
@@ -2031,6 +2032,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5296589789433599000">Matreiðsla og uppskriftir</translation>
 <translation id="5299298092464848405">Villa við þáttun stefnu</translation>
 <translation id="5299638840995777423">Þjarkafræði</translation>
+<translation id="5300062471671636390">Fela tækjalista fyrir vörpun</translation>
 <translation id="5300589172476337783">Sýna</translation>
 <translation id="5306593769196050043">Bæði blöðin</translation>
 <translation id="5307166000025436103">Í lagi</translation>
@@ -2618,7 +2620,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6573200754375280815">Tvö göt hægra megin</translation>
 <translation id="6578434528542148658">Ógilt kenni viðbótar.</translation>
 <translation id="657902945730878902">Teikning og litun</translation>
-<translation id="6579630537141957243">Tengja MIDI-tæki?</translation>
 <translation id="6579858392010591435">Hátíðir og árstíðabundnir atburðir</translation>
 <translation id="6579990219486187401">Ljósbleikur</translation>
 <translation id="6581831440014388355">Fjarlæging óæskilegra líkams- og andlitshára</translation>
@@ -3495,6 +3496,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8368027906805972958">Óþekkt eða óstutt tæki (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Þjónusta Google Play</translation>
 <translation id="8369073279043109617">Fá nýjan kóða</translation>
+<translation id="8371841335382565017">Sýna tækjalista fyrir vörpun</translation>
 <translation id="8371889962595521444">Sérsniðin rótarvottorð</translation>
 <translation id="8374636051559112948">Breytileg</translation>
 <translation id="8378714024927312812">Stjórnað af fyrirtækinu þínu</translation>

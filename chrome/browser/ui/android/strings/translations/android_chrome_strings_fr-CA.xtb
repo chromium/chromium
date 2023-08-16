@@ -34,6 +34,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1150263420752757504"><ph name="APP_NAME" /> s'ouvrira dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Renommer</translation>
 <translation id="1177863135347784049">Personnalisé</translation>
+<translation id="1178581264944972037">Interrompre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1181366777303791449">sur <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Utiliser un mot de passe fort?</translation>
@@ -1091,6 +1092,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6770042910635026163">Sites que vous visitez et qui définissent vos centres d'intérêt</translation>
 <translation id="6770602306803890733">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web</translation>
 <translation id="6785476624617658922">Conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS</translation>
+<translation id="6790428901817661496">Jouer</translation>
 <translation id="6795633245022906657">Ouvrez rapidement un nouvel onglet. Pour modifier ce raccourci, accédez à Paramètres.</translation>
 <translation id="6802555630140434547">La fenêtre sera fermée</translation>
 <translation id="6811034713472274749">La page est prête pour consultation</translation>
@@ -1215,7 +1217,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7431991332293347422">Gérez la façon dont votre historique de navigation est utilisé pour personnaliser, entre autres, la recherche</translation>
 <translation id="7435356471928173109">Désactivée par votre administrateur</translation>
 <translation id="7437998757836447326">Se déconnecter de Chrome</translation>
-<translation id="7443901082822119557">Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utiliser vos témoins pour consulter votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités pourraient ne pas fonctionner sur certains sites.</translation>
 <translation id="7453467225369441013">Vous déconnecte de la plupart des sites. Vous ne serez pas déconnecté de votre compte Google.</translation>
 <translation id="7453810262525006706">Réduire la fenêtre en vue latérale</translation>
 <translation id="7454641608352164238">Espace insuffisant</translation>
@@ -1331,7 +1332,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="799576009106109668">Vous naviguerez plus rapidement parce que le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="7998918019931843664">Rouvrir l'onglet fermé</translation>
 <translation id="8004582292198964060">Navigateur</translation>
-<translation id="8006818846907410687">Bloquer seulement durant l'utilisation du mode de navigation privée</translation>
 <translation id="8013372441983637696">Aussi effacer vos données de Chrome de cet appareil</translation>
 <translation id="8015452622527143194">Afficher cette page dans sa taille par défaut</translation>
 <translation id="8026334261755873520">Effacer les données de navigation</translation>

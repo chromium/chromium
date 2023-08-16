@@ -852,6 +852,7 @@
 <translation id="76959938259365003">Failed to empty the bin.</translation>
 <translation id="770015031906360009">Greek</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> copied.</translation>
+<translation id="7707941139430559579">Can't move file. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">To use this network, you need to enter the 8-digit Personal Unblocking Key (PUK) provided by the operator.</translation>
 <translation id="7711920809702896782">Image info</translation>
 <translation id="7724603315864178912">Cut</translation>

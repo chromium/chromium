@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">正在搜索移动网络</translation>
 <translation id="1293556467332435079">文件</translation>
 <translation id="1297922636971898492">Google云端硬盘暂时无法使用。Google云端硬盘恢复正常后，系统将自动重新开始上传。</translation>
+<translation id="1306130176943817227">无法删除这项内容。它正被使用。</translation>
 <translation id="1307931752636661898">无法查看 Linux 文件</translation>
 <translation id="1313405956111467313">自动配置代理</translation>
 <translation id="134645005685694099">您设备的存储空间不足，无法继续进行文件同步。新文件将不再自动同步。</translation>
@@ -537,6 +538,7 @@
 <translation id="5218183485292899140">瑞士法语</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5253070652067921974">创建者</translation>
+<translation id="5254207638927440400">无法移动这个文件。它正被使用。</translation>
 <translation id="5257456363153333584">蜻蜓</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />可随时随地访问文件，即使处于离线状态也没关系。<ph name="MARKUP_2" />Google 云端硬盘上的文件是最新的，并可通过任意设备访问。<ph name="MARKUP_3" /><ph name="MARKUP_4" />可确保文件安全。<ph name="MARKUP_5" />无论您的设备出现什么状况，您的文件都会安全地存储在 Google 云端硬盘上。<ph name="MARKUP_6" /><ph name="MARKUP_7" />文件集中存储，方便您与他人在同一个地方共享、创建和协作处理<ph name="MARKUP_8" />文件。<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">从 Google 云端硬盘恢复的文件</translation>

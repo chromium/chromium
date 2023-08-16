@@ -347,6 +347,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1668071460721346172">Dapatkan e-mel</translation>
 <translation id="1671391448414634642">Halaman dalam <ph name="SOURCE_LANGUAGE" /> akan diterjemah kepada <ph name="TARGET_LANGUAGE" /> bermula dari sekarang.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> kepada <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Senarai URL halaman terhad yang anda lawati yang mengandungi <ph name="BEGIN_LINK" />acara teknologi lama<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Sisi pendek dahulu</translation>
 <translation id="168693727862418163">Nilai dasar ini gagal disahkan dengan skemanya dan akan diabaikan.</translation>
 <translation id="168841957122794586">Sijil pelayan mengandungi kunci kriptografi yang lemah.</translation>
@@ -605,6 +606,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2225927550500503913">Kad maya dihidupkan</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Log masuk<ph name="END_LINK" /> ke rangkaian Wi-Fi</translation>
 <translation id="2228057197024893428">Alamat ini disimpan dalam Chrome pada masa ini. Untuk menggunakan alamat ini pada seluruh produk Google, simpan alamat ini dalam Google Account anda, <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> akan mengetahui bahawa anda melawati <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Cakera Padat</translation>
 <translation id="2239100178324503013">Hantar sekarang</translation>
 <translation id="2241693394036365668">Fail dimuat turun</translation>
@@ -2093,6 +2095,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5426179911063097041"><ph name="SITE" /> mahu menghantar pemberitahuan kepada anda</translation>
 <translation id="5430298929874300616">Alih keluar penanda halaman</translation>
 <translation id="5443468954631487277">Susunan terbalik menghadap ke atas</translation>
+<translation id="5447235695608032700">Benarkan <ph name="SITE" /> menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="5447765697759493033">Tapak ini tidak akan diterjemah</translation>
 <translation id="5452270690849572955">Halaman <ph name="HOST_NAME" /> ini tidak ditemui</translation>
 <translation id="5455374756549232013">Cap waktu dasar tidak elok</translation>
@@ -2620,7 +2623,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6573200754375280815">Dua tebukan kanan</translation>
 <translation id="6578434528542148658">ID sambungan tidak sah.</translation>
 <translation id="657902945730878902">Melukis &amp; mewarna</translation>
-<translation id="6579630537141957243">Sambungkan peranti MIDI?</translation>
 <translation id="6579858392010591435">Acara Musim Cuti &amp; Bermusim</translation>
 <translation id="6579990219486187401">Merah Jambu Cerah</translation>
 <translation id="6581831440014388355">Pembuangan Bulu Badan &amp; Muka Yang Tidak Dikehendaki</translation>

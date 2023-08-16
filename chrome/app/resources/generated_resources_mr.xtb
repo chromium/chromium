@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">डेटा एनसिफरमेन्ट</translation>
 <translation id="1072700771426194907">USB डिव्हाइस आढळले आहे</translation>
 <translation id="107278043869924952">पासवर्ड व्यतिरिक्त पिन वापरा</translation>
+<translation id="107450319332239199">काहीतरी चुकले. त्याऐवजी विंडो मॅन्युअली उघडा.</translation>
 <translation id="1076176485976385390">मजकुराचा कर्सर वापरून पेज नेव्हिगेट करा</translation>
 <translation id="1076382954055048850">इतर कास्‍ट सेशन दाखवा</translation>
 <translation id="1076698951459398590">थीम सुरू करा</translation>
@@ -1756,6 +1757,7 @@
 <translation id="2369058545741334020">वाचन मोडमध्ये उघडा</translation>
 <translation id="236939127352773362">डिव्हाइस जवळपास शेअर करताना</translation>
 <translation id="2371076942591664043">&amp;पूर्ण झाल्यानंतर उघडा</translation>
+<translation id="237336063998926520">स्थान निर्धारित करण्यासाठी तुमचा आयपी ॲड्रेस वापरा</translation>
 <translation id="2373666622366160481">कागदाच्या आकारात बसवा</translation>
 <translation id="2375406435414127095">तुमच्या फोनशी कनेक्ट करा</translation>
 <translation id="2376056713414548745">मोठ्‍याने वाचा</translation>
@@ -8989,7 +8991,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">अनुमती असलेले <ph name="PERMISSION" /> आणि आणखी <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">तुम्हाला ChromeOS साठी बिल्ट-इन स्क्रीन रीडर असलेले ChromeVox अ‍ॅक्टिव्हेट करायचे आहे का?</translation>
-<translation id="8414065061814811918">अ‍ॅक्सिलरेशन स्क्रोल करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">मेमरी दोन दिवसांसाठी लपवल्या गेल्या</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> वापरून <ph name="SITE_ETLD_PLUS_ONE" /> मध्ये साइन इन करा</translation>
 <translation id="8414685983518053656">टिपा</translation>
@@ -9676,6 +9677,7 @@
 <translation id="8989359959810288806">टेदरिंग स्टेटस रिफ्रेश करा</translation>
 <translation id="8991520179165052608">साइट तुमचा मायक्रोफोन वापरू शकते</translation>
 <translation id="8991694323904646277">कोणताही कॅमेरा नाही</translation>
+<translation id="8991766915726096402">स्थानिक डेटा रिकव्हरी</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - मेमरी वापर - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">तुम्ही तुमच्या <ph name="DEVICE_TYPE" /> चा पासवर्ड विसरल्यास, तुम्ही तरीही तुमचा स्थानिक डेटा रिस्टोअर करू शकता. तुम्ही तुमच्या Google खाते मध्ये साइन इन करणे किंवा खाते रिकव्हरी वापरणे आवश्यक आहे.</translation>
 <translation id="8993737615451556423">वाचनाच्या आवाजाची गती वाढवण्यासाठी, कमी करण्यासाठी आणि विराम देण्यासाठी नियंत्रणे पुरवते</translation>

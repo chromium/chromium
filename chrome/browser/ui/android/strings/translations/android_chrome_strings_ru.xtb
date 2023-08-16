@@ -3,6 +3,7 @@
 <translationbundle lang="ru">
 <translation id="1011749477052068769">Переместить сюда</translation>
 <translation id="1016498331642356377">Выполнить голосовой поиск. Чтобы изменить функцию кнопки, нажмите и удерживайте ее.</translation>
+<translation id="1024113959924243553">Chrome для разработчиков</translation>
 <translation id="1028699632127661925">Отправка на устройство "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="103269572468856066">Удалить эти данные?</translation>
 <translation id="1034259925032978114">Окно открыто</translation>
@@ -34,6 +35,7 @@
 <translation id="1150263420752757504">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Переименовать</translation>
 <translation id="1177863135347784049">Персонализированные</translation>
+<translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Использовать надежный пароль?</translation>
@@ -51,6 +53,7 @@
 <translation id="1240288207750131269">Выполняется загрузка пакета "<ph name="LANG" />"…</translation>
 <translation id="1240903469550363138">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" />.</translation>
 <translation id="124116460088058876">Другие языки</translation>
+<translation id="1241792820757384812">Ваши пароли будут удалены из Google Менеджера паролей в <ph name="CHROME_CHANNEL" />. Файл с паролями, который вы скачали, останется.</translation>
 <translation id="1242883863226959074">устройстве</translation>
 <translation id="124678866338384709">Закрыть вкладку</translation>
 <translation id="1246905108078336582">Удалить подсказку из буфера обмена?</translation>
@@ -431,6 +434,7 @@
 <translation id="3303414029551471755">Скачать?</translation>
 <translation id="3305130791745726624">Отправить на устройства</translation>
 <translation id="3305795716056605962">Переводить страницы можно через меню "Ещё"</translation>
+<translation id="3324393723900507254">Выбран шаблон "<ph name="TEMPLATE_TITLE" />"</translation>
 <translation id="3334729583274622784">Изменить расширение имени файла?</translation>
 <translation id="3341262203274374114">Не удалось отменить подписку. Что-то пошло не так.</translation>
 <translation id="3359667936385849800">Использовать текущего поставщика</translation>
@@ -576,6 +580,7 @@
 <translation id="4124152339699379357">Развернутое на весь экран окно с разрешениями на уведомления</translation>
 <translation id="4135200667068010335">Список устройств для отправки вкладки закрыт.</translation>
 <translation id="4137746084635924146">Текущий язык устройства</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Полная версия сайта запрашивается по умолчанию</translation>
 <translation id="4147131678541801076">Если пробные функции включены, для противодействия спаму и мошенничеству будут использоваться личные токены состояния. Токены помогают сайтам бороться с недобросовестными действиями и отличать ботов от людей.
 
@@ -1069,6 +1074,7 @@
 <translation id="6649642165559792194">Просмотреть изображение <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659594942844771486">Tab</translation>
+<translation id="6662119761881114773">Сохраненные на этом устройстве пароли пока нельзя использовать в разных каналах Chrome. Мы объединим ваши сохраненные пароли для Chrome и <ph name="CHROME_CHANNEL" /> после выхода версии Chrome 121, и их можно будет использовать в обоих приложениях.</translation>
 <translation id="666731172850799929">Открыть в <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Копировать изображение</translation>
 <translation id="6672917148207387131">Добавить сайт <ph name="DOMAIN" /></translation>
@@ -1091,6 +1097,7 @@
 <translation id="6770042910635026163">Посещаемые вами сайты, по данным которых определяются ваши интересы</translation>
 <translation id="6770602306803890733">Делает интернет более безопасным для вас и других пользователей.</translation>
 <translation id="6785476624617658922">Дополнительные условия использования Chrome и Chrome OS</translation>
+<translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6795633245022906657">Открыть новую вкладку. Чтобы изменить функцию кнопки, перейдите в настройки.</translation>
 <translation id="6802555630140434547">Окно будет закрыто.</translation>
 <translation id="6811034713472274749">Страница загружена</translation>
@@ -1215,7 +1222,6 @@
 <translation id="7431991332293347422">Укажите, как Google может использовать историю браузера для персонализации Поиска и других сервисов.</translation>
 <translation id="7435356471928173109">Функцию отключил администратор.</translation>
 <translation id="7437998757836447326">Выход из Chrome</translation>
-<translation id="7443901082822119557">В режиме инкогнито сайты не могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например, для показа персонализированной рекламы. Из-за этого некоторые функции на сайтах могут работать некорректно.</translation>
 <translation id="7453467225369441013">Вы выйдете из аккаунтов на большинстве сайтов, но останетесь в аккаунте Google.</translation>
 <translation id="7453810262525006706">Свернуть в боковую панель</translation>
 <translation id="7454641608352164238">Недостаточно места</translation>
@@ -1320,6 +1326,7 @@
 <translation id="7944772052836377867">Подтвердите личность для синхронизации</translation>
 <translation id="7947953824732555851">Принять и войти</translation>
 <translation id="7957413488482743710">Виртуальная карта помогает скрыть ваши данные от мошенников. <ph name="BEGIN_LINK1" />Подробнее…<ph name="END_LINK1" /></translation>
+<translation id="7960972236129063347">Кнопка "Назад" на странице со статистикой</translation>
 <translation id="7961926449547174351">Откройте доступ к хранилищу в настройках устройства.</translation>
 <translation id="7963646190083259054">Поставщик:</translation>
 <translation id="7965838025086216108">Вы можете использовать сохраненные пароли на любых устройствах. Они сохраняются в Google Менеджере паролей для аккаунта <ph name="ACCOUNT" />.</translation>
@@ -1331,7 +1338,6 @@
 <translation id="799576009106109668">Работа браузера станет быстрее благодаря автоматической загрузке контента с учетом просматриваемой в настоящий момент страницы.</translation>
 <translation id="7998918019931843664">Открыть закрытую вкладку</translation>
 <translation id="8004582292198964060">Браузер</translation>
-<translation id="8006818846907410687">Блокировать в режиме инкогнито</translation>
 <translation id="8013372441983637696">Удалить данные Chrome с этого устройства</translation>
 <translation id="8015452622527143194">Восстановить масштаб страницы по умолчанию</translation>
 <translation id="8026334261755873520">Очистить историю</translation>
@@ -1563,6 +1569,7 @@
 <translation id="9158770349521403363">Поделиться без ссылки</translation>
 <translation id="9159716826369098114">Восстановить группу вкладок (<ph name="TAB_COUNT" />) и открыть ее в фоновом режиме.</translation>
 <translation id="9169507124922466868">История переходов открыта наполовину</translation>
+<translation id="918419812064856259">Бета-версия Chrome</translation>
 <translation id="9190276265094487094">История будет храниться на всех синхронизированных устройствах. Так вы сможете начать работу на одном устройстве и продолжить на другом.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено 1 минуту назад.}one{Проверено # минуту назад.}few{Проверено # минуты назад.}many{Проверено # минут назад.}other{Проверено # минуты назад.}}</translation>
 <translation id="9204021776105550328">Удаление…</translation>
@@ -1577,6 +1584,7 @@
 <translation id="926205370408745186">Удалить данные о действиях в Chrome из сервиса "Цифровое благополучие"</translation>
 <translation id="927968626442779827">Попробуйте упрощенный режим в Google Chrome.</translation>
 <translation id="928550791203542716">Вы подписались на сайт "<ph name="SITE_NAME" />".</translation>
+<translation id="93533588269984624">Все пароли будут скачаны на ваше устройство и удалены из <ph name="CHROME_CHANNEL" />.</translation>
 <translation id="938850635132480979">Ошибка <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Введите кодовую фразу</translation>
 <translation id="952301137339791907">Нижний экран статистики страницы открыт</translation>

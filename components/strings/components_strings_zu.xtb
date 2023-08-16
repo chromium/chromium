@@ -610,6 +610,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2225927550500503913">Ikhadi elingekho ngokoqobo livuliwe</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Ingena ngemvume<ph name="END_LINK" /> kunethiwekhi ye-WiFi</translation>
 <translation id="2228057197024893428">Leli kheli okwamanje lilondolozwa ku-Chrome. Ukuze uyisebenzise emikhiqizweni ye-Google, yilondoloze ku-Google Account yakho, <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> izokwazi ukuthi uvakashele i-<ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">I-Compact Disc</translation>
 <translation id="2239100178324503013">Thumela manje</translation>
 <translation id="2241693394036365668">Ifayela lilandiwe</translation>
@@ -2107,6 +2108,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5426179911063097041">I-<ph name="SITE" /> ifuna ukukuthumelela izaziso</translation>
 <translation id="5430298929874300616">Susa ibhukhimakhi</translation>
 <translation id="5443468954631487277">I-oda elingemuva libheke phezulu</translation>
+<translation id="5447235695608032700">Vumela i-<ph name="SITE" /> ukuthi isebenzise imininingwane eyilondolozile ngawe</translation>
 <translation id="5447765697759493033">Leli sayithi ngeke lihumushwe</translation>
 <translation id="5452270690849572955">Leli khasi le-<ph name="HOST_NAME" /> alikwazi ukutholwa</translation>
 <translation id="5455374756549232013">Isitembu sesikhathi senqubomgomo embi</translation>
@@ -2640,7 +2642,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6573200754375280815">Ukushaya okubili kwesokudla</translation>
 <translation id="6578434528542148658">I-ID yesandiso engavumelekile.</translation>
 <translation id="657902945730878902">Ukudweba nemibala</translation>
-<translation id="6579630537141957243">Xhuma idivayisi ye-MIDI?</translation>
 <translation id="6579858392010591435">Amaholide Nemicimbi Yamasizini</translation>
 <translation id="6579990219486187401">Okuphinki okukhanyayo</translation>
 <translation id="6581831440014388355">Ukususwa Koboya Ongafuneki Emzimbeni Nasebusweni</translation>

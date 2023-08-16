@@ -347,6 +347,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1668071460721346172">Recibir un correo electrónico</translation>
 <translation id="1671391448414634642">As páxinas en <ph name="SOURCE_LANGUAGE" /> traduciranse ao <ph name="TARGET_LANGUAGE" /> a partir de agora.</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Unha lista limitada dos URL das páxinas que visites nas que se produzan <ph name="BEGIN_LINK" />eventos de tecnoloxía antiga<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Co bordo curto primeiro</translation>
 <translation id="168693727862418163">Non puido cotexarse o valor desta política co seu esquema para levar a cabo a súa validación, así que se ignorará.</translation>
 <translation id="168841957122794586">O certificado do servidor contén unha clave criptográfica non segura.</translation>
@@ -2031,6 +2032,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5296589789433599000">Cociña e receitas</translation>
 <translation id="5299298092464848405">Erro ao analizar a política</translation>
 <translation id="5299638840995777423">Robótica</translation>
+<translation id="5300062471671636390">Ocultar lista dos dispositivos de emisión</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5306593769196050043">As dúas follas</translation>
 <translation id="5307166000025436103">Válido</translation>
@@ -2618,7 +2620,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6573200754375280815">Dúas perforacións na parte dereita</translation>
 <translation id="6578434528542148658">O código da extensión non é válido.</translation>
 <translation id="657902945730878902">Debuxo e coloreado</translation>
-<translation id="6579630537141957243">Queres conectar o dispositivo MIDI?</translation>
 <translation id="6579858392010591435">Festas e eventos de tempada</translation>
 <translation id="6579990219486187401">Rosa claro</translation>
 <translation id="6581831440014388355">Depilación de pelo facial e corporal</translation>
@@ -3495,6 +3496,7 @@ Detalles adicionais:
 <translation id="8368027906805972958">Dispositivo descoñecido ou non compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Servizos de Google Play</translation>
 <translation id="8369073279043109617">Xerar novo código</translation>
+<translation id="8371841335382565017">Mostrar lista dos dispositivos de emisión</translation>
 <translation id="8371889962595521444">Certificados raíz personalizados</translation>
 <translation id="8374636051559112948">Varía</translation>
 <translation id="8378714024927312812">Xestionado pola túa organización</translation>

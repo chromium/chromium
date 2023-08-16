@@ -34,6 +34,7 @@
 <translation id="1150263420752757504">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Перейменувати</translation>
 <translation id="1177863135347784049">Спеціальне</translation>
+<translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1181366777303791449">на сторінці <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Використати надійний пароль?</translation>
@@ -1091,6 +1092,7 @@
 <translation id="6770042910635026163">Відвідувані вами сайти, що визначають ваші інтереси</translation>
 <translation id="6770602306803890733">Покращує захист усіх користувачів в Інтернеті</translation>
 <translation id="6785476624617658922">Додаткові умови використання Google Chrome і ОС Chrome</translation>
+<translation id="6790428901817661496">Відтворити</translation>
 <translation id="6795633245022906657">Швидко відкривайте нову вкладку. Щоб змінити функцію цієї кнопки, перейдіть у налаштування.</translation>
 <translation id="6802555630140434547">Вікно буде закрито</translation>
 <translation id="6811034713472274749">Сторінка готова для перегляду</translation>
@@ -1215,7 +1217,6 @@
 <translation id="7431991332293347422">Указуйте, як використовувати історію веб-перегляду для персоналізації Пошуку тощо</translation>
 <translation id="7435356471928173109">Вимкнено адміністратором</translation>
 <translation id="7437998757836447326">Вихід із Chrome</translation>
-<translation id="7443901082822119557">В анонімному режимі сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="7453467225369441013">Ви вийдете з більшості сайтів, але не вийдете з облікового запису Google.</translation>
 <translation id="7453810262525006706">Згорнути до бічної панелі</translation>
 <translation id="7454641608352164238">Замало місця</translation>
@@ -1331,7 +1332,6 @@
 <translation id="799576009106109668">Ви будете швидше переглядати веб-сторінки, оскільки контент попередньо завантажується на основі поточної відкритої веб-сторінки</translation>
 <translation id="7998918019931843664">Знову відкрити закриту вкладку</translation>
 <translation id="8004582292198964060">Переглядач</translation>
-<translation id="8006818846907410687">Блокувати в анонімному режимі</translation>
 <translation id="8013372441983637696">Також видалити дані Chrome із цього пристрою</translation>
 <translation id="8015452622527143194">Відновити розміри всіх елементів за умовчанням</translation>
 <translation id="8026334261755873520">Очистити історію</translation>

@@ -347,6 +347,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1668071460721346172">Dapatkan email</translation>
 <translation id="1671391448414634642">Mulai sekarang, halaman dalam bahasa <ph name="SOURCE_LANGUAGE" /> akan diterjemahkan ke dalam bahasa <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ke <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Daftar terbatas URL halaman yang Anda buka tempat <ph name="BEGIN_LINK" />peristiwa teknologi lama<ph name="END_LINK" /> terjadi.</translation>
 <translation id="1682696192498422849">Tepi pendek lebih dulu</translation>
 <translation id="168693727862418163">Nilai kebijakan ini gagal memvalidasi skemanya dan akan diabaikan.</translation>
 <translation id="168841957122794586">Sertifikat server berisi kunci kriptografis yang lemah.</translation>
@@ -2030,6 +2031,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5296589789433599000">Memasak &amp; resep masakan</translation>
 <translation id="5299298092464848405">Kebijakan kesalahan penguraian</translation>
 <translation id="5299638840995777423">Robotika</translation>
+<translation id="5300062471671636390">Sembunyikan daftar perangkat untuk transmisi</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
 <translation id="5306593769196050043">Kedua lembar</translation>
 <translation id="5307166000025436103">Oke</translation>
@@ -2617,7 +2619,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6573200754375280815">Dua lubang di kanan</translation>
 <translation id="6578434528542148658">ID ekstensi tidak valid.</translation>
 <translation id="657902945730878902">Menggambar &amp; mewarnai</translation>
-<translation id="6579630537141957243">Hubungkan perangkat MIDI?</translation>
 <translation id="6579858392010591435">Acara Liburan &amp; Musiman</translation>
 <translation id="6579990219486187401">Merah Muda Terang</translation>
 <translation id="6581831440014388355">Penghilangan Rambut Badan dan Wajah Yang Tidak Diinginkan</translation>
@@ -3492,6 +3493,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8368027906805972958">Perangkat tidak dikenal atau tidak didukung (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Layanan Google Play</translation>
 <translation id="8369073279043109617">Dapatkan kode baru</translation>
+<translation id="8371841335382565017">Tampilkan daftar perangkat untuk transmisi</translation>
 <translation id="8371889962595521444">Root certificate kustom</translation>
 <translation id="8374636051559112948">Bervariasi</translation>
 <translation id="8378714024927312812">Dikelola oleh organisasi</translation>

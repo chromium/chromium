@@ -1084,6 +1084,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Դուք այժմ ավելի լավ ցանցի եք միացած</translation>
 <translation id="5619862035903135339">Ադմինիստրատորի կանոններով արգելված է էկրանի տեսագրումը</translation>
+<translation id="5620856676199877916">Դիտել ամբողջ դասարանային աշխատանքը Google Classroom կայքում</translation>
 <translation id="5620979661744857819">Սա օգտագործման թույլտվություն է տրամադրում <ph name="APP_NAME" /> հավելվածին և բոլոր այն հավելվածներին ու կայքերին, որոնք ունեն տեսախցիկի և խոսափողի օգտագործման թույլտվություն։ Հնարավոր է՝ անհրաժեշտ լինի թարմացնել վեբ էջը կամ վերագործարկել հավելվածը։</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Չհաջողվեց հաստատել ձեր գաղտնաբառը։ Նորից փորձեք։</translation>
@@ -1213,6 +1214,7 @@
 <translation id="6154006699632741460">Արտաքին սարքերը չեն աջակցվում</translation>
 <translation id="6156960295318603523">Լեզվի կարգավորումներ</translation>
 <translation id="615957422585914272">Ցույց տալ էկրանի ստեղնաշարը</translation>
+<translation id="616543563528926612">«Սեղմել մկնիկի աջ կոճակը» գործողության դյուրանցումը դարձել է Alt + սեղմում (նախկին դյուրանցումը՝ <ph name="LAUNCHER_KEY_NAME" /> ստեղն + սեղմում)</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6166852626429024716">Որոնեք սարքում, հավելվածներում, կարգավորումներում, համացանցում…</translation>
 <translation id="6168318496333165060">Բացել «Դիագնոստիկա» հավելվածը</translation>
@@ -1499,6 +1501,7 @@
 <translation id="7497767806359279797">Ընտրել լեզու և ստեղնաշար</translation>
 <translation id="7508690557411636492">Անցած ամիս բացել եք</translation>
 <translation id="7509246181739783082">Հաստատեք ձեր ինքնությունը</translation>
+<translation id="7512509370370076552">«Սեղմել մկնիկի աջ կոճակը» գործողության դյուրանցումը դարձել է <ph name="LAUNCHER_KEY_NAME" /> ստեղն + սեղմում (նախկին դյուրանցումը՝ Alt + սեղմում)</translation>
 <translation id="7512726380443357693">«<ph name="BUTTON_LABEL" />», ընտրված չէ</translation>
 <translation id="7513622367902644023">Ընտրված է սքրինշոթի ռեժիմը</translation>
 <translation id="7513922695575567867">Օրացույց, <ph name="DATE" /> ամսաթվի շաբաթը, այժմ ընտրված է՝ <ph name="SELECTED_DATE" />։</translation>
@@ -1602,6 +1605,7 @@
 <translation id="7904094684485781019">Այս հաշվի ադմինիստրատորը բազմակի մուտք չի թույլատրել:</translation>
 <translation id="7911118814695487383">Լինուքս</translation>
 <translation id="7917760201509801422">Միացած է <ph name="DEVICECOUNT" /> սարք</translation>
+<translation id="7926080067315048321">Դիտել բոլոր առաջադրանքները Google Tasks կայքում</translation>
 <translation id="7930731167419639574">Խոսքն այժմ մշակվում է այս սարքում, և թելադրումն աշխատում է առանց ինտերնետի։</translation>
 <translation id="7932451802722951285">Բացել Google Օրացույցում</translation>
 <translation id="7933084174919150729">Google Օգնականը հասանելի է միայն հիմնական պրոֆիլում։</translation>

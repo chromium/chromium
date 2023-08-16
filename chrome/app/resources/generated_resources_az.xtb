@@ -97,6 +97,7 @@
 <translation id="1071917609930274619">Data Şifrələnməsi</translation>
 <translation id="1072700771426194907">USB cihazı aşkarlandı</translation>
 <translation id="107278043869924952">Parol ilə yanaşı PIN istifadə edin</translation>
+<translation id="107450319332239199">Xəta oldu. Pəncərələri manual açın.</translation>
 <translation id="1076176485976385390">Səhifələri mətn kursoru ilə vərəqləyin</translation>
 <translation id="1076382954055048850">Digər Yayım sessiyalarını göstərin</translation>
 <translation id="1076698951459398590">Temanı Aktiv Edin</translation>
@@ -1741,6 +1742,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2369058545741334020">Oxu rejimində açın</translation>
 <translation id="236939127352773362">Cihazlar yaxınlıqda paylaşdıqda</translation>
 <translation id="2371076942591664043">Hazır olanda açın</translation>
+<translation id="237336063998926520">Məkanı müəyyən etmək üçün IP ünvanından istifadə edin</translation>
 <translation id="2373666622366160481">Kağıza sığdırın</translation>
 <translation id="2375406435414127095">Telefonunuzu qoşun</translation>
 <translation id="2376056713414548745">Ucadan oxuyun</translation>
@@ -7700,6 +7702,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7396017167185131589">Paylaşılan qovluqlar burada görünəcək</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> sistem startapı başladacaq və hətta bütün digər <ph name="PRODUCT_NAME" /> pəncərələrini bağlayan kimi  arxa fonda işlətməyə davam edəcək.</translation>
 <translation id="7399045143794278225">Sinxronlaşdırmanı fərdiləşdirin</translation>
+<translation id="7399616692258236448">İcazə verilənlərdən başqa bütün saytlar üçün məkan sorğuları avtomatik bloklanır</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470"><ph name="OLD_SEARCH_PROVIDER" /> seçiminə qayıtmaq istəyirsiniz?</translation>
 <translation id="7400839060291901923"><ph name="PHONE_NAME" /> telefonunda bağlantı ayarlayın</translation>
@@ -8970,7 +8973,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> və daha <ph name="COUNT" /> üçün icazə verilib</translation>
 <translation id="8413956290606243087">ChromeOS üçün daxili ekran oxuyucusu olan ChromeVox'u aktiv etmək istəyirsiniz?</translation>
-<translation id="8414065061814811918">Sürüşdürmənin sürətləndirilməsi. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Xatirələr iki günlük gizlədilib</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> saytına <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ilə daxil olun</translation>
 <translation id="8414685983518053656">Qeydlər</translation>
@@ -9651,9 +9653,11 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="8986494364107987395">Google'a istifadəçi statistikalarını və qəza raportlarını avtomatik göndərin</translation>
 <translation id="8987305927843254629">Hamı öz təcrübəsini fərdiləşdirə və datanı məxfi saxlaya bilər.</translation>
 <translation id="8987927404178983737">Ay</translation>
+<translation id="8988539543012086784">Bu səhifə <ph name="BOOKMARK_FOLDER" /> qovluğunda yadda saxlandı</translation>
 <translation id="8989359959810288806">Modem Rejimi Statusunu yeniləyin</translation>
 <translation id="8991520179165052608">Sayt mikrofonu paylaşa bilər</translation>
 <translation id="8991694323904646277">Kamera yoxdur</translation>
+<translation id="8991766915726096402">Lokal data bərpası</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Yaddaş istifadəsi - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> parolunuzu unutsanız, yenə də lokal datanızı bərpa edə bilərsiniz. Google Hesabınıza daxil olmalı və ya hesabın bərpasından istifadə etməlisiniz.</translation>
 <translation id="8993737615451556423">Oxu səsini sürətləndirmək, yavaşlatmaq və durdurmaq üçün nizamlayıcılar təmin edir</translation>

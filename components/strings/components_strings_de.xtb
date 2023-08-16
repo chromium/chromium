@@ -347,6 +347,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1668071460721346172">E-Mail anfordern</translation>
 <translation id="1671391448414634642">Seiten auf <ph name="SOURCE_LANGUAGE" /> werden ab jetzt auf <ph name="TARGET_LANGUAGE" /> übersetzt.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Eine begrenzte Liste mit URLs der von dir besuchten Seiten, auf denen <ph name="BEGIN_LINK" />Probleme aufgrund von veralteter Technologie<ph name="END_LINK" /> auftreten.</translation>
 <translation id="1682696192498422849">Kurze Seite zuerst</translation>
 <translation id="168693727862418163">Die Richtlinienwertprüfung des Schemas ist fehlgeschlagen. Der Richtlinienwert wird ignoriert.</translation>
 <translation id="168841957122794586">Das Serverzertifikat weist einen schwachen kryptografischen Schlüssel auf.</translation>
@@ -2614,7 +2615,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6573200754375280815">Doppelte Lochung rechts</translation>
 <translation id="6578434528542148658">Ungültige Erweiterungs-ID.</translation>
 <translation id="657902945730878902">Zeichnen und Malen</translation>
-<translation id="6579630537141957243">MIDI-Gerät verbinden?</translation>
 <translation id="6579858392010591435">Feiertage und besondere Anlässe</translation>
 <translation id="6579990219486187401">Hellrosa</translation>
 <translation id="6581831440014388355">Entfernung unerwünschter Haare an Gesicht und Körper</translation>

@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">데이터 암호화</translation>
 <translation id="1072700771426194907">USB 기기 감지됨</translation>
 <translation id="107278043869924952">비밀번호 외에 PIN 사용</translation>
+<translation id="107450319332239199">문제가 발생했습니다. 대신 수동으로 창을 여세요.</translation>
 <translation id="1076176485976385390">텍스트 커서로 페이지 탐색</translation>
 <translation id="1076382954055048850">다른 전송 세션 표시</translation>
 <translation id="1076698951459398590">테마 사용</translation>
@@ -1759,6 +1760,7 @@
 <translation id="2369058545741334020">읽기 모드로 열기</translation>
 <translation id="236939127352773362">근처에 공유 중인 기기가 있을 때</translation>
 <translation id="2371076942591664043">완료되면 열기(&amp;D)</translation>
+<translation id="237336063998926520">IP 주소를 사용하여 위치 파악</translation>
 <translation id="2373666622366160481">용지에 맞춤</translation>
 <translation id="2375406435414127095">휴대전화에 연결</translation>
 <translation id="2376056713414548745">소리내어 읽기</translation>
@@ -8993,7 +8995,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> 외 <ph name="COUNT" />개 허용함</translation>
 <translation id="8413956290606243087">ChromeOS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까?</translation>
-<translation id="8414065061814811918">스크롤 가속 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">이틀 동안 추억 숨김</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 계정으로 <ph name="SITE_ETLD_PLUS_ONE" />에 로그인하세요</translation>
 <translation id="8414685983518053656">참고</translation>
@@ -9679,6 +9680,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8989359959810288806">테더링 상태 새로고침</translation>
 <translation id="8991520179165052608">사이트에서 마이크를 사용할 수 있습니다.</translation>
 <translation id="8991694323904646277">카메라 없음</translation>
+<translation id="8991766915726096402">로컬 데이터 복구</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - 메모리 사용량 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> 비밀번호를 잊어버린 경우에도 로컬 데이터를 복원할 수 있습니다. Google 계정에 로그인하거나 계정 복구를 사용해야 합니다.</translation>
 <translation id="8993737615451556423">읽는 음성의 속도를 높이거나 낮추고, 일시중지할 수 있는 제어 기능을 제공합니다.</translation>

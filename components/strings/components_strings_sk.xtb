@@ -347,6 +347,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1668071460721346172">Poslať e‑mail</translation>
 <translation id="1671391448414634642">Stránky v jazyku <ph name="SOURCE_LANGUAGE" /> budú odteraz prekladané do jazyka <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Obmedzený zoznam webových adries stránok, ktoré navštívite a na ktorých sa vyskytujú <ph name="BEGIN_LINK" />udalosti využívajúce starú technológiu<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Napred krátkym okrajom</translation>
 <translation id="168693727862418163">Túto hodnotu pravidla sa nepodarilo v jeho schéme overiť a bude ignorovaná.</translation>
 <translation id="168841957122794586">Certifikát servera obsahuje slabý kryptografický kľúč.</translation>
@@ -2027,6 +2028,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5296589789433599000">Varenie a recepty</translation>
 <translation id="5299298092464848405">Pri analýze pravidla sa vyskytla chyba</translation>
 <translation id="5299638840995777423">Robotika</translation>
+<translation id="5300062471671636390">Skryť zoznam zariadení na prenos</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5306593769196050043">Oba hárky</translation>
 <translation id="5307166000025436103">OK</translation>
@@ -2613,7 +2615,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6573200754375280815">Dve dierky vpravo</translation>
 <translation id="6578434528542148658">Identifikátor rozšírenia je neplatný.</translation>
 <translation id="657902945730878902">Kreslenie a vyfarbovanie</translation>
-<translation id="6579630537141957243">Chcete pripojiť zariadenie MIDI?</translation>
 <translation id="6579858392010591435">Dovolenky a sezónne udalosti</translation>
 <translation id="6579990219486187401">Svetloružová</translation>
 <translation id="6581831440014388355">Epilácia a depilácia</translation>
@@ -3490,6 +3491,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8368027906805972958">Neznáme alebo nepodporované zariadenie (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Služby Google Play</translation>
 <translation id="8369073279043109617">Získať nový kód</translation>
+<translation id="8371841335382565017">Zobraziť zoznam zariadení na prenos</translation>
 <translation id="8371889962595521444">Vlastné koreňové certifikáty</translation>
 <translation id="8374636051559112948">Rôzna</translation>
 <translation id="8378714024927312812">Spravované vašou organizáciou</translation>

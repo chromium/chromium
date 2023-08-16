@@ -1085,6 +1085,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5601503069213153581">PIN-númer</translation>
 <translation id="5618148318840095371">Við tengdum þig við betra netkerfi</translation>
 <translation id="5619862035903135339">Slökkt er á skjáupptöku vegna reglu kerfisstjóra</translation>
+<translation id="5620856676199877916">Sjá öll skólaverkefni á vefsvæði Google Classroom</translation>
 <translation id="5620979661744857819">Þetta veitir <ph name="APP_NAME" /> og öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Ekki var hægt að staðfesta auðkenni þitt. Reyndu aftur.</translation>
@@ -1214,6 +1215,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="6154006699632741460">Jaðartæki er ekki stutt</translation>
 <translation id="6156960295318603523">Tungumálastillingar</translation>
 <translation id="615957422585914272">Sýna skjályklaborðið</translation>
+<translation id="616543563528926612">Hægrismellsflýtileiðin var uppfærð í Alt + smella úr <ph name="LAUNCHER_KEY_NAME" />-lykill + smella</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6166852626429024716">Leitaðu í tækinu þínu, forritum, stillingum, á vefnum...</translation>
 <translation id="6168318496333165060">Opna greiningarforrit</translation>
@@ -1501,6 +1503,7 @@ Ný uppsetning</translation>
 <translation id="7497767806359279797">Velja tungumál og lyklaborð</translation>
 <translation id="7508690557411636492">Opnað í liðnum mánuði</translation>
 <translation id="7509246181739783082">Staðfestu hver þú ert</translation>
+<translation id="7512509370370076552">Hægrismellsflýtileiðin var uppfærð í <ph name="LAUNCHER_KEY_NAME" />-lykill + smella úr Alt + smella</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, ekki valið</translation>
 <translation id="7513622367902644023">Skjámyndastilling valin</translation>
 <translation id="7513922695575567867">Dagatal, vikan <ph name="DATE" />, núverandi val er <ph name="SELECTED_DATE" />.</translation>
@@ -1604,6 +1607,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7904094684485781019">Stjórnandi þessa reiknings hefur gert innskráningu á marga reikninga óvirka.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> tæki tengd</translation>
+<translation id="7926080067315048321">Sjá öll verkefni í Google-verkefnum á netinu</translation>
 <translation id="7930731167419639574">Úrvinnsla á tali fer núna fram í tækinu og raddinnsláttur virkar án nettengingar</translation>
 <translation id="7932451802722951285">Opna í Google dagatali</translation>
 <translation id="7933084174919150729">Google hjálparinn er aðeins í boði fyrir aðalprófíl.</translation>

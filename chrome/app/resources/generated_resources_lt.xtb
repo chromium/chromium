@@ -1761,6 +1761,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2369058545741334020">Atidaryti skaitymo režimu</translation>
 <translation id="236939127352773362">Kada įrenginiai bendrina netoliese</translation>
 <translation id="2371076942591664043">Baigus &amp;atidaryti</translation>
+<translation id="237336063998926520">Naudoti IP adresą vietai nustatyti</translation>
 <translation id="2373666622366160481">Pritaikyti pagal lapo dydį</translation>
 <translation id="2375406435414127095">Susieti su telefonu</translation>
 <translation id="2376056713414548745">Skaityti garsiai</translation>
@@ -7733,6 +7734,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7396017167185131589">Čia bus rodomi bendrinami aplankai</translation>
 <translation id="7396845648024431313">„<ph name="APP_NAME" />“ bus paleista kartu su sistema ir fone veiks toliau, net ir išjungus visus kitus „<ph name="PRODUCT_NAME" />“ langus.</translation>
 <translation id="7399045143794278225">Tinkinti sinchronizavimą</translation>
+<translation id="7399616692258236448">Vietovės užklausos automatiškai blokuojamos visose svetainėse, išskyrus svetaines, kuriose leidote tai daryti</translation>
 <translation id="7400418766976504921">URL adresas</translation>
 <translation id="7400447915166857470">Pakeisti atgal į „<ph name="OLD_SEARCH_PROVIDER" />“?</translation>
 <translation id="7400839060291901923">Nustatykite ryšį „<ph name="PHONE_NAME" />“ įrenginyje</translation>
@@ -9004,7 +9006,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Leidžiama: <ph name="PERMISSION" /> ir dar <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Ar norite suaktyvinti „ChromeVox“ – integruotą „Chrome“ OS ekrano skaitytuvą?</translation>
-<translation id="8414065061814811918">Slinkimo spartinimas. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Prisiminimai paslėpti dviem dienoms</translation>
 <translation id="8414396119627470038">Prisijungimas prie <ph name="SITE_ETLD_PLUS_ONE" /> naudojant <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Užrašai</translation>
@@ -9690,6 +9691,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8986494364107987395">Automatiškai siųsti naudojimo statistiką ir strigčių ataskaitas „Google“</translation>
 <translation id="8987305927843254629">Kiekvienas asmuo gali suasmeninti funkcijas ir saugoti duomenis privačiai.</translation>
 <translation id="8987927404178983737">Mėnuo</translation>
+<translation id="8988539543012086784">Šis puslapis išsaugotas aplanke „<ph name="BOOKMARK_FOLDER" />“</translation>
 <translation id="8989359959810288806">Atnaujinti įrenginio kaip modemo naudojimo būseną</translation>
 <translation id="8991520179165052608">Svetainė gali naudoti jūsų mikrofoną</translation>
 <translation id="8991694323904646277">Nėra fotoaparato</translation>

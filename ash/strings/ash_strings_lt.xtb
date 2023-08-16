@@ -1085,6 +1085,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5601503069213153581">PIN kodas</translation>
 <translation id="5618148318840095371">Prijungėme jus prie geresnio tinklo</translation>
 <translation id="5619862035903135339">Ekrano fiksavimo funkcija yra išjungta remiantis administratoriaus politika</translation>
+<translation id="5620856676199877916">Peržiūrėti visą kurso darbą „Google Classroom“ svetainėje</translation>
 <translation id="5620979661744857819">Suteikiama prieiga „<ph name="APP_NAME" />“ ir visoms programoms bei svetainėms, turinčioms fotoaparato ir mikrofono leidimus Gali reikėti atnaujinti tinklalapį arba paleisti programą iš naujo.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Nepavyko patvirtinti tapatybės. Bandykite dar kartą.</translation>
@@ -1214,6 +1215,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="6154006699632741460">Išoriniai įrenginiai nepalaikomi</translation>
 <translation id="6156960295318603523">Kalbos nustatymai</translation>
 <translation id="615957422585914272">Rodyti ekrano klaviatūrą</translation>
+<translation id="616543563528926612">Dešiniuoju klavišu spustelėjamas spartusis klavišas atnaujintas: dabar naudojamas derinys „Alt“ + paspaudimas vietoj <ph name="LAUNCHER_KEY_NAME" /> klavišo + paspaudimo</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6166852626429024716">Ieškokite įrenginyje, programose, nustatymuose, žiniatinklyje...</translation>
 <translation id="6168318496333165060">Atidaryti Diagnostikos programą</translation>
@@ -1501,6 +1503,7 @@ Naujas įdiegimas</translation>
 <translation id="7497767806359279797">Pasirinkti kalbą ir klaviatūros išdėstymą</translation>
 <translation id="7508690557411636492">Atidaryta per pastarąjį mėnesį</translation>
 <translation id="7509246181739783082">Tapatybės patvirtinimas</translation>
+<translation id="7512509370370076552">Dešiniuoju klavišu spustelėjamas spartusis klavišas atnaujintas: dabar naudojamas derinys <ph name="LAUNCHER_KEY_NAME" /> klavišas + paspaudimas vietoj „Alt“ + paspaudimo</translation>
 <translation id="7512726380443357693">„<ph name="BUTTON_LABEL" />“, nepasirinkta</translation>
 <translation id="7513622367902644023">Pasirinktas ekrano kopijos režimas</translation>
 <translation id="7513922695575567867">Kalendorius, <ph name="DATE" /> savaitė, šiuo metu pasirinkta <ph name="SELECTED_DATE" />.</translation>
@@ -1604,6 +1607,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7904094684485781019">Šios paskyros administratorius neleidžia naudoti kelių paskyrų.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Prijungtų įrenginių: <ph name="DEVICECOUNT" /></translation>
+<translation id="7926080067315048321">Peržiūrėti visas užduotis „Google Tasks“ žiniatinklyje</translation>
 <translation id="7930731167419639574">Kalba dabar apdorojama vietoje ir diktavimas veikia neprisijungus</translation>
 <translation id="7932451802722951285">Atidaryti „Google“ kalendoriuje</translation>
 <translation id="7933084174919150729">„Google“ padėjėjas pasiekiamas tik pagrindiniame profilyje.</translation>

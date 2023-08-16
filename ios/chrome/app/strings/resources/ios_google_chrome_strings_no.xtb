@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1143896152279775643">Passordet blir lagret i Google Passordlagring for <ph name="EMAIL" />.</translation>
+<translation id="1180362651362502943">Fortsett å bruke Chrome-dataene i Google-kontoen din.</translation>
 <translation id="1282031177488366470">Bidra til å gjøre Chrome bedre og raskere</translation>
 <translation id="1352919863522755794">Google Passordlagring kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
+<translation id="1407843355326180937">Logg på dette nettstedet og Chrome for å få bokmerkene dine med mer på alle enhetene dine.</translation>
 <translation id="1462727070346936664">Logg på for å få mest mulig ut av Chrome.</translation>
 <translation id="1479202195792305274">Chrome kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="1491435845014430217">Slå på «Lås inkognitofaner når du lukker Chrome».</translation>
 <translation id="1493827051843127077">Angi Chrome som standard for å synkronisere faner, passord og betalingsopplysninger på alle enhetene dine</translation>
 <translation id="1504372625950710826">Chrome kunne ikke se etter oppdateringer. Se om du er koblet til internett.</translation>
 <translation id="1511320244449497906">Du er pålogget og synkroniserer dataene dine med en konto som er administrert av <ph name="DOMAIN" />, hvor administratoren nå kan angi brukerinnstillinger spesifikt for denne kontoen for å endre virkemåten til Chrome.</translation>
+<translation id="1526327845902180576">Når dette er på,
+<ph name="BEGIN_INDENT" /> • bidrar du til å gjøre Chrome bedre for folk som bruker nettleseren slik du gjør.<ph name="END_INDENT" />
+
+Du bør tenke på følgende:
+<ph name="BEGIN_INDENT" /> • Informasjon om Chrome-bruken din blir sendt til Google, men den blir ikke knyttet til deg.
+
+  • Hvis Chrome krasjer, kan krasjdetaljene inneholde enkelte personopplysninger.
+
+  • Hvis du synkroniserer loggen din med Google-kontoen din, kan verdiene også inneholde informasjon om nettadressene du besøker.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Du har den sterkeste sikkerheten i Chrome mot skadelige nettsteder</translation>
 <translation id="1682483655351012182">Synkroniser Chrome-dataene dine</translation>
 <translation id="1733654336159102143">Lås inkognitomodus når du går ut av Chrome eller bytter til en annen app.</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">Lås inkognitofaner når du lukker Chrome</translation>
 <translation id="3827545470516145620">Du får standard sikkerhetsbeskyttelse på denne enheten</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruke kameraet akkurat nå</translation>
+<translation id="3901001113120561395">Få mest mulig ut av Chrome.</translation>
 <translation id="3980220367029651214">Du bytter synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. De eksisterende Chrome-dataene dine administreres av <ph name="DOMAIN" />. Dette sletter dataene dine fra denne enheten, men dataene blir værende i <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisasjonen din krever at du forblir logget av Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har ikke tilgang til bildene eller videoene dine. Slå på tilgangen i iOS-innstillingene &gt; Personvern &gt; Bilder.</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">Logg på dette nettstedet og Chrome.</translation>
 <translation id="4698415050768537821">Chrome kunne ikke sjekke alle passordene. Prøv på nytt i morgen, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">For å bidra til å gjøre appen bedre sender Chrome bruks- og krasjrelaterte data til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå.
+
+        Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="484033449593719797">Støttes ikke i Chrome Beta</translation>
 <translation id="4840404732697892756">Google Passordlagring kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="4903674399067644695">På dette kortet ser du forslag til hvordan du får mest mulig ut av Chrome.</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">Gjør Chrome bedre</translation>
 <translation id="5119391094379141756">Velg Chrome</translation>
 <translation id="5162467219239570114">Chrome er utdatert. Hvis ingen oppdatering er tilgjengelig i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det hende at enheten din ikke støtter nye versjoner av Chrome lenger.</translation>
+<translation id="5190139289262548459">Organisasjonen din, <ph name="DOMAIN" />, administrerer kontoen du er logget på, og hvordan Chrome brukes.</translation>
 <translation id="5389212809648216794">Google Chrome kan ikke bruke kameraet fordi det brukes av en annen app</translation>
 <translation id="5395376160638294582">Sørg for at du alltid kan bruke Chrome-dataene i Google-kontoen din</translation>
 <translation id="5439191312780166229">Advarer deg om farlige nettsteder, også nettsteder som Google ikke kjenner til fra før, ved å analysere mer data fra nettsteder enn ved standardbeskyttelse. Du kan velge å hoppe over Chrome-advarsler.</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">Du logger på med en konto som administreres av <ph name="DOMAIN" />, og du gir administratoren for dette domenet kontroll over Chrome-dataene dine. Dataene dine blir permanent knyttet til denne kontoen. Når du logger av Chrome, slettes dataene dine fra denne enheten, men de lagres fortsatt i Google-kontoen din.</translation>
 <translation id="6676840375528380067">Vil du fjerne Chrome-dataene dine fra denne enheten?</translation>
 <translation id="6709398533399187136">Passordet ditt har vært avdekket i et databrudd. Google Passordlagring anbefaler at du endrer det nå.</translation>
+<translation id="6815466750807582739">Betalingsmåter og adresser krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.
+
+Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome kunne ikke sjekke alle passordene. Prøv på nytt senere.</translation>
 <translation id="6964931465519938134">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="6975725306479268850">Velg Chrome for autofyll</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">Viser vinduer som ber deg logge på Chrome.</translation>
 <translation id="8788269841521769222">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring for <ph name="EMAIL" /></translation>
 <translation id="8808828119384186784">Chrome-innstillinger</translation>
+<translation id="8856877214925961642">Kryptering med passordfrase inkluderer ikke betalingsmåter eller adresser.
+
+For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>
 <translation id="8897749957032330183">Passord lagres i Google Passordlagring på denne enheten.</translation>
 <translation id="8969290730818637510">Når du gir samtykke

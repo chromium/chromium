@@ -34,6 +34,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1150263420752757504">Aplikace <ph name="APP_NAME" /> se otevře v Chromu. Pokračováním vyjadřujete souhlas se <ph name="BEGIN_LINK1" />smluvními podmínkami společnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatečnými smluvními podmínkami prohlížeče Chrome a systému ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Přejmenovat</translation>
 <translation id="1177863135347784049">Vlastní</translation>
+<translation id="1178581264944972037">Pozastavit</translation>
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1181366777303791449">v doméně <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Použít silné heslo?</translation>
@@ -1091,6 +1092,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6770042910635026163">Navštívené weby, které stanovují vaše zájmy</translation>
 <translation id="6770602306803890733">Zlepšuje bezpečnost pro vás i všechny ostatní uživatele internetu</translation>
 <translation id="6785476624617658922">Dodatečné smluvní podmínky prohlížeče Google Chrome a systému ChromeOS</translation>
+<translation id="6790428901817661496">Přehrát</translation>
 <translation id="6795633245022906657">Rychle otevřít novou kartu. Tuto zkratku můžete upravit v Nastavení.</translation>
 <translation id="6802555630140434547">Okno se zavře</translation>
 <translation id="6811034713472274749">Stránka je připravená k zobrazení</translation>
@@ -1215,7 +1217,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7431991332293347422">Nastavte, jak se má vaše historie prohlížení používat k personalizaci Vyhledávání a dalších služeb</translation>
 <translation id="7435356471928173109">Vypnuto administrátorem</translation>
 <translation id="7437998757836447326">Odhlášení z Chromu</translation>
-<translation id="7443901082822119557">V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na různých webech, například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="7453467225369441013">Odhlásí vás z většiny webů. Z účtu Google odhlášeni nebudete.</translation>
 <translation id="7453810262525006706">Sbalit na boční panel</translation>
 <translation id="7454641608352164238">Nedostatek místa</translation>
@@ -1331,7 +1332,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="799576009106109668">Budete web moci procházet rychleji, protože se obsah bude načítat proaktivně na základě aktuálně navštívené webové stránky</translation>
 <translation id="7998918019931843664">Znovu otevřít zavřenou kartu</translation>
 <translation id="8004582292198964060">Prohlížeč</translation>
-<translation id="8006818846907410687">Blokovat v anonymním režimu</translation>
 <translation id="8013372441983637696">Vymazat data prohlížeče Chrome také z tohoto zařízení</translation>
 <translation id="8015452622527143194">Vrátit veškerý obsah stránky na původní velikost</translation>
 <translation id="8026334261755873520">Vymazat údaje o prohlížení</translation>

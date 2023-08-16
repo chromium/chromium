@@ -1085,7 +1085,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Prebacili smo vas na bolju mrežu</translation>
 <translation id="5619862035903135339">Administratorska pravila onemogućavaju snimanje ekrana</translation>
-<translation id="5620856676199877916">Pregled svih školskih zadaća na web-lokaciji Google učionice</translation>
+<translation id="5620856676199877916">Prikaži sve školske zadatke na web lokaciji Google Učionice</translation>
 <translation id="5620979661744857819">Ovo dozvoljava pristup kameri i mikrofonu za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web lokacije s odobrenjima za njih. Možda ćete morati osvježiti web stranicu ili ponovo pokrenuti aplikaciju.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Potvrđivanje lozinke nije uspjelo. Pokušajte ponovo.</translation>
@@ -1215,7 +1215,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="6154006699632741460">Periferni uređaj nije podržan</translation>
 <translation id="6156960295318603523">Postavke jezika</translation>
 <translation id="615957422585914272">Prikaži tastaturu na ekranu</translation>
-<translation id="616543563528926612">Prečac desnom tipkom miša ažuriran je na Alt + klik (stari prečac: <ph name="LAUNCHER_KEY_NAME" /> + klik)</translation>
+<translation id="616543563528926612">Prečica desnog klika je ažurirana iz tipke <ph name="LAUNCHER_KEY_NAME" /> i klik u Alt i klik</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6166852626429024716">Pretražite uređaj, aplikacije, postavke, web...</translation>
 <translation id="6168318496333165060">Otvorite aplikaciju za dijagnostiku</translation>
@@ -1503,7 +1503,7 @@ Nova instalacija</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>
 <translation id="7508690557411636492">Otvoreno u proteklom mjesecu</translation>
 <translation id="7509246181739783082">Potvrdite identitet</translation>
-<translation id="7512509370370076552">Prečac desnom tipkom miša ažuriran je na tipku <ph name="LAUNCHER_KEY_NAME" /> i klik (stari prečac: Alt + klik)</translation>
+<translation id="7512509370370076552">Prečica desnog klika je ažurirana iz Alt i klik u tipku <ph name="LAUNCHER_KEY_NAME" /> i klik</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nije odabrano</translation>
 <translation id="7513622367902644023">Odabran je način rada za snimak ekrana</translation>
 <translation id="7513922695575567867">Kalendar, sedmica <ph name="DATE" />, trenutno je odabran datum <ph name="SELECTED_DATE" />.</translation>
@@ -1607,7 +1607,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7904094684485781019">Administrator ovog računa nije dozvolio višestruku prijavu.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Povezani uređaji: <ph name="DEVICECOUNT" /></translation>
-<translation id="7926080067315048321">Pogledajte sve zadatke na Googleovim zadacima na webu</translation>
+<translation id="7926080067315048321">Prikaži sve zadatke na Google Zadacima na webu</translation>
 <translation id="7930731167419639574">Govor se sada obrađuje lokalno i Diktiranje radi offline</translation>
 <translation id="7932451802722951285">Otvori u Google kalendaru</translation>
 <translation id="7933084174919150729">Google Asistent je dostupan samo za primarni profil.</translation>

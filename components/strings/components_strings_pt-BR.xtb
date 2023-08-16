@@ -347,6 +347,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1668071460721346172">Receber um e-mail</translation>
 <translation id="1671391448414634642">Páginas em <ph name="SOURCE_LANGUAGE" /> serão traduzidas para <ph name="TARGET_LANGUAGE" /> de agora em diante.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> para <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Uma lista limitada de URLs de páginas acessadas em que <ph name="BEGIN_LINK" />eventos de tecnologia legados<ph name="END_LINK" /> estão ocorrendo.</translation>
 <translation id="1682696192498422849">Borda menor primeiro</translation>
 <translation id="168693727862418163">Houve uma falha na validação do valor da política em relação ao esquema, e ele será ignorado.</translation>
 <translation id="168841957122794586">O certificado do servidor contém uma chave de criptografia fraca.</translation>
@@ -2031,6 +2032,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5296589789433599000">Culinária e receitas</translation>
 <translation id="5299298092464848405">Política de análise de erros</translation>
 <translation id="5299638840995777423">Robótica</translation>
+<translation id="5300062471671636390">Ocultar lista de dispositivos para transmissão</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5306593769196050043">As duas páginas</translation>
 <translation id="5307166000025436103">OK</translation>
@@ -2618,7 +2620,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6573200754375280815">Perfuração dupla no lado direito</translation>
 <translation id="6578434528542148658">ID de extensão inválido.</translation>
 <translation id="657902945730878902">Desenho e pintura</translation>
-<translation id="6579630537141957243">Conectar dispositivo MIDI?</translation>
 <translation id="6579858392010591435">Feriados e eventos sazonais</translation>
 <translation id="6579990219486187401">Rosa-claro</translation>
 <translation id="6581831440014388355">Remoção de pelos indesejados no corpo e rosto</translation>
@@ -3495,6 +3496,7 @@ Mais detalhes:
 <translation id="8368027906805972958">Dispositivo desconhecido ou incompatível (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Serviços do Google Play</translation>
 <translation id="8369073279043109617">Gerar novo código</translation>
+<translation id="8371841335382565017">Mostrar lista de dispositivos para transmissão</translation>
 <translation id="8371889962595521444">Personalizar certificados raiz</translation>
 <translation id="8374636051559112948">Varia</translation>
 <translation id="8378714024927312812">Gerenciado pela sua organização</translation>

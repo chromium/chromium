@@ -347,6 +347,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1668071460721346172">Recibir correo</translation>
 <translation id="1671391448414634642">A partir de ahora, las páginas en <ph name="SOURCE_LANGUAGE" /> se traducirán al <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Una lista limitada de URLs de las páginas que visitas donde se producen <ph name="BEGIN_LINK" />eventos tecnológicos antiguos<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Borde corto primero</translation>
 <translation id="168693727862418163">No se ha podido validar el valor de esta política con su esquema y se ignorará.</translation>
 <translation id="168841957122794586">El certificado del servidor contiene una clave criptográfica no segura.</translation>
@@ -2618,7 +2619,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6573200754375280815">Perforado doble en la parte derecha</translation>
 <translation id="6578434528542148658">El ID de la extensión no es válido.</translation>
 <translation id="657902945730878902">Dibujar y colorear</translation>
-<translation id="6579630537141957243">¿Conectar dispositivo MIDI?</translation>
 <translation id="6579858392010591435">Vacaciones y eventos de temporada</translation>
 <translation id="6579990219486187401">Rosa claro</translation>
 <translation id="6581831440014388355">Depilación de vello facial y corporal</translation>

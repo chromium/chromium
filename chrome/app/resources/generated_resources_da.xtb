@@ -101,6 +101,7 @@
 <translation id="1071917609930274619">Omsætning af data til kode</translation>
 <translation id="1072700771426194907">Der blev registreret en USB-enhed</translation>
 <translation id="107278043869924952">Brug pinkode og adgangskode</translation>
+<translation id="107450319332239199">Noget gik galt. Åbn vinduerne manuelt i stedet.</translation>
 <translation id="1075920807995555452">Kør værktøjer, redigeringsværktøjer og IDE'er i et miljø, der administreres af din virksomhed på <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">Naviger på sider med en tekstmarkør</translation>
 <translation id="1076382954055048850">Vis andre Cast-sessioner</translation>
@@ -1780,6 +1781,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2369058545741334020">Åbn i læsetilstand</translation>
 <translation id="236939127352773362">Når enheder deler indhold i nærheden</translation>
 <translation id="2371076942591664043">Åbn når &amp;færdigt</translation>
+<translation id="237336063998926520">Brug din IP-adresse til at fastslå placeringen</translation>
 <translation id="2373666622366160481">Tilpas til papiret</translation>
 <translation id="2375406435414127095">Opret forbindelse til din telefon</translation>
 <translation id="2376056713414548745">Læs højt</translation>
@@ -7818,6 +7820,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7396017167185131589">Delte mapper vises her</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> vil starte ved opstart af systemet og fortsætte med at køre i baggrunden, selv når du har lukket alle andre vinduer i <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Tilpas synkronisering</translation>
+<translation id="7399616692258236448">Lokationsanmodninger blokeres automatisk for alle websites undtagen dem, hvor du har givet tilladelse</translation>
 <translation id="7400418766976504921">Webadresse</translation>
 <translation id="7400447915166857470">Vil du skifte tilbage til <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Konfigurer en forbindelse på din <ph name="PHONE_NAME" /></translation>
@@ -9102,7 +9105,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Adgangen til <ph name="PERMISSION" /> og <ph name="COUNT" /> yderligere blev tilladt</translation>
 <translation id="8413956290606243087">Vil du aktivere ChromeVox, der er den indbyggede skærmlæser til ChromeOS?</translation>
-<translation id="8414065061814811918">Acceleration ved rulning. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Minder skjules i to dage</translation>
 <translation id="8414396119627470038">Log ind på <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Noter</translation>
@@ -9802,9 +9804,11 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8986494364107987395">Send automatisk brugsstatistikker og nedbrudsrapporter til Google</translation>
 <translation id="8987305927843254629">Hver person kan tilpasse sin brugeroplevelse personligt og holde sine data private.</translation>
 <translation id="8987927404178983737">Måned</translation>
+<translation id="8988539543012086784">Denne side er gemt i <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Opdater status for netdeling</translation>
 <translation id="8991520179165052608">Websitet kan anvende din mikrofon</translation>
 <translation id="8991694323904646277">Der er intet kamera</translation>
+<translation id="8991766915726096402">Gendannelse af lokale data</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> – Hukommelsesforbrug – <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Hvis du glemmer din adgangskode til <ph name="DEVICE_TYPE" />, kan du stadig gendanne dine lokale data. Du skal logge ind på din Google-konto eller gendanne din konto.</translation>
 <translation id="8993737615451556423">Giver mulighed for at sænke eller øge hastigheden på oplæsningsstemmen eller sætte den på pause</translation>

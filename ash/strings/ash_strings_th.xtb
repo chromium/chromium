@@ -1081,6 +1081,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">เราสลับไปใช้เครือข่ายที่ดีกว่า</translation>
 <translation id="5619862035903135339">นโยบายของผู้ดูแลระบบปิดใช้การจับภาพหน้าจอ</translation>
+<translation id="5620856676199877916">ดูงานของชั้นเรียนทั้งหมดในเว็บไซต์ Google Classroom</translation>
 <translation id="5620979661744857819">การดำเนินการนี้ช่วยให้ <ph name="APP_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องและไมโครโฟนได้ คุณอาจต้องรีเฟรชหน้าเว็บหรือรีสตาร์ทแอป</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ยืนยันรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้ง</translation>
@@ -1210,6 +1211,7 @@
 <translation id="6154006699632741460">ไม่รองรับอุปกรณ์ต่อพ่วง</translation>
 <translation id="6156960295318603523">การตั้งค่าภาษา</translation>
 <translation id="615957422585914272">แสดงแป้นพิมพ์บนหน้าจอ</translation>
+<translation id="616543563528926612">อัปเดตแป้นพิมพ์ลัดสำหรับการคลิกขวาจากแป้น <ph name="LAUNCHER_KEY_NAME" /> + คลิกเป็น Alt + คลิกแล้ว</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6166852626429024716">ค้นหาอุปกรณ์ แอป การตั้งค่า เว็บ...</translation>
 <translation id="6168318496333165060">เปิดแอปการวินิจฉัย</translation>
@@ -1497,6 +1499,7 @@
 <translation id="7497767806359279797">เลือกภาษาและแป้นพิมพ์</translation>
 <translation id="7508690557411636492">เปิดในเดือนที่ผ่านมา</translation>
 <translation id="7509246181739783082">ยืนยันตัวตนของคุณ</translation>
+<translation id="7512509370370076552">อัปเดตแป้นพิมพ์ลัดสำหรับการคลิกขวาจาก Alt + คลิกเป็นแป้น <ph name="LAUNCHER_KEY_NAME" /> + คลิกแล้ว</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" /> ไม่ได้เลือกอยู่</translation>
 <translation id="7513622367902644023">เลือกโหมดภาพหน้าจอแล้ว</translation>
 <translation id="7513922695575567867">ปฏิทิน, สัปดาห์วันที่ <ph name="DATE" />, เลือกวันที่ <ph name="SELECTED_DATE" /> อยู่</translation>
@@ -1600,6 +1603,7 @@
 <translation id="7904094684485781019">ผู้ดูแลระบบของบัญชีนี้ไม่อนุญาตการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">เชื่อมต่ออุปกรณ์อยู่ <ph name="DEVICECOUNT" /> เครื่อง</translation>
+<translation id="7926080067315048321">ดูงานทั้งหมดใน Google Tasks บนเว็บ</translation>
 <translation id="7930731167419639574">คำพูดได้รับการประมวลผลในเครื่องและการพิมพ์ตามคำบอกทำงานแบบออฟไลน์ได้แล้วในขณะนี้</translation>
 <translation id="7932451802722951285">เปิดใน Google ปฏิทิน</translation>
 <translation id="7933084174919150729">Google Assistant ใช้งานได้กับโปรไฟล์หลักเท่านั้น</translation>

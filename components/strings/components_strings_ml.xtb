@@ -347,6 +347,7 @@
 <translation id="1668071460721346172">ഇമെയിൽ നേടുക</translation>
 <translation id="1671391448414634642">ഇനിമുതൽ <ph name="SOURCE_LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ <ph name="TARGET_LANGUAGE" /> ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യപ്പെടും.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> എന്നതിൽ നിന്ന് <ph name="TARGET_LANGUAGE" /> എന്നതിലേക്ക്</translation>
+<translation id="1674542638006317838"><ph name="BEGIN_LINK" />ലെഗസി ടെക്‌നോളജി ഇവന്റുകൾ<ph name="END_LINK" /> നടക്കുന്ന, നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ URL-കളുടെ പരിമിതമായ ലിസ്‌റ്റ്.</translation>
 <translation id="1682696192498422849">നീളം കുറഞ്ഞ അരിക് ആദ്യം</translation>
 <translation id="168693727862418163">ഈ നയ മൂല്യം അതിന്റെ സ്‌കീമയുമായി സാധൂകരിക്കാൻ കഴിയാത്തതിനാൽ അത് അവഗണിക്കപ്പെടും.</translation>
 <translation id="168841957122794586">സെർവർ സർട്ടിഫിക്കറ്റിൽ ഒരു ദുർബലമായ ഗൂഢഭാഷ കീ ഉൾപ്പെടുന്നു.</translation>
@@ -2030,6 +2031,7 @@
 <translation id="5296589789433599000">പാചകവും റെസിപ്പികളും</translation>
 <translation id="5299298092464848405">നയം വിശകലനം ചെയ്യുന്നതിൽ പിശക്</translation>
 <translation id="5299638840995777423">റോബോട്ടിക്‌സ്</translation>
+<translation id="5300062471671636390">കാസ്റ്റിംഗിനുള്ള ഉപകരണങ്ങളുടെ ലിസ്റ്റ് മറയ്ക്കുക</translation>
 <translation id="5300589172476337783">കാണിക്കുക</translation>
 <translation id="5306593769196050043">രണ്ട് ഷീറ്റുകളും</translation>
 <translation id="5307166000025436103">ശരി</translation>
@@ -2617,7 +2619,6 @@
 <translation id="6573200754375280815">വലതുവശത്ത് ഇരട്ട പഞ്ച് ചെയ്യുക</translation>
 <translation id="6578434528542148658">വിപുലീകരണ ഐഡി അസാധുവാണ്.</translation>
 <translation id="657902945730878902">വരയ്ക്കലും നിറംകൊടുക്കലും</translation>
-<translation id="6579630537141957243">MIDI ഉപകരണം കണക്റ്റ് ചെയ്യണോ?</translation>
 <translation id="6579858392010591435">അവധിക്കാലവും സീസണൽ ഇവന്റുകളും</translation>
 <translation id="6579990219486187401">ഇളം പിങ്ക്</translation>
 <translation id="6581831440014388355">ശരീരത്തിലെയും മുഖത്തെയും അനാവശ്യ രോമങ്ങൾ നീക്കം ചെയ്യൽ</translation>
@@ -3492,6 +3493,7 @@
 <translation id="8368027906805972958">പരിചിതമല്ലാത്തതോ പിന്തുണയ്‌ക്കാത്തതോ ആയ ഉപകരണം (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play സേവനങ്ങൾ</translation>
 <translation id="8369073279043109617">പുതിയ കോഡ് നേടുക</translation>
+<translation id="8371841335382565017">കാസ്റ്റിംഗിനുള്ള ഉപകരണങ്ങളുടെ ലിസ്റ്റ് കാണിക്കുക</translation>
 <translation id="8371889962595521444">ഇഷ്‌ടാനുസൃത റൂട്ട് സർട്ടിഫിക്കറ്റുകൾ</translation>
 <translation id="8374636051559112948">വ്യത്യാസപ്പെടുന്നു</translation>
 <translation id="8378714024927312812">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്</translation>

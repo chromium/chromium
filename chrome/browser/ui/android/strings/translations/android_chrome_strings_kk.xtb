@@ -34,6 +34,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> қолданбасы Chrome браузерінде ашылады. Жалғастыру арқылы <ph name="BEGIN_LINK1" />Google Қызмет көрсету шарттарына<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome және ChromeOS Қосымша қызмет көрсету шарттарына<ph name="END_LINK2" /> келісесіз.</translation>
 <translation id="1173894706177603556">Атын өзгерту</translation>
 <translation id="1177863135347784049">Реттелетін</translation>
+<translation id="1178581264944972037">Кідірту</translation>
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="1181366777303791449">Күні: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Күрделі құпия сөз пайдаланылсын ба?</translation>
@@ -1091,6 +1092,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6770042910635026163">Қызығушылықтарыңызды анықтайтын сайттар</translation>
 <translation id="6770602306803890733">Интернет пайдаланушылары үшін қауіпсіздікті жақсартады.</translation>
 <translation id="6785476624617658922">Chrome және ChromeOS Қосымша қызмет көрсету шарттары</translation>
+<translation id="6790428901817661496">Ойнату</translation>
 <translation id="6795633245022906657">Жаңа қойындыны жылдам ашуға арналған. Бұл таңбашаны өзгерту үшін "Параметрлер" бөліміне өтіңіз.</translation>
 <translation id="6802555630140434547">Терезе жабылады.</translation>
 <translation id="6811034713472274749">Бетті көре беруге болады.</translation>
@@ -1215,7 +1217,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7431991332293347422">Search және т.б. қызметтерді жекелендіру үшін шолу тарихын қалай пайдалану керектігін көрсетіңіз</translation>
 <translation id="7435356471928173109">Әкімші өшіріп қойған.</translation>
 <translation id="7437998757836447326">Chrome жүйесінен шығу</translation>
-<translation id="7443901082822119557">Инкогнито режимінде болғанда, сайттар браузерді қолдану мәліметін көру (мысалы, жарнамаларды жекелендіру) үшін cookie файлдарын пайдалана алмайды. Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>
 <translation id="7453467225369441013">Көп сайттардан шығарады. Google аккаунтынан шықпайсыз.</translation>
 <translation id="7453810262525006706">Бүйірлік көрініске жию</translation>
 <translation id="7454641608352164238">Орын жеткіліксіз</translation>
@@ -1331,7 +1332,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="799576009106109668">Кіріп отырған веб-бетке сәйкес контент алдын ала жүктелетіндіктен, шолу барысы жылдамдайды.</translation>
 <translation id="7998918019931843664">Жабық қойындыны қайта ашу</translation>
 <translation id="8004582292198964060">Браузер</translation>
-<translation id="8006818846907410687">Инкогнито режимінде бөгеу</translation>
 <translation id="8013372441983637696">Бұл құрылғыдан Chrome браузерінің деректерін де өшіру</translation>
 <translation id="8015452622527143194">Беттегі элементтерді әдепкі өлшеміне қайтару</translation>
 <translation id="8026334261755873520">Шолу деректерін өшіру</translation>

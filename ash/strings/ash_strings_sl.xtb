@@ -1085,6 +1085,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Preklopili smo na boljše omrežje.</translation>
 <translation id="5619862035903135339">Pravilnik skrbnika onemogoča zajem zaslonske slike.</translation>
+<translation id="5620856676199877916">Ogled vsega šolskega dela na spletnem mestu Učilnice Google</translation>
 <translation id="5620979661744857819">To omogoča dostop za aplikacijo <ph name="APP_NAME" /> ter vse aplikacije in spletna mesta z dovoljenji za kamero in mikrofon. Morda boste morali osvežiti spletno stran ali znova zagnati aplikacijo.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Vašega gesla ni bilo mogoče preveriti. Poskusite znova.</translation>
@@ -1214,6 +1215,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6154006699632741460">Dodatna oprema ni podprta</translation>
 <translation id="6156960295318603523">Jezikovne nastavitve</translation>
 <translation id="615957422585914272">Pokaži zaslonsko tipkovnico</translation>
+<translation id="616543563528926612">Bližnjica, ki jo kliknete z desnim gumbom, je posodobljena s tipke <ph name="LAUNCHER_KEY_NAME" /> + klik na kombinacije tipke alt + klik</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6166852626429024716">Iščite v napravi, aplikacijah, nastavitvah, spletu …</translation>
 <translation id="6168318496333165060">Odpiranje aplikacije za diagnostiko</translation>
@@ -1501,6 +1503,7 @@ Nova namestitev</translation>
 <translation id="7497767806359279797">Izbira jezika in tipkovnice</translation>
 <translation id="7508690557411636492">Odprto v preteklem mesecu</translation>
 <translation id="7509246181739783082">Preverjanje identitete</translation>
+<translation id="7512509370370076552">Bližnjica, ki jo kliknete z desnim gumbom, je posodobljena na tipko <ph name="LAUNCHER_KEY_NAME" /> + klik s kombinacijo tipke alt + klik</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, ni izbrano</translation>
 <translation id="7513622367902644023">Izbran je način posnetka zaslona</translation>
 <translation id="7513922695575567867">Koledar, v tednu <ph name="DATE" />, trenutno izbran datum: <ph name="SELECTED_DATE" />.</translation>
@@ -1604,6 +1607,7 @@ Nova namestitev</translation>
 <translation id="7904094684485781019">Skrbnik tega računa je onemogočil prijavo z več računi.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Povezane naprave (<ph name="DEVICECOUNT" />)</translation>
+<translation id="7926080067315048321">Ogled vseh opravil v Google Opravilih v spletu</translation>
 <translation id="7930731167419639574">Govor se zdaj obdela lokalno in narek deluje brez povezave.</translation>
 <translation id="7932451802722951285">Odpri v Google Koledarju</translation>
 <translation id="7933084174919150729">Pomočnik Google je na voljo samo za primarni profil.</translation>

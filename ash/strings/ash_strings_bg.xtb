@@ -1085,6 +1085,7 @@
 <translation id="5601503069213153581">ПИН код</translation>
 <translation id="5618148318840095371">Превключихме ви към по-добра мрежа</translation>
 <translation id="5619862035903135339">Заснемането на екрана е деактивирано чрез администраторско правило</translation>
+<translation id="5620856676199877916">Вижте цялата работа в клас на уебсайта на Google Classroom</translation>
 <translation id="5620979661744857819">Това разрешава достъп на <ph name="APP_NAME" /> и всички приложения и уебсайтове, които имат разрешения за камерата и микрофона. Може да се наложи да опресните уеб страницата или да рестартирате приложението.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Паролата ви не бе потвърдена. Опитайте отново.</translation>
@@ -1214,6 +1215,7 @@
 <translation id="6154006699632741460">Периферното устройство не се поддържа</translation>
 <translation id="6156960295318603523">Езикови настройки</translation>
 <translation id="615957422585914272">Показване на екранната клавиатура</translation>
+<translation id="616543563528926612">Прекият път с десния бутон на мишката е променен от клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + кликване на Alt + кликване</translation>
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6166852626429024716">Търсете в устройството, приложенията, настройките и мрежата...</translation>
 <translation id="6168318496333165060">Отваряне на приложението за диагностика</translation>
@@ -1501,6 +1503,7 @@
 <translation id="7497767806359279797">Избор на език и клавиатура</translation>
 <translation id="7508690557411636492">Отваряно през миналия месец</translation>
 <translation id="7509246181739783082">Потвърждаване на самоличността ви</translation>
+<translation id="7512509370370076552">Прекият път с десния бутон на мишката е променен от Alt + кликване на клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + кликване</translation>
 <translation id="7512726380443357693">Бутонът „<ph name="BUTTON_LABEL" />“ не е избран</translation>
 <translation id="7513622367902644023">Избран е режимът за екранна снимка</translation>
 <translation id="7513922695575567867">Календар, седмицата на <ph name="DATE" />, понастоящем е избрана датата <ph name="SELECTED_DATE" />.</translation>
@@ -1604,6 +1607,7 @@
 <translation id="7904094684485781019">Администраторът на този профил е забранил централизирания вход.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> свързани устройства</translation>
+<translation id="7926080067315048321">Преглед на всички задачи в Google Tasks в мрежата</translation>
 <translation id="7930731167419639574">Говорът вече се обработва локално, а диктуването работи офлайн</translation>
 <translation id="7932451802722951285">Отваряне в Google Календар</translation>
 <translation id="7933084174919150729">Google Асистент е налице само за основния потребителски профил.</translation>

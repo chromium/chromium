@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">ӨгөгдлийН шифрлэлт</translation>
 <translation id="1072700771426194907">USB төхөөрөмж олдлоо</translation>
 <translation id="107278043869924952">Нууц үг дээрээ ПИН нэмж ашиглах</translation>
+<translation id="107450319332239199">Ямар нэг алдаа гарлаа. Оронд нь цонхыг гар аргаар нээнэ үү.</translation>
 <translation id="1076176485976385390">Текстийн курсор ашиглан хуудас хооронд шилжих</translation>
 <translation id="1076382954055048850">Дамжуулах бусад харилцан үйлдлийг харуулах</translation>
 <translation id="1076698951459398590">Загварыг идэвхжүүлэх</translation>
@@ -1753,6 +1754,7 @@
 <translation id="2369058545741334020">Уншлагын горимд нээх</translation>
 <translation id="236939127352773362">Төхөөрөмжүүд ойролцоо хуваалцаж байх үед</translation>
 <translation id="2371076942591664043">Татаж авч дууссаны дараа нээ</translation>
+<translation id="237336063998926520">Байршил тогтоохын тулд IP хаягаа ашиглана уу</translation>
 <translation id="2373666622366160481">Цаасанд багтаах</translation>
 <translation id="2375406435414127095">Утсандаа холбогдох</translation>
 <translation id="2376056713414548745">Чангаар унших</translation>
@@ -7716,6 +7718,7 @@
 <translation id="7396017167185131589">Хуваалцсан фолдерууд энд харагдана</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> программыг систем эхлэхэд эхлүүлээд бусад <ph name="PRODUCT_NAME" /> цонхууд хаагдсан байсан ч программыг үргэлжлүүл.</translation>
 <translation id="7399045143794278225">Синк хийхийг өөрчлөх</translation>
+<translation id="7399616692258236448">Байршлын хүсэлтүүдийг таны зөвшөөрснөөс бусад бүх сайтад автоматаар блоклодог</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470"><ph name="OLD_SEARCH_PROVIDER" /> руу буцааж өөрчлөх үү?</translation>
 <translation id="7400839060291901923"><ph name="PHONE_NAME" />-д холболт тохируулах</translation>
@@ -8984,7 +8987,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> болон бусад <ph name="COUNT" />-г зөвшөөрсөн</translation>
 <translation id="8413956290606243087">Та ChromeOS-н бүрэлдэхүүн дэлгэц уншигч болох ChromeVox-г идэвхжүүлэхийг хүсэж байна уу?</translation>
-<translation id="8414065061814811918">Гүйлгэх хурдасгуур. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Дурсамжийг хоёр өдрийн турш нуусан</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" />-д <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р нэвтэрнэ үү</translation>
 <translation id="8414685983518053656">Тэмдэглэл</translation>
@@ -9665,9 +9667,11 @@
 <translation id="8986494364107987395">Google рүү хэрэглээний статистик мэдээ болон алдаа ослын тайланг автоматаар илгээ</translation>
 <translation id="8987305927843254629">Хүн бүр хэрэглээгээ хувийн болгох ба өгөгдлийг хувийн байлгах боломжтой.</translation>
 <translation id="8987927404178983737">Сар</translation>
+<translation id="8988539543012086784">Энэ хуудсыг <ph name="BOOKMARK_FOLDER" />-д хадгалсан</translation>
 <translation id="8989359959810288806">Модем болгох төлөвийг сэргээх</translation>
 <translation id="8991520179165052608">Сайт таны микрофоныг ашиглах боломжтой</translation>
 <translation id="8991694323904646277">Камер алга</translation>
+<translation id="8991766915726096402">Дотоод өгөгдлийг сэргээх</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Санах ойн ашиглалт - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Хэрэв та <ph name="DEVICE_TYPE" />-н нууц үгээ мартвал дотоод өгөгдлөө сэргээх боломжтой хэвээр байна. Та Google Бүртгэлдээ нэвтрэх эсвэл бүртгэл сэргээх онцлогийг ашиглах шаардлагатай.</translation>
 <translation id="8993737615451556423">Унших дуу хоолойг хурдасгах, удаашруулах болон түр зогсоох удирдлагаар хангана</translation>

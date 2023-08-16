@@ -347,6 +347,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1668071460721346172">E-posta alın</translation>
 <translation id="1671391448414634642"><ph name="SOURCE_LANGUAGE" /> dilindeki sayfalar artık <ph name="TARGET_LANGUAGE" /> diline çevrilecek</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> dilinden <ph name="TARGET_LANGUAGE" /> diline</translation>
+<translation id="1674542638006317838"><ph name="BEGIN_LINK" />Eski teknoloji etkinliklerinin<ph name="END_LINK" /> gerçekleştiği, ziyaret ettiğiniz sayfaların URL'lerinin sınırlı bir listesi.</translation>
 <translation id="1682696192498422849">Önce kısa kenar</translation>
 <translation id="168693727862418163">Bu politika değeri, şemasına göre doğrulanamadı, yok sayılacak.</translation>
 <translation id="168841957122794586">Sunucu sertifikasında zayıf bir şifreleme anahtarı var.</translation>
@@ -2031,6 +2032,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5296589789433599000">Aşçılık ve yemek tarifi</translation>
 <translation id="5299298092464848405">Politika ayrıştırma hatası</translation>
 <translation id="5299638840995777423">Robot bilimi</translation>
+<translation id="5300062471671636390">Yayın için cihaz listesini gizle</translation>
 <translation id="5300589172476337783">Göster</translation>
 <translation id="5306593769196050043">Her iki sayfa</translation>
 <translation id="5307166000025436103">Tamam</translation>
@@ -2618,7 +2620,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6573200754375280815">Sağda ikili delik</translation>
 <translation id="6578434528542148658">Geçersiz uzantı kimliği.</translation>
 <translation id="657902945730878902">Çizim ve boyama</translation>
-<translation id="6579630537141957243">MIDI cihazına bağlanılsın mı?</translation>
 <translation id="6579858392010591435">Tatiller ve Mevsimsel Etkinlikler</translation>
 <translation id="6579990219486187401">Açık Pembe</translation>
 <translation id="6581831440014388355">Vücut ve Yüzdeki İstenmeyen Tüyleri Alma</translation>
@@ -3495,6 +3496,7 @@ Ek ayrıntılar:
 <translation id="8368027906805972958">Bilinmeyen veya desteklenmeyen cihaz (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play Hizmetleri</translation>
 <translation id="8369073279043109617">Yeni kod al</translation>
+<translation id="8371841335382565017">Yayın için cihaz listesini göster</translation>
 <translation id="8371889962595521444">Özel kök sertifikalar</translation>
 <translation id="8374636051559112948">Değişkenlik gösterir</translation>
 <translation id="8378714024927312812">Kuruluşunuz tarafından yönetiliyor</translation>

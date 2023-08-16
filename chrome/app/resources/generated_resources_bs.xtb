@@ -1757,6 +1757,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2369058545741334020">Otvori u načinu rada za čitanje</translation>
 <translation id="236939127352773362">Kada uređaji dijele u blizini</translation>
 <translation id="2371076942591664043">Otvori kad bude &amp;gotovo</translation>
+<translation id="237336063998926520">Upotreba vaše IP adrese radi određivanja lokacije</translation>
 <translation id="2373666622366160481">Prilagodi veličini papira</translation>
 <translation id="2375406435414127095">Povežite na telefon</translation>
 <translation id="2376056713414548745">Čitanje naglas</translation>
@@ -7726,7 +7727,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7396017167185131589">Dijeljeni folderi će se pojaviti ovdje</translation>
 <translation id="7396845648024431313">Aplikacija <ph name="APP_NAME" /> će se pokrenuti pri pokretanju sistema i nastavit će raditi u pozadini čak i nakon što zatvorite sve druge prozore proizvoda <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Prilagodi sinhronizaciju</translation>
-<translation id="7399616692258236448">Zahtjevi za lokacije automatski se blokiraju za sve web-lokacije osim onih koje dopustite</translation>
+<translation id="7399616692258236448">Zahtjevi za lokaciju se automatski blokiraju za sve web lokacije osim onih koje omogućite</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Vratiti na <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Postavite vezu na uređaju <ph name="PHONE_NAME" /></translation>
@@ -8998,7 +8999,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Dozvoljeno: <ph name="PERMISSION" /> i još <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Želite li aktivirati ChromeVox, ugrađeni čitač ekrana za ChromeOS?</translation>
-<translation id="8414065061814811918">Ubrzanje klizanja. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Uspomene su skrivene na dva dana</translation>
 <translation id="8414396119627470038">Prijavite se na <ph name="SITE_ETLD_PLUS_ONE" /> pomoću <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Bilješke</translation>
@@ -9683,7 +9683,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8986494364107987395">Automatski šaljite statistiku korištenja i izvještaje o padovima aplikacije Googleu</translation>
 <translation id="8987305927843254629">Svaka osoba može personalizirati svoje iskustvo i čuvati privatnost podataka.</translation>
 <translation id="8987927404178983737">Mjesec</translation>
-<translation id="8988539543012086784">Ova je stranica spremljena u: <ph name="BOOKMARK_FOLDER" /></translation>
+<translation id="8988539543012086784">Stranica je sačuvana u folder <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Osvježi status dijeljenja internetske veze</translation>
 <translation id="8991520179165052608">Web lokacija može koristiti vaš mikrofon</translation>
 <translation id="8991694323904646277">Nema kamere</translation>

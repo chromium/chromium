@@ -1086,6 +1086,7 @@
 <translation id="5601503069213153581">ПИН</translation>
 <translation id="5618148318840095371">Бид таныг илүү сайн сүлжээ рүү сэлгэлээ</translation>
 <translation id="5619862035903135339">Администраторын бодлого нь дэлгэцийн зураг авахыг идэвхгүй болгодог</translation>
+<translation id="5620856676199877916">Google Classroom вебсайтаас бүх ангийн ажлыг харах</translation>
 <translation id="5620979661744857819">Энэ нь <ph name="APP_NAME" /> болон камер, микрофоны зөвшөөрөлтэй бүх апп, вебсайтын хандалтыг зөвшөөрнө. Та веб хуудсыг сэргээх эсвэл аппыг дахин эхлүүлэх шаардлагатай байж магадгүй.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Таны нууц үгийг баталгаажуулж чадсангүй. Дахин оролдоно уу.</translation>
@@ -1215,6 +1216,7 @@
 <translation id="6154006699632741460">Нэмэлтийг дэмждэггүй</translation>
 <translation id="6156960295318603523">Хэлний тохиргоо</translation>
 <translation id="615957422585914272">Дэлгэц дээрх гарыг харуулах</translation>
+<translation id="616543563528926612">Баруун талыг товших товчлолыг <ph name="LAUNCHER_KEY_NAME" /> товчлуур + товшилтоос alt + товшилт болгож шинэчилсэн</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6166852626429024716">Төхөөрөмж, апп, тохиргоо, вебээс хайх...</translation>
 <translation id="6168318496333165060">Оношилгооны аппыг нээх</translation>
@@ -1502,6 +1504,7 @@
 <translation id="7497767806359279797">Хэл болон гарыг сонгох</translation>
 <translation id="7508690557411636492">Өнгөрсөн сард зассан</translation>
 <translation id="7509246181739783082">Өөрийгөө баталгаажуулах</translation>
+<translation id="7512509370370076552">Баруун талыг товших товчлолыг alt + товшилтоос <ph name="LAUNCHER_KEY_NAME" /> товчлуур болгож шинэчилсэн</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, сонгоогүй</translation>
 <translation id="7513622367902644023">Дэлгэцийн агшны горимыг сонгосон</translation>
 <translation id="7513922695575567867">Календарь, <ph name="DATE" />-н долоо хоног, <ph name="SELECTED_DATE" />-г одоогоор сонгосон.</translation>
@@ -1605,6 +1608,7 @@
 <translation id="7904094684485781019">Энэ бүртгэлийн админ нь олон тооны нэвтрэлтийг хэрэгсэхгүй болгосон байна.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> төхөөрөмж холбогдсон</translation>
+<translation id="7926080067315048321">Вебийн Google Tasks-с бүх ажлыг харах</translation>
 <translation id="7930731167419639574">Яриаг одоо дотоодод боловсруулах бөгөөд Дуу хоолойгоор бичих онцлог офлайнаар ажиллана</translation>
 <translation id="7932451802722951285">Google Календарьт нээх</translation>
 <translation id="7933084174919150729">Google Туслах зөвхөн үндсэн профайлд боломжтой.</translation>

@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Totalt antall filer</translation>
 <translation id="1755345808328621801">Denne filen er laget for datamaskiner som kjører Windows-programvare. Den er ikke kompatibel med enheten din, som kjører ChromeOS. Søk etter en passende erstatningsapp i Chrome Nettmarked.</translation>
 <translation id="1757915090001272240">Bred Latin</translation>
+<translation id="1761091787730831947">Del med <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Autentiseringssertifikatet ble avvist lokalt</translation>
 <translation id="1775381402323441512">Videoinformasjon</translation>
 <translation id="180035236176489073">Du må ha internettilkobling for å få tilgang til disse filene.</translation>
@@ -210,6 +211,7 @@
 <translation id="2718540689505416944">Installér app med Linux</translation>
 <translation id="2719020180254996569">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="CONNECTION_STATUS" /> – detaljer</translation>
 <translation id="2724954091494693138">Tyrkisk med F-tastatur</translation>
+<translation id="2732288874651063549">Administrer <ph name="VM_NAME" />-deling</translation>
 <translation id="2732839045120506979">Vietnamesisk VNI</translation>
 <translation id="2735623501230989521">Gi Parallels Desktop tilgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Du har brukt opp den individuelle Google Workspace-lagringsplassen din.</translation>
@@ -304,6 +306,7 @@
 <translation id="3509680540198371098">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – detaljer</translation>
 <translation id="3511705761158917664">Forbereder synkronisering av <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
 <translation id="3522708245912499433">Portugisisk</translation>
+<translation id="3523225005467146490">1 mappe er delt med <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Advarsel: Disse filene er midlertidige og kan bli slettet automatisk for å frigjøre diskplass.  <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mappe</translation>
 <translation id="3548125359243647069">Feil PIN-kode ble tastet inn for mange ganger.</translation>
@@ -660,6 +663,7 @@
 <translation id="6164412158936057769">Sommerfugler</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6170470584681422115">Smørbrød</translation>
+<translation id="6181912134988520389">Gi <ph name="VM_NAME" /> tilgang til filer på Google Disk. Endringer synkroniseres med de andre enhetene dine.</translation>
 <translation id="6187719147498869044">Ungarsk</translation>
 <translation id="6198252989419008588">Endre personlig kode</translation>
 <translation id="6199801702437275229">Venter på informasjon om lagringsplass …</translation>
@@ -763,6 +767,7 @@
 <translation id="6989942356279143254">Svensk</translation>
 <translation id="6990081529015358884">Du har ikke tilgjengelig lagringsplass</translation>
 <translation id="6993826899923627728">Disse elementene ligger i papirkurven din</translation>
+<translation id="6996593023542748157">Del mappen med <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Organisasjonen din trenger mer lagringsplass for å fullføre opplastingen.</translation>
 <translation id="7009985720488544166">Flytting av <ph name="COUNT" /> filer er blokkert på grunn av en administratorregel</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -852,6 +857,7 @@
 <translation id="76959938259365003">Kunne ikke tømme papirkurven.</translation>
 <translation id="770015031906360009">Gresk</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> er kopiert.</translation>
+<translation id="7707941139430559579">Kan ikke flytte filen. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">For å bruke dette nettverket må du skrive inn den åttesifrede PUK-koden fra operatøren.</translation>
 <translation id="7711920809702896782">Bildeinformasjon</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
@@ -948,6 +954,7 @@
 <translation id="8335837413233998004">Hviterussisk</translation>
 <translation id="8336153091935557858">I går kl. <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Det finnes allerede en fil eller en katalog med det samme navnet.</translation>
+<translation id="83651606385705612">Gi <ph name="VM_NAME" /> tilgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Feil WEP-nøkkel</translation>
 <translation id="8372852072747894550">Gresk</translation>
 <translation id="8386903983509584791">Skanningen er fullført</translation>
@@ -957,6 +964,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-nettverk – kobler til</translation>
 <translation id="8425213833346101688">Endre</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> mapper er delt med <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Endre PIN-koden for SIM-kortet</translation>
 <translation id="8437209419043462667">Amerikansk</translation>
 <translation id="8452135315243592079">SIM-kort mangler</translation>

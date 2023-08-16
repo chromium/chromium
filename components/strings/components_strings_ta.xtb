@@ -347,6 +347,7 @@
 <translation id="1668071460721346172">மின்னஞ்சல் மூலம் பெறுக</translation>
 <translation id="1671391448414634642"><ph name="SOURCE_LANGUAGE" /> மொழியிலுள்ள பக்கங்கள் இப்போது முதல் <ph name="TARGET_LANGUAGE" /> மொழியில் மொழிபெயர்க்கப்படும்.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> இலிருந்து <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838"><ph name="BEGIN_LINK" />பழைய தொழில்நுட்ப நிகழ்வுகள்<ph name="END_LINK" /> நடைபெறக்கூடிய, நீங்கள் பார்வையிடும் பக்கங்களின் வரம்பிடப்பட்ட URLகளின் பட்டியல்.</translation>
 <translation id="1682696192498422849">குறுகிய ஓரம் முதலில்</translation>
 <translation id="168693727862418163">இந்தக் கொள்கை அதன் திட்டப்பணித் தரவுக்கு எதிராக மதிப்பீடு செய்யப்படாததால் புறக்கணிக்கப்படும்.</translation>
 <translation id="168841957122794586">சேவையக சான்றிதழில் வலுவற்ற குறியீட்டாக்க விசை இருக்கிறது.</translation>
@@ -2613,7 +2614,6 @@
 <translation id="6573200754375280815">டூயல் பஞ்ச் ரைட்</translation>
 <translation id="6578434528542148658">தவறான நீட்டிப்பு ஐடி.</translation>
 <translation id="657902945730878902">படம் வரைதல் &amp; வண்ணம் தீட்டுதல்</translation>
-<translation id="6579630537141957243">MIDI சாதனத்தை இணைக்கவா?</translation>
 <translation id="6579858392010591435">விடுமுறைகள் &amp; விசேஷ நாட்கள்</translation>
 <translation id="6579990219486187401">வெளிர் பிங்க் நிறம்</translation>
 <translation id="6581831440014388355">உடல் &amp; முகத்தில் உள்ள தேவையற்ற முடியை அகற்றுதல்</translation>

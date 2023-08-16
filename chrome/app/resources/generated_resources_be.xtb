@@ -7712,6 +7712,7 @@
 <translation id="7396017167185131589">Тут з'явяцца абагуленыя папкі</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> будзе запускацца пры запуску сістэмы і будзе працягваць працаваць у фоне, нават калі вы закрылі ўсе іншыя вокны <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Наладзіць сінхранізацыю</translation>
+<translation id="7399616692258236448">Запыты геаданых аўтаматычна блакіруюцца для ўсіх сайтаў, акрамя тых, якім вы далі дазвол</translation>
 <translation id="7400418766976504921">URL-адрас</translation>
 <translation id="7400447915166857470">Зноў зрабіць пошукавую сістэму <ph name="OLD_SEARCH_PROVIDER" /> стандартнай?</translation>
 <translation id="7400839060291901923">Наладзьце падключэнне на прыладзе <ph name="PHONE_NAME" /></translation>
@@ -8982,7 +8983,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Дазволена: <ph name="PERMISSION" /> і яшчэ <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Актываваць ChromeVox – убудаваную праграму чытання з экрана для Chrome OS?</translation>
-<translation id="8414065061814811918">Паскарэнне прагорткі. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Успаміны схаваны на два дні</translation>
 <translation id="8414396119627470038">Увайдзіце на сайт <ph name="SITE_ETLD_PLUS_ONE" />, выкарыстаўшы ідэнтыфікацыйную інфармацыю ад пастаўшчыка <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Нататкі</translation>
@@ -9668,6 +9668,7 @@
 <translation id="8986494364107987395">Аўтаматычна адпраўляць у Google статыстыку выкарыстання і справаздачы аб збоях</translation>
 <translation id="8987305927843254629">Дададзеныя карыстальнікі могуць персаналізаваць патрэбныя функцыі. Пры гэтым іх даныя застаюцца прыватнымі.</translation>
 <translation id="8987927404178983737">Месяц</translation>
+<translation id="8988539543012086784">Гэта старонка захавана ў папцы "<ph name="BOOKMARK_FOLDER" />"</translation>
 <translation id="8989359959810288806">Абнавіць стан рэжыму мадэма</translation>
 <translation id="8991520179165052608">Сайт можа выкарыстоўваць ваш мікрафон</translation>
 <translation id="8991694323904646277">Няма камеры</translation>

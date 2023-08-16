@@ -1758,6 +1758,7 @@
 <translation id="2369058545741334020">在「朗讀模式」中開啟</translation>
 <translation id="236939127352773362">當附近的裝置正在分享內容時</translation>
 <translation id="2371076942591664043">完成後開啟(&amp;D)</translation>
+<translation id="237336063998926520">根據您的 IP 位址確定位置</translation>
 <translation id="2373666622366160481">依紙張大小自動調整</translation>
 <translation id="2375406435414127095">連線至您的手機</translation>
 <translation id="2376056713414548745">朗讀</translation>
@@ -8988,7 +8989,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">已允許<ph name="PERMISSION" />和其他 <ph name="COUNT" /> 個項目</translation>
 <translation id="8413956290606243087">要啟用 Chrome OS 內置的螢幕閱讀器 ChromeVox 嗎？</translation>
-<translation id="8414065061814811918">捲動加速。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">回憶將會隱藏 2 天</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">附註</translation>

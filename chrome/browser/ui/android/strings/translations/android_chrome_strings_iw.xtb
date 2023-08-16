@@ -34,6 +34,7 @@
 <translation id="1150263420752757504">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה <ph name="BEGIN_LINK1" />לתנאים ולהגבלות של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">שינוי שם</translation>
 <translation id="1177863135347784049">מותאם אישית</translation>
+<translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1181366777303791449">ב-<ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">רוצה להשתמש בסיסמה החזקה?</translation>
@@ -1091,6 +1092,7 @@
 <translation id="6770042910635026163">אתרים שביקרת בהם שמגדירים את תחומי העניין שלך</translation>
 <translation id="6770602306803890733">רמת אבטחה משופרת עבורך ועבור כל מי שמתחבר לאינטרנט</translation>
 <translation id="6785476624617658922">‏תנאים והגבלות נוספים של Chrome ושל ChromeOS</translation>
+<translation id="6790428901817661496">הפעלה</translation>
 <translation id="6795633245022906657">פתיחת כרטיסייה חדשה במהירות. ניתן לערוך את קיצור הדרך ב'הגדרות'.</translation>
 <translation id="6802555630140434547">החלון הזה ייסגר</translation>
 <translation id="6811034713472274749">הדף מוכן להצגה</translation>
@@ -1215,7 +1217,6 @@
 <translation id="7431991332293347422">קביעת אופן השימוש בהיסטוריית הגלישה להתאמה אישית של החיפוש ועוד</translation>
 <translation id="7435356471928173109">מנהל המערכת כיבה את התכונה הזו</translation>
 <translation id="7437998757836447326">‏יציאה מ-Chrome</translation>
-<translation id="7443901082822119557">‏במצב פרטי, אתרים לא יכולים להשתמש בקובצי ה-cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים שונים, למשל, לצורך התאמה אישית של מודעות. ייתכן שתכונות באתרים מסוימים לא יפעלו כראוי.</translation>
 <translation id="7453467225369441013">‏הפעולה תוציא אותך מרוב האתרים אבל לא מחשבון Google שלך.</translation>
 <translation id="7453810262525006706">כיווץ לחלונית צדדית</translation>
 <translation id="7454641608352164238">אין מספיק מקום</translation>
@@ -1331,7 +1332,6 @@
 <translation id="799576009106109668">מהירות הגלישה תגבר כי התוכן ייטען באופן יזום, על סמך הביקור הנוכחי שלך בדף האינטרנט</translation>
 <translation id="7998918019931843664">פתיחה מחדש של כרטיסייה שנסגרה</translation>
 <translation id="8004582292198964060">דפדפן</translation>
-<translation id="8006818846907410687">חסימה במהלך גלישה במצב פרטי</translation>
 <translation id="8013372441983637696">‏יש לנקות גם את נתוני Chrome מהמכשיר הזה</translation>
 <translation id="8015452622527143194">כל מה שמופיע בדף ישתנה לגודל ברירת המחדל</translation>
 <translation id="8026334261755873520">ניקוי נתוני גלישה</translation>

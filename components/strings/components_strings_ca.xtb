@@ -347,6 +347,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1668071460721346172">Rep un correu electrònic</translation>
 <translation id="1671391448414634642">A partir d'ara, les pàgines en <ph name="SOURCE_LANGUAGE" /> es traduiran a <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Una llista limitada d'URL de les pàgines que visites en què es produeixen <ph name="BEGIN_LINK" />esdeveniments tecnològics heretats<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">La vora curta primer</translation>
 <translation id="168693727862418163">No s'ha pogut validar el valor d'aquesta política comparant-lo amb l'esquema i, per tant, s'ignorarà.</translation>
 <translation id="168841957122794586">El certificat de servidor conté una clau criptogràfica dèbil.</translation>
@@ -2031,6 +2032,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5296589789433599000">Cuina i receptes</translation>
 <translation id="5299298092464848405">S'ha produït un error en analitzar la política</translation>
 <translation id="5299638840995777423">Robòtica</translation>
+<translation id="5300062471671636390">Amaga la llista de dispositius per emetre</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5306593769196050043">Tots dos fulls</translation>
 <translation id="5307166000025436103">Vàlid</translation>
@@ -2618,7 +2620,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6573200754375280815">Encunyació doble a la dreta</translation>
 <translation id="6578434528542148658">L'identificador d'extensió no és vàlid.</translation>
 <translation id="657902945730878902">Dibuix i pintura</translation>
-<translation id="6579630537141957243">Vols connectar el dispositiu MIDI?</translation>
 <translation id="6579858392010591435">Festius i esdeveniments de temporada</translation>
 <translation id="6579990219486187401">Rosa clar</translation>
 <translation id="6581831440014388355">Depilació de pèl corporal i facial</translation>
@@ -3495,6 +3496,7 @@ Detalls addicionals:
 <translation id="8368027906805972958">Dispositiu desconegut o no admès (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Serveis de Google Play</translation>
 <translation id="8369073279043109617">Obtén un codi nou</translation>
+<translation id="8371841335382565017">Mostra la llista de dispositius per emetre</translation>
 <translation id="8371889962595521444">Certificats arrel personalitzats</translation>
 <translation id="8374636051559112948">Varia</translation>
 <translation id="8378714024927312812">Gestionat per la teva organització</translation>

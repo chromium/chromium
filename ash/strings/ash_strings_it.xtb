@@ -1082,6 +1082,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Abbiamo eseguito per te il passaggio a una rete migliore</translation>
 <translation id="5619862035903135339">Il criterio dell'amministratore disattiva l'acquisizione schermo</translation>
+<translation id="5620856676199877916">Visualizza tutti i lavori del corso sul sito web di Google Classroom</translation>
 <translation id="5620979661744857819">Consente l'accesso per <ph name="APP_NAME" />, tutte le app e tutti i siti web che hanno le autorizzazioni di accesso al microfono e alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Impossibile verificare la password. Riprova.</translation>
@@ -1211,6 +1212,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6154006699632741460">Periferica non supportata</translation>
 <translation id="6156960295318603523">Impostazioni lingua</translation>
 <translation id="615957422585914272">Mostra tastiera sullo schermo</translation>
+<translation id="616543563528926612">La scorciatoia per il clic con il tasto destro del mouse tasto <ph name="LAUNCHER_KEY_NAME" /> + clic viene aggiornata ad Alt + clic</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6166852626429024716">Cerca sul dispositivo, nelle app, nelle impostazioni e sul Web.</translation>
 <translation id="6168318496333165060">Apri l'app Diagnostica</translation>
@@ -1498,6 +1500,7 @@ Nuova installazione</translation>
 <translation id="7497767806359279797">Scegli la lingua e la tastiera</translation>
 <translation id="7508690557411636492">Aperto il mese scorso</translation>
 <translation id="7509246181739783082">Verifica la tua identità</translation>
+<translation id="7512509370370076552">La scorciatoia per il clic con il tasto destro del mouse Alt + clic viene aggiornata a tasto <ph name="LAUNCHER_KEY_NAME" /> + clic</translation>
 <translation id="7512726380443357693">Struttura non selezionata: <ph name="BUTTON_LABEL" /></translation>
 <translation id="7513622367902644023">Modalità screenshot selezionata</translation>
 <translation id="7513922695575567867">Calendario, settimana del <ph name="DATE" />, è attualmente selezionata la data <ph name="SELECTED_DATE" />.</translation>
@@ -1601,6 +1604,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7904094684485781019">L'amministratore di questo account ha bloccato l'accesso simultaneo.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivi connessi</translation>
+<translation id="7926080067315048321">Visualizza tutte le attività di Google Tasks sul web</translation>
 <translation id="7930731167419639574">Ciò che dici ora viene elaborato localmente e la dettatura funziona offline.</translation>
 <translation id="7932451802722951285">Apri in Google Calendar</translation>
 <translation id="7933084174919150729">L'Assistente Google è disponibile solo per il profilo principale.</translation>

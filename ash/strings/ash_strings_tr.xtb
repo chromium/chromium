@@ -1085,6 +1085,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Sizi daha iyi bir ağa geçirdik</translation>
 <translation id="5619862035903135339">Yönetici politikası ekran görüntüsü almaya izin vermiyor</translation>
+<translation id="5620856676199877916">Google Classroom web sitesindeki tüm sınıf çalışmalarını göster</translation>
 <translation id="5620979661744857819">Bu işlem, <ph name="APP_NAME" /> uygulamasının yanı sıra kamera ve mikrofon izni olan tüm uygulamaların ve web sitelerinin erişmesine izin verir. Web sayfasını yenilemeniz veya uygulamayı yeniden başlatmanız gerekebilir.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Kimliğiniz doğrulanamadı. Tekrar deneyin.</translation>
@@ -1214,6 +1215,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6154006699632741460">Çevre birimi desteklenmiyor</translation>
 <translation id="6156960295318603523">Dil Ayarları</translation>
 <translation id="615957422585914272">Dokunmatik klavyeyi göster</translation>
+<translation id="616543563528926612">Sağ tıklama kısayolu, alt + <ph name="LAUNCHER_KEY_NAME" /> tuşunu tıklama + tıklama olarak güncellendi</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6166852626429024716">Cihazınızda, uygulamalarda, ayarlarda, web'de arama yapın</translation>
 <translation id="6168318496333165060">Teşhis Aracı uygulamasını açın</translation>
@@ -1501,6 +1503,7 @@ Yeni yüklenmiş</translation>
 <translation id="7497767806359279797">Dil ve klavye seçin</translation>
 <translation id="7508690557411636492">Geçen ay açıldı</translation>
 <translation id="7509246181739783082">Kimliğinizi doğrulayın</translation>
+<translation id="7512509370370076552">Sağ tıklama kısayolu, <ph name="LAUNCHER_KEY_NAME" /> tuşu + alt tuşunu tıklama + tıklama olarak güncellendi</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, seçilmedi</translation>
 <translation id="7513622367902644023">Ekran görüntüsü modu seçildi</translation>
 <translation id="7513922695575567867">Takvim, <ph name="DATE" /> haftası, şu anda <ph name="SELECTED_DATE" /> seçili.</translation>
@@ -1604,6 +1607,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7904094684485781019">Bu hesabın yöneticisi, çoklu oturum açmayı engelledi.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> cihaz bağlandı</translation>
+<translation id="7926080067315048321">Google Görevler'deki tüm görevleri web'de göster</translation>
 <translation id="7930731167419639574">Konuşma artık yerel olarak işlenip çevrimdışı olarak çalışacaktır</translation>
 <translation id="7932451802722951285">Google Takvim'de aç</translation>
 <translation id="7933084174919150729">Google Asistan yalnızca birincil profilde kullanılabilir.</translation>

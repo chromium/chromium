@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Penyandian Data</translation>
 <translation id="1072700771426194907">Perangkat USB terdeteksi</translation>
 <translation id="107278043869924952">Gunakan PIN sebagai tambahan untuk sandi</translation>
+<translation id="107450319332239199">Terjadi error. Buka jendela secara manual.</translation>
 <translation id="1076176485976385390">Buka halaman dengan kursor teks</translation>
 <translation id="1076382954055048850">Tampilkan sesi Transmisi lainnya</translation>
 <translation id="1076698951459398590">Aktifkan Tema</translation>
@@ -1757,6 +1758,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2369058545741334020">Buka dalam mode baca</translation>
 <translation id="236939127352773362">Saat perangkat berbagi langsung</translation>
 <translation id="2371076942591664043">Buka setelah &amp;selesai</translation>
+<translation id="237336063998926520">Gunakan alamat IP untuk menentukan lokasi</translation>
 <translation id="2373666622366160481">Paskan dengan kertas</translation>
 <translation id="2375406435414127095">Hubungkan ke ponsel Anda</translation>
 <translation id="2376056713414548745">Bacakan lisan</translation>
@@ -7722,6 +7724,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7396017167185131589">Folder bersama akan muncul di sini</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> akan diluncurkan pada permulaan sistem dan tetap berjalan di latar meskipun Anda telah menutup semua jendela <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Sesuaikan sinkronisasi</translation>
+<translation id="7399616692258236448">Permintaan lokasi otomatis diblokir untuk semua situs kecuali situs yang Anda izinkan</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Ubah kembali ke <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Siapkan koneksi di <ph name="PHONE_NAME" /> Anda</translation>
@@ -8992,7 +8995,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Mengizinkan <ph name="PERMISSION" /> dan <ph name="COUNT" /> lainnya</translation>
 <translation id="8413956290606243087">Ingin mengaktifkan ChromeVox, pembaca layar bawaan untuk ChromeOS?</translation>
-<translation id="8414065061814811918">Akselerasi scroll. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Kenangan disembunyikan selama dua hari</translation>
 <translation id="8414396119627470038">Login ke <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Catatan</translation>
@@ -9675,9 +9677,11 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8986494364107987395">Kirim statistik penggunaan dan laporan error ke Google secara otomatis</translation>
 <translation id="8987305927843254629">Setiap pengguna dapat mempersonalisasi pengalaman dan menjaga privasi datanya.</translation>
 <translation id="8987927404178983737">Bulan</translation>
+<translation id="8988539543012086784">Halaman ini disimpan ke <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Refresh Status Tethering</translation>
 <translation id="8991520179165052608">Situs dapat menggunakan mikrofon</translation>
 <translation id="8991694323904646277">Tidak ada kamera</translation>
+<translation id="8991766915726096402">Pemulihan Data Lokal</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Penggunaan memori - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Jika lupa sandi <ph name="DEVICE_TYPE" />, Anda masih dapat memulihkan data lokal. Anda harus login ke Akun Google Anda atau menggunakan pemulihan akun.</translation>
 <translation id="8993737615451556423">Memberikan kontrol untuk mempercepat, memperlambat, dan menjeda suara pembacaan</translation>

@@ -1085,6 +1085,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">我们已将您切换到更好的网络</translation>
 <translation id="5619862035903135339">管理员政策已停用截屏功能</translation>
+<translation id="5620856676199877916">在 Google 课堂网站上查看所有课业</translation>
 <translation id="5620979661744857819">这将允许“<ph name="APP_NAME" />”以及所有具有摄像头和麦克风使用权限的应用和网站使用摄像头/麦克风。您可能需要刷新网页或重启应用。</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">无法验证您的密码。请重试。</translation>
@@ -1214,6 +1215,7 @@
 <translation id="6154006699632741460">不支持外围设备</translation>
 <translation id="6156960295318603523">语言设置</translation>
 <translation id="615957422585914272">显示屏幕键盘</translation>
+<translation id="616543563528926612">“右键点击”对应的快捷键原为<ph name="LAUNCHER_KEY_NAME" />键 + 点击，现已更新为 alt + 点击</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6166852626429024716">搜索您的设备、应用、设置、网站…</translation>
 <translation id="6168318496333165060">打开“诊断”应用</translation>
@@ -1498,6 +1500,7 @@
 <translation id="7497767806359279797">选择语言和键盘布局</translation>
 <translation id="7508690557411636492">过去一个月内打开过</translation>
 <translation id="7509246181739783082">验证您的身份</translation>
+<translation id="7512509370370076552">“右键点击”对应的快捷键原为 alt + 点击，现已更新为<ph name="LAUNCHER_KEY_NAME" />键 + 点击</translation>
 <translation id="7512726380443357693">未选择“<ph name="BUTTON_LABEL" />”</translation>
 <translation id="7513622367902644023">已选择截屏模式</translation>
 <translation id="7513922695575567867">日历，<ph name="DATE" />这周，目前所选日期为 <ph name="SELECTED_DATE" />。</translation>
@@ -1601,6 +1604,7 @@
 <translation id="7904094684485781019">此账号的管理员已停用多账号登录。</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">已连接 <ph name="DEVICECOUNT" /> 部设备</translation>
+<translation id="7926080067315048321">在 Google Tasks 网页版上查看所有任务</translation>
 <translation id="7930731167419639574">现在，语音均在本地处理，语音输入内容可离线使用</translation>
 <translation id="7932451802722951285">在 Google 日历中打开</translation>
 <translation id="7933084174919150729">Google 助理仅适用于主要个人资料。</translation>

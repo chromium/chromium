@@ -3356,7 +3356,7 @@ Kolom <ph name="RUN_ON_OS_LOGIN_FIELD" /> menentukan apakah aplikasi web dapat d
 
       Mendaftar ekstensi yang dipasang secara otomatis untuk pengguna Demo, untuk perangkat dalam mode ritel. Ekstensi ini disimpan dalam perangkat dan dapat dipasang saat offline, setelah pemasangan.
 
-      Setiap entri cantuman berisi kamus yang harus menyertakan ID ekstensi dalam bidang 'extension-id', dan URL pembaruannya dalam bidang 'update-url'.</translation>
+      Setiap entri listingan berisi kamus yang harus menyertakan ID ekstensi dalam bidang 'extension-id', dan URL pembaruannya dalam bidang 'update-url'.</translation>
 <translation id="3869180930654347954">Nonaktifkan Set Pihak Pertama untuk semua pengguna yang terpengaruh</translation>
 <translation id="3869566220234507038">Selalu muat browser <ph name="LACROS_NAME" /> <ph name="LACROS_ROOTFS_NAME" /></translation>
 <translation id="3870035799352372700">Blokir Asisten Google agar tidak mengakses konteks layar selama interaksi</translation>

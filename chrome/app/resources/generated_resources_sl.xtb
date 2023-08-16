@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Šifriranje podatkov</translation>
 <translation id="1072700771426194907">Zaznana je naprava USB</translation>
 <translation id="107278043869924952">Uporabite PIN poleg gesla</translation>
+<translation id="107450319332239199">Prišlo je do napake. Okna raje odprite ročno.</translation>
 <translation id="1076176485976385390">Premikanje po straneh s kazalcem besedila</translation>
 <translation id="1076382954055048850">Prikaz drugih sej za predvajanje</translation>
 <translation id="1076698951459398590">Omogoči temo</translation>
@@ -1760,6 +1761,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2369058545741334020">Odpri v načinu za branje</translation>
 <translation id="236939127352773362">Kadar naprave v bližini delijo.</translation>
 <translation id="2371076942591664043">Odpri, ko je &amp;dokončano</translation>
+<translation id="237336063998926520">Uporaba naslova IP za ugotavljanje lokacije</translation>
 <translation id="2373666622366160481">Prilagajanje velikosti papirja</translation>
 <translation id="2375406435414127095">Povežite se s telefonom</translation>
 <translation id="2376056713414548745">Branje na glas</translation>
@@ -7733,6 +7735,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7396017167185131589">Deljene mape bodo prikazane tukaj</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> se bo zagnal ob zagonu sistema in se izvajal v ozadju, tudi ko zaprete vsa druga okna programa <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Prilagajanje sinhronizacije</translation>
+<translation id="7399616692258236448">Zahteve za lokacijo so samodejno blokirane za vsa spletna mesta, razen tiste z vašim dovoljenjem</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Želite preklopiti nazaj na iskalnik <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Nastavitev povezave v telefonu <ph name="PHONE_NAME" /></translation>
@@ -9004,7 +9007,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Dovoljeno: <ph name="PERMISSION" /> in še <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za Chrome OS?</translation>
-<translation id="8414065061814811918">Pospeševanje pomikanja. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Spomini so skriti za dva dneva.</translation>
 <translation id="8414396119627470038">Prijavite se v storitev <ph name="SITE_ETLD_PLUS_ONE" /> s podatki za <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Opombe</translation>
@@ -9690,9 +9692,11 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8986494364107987395">Samodejno pošlji statistične podatke o uporabi in poročila o zrušitvah Googlu</translation>
 <translation id="8987305927843254629">Vsak si lahko individualno prilagodi izkušnjo in poskrbi za zasebnost podatkov.</translation>
 <translation id="8987927404178983737">Mesec</translation>
+<translation id="8988539543012086784">Ta stran je shranjena v mapi <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Osveži stanje povezave računalnika z internetom prek mobilnega telefona</translation>
 <translation id="8991520179165052608">Spletno mesto lahko uporablja vaš mikrofon</translation>
 <translation id="8991694323904646277">Kamera ni na voljo</translation>
+<translation id="8991766915726096402">Obnovitev lokalnih podatkov</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> – Uporaba pomnilnika – <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Če pozabite geslo za napravo <ph name="DEVICE_TYPE" />, lahko še vedno obnovite lokalne podatke. Prijaviti se boste morali v račun Google ali uporabiti račun za obnovitev.</translation>
 <translation id="8993737615451556423">Omogoča kontrolnike za pospešitev, upočasnitev in zaustavitev bralnega glasu.</translation>

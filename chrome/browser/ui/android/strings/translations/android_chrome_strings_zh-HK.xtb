@@ -35,6 +35,7 @@
 <translation id="1150263420752757504">「<ph name="APP_NAME" />」將在 Chrome 中開啟。繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。</translation>
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1177863135347784049">自訂</translation>
+<translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1181366777303791449">在 <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">要使用安全性強的密碼嗎？</translation>
@@ -1096,6 +1097,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="6770042910635026163">您所瀏覽的網站會定義您的興趣</translation>
 <translation id="6770602306803890733">為您和網絡上的所有使用者提高安全性</translation>
 <translation id="6785476624617658922">Chrome 和 Chrome OS 的《附加服務條款》</translation>
+<translation id="6790428901817661496">播放</translation>
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯此捷徑，請前往「設定」。</translation>
 <translation id="6802555630140434547">視窗即將關閉</translation>
 <translation id="6811034713472274749">網頁已準備就緒，可供查看</translation>
@@ -1220,7 +1222,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="7431991332293347422">控制系統如何使用您的瀏覽記錄，為您提供個人化的搜尋內容和其他服務</translation>
 <translation id="7435356471928173109">已由管理員關閉</translation>
 <translation id="7437998757836447326">登出 Chrome</translation>
-<translation id="7443901082822119557">在無痕模式中，網站不能使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告。有些網站的功能可能無法正常運作。</translation>
 <translation id="7453467225369441013">您會登出大部分的網站，但不會因此登出 Google 帳戶。</translation>
 <translation id="7453810262525006706">收合去側視模式</translation>
 <translation id="7454641608352164238">空間不足</translation>
@@ -1337,7 +1338,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="799576009106109668">系統會根據您目前瀏覽的網頁主動載入內容，助您加快瀏覽速度</translation>
 <translation id="7998918019931843664">重新開啟先前關閉的分頁</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
-<translation id="8006818846907410687">使用無痕模式時封鎖</translation>
 <translation id="8013372441983637696">一併清除您在此裝置上的 Chrome 資料</translation>
 <translation id="8015452622527143194">將網頁中的所有內容回復到預設大小</translation>
 <translation id="8026334261755873520">清除瀏覽數據</translation>

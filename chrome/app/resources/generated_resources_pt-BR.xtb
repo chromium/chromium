@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Codificação de dados</translation>
 <translation id="1072700771426194907">Dispositivo USB detectado</translation>
 <translation id="107278043869924952">Usar um PIN além da senha</translation>
+<translation id="107450319332239199">Algo deu errado. Abra as janelas manualmente.</translation>
 <translation id="1076176485976385390">Navegar pelas páginas com um cursor de texto</translation>
 <translation id="1076382954055048850">Mostrar outras sessões de transmissão</translation>
 <translation id="1076698951459398590">Ativar tema</translation>
@@ -1758,6 +1759,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2369058545741334020">Abrir no modo de leitura</translation>
 <translation id="236939127352773362">Quando dispositivos estiverem compartilhando itens por perto</translation>
 <translation id="2371076942591664043">Abrir quando estiver &amp;concluído</translation>
+<translation id="237336063998926520">Usar seu endereço IP para determinar o local</translation>
 <translation id="2373666622366160481">Ajustar à página</translation>
 <translation id="2375406435414127095">Conecte-se ao seu smartphone</translation>
 <translation id="2376056713414548745">Ler em voz alta</translation>
@@ -7726,6 +7728,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7396017167185131589">As pastas compartilhadas serão exibidas aqui</translation>
 <translation id="7396845648024431313">O <ph name="APP_NAME" /> será iniciado na inicialização do sistema e continuará sendo executado em segundo plano, mesmo quando você fechar todas as outras janelas de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizar sincronização</translation>
+<translation id="7399616692258236448">As solicitações de localização são bloqueadas automaticamente para todos os sites, exceto os que você permitir</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Voltar para <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Configurar conexão no <ph name="PHONE_NAME" /></translation>
@@ -8997,7 +9000,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Permitidos: <ph name="PERMISSION" /> e mais <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Você quer ativar o ChromeVox, o leitor de tela integrado do ChromeOS?</translation>
-<translation id="8414065061814811918">Aceleração da rolagem. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">As recordações estão ocultas por dois dias</translation>
 <translation id="8414396119627470038">Fazer login no <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Observações</translation>
@@ -9681,9 +9683,11 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8986494364107987395">Envia estatísticas de uso e relatórios de erros ao Google automaticamente</translation>
 <translation id="8987305927843254629">Cada pessoa pode personalizar a própria experiência e manter os dados privados.</translation>
 <translation id="8987927404178983737">Mês</translation>
+<translation id="8988539543012086784">Esta página foi salva em <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Atualizar status do tethering</translation>
 <translation id="8991520179165052608">O site pode usar seu microfone</translation>
 <translation id="8991694323904646277">Sem câmera</translation>
+<translation id="8991766915726096402">Recuperação de dados locais</translation>
 <translation id="8992671062738341478">Uso da memória em <ph name="WINDOW_TITLE" />: <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Se você esquecer a senha do <ph name="DEVICE_TYPE" />, ainda poderá restaurar seus dados locais. Faça login na sua Conta do Google ou use a recuperação de conta.</translation>
 <translation id="8993737615451556423">Fornece controles para pausar e aumentar ou reduzir a velocidade da voz da leitura</translation>

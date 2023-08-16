@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">Traženje mobilnih mreža</translation>
 <translation id="1293556467332435079">Datoteke</translation>
 <translation id="1297922636971898492">Google disk trenutačno nije dostupan. Prijenos će se automatski ponovo pokrenuti kada Google disk opet postane dostupan.</translation>
+<translation id="1306130176943817227">Brisanje nije moguće. Stavka se upotrebljava.</translation>
 <translation id="1307931752636661898">Nije moguće pregledati Linux datoteke</translation>
 <translation id="1313405956111467313">Automatska konfiguracija proxyja</translation>
 <translation id="134645005685694099">Vaš uređaj nema dovoljno prostora za pohranu da bi sinkronizacija datoteka ostala uključena. Nove datoteke više se neće automatski sinkronizirati.</translation>
@@ -537,6 +538,7 @@
 <translation id="5218183485292899140">švicarska (francuska)</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5253070652067921974">Autor</translation>
+<translation id="5254207638927440400">Datoteka se ne može premjestiti. Datoteka se upotrebljava.</translation>
 <translation id="5257456363153333584">Vilin konjic</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Pristupite datotekama svugdje, čak i kada niste povezani s internetom.<ph name="MARKUP_2" />
     Datoteke na Google disku ažurirane su i dostupne putem bilo kojeg uređaja.<ph name="MARKUP_3" />

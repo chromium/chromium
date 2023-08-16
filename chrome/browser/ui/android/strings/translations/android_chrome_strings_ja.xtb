@@ -35,6 +35,7 @@
 <translation id="1150263420752757504">Chrome で <ph name="APP_NAME" /> を開きます。続行すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したものと見なされます。</translation>
 <translation id="1173894706177603556">名前を変更</translation>
 <translation id="1177863135347784049">カスタム</translation>
+<translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="1181366777303791449">ドメイン: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">安全なパスワードを使用しますか？</translation>
@@ -1095,6 +1096,7 @@
 <translation id="6770042910635026163">お客様の興味 / 関心を定義しているアクセスしたサイト</translation>
 <translation id="6770602306803890733">すべてのウェブユーザーの安全性を高めます</translation>
 <translation id="6785476624617658922">Chrome および Chrome OS 追加利用規約</translation>
+<translation id="6790428901817661496">再生</translation>
 <translation id="6795633245022906657">新しいタブをすばやく開きます。このショートカットは [設定] で編集できます。</translation>
 <translation id="6802555630140434547">ウィンドウが閉じられます</translation>
 <translation id="6811034713472274749">ページを表示できます</translation>
@@ -1218,7 +1220,6 @@
 <translation id="7431991332293347422">検索などのカスタマイズを目的とした閲覧履歴の使用方法を設定</translation>
 <translation id="7435356471928173109">管理者によってオフにされています</translation>
 <translation id="7437998757836447326">Chrome からログアウト</translation>
-<translation id="7443901082822119557">シークレット モードのとき、サイトは、Cookie を使用して、別のサイトでのあなたの閲覧アクティビティを確認することができません。広告をパーソナライズできないなど、一部サイトの機能が使用できなくなる可能性もあります。</translation>
 <translation id="7453467225369441013">ほとんどのサイトからログアウトします。Google アカウントへのログイン状態は維持されます。</translation>
 <translation id="7453810262525006706">サイドビューに折りたたむ</translation>
 <translation id="7454641608352164238">空き容量が不足しています</translation>
@@ -1335,7 +1336,6 @@
 <translation id="799576009106109668">表示中のウェブページに基づいてコンテンツが事前に読み込まれるので、すばやくブラウジングできます</translation>
 <translation id="7998918019931843664">閉じたタブを開く</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
-<translation id="8006818846907410687">シークレット モードのときはブロックする</translation>
 <translation id="8013372441983637696">Chrome データをこのデバイスから削除する</translation>
 <translation id="8015452622527143194">ページ上のすべての要素をデフォルトのサイズに戻す</translation>
 <translation id="8026334261755873520">閲覧履歴データの削除</translation>

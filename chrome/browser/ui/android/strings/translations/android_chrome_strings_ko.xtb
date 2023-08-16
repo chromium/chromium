@@ -34,6 +34,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="1173894706177603556">이름 바꾸기</translation>
 <translation id="1177863135347784049">맞춤설정</translation>
+<translation id="1178581264944972037">일시중지</translation>
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1181366777303791449">(도메인: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" />)</translation>
 <translation id="1193729455103054076">안전한 비밀번호를 사용하시겠습니까?</translation>
@@ -1069,6 +1070,7 @@
 <translation id="6649642165559792194">이미지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">비밀번호</translation>
 <translation id="6659594942844771486">탭</translation>
+<translation id="6662119761881114773">현재 이 기기에 저장된 비밀번호는 Chrome 채널에서 사용할 수 없습니다. Chrome 121 이후에는 Chrome 및 <ph name="CHROME_CHANNEL" />용 기기에 저장된 비밀번호가 병합되어 두 앱 모두에서 사용할 수 있습니다</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />에서 열기</translation>
 <translation id="6671495933530132209">이미지 복사</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> 추가</translation>
@@ -1091,6 +1093,7 @@
 <translation id="6770042910635026163">방문한 사이트 중 관심분야를 정의하는 사이트</translation>
 <translation id="6770602306803890733">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6785476624617658922">Chrome 및 ChromeOS 추가 서비스 약관</translation>
+<translation id="6790428901817661496">재생</translation>
 <translation id="6795633245022906657">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>
 <translation id="6802555630140434547">창이 닫힙니다.</translation>
 <translation id="6811034713472274749">페이지를 볼 수 있음</translation>
@@ -1215,7 +1218,6 @@
 <translation id="7431991332293347422">검색 등을 맞춤설정하는 데 인터넷 방문 기록이 사용되는 방식 관리</translation>
 <translation id="7435356471928173109">관리자가 사용 중지했습니다.</translation>
 <translation id="7437998757836447326">Chrome에서 로그아웃</translation>
-<translation id="7443901082822119557">시크릿 모드에 있는 동안에는 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="7453467225369441013">대부분의 사이트에서 로그아웃됩니다. Google 계정에서는 로그아웃되지 않습니다.</translation>
 <translation id="7453810262525006706">사이드뷰로 축소</translation>
 <translation id="7454641608352164238">저장공간 부족</translation>
@@ -1331,7 +1333,6 @@
 <translation id="799576009106109668">현재 웹페이지 방문을 토대로 콘텐츠가 미리 로드되므로 더 빠르게 탐색할 수 있습니다.</translation>
 <translation id="7998918019931843664">닫은 탭 다시 열기</translation>
 <translation id="8004582292198964060">브라우저</translation>
-<translation id="8006818846907410687">시크릿 모드 사용 중에 차단</translation>
 <translation id="8013372441983637696">이 기기에서 내 Chrome 데이터 삭제</translation>
 <translation id="8015452622527143194">페이지의 모든 항목을 기본 크기로 되돌리기</translation>
 <translation id="8026334261755873520">인터넷 사용 기록 삭제</translation>

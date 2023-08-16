@@ -1754,6 +1754,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2369058545741334020">Fungua katika hali ya kusoma</translation>
 <translation id="236939127352773362">Vifaa vinaposhiriki karibu nawe</translation>
 <translation id="2371076942591664043">Fungua baada ya &amp;kumaliza</translation>
+<translation id="237336063998926520">Tumia anwani yako ya IP ili ubainishe eneo</translation>
 <translation id="2373666622366160481">Fanya itoshe kwenye karatasi</translation>
 <translation id="2375406435414127095">Unganisha kwenye simu yako</translation>
 <translation id="2376056713414548745">Soma kwa sauti</translation>
@@ -7717,6 +7718,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7396017167185131589">Folda za pamoja zitaonekana hapa</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> itazinduliwa katika kuanzishwa kwa mfumo na iendelee kuendeshwa katika mandharinyuma hata pindi tu umefunga madirisha mengine <ph name="PRODUCT_NAME" /> yote.</translation>
 <translation id="7399045143794278225">Weka mapendeleo ya usawazishaji</translation>
+<translation id="7399616692258236448">Maombi ya kufikia data ya mahali ulipo yanazuiwa kiotomatiki kwenye tovuti zote isipokuwa zile unazoruhusu</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Ungependa kurudi kwenye <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Weka mipangilio ya muunganisho kwenye <ph name="PHONE_NAME" /> yako</translation>
@@ -8989,7 +8991,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Umeruhusu <ph name="PERMISSION" /> na zingine <ph name="COUNT" /></translation>
 <translation id="8413956290606243087">Ungependa kuwasha ChromeVox, kisoma skrini kilichojumuishwa cha Mfumo wa Uendeshaji wa Chrome?</translation>
-<translation id="8414065061814811918">Kuongezeka kasi ya kitufe cha sogeza. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Kumbukumbu zimefichwa kwa siku mbili</translation>
 <translation id="8414396119627470038">Ingia katika akaunti <ph name="SITE_ETLD_PLUS_ONE" /> kwa kutumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Madokezo</translation>
@@ -9672,6 +9673,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="8986494364107987395">Tumia Google takwimu za matumizi na ripoti za mara ambazo kivinjari kinaacha kufanya kazi, moja kwa moja</translation>
 <translation id="8987305927843254629">Kila mtu anaweza kuweka mapendeleo ya hali yake ya utumiaji na kuweka data yake iwe ya faragha.</translation>
 <translation id="8987927404178983737">Mwezi</translation>
+<translation id="8988539543012086784">Ukurasa huu umehifadhiwa kwenye <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Onyesha Upya Hali ya Kusambaza Mtandao</translation>
 <translation id="8991520179165052608">Tovuti inaweza kutumia maikrofoni yako</translation>
 <translation id="8991694323904646277">Hakuna kamera</translation>

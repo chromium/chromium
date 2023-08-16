@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Veri Şifreleme</translation>
 <translation id="1072700771426194907">USB cihaz algılandı</translation>
 <translation id="107278043869924952">Şifrenin yanı sıra PIN kullan</translation>
+<translation id="107450319332239199">Bir hata oluştu. Bunun yerine pencereleri manuel olarak açın.</translation>
 <translation id="1076176485976385390">Sayfalarda metin imleciyle gezin</translation>
 <translation id="1076382954055048850">Yayın yapan diğer cihazları göster</translation>
 <translation id="1076698951459398590">Temayı Etkinleştir</translation>
@@ -1740,6 +1741,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2369058545741334020">Okuma Modu'nda aç</translation>
 <translation id="236939127352773362">Yakındaki cihazlar paylaşırken</translation>
 <translation id="2371076942591664043">İşlem tamamlandığın&amp;da aç</translation>
+<translation id="237336063998926520">Konumu belirlemek için IP adresinizi kullanın</translation>
 <translation id="2373666622366160481">Kağıda sığdır</translation>
 <translation id="2375406435414127095">Telefonunuza bağlama</translation>
 <translation id="2376056713414548745">Sesli oku</translation>
@@ -7705,6 +7707,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7396017167185131589">Paylaşılan klasörler burada görünür</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" />, sistem açıldığında başlayacak ve diğer tüm <ph name="PRODUCT_NAME" /> pencerelerini kapatsanız da arka planda çalışmaya devam edecektir.</translation>
 <translation id="7399045143794278225">Senkronizasyonu özelleştir</translation>
+<translation id="7399616692258236448">Konum istekleri, izin verdikleriniz dışındaki tüm siteler için otomatik olarak engellenir</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470"><ph name="OLD_SEARCH_PROVIDER" /> sağlayıcısına geri dönmek ister misiniz?</translation>
 <translation id="7400839060291901923"><ph name="PHONE_NAME" /> telefonunuzda bağlantıyı yapılandırın</translation>
@@ -8975,7 +8978,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">İzin verildi: <ph name="PERMISSION" /> ve <ph name="COUNT" /> daha</translation>
 <translation id="8413956290606243087">ChromeOS'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz?</translation>
-<translation id="8414065061814811918">Kaydırma hızlandırması. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Anılar iki gün süreyle gizlenecek</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> oturumunu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile açın</translation>
 <translation id="8414685983518053656">Notlar</translation>
@@ -9658,9 +9660,11 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8986494364107987395">Kullanım istatistiklerini ve çökme raporlarını otomatik olarak Google'a gönder</translation>
 <translation id="8987305927843254629">Her kullanıcı, hesabını kişiselleştirip verilerini gizli tutabilir.</translation>
 <translation id="8987927404178983737">Ay</translation>
+<translation id="8988539543012086784">Bu sayfa <ph name="BOOKMARK_FOLDER" /> klasörüne kaydedildi</translation>
 <translation id="8989359959810288806">Tethering Durumunu Yenile</translation>
 <translation id="8991520179165052608">Site, mikrofonunuzu kullanabilir</translation>
 <translation id="8991694323904646277">Kamera yok</translation>
+<translation id="8991766915726096402">Yerel verileri kurtar</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Bellek kullanımı - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> şifrenizi unutsanız bile, yerel verilerinizi geri yükleyebilirsiniz. Google Hesabınızda oturum açmanız veya hesap kurtarma özelliğini kullanmanız gerekir.</translation>
 <translation id="8993737615451556423">Okuma sesini hızlandırma, yavaşlatma ve duraklatma kontrollerini sağlar</translation>

@@ -34,6 +34,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1150263420752757504">Bydd <ph name="APP_NAME" /> yn agor yn Chrome. Drwy barhau, rydych yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" />, a <ph name="BEGIN_LINK2" />Thelerau Gwasanaeth Ychwanegol Google Chrome a ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1173894706177603556">Ailenwi</translation>
 <translation id="1177863135347784049">Personol</translation>
+<translation id="1178581264944972037">Seibio</translation>
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1181366777303791449">ar <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Defnyddio cyfrinair cryf?</translation>
@@ -1068,6 +1069,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6649642165559792194">Rhagweld y ddelwedd <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Cyfrinair</translation>
 <translation id="6659594942844771486">Tab</translation>
+<translation id="6662119761881114773">Ar hyn o bryd, ni ellir defnyddio cyfrineiriau sydd wedi'u cadw ar y ddyfais hon ar draws sianeli Chrome. Ar ôl Chrome 121, bydd cyfrineiriau sy'n cael eu cadw ar eich dyfais ar gyfer Chrome a <ph name="CHROME_CHANNEL" /> yn cael eu huno a gellir eu defnyddio yn y ddau ap.</translation>
 <translation id="666731172850799929">Agor yn <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Copïo’r llun</translation>
 <translation id="6672917148207387131">Ychwanegu <ph name="DOMAIN" /></translation>
@@ -1090,6 +1092,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6770042910635026163">Gwefannau rydych yn ymweld â nhw sy'n diffinio eich diddordebau</translation>
 <translation id="6770602306803890733">Mae'n gwella diogelwch i chi a phawb ar y we</translation>
 <translation id="6785476624617658922">Telerau Gwasanaeth Ychwanegol Chrome a ChromeOS</translation>
+<translation id="6790428901817661496">Chwarae</translation>
 <translation id="6795633245022906657">Agor tab newydd yn gyflym. I olygu'r llwybr byr hwn, ewch i'r Gosodiadau.</translation>
 <translation id="6802555630140434547">Bydd y ffenestr yn cael ei chau</translation>
 <translation id="6811034713472274749">Mae'r dudalen yn barod i'w gweld</translation>
@@ -1214,7 +1217,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7431991332293347422">Rheoli sut mae eich hanes pori yn cael ei ddefnyddio i bersonoleiddio Search a rhagor</translation>
 <translation id="7435356471928173109">Wedi'i ddiffodd gan eich gweinyddwr</translation>
 <translation id="7437998757836447326">Allgofnodi o Chrome</translation>
-<translation id="7443901082822119557">Pan fyddwch yn y modd anhysbys, ni all gwefannau ddefnyddio'ch cwcis i weld eich gweithgarwch pori ar draws gwahanol wefannau, er enghraifft, i bersonoleiddio hysbysebion. Mae'n bosib y bydd nodweddion ar rai gwefannau yn torri.</translation>
 <translation id="7453467225369441013">Yn eich allgofnodi o'r mwyafrif o wefannau. Ni fyddwch yn cael eich allgofnodi o'ch Cyfrif Google.</translation>
 <translation id="7453810262525006706">Crebachu i'r wedd ochr</translation>
 <translation id="7454641608352164238">Dim digon o le</translation>
@@ -1330,7 +1332,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="799576009106109668">Byddwch yn pori'n gyflymach oherwydd bod cynnwys yn cael ei lwytho'n rhagweithiol yn seiliedig ar eich ymweliad tudalen we bresennol</translation>
 <translation id="7998918019931843664">Ailagor tab sydd wedi'i gau</translation>
 <translation id="8004582292198964060">Porwr</translation>
-<translation id="8006818846907410687">Rhwystro wrth ddefnyddio'r modd anhysbys</translation>
 <translation id="8013372441983637696">Clirio'ch data Chrome o'r ddyfais hon hefyd</translation>
 <translation id="8015452622527143194">Dychwelyd popeth ar y dudalen i'r maint diofyn</translation>
 <translation id="8026334261755873520">Clirio data pori</translation>

@@ -347,6 +347,7 @@
 <translation id="1668071460721346172">E-məktub alın</translation>
 <translation id="1671391448414634642"><ph name="SOURCE_LANGUAGE" /> dilindəki səhifələr artıq <ph name="TARGET_LANGUAGE" /> dilinə tərcümə ediləcək.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> dilindən <ph name="TARGET_LANGUAGE" /> dilinə</translation>
+<translation id="1674542638006317838"><ph name="BEGIN_LINK" />Köhnə texnologiya hadisələri<ph name="END_LINK" /> olan səhifələrin məhdud URL siyahısı.</translation>
 <translation id="1682696192498422849">Qısa kənar əvvəldə</translation>
 <translation id="168693727862418163">Bu siyasət dəyəri sxem əsasında doğrulanmadı və nəzərə alınmayacaq.</translation>
 <translation id="168841957122794586">Server sertifikatının kriptoqrafik açarı zəifdir.</translation>
@@ -2027,6 +2028,7 @@
 <translation id="5296589789433599000">Kulinariya və reseptlər</translation>
 <translation id="5299298092464848405">Siyasət təhlili xətası</translation>
 <translation id="5299638840995777423">Robotika</translation>
+<translation id="5300062471671636390">Yayım üçün cihaz siyahısını gizlədin</translation>
 <translation id="5300589172476337783">Göstərin</translation>
 <translation id="5306593769196050043">Hər iki vərəq</translation>
 <translation id="5307166000025436103">OK</translation>
@@ -2614,7 +2616,6 @@
 <translation id="6573200754375280815">Sağdan qoşa deşik açın</translation>
 <translation id="6578434528542148658">Yanlış artırma ID-si.</translation>
 <translation id="657902945730878902">Rəsm və boyama</translation>
-<translation id="6579630537141957243">MIDI cihazı qoşulsun?</translation>
 <translation id="6579858392010591435">Bayram və mövsümlük tədbirlər</translation>
 <translation id="6579990219486187401">Açıq-çəhrayı</translation>
 <translation id="6581831440014388355">Xoşagəlməz bədən və üz tüklərinin təmizlənməsi</translation>
@@ -3491,6 +3492,7 @@
 <translation id="8368027906805972958">Naməlum və ya dəstəklənməyən cihaz (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play xidmətləri</translation>
 <translation id="8369073279043109617">Yeni kod əldə edin</translation>
+<translation id="8371841335382565017">Yayım üçün cihaz siyahısını göstərin</translation>
 <translation id="8371889962595521444">Əsas fərdi sertifikatlar</translation>
 <translation id="8374636051559112948">Fərqlənir</translation>
 <translation id="8378714024927312812">Təşkilatınız tərəfindən idarə olunur</translation>

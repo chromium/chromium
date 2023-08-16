@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">Gegevenscodering</translation>
 <translation id="1072700771426194907">USB-apparaat gedetecteerd</translation>
 <translation id="107278043869924952">Pincode gebruiken naast wachtwoord</translation>
+<translation id="107450319332239199">Er is iets misgegaan. Open de vensters handmatig.</translation>
 <translation id="1076176485976385390">Navigeren op pagina's met een tekstcursor</translation>
 <translation id="1076382954055048850">Andere Cast-sessies tonen</translation>
 <translation id="1076698951459398590">Thema aanzetten</translation>
@@ -1742,6 +1743,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2369058545741334020">Openen in leesmodus</translation>
 <translation id="236939127352773362">Als apparaten in de buurt content delen</translation>
 <translation id="2371076942591664043">Openen wanneer geree&amp;d</translation>
+<translation id="237336063998926520">Je IP-adres gebruiken om je locatie te bepalen</translation>
 <translation id="2373666622366160481">Aanpassen aan papierformaat</translation>
 <translation id="2375406435414127095">Verbinding maken met je telefoon</translation>
 <translation id="2376056713414548745">Voorlezen</translation>
@@ -8968,7 +8970,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Recht voor <ph name="PERMISSION" /> en <ph name="COUNT" /> andere toegestaan</translation>
 <translation id="8413956290606243087">Wil je ChromeVox aanzetten, de ingebouwde schermlezer voor Chrome OS?</translation>
-<translation id="8414065061814811918">Scrollversnelling. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="8414249071344507766">Herinneringen 2 dagen verborgen</translation>
 <translation id="8414396119627470038">Log in bij <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Notities</translation>
@@ -9656,6 +9657,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8989359959810288806">Tethering-status vernieuwen</translation>
 <translation id="8991520179165052608">Site kan je microfoon gebruiken</translation>
 <translation id="8991694323904646277">Geen camera</translation>
+<translation id="8991766915726096402">Herstel van lokale gegevens</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Geheugengebruik - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Als je je <ph name="DEVICE_TYPE" />-wachtwoord bent vergeten, kun je je lokale gegevens nog steeds herstellen. Log hiervoor in op je Google-account of gebruik accountherstel.</translation>
 <translation id="8993737615451556423">Biedt opties om de leesstem te versnellen, te vertragen en te onderbreken</translation>

@@ -347,6 +347,7 @@
 <translation id="1668071460721346172">รับอีเมล</translation>
 <translation id="1671391448414634642">จากนี้ไประบบจะแปลหน้าภาษา<ph name="SOURCE_LANGUAGE" />เป็นภาษา<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />เป็น<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">รายการ URL ที่จำกัดไว้ของหน้าเว็บที่คุณเข้าชมซึ่งใช้<ph name="BEGIN_LINK" />เหตุการณ์เทคโนโลยีเดิม<ph name="END_LINK" /></translation>
 <translation id="1682696192498422849">ด้านขอบสั้นก่อน</translation>
 <translation id="168693727862418163">ตรวจสอบค่านโยบายนี้กับสคีมาไม่ได้ ระบบจะเพิกเฉยต่อค่านี้</translation>
 <translation id="168841957122794586">ใบรับรองของเซิร์ฟเวอร์มีคีย์การเข้ารหัสที่ไม่รัดกุม</translation>
@@ -2030,6 +2031,7 @@
 <translation id="5296589789433599000">การทำอาหารและสูตรอาหาร</translation>
 <translation id="5299298092464848405">ข้อผิดพลาดในการแยกวิเคราะห์นโยบาย</translation>
 <translation id="5299638840995777423">หุ่นยนต์</translation>
+<translation id="5300062471671636390">ซ่อนรายการอุปกรณ์สําหรับการแคสต์</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5306593769196050043">ทั้ง 2 แผ่นงาน</translation>
 <translation id="5307166000025436103">ปกติ</translation>
@@ -2617,7 +2619,6 @@
 <translation id="6573200754375280815">เจาะรูด้านขวา 2 รู</translation>
 <translation id="6578434528542148658">รหัสส่วนขยายไม่ถูกต้อง</translation>
 <translation id="657902945730878902">การวาดภาพและระบายสี</translation>
-<translation id="6579630537141957243">เชื่อมต่ออุปกรณ์ MIDI ไหม</translation>
 <translation id="6579858392010591435">วันหยุดและเทศกาล</translation>
 <translation id="6579990219486187401">ชมพูอ่อน</translation>
 <translation id="6581831440014388355">การกำจัดหนวดเคราและขนตามร่างกายที่ไม่พึงประสงค์</translation>
@@ -3494,6 +3495,7 @@
 <translation id="8368027906805972958">อุปกรณ์ที่ไม่รู้จักหรือไม่รองรับ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">บริการ Google Play</translation>
 <translation id="8369073279043109617">ขอรหัสใหม่</translation>
+<translation id="8371841335382565017">แสดงรายการอุปกรณ์สําหรับการแคสต์</translation>
 <translation id="8371889962595521444">ใบรับรองรูทที่กำหนดเอง</translation>
 <translation id="8374636051559112948">หลากหลาย</translation>
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>
