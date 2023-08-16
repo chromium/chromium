@@ -64,6 +64,17 @@ id<GREYAction> PageSheetScrollDown() {
   UIWindow* currentWindow = chrome_test_util::GetAnyKeyWindow();
   if (currentWindow.rootViewController.view.frame.size.height < 600)
     menu_scroll_displacement = 250;
+
+  // On iOS 17.0, the default origin position doesn't properly maximize the
+  // distance that an interaction can scroll. Therefore, we set the origin
+  // position to the middle which ensures scrolling works properly.
+  if (@available(iOS 17.0, *)) {
+    return grey_scrollInDirectionWithStartPoint(
+        kGREYDirectionDown, /*amount=*/menu_scroll_displacement,
+        /*xOriginStartPercentage=*/0.5,
+        /*yOriginStartPercentage=*/0.5);
+  }
+
   return grey_scrollInDirection(kGREYDirectionDown, menu_scroll_displacement);
 }
 
