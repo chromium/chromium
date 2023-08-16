@@ -124,38 +124,28 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
 
   if (ShouldPaintBoxDecorationBackground(local_paint_info)) {
     bool should_paint_background = false;
-    if (layout_replaced_.StyleRef().Visibility() == EVisibility::kVisible) {
-      if (layout_replaced_.HasBoxDecorationBackground()) {
+    if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+      should_paint_background = true;
+    } else if (layout_replaced_.HasBoxDecorationBackground()) {
+      should_paint_background = true;
+    } else if (layout_replaced_.HasEffectiveAllowedTouchAction() ||
+               layout_replaced_.InsideBlockingWheelEventHandler()) {
+      should_paint_background = true;
+    } else {
+      Element* element = DynamicTo<Element>(layout_replaced_.GetNode());
+      if (element && element->GetRegionCaptureCropId()) {
         should_paint_background = true;
-      } else if (layout_replaced_.HasEffectiveAllowedTouchAction() ||
-                 layout_replaced_.InsideBlockingWheelEventHandler()) {
-        should_paint_background = true;
-      } else {
-        Element* element = DynamicTo<Element>(layout_replaced_.GetNode());
-        if (element && element->GetRegionCaptureCropId()) {
-          should_paint_background = true;
-        }
       }
     }
     if (should_paint_background) {
-      if (layout_replaced_.DrawsBackgroundOntoContentLayer()) {
-        // If the background paints into the content layer, we can skip painting
-        // the background but still need to paint the hit test rects.
-        ObjectPainter(layout_replaced_)
-            .RecordHitTestData(local_paint_info,
-                               ToPixelSnappedRect(border_rect),
-                               layout_replaced_);
-        BoxPainter(layout_replaced_)
-            .RecordRegionCaptureData(local_paint_info, border_rect,
-                                     layout_replaced_);
-        return;
-      }
-
       PaintBoxDecorationBackground(local_paint_info, paint_offset);
     }
+
     // We're done. We don't bother painting any children.
-    if (local_paint_info.phase == PaintPhase::kSelfBlockBackgroundOnly)
+    if (layout_replaced_.DrawsBackgroundOntoContentLayer() ||
+        local_paint_info.phase == PaintPhase::kSelfBlockBackgroundOnly) {
       return;
+    }
   }
 
   if (local_paint_info.phase == PaintPhase::kMask) {
@@ -313,7 +303,8 @@ void ReplacedPainter::MeasureOverflowMetrics() const {
 void ReplacedPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
-  if (layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible) {
+  const ComputedStyle& style = layout_replaced_.StyleRef();
+  if (style.Visibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -347,11 +338,8 @@ void ReplacedPainter::PaintBoxDecorationBackground(
     visual_rect = BoxPainter(layout_replaced_).VisualRect(paint_offset);
   }
 
-  // Paint the background if we're visible and this block has a box decoration
-  // (background, border, appearance, or box shadow).
-  const ComputedStyle& style = layout_replaced_.StyleRef();
-  if (style.Visibility() == EVisibility::kVisible &&
-      layout_replaced_.HasBoxDecorationBackground()) {
+  if (layout_replaced_.HasBoxDecorationBackground() &&
+      !layout_replaced_.DrawsBackgroundOntoContentLayer()) {
     PaintBoxDecorationBackgroundWithRect(
         contents_paint_state ? contents_paint_state->GetPaintInfo()
                              : paint_info,

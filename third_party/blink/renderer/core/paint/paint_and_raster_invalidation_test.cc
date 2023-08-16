@@ -23,10 +23,13 @@ const RasterInvalidationTracking* GetRasterInvalidationTracking(
     const String& name_regex) {
   if (auto* client = root_frame_view.GetPaintArtifactCompositor()
                          ->ContentLayerClientForTesting(index)) {
-    DCHECK(client->Layer().draws_content()) << client->Layer().DebugName();
+    DCHECK(client->Layer().draws_content())
+        << index << ": " << client->Layer().DebugName();
     DCHECK(::testing::Matcher<std::string>(
                ::testing::ContainsRegex(name_regex.Utf8()))
-               .Matches(client->Layer().DebugName()));
+               .Matches(client->Layer().DebugName()))
+        << index << ": " << client->Layer().DebugName()
+        << " regex=" << name_regex;
     return client->GetRasterInvalidator().GetTracking();
   }
   return nullptr;

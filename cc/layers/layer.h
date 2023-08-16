@@ -410,8 +410,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // For callers that don't know the HitTestOpaqueness::kOpaque concept.
   void SetHitTestable(bool hit_testable);
   HitTestOpaqueness hit_test_opaqueness() const {
-    return static_cast<HitTestOpaqueness>(
-        inputs_.Read(*this).hit_test_opaqueness);
+    return inputs_.Read(*this).hit_test_opaqueness;
   }
 
   // For layer tree mode only.

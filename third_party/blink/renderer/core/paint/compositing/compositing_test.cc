@@ -623,8 +623,11 @@ TEST_P(CompositingTest, HitTestOpaqueness) {
   }
 
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
-    <div id="transparent" style="pointer-events: none; will-change: transform">
-      Transparent
+    <div id="transparent1" style="pointer-events: none; will-change: transform;
+                                  width: 100px; height: 50px">
+    </div>
+    <div id="transparent2" style="pointer-events: none; will-change: transform;
+                                  width: 100px; height: 50px; background: red">
     </div>
 
     <!-- Transparent parent with a small opaque child. -->
@@ -666,10 +669,18 @@ TEST_P(CompositingTest, HitTestOpaqueness) {
                              width: 50px; height; 50px">
       <div style="height: 50px"></div>
     </div>
+    <!-- This is opaque because the svg element (opaque to hit test) fully
+         contains the circle (mixed opaqueness to hit test). -->
+    <svg id="opaque6" style="will-change: transform">
+      <circle cx="20" cy="20" r="20"/>
+    </svg>
   )HTML");
 
   EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
-            CcLayersByDOMElementId(RootCcLayer(), "transparent")[0]
+            CcLayersByDOMElementId(RootCcLayer(), "transparent1")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
+            CcLayersByDOMElementId(RootCcLayer(), "transparent2")[0]
                 ->hit_test_opaqueness());
   EXPECT_EQ(cc::HitTestOpaqueness::kMixed,
             CcLayersByDOMElementId(RootCcLayer(), "mixed1")[0]
@@ -694,6 +705,9 @@ TEST_P(CompositingTest, HitTestOpaqueness) {
                 ->hit_test_opaqueness());
   EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
             CcLayersByDOMElementId(RootCcLayer(), "opaque5")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            CcLayersByDOMElementId(RootCcLayer(), "opaque6")[0]
                 ->hit_test_opaqueness());
 }
 

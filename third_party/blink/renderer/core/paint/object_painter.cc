@@ -152,7 +152,9 @@ void ObjectPainter::RecordHitTestData(
     return;
   }
 
-  // If an object is not visible, it does not participate in hit testing.
+  // If an object is not visible, it does not participate in painting or hit
+  // testing. TODO(crbug.com/1471738): Some pointer-events values actually
+  // allow hit testing with visibility:hidden.
   if (layout_object_.StyleRef().Visibility() != EVisibility::kVisible) {
     return;
   }
@@ -164,8 +166,16 @@ void ObjectPainter::RecordHitTestData(
   if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
     if (!layout_object_.VisibleToHitTesting()) {
       hit_test_opaqueness = cc::HitTestOpaqueness::kTransparent;
-    } else if (!layout_object_.StyleRef().HasBorderRadius()) {
-      hit_test_opaqueness = cc::HitTestOpaqueness::kOpaque;
+    } else {
+      // Border radius is not considered opaque for hit test because the hit
+      // test may be inside or outside of the rounded corner.
+      // SVG children are not considered opaque for hit test because SVG has
+      // special hit test rules for stroke/fill/etc, and the children may
+      // overflow the root.
+      if (!layout_object_.StyleRef().HasBorderRadius() &&
+          !layout_object_.IsSVGChild()) {
+        hit_test_opaqueness = cc::HitTestOpaqueness::kOpaque;
+      }
     }
   }
   paint_info.context.GetPaintController().RecordHitTestData(
