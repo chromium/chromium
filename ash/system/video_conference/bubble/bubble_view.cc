@@ -152,7 +152,6 @@ void BubbleView::AddedToWidget() {
       views::BoxLayout::CrossAxisAlignment::kStretch);
   scroll_contents_view->SetInsideBorderInsets(
       gfx::Insets::VH(16, kVideoConferenceBubbleHorizontalPadding));
-  scroll_contents_view->SetBetweenChildSpacing(16);
 
   // Make the effects sections children of the `views::FlexLayoutView`, so that
   // they scroll (if more effects are present than can fit in the available
