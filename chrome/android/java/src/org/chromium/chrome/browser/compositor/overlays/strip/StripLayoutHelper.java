@@ -2264,16 +2264,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 6. the selected tab will already be visible, so update tab group and background
         // container.
-        if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) {
-            Tab tab = getTabById(mInteractingTab.getId());
-            computeAndUpdateTabGroupMargins(true, animationList);
-            if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-                setTabGroupBackgroundContainersVisible(mTabGroupModelFilter.getRootId(tab), true);
-            } else {
-                setTabGroupDimmed(mTabGroupModelFilter.getRootId(tab), false);
-            }
-            performHapticFeedback(tab);
+        Tab tab = getTabById(mInteractingTab.getId());
+        computeAndUpdateTabGroupMargins(true, animationList);
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            setTabGroupBackgroundContainersVisible(mTabGroupModelFilter.getRootId(tab), true);
+        } else {
+            setTabGroupDimmed(mTabGroupModelFilter.getRootId(tab), false);
         }
+        performHapticFeedback(tab);
 
         // 7. Lift the TSR folio container off the toolbar.
         mInteractingTab.setIsReordering(true);
@@ -2315,10 +2313,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
         setCompositorButtonsVisible(true);
 
-        // 4. Clear any tab group margins if they are enabled.
-        if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) {
-            resetTabGroupMargins(animationList);
-        }
+        // 4. Clear any tab group margins.
+        resetTabGroupMargins(animationList);
 
         // 5. Reattach the TSR folio container to the toolbar.
         mInteractingTab.setIsReordering(false);
@@ -2509,8 +2505,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     private void setTabGroupDimmed(int groupId, boolean dimmed) {
-        assert TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext);
-
         for (int i = 0; i < mStripTabs.length; i++) {
             final StripLayoutTab tab = mStripTabs[i];
 
@@ -2701,8 +2695,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // 2. Check if we should swap tabs and track the new destination index.
         int destIndex = TabModel.INVALID_TAB_INDEX;
         boolean towardEnd = (offset >= 0) ^ LocalizationUtils.isLayoutRtl();
-        boolean isInGroup = TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)
-                && mTabGroupModelFilter.hasOtherRelatedTabs(getTabById(mInteractingTab.getId()));
+        boolean isInGroup =
+                mTabGroupModelFilter.hasOtherRelatedTabs(getTabById(mInteractingTab.getId()));
         boolean hasTrailingMargin = mInteractingTab.getTrailingMargin() == mTabMarginWidth;
         boolean hasStartingMargin = curIndex == 0
                 ? mStripStartMarginForReorder > 0
@@ -2754,9 +2748,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             // 3.c. Re-compute tab group margins if necessary.
             float oldIdealX = mInteractingTab.getIdealX();
             float oldOffset = mScrollOffset;
-            if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) {
-                computeAndUpdateTabGroupMargins(false, null);
-            }
+            computeAndUpdateTabGroupMargins(false, null);
 
             // 3.d. Since we just moved the tab we're dragging, adjust its offset so it stays in
             // the same apparent position.

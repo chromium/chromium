@@ -136,23 +136,13 @@ public class TabUiFeatureUtilities {
     }
 
     /**
-     * @return Whether tab groups are enabled for tablet.
-     * @param context The activity context.
-     */
-    public static boolean isTabletTabGroupsEnabled(Context context) {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && ChromeFeatureList.sTabGroupsForTablets.isEnabled()
-                && !DeviceClassManager.enableAccessibilityLayout(context);
-    }
-
-    /**
      * @return Whether the tab group feature is enabled and available for use.
      * @param context The activity context.
      */
     public static boolean isTabGroupsAndroidEnabled(Context context) {
-        // Disable tab group for tablet.
+        // Enable tab group for tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return isTabletTabGroupsEnabled(context);
+            return true;
         }
 
         return !DeviceClassManager.enableAccessibilityLayout(context)

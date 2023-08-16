@@ -344,7 +344,7 @@ public class TabGridDialogView extends FrameLayout {
             mShowDialogAnimation.addListener(mShowDialogAnimationListener);
 
             mHideDialogAnimation = new AnimatorSet();
-            Animator hideAnimator = TabUiFeatureUtilities.isTabletTabGroupsEnabled(getContext())
+            Animator hideAnimator = DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
                     ? mYTranslateAnimation
                     : mBasicFadeOutAnimation;
             mHideDialogAnimation.play(hideAnimator);

@@ -692,13 +692,11 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 tabCreatorManager.getTabCreator(false), tabStateInitialized);
         mIncognitoHelper.setTabModel(mTabModelSelector.getModel(true),
                 tabCreatorManager.getTabCreator(true), tabStateInitialized);
-        if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) {
-            TabModelFilterProvider provider = mTabModelSelector.getTabModelFilterProvider();
-            mNormalHelper.setTabGroupModelFilter(
-                    (TabGroupModelFilter) provider.getTabModelFilter(false));
-            mIncognitoHelper.setTabGroupModelFilter(
-                    (TabGroupModelFilter) provider.getTabModelFilter(true));
-        }
+        TabModelFilterProvider provider = mTabModelSelector.getTabModelFilterProvider();
+        mNormalHelper.setTabGroupModelFilter(
+                (TabGroupModelFilter) provider.getTabModelFilter(false));
+        mIncognitoHelper.setTabGroupModelFilter(
+                (TabGroupModelFilter) provider.getTabModelFilter(true));
         tabModelSwitched(mTabModelSelector.isIncognitoSelected());
 
         mTabModelSelectorTabModelObserver = new TabModelSelectorTabModelObserver(modelSelector) {

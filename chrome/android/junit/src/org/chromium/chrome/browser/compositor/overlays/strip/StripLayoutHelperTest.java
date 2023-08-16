@@ -91,7 +91,6 @@ import java.util.List;
 // clang-format off
 @Features.EnableFeatures({
         ChromeFeatureList.TAB_STRIP_REDESIGN,
-        ChromeFeatureList.TAB_GROUPS_FOR_TABLETS,
         ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
 @Config(manifest = Config.NONE, qualifiers = "sw600dp", shadows = {ShadowAppCompatResources.class})
 @LooperMode(Mode.LEGACY)
