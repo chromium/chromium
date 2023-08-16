@@ -31,18 +31,6 @@ public interface ProcessScopeDependencyProvider {
         return null;
     }
 
-    /** Returns the account name of the signed-in user, or the empty string. */
-    @Deprecated
-    default String getAccountName() {
-        return "";
-    }
-
-    /** Returns the client instance id for this chrome. */
-    @Deprecated
-    default String getClientInstanceId() {
-        return "";
-    }
-
     /** Returns the collection of currently active experiment ids. */
     default int[] getExperimentIds() {
         return new int[0];
@@ -111,11 +99,6 @@ public interface ProcessScopeDependencyProvider {
         return null;
     }
 
-    @Deprecated
-    default @Nullable PersistentKeyValueCache getPersistentKeyValueCache() {
-        return null;
-    }
-
     // Posts task to the UI thread.
     int TASK_TYPE_UI_THREAD = 1;
     // Posts to a background thread. The task may block.
@@ -175,23 +158,6 @@ public interface ProcessScopeDependencyProvider {
     /** Returns the signed-out session id */
     default String getSignedOutSessionId() {
         return "";
-    }
-
-    /**
-     * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
-     * message.
-     */
-    @Deprecated
-    default void processViewAction(byte[] data, LoggingParameters loggingParameters) {}
-
-    /**
-     * Reports whether the visibility log upload was successful.
-     *
-     * @param success - whether the upload was successful
-     */
-    @Deprecated
-    default void reportOnUploadVisibilityLog(boolean success) {
-        reportOnUploadVisibilityLog(VisibilityLogType.UNSPECIFIED, success);
     }
 
     // Visibility log types that can be uploaded.

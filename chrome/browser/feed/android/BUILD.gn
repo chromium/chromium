@@ -232,7 +232,7 @@ android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.feed.test"
 
-  sources = [ "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProviderNativeTest.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/feed/FeedSurfaceScopeDependencyProviderImplTest.java" ]
 
   deps = [
     ":feed_java_resources",

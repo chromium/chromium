@@ -27,14 +27,13 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.ArrayList;
 
 /**
- * Tests for FeedProcessScopeDependencyProvider. Uses ChromeTabbedActivityTestRule to test native
- * code. Note, this class has a 'NativeTest' suffix to avoid collision with
- * a junit test with the name 'FeedProcessScopeDependencyProviderTest'.
+ * Tests for FeedSurfaceScopeDependencyProviderImpl. Uses ChromeTabbedActivityTestRule to test
+ * native code.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
-public class FeedProcessScopeDependencyProviderNativeTest {
+public class FeedSurfaceScopeDependencyProviderImplTest {
     static final byte[] VALUE_1 = "one".getBytes();
     static final byte[] VALUE_2 = "two".getBytes();
 
@@ -56,8 +55,9 @@ public class FeedProcessScopeDependencyProviderNativeTest {
     @MediumTest
     @Feature({"Feed"})
     public void testPersistentKeyValueCachePutAndLookup() {
-        FeedProcessScopeDependencyProvider dependencyProvider =
-                new FeedProcessScopeDependencyProvider("key", null);
+        FeedSurfaceScopeDependencyProviderImpl dependencyProvider =
+                new FeedSurfaceScopeDependencyProviderImpl(
+                        /* activity= */ null, /* activityContext= */ null, /* darkMode= */ false);
         ArrayList<String> calls = new ArrayList<String>();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -76,8 +76,9 @@ public class FeedProcessScopeDependencyProviderNativeTest {
     @MediumTest
     @Feature({"Feed"})
     public void testPersistentKeyValueCacheEvict() {
-        FeedProcessScopeDependencyProvider dependencyProvider =
-                new FeedProcessScopeDependencyProvider("key", null);
+        FeedSurfaceScopeDependencyProviderImpl dependencyProvider =
+                new FeedSurfaceScopeDependencyProviderImpl(
+                        /* activity= */ null, /* activityContext= */ null, /* darkMode= */ false);
         ArrayList<String> calls = new ArrayList<String>();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -98,8 +99,9 @@ public class FeedProcessScopeDependencyProviderNativeTest {
     @Feature({"Feed"})
     public void testPersistentKeyValueCacheNullRunnables() {
         // Verify put() and evict() accept null runnables.
-        FeedProcessScopeDependencyProvider dependencyProvider =
-                new FeedProcessScopeDependencyProvider("key", null);
+        FeedSurfaceScopeDependencyProviderImpl dependencyProvider =
+                new FeedSurfaceScopeDependencyProviderImpl(
+                        /* activity= */ null, /* activityContext= */ null, /* darkMode= */ false);
         ArrayList<String> calls = new ArrayList<String>();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {

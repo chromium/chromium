@@ -19,8 +19,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
-import org.chromium.chrome.browser.xsurface.LoggingParameters;
-import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.components.version_info.VersionConstants;
 
@@ -33,7 +31,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
 
     private Context mContext;
     private ImageFetchClient mImageFetchClient;
-    private FeedPersistentKeyValueCache mPersistentKeyValueCache;
     private LibraryResolver mLibraryResolver;
     private PrivacyPreferencesManager mPrivacyPreferencesManager;
     private String mApiKey;
@@ -44,7 +41,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
             String apiKey, PrivacyPreferencesManager privacyPreferencesManager) {
         mContext = createFeedContext(ContextUtils.getApplicationContext());
         mImageFetchClient = new FeedImageFetchClient();
-        mPersistentKeyValueCache = new FeedPersistentKeyValueCache();
         mPrivacyPreferencesManager = privacyPreferencesManager;
         mApiKey = apiKey;
         if (BundleUtils.isIsolatedSplitInstalled(FEED_SPLIT_NAME)) {
@@ -62,11 +58,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     @Override
     public ImageFetchClient getImageFetchClient() {
         return mImageFetchClient;
-    }
-
-    @Override
-    public PersistentKeyValueCache getPersistentKeyValueCache() {
-        return mPersistentKeyValueCache;
     }
 
     @Override
@@ -182,16 +173,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
                         featureName, paramName, defaultValue);
             }
         };
-    }
-
-    /**
-     * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
-     * message.
-     */
-    @Override
-    public void processViewAction(byte[] data, LoggingParameters loggingParameters) {
-        FeedProcessScopeDependencyProviderJni.get().processViewAction(
-                data, FeedLoggingParameters.convertToProto(loggingParameters).toByteArray());
     }
 
     @Override
