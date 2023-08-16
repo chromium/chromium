@@ -190,7 +190,6 @@ group("build") {
   deps = [
     ":chromevox_background_script",
     ":chromevox_copied_files",
-    ":chromevox_learn_mode_script",
     ":chromevox_options_script",
     ":chromevox_panel_script",
     ":chromevox_phonetic_dictionaries_js",
@@ -201,7 +200,6 @@ group("build") {
 }
 
 chromevox_background_script_loader_file = "background/loader.js"
-chromevox_learn_mode_loader_file = "learn_mode/kbexplorer_loader.js"
 chromevox_options_script_loader_file = "options/options_loader.js"
 chromevox_panel_script_loader_file = "panel/panel_loader.js"
 
@@ -303,10 +301,6 @@ template("compress_js") {
 }
 
 # TODO once these loaders are all empty, we will need to re-work the entry points.
-compress_js("chromevox_learn_mode_script") {
-  sources = [ chromevox_learn_mode_loader_file ]
-  output_file = "$chromevox_out_dir/chromeVoxKbExplorerScript.js"
-}
 
 compress_js("chromevox_options_script") {
   sources = [ chromevox_options_script_loader_file ]
