@@ -57,7 +57,7 @@ void FakeCastAgent::GetCorsExemptHeaderNames(
 template <class T>
 void FakeCastAgent::MaybeAddDefaultService(
     fidl::InterfaceRequestHandler<T> request_handler) {
-  if (on_connect_.find(T::Name_) == on_connect_.end()) {
+  if (!base::Contains(on_connect_, T::Name_)) {
     ASSERT_EQ(outgoing()->AddPublicService(std::move(request_handler)), ZX_OK);
   }
 }
