@@ -90736,6 +90736,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Cancel button on dialog clicked"/>
   <int value="3"
       label="Dialog dismissed due to reasons other than Cancel or Delete"/>
+  <int value="4" label="Entry from tab switcher menu item clicked"/>
+  <int value="5" label="More options button on dialog clicked"/>
+  <int value="6" label="My activity link on dialog clicked"/>
+  <int value="7" label="Search history link on dialog clicked"/>
+  <int value="8" label="last 15 minutes deletion time range selected"/>
+  <int value="9" label="last hour minutes deletion time range selected"/>
+  <int value="10" label="last day minutes deletion time range selected"/>
+  <int value="11" label="last week minutes deletion time range selected"/>
+  <int value="12" label="last four weeks deletion time range selected"/>
+  <int value="13" label="All time deletion time range selected"/>
 </enum>
 
 <enum name="QuicKeyUpdateReason">

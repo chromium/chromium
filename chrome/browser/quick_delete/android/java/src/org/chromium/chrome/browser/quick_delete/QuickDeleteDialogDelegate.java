@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinnerOption;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -32,8 +31,9 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
+
+import java.util.Objects;
 
 /**
  * A delegate responsible for providing logic around the quick delete modal dialog.
@@ -54,9 +54,6 @@ class QuickDeleteDialogDelegate {
     private final @NonNull View mQuickDeleteView;
     private final @NonNull Callback<Integer> mOnDismissCallback;
     private final @NonNull TabModelSelector mTabModelSelector;
-    // TODO(crbug.com/1412087): Remove this and instead specify ON_MORE_OPTIONS_CLICKED property and
-    // bind the launcher from the {@link QuickDeleteController}.
-    private final @NonNull SettingsLauncher mSettingsLauncher;
     private final @NonNull TimePeriodChangeObserver mTimePeriodChangeObserver;
     /**
      * The {@link PropertyModel} of the underlying dialog where the quick dialog view would be
@@ -97,22 +94,19 @@ class QuickDeleteDialogDelegate {
      *                           cancels the deletion;
      * @param tabModelSelector   {@link TabModelSelector} to use for opening the links in search
      *                           history disambiguation notice.
-     * @param settingsLauncher   @link SettingsLauncher} used to launch the Clear browsing data
-     *                           settings fragment.
      * @param timePeriodChangeObserver {@link TimePeriodChangeObserver} which would be notified when
      *         the spinner is toggled.
      */
     QuickDeleteDialogDelegate(@NonNull Context context, @NonNull View quickDeleteView,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull Callback<Integer> onDismissCallback,
-            @NonNull TabModelSelector tabModelSelector, @NonNull SettingsLauncher settingsLauncher,
+            @NonNull TabModelSelector tabModelSelector,
             @NonNull TimePeriodChangeObserver timePeriodChangeObserver) {
         mContext = context;
         mQuickDeleteView = quickDeleteView;
         mModalDialogManager = modalDialogManager;
         mOnDismissCallback = onDismissCallback;
         mTabModelSelector = tabModelSelector;
-        mSettingsLauncher = settingsLauncher;
         mTimePeriodChangeObserver = timePeriodChangeObserver;
 
         mCurrentTimePeriodOption = new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
@@ -126,11 +120,6 @@ class QuickDeleteDialogDelegate {
         // Update Spinner
         Spinner quickDeleteSpinner = mQuickDeleteView.findViewById(R.id.quick_delete_spinner);
         updateSpinner(quickDeleteSpinner);
-
-        // Update the "More options" button.
-        ButtonCompat moreOptionsView =
-                mQuickDeleteView.findViewById(R.id.quick_delete_more_options);
-        updateMoreOptions(moreOptionsView);
 
         // Update search history text
         setUpSearchHistoryText();
@@ -176,8 +165,10 @@ class QuickDeleteDialogDelegate {
                 TimePeriodSpinnerOption item =
                         (TimePeriodSpinnerOption) adapterView.getItemAtPosition(position);
                 mCurrentTimePeriodOption = item;
-                mTimePeriodChangeObserver.onTimePeriodChanged(
-                        mCurrentTimePeriodOption.getTimePeriod());
+                @TimePeriod
+                int timePeriod = mCurrentTimePeriodOption.getTimePeriod();
+                mTimePeriodChangeObserver.onTimePeriodChanged(timePeriod);
+                recordTimePeriodChange(timePeriod);
             }
 
             @Override
@@ -206,12 +197,6 @@ class QuickDeleteDialogDelegate {
         text.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    private void updateMoreOptions(@NonNull ButtonCompat moreOptionsView) {
-        moreOptionsView.setOnClickListener(view
-                -> mSettingsLauncher.launchSettingsActivity(mContext,
-                        SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE));
-    }
-
     /**
      * Opens a url in a new non-incognito tab and dismisses the dialog.
      *
@@ -219,10 +204,49 @@ class QuickDeleteDialogDelegate {
      *            MY_ACTIVITY_URL_IN_QD.
      */
     private void openUrlInNewTab(final String url) {
+        if (Objects.equals(url, UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_QD)) {
+            QuickDeleteMetricsDelegate.recordHistogram(
+                    QuickDeleteMetricsDelegate.QuickDeleteAction.SEARCH_HISTORY_LINK_CLICKED);
+        } else {
+            QuickDeleteMetricsDelegate.recordHistogram(
+                    QuickDeleteMetricsDelegate.QuickDeleteAction.MY_ACTIVITY_LINK_CLICKED);
+        }
+
         mTabModelSelector.openNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI,
                 mTabModelSelector.getCurrentTab(), false);
         mModalDialogManager.dismissDialog(
                 mModalDialogPropertyModel, DialogDismissalCause.ACTION_ON_CONTENT);
+    }
+
+    private void recordTimePeriodChange(@TimePeriod int timePeriod) {
+        switch (timePeriod) {
+            case TimePeriod.LAST_15_MINUTES:
+                QuickDeleteMetricsDelegate.recordHistogram(
+                        QuickDeleteMetricsDelegate.QuickDeleteAction.LAST_15_MINUTES_SELECTED);
+                break;
+            case TimePeriod.LAST_HOUR:
+                QuickDeleteMetricsDelegate.recordHistogram(
+                        QuickDeleteMetricsDelegate.QuickDeleteAction.LAST_HOUR_SELECTED);
+                break;
+            case TimePeriod.LAST_DAY:
+                QuickDeleteMetricsDelegate.recordHistogram(
+                        QuickDeleteMetricsDelegate.QuickDeleteAction.LAST_DAY_SELECTED);
+                break;
+            case TimePeriod.LAST_WEEK:
+                QuickDeleteMetricsDelegate.recordHistogram(
+                        QuickDeleteMetricsDelegate.QuickDeleteAction.LAST_WEEK_SELECTED);
+                break;
+            case TimePeriod.FOUR_WEEKS:
+                QuickDeleteMetricsDelegate.recordHistogram(
+                        QuickDeleteMetricsDelegate.QuickDeleteAction.FOUR_WEEKS_SELECTED);
+                break;
+            case TimePeriod.ALL_TIME:
+                QuickDeleteMetricsDelegate.recordHistogram(
+                        QuickDeleteMetricsDelegate.QuickDeleteAction.ALL_TIME_SELECTED);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + timePeriod);
+        }
     }
 
     /**
