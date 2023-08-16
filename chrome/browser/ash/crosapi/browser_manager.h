@@ -163,6 +163,12 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Returns true if crosapi interface supports NewWindowForDetachingTab API.
   bool NewWindowForDetachingTabSupported() const;
 
+  // NOTE on callbacks:
+  // An action's callback (e.g. the last parameter to NewWindowForDetachingTab
+  // below) will never be invoked with a CreationResult value of
+  // kBrowserShutdown. In the case of a Lacros shutdown (rather than system
+  // shutdown), BrowserManager will try to perform the action again later.
+
   using NewWindowForDetachingTabCallback =
       base::OnceCallback<void(crosapi::mojom::CreationResult,
                               const std::string&)>;
@@ -515,6 +521,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // - Otherwise, the action is cancelled.
   void PerformOrEnqueue(std::unique_ptr<BrowserAction> action);
 
+  void OnActionPerformed(std::unique_ptr<BrowserAction> action, bool retry);
+
   // Remembers the launch mode of Lacros.
   void RecordLacrosLaunchMode();
 
@@ -692,6 +700,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Sending the LaunchMode state at least once a day.
   // multiple events will get de-duped on the server side.
   void OnDailyLaunchModeTimer();
+
+  void PerformAction(std::unique_ptr<BrowserAction> action);
 
   // NOTE: The state is exposed to tests via autotest_private.
   State state_ = State::NOT_INITIALIZED;

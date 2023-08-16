@@ -1322,6 +1322,15 @@ void BrowserManager::EmitLoginPromptVisibleCalled() {
   OnLoginPromptVisible();
 }
 
+void BrowserManager::PerformAction(std::unique_ptr<BrowserAction> action) {
+  BrowserAction* action_raw = action.get();  // We're `move`ing action below.
+  action_raw->Perform(
+      {browser_service_.value().service,
+       browser_service_.value().interface_version},
+      base::BindOnce(&BrowserManager::OnActionPerformed,
+                     weak_factory_.GetWeakPtr(), std::move(action)));
+}
+
 void BrowserManager::OnBrowserServiceConnected(
     CrosapiId id,
     mojo::RemoteSetElementId mojo_id,
@@ -1367,9 +1376,7 @@ void BrowserManager::OnBrowserServiceConnected(
   UpdateKeepAliveInBrowserIfNecessary(!keep_alive_features_.empty());
 
   while (!pending_actions_.IsEmpty()) {
-    pending_actions_.Pop()->Perform(
-        {browser_service_.value().service,
-         browser_service_.value().interface_version});
+    PerformAction(pending_actions_.Pop());
     DCHECK_EQ(state_, State::RUNNING);
   }
 }
@@ -1948,6 +1955,8 @@ void BrowserManager::RecordLacrosLaunchMode() {
 void BrowserManager::PerformOrEnqueue(std::unique_ptr<BrowserAction> action) {
   if (shutdown_requested_) {
     LOG(WARNING) << "lacros-chrome is preparing for system shutdown";
+    // The whole system is shutting down, so there is no point in queueing the
+    // request for later.
     action->Cancel(mojom::CreationResult::kBrowserNotRunning);
     return;
   }
@@ -1955,6 +1964,8 @@ void BrowserManager::PerformOrEnqueue(std::unique_ptr<BrowserAction> action) {
   switch (state_) {
     case State::UNAVAILABLE:
       LOG(ERROR) << "lacros unavailable";
+      // We cannot recover from this, so there is no point in queueing the
+      // request for later.
       action->Cancel(mojom::CreationResult::kBrowserNotRunning);
       return;
 
@@ -1962,35 +1973,49 @@ void BrowserManager::PerformOrEnqueue(std::unique_ptr<BrowserAction> action) {
     case State::RELOADING:
     case State::MOUNTING:
       LOG(WARNING) << "lacros component image not yet available";
-      pending_actions_.PushOrCancel(std::move(action));
+      pending_actions_.PushOrCancel(std::move(action),
+                                    mojom::CreationResult::kBrowserNotRunning);
       return;
     case State::TERMINATING:
       LOG(WARNING) << "lacros-chrome is terminating, so cannot start now";
-      pending_actions_.PushOrCancel(std::move(action));
+      pending_actions_.PushOrCancel(std::move(action),
+                                    mojom::CreationResult::kBrowserNotRunning);
       return;
     case State::CREATING_LOG_FILE:
     case State::PRE_LAUNCHED:
     case State::STARTING:
       LOG(WARNING) << "lacros-chrome is in the process of launching";
-      pending_actions_.PushOrCancel(std::move(action));
+      pending_actions_.PushOrCancel(std::move(action),
+                                    mojom::CreationResult::kBrowserNotRunning);
       return;
 
     case State::STOPPED:
       DCHECK(!IsKeepAliveEnabled());
       DCHECK(pending_actions_.IsEmpty());
-      pending_actions_.PushOrCancel(std::move(action));
+      pending_actions_.PushOrCancel(std::move(action),
+                                    mojom::CreationResult::kBrowserNotRunning);
       StartIfNeeded();
       return;
 
     case State::RUNNING:
       if (!browser_service_.has_value()) {
         LOG(ERROR) << "BrowserService was disconnected";
-        action->Cancel(mojom::CreationResult::kServiceDisconnected);
+        // We expect that OnMojoDisconnected will get called very soon, which
+        // will transition us to STOPPED state. Hence it's okay to enqueue the
+        // action.
+        pending_actions_.PushOrCancel(
+            std::move(action), mojom::CreationResult::kServiceDisconnected);
         return;
       }
-      action->Perform(
-          {browser_service_->service, browser_service_->interface_version});
+      PerformAction(std::move(action));
       return;
+  }
+}
+
+void BrowserManager::OnActionPerformed(std::unique_ptr<BrowserAction> action,
+                                       bool retry) {
+  if (retry) {
+    PerformOrEnqueue(std::move(action));
   }
 }
 

@@ -85,7 +85,7 @@ class BrowserLauncherTest : public InProcessBrowserTest {
   }
 
   void NewWindowSync(bool incognito, bool should_trigger_session_restore) {
-    base::test::TestFuture<void> new_window_future;
+    base::test::TestFuture<crosapi::mojom::CreationResult> new_window_future;
     browser_service()->NewWindow(
         incognito, should_trigger_session_restore,
         display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
 
   // Launch the browser.
-  base::test::TestFuture<void> launch_future;
+  base::test::TestFuture<crosapi::mojom::CreationResult> launch_future;
   browser_service()->Launch(0, launch_future.GetCallback());
   ASSERT_TRUE(launch_future.Wait()) << "Launch did not trigger the callback.";
 
@@ -768,7 +768,7 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
 
   // Launch the browser. A browser window for each last profile should be
   // restored.
-  base::test::TestFuture<void> launch_future;
+  base::test::TestFuture<crosapi::mojom::CreationResult> launch_future;
   browser_service()->Launch(0, launch_future.GetCallback());
   ASSERT_TRUE(launch_future.Wait()) << "Launch did not trigger the callback.";
 
