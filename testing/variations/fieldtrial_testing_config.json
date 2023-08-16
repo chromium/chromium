@@ -12224,6 +12224,40 @@
             ]
         }
     ],
+    "ProtectedAudiencesBidAndScoreRoundingStudy": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "FledgeRounding16Bit",
+                    "params": {
+                        "fledge_bid_reporting_bits": "16",
+                        "fledge_score_reporting_bits": "16"
+                    },
+                    "enable_features": [
+                        "FledgeRounding"
+                    ]
+                },
+                {
+                    "name": "FledgeRounding8Bit",
+                    "params": {
+                        "fledge_bid_reporting_bits": "8",
+                        "fledge_score_reporting_bits": "8"
+                    },
+                    "enable_features": [
+                        "FledgeRounding"
+                    ]
+                }
+            ]
+        }
+    ],
     "PurgeOldCacheEntriesOnTimer": [
         {
             "platforms": [
