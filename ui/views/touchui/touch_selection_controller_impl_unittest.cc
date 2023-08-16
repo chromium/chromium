@@ -238,7 +238,8 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
     if (controller && controller->quick_menu_requested_) {
       controller->ShowQuickMenuImmediatelyForTesting();
     }
-    return ui::TouchSelectionMenuRunner::GetInstance()->IsRunning();
+    return ui::TouchSelectionMenuRunner::GetInstance() &&
+           ui::TouchSelectionMenuRunner::GetInstance()->IsRunning();
   }
 
   bool IsMagnifierVisible() {
@@ -672,6 +673,8 @@ TEST_F(TouchSelectionControllerImplTest,
   EXPECT_TRUE(textfield_->HasSelection());
 }
 
+// Touch selection menu is not supported on Cast.
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(TouchSelectionControllerImplTest,
        MenuAppearsAfterDraggingSelectionHandles) {
   CreateTextfield();
@@ -697,6 +700,7 @@ TEST_F(TouchSelectionControllerImplTest,
   textfield_widget_->GetFocusManager()->ClearFocus();
   EXPECT_FALSE(IsQuickMenuVisible());
 }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(TouchSelectionControllerImplTest,
