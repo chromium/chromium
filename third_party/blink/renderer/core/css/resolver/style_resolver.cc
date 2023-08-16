@@ -644,9 +644,9 @@ static void MatchVTTRules(const Element& element,
 // Matches rules from the element's scope. The selectors may cross shadow
 // boundaries during matching, like for :host-context.
 static void MatchElementScopeRules(const Element& element,
-                                   ScopedStyleResolver* element_scope_resolver,
                                    ElementRuleCollector& collector,
                                    StyleRuleUsageTracker* tracker) {
+  ScopedStyleResolver* element_scope_resolver = ScopedResolverFor(element);
   if (element_scope_resolver) {
     collector.ClearMatchedRules();
     collector.BeginAddingAuthorRulesForTreeScope(
@@ -751,11 +751,10 @@ void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,
 
 void StyleResolver::MatchAuthorRules(
     const Element& element,
-    ScopedStyleResolver* element_scope_resolver,
     ElementRuleCollector& collector) {
   MatchHostRules(element, collector, tracker_);
   MatchSlottedRules(element, collector, tracker_);
-  MatchElementScopeRules(element, element_scope_resolver, collector, tracker_);
+  MatchElementScopeRules(element, collector, tracker_);
   MatchPseudoPartRules(element, collector);
 }
 
@@ -907,8 +906,7 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
   // mapped from HTML.
   MatchPresentationalHints(state, collector);
 
-  ScopedStyleResolver* element_scope_resolver = ScopedResolverFor(element);
-  MatchAuthorRules(element, element_scope_resolver, collector);
+  MatchAuthorRules(element, collector);
 
   if (element.IsStyledElement() && !state.IsForPseudoElement()) {
     collector.BeginAddingAuthorRulesForTreeScope(element.GetTreeScope());
@@ -1847,7 +1845,7 @@ void StyleResolver::CollectPseudoRulesForElement(
   }
 
   if (rules_to_include & kAuthorCSSRules) {
-    MatchAuthorRules(element, ScopedResolverFor(element), collector);
+    MatchAuthorRules(element, collector);
   }
 }
 

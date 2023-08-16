@@ -275,7 +275,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                             bool for_shadow_pseudo = false);
   void MatchPseudoPartRulesForUAHost(const Element&, ElementRuleCollector&);
   void MatchAuthorRules(const Element&,
-                        ScopedStyleResolver*,
                         ElementRuleCollector&);
   void MatchAllRules(StyleResolverState&,
                      ElementRuleCollector&,
