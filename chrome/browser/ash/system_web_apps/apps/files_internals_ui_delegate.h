@@ -24,6 +24,11 @@ class ChromeFilesInternalsUIDelegate : public ash::FilesInternalsUIDelegate {
 
   void GetDebugJSON(
       base::OnceCallback<void(const base::Value&)> callback) const override;
+  void GetDownloadsFSURLs(
+      base::OnceCallback<void(const std::string_view)> callback) const override;
+  void GetFileTasks(
+      const std::string& mime_type,
+      base::OnceCallback<void(const std::string_view)> callback) const override;
 
   bool GetSmbfsEnableVerboseLogging() const override;
   void SetSmbfsEnableVerboseLogging(bool enabled) override;

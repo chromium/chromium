@@ -44,10 +44,9 @@ class FilesInternalsUI : public ui::MojoWebUIController {
   FilesInternalsUIDelegate* delegate();
 
  private:
-  void SetRequestFilterDebugJson(content::WebUIDataSource* data_source);
-  void HandleRequestDebugJson(
-      const std::string& url,
-      content::WebUIDataSource::GotDataCallback callback);
+  void CallSetRequestFilter(content::WebUIDataSource* data_source);
+  void HandleRequest(const std::string& url,
+                     content::WebUIDataSource::GotDataCallback callback);
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 

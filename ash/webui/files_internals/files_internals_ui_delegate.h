@@ -17,6 +17,11 @@ class FilesInternalsUIDelegate {
 
   virtual void GetDebugJSON(
       base::OnceCallback<void(const base::Value&)> callback) const = 0;
+  virtual void GetDownloadsFSURLs(
+      base::OnceCallback<void(const std::string_view)> callback) const = 0;
+  virtual void GetFileTasks(
+      const std::string& file_system_url,
+      base::OnceCallback<void(const std::string_view)> callback) const = 0;
 
   virtual bool GetSmbfsEnableVerboseLogging() const = 0;
   virtual void SetSmbfsEnableVerboseLogging(bool enabled) = 0;
