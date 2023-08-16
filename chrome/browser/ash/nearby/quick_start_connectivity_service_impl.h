@@ -18,6 +18,8 @@ class NearbyConnectionsManager;
 
 namespace ash::quick_start {
 
+// TODO(b/280308935): Shut down Nearby Connections when we exit the Quick Start
+// flow.
 class QuickStartConnectivityServiceImpl : public QuickStartConnectivityService {
  public:
   explicit QuickStartConnectivityServiceImpl(
