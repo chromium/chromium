@@ -240,8 +240,6 @@ source_set("client_side_detection") {
     "client_side_detection_service.h",
     "client_side_phishing_model.cc",
     "client_side_phishing_model.h",
-    "client_side_phishing_model_optimization_guide.cc",
-    "client_side_phishing_model_optimization_guide.h",
     "safe_browsing_tab_observer.cc",
     "safe_browsing_tab_observer.h",
   ]

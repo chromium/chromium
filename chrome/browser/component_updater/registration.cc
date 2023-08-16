@@ -18,7 +18,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
-#include "chrome/browser/component_updater/chrome_client_side_phishing_component_installer.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 #include "chrome/browser/component_updater/commerce_heuristics_component_installer.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
@@ -210,13 +209,6 @@ void RegisterComponentsForUpdate() {
 #endif  // BUIDLFLAG(IS_ANDROID)
 
   RegisterAutofillStatesComponent(cus, g_browser_process->local_state());
-
-  // OptimizationGuide provides the model through their services, so if the
-  // flag is false, a registration to CSD-Phishing component is needed
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kClientSideDetectionModelOptimizationGuide)) {
-    RegisterClientSidePhishingComponent(cus);
-  }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && !BUILDFLAG(IS_CHROMEOS)
   ManageScreenAIComponentRegistration(cus, g_browser_process->local_state());

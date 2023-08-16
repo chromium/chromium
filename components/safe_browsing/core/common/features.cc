@@ -326,10 +326,6 @@ BASE_FEATURE(kVisualFeaturesSizes,
              "VisualFeaturesSizes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClientSideDetectionModelOptimizationGuide,
-             "ClientSideDetectionModelOptimizationGuide",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kClientSideDetectionModelImageEmbedder,
              "ClientSideDetectionModelImageEmbedder",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -360,7 +356,6 @@ constexpr struct {
     {&kAdSamplerTriggerFeature, false},
     {&kAntiPhishingTelemetry, false},
     {&kClientSideDetectionKillswitch, true},
-    {&kClientSideDetectionModelOptimizationGuide, true},
     {&kClientSideDetectionModelIsFlatBuffer, true},
     {&kClientSideDetectionTypeForceRequest, true},
     {&kDelayedWarnings, true},

@@ -56,9 +56,7 @@ KeyedService* ClientSideDetectionServiceFactory::BuildServiceInstanceFor(
   auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(context));
 
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide) &&
-      !opt_guide) {
+  if (!opt_guide) {
     return nullptr;
   }
 

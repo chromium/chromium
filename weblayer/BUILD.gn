@@ -613,8 +613,6 @@ source_set("weblayer_lib_base") {
       "browser/bluetooth/weblayer_bluetooth_scanning_prompt_android_delegate.h",
       "browser/browser_list_proxy.cc",
       "browser/browser_list_proxy.h",
-      "browser/component_updater/client_side_phishing_component_loader_policy.cc",
-      "browser/component_updater/client_side_phishing_component_loader_policy.h",
       "browser/component_updater/registration.cc",
       "browser/component_updater/registration.h",
       "browser/content_view_render_view.cc",

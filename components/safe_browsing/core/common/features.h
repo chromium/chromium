@@ -25,7 +25,8 @@ BASE_DECLARE_FEATURE(kAntiPhishingTelemetry);
 // run on a large fraction of navigations, crashes due to the model are very
 // impactful, even if only a small fraction of users have a bad version of the
 // model. This Finch flag allows us to remediate long-tail component versions
-// while we fix the root cause.
+// while we fix the root cause. This will also halt the model distribution from
+// OptimizationGuide.
 BASE_DECLARE_FEATURE(kClientSideDetectionKillswitch);
 
 // The client side detection model is a flatbuffer.
@@ -320,10 +321,6 @@ std::string GetClientSideDetectionTag();
 // Returns the tag used for file type policies, as computed from the current
 // feature flag.
 std::string GetFileTypePoliciesTag();
-
-// Enables OptimizationGuide to deliver the client side phishing model instead
-// of through component updater.
-BASE_DECLARE_FEATURE(kClientSideDetectionModelOptimizationGuide);
 
 // Enables new ESB specific threshold fields in Visual TF Lite model files
 BASE_DECLARE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold);

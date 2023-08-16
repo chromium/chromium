@@ -23,7 +23,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
-#include "components/safe_browsing/content/browser/client_side_phishing_model_optimization_guide.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/common/visual_utils.h"
@@ -440,8 +439,9 @@ void ClientSideDetectionHost::DidFinishNavigation(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     return;
+  }
 
   // TODO(noelutz): move this DCHECK to WebContents and fix all the unit tests
   // that don't call this method on the UI thread.
@@ -518,12 +518,10 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   base::UmaHistogramEnumeration("SBClientPhishing.PhishingDetectorResult",
                                 result);
   if (result == mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY) {
-    bool isModelAvailable =
-        base::FeatureList::IsEnabled(kClientSideDetectionModelOptimizationGuide)
-            ? csd_service_->IsModelAvailable()
-            : ClientSidePhishingModel::GetInstance()->IsEnabled();
+    bool is_model_available = csd_service_->IsModelAvailable();
     base::UmaHistogramBoolean(
-        "SBClientPhishing.BrowserReadyOnClassifierNotReady", isModelAvailable);
+        "SBClientPhishing.BrowserReadyOnClassifierNotReady",
+        is_model_available);
   }
   if (result != mojom::PhishingDetectorResult::SUCCESS)
     return;
@@ -628,9 +626,7 @@ void ClientSideDetectionHost::PhishingDetectionDone(
           &token);
     }
 
-    if (base::FeatureList::IsEnabled(
-            kClientSideDetectionModelOptimizationGuide) &&
-        base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder) &&
+    if (base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder) &&
         IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
         csd_service_->IsModelMetadataImageEmbeddingVersionMatching()) {
       content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
