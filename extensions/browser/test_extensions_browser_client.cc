@@ -61,7 +61,7 @@ bool TestExtensionsBrowserClient::AreExtensionsDisabled(
   return false;
 }
 
-bool TestExtensionsBrowserClient::IsValidContext(BrowserContext* context) {
+bool TestExtensionsBrowserClient::IsValidContext(void* context) {
   return context == main_context_ ||
          (incognito_context_ && context == incognito_context_);
 }

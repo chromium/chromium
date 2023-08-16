@@ -66,7 +66,7 @@ bool ShellExtensionsBrowserClient::AreExtensionsDisabled(
   return false;
 }
 
-bool ShellExtensionsBrowserClient::IsValidContext(BrowserContext* context) {
+bool ShellExtensionsBrowserClient::IsValidContext(void* context) {
   DCHECK(browser_context_);
   return context == browser_context_;
 }
