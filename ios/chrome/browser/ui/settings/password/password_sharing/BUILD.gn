@@ -83,6 +83,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/password_manager/core/browser",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/ui/settings/cells",

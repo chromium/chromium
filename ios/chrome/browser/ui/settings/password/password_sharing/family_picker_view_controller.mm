@@ -115,7 +115,9 @@ const CGFloat kAccessorySymbolSize = 22;
   cell.textLabel.numberOfLines = 1;
   cell.detailTextLabel.numberOfLines = 1;
   if (_recipients[indexPath.row].isEligible) {
-    cell.accessoryView = [[UIImageView alloc] initWithImage:[self circleIcon]];
+    cell.accessoryView = [[UIImageView alloc]
+        initWithImage:cell.isSelected ? [self checkmarkCircleIcon]
+                                      : [self circleIcon]];
   } else {
     UIButton* infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
     [infoButton setImage:[self infoCircleIcon] forState:UIControlStateNormal];

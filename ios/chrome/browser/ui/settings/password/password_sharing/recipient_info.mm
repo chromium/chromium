@@ -15,6 +15,7 @@
   if (self) {
     _fullName = base::SysUTF8ToNSString(recipient.user_name);
     _email = base::SysUTF8ToNSString(recipient.email);
+    _isEligible = !recipient.public_key.key.empty();
   }
   return self;
 }
