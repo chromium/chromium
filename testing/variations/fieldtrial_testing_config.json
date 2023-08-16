@@ -16014,7 +16014,7 @@
                         "V8MemoryReducerGCCount": "2"
                     },
                     "enable_features": [
-                        "kV8MemoryReducer"
+                        "V8MemoryReducer"
                     ]
                 },
                 {
@@ -16023,7 +16023,7 @@
                         "V8MemoryReducerGCCount": "1"
                     },
                     "enable_features": [
-                        "kV8MemoryReducer"
+                        "V8MemoryReducer"
                     ]
                 },
                 {
@@ -16032,13 +16032,13 @@
                         "V8MemoryReducerGCCount": "3"
                     },
                     "enable_features": [
-                        "kV8MemoryReducer"
+                        "V8MemoryReducer"
                     ]
                 },
                 {
                     "name": "Control",
                     "disable_features": [
-                        "kV8MemoryReducer"
+                        "V8MemoryReducer"
                     ]
                 }
             ]
