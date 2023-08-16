@@ -130,34 +130,6 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Force Language</string>
-			<key>Key</key>
-			<string>UILanguageOverride</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>Values</key>
-			<array>
-				<string></string>
-				<string>ar</string>
-				<string>en</string>
-				<string>fr</string>
-				<string>he</string>
-				<string>hi</string>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>Default</string>
-				<string>Arabic</string>
-				<string>English</string>
-				<string>French</string>
-				<string>Hebrew</string>
-				<string>Hindi</string>
-			</array>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
 			<string>Force Promo</string>
 			<key>Key</key>
 			<string>NextPromoForDisplayOverride</string>
