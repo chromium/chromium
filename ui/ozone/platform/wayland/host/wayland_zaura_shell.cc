@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/version.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
@@ -22,7 +23,7 @@ namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 57;
+constexpr uint32_t kMaxVersion = 58;
 }
 
 // static
@@ -67,10 +68,10 @@ WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
   DCHECK(connection_);
 
   static constexpr zaura_shell_listener zaura_shell_listener = {
-      &OnLayoutMode,     &OnBugFix,
-      &OnDesksChanged,   &OnDeskActivationChanged,
-      &OnActivated,      &SetOverviewMode,
-      &UnsetOverviewMode};
+      &OnLayoutMode,      &OnBugFix,
+      &OnDesksChanged,    &OnDeskActivationChanged,
+      &OnActivated,       &SetOverviewMode,
+      &UnsetOverviewMode, &OnCompositorVersion};
   zaura_shell_add_listener(obj_.get(), &zaura_shell_listener, this);
   if (IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() &&
       zaura_shell_get_version(wl_object()) >=
@@ -188,6 +189,23 @@ void WaylandZAuraShell::UnsetOverviewMode(void* data,
     }
   }
 #endif
+}
+
+// static
+void WaylandZAuraShell::OnCompositorVersion(void* data,
+                                            struct zaura_shell* zaura_shell,
+                                            const char* version_label) {
+  auto* self = static_cast<WaylandZAuraShell*>(data);
+  base::Version compositor_version(version_label);
+  if (!compositor_version.IsValid()) {
+    LOG(WARNING) << "Invalid compositor version string received.";
+    self->compositor_version_ = {};
+    return;
+  }
+
+  DCHECK_EQ(compositor_version.components().size(), 4u);
+  DVLOG(1) << "Wayland compositor version: " << compositor_version;
+  self->compositor_version_ = compositor_version;
 }
 
 }  // namespace ui
