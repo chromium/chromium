@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/partition_alloc_base/apple/mach_logging.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/mac/mach_logging.h"
 
 #include <iomanip>
 #include <string>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/strings/stringprintf.h"
+#include "build/build_config.h"
 
 namespace {
 

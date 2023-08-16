@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/shim/malloc_zone_functions_apple.h"
+#include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 
 #include <atomic>
 #include <type_traits>

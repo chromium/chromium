@@ -3726,8 +3726,8 @@ test("base_unittests") {
 
   if (is_mac) {
     sources += [
-      "allocator/partition_allocator/shim/allocator_interception_apple_unittest.mm",
-      "allocator/partition_allocator/shim/malloc_zone_functions_apple_unittest.cc",
+      "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
+      "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
       "apple/call_with_eh_frame_unittest.mm",
       "apple/scoped_mach_vm_unittest.cc",
       "apple/scoped_objc_class_swizzler_unittest.mm",
@@ -3783,8 +3783,8 @@ test("base_unittests") {
 
     if (use_allocator_shim) {
       sources += [
-        "allocator/partition_allocator/shim/allocator_interception_apple_unittest.mm",
-        "allocator/partition_allocator/shim/malloc_zone_functions_apple_unittest.cc",
+        "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
+        "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
       ]
     }
 

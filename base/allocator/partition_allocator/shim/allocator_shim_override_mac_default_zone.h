@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_APPLE_DEFAULT_ZONE_H_
+#ifdef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
 #error This header is meant to be included only once by allocator_shim.cc
 #endif
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_APPLE_DEFAULT_ZONE_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_APPLE_DEFAULT_ZONE_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
 
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #error This header must be included iff PartitionAlloc-Everywhere is enabled.
@@ -18,9 +18,9 @@
 #include <atomic>
 #include <tuple>
 
-#include "base/allocator/partition_allocator/partition_alloc_base/apple/mach_logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/mac/mach_logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -408,4 +408,4 @@ bool IsDefaultAllocatorPartitionRootInitialized() {
 
 }  // namespace allocator_shim
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_APPLE_DEFAULT_ZONE_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_

@@ -26,8 +26,8 @@
 #if BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 
-#include "base/allocator/partition_allocator/partition_alloc_base/apple/mach_logging.h"
-#include "base/allocator/partition_allocator/shim/allocator_interception_apple.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/mac/mach_logging.h"
+#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -410,9 +410,9 @@ PA_ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 #include "base/allocator/partition_allocator/shim/allocator_shim_override_ucrt_symbols_win.h"
 #elif BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/shim/allocator_shim_override_apple_default_zone.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim_override_mac_default_zone.h"
 #else  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/shim/allocator_shim_override_apple_symbols.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim_override_mac_symbols.h"
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #else
 #include "base/allocator/partition_allocator/shim/allocator_shim_override_libc_symbols.h"
