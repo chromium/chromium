@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_fit_to_view_box.h"
-#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_pattern_element.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
@@ -139,10 +138,9 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
     return pattern_data;
 
   // Compute tile metrics.
-  gfx::RectF tile_bounds = SVGLengthContext::ResolveRectangle(
-      GetElement(), attributes.PatternUnits(), object_bounding_box,
-      *attributes.X(), *attributes.Y(), *attributes.Width(),
-      *attributes.Height());
+  gfx::RectF tile_bounds = ResolveRectangle(
+      attributes.PatternUnits(), object_bounding_box, *attributes.X(),
+      *attributes.Y(), *attributes.Width(), *attributes.Height());
   if (tile_bounds.IsEmpty())
     return pattern_data;
 

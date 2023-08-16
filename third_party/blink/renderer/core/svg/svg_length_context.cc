@@ -22,46 +22,18 @@
 
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 
-#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/core/svg/svg_length.h"
-#include "third_party/blink/renderer/platform/geometry/length_functions.h"
-#include "third_party/blink/renderer/platform/geometry/length_point.h"
+#include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
 namespace {
-
-const ComputedStyle* ComputedStyleForLengthResolving(
-    const SVGElement& context) {
-  const ContainerNode* current_context = &context;
-  do {
-    if (current_context->GetLayoutObject()) {
-      return current_context->GetLayoutObject()->Style();
-    }
-    current_context = current_context->parentNode();
-  } while (current_context);
-
-  Document& document = context.GetDocument();
-  // Detached documents does not have initial style.
-  if (document.IsDetached()) {
-    return nullptr;
-  }
-  // We can end up here if trying to resolve values for elements in an
-  // inactive document.
-  return &document.GetStyleResolver().InitialStyle();
-}
-
-const ComputedStyle* ComputedStyleForLengthResolving(
-    const SVGElement* context) {
-  return context ? ComputedStyleForLengthResolving(*context) : nullptr;
-}
 
 const ComputedStyle* RootElementStyle(const Element& element) {
   if (auto* document_element = element.GetDocument().documentElement()) {
@@ -70,26 +42,6 @@ const ComputedStyle* RootElementStyle(const Element& element) {
     }
   }
   return nullptr;
-}
-
-float ObjectBoundingBoxUnitToUserUnits(const Length& length,
-                                       float ref_dimension) {
-  // For "plain" percentages we resolve against the real reference dimension
-  // and scale with the unit dimension to avoid losing precision for common
-  // cases. In essence because of the difference between:
-  //
-  //   v * percentage / 100
-  //
-  // and:
-  //
-  //   v * (percentage / 100)
-  //
-  // for certain, common, values of v and percentage.
-  float unit_dimension = 1;
-  if (length.IsPercent()) {
-    std::swap(unit_dimension, ref_dimension);
-  }
-  return FloatValueForLength(length, unit_dimension, nullptr) * ref_dimension;
 }
 
 }  // namespace
@@ -113,59 +65,32 @@ SVGLengthConversionData::SVGLengthConversionData(const LayoutObject& object)
 SVGLengthContext::SVGLengthContext(const SVGElement* context)
     : context_(context) {}
 
-gfx::RectF SVGLengthContext::ResolveRectangle(const SVGElement* context,
-                                              SVGUnitTypes::SVGUnitType type,
-                                              const gfx::RectF& viewport,
-                                              const SVGLength& x,
-                                              const SVGLength& y,
-                                              const SVGLength& width,
-                                              const SVGLength& height) {
-  DCHECK_NE(SVGUnitTypes::kSvgUnitTypeUnknown, type);
-  const ComputedStyle* style = ComputedStyleForLengthResolving(context);
-  if (!style) {
-    return gfx::RectF(0, 0, 0, 0);
-  }
-  const SVGLengthConversionData conversion_data(*context, *style);
-  // Convert SVGLengths to Lengths (preserves percentages).
-  const LengthPoint point(
-      x.AsCSSPrimitiveValue().ConvertToLength(conversion_data),
-      y.AsCSSPrimitiveValue().ConvertToLength(conversion_data));
-  const LengthSize size(
-      width.AsCSSPrimitiveValue().ConvertToLength(conversion_data),
-      height.AsCSSPrimitiveValue().ConvertToLength(conversion_data));
-
-  gfx::RectF resolved_rect;
-  // If the requested unit is 'objectBoundingBox' then the resolved user units
-  // are actually normalized (in bounding box units), so transform them to the
-  // actual user space.
-  if (type == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
-    // Resolve the Lengths to user units.
-    resolved_rect = gfx::RectF(
-        ObjectBoundingBoxUnitToUserUnits(point.X(), viewport.width()),
-        ObjectBoundingBoxUnitToUserUnits(point.Y(), viewport.height()),
-        ObjectBoundingBoxUnitToUserUnits(size.Width(), viewport.width()),
-        ObjectBoundingBoxUnitToUserUnits(size.Height(), viewport.height()));
-    resolved_rect += viewport.OffsetFromOrigin();
-  } else {
-    DCHECK_EQ(type, SVGUnitTypes::kSvgUnitTypeUserspaceonuse);
-    // Determine the viewport to use for resolving the Lengths to user units.
-    gfx::SizeF viewport_size_for_resolve;
-    if (size.Width().IsPercentOrCalc() || size.Height().IsPercentOrCalc() ||
-        point.X().IsPercentOrCalc() || point.Y().IsPercentOrCalc()) {
-      viewport_size_for_resolve =
-          SVGViewportResolver(*context).ResolveViewport();
+const ComputedStyle* SVGLengthContext::ComputedStyleForLengthResolving(
+    const SVGElement& context) {
+  const ContainerNode* current_context = &context;
+  do {
+    if (current_context->GetLayoutObject()) {
+      return current_context->GetLayoutObject()->Style();
     }
-    // Resolve the Lengths to user units.
-    resolved_rect =
-        gfx::RectF(PointForLengthPoint(point, viewport_size_for_resolve),
-                   SizeForLengthSize(size, viewport_size_for_resolve));
+    current_context = current_context->parentNode();
+  } while (current_context);
+
+  Document& document = context.GetDocument();
+  // Detached documents does not have initial style.
+  if (document.IsDetached()) {
+    return nullptr;
   }
-  return resolved_rect;
+  // We can end up here if trying to resolve values for elements in an
+  // inactive document.
+  return &document.GetStyleResolver().InitialStyle();
 }
 
 float SVGLengthContext::ResolveValue(const CSSPrimitiveValue& primitive_value,
                                      SVGLengthMode mode) const {
-  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
+  if (!context_) {
+    return 0;
+  }
+  const ComputedStyle* style = ComputedStyleForLengthResolving(*context_);
   if (!style) {
     return 0;
   }

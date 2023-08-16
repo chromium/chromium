@@ -23,9 +23,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
-#include "third_party/blink/renderer/core/svg/svg_length_functions.h"
-#include "third_party/blink/renderer/core/svg/svg_unit_types.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -33,7 +30,8 @@ class ComputedStyle;
 class Element;
 class LayoutObject;
 class SVGElement;
-class SVGLength;
+
+enum class SVGLengthMode;
 
 class CORE_EXPORT SVGLengthContext {
   STACK_ALLOCATED();
@@ -41,23 +39,6 @@ class CORE_EXPORT SVGLengthContext {
  public:
   explicit SVGLengthContext(const SVGElement*);
 
-  template <typename T>
-  static gfx::RectF ResolveRectangle(const T* context,
-                                     SVGUnitTypes::SVGUnitType type,
-                                     const gfx::RectF& viewport) {
-    return ResolveRectangle(
-        context, type, viewport, *context->x()->CurrentValue(),
-        *context->y()->CurrentValue(), *context->width()->CurrentValue(),
-        *context->height()->CurrentValue());
-  }
-
-  static gfx::RectF ResolveRectangle(const SVGElement*,
-                                     SVGUnitTypes::SVGUnitType,
-                                     const gfx::RectF& viewport,
-                                     const SVGLength& x,
-                                     const SVGLength& y,
-                                     const SVGLength& width,
-                                     const SVGLength& height);
   float ConvertValueToUserUnits(float,
                                 SVGLengthMode,
                                 CSSPrimitiveValue::UnitType from_unit) const;
@@ -65,6 +46,9 @@ class CORE_EXPORT SVGLengthContext {
                                   SVGLengthMode,
                                   CSSPrimitiveValue::UnitType to_unit) const;
   float ResolveValue(const CSSPrimitiveValue&, SVGLengthMode) const;
+
+  static const ComputedStyle* ComputedStyleForLengthResolving(
+      const SVGElement&);
 
  private:
   double ConvertValueToUserUnitsUnclamped(

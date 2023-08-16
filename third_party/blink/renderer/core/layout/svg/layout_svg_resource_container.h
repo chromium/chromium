@@ -24,8 +24,13 @@
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
+#include "third_party/blink/renderer/core/svg/svg_unit_types.h"
 
 namespace blink {
+
+class SVGLength;
+class SVGLengthConversionData;
+class SVGViewportResolver;
 
 enum LayoutSVGResourceType {
   kMaskerResourceType,
@@ -85,6 +90,42 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
     NOT_DESTROYED();
     completed_invalidations_mask_ = 0;
   }
+
+  // Resolve the rectangle defined by `x`, `y`, `width` and `height` in the
+  // unit space defined by `type` into user units.
+  static gfx::RectF ResolveRectangle(const SVGViewportResolver&,
+                                     const SVGLengthConversionData&,
+                                     SVGUnitTypes::SVGUnitType type,
+                                     const gfx::RectF& reference_box,
+                                     const SVGLength& x,
+                                     const SVGLength& y,
+                                     const SVGLength& width,
+                                     const SVGLength& height);
+  static gfx::RectF ResolveRectangle(const SVGElement& context,
+                                     SVGUnitTypes::SVGUnitType type,
+                                     const gfx::RectF& reference_box,
+                                     const SVGLength& x,
+                                     const SVGLength& y,
+                                     const SVGLength& width,
+                                     const SVGLength& height);
+  // Like the above, but pass `x()`, `y()`, `width()` and `height()` from the
+  // context element for the corresponding arguments.
+  template <typename T>
+  static gfx::RectF ResolveRectangle(const T& context,
+                                     SVGUnitTypes::SVGUnitType type,
+                                     const gfx::RectF& reference_box) {
+    return ResolveRectangle(
+        context, type, reference_box, *context.x()->CurrentValue(),
+        *context.y()->CurrentValue(), *context.width()->CurrentValue(),
+        *context.height()->CurrentValue());
+  }
+
+  gfx::RectF ResolveRectangle(SVGUnitTypes::SVGUnitType type,
+                              const gfx::RectF& reference_box,
+                              const SVGLength& x,
+                              const SVGLength& y,
+                              const SVGLength& width,
+                              const SVGLength& height) const;
 
  protected:
   typedef unsigned InvalidationModeMask;
