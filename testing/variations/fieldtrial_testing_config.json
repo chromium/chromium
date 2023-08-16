@@ -384,11 +384,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Active_Omnibox_Small_Margin_20221025",
+                    "name": "Enabled_Active_Omnibox_Small_Margin_20230816",
                     "params": {
                         "enable_modernize_visual_update_on_tablet": "false",
                         "modernize_visual_update_active_color_on_omnibox": "true",
-                        "modernize_visual_update_small_bottom_margin": "true"
+                        "modernize_visual_update_merge_clipboard_on_ntp": "true",
+                        "modernize_visual_update_smallest_margins": "true"
                     },
                     "enable_features": [
                         "OmniboxModernizeVisualUpdate"
