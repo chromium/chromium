@@ -49,6 +49,7 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     map[&kCommercePriceTrackingRegionLaunched] = {{"us", {"en-us"}}};
     map[&kPriceInsightsRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShowDiscountOnNavigationRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kShoppingPageTypesRegionLaunched] = {{"us", {"en-us"}}};
 
     return map;
   }());
@@ -219,6 +220,14 @@ BASE_FEATURE(kShoppingPDPMetrics,
 BASE_FEATURE(kShoppingPDPMetricsRegionLaunched,
              "ShoppingPDPMetricsRegionLaunched",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kShoppingPageTypes,
+             "ShoppingPageTypes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kShoppingPageTypesRegionLaunched,
+             "ShoppingPageTypesRegionLaunched",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRetailCoupons, "RetailCoupons", base::FEATURE_ENABLED_BY_DEFAULT);
 

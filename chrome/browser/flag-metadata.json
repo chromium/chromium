@@ -7303,6 +7303,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "shopping-page-types",
+    "owners": [ "yuezhanggg", "chrome-shopping-eng@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "shortcut-customization-jelly",
     "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com" ],
     "expiry_milestone": 122

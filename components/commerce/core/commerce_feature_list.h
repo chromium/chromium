@@ -101,6 +101,8 @@ BASE_DECLARE_FEATURE(kShoppingCollection);
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);
 BASE_DECLARE_FEATURE(kShoppingListTrackByDefault);
+BASE_DECLARE_FEATURE(kShoppingPageTypes);
+BASE_DECLARE_FEATURE(kShoppingPageTypesRegionLaunched);
 BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
 BASE_DECLARE_FEATURE(kShoppingPDPMetricsRegionLaunched);
 

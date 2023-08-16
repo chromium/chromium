@@ -43,4 +43,8 @@ const char kPriceTrackingChipExperimentName[] =
 const char kPriceTrackingChipExperimentDescription[] =
     "Enable price tracking chip experiment.";
 
+const char kShoppingPageTypesName[] = "Shopping Page Types";
+const char kShoppingPageTypesDescription[] =
+    "Enable shopping page types experiment.";
+
 }  // namespace commerce::flag_descriptions

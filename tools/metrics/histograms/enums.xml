@@ -61933,6 +61933,7 @@ from previous Chrome versions.
   <int value="-1040000888" label="ContextMenuSearchWithGoogleLens:disabled"/>
   <int value="-1039889738" label="NativeNotifications:enabled"/>
   <int value="-1039555838" label="GamepadExtensions:enabled"/>
+  <int value="-1039219684" label="ShoppingPageTypes:disabled"/>
   <int value="-1037950113"
       label="ResamplingScrollEventsExperimentalPrediction:enabled"/>
   <int value="-1037620891"
@@ -62888,6 +62889,7 @@ from previous Chrome versions.
       label="OmniboxDocumentProviderNoSyncRequirement:enabled"/>
   <int value="-556021689" label="ArcEnableVirtioBlkForData:disabled"/>
   <int value="-555341956" label="AutofillSaveAndFillVPA:enabled"/>
+  <int value="-553732400" label="ShoppingPageTypes:enabled"/>
   <int value="-552425893" label="ProjectorAnnotator:disabled"/>
   <int value="-552407626" label="ContextualSearchNewSettings:disabled"/>
   <int value="-551664909" label="DrawEdgeToEdge:enabled"/>

@@ -37,6 +37,9 @@ extern const char kShowDiscountOnNavigationDescription[];
 extern const char kPriceTrackingChipExperimentName[];
 extern const char kPriceTrackingChipExperimentDescription[];
 
+extern const char kShoppingPageTypesName[];
+extern const char kShoppingPageTypesDescription[];
+
 }  // namespace commerce::flag_descriptions
 
 #endif  // COMPONENTS_COMMERCE_CORE_FLAG_DESCRIPTIONS_H_

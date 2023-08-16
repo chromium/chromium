@@ -6744,6 +6744,10 @@ const FeatureEntry kFeatureEntries[] = {
      commerce::flag_descriptions::kPriceInsightsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kPriceInsights)},
 
+    {"shopping-page-types", commerce::flag_descriptions::kShoppingPageTypesName,
+     commerce::flag_descriptions::kShoppingPageTypesDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(commerce::kShoppingPageTypes)},
+
     {"show-discount-on-navigation",
      commerce::flag_descriptions::kShowDiscountOnNavigationName,
      commerce::flag_descriptions::kShowDiscountOnNavigationDescription,
