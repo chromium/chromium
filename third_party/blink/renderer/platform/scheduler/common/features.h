@@ -111,7 +111,7 @@ PLATFORM_EXPORT extern const base::FeatureParam<
 
 BASE_FEATURE(kMicrotaskQueuePerWorkerAgent,
              "BlinkSchedulerMicroTaskQueuePerWorkerAgent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMicrotaskQueueRejectPromisesOnEachCompletion,
              "BlinkSchedulerMicroTaskRejectPromisesOnEachCompletion",
