@@ -24,6 +24,8 @@ enum {
   DIR_SAFE_BROWSING,  // Directory where safe browsing related cookies are
                       // stored.
 
+  DIR_LOCAL_TRACES,  // Directory where local traces are written.
+
   PATH_END
 };
 
