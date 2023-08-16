@@ -3349,8 +3349,8 @@ if (use_fuzzing_engine) {
       "//net",
     ]
     data = [
-      "fuzzer_data",
-      "fuzzer_dictionaries",
+      "data/fuzzer_data",
+      "data/fuzzer_dictionaries",
     ]
     allow_circular_includes_from = [ "//net/dns:fuzzer_test_support" ]
   }
