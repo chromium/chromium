@@ -21,6 +21,7 @@
 #include "base/task/task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "extensions/common/extension_id.h"
 #include "net/base/net_errors.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -91,7 +92,7 @@ class CertificateProviderService::SSLPrivateKey : public net::SSLPrivateKey {
  private:
   ~SSLPrivateKey() override;
 
-  const std::string extension_id_;
+  const extensions::ExtensionId extension_id_;
   const CertificateInfo cert_info_;
   const base::WeakPtr<CertificateProviderService> service_;
   SEQUENCE_CHECKER(sequence_checker_);
