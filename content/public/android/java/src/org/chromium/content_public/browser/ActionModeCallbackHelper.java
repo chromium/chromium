@@ -46,7 +46,7 @@ public abstract class ActionModeCallbackHelper {
     /**
      * Empty {@link ActionMode.Callback} that does nothing. Used for {@link #EMPTY_CALLBACK}.
      */
-    private static class EmptyActionCallback extends ActionMode.Callback2 {
+    private static class EmptyActionCallback extends ActionModeCallback {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             return false;
@@ -67,6 +67,12 @@ public abstract class ActionModeCallbackHelper {
 
         @Override
         public void onGetContentRect(ActionMode mode, View view, Rect outRect) {}
+
+        @Override
+        public boolean onDropdownItemClicked(int groupId, int id, @Nullable Intent intent,
+                @Nullable View.OnClickListener clickListener) {
+            return false;
+        }
     };
 
     /**
@@ -79,6 +85,11 @@ public abstract class ActionModeCallbackHelper {
      * @see ActionMode#finish()
      */
     public abstract void finishActionMode();
+
+    /**
+     * Dismisses the menu. No matter which type (i.e. ActionMode, Dropdown) is showing.
+     */
+    public abstract void dismissMenu();
 
     /**
      * @return The selected text (empty if no text is selected).
@@ -114,6 +125,14 @@ public abstract class ActionModeCallbackHelper {
     public abstract int getAllowedMenuItemIfAny(ActionMode mode, MenuItem item);
 
     /**
+     * Returns the {@link WebSettings} menu item that maps to the menu item properties
+     * passed in. Otherwise, returns 0.
+     * @param groupId the group id of the menu item.
+     * @param id the id of the menu item.
+     */
+    public abstract int getAllowedMenuItemIfAny(int groupId, int id);
+
+    /**
      * @see {@link ActionMode.Callback#onCreateActionMode(ActionMode, Menu)}
      */
     public abstract void onCreateActionMode(ActionMode mode, Menu menu);
@@ -127,6 +146,12 @@ public abstract class ActionModeCallbackHelper {
      * @see {@link ActionMode.Callback#onActionItemClicked(ActionMode, MenuItem)}
      */
     public abstract boolean onActionItemClicked(ActionMode mode, MenuItem item);
+
+    /**
+     * Callback for when a drop-down menu item is clicked.
+     */
+    public abstract boolean onDropdownItemClicked(int groupId, int id, @Nullable Intent intent,
+            @Nullable View.OnClickListener clickListener);
 
     /**
      * @see {@link ActionMode.Callback#onDestroyActionMode(ActionMode)}

@@ -5,6 +5,7 @@
 package org.chromium.content_public.browser.selection;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -65,6 +66,12 @@ public interface SelectionDropdownMenuDelegate {
     int getItemId(PropertyModel itemModel);
 
     /**
+     * Returns the intent for an item if it's present. Otherwise null is returned.
+     */
+    @Nullable
+    Intent getItemIntent(PropertyModel itemModel);
+
+    /**
      * Returns the {@link android.view.View.OnClickListener} for an item if there is
      * one. Otherwise returns null.
      */
@@ -88,10 +95,11 @@ public interface SelectionDropdownMenuDelegate {
      * @param groupContainsIcon True if this or any other item in group has an icon.
      * @param enabled Whether or not this menu item should be enabled.
      * @param clickListener Optional click listener for the menu item.
+     * @param intent Optional intent for the menu item.
      * @return ListItem with text and optionally an icon.
      */
     ListItem getMenuItem(String title, @Nullable String contentDescription, @IdRes int groupId,
             @IdRes int id, @Nullable Drawable startIcon, boolean isIconTintable,
             boolean groupContainsIcon, boolean enabled,
-            @Nullable View.OnClickListener clickListener);
+            @Nullable View.OnClickListener clickListener, @Nullable Intent intent);
 }

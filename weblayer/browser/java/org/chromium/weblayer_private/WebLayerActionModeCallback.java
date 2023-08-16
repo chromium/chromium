@@ -17,6 +17,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
@@ -28,7 +29,7 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 /**
  * A class that handles selection action mode for WebLayer.
  */
-public final class ActionModeCallback extends ActionMode.Callback2 {
+public final class WebLayerActionModeCallback extends ActionModeCallback {
     private final ActionModeCallbackHelper mHelper;
     // Can be null during init.
     private @Nullable ITabClient mTabClient;
@@ -53,7 +54,7 @@ public final class ActionModeCallback extends ActionMode.Callback2 {
         }
     }
 
-    public ActionModeCallback(WebContents webContents) {
+    public WebLayerActionModeCallback(WebContents webContents) {
         mHelper =
                 SelectionPopupController.fromWebContents(webContents).getActionModeCallbackHelper();
     }
@@ -95,6 +96,24 @@ public final class ActionModeCallback extends ActionMode.Callback2 {
         if ((menuItemType & mActionModeOverride) == 0) {
             return mHelper.onActionItemClicked(mode, item);
         }
+        handleMenuItemClick(menuItemType);
+        mode.finish();
+        return true;
+    }
+
+    @Override
+    public boolean onDropdownItemClicked(int groupId, int id, @Nullable Intent intent,
+            @Nullable View.OnClickListener clickListener) {
+        int menuItemType = contentToWebLayerType(mHelper.getAllowedMenuItemIfAny(groupId, id));
+        if ((menuItemType & mActionModeOverride) == 0) {
+            return mHelper.onDropdownItemClicked(groupId, id, intent, clickListener);
+        }
+        handleMenuItemClick(menuItemType);
+        mHelper.dismissMenu();
+        return true;
+    }
+
+    private void handleMenuItemClick(int menuItemType) {
         assert WebLayerFactoryImpl.getClientMajorVersion() >= 88;
         try {
             mTabClient.onActionItemClicked(
@@ -102,8 +121,6 @@ public final class ActionModeCallback extends ActionMode.Callback2 {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
-        mode.finish();
-        return true;
     }
 
     @Override

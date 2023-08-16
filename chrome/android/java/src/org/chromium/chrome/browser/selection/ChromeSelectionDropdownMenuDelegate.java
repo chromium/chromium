@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.selection;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -68,18 +69,44 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
 
     @Override
     public int getGroupId(PropertyModel itemModel) {
-        return itemModel.get(ListMenuItemProperties.GROUP_ID);
+        // We need to check first because PropertyModel#get throws an exception if a key
+        // is not present in the Map.
+        if (itemModel.containsKey(ListMenuItemProperties.GROUP_ID)) {
+            return itemModel.get(ListMenuItemProperties.GROUP_ID);
+        }
+        return 0;
     }
 
     @Override
     public int getItemId(PropertyModel itemModel) {
-        return itemModel.get(ListMenuItemProperties.MENU_ITEM_ID);
+        // We need to check first because PropertyModel#get throws an exception if a key
+        // is not present in the Map.
+        if (itemModel.containsKey(ListMenuItemProperties.MENU_ITEM_ID)) {
+            return itemModel.get(ListMenuItemProperties.MENU_ITEM_ID);
+        }
+        return 0;
+    }
+
+    @Nullable
+    @Override
+    public Intent getItemIntent(PropertyModel itemModel) {
+        // We need to check first because PropertyModel#get throws an exception if a key
+        // is not present in the Map.
+        if (itemModel.containsKey(ListMenuItemProperties.INTENT)) {
+            return itemModel.get(ListMenuItemProperties.INTENT);
+        }
+        return null;
     }
 
     @Nullable
     @Override
     public View.OnClickListener getClickListener(PropertyModel itemModel) {
-        return itemModel.get(ListMenuItemProperties.CLICK_LISTENER);
+        // We need to check first because PropertyModel#get throws an exception if a key
+        // is not present in the Map.
+        if (itemModel.containsKey(ListMenuItemProperties.CLICK_LISTENER)) {
+            return itemModel.get(ListMenuItemProperties.CLICK_LISTENER);
+        }
+        return null;
     }
 
     @Override
@@ -90,7 +117,8 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
     @Override
     public ListItem getMenuItem(String title, @Nullable String contentDescription, int groupId,
             int id, @Nullable Drawable startIcon, boolean isIconTintable, boolean groupContainsIcon,
-            boolean enabled, @Nullable View.OnClickListener clickListener) {
+            boolean enabled, @Nullable View.OnClickListener clickListener,
+            @Nullable Intent intent) {
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, title)
@@ -100,6 +128,7 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
                         .with(ListMenuItemProperties.START_ICON_DRAWABLE, startIcon)
                         .with(ListMenuItemProperties.ENABLED, enabled)
                         .with(ListMenuItemProperties.CLICK_LISTENER, clickListener)
+                        .with(ListMenuItemProperties.INTENT, intent)
                         .with(ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN,
                                 groupContainsIcon);
         if (isIconTintable) {

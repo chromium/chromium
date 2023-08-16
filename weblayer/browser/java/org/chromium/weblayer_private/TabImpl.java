@@ -139,7 +139,7 @@ public final class TabImpl extends ITab.Stub {
     private DisplayCutoutController mDisplayCutoutController;
 
     private boolean mPostContainerViewInitDone;
-    private ActionModeCallback mActionModeCallback;
+    private WebLayerActionModeCallback mActionModeCallback;
 
     private Set<FaviconCallbackProxy> mFaviconCallbackProxies = new HashSet<>();
 
@@ -320,7 +320,7 @@ public final class TabImpl extends ITab.Stub {
 
             SelectionPopupController selectionPopupController =
                     SelectionPopupController.fromWebContents(mWebContents);
-            mActionModeCallback = new ActionModeCallback(mWebContents);
+            mActionModeCallback = new WebLayerActionModeCallback(mWebContents);
             mActionModeCallback.setTabClient(mClient);
             selectionPopupController.setActionModeCallback(mActionModeCallback);
             selectionPopupController.setSelectionClient(
