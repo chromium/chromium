@@ -126,7 +126,8 @@ class AudioServiceImpl : public AudioService,
   // List of observers.
   base::ObserverList<AudioService::Observer>::Unchecked observer_list_;
 
-  raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_;
+  raw_ptr<CrasAudioHandler, DanglingUntriaged | ExperimentalAsh>
+      cras_audio_handler_;
 
   raw_ptr<AudioDeviceIdCalculator, ExperimentalAsh> id_calculator_;
 

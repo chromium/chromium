@@ -802,7 +802,7 @@ class LockScreenItemStorageTest : public ExtensionsTest {
   // Whether the test is expected to create deprecated value store version.
   bool can_create_deprecated_value_store_ = false;
 
-  raw_ptr<TestLockScreenValueStoreMigrator, ExperimentalAsh>
+  raw_ptr<TestLockScreenValueStoreMigrator, DanglingUntriaged | ExperimentalAsh>
       value_store_migrator_ = nullptr;
 };
 
