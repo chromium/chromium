@@ -8,7 +8,6 @@ import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//build/config/ui.gni")
 import("//build_overrides/build.gni")
-import("//third_party/perfetto/gn/perfetto_cc_proto_descriptor.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
@@ -17,6 +16,10 @@ if (is_android) {
 
 if (is_ios) {
   import("//build/config/ios/rules.gni")
+}
+
+if (enable_base_tracing) {
+  import("//third_party/perfetto/gn/perfetto_cc_proto_descriptor.gni")
 }
 
 static_library("test_config") {
