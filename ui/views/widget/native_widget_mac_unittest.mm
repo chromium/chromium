@@ -6,11 +6,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
@@ -1215,7 +1215,7 @@ class ScopedSwizzleWaiter {
 
   static ScopedSwizzleWaiter* instance_;
 
-  base::mac::ScopedObjCClassSwizzler swizzler_;
+  base::apple::ScopedObjCClassSwizzler swizzler_;
   raw_ptr<base::RunLoop> run_loop_ = nullptr;
   bool method_called_ = false;
 };

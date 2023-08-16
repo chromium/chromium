@@ -8,8 +8,8 @@
 
 #include <ostream>
 
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/check_op.h"
-#import "base/mac/scoped_objc_class_swizzler.h"
 
 namespace {
 
@@ -34,7 +34,7 @@ namespace ui::test {
 
 ScopedFakeFullKeyboardAccess::ScopedFakeFullKeyboardAccess()
     : full_keyboard_access_state_(true),
-      swizzler_(new base::mac::ScopedObjCClassSwizzler(
+      swizzler_(new base::apple::ScopedObjCClassSwizzler(
           [NSApplication class],
           [FakeNSAppKeyboardAccessDonor class],
           @selector(isFullKeyboardAccessEnabled))) {

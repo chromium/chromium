@@ -10,10 +10,10 @@
 #include <memory>
 #include <string>
 
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/bind.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
-#import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -1923,10 +1923,10 @@ TEST_F(BridgedNativeWidgetTest, TextInput_RecursiveUpdateWindows) {
   EXPECT_TRUE([ns_view_ textInputClient]);
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
-  base::mac::ScopedObjCClassSwizzler update_windows_swizzler(
+  base::apple::ScopedObjCClassSwizzler update_windows_swizzler(
       [NSApplication class], [UpdateWindowsDonorForNSApp class],
       @selector(updateWindows));
-  base::mac::ScopedObjCClassSwizzler current_input_context_swizzler(
+  base::apple::ScopedObjCClassSwizzler current_input_context_swizzler(
       [NSTextInputContext class],
       [CurrentInputContextDonorForNSTextInputContext class],
       @selector(currentInputContext));
@@ -2056,9 +2056,9 @@ TEST_F(BridgedNativeWidgetTest, TextInput_WriteToPasteboard) {
 }
 
 TEST_F(BridgedNativeWidgetTest, WriteToFindPasteboard) {
-  base::mac::ScopedObjCClassSwizzler swizzler([FindPasteboard class],
-                                              [MockFindPasteboard class],
-                                              @selector(sharedInstance));
+  base::apple::ScopedObjCClassSwizzler swizzler([FindPasteboard class],
+                                                [MockFindPasteboard class],
+                                                @selector(sharedInstance));
   EXPECT_NSEQ(@"", [[FindPasteboard sharedInstance] findText]);
 
   const std::string test_string = "foo bar baz";

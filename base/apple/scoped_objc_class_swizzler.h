@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_MAC_SCOPED_OBJC_CLASS_SWIZZLER_H_
-#define BASE_MAC_SCOPED_OBJC_CLASS_SWIZZLER_H_
+#ifndef BASE_APPLE_SCOPED_OBJC_CLASS_SWIZZLER_H_
+#define BASE_APPLE_SCOPED_OBJC_CLASS_SWIZZLER_H_
 
 #import <objc/runtime.h>
 
 #include "base/base_export.h"
 
-namespace base::mac {
+namespace base::apple {
 
 // Within a given scope, swaps method implementations of a class interface, or
 // between two class interfaces. The argument and return types must match.
@@ -52,6 +52,6 @@ class BASE_EXPORT ScopedObjCClassSwizzler {
   Method new_selector_impl_;
 };
 
-}  // namespace base::mac
+}  // namespace base::apple
 
-#endif  // BASE_MAC_SCOPED_OBJC_CLASS_SWIZZLER_H_
+#endif  // BASE_APPLE_SCOPED_OBJC_CLASS_SWIZZLER_H_

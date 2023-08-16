@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/mac/scoped_objc_class_swizzler.h"
+#import "base/apple/scoped_objc_class_swizzler.h"
 
 #import <Foundation/Foundation.h>
 
@@ -74,7 +74,7 @@
 }
 @end
 
-namespace base::mac {
+namespace base::apple {
 
 TEST(ObjCClassSwizzlerTest, SwizzleInstanceMethods) {
   ObjCClassSwizzlerTestOne* object_one =
@@ -85,9 +85,8 @@ TEST(ObjCClassSwizzlerTest, SwizzleInstanceMethods) {
   EXPECT_EQ(14, [object_two method]);
 
   {
-    base::mac::ScopedObjCClassSwizzler swizzler(
-        [ObjCClassSwizzlerTestOne class],
-        [ObjCClassSwizzlerTestTwo class],
+    base::apple::ScopedObjCClassSwizzler swizzler(
+        [ObjCClassSwizzlerTestOne class], [ObjCClassSwizzlerTestTwo class],
         @selector(method));
     EXPECT_EQ(6, [object_one method]);
     EXPECT_EQ(7, [object_two method]);
@@ -104,9 +103,8 @@ TEST(ObjCClassSwizzlerTest, SwizzleClassMethods) {
   EXPECT_EQ(20, [ObjCClassSwizzlerTestTwo function]);
 
   {
-    base::mac::ScopedObjCClassSwizzler swizzler(
-        [ObjCClassSwizzlerTestOne class],
-        [ObjCClassSwizzlerTestTwo class],
+    base::apple::ScopedObjCClassSwizzler swizzler(
+        [ObjCClassSwizzlerTestOne class], [ObjCClassSwizzlerTestTwo class],
         @selector(function));
     EXPECT_EQ(20, [ObjCClassSwizzlerTestOne function]);
     EXPECT_EQ(10, [ObjCClassSwizzlerTestTwo function]);
@@ -125,9 +123,8 @@ TEST(ObjCClassSwizzlerTest, SwizzleViaCategory) {
   EXPECT_EQ(3, [object_one method]);
 
   {
-    base::mac::ScopedObjCClassSwizzler swizzler(
-        [ObjCClassSwizzlerTestOne class],
-        @selector(method),
+    base::apple::ScopedObjCClassSwizzler swizzler(
+        [ObjCClassSwizzlerTestOne class], @selector(method),
         @selector(alternate));
     EXPECT_EQ(9, [object_one method]);
 
@@ -143,9 +140,8 @@ TEST(ObjCClassSwizzlerTest, SwizzleViaInheritance) {
   EXPECT_EQ(3, [child method]);
 
   {
-    base::mac::ScopedObjCClassSwizzler swizzler(
-        [ObjCClassSwizzlerTestOneChild class],
-        @selector(method),
+    base::apple::ScopedObjCClassSwizzler swizzler(
+        [ObjCClassSwizzlerTestOneChild class], @selector(method),
         @selector(childAlternate));
     EXPECT_EQ(15, [child method]);
 
@@ -155,4 +151,4 @@ TEST(ObjCClassSwizzlerTest, SwizzleViaInheritance) {
   EXPECT_EQ(3, [child method]);
 }
 
-}  // namespace base::mac
+}  // namespace base::apple

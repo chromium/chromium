@@ -6,7 +6,7 @@
 
 #include <Cocoa/Cocoa.h>
 
-#import "base/mac/scoped_objc_class_swizzler.h"
+#import "base/apple/scoped_objc_class_swizzler.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"

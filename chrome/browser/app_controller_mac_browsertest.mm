@@ -9,11 +9,11 @@
 
 #include <string>
 
+#include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_objc_class_swizzler.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -1324,7 +1324,7 @@ class AppControllerHandoffBrowserTest : public InProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     // This swizzle intercepts the URL that would be sent to the Handoff
     // Manager, and instead puts it into a variable accessible to this test.
-    swizzler_ = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+    swizzler_ = std::make_unique<base::apple::ScopedObjCClassSwizzler>(
         [AppController class], @selector(updateHandoffManagerWithURL:title:),
         @selector(new_updateHandoffManagerWithURL:title:));
   }
@@ -1340,7 +1340,7 @@ class AppControllerHandoffBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> swizzler_;
 };
 
 // Tests that as a user switches between tabs, navigates within a tab, and

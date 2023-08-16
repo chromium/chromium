@@ -4,9 +4,9 @@
 
 #include <memory>
 
+#include "base/apple/scoped_objc_class_swizzler.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
-#include "base/mac/scoped_objc_class_swizzler.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -112,7 +112,7 @@ struct Version {
 
 @implementation WebContentVisibilityUpdateWatcher
 
-+ (std::unique_ptr<base::mac::ScopedObjCClassSwizzler>&)
++ (std::unique_ptr<base::apple::ScopedObjCClassSwizzler>&)
     performOcclusionStateUpdatesSwizzler {
   // The swizzler needs to be generally available (i.e. not stored in an
   // instance variable) because we want to call the original
@@ -122,15 +122,17 @@ struct Version {
   // not WebContentVisibilityUpdateWatcher, so it has no access to any
   // instance variables we define for WebContentVisibilityUpdateWatcher.
   // Storing the swizzler in a static makes it available to any caller.
-  static base::NoDestructor<std::unique_ptr<base::mac::ScopedObjCClassSwizzler>>
+  static base::NoDestructor<
+      std::unique_ptr<base::apple::ScopedObjCClassSwizzler>>
       performOcclusionStateUpdatesSwizzler;
 
   return *performOcclusionStateUpdatesSwizzler;
 }
 
-+ (std::unique_ptr<base::mac::ScopedObjCClassSwizzler>&)
++ (std::unique_ptr<base::apple::ScopedObjCClassSwizzler>&)
     setWebContentsOccludedSwizzler {
-  static base::NoDestructor<std::unique_ptr<base::mac::ScopedObjCClassSwizzler>>
+  static base::NoDestructor<
+      std::unique_ptr<base::apple::ScopedObjCClassSwizzler>>
       setWebContentsOccludedSwizzler;
 
   return *setWebContentsOccludedSwizzler;
@@ -149,13 +151,13 @@ struct Version {
   // The tests should access WebContentsOcclusionCheckerMac directly, rather
   // than through NSClassFromString(). See crbug.com/1450724 .
   [WebContentVisibilityUpdateWatcher performOcclusionStateUpdatesSwizzler] =
-      std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+      std::make_unique<base::apple::ScopedObjCClassSwizzler>(
           NSClassFromString(@"WebContentsOcclusionCheckerMac"),
           [WebContentVisibilityUpdateWatcher class],
           @selector(performOcclusionStateUpdates));
 
   [WebContentVisibilityUpdateWatcher setWebContentsOccludedSwizzler] =
-      std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+      std::make_unique<base::apple::ScopedObjCClassSwizzler>(
           NSClassFromString(@"WebContentsViewCocoa"),
           [WebContentVisibilityUpdateWatcher class],
           @selector(performDelayedSetWebContentsOccluded));
@@ -213,8 +215,9 @@ struct Version {
 
 @implementation WebContentVisibilityUpdateCounter
 
-+ (std::unique_ptr<base::mac::ScopedObjCClassSwizzler>&)swizzler {
-  static base::NoDestructor<std::unique_ptr<base::mac::ScopedObjCClassSwizzler>>
++ (std::unique_ptr<base::apple::ScopedObjCClassSwizzler>&)swizzler {
+  static base::NoDestructor<
+      std::unique_ptr<base::apple::ScopedObjCClassSwizzler>>
       swizzler;
 
   return *swizzler;
@@ -236,7 +239,7 @@ struct Version {
 
   // Set up the swizzling.
   [WebContentVisibilityUpdateCounter swizzler] =
-      std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+      std::make_unique<base::apple::ScopedObjCClassSwizzler>(
           NSClassFromString(@"WebContentsOcclusionCheckerMac"),
           [WebContentVisibilityUpdateCounter class],
           @selector(scheduleOcclusionStateUpdates));

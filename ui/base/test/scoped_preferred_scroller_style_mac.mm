@@ -6,10 +6,10 @@
 
 #import <AppKit/AppKit.h>
 
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/check.h"
-#import "base/mac/scoped_objc_class_swizzler.h"
 
-using base::mac::ScopedObjCClassSwizzler;
+using base::apple::ScopedObjCClassSwizzler;
 
 namespace {
 

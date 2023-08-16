@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#import "base/mac/scoped_objc_class_swizzler.h"
+#import "base/apple/scoped_objc_class_swizzler.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #include "ui/gfx/geometry/rect.h"
@@ -44,7 +44,7 @@ class MacCoordinateConversionTest : public PlatformTest {
   void TearDown() override;
 
  private:
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzle_frame_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> swizzle_frame_;
 };
 
 void MacCoordinateConversionTest::SetUp() {
@@ -54,7 +54,7 @@ void MacCoordinateConversionTest::SetUp() {
   EXPECT_EQ(0, primary_screen_frame.origin.x);
   EXPECT_EQ(0, primary_screen_frame.origin.y);
 
-  swizzle_frame_ = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+  swizzle_frame_ = std::make_unique<base::apple::ScopedObjCClassSwizzler>(
       [NSScreen class], [MacCoordinateConversionTestScreenDonor class],
       @selector(frame));
 

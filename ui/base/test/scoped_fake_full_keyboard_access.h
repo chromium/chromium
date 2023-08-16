@@ -7,14 +7,11 @@
 
 #include <memory>
 
-namespace base {
-namespace mac {
+namespace base::apple {
 class ScopedObjCClassSwizzler;
 }
-}
 
-namespace ui {
-namespace test {
+namespace ui::test {
 
 // A singleton class which swizzles [NSApp isFullKeyboardAccessEnabled] so
 // that it returns the value set using set_full_keyboard_access_state().
@@ -43,10 +40,9 @@ class ScopedFakeFullKeyboardAccess {
 
  private:
   bool full_keyboard_access_state_;
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> swizzler_;
 };
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test
 
 #endif  // UI_BASE_TEST_SCOPED_FAKE_FULL_KEYBOARD_ACCESS_H_

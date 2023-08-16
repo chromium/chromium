@@ -8,9 +8,9 @@
 
 #include <memory>
 
+#include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/check.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_objc_class_swizzler.h"
 #include "base/strings/sys_string_conversions.h"
 
 static id __strong g_swizzled_main_bundle = nil;
@@ -59,7 +59,7 @@ ScopedBundleSwizzlerMac::ScopedBundleSwizzlerMac() {
   g_swizzled_main_bundle =
       [[TestBundle alloc] initWithRealBundle:original_main_bundle];
 
-  class_swizzler_ = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+  class_swizzler_ = std::make_unique<base::apple::ScopedObjCClassSwizzler>(
       [NSBundle class], [TestBundle class], @selector(mainBundle));
 }
 

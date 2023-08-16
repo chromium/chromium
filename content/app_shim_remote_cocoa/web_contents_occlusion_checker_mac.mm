@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #import "base/mac/foundation_util.h"
-#import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
@@ -44,7 +44,7 @@ bool IsBrowserProcess() {
 // Returns a pointer to the shared instance that can be cleared during tests.
 + (WebContentsOcclusionCheckerMac* __strong*)sharedOcclusionChecker;
 
-- (base::mac::ScopedObjCClassSwizzler*)windowClassSwizzler;
+- (base::apple::ScopedObjCClassSwizzler*)windowClassSwizzler;
 
 @end
 
@@ -54,7 +54,7 @@ bool IsBrowserProcess() {
   BOOL _displaysAreAsleep;
   BOOL _occlusionStateUpdatesAreScheduled;
   BOOL _updatingOcclusionStates;
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> _windowClassSwizzler;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> _windowClassSwizzler;
 }
 
 + (WebContentsOcclusionCheckerMac* __strong*)sharedOcclusionChecker {
@@ -115,7 +115,7 @@ bool IsBrowserProcess() {
   // There's no notification for NSWindows changing their order in the window
   // list. Swizzle -orderWindow:relativeTo:, allowing the checker to initiate
   // occlusion checks on window ordering changes.
-  _windowClassSwizzler = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+  _windowClassSwizzler = std::make_unique<base::apple::ScopedObjCClassSwizzler>(
       [NSWindow class], [WebContentsOcclusionCheckerMac class],
       @selector(orderWindow:relativeTo:));
 
@@ -132,7 +132,7 @@ bool IsBrowserProcess() {
   _windowClassSwizzler.reset();
 }
 
-- (base::mac::ScopedObjCClassSwizzler*)windowClassSwizzler {
+- (base::apple::ScopedObjCClassSwizzler*)windowClassSwizzler {
   return _windowClassSwizzler.get();
 }
 

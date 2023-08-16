@@ -6,8 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/bind.h"
-#import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -266,7 +266,7 @@ TEST_F(DragDropClientMacTest, ReleaseCapture) {
 
   // There's no way to cleanly stop NSDraggingSession inside unit tests, so just
   // don't start it at all.
-  base::mac::ScopedObjCClassSwizzler swizzle(
+  base::apple::ScopedObjCClassSwizzler swizzle(
       [NSView class], @selector(beginDraggingSessionWithItems:event:source:),
       @selector(cr_beginDraggingSessionWithItems:event:source:));
 

@@ -7,7 +7,7 @@
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
-#import "base/mac/scoped_objc_class_swizzler.h"
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
 #include "ui/display/screen.h"
@@ -324,9 +324,9 @@ class EventGeneratorDelegateMac : public ui::EventTarget,
 
   raw_ptr<ui::test::EventGenerator> owner_;
   NSWindow* __strong target_window_;
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzle_pressed_;
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzle_location_;
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzle_current_event_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> swizzle_pressed_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> swizzle_location_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> swizzle_current_event_;
   NSMenu* __strong fake_menu_;
 
   // Mac always sends trackpad scroll events between begin/end phase event
@@ -395,12 +395,12 @@ EventGeneratorDelegateMac::EventGeneratorDelegateMac(
                                      firstResponder]];
 
   if (owner_) {
-    swizzle_pressed_ = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+    swizzle_pressed_ = std::make_unique<base::apple::ScopedObjCClassSwizzler>(
         [NSEvent class], [NSEventDonor class], @selector(pressedMouseButtons));
-    swizzle_location_ = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+    swizzle_location_ = std::make_unique<base::apple::ScopedObjCClassSwizzler>(
         [NSEvent class], [NSEventDonor class], @selector(mouseLocation));
     swizzle_current_event_ =
-        std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+        std::make_unique<base::apple::ScopedObjCClassSwizzler>(
             [NSApplication class], [NSApplicationDonor class],
             @selector(currentEvent));
   }

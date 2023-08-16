@@ -4,9 +4,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
-#include "base/mac/scoped_objc_class_swizzler.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -89,11 +89,11 @@ class AppControllerKeyEquivalentTest : public PlatformTest {
     PlatformTest::SetUp();
 
     nsapp_target_for_action_swizzler_ =
-        std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+        std::make_unique<base::apple::ScopedObjCClassSwizzler>(
             [NSApp class], [AppControllerKeyEquivalentTestHelper class],
             @selector(targetForAction:));
     app_controller_swizzler_ =
-        std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+        std::make_unique<base::apple::ScopedObjCClassSwizzler>(
             [AppController class], [AppControllerKeyEquivalentTestHelper class],
             @selector(windowHasBrowserTabs:));
 
@@ -146,9 +146,10 @@ class AppControllerKeyEquivalentTest : public PlatformTest {
   }
 
  private:
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler>
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
       nsapp_target_for_action_swizzler_;
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> app_controller_swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
+      app_controller_swizzler_;
   AppController* __strong app_controller_;
   NSMenuItem* __strong close_window_menu_item_;
   NSMenuItem* __strong close_tab_menu_item_;

@@ -4,7 +4,7 @@
 
 #include "headless/lib/browser/headless_browser_impl.h"
 
-#import "base/mac/scoped_objc_class_swizzler.h"
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -54,8 +54,8 @@ class HeadlessPopUpMethods {
                                [FakeNSPopUpButtonCell class],
                                @selector(attachPopUpWithFrame:inView:)) {}
 
-  base::mac::ScopedObjCClassSwizzler popup_perform_click_swizzler_;
-  base::mac::ScopedObjCClassSwizzler popup_attach_swizzler_;
+  base::apple::ScopedObjCClassSwizzler popup_perform_click_swizzler_;
+  base::apple::ScopedObjCClassSwizzler popup_attach_swizzler_;
 };
 
 NSString* const kActivityReason = @"Batch headless process";

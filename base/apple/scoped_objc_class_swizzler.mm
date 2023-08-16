@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/mac/scoped_objc_class_swizzler.h"
+#import "base/apple/scoped_objc_class_swizzler.h"
 
 #include <string.h>
 
 #include "base/check_op.h"
 
-namespace base::mac {
+namespace base::apple {
 
 ScopedObjCClassSwizzler::ScopedObjCClassSwizzler(Class target,
                                                  Class source,
@@ -25,8 +25,9 @@ ScopedObjCClassSwizzler::ScopedObjCClassSwizzler(Class target,
 }
 
 ScopedObjCClassSwizzler::~ScopedObjCClassSwizzler() {
-  if (old_selector_impl_ && new_selector_impl_)
+  if (old_selector_impl_ && new_selector_impl_) {
     method_exchangeImplementations(old_selector_impl_, new_selector_impl_);
+  }
 }
 
 IMP ScopedObjCClassSwizzler::GetOriginalImplementation() const {
@@ -49,8 +50,9 @@ void ScopedObjCClassSwizzler::Init(Class target,
 
   DCHECK(old_selector_impl_);
   DCHECK(new_selector_impl_);
-  if (!old_selector_impl_ || !new_selector_impl_)
+  if (!old_selector_impl_ || !new_selector_impl_) {
     return;
+  }
 
   // The argument and return types must match exactly.
   const char* old_types = method_getTypeEncoding(old_selector_impl_);
@@ -66,4 +68,4 @@ void ScopedObjCClassSwizzler::Init(Class target,
   method_exchangeImplementations(old_selector_impl_, new_selector_impl_);
 }
 
-}  // namespace base::mac
+}  // namespace base::apple

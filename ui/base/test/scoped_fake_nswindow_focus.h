@@ -7,7 +7,7 @@
 
 #include <memory>
 
-namespace base::mac {
+namespace base::apple {
 class ScopedObjCClassSwizzler;
 }
 
@@ -26,13 +26,13 @@ class ScopedFakeNSWindowFocus {
   ~ScopedFakeNSWindowFocus();
 
  private:
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> is_main_swizzler_;
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> make_main_swizzler_;
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> resign_main_swizzler_;
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> is_key_swizzler_;
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> make_key_swizzler_;
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> resign_key_swizzler_;
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> order_out_swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> is_main_swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> make_main_swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> resign_main_swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> is_key_swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> make_key_swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> resign_key_swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> order_out_swizzler_;
 };
 
 }  // namespace ui::test

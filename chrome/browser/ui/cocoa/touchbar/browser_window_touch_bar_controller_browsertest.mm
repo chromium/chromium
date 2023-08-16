@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/apple/scoped_objc_class_swizzler.h"
 #import "base/mac/foundation_util.h"
-#include "base/mac/scoped_objc_class_swizzler.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
@@ -66,9 +66,10 @@
   return touchBarInvalidFlag;
 }
 
-+ (std::unique_ptr<base::mac::ScopedObjCClassSwizzler>&)setTouchBarSwizzler {
-  static base::NoDestructor<std::unique_ptr<base::mac::ScopedObjCClassSwizzler>>
-      setTouchBarSwizzler(new base::mac::ScopedObjCClassSwizzler(
++ (std::unique_ptr<base::apple::ScopedObjCClassSwizzler>&)setTouchBarSwizzler {
+  static base::NoDestructor<
+      std::unique_ptr<base::apple::ScopedObjCClassSwizzler>>
+      setTouchBarSwizzler(new base::apple::ScopedObjCClassSwizzler(
           [NSWindow class], [TouchBarInvalidationWatcher class],
           @selector(setTouchBar:)));
 
@@ -117,10 +118,11 @@
   return pageIsLoadingFlag;
 }
 
-+ (std::unique_ptr<base::mac::ScopedObjCClassSwizzler>&)
++ (std::unique_ptr<base::apple::ScopedObjCClassSwizzler>&)
     setPageIsLoadingSwizzler {
-  static base::NoDestructor<std::unique_ptr<base::mac::ScopedObjCClassSwizzler>>
-      setPageIsLoadingSwizzler(new base::mac::ScopedObjCClassSwizzler(
+  static base::NoDestructor<
+      std::unique_ptr<base::apple::ScopedObjCClassSwizzler>>
+      setPageIsLoadingSwizzler(new base::apple::ScopedObjCClassSwizzler(
           [BrowserWindowDefaultTouchBar class], [PageReloadWatcher class],
           @selector(setIsPageLoading:)));
 

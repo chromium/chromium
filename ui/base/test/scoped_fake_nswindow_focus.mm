@@ -6,15 +6,15 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "base/apple/scoped_objc_class_swizzler.h"
 #import "base/mac/foundation_util.h"
-#import "base/mac/scoped_objc_class_swizzler.h"
 
-using base::mac::ScopedObjCClassSwizzler;
+using base::apple::ScopedObjCClassSwizzler;
 
 namespace {
 
 NSWindow* g_fake_focused_window = nil;
-base::mac::ScopedObjCClassSwizzler* g_order_out_swizzler = nullptr;
+base::apple::ScopedObjCClassSwizzler* g_order_out_swizzler = nullptr;
 
 void SetFocus(NSWindow* window) {
   g_fake_focused_window = window;
