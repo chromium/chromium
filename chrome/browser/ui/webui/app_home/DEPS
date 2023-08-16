@@ -1,0 +1,5 @@
+specific_include_rules = {
+  ".*test\.cc": [
+    "+chrome/browser/ui/views/create_application_shortcut_view_test_support.h",
+  ]
+}

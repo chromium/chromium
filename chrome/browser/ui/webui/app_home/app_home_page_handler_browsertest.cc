@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/create_application_shortcut_view_test_support.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/mock_app_home_page.h"
@@ -431,13 +433,10 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateWebAppShortcut) {
   page_handler->CreateAppShortcut(installed_app_id, loop.QuitClosure());
   loop.Run();
 #else
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "CreateChromeApplicationShortcutView");
+  CreateChromeApplicationShortcutViewWaiter waiter;
   page_handler->CreateAppShortcut(installed_app_id, base::DoNothing());
   FlushShortcutTasks();
-  views::Widget* widget = waiter.WaitIfNeededAndGet();
-  ASSERT_TRUE(widget != nullptr);
-  views::test::AcceptDialog(widget);
+  std::move(waiter).WaitForAndAccept();
   FlushShortcutTasks();
 #endif
   EXPECT_CALL(page_, RemoveApp(MatchAppId(installed_app_id)))
@@ -472,13 +471,10 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateExtensionAppShortcut) {
   page_handler->CreateAppShortcut(extension->id(), loop.QuitClosure());
   loop.Run();
 #else
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "CreateChromeApplicationShortcutView");
+  CreateChromeApplicationShortcutViewWaiter waiter;
   page_handler->CreateAppShortcut(extension->id(), base::DoNothing());
   FlushShortcutTasks();
-  views::Widget* widget = waiter.WaitIfNeededAndGet();
-  ASSERT_TRUE(widget != nullptr);
-  views::test::AcceptDialog(widget);
+  std::move(waiter).WaitForAndAccept();
 #endif
   EXPECT_CALL(page_, RemoveApp(MatchAppId(extension->id())))
       .Times(testing::AtLeast(1));

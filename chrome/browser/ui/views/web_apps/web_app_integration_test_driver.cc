@@ -7,6 +7,7 @@
 #include <codecvt>
 #include <ostream>
 #include <string>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -53,6 +54,7 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/create_application_shortcut_view_test_support.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -1835,14 +1837,11 @@ void WebAppIntegrationTestDriver::CreateShortcutsFromList(Site site) {
   app_home_page_handler.CreateAppShortcut(app_id,
                                           shortcuts_future.GetCallback());
 #else   // !BUILDFLAG(IS_MAC)
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "CreateChromeApplicationShortcutView");
+  CreateChromeApplicationShortcutViewWaiter waiter;
   app_home_page_handler.CreateAppShortcut(app_id,
                                           shortcuts_future.GetCallback());
   FlushShortcutTasks();
-  views::Widget* widget = waiter.WaitIfNeededAndGet();
-  ASSERT_TRUE(widget != nullptr);
-  views::test::AcceptDialog(widget);
+  std::move(waiter).WaitForAndAccept();
 #endif  // BUILDFLAG(IS_MAC)
   EXPECT_TRUE(shortcuts_future.Wait());
   AfterStateChangeAction();
