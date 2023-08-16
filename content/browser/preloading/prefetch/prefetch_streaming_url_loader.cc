@@ -17,7 +17,7 @@ namespace content {
 
 PrefetchStreamingURLLoader::PrefetchStreamingURLLoader(
     network::mojom::URLLoaderFactory* url_loader_factory,
-    std::unique_ptr<network::ResourceRequest> request,
+    const network::ResourceRequest& request,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     base::TimeDelta timeout_duration,
     OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
@@ -38,7 +38,7 @@ PrefetchStreamingURLLoader::PrefetchStreamingURLLoader(
       network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
           network::mojom::kURLLoadOptionSniffMimeType |
           network::mojom::kURLLoadOptionSendSSLInfoForCertificateError,
-      *request,
+      request,
       prefetch_url_loader_client_receiver_.BindNewPipeAndPassRemote(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation));

@@ -30,8 +30,8 @@ void MakeServableStreamingURLLoaderForTest(
 
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          &test_url_loader_factory, std::move(request),
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+          &test_url_loader_factory, *request, TRAFFIC_ANNOTATION_FOR_TESTS,
+          /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,
                  network::mojom::URLResponseHead* head) {
@@ -84,8 +84,8 @@ MakeManuallyServableStreamingURLLoaderForTest(
 
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          &test_url_loader_factory, std::move(request),
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+          &test_url_loader_factory, *request, TRAFFIC_ANNOTATION_FOR_TESTS,
+          /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce([](network::mojom::URLResponseHead* head) {
             return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
           }),
@@ -145,8 +145,8 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
 
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          &test_url_loader_factory, std::move(request),
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+          &test_url_loader_factory, *request, TRAFFIC_ANNOTATION_FOR_TESTS,
+          /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,
                  network::mojom::URLResponseHead* head) {
@@ -226,8 +226,8 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
   // PrefetchStreamingURLLoader will be started with a request to the redirect
   // URL.
   auto first_streaming_loader = std::make_unique<PrefetchStreamingURLLoader>(
-      &test_url_loader_factory, std::move(original_request),
-      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      &test_url_loader_factory, *original_request, TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce([](network::mojom::URLResponseHead* head) {
         NOTREACHED();
         return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
@@ -277,8 +277,8 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
   // GetResponseReaderForCurrentPrefetch() now points to a new ResponseReader
   // after `AddRedirectHop()` above.
   auto second_streaming_loader = std::make_unique<PrefetchStreamingURLLoader>(
-      &test_url_loader_factory, std::move(redirect_request),
-      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      &test_url_loader_factory, *redirect_request, TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce(
           [](base::RunLoop* on_response_received_loop,
              network::mojom::URLResponseHead* head) {

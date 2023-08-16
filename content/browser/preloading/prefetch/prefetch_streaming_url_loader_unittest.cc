@@ -206,7 +206,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,
@@ -319,7 +319,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,
@@ -446,7 +446,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,
@@ -508,7 +508,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,
@@ -566,7 +566,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadReceived) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,
@@ -631,7 +631,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadNotReveived) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce([](network::mojom::URLResponseHead* head) {
             NOTREACHED();
@@ -686,7 +686,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,
@@ -814,7 +814,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
       base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,
@@ -976,7 +976,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce([](network::mojom::URLResponseHead* head) {
             NOTREACHED();
@@ -1032,7 +1032,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce([](network::mojom::URLResponseHead* head) {
             NOTREACHED();
@@ -1135,7 +1135,7 @@ TEST_P(PrefetchStreamingURLLoaderTest,
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce([](network::mojom::URLResponseHead* head) {
             NOTREACHED();
@@ -1198,7 +1198,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, Decoy) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,
@@ -1260,7 +1260,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, Timeout) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::Seconds(1),
           base::BindOnce([](network::mojom::URLResponseHead* head) {
             NOTREACHED();
@@ -1314,7 +1314,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, StopTimeoutTimerAfterBeingServed) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::Seconds(1),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,
@@ -1422,7 +1422,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, StaleResponse) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,
@@ -1492,7 +1492,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, TransferSizeUpdated) {
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), std::move(prefetch_request),
+          test_url_loader_factory(), *prefetch_request,
           TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
           base::BindOnce(
               [](base::RunLoop* on_response_received_loop,

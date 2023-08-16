@@ -1115,8 +1115,8 @@ void PrefetchService::MakePrefetchRequest(
 
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
-          GetURLLoaderFactoryForCurrentPrefetch(prefetch_container),
-          std::move(request), traffic_annotation, PrefetchTimeoutDuration(),
+          GetURLLoaderFactoryForCurrentPrefetch(prefetch_container), *request,
+          traffic_annotation, PrefetchTimeoutDuration(),
           base::BindOnce(&PrefetchService::OnPrefetchResponseStarted,
                          base::Unretained(this), prefetch_container),
           base::BindOnce(&PrefetchService::OnPrefetchResponseCompleted,

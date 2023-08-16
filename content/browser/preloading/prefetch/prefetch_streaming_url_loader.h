@@ -173,7 +173,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
 
   PrefetchStreamingURLLoader(
       network::mojom::URLLoaderFactory* url_loader_factory,
-      std::unique_ptr<network::ResourceRequest> request,
+      const network::ResourceRequest& request,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
       base::TimeDelta timeout_duration,
       OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
