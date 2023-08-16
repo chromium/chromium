@@ -82,8 +82,7 @@ TEST_F(ChromeClientTest, UpdateTooltipUnderCursorEmptyString) {
   HitTestResult result(HitTestRequest(HitTestRequest::kMove), location);
   ScopedNullExecutionContext execution_context;
   auto& doc = *Document::CreateForTest(execution_context.GetExecutionContext());
-  auto& input_element =
-      *MakeGarbageCollected<HTMLInputElement>(doc, CreateElementFlags());
+  auto& input_element = *MakeGarbageCollected<HTMLInputElement>(doc);
   input_element.setAttribute(html_names::kTypeAttr, AtomicString("file"));
 
   result.SetInnerNode(&input_element);

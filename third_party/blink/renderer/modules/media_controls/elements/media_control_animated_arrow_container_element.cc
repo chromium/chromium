@@ -94,8 +94,7 @@ void MediaControlAnimatedArrowContainerElement::ShowArrowAnimation(
     // This stylesheet element and will contain rules that are specific to the
     // jump arrows. The shadow DOM protects these rules from the parent DOM
     // from bleeding across the shadow DOM boundary.
-    auto* style = MakeGarbageCollected<HTMLStyleElement>(GetDocument(),
-                                                         CreateElementFlags());
+    auto* style = MakeGarbageCollected<HTMLStyleElement>(GetDocument());
     style->setTextContent(
         MediaControlsResourceLoader::GetAnimatedArrowStyleSheet());
     shadow_root->ParserAppendChild(style);

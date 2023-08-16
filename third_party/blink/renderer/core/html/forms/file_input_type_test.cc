@@ -82,8 +82,7 @@ TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
   ScopedNullExecutionContext execution_context;
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
-  auto* input =
-      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  auto* input = MakeGarbageCollected<HTMLInputElement>(*document);
   InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
 
   DataObject* native_file_raw_drag_data = DataObject::Create();
@@ -118,8 +117,7 @@ TEST(FileInputTypeTest, setFilesFromPaths) {
   ScopedNullExecutionContext execution_context;
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
-  auto* input =
-      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  auto* input = MakeGarbageCollected<HTMLInputElement>(*document);
   InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
   Vector<String> paths;
   paths.push_back("/native/path");
@@ -254,8 +252,7 @@ TEST(FileInputTypeTest, SetFilesFireCorrectEventsForSameFile) {
 
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
-  auto* input =
-      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  auto* input = MakeGarbageCollected<HTMLInputElement>(*document);
   InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
   auto* listener_change = MakeGarbageCollected<MockEventListener>();
   auto* listener_cancel = MakeGarbageCollected<MockEventListener>();
@@ -288,8 +285,7 @@ TEST(FileInputTypeTest, SetFilesFireCorrectEventsForSameFiles) {
 
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
-  auto* input =
-      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  auto* input = MakeGarbageCollected<HTMLInputElement>(*document);
   InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
   auto* listener_change = MakeGarbageCollected<MockEventListener>();
   auto* listener_cancel = MakeGarbageCollected<MockEventListener>();
@@ -328,8 +324,7 @@ TEST(FileInputTypeTest, SetFilesFireCorrectEventsForDifferentFile) {
 
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
-  auto* input =
-      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  auto* input = MakeGarbageCollected<HTMLInputElement>(*document);
   InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
   auto* listener_change = MakeGarbageCollected<MockEventListener>();
   auto* listener_cancel = MakeGarbageCollected<MockEventListener>();
@@ -363,8 +358,7 @@ TEST(FileInputTypeTest, SetFilesFireCorrectEventsForDifferentFiles) {
 
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
-  auto* input =
-      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  auto* input = MakeGarbageCollected<HTMLInputElement>(*document);
   InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
   auto* listener_change = MakeGarbageCollected<MockEventListener>();
   auto* listener_cancel = MakeGarbageCollected<MockEventListener>();
@@ -401,8 +395,7 @@ TEST(FileInputTypeTest, SetFilesFireCorrectEventsCancelWithSelection) {
 
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
-  auto* input =
-      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  auto* input = MakeGarbageCollected<HTMLInputElement>(*document);
   InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
   auto* listener_change = MakeGarbageCollected<MockEventListener>();
   auto* listener_cancel = MakeGarbageCollected<MockEventListener>();
@@ -437,8 +430,7 @@ TEST(FileInputTypeTest, SetFilesFireCorrectEventsCancelWithoutSelection) {
 
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
-  auto* input =
-      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  auto* input = MakeGarbageCollected<HTMLInputElement>(*document);
   InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
   auto* listener_change = MakeGarbageCollected<MockEventListener>();
   auto* listener_cancel = MakeGarbageCollected<MockEventListener>();

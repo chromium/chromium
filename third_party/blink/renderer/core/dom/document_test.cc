@@ -1794,8 +1794,8 @@ TEST_F(UnassociatedListedElementTest,
        GetUnassociatedListedElementsFromShadowTree) {
   ShadowRoot& shadow_root =
       GetDocument().body()->AttachShadowRootInternal(ShadowRootType::kOpen);
-  HTMLInputElement* input = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  HTMLInputElement* input =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   shadow_root.AppendChild(input);
   ListedElement::List listed_elements =
       GetDocument().UnassociatedListedElements();
@@ -1816,8 +1816,7 @@ TEST_F(UnassociatedListedElementTest,
       GetDocument().UnassociatedListedElements();
   EXPECT_EQ(0u, listed_elements.size());
 
-  auto* input = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  auto* input = MakeGarbageCollected<HTMLInputElement>(GetDocument());
   input->SetIdAttribute(AtomicString("unassociated_input"));
   GetDocument().body()->AppendChild(input);
 
@@ -1914,8 +1913,8 @@ TEST_F(UnassociatedListedElementTest,
   EXPECT_EQ(0u, listed_elements.size());
 
   HTMLDivElement* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  HTMLInputElement* input = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  HTMLInputElement* input =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   div->AppendChild(input);
   listed_elements = GetDocument().UnassociatedListedElements();
   EXPECT_EQ(0u, listed_elements.size());
@@ -1932,8 +1931,8 @@ TEST_F(UnassociatedListedElementTest,
   EXPECT_EQ(0u, listed_elements.size());
 
   HTMLDivElement* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  HTMLInputElement* input = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  HTMLInputElement* input =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   div->AppendChild(input);
   GetDocument().body()->AppendChild(div);
   listed_elements = GetDocument().UnassociatedListedElements();

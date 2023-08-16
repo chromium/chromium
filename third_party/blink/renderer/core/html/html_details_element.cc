@@ -101,8 +101,8 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
                                         CSSValueID::kBlock);
   root.AppendChild(content_slot_);
 
-  auto* default_summary_style = MakeGarbageCollected<HTMLStyleElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  auto* default_summary_style =
+      MakeGarbageCollected<HTMLStyleElement>(GetDocument());
   // This style is required only if this <details> shows the UA-provided
   // <summary>, not a light child <summary>.
   default_summary_style->setTextContent(R"CSS(

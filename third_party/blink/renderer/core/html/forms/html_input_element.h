@@ -60,7 +60,8 @@ class CORE_EXPORT HTMLInputElement
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  HTMLInputElement(Document&, const CreateElementFlags);
+  explicit HTMLInputElement(Document&,
+                            const CreateElementFlags = CreateElementFlags());
   ~HTMLInputElement() override;
   void Trace(Visitor*) const override;
 

@@ -139,8 +139,7 @@ class JSONDocumentParser : public HTMLDocumentParser {
                             IDS_PRETTY_PRINT_JSON))));
     label->setAttribute(html_names::kClassAttr,
                         AtomicString("line-wrap-control"));
-    auto* checkbox = MakeGarbageCollected<HTMLInputElement>(
-        *GetDocument(), CreateElementFlags());
+    auto* checkbox = MakeGarbageCollected<HTMLInputElement>(*GetDocument());
     checkbox->setAttribute(html_names::kTypeAttr, input_type_names::kCheckbox);
     checkbox->addEventListener(
         event_type_names::kChange,
@@ -156,8 +155,8 @@ class JSONDocumentParser : public HTMLDocumentParser {
     auto* form = MakeGarbageCollected<HTMLFormElement>(*GetDocument());
     form->setAttribute(html_names::kAutocompleteAttr, AtomicString("off"));
     form->ParserAppendChild(label);
-    HTMLStyleElement* style = MakeGarbageCollected<HTMLStyleElement>(
-        *GetDocument(), CreateElementFlags());
+    HTMLStyleElement* style =
+        MakeGarbageCollected<HTMLStyleElement>(*GetDocument());
     style->setTextContent(GetStyleSheetContents());
     auto* div = MakeGarbageCollected<HTMLDivElement>(*GetDocument());
     ShadowRoot& shadow_root = div->EnsureUserAgentShadowRoot();

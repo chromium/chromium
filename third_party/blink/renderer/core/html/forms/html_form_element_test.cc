@@ -50,8 +50,8 @@ TEST_F(HTMLFormElementTest, ListedElementsNestedForms) {
   HTMLFormElement* form2 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
   form1->AppendChild(form2);
 
-  HTMLInputElement* input = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  HTMLInputElement* input =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   form2->AppendChild(input);
 
   ListedElement::List form1elements = form1->ListedElements();
@@ -67,8 +67,8 @@ TEST_F(HTMLFormElementTest, ListedElementsDetachedForm) {
   HTMLFormElement* form = MakeGarbageCollected<HTMLFormElement>(GetDocument());
   body->AppendChild(form);
 
-  HTMLInputElement* input = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  HTMLInputElement* input =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   form->AppendChild(input);
 
   ListedElement::List listed_elements = form->ListedElements();
@@ -119,8 +119,8 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTrees) {
   ShadowRoot& form3root =
       form3div->AttachShadowRootInternal(ShadowRootType::kOpen);
 
-  HTMLInputElement* input = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  HTMLInputElement* input =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
 
   form3root.AppendChild(input);
   EXPECT_EQ(form1->ListedElements(), ListedElement::List{});
@@ -271,8 +271,8 @@ TEST_F(HTMLFormElementTest, ListedElementsAfterIncludeShadowTrees) {
   HTMLFormElement* form1 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
   body->AppendChild(form1);
 
-  HTMLInputElement* input1 = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  HTMLInputElement* input1 =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   form1->AppendChild(input1);
 
   HTMLDivElement* form1div =
@@ -281,8 +281,8 @@ TEST_F(HTMLFormElementTest, ListedElementsAfterIncludeShadowTrees) {
   ShadowRoot& form1root =
       form1div->AttachShadowRootInternal(ShadowRootType::kOpen);
 
-  HTMLInputElement* input2 = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  HTMLInputElement* input2 =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   form1root.AppendChild(input2);
 
   EXPECT_EQ(form1->ListedElements(), ListedElement::List{input1});

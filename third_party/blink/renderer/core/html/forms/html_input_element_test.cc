@@ -188,16 +188,15 @@ TEST_F(HTMLInputElementTest, NoAssertWhenMovedInNewDocument) {
 }
 
 TEST_F(HTMLInputElementTest, DefaultToolTip) {
-  auto* input_without_form = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags());
+  auto* input_without_form =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   input_without_form->SetBooleanAttribute(html_names::kRequiredAttr, true);
   GetDocument().body()->AppendChild(input_without_form);
   EXPECT_EQ("<<ValidationValueMissing>>", input_without_form->DefaultToolTip());
 
   auto* form = MakeGarbageCollected<HTMLFormElement>(GetDocument());
   GetDocument().body()->AppendChild(form);
-  auto* input_with_form = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags());
+  auto* input_with_form = MakeGarbageCollected<HTMLInputElement>(GetDocument());
   input_with_form->SetBooleanAttribute(html_names::kRequiredAttr, true);
   form->AppendChild(input_with_form);
   EXPECT_EQ("<<ValidationValueMissing>>", input_with_form->DefaultToolTip());
@@ -208,8 +207,7 @@ TEST_F(HTMLInputElementTest, DefaultToolTip) {
 
 // crbug.com/589838
 TEST_F(HTMLInputElementTest, ImageTypeCrash) {
-  auto* input = MakeGarbageCollected<HTMLInputElement>(GetDocument(),
-                                                       CreateElementFlags());
+  auto* input = MakeGarbageCollected<HTMLInputElement>(GetDocument());
   input->setAttribute(html_names::kTypeAttr, AtomicString("image"));
   input->EnsureFallbackContent();
   // Make sure ensurePrimaryContent() recreates UA shadow tree, and updating
@@ -250,8 +248,7 @@ TEST_F(HTMLInputElementTest, DateTimeChooserSizeParamRespectsScale) {
 }
 
 TEST_F(HTMLInputElementTest, StepDownOverflow) {
-  auto* input = MakeGarbageCollected<HTMLInputElement>(GetDocument(),
-                                                       CreateElementFlags());
+  auto* input = MakeGarbageCollected<HTMLInputElement>(GetDocument());
   input->setAttribute(html_names::kTypeAttr, AtomicString("date"));
   input->setAttribute(html_names::kMinAttr, AtomicString("2010-02-10"));
   input->setAttribute(html_names::kStepAttr,

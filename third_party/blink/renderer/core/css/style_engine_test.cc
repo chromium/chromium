@@ -386,8 +386,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   ASSERT_EQ(capabilities.slope,
             FontSelectionRange({ItalicSlopeValue(), ItalicSlopeValue()}));
 
-  auto* style_element = MakeGarbageCollected<HTMLStyleElement>(
-      GetDocument(), CreateElementFlags());
+  auto* style_element = MakeGarbageCollected<HTMLStyleElement>(GetDocument());
   style_element->setInnerHTML(
       "@font-face {"
       " font-family: 'Cool Font';"
@@ -461,8 +460,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   ASSERT_TRUE(keyframes);
   EXPECT_EQ(1u, keyframes->Keyframes().size());
 
-  style_element = MakeGarbageCollected<HTMLStyleElement>(GetDocument(),
-                                                         CreateElementFlags());
+  style_element = MakeGarbageCollected<HTMLStyleElement>(GetDocument());
   style_element->setInnerHTML("@keyframes dummy-animation { from {} to {} }");
   GetDocument().body()->AppendChild(style_element);
   UpdateAllLifecyclePhases();
@@ -808,8 +806,7 @@ TEST_F(StyleEngineTest, IgnoreInvalidPropertyValue) {
 }
 
 TEST_F(StyleEngineTest, TextToSheetCache) {
-  auto* element = MakeGarbageCollected<HTMLStyleElement>(GetDocument(),
-                                                         CreateElementFlags());
+  auto* element = MakeGarbageCollected<HTMLStyleElement>(GetDocument());
 
   String sheet_text("div {}");
   TextPosition min_pos = TextPosition::MinimumPosition();
@@ -838,8 +835,7 @@ TEST_F(StyleEngineTest, TextToSheetCache) {
   // StyleSheetContents cache.
   ThreadState::Current()->CollectAllGarbageForTesting();
 
-  element = MakeGarbageCollected<HTMLStyleElement>(GetDocument(),
-                                                   CreateElementFlags());
+  element = MakeGarbageCollected<HTMLStyleElement>(GetDocument());
   sheet1 = GetStyleEngine().CreateSheet(*element, sheet_text, min_pos,
                                         PendingSheetType::kNonBlocking,
                                         RenderBlockingBehavior::kNonBlocking);

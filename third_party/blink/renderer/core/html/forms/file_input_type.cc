@@ -348,8 +348,7 @@ void FileInputType::CreateShadowSubtree() {
   DCHECK(IsShadowHost(GetElement()));
   Document& document = GetElement().GetDocument();
 
-  auto* button =
-      MakeGarbageCollected<HTMLInputElement>(document, CreateElementFlags());
+  auto* button = MakeGarbageCollected<HTMLInputElement>(document);
   button->setType(input_type_names::kButton);
   button->setAttribute(
       html_names::kValueAttr,
