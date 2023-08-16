@@ -4391,6 +4391,9 @@
         <message name="IDS_SETTINGS_APN_WARNING_PROMPT_FOR_DISABLE_REMOVE" desc="Warning Prompt describing why the APN can't be disabled or removed.">
           Can't disable or remove this APN. Make sure enabled attach APNs are disabled or removed.
         </message>
+        <message name="IDS_SETTINGS_APN_WARNING_PROMPT_FOR_ENABLE" desc="Warning Prompt describing why the APN can't be enabled.">
+          Can’t enable this APN. Make sure a default APN is added.
+        </message>
         <message name="IDS_SETTINGS_APN_DIALOG_ADD" desc="Text used for adding a new APN.">
           Add
         </message>

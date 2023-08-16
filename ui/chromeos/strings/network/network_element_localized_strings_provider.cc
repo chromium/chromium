@@ -367,6 +367,7 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"apnAutoDetected", IDS_SETTINGS_APN_AUTO_DETECTED},
       {"apnWarningPromptForDisableRemove",
        IDS_SETTINGS_APN_WARNING_PROMPT_FOR_DISABLE_REMOVE},
+      {"apnWarningPromptForEnable", IDS_SETTINGS_APN_WARNING_PROMPT_FOR_ENABLE},
       {"apnDetailDialogAdd", IDS_SETTINGS_APN_DIALOG_ADD},
       {"apnDetailDialogSave", IDS_SETTINGS_APN_DIALOG_SAVE},
       {"apnDetailDialogCancel", IDS_SETTINGS_APN_DIALOG_CANCEL},

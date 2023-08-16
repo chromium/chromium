@@ -174,13 +174,11 @@ class ApnListItem extends ApnListItemBase {
       return;
     }
 
-    // TODO(b/162365553): Add string to chromeos_string when it is approved by
-    // writers.
     if (this.shouldDisallowEnabling) {
       this.dispatchEvent(new CustomEvent('show-error-toast', {
         bubbles: true,
         composed: true,
-        detail: `Can't enable this APN. Add a default APN to attach to.`,
+        detail: this.i18n('apnWarningPromptForEnable'),
       }));
       return;
     }

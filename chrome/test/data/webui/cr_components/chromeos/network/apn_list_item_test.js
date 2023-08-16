@@ -323,11 +323,8 @@ suite('ApnListItemTest', function() {
     assertEquals(
         ApnState.kDisabled,
         managedProps.result.typeProperties.cellular.customApnList[0].state);
-    // TODO(b/162365553): Add string to chromeos_string when it is approved by
-    // writers.
     assertEquals(
-        `Can't enable this APN. Add a default APN to attach to.`,
-        eventData.detail);
+        apnListItem.i18n('apnWarningPromptForEnable'), eventData.detail);
     assertFalse(apnListItem.$.dotsMenu.open);
   });
 
