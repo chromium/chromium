@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/string_data_source.h"
 #include "net/base/isolation_info.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -1030,30 +1031,43 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
   auto pending_request =
       MakeManuallyServableStreamingURLLoaderForTest(prefetch_container.get());
 
+  const auto producer_pipe_capacity =
+      network::features::GetDataPipeDefaultAllocationSize(
+          network::features::DataPipeAllocationSize::kLargerSizeIfPossible);
+
+  const BodySize body_size = std::get<1>(GetParam());
   std::string content;
-  switch (std::get<1>(GetParam())) {
+  switch (body_size) {
     case BodySize::kSmall:
       content = "Body";
       break;
     case BodySize::kLarge:
-      while (content.size() <
-             4 * GetDataPipeDefaultAllocationSize(
-                     network::features::DataPipeAllocationSize::
-                         kLargerSizeIfPossible)) {
-        content += "Body";
-      }
+      content = std::string(4 * producer_pipe_capacity, '-');
       break;
   }
+
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  bool producer_completed = false;
+
   {
     mojo::ScopedDataPipeProducerHandle producer_handle;
-    CHECK_EQ(
-        mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
-        MOJO_RESULT_OK);
-    uint32_t bytes_written = content.size();
-    CHECK_EQ(MOJO_RESULT_OK,
-             producer_handle->WriteData(content.data(), &bytes_written,
-                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+    ASSERT_EQ(mojo::CreateDataPipe(producer_pipe_capacity, producer_handle,
+                                   consumer_handle),
+              MOJO_RESULT_OK);
+    auto producer =
+        std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
+    mojo::DataPipeProducer* raw_producer = producer.get();
+    raw_producer->Write(std::make_unique<mojo::StringDataSource>(
+                            content, mojo::StringDataSource::AsyncWritingMode::
+                                         STRING_STAYS_VALID_UNTIL_COMPLETION),
+                        base::BindOnce(
+                            [](std::unique_ptr<mojo::DataPipeProducer> producer,
+                               bool* producer_completed, MojoResult result) {
+                              *producer_completed = true;
+                              DCHECK_EQ(result, MOJO_RESULT_OK);
+                              // `producer` is deleted here.
+                            },
+                            std::move(producer), &producer_completed));
   }
 
   EXPECT_FALSE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
@@ -1124,9 +1138,24 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
         break;
 
       // Completely read the body mojo pipe.
-      case Event::kCompleteBody:
+      case Event::kCompleteBody: {
+        if (body_size == BodySize::kLarge) {
+          // The body is sufficiently large to fill the data pipes and thus the
+          // producer should still have pending data to write before
+          // `StartDraining()`.
+          EXPECT_FALSE(producer_completed);
+        }
+        // Wait until the URLLoaderClient completion.
+        // `base::RunLoop().RunUntilIdle()` is not sufficient here, because
+        // `mojo::DataPipeProducer` uses thread pool.
+        base::RunLoop loop;
+        serving_url_loader_client->SetOnDataCompleteCallback(
+            loop.QuitClosure());
         serving_url_loader_client->StartDraining();
+        loop.Run();
+        EXPECT_TRUE(producer_completed);
         break;
+      }
 
       case Event::kDestructPrefetchContainer:
         ASSERT_TRUE(prefetch_container);
