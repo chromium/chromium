@@ -108,11 +108,6 @@ wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format,
                                                 bool is_yuv_plane = false,
                                                 bool is_dcomp_surface = false);
 
-// Returns wgpu::TextureAspect corresponding to `plane_index` of a particular
-// `format`.
-wgpu::TextureAspect GetDawnTextureAspect(viz::SharedImageFormat format,
-                                         int plane_index);
-
 // Following function return the appropriate Metal format for a
 // SharedImageFormat.
 #if BUILDFLAG(IS_APPLE)

@@ -43,9 +43,8 @@ void LogError(WGPUErrorType type, char const* message, void* userdata) {
 void LogDeviceLost(WGPUDeviceLostReason reason,
                    char const* message,
                    void* userdata) {
-  if (reason == WGPUDeviceLostReason::WGPUDeviceLostReason_Destroyed) {
+  if (reason == WGPUDeviceLostReason::WGPUDeviceLostReason_Destroyed)
     return;
-  }
   LOG(FATAL) << message;
 }
 
@@ -116,17 +115,6 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::Create(
     const GpuPreferences& gpu_preferences,
     webgpu::DawnCachingInterfaceFactory* caching_interface_factory,
     CacheBlobCallback callback) {
-  return DawnContextProvider::CreateWithBackend(
-      GetDefaultBackendType(), /*force_fallback_adapter=*/false,
-      gpu_preferences, caching_interface_factory, std::move(callback));
-}
-
-std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
-    wgpu::BackendType backend_type,
-    bool force_fallback_adapter,
-    const GpuPreferences& gpu_preferences,
-    webgpu::DawnCachingInterfaceFactory* caching_interface_factory,
-    CacheBlobCallback callback) {
   auto context_provider =
       base::WrapUnique(new DawnContextProvider(caching_interface_factory));
 
@@ -134,8 +122,7 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
   // the only known way to avoid this is platform-specific; e.g. on Mac, create
   // a Dawn device, get the actual Metal device from it, and compare against
   // MTLCreateSystemDefaultDevice().
-  if (!context_provider->Initialize(backend_type, force_fallback_adapter,
-                                    gpu_preferences, std::move(callback))) {
+  if (!context_provider->Initialize(gpu_preferences, std::move(callback))) {
     context_provider.reset();
   }
   return context_provider;
@@ -146,9 +133,7 @@ DawnContextProvider::DawnContextProvider(
     : caching_interface_factory_(caching_interface_factory) {}
 DawnContextProvider::~DawnContextProvider() = default;
 
-bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
-                                     bool force_fallback_adapter,
-                                     const GpuPreferences& gpu_preferences,
+bool DawnContextProvider::Initialize(const GpuPreferences& gpu_preferences,
                                      CacheBlobCallback callback) {
   std::unique_ptr<webgpu::DawnCachingInterface> caching_interface;
   if (caching_interface_factory_) {
@@ -203,8 +188,7 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
   };
 
   wgpu::RequestAdapterOptions adapter_options;
-  adapter_options.backendType = backend_type;
-  adapter_options.forceFallbackAdapter = force_fallback_adapter;
+  adapter_options.backendType = GetDefaultBackendType();
   adapter_options.powerPreference = wgpu::PowerPreference::LowPower;
 
 #if BUILDFLAG(IS_WIN)
@@ -249,8 +233,6 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
   device.SetLoggingCallback(&LogInfo, nullptr);
   device_ = std::move(device);
 
-  backend_type_ = backend_type;
-
 #if BUILDFLAG(IS_WIN)
   // DirectComposition is initialized in ui/gl/init/gl_initializer_win.cc while
   // initializing GL. So we need to shutdown it and re-initialize it here with
@@ -287,7 +269,7 @@ wgpu::Instance DawnContextProvider::GetInstance() const {
 #if BUILDFLAG(IS_WIN)
 Microsoft::WRL::ComPtr<ID3D11Device> DawnContextProvider::GetD3D11Device()
     const {
-  if (backend_type() == wgpu::BackendType::D3D11) {
+  if (GetDefaultBackendType() == wgpu::BackendType::D3D11) {
     return dawn::native::d3d11::GetD3D11Device(device_.Get());
   }
   return nullptr;

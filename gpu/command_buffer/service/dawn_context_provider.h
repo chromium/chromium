@@ -39,12 +39,6 @@ class GPU_GLES2_EXPORT DawnContextProvider {
       const GpuPreferences& gpu_preferences = GpuPreferences(),
       webgpu::DawnCachingInterfaceFactory* caching_interface_factory = nullptr,
       CacheBlobCallback callback = {});
-  static std::unique_ptr<DawnContextProvider> CreateWithBackend(
-      wgpu::BackendType backend_type,
-      bool force_fallback_adapter = false,
-      const GpuPreferences& gpu_preferences = GpuPreferences(),
-      webgpu::DawnCachingInterfaceFactory* caching_interface_factory = nullptr,
-      CacheBlobCallback callback = {});
 
   DawnContextProvider(const DawnContextProvider&) = delete;
   DawnContextProvider& operator=(const DawnContextProvider&) = delete;
@@ -52,7 +46,6 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   ~DawnContextProvider();
 
   wgpu::Device GetDevice() const { return device_; }
-  wgpu::BackendType backend_type() const { return backend_type_; }
   wgpu::Instance GetInstance() const;
 
   bool InitializeGraphiteContext(
@@ -73,16 +66,13 @@ class GPU_GLES2_EXPORT DawnContextProvider {
  private:
   explicit DawnContextProvider(
       webgpu::DawnCachingInterfaceFactory* caching_interface_factory);
-  bool Initialize(wgpu::BackendType backend_type,
-                  bool force_fallback_adapter,
-                  const GpuPreferences& gpu_preferences,
+  bool Initialize(const GpuPreferences& gpu_preferences,
                   CacheBlobCallback callback);
 
   raw_ptr<webgpu::DawnCachingInterfaceFactory> caching_interface_factory_;
   std::unique_ptr<dawn::platform::Platform> platform_;
   std::unique_ptr<webgpu::DawnInstance> instance_;
   wgpu::Device device_;
-  wgpu::BackendType backend_type_;
   std::unique_ptr<skgpu::graphite::Context> graphite_context_;
 };
 

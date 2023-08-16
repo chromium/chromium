@@ -249,9 +249,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   IOSurfaceImageBacking& operator=(const IOSurfaceImageBacking& other) = delete;
   ~IOSurfaceImageBacking() override;
 
-  bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
-  bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
-
   bool InitializePixels(base::span<const uint8_t> pixel_data);
 
   std::unique_ptr<gfx::GpuFence> GetLastWriteGpuFence();

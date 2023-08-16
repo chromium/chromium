@@ -374,21 +374,6 @@ wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format,
   return wgpu::TextureUsage::TextureBinding;
 }
 
-wgpu::TextureAspect GetDawnTextureAspect(viz::SharedImageFormat format,
-                                         int plane_index) {
-  if (format.is_single_plane() && !format.IsLegacyMultiplanar()) {
-    DCHECK_EQ(plane_index, 0);
-    return wgpu::TextureAspect::All;
-  }
-
-  if (plane_index == 0) {
-    return wgpu::TextureAspect::Plane0Only;
-  }
-
-  DCHECK_EQ(plane_index, 1);
-  return wgpu::TextureAspect::Plane1Only;
-}
-
 skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
