@@ -575,8 +575,27 @@ class SystemAccessProcessPrintBrowserTestBase
                        .shadowRoot.querySelector('print-preview-button-strip')
                        .shadowRoot.querySelector('.action-button');
       button.click();)";
-    ASSERT_TRUE(content::ExecJs(preview_dialog, kScript));
+    auto result = content::ExecJs(preview_dialog, kScript);
+    // TODO(crbug.com/1472464):  Update once it is known if the assertion
+    // should not happen if the failure is just because the renderer
+    // terminated.
+    // If the renderer terminates, it will return a failing result.  It has
+    // been observed in other tests that sometimes the renderer terminates
+    // and the test was successful; all the needed callbacks happened before
+    // ExecJs() returned.
+    // Add a warning for the logs to help with debugging, and then only do
+    // the assert check after having done the wait.
+    // If the renderer terminated but the printing was all successful, then
+    // `WaitUntilCallbackReceived()` should return successfully, and any crash
+    // logs should show the assert.  Otherwise the crashes for this bug should
+    // change to become the test timeouts.
+    if (!result) {
+      LOG(ERROR) << "ExecJs() failed; if reason is because the renderer "
+                    "terminated, it is possibly okay?";
+      LOG(ERROR) << result.message();
+    }
     WaitUntilCallbackReceived();
+    ASSERT_TRUE(result);
   }
 
   void AdjustMediaAfterPreviewIsReadyAndLoaded() {
