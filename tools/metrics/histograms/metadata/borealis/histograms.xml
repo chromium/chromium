@@ -92,7 +92,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Disk.SwapReadsDaily" units="KiB"
-    expires_after="2023-10-09">
+    expires_after="2024-02-11">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>Borealis swap file KiB read per day. Reported daily.</summary>
