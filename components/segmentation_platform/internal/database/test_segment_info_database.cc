@@ -215,8 +215,7 @@ void TestSegmentInfoDatabase::AddSqlFeature(
     ModelSource model_source) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id, model_source);
   MetadataWriter writer(info->mutable_model_metadata());
-  MetadataWriter::SqlFeature features[] = {feature};
-  writer.AddSqlFeatures(features, 1);
+  writer.AddSqlFeature(feature);
 }
 
 void TestSegmentInfoDatabase::AddPredictionResult(SegmentId segment_id,

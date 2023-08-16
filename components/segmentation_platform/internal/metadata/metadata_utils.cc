@@ -165,8 +165,9 @@ ValidationResult ValidateMetadataCustomInput(
     // If the current fill policy is not supported or not filled, we must use
     // the given default value list, therefore the default value list must
     // provide enough input values as specified by tensor length.
-    if (custom_input.tensor_length() > custom_input.default_value_size())
+    if (custom_input.tensor_length() > custom_input.default_value_size()) {
       return ValidationResult::kCustomInputInvalid;
+    }
   } else if (custom_input.default_value_size() != 0) {
     // The default value should be longer than the tensor length.
     if (custom_input.tensor_length() > custom_input.default_value_size()) {

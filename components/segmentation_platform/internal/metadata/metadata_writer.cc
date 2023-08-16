@@ -11,6 +11,27 @@
 
 namespace segmentation_platform {
 
+namespace {
+
+void FillCustomInput(const MetadataWriter::CustomInput feature,
+                     proto::CustomInput& input) {
+  input.set_tensor_length(feature.tensor_length);
+  input.set_fill_policy(feature.fill_policy);
+  for (size_t i = 0; i < feature.default_values_size; ++i) {
+    input.add_default_value(feature.default_values[i]);
+  }
+  if (feature.name) {
+    input.set_name(feature.name);
+  }
+
+  for (size_t i = 0; i < feature.arg_size; ++i) {
+    (*input.mutable_additional_args())[feature.arg[i].first] =
+        std::string(feature.arg[i].second);
+  }
+}
+
+}  // namespace
+
 MetadataWriter::MetadataWriter(proto::SegmentationModelMetadata* metadata)
     : metadata_(metadata) {}
 MetadataWriter::~MetadataWriter() = default;
@@ -47,35 +68,45 @@ void MetadataWriter::AddUmaFeatures(const UMAFeature features[],
   }
 }
 
-void MetadataWriter::AddSqlFeatures(const SqlFeature features[],
-                                    size_t features_size) {
-  proto::SqlFeature* feature =
+proto::SqlFeature* MetadataWriter::AddSqlFeature(const SqlFeature& feature) {
+  proto::SqlFeature* proto =
       metadata_->add_input_features()->mutable_sql_feature();
-  for (size_t i = 0; i < features_size; ++i) {
-    const auto& f = features[i];
-    feature->set_sql(f.sql);
-    for (size_t ev = 0; ev < f.events_size; ++ev) {
-      const auto& event = f.events[ev];
-      auto* ukm_event = feature->mutable_signal_filter()->add_ukm_events();
-      ukm_event->set_event_hash(event.event_hash.GetUnsafeValue());
-      for (size_t m = 0; m < event.metrics_size; ++m) {
-        ukm_event->mutable_metric_hash_filter()->Add(
-            event.metrics[m].GetUnsafeValue());
-      }
+  proto->set_sql(feature.sql);
+  for (size_t ev = 0; ev < feature.events_size; ++ev) {
+    const auto& event = feature.events[ev];
+    auto* ukm_event = proto->mutable_signal_filter()->add_ukm_events();
+    ukm_event->set_event_hash(event.event_hash.GetUnsafeValue());
+    for (size_t m = 0; m < event.metrics_size; ++m) {
+      ukm_event->mutable_metric_hash_filter()->Add(
+          event.metrics[m].GetUnsafeValue());
     }
   }
+  return proto;
+}
+
+proto::SqlFeature* MetadataWriter::AddSqlFeature(
+    const SqlFeature& feature,
+    const BindValues& bind_values) {
+  auto* proto = AddSqlFeature(feature);
+
+  unsigned index = 0;
+  for (const auto& it : bind_values) {
+    auto* value = proto->add_bind_values();
+    for (unsigned i = index; i < index + it.second.tensor_length; ++i) {
+      value->add_bind_field_index(i);
+    }
+    index += it.second.tensor_length;
+    value->set_param_type(it.first);
+    FillCustomInput(it.second, *value->mutable_value());
+  }
+  return proto;
 }
 
 proto::CustomInput* MetadataWriter::AddCustomInput(const CustomInput& feature) {
-  proto::CustomInput* custom_input_feature =
+  proto::CustomInput* proto =
       metadata_->add_input_features()->mutable_custom_input();
-  custom_input_feature->set_tensor_length(feature.tensor_length);
-  custom_input_feature->set_fill_policy(feature.fill_policy);
-  for (size_t i = 0; i < feature.default_values_size; i++) {
-    custom_input_feature->add_default_value(feature.default_values[i]);
-  }
-  custom_input_feature->set_name(feature.name);
-  return custom_input_feature;
+  FillCustomInput(feature, *proto);
+  return proto;
 }
 
 void MetadataWriter::AddDiscreteMappingEntries(

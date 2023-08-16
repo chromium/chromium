@@ -101,8 +101,7 @@ SearchUserModel::GetModelConfig() {
         .sql = query.c_str(),
         .events = kPageLoadEvent.data(),
         .events_size = kPageLoadEvent.size()};
-    MetadataWriter::SqlFeature features[] = {sql_feature};
-    writer.AddSqlFeatures(features, 1);
+    writer.AddSqlFeature(sql_feature);
   }
 
   // Set OutputConfig.
