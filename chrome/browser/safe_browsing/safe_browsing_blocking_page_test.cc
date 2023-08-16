@@ -129,7 +129,6 @@
 // Delayed warnings feature checks if the Suspicious Site Reporter extension
 // is installed. These includes are to fake-install this extension.
 #include "chrome/browser/extensions/crx_installer.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #endif

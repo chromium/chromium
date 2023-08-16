@@ -29,7 +29,6 @@
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/api/commands/commands_handler.h"
 #include "extensions/common/command.h"
 #include "extensions/common/feature_switch.h"

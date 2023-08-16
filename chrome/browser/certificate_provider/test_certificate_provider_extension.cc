@@ -29,7 +29,6 @@
 #include "crypto/rsa_private_key.h"
 #include "extensions/browser/api/test/test_api.h"
 #include "extensions/browser/event_router.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/api/test.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
