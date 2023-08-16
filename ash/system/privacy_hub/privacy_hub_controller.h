@@ -19,6 +19,23 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+// Used to override the value of the LED Fallback value in tests.
+// Should not be nested.
+// TODO(b/289510726): remove when all cameras fully support the software
+// switch.
+class ASH_EXPORT ScopedLedFallbackForTesting {
+ public:
+  explicit ScopedLedFallbackForTesting(bool value);
+
+  ScopedLedFallbackForTesting(const ScopedLedFallbackForTesting&) = delete;
+  ScopedLedFallbackForTesting& operator=(const ScopedLedFallbackForTesting&) =
+      delete;
+
+  ~ScopedLedFallbackForTesting();
+
+  const bool value;
+};
+
 class ASH_EXPORT PrivacyHubController {
  public:
   // This enum defines the access levels of the signals of the Privacy Hub
@@ -69,7 +86,26 @@ class ASH_EXPORT PrivacyHubController {
   // Returns the adapter that can be used to modify the frontend
   PrivacyHubDelegate* frontend() { return frontend_; }
 
+  // Checks if we use the fallback solution for the camera LED.
+  // Returns the boolean value via callback.
+  // (go/privacy-hub:camera-led-fallback).
+  // TODO(b/289510726): remove when all cameras fully support the software
+  // switch.
+  bool UsingCameraLEDFallback();
+
+  // This checks whether the LED fallback mechanism is used directly (using the
+  // filesystem). Is used during initialization and can be used externally in
+  // case that the controller object does not exist. (E.g. to initialize the
+  // PrivacyHubNotificationController, which exists even if privacy hub is
+  // disabled). Should be used only in that case to avoid repeated blocking
+  // calls to the filesystem.
+  static bool CheckCameraLEDFallbackDirectly();
+
  private:
+  // Used for first time initialization of the cached value.
+  // Can be called only once.
+  void InitUsingCameraLEDFallback();
+
   std::unique_ptr<CameraPrivacySwitchController> camera_controller_;
   std::unique_ptr<CameraPrivacySwitchDisabled> camera_disabled_;
   std::unique_ptr<MicrophonePrivacySwitchController> microphone_controller_;
@@ -78,6 +114,7 @@ class ASH_EXPORT PrivacyHubController {
   std::unique_ptr<GeolocationPrivacySwitchController>
       geolocation_switch_controller_;
   raw_ptr<PrivacyHubDelegate> frontend_ = nullptr;
+  bool using_camera_led_fallback_ = true;
 };
 
 }  // namespace ash

@@ -25,7 +25,6 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/prefs/pref_service.h"
-#include "privacy_hub_notification_controller.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -89,6 +88,9 @@ class GeolocationThrottler : public PrivacyHubNotification::Throttler {
 }  // namespace
 
 PrivacyHubNotificationController::PrivacyHubNotificationController() {
+  PrivacyHubController* privacy_hub_controller = PrivacyHubController::Get();
+  CHECK(privacy_hub_controller);
+
   // If privacy hub is on and the camera fallback mechanism is active, we need
   // to use a different set of messages.
   // TODO(b/289510726): remove when all cameras fully support the software
@@ -97,7 +99,7 @@ PrivacyHubNotificationController::PrivacyHubNotificationController() {
   // is used by privacy indicators as well.
   bool use_camera_led_fallback =
       features::IsCrosPrivacyHubEnabled() &&
-      CameraPrivacySwitchController::CheckCameraLEDFallbackDirectly();
+      privacy_hub_controller->UsingCameraLEDFallback();
 
   std::vector<int> camera_messages;
   std::vector<int> combined_messages;

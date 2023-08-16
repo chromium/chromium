@@ -1565,11 +1565,11 @@ void Shell::Init(
     system_sounds_delegate_->Init();
   }
 
+  privacy_hub_controller_ = PrivacyHubController::CreatePrivacyHubController();
+
   // One of the subcontrollers accesses the SystemNotificationController.
   system_notification_controller_ =
       std::make_unique<SystemNotificationController>();
-
-  privacy_hub_controller_ = PrivacyHubController::CreatePrivacyHubController();
 
   // WmModeController should be created before initializing the window tree
   // hosts, since the latter will initialize the shelf on each display, which

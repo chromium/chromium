@@ -99,6 +99,10 @@ class ASH_EXPORT PrivacyHubNotificationController {
   // Retrieves the `SensorDisabledNotificationDelegate` or nullptr.
   SensorDisabledNotificationDelegate* sensor_disabled_notification_delegate();
 
+  PrivacyHubNotification* combined_notification_for_test() {
+    return combined_notification_.get();
+  }
+
  private:
   void AddSensor(SensorDisabledNotificationDelegate::Sensor sensor);
   void RemoveSensor(SensorDisabledNotificationDelegate::Sensor sensor);

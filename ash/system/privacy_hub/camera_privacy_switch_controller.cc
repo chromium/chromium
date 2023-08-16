@@ -4,6 +4,7 @@
 
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 
+#include <cstddef>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -20,12 +21,10 @@
 #include "ash/system/system_notification_controller.h"
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "camera_privacy_switch_controller.h"
 #include "components/prefs/pref_service.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
@@ -158,9 +157,7 @@ void CameraPrivacySwitchSynchronizer::SetUserSwitchPreference(
       value == CameraSWPrivacySwitchSetting::kEnabled);
 }
 
-CameraPrivacySwitchController::CameraPrivacySwitchController() {
-  InitUsingCameraLEDFallback();
-}
+CameraPrivacySwitchController::CameraPrivacySwitchController() = default;
 
 CameraPrivacySwitchController::~CameraPrivacySwitchController() = default;
 
@@ -236,30 +233,11 @@ void CameraPrivacySwitchController::ActiveApplicationsChanged(
 }
 
 bool CameraPrivacySwitchController::UsingCameraLEDFallback() {
-  return using_camera_led_fallback_;
+  auto* privacy_hub_controller = PrivacyHubController::Get();
+  CHECK(privacy_hub_controller);
+  return privacy_hub_controller->UsingCameraLEDFallback();
 }
 
-void CameraPrivacySwitchController::InitUsingCameraLEDFallback() {
-  using_camera_led_fallback_ = CheckCameraLEDFallbackDirectly();
-}
-
-// static
-bool CameraPrivacySwitchController::CheckCameraLEDFallbackDirectly() {
-  // Check that the file created by the camera service exists.
-  const base::FilePath kPath(
-      "/run/camera/camera_ids_with_sw_privacy_switch_fallback");
-  if (!base::PathExists(kPath) || !base::PathIsReadable(kPath)) {
-    // The camera service should create the file always. However we keep this
-    // for backward compatibility when deployed with an older version of the OS
-    // and forward compatibility when the fallback is eventually dropped.
-    return false;
-  }
-  int64_t file_size{};
-  const bool file_size_read_success = base::GetFileSize(kPath, &file_size);
-  CHECK(file_size_read_success);
-
-  return (file_size != 0ll);
-}
 
 void CameraPrivacySwitchController::ShowNotification() {
   last_active_notification_update_time_ = base::Time::Now();

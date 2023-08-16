@@ -109,22 +109,10 @@ class ASH_EXPORT CameraPrivacySwitchController
   // switch.
   bool UsingCameraLEDFallback();
 
-  // This checks whether the LED fallback mechanism is used directly (using the
-  // filesystem). Is used during initialization and can be used externally in
-  // case that the controller object does not exist. (E.g. to initialize the
-  // PrivacyHubNotificationController, which exists even if privacy hub is
-  // disabled). Should be used only in that case to avoid repeated blocking
-  // calls to the filesystem.
-  static bool CheckCameraLEDFallbackDirectly();
-
  private:
   // Handles changes in the user pref ( e.g. toggling the camera switch on
   // Privacy Hub UI).
   void OnPreferenceChangedImpl() override;
-
-  // Used for first time initialization of the cached value.
-  // Can be called only once.
-  void InitUsingCameraLEDFallback();
 
   void ShowNotification() VALID_CONTEXT_REQUIRED(sequence_checker_);
   void RemoveNotification() VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -138,7 +126,6 @@ class ASH_EXPORT CameraPrivacySwitchController
   int GUARDED_BY_CONTEXT(sequence_checker_)
       active_applications_using_camera_count_ = 0;
   int camera_count_ = -1;
-  bool using_camera_led_fallback_ = true;
   base::Time GUARDED_BY_CONTEXT(sequence_checker_)
       last_active_notification_update_time_;
 

@@ -4,6 +4,8 @@
 
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 
+#include <cstddef>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
@@ -11,13 +13,20 @@
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/speak_on_mute_detection_privacy_switch_controller.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/types/pass_key.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
 
+namespace {
+ScopedLedFallbackForTesting* g_scoped_led_fallback_for_testing = nullptr;
+}
+
 PrivacyHubController::PrivacyHubController(
-    base::PassKey<PrivacyHubController>) {}
+    base::PassKey<PrivacyHubController>) {
+  InitUsingCameraLEDFallback();
+}
 
 PrivacyHubController::~PrivacyHubController() = default;
 
@@ -100,6 +109,46 @@ PrivacyHubController::speak_on_mute_controller() {
 GeolocationPrivacySwitchController*
 PrivacyHubController::geolocation_controller() {
   return geolocation_switch_controller_.get();
+}
+
+bool PrivacyHubController::UsingCameraLEDFallback() {
+  if (g_scoped_led_fallback_for_testing) {
+    return g_scoped_led_fallback_for_testing->value;
+  }
+  return using_camera_led_fallback_;
+}
+
+void PrivacyHubController::InitUsingCameraLEDFallback() {
+  using_camera_led_fallback_ = CheckCameraLEDFallbackDirectly();
+}
+
+// static
+bool PrivacyHubController::CheckCameraLEDFallbackDirectly() {
+  // Check that the file created by the camera service exists.
+  const base::FilePath kPath(
+      "/run/camera/camera_ids_with_sw_privacy_switch_fallback");
+  if (!base::PathExists(kPath) || !base::PathIsReadable(kPath)) {
+    // The camera service should create the file always. However we keep this
+    // for backward compatibility when deployed with an older version of the OS
+    // and forward compatibility when the fallback is eventually dropped.
+    return false;
+  }
+  int64_t file_size{};
+  const bool file_size_read_success = base::GetFileSize(kPath, &file_size);
+  CHECK(file_size_read_success);
+
+  return (file_size != 0ll);
+}
+
+ScopedLedFallbackForTesting::ScopedLedFallbackForTesting(bool value)
+    : value(value) {
+  CHECK(!g_scoped_led_fallback_for_testing);
+  g_scoped_led_fallback_for_testing = this;
+}
+
+ScopedLedFallbackForTesting::~ScopedLedFallbackForTesting() {
+  CHECK_EQ(this, g_scoped_led_fallback_for_testing);
+  g_scoped_led_fallback_for_testing = nullptr;
 }
 
 }  // namespace ash
