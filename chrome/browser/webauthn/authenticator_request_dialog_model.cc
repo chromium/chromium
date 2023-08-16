@@ -1021,7 +1021,6 @@ void AuthenticatorRequestDialogModel::RecordMacOsStartedHistogram() {
   absl::optional<MacOsHistogramValues> v;
   if (transport_availability_.request_type ==
           device::FidoRequestType::kMakeCredential &&
-      transport_availability_.make_credential_attachment.has_value() &&
       *transport_availability_.make_credential_attachment ==
           device::AuthenticatorAttachment::kPlatform) {
     v = transport_availability_.has_icloud_drive_enabled
@@ -1681,11 +1680,8 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
         device::ResidentKeyRequirement::kDiscouraged;
     if (is_passkey_request) {
       // If attachment=any, then don't jump to suggesting a phone.
-      // TODO(crbug.com/1426628): makeCredential requests should always have
-      // `make_credential_attachment` set. Stop being hesitant.
-      if ((!transport_availability_.make_credential_attachment ||
-           *transport_availability_.make_credential_attachment !=
-               device::AuthenticatorAttachment::kAny) &&
+      if (*transport_availability_.make_credential_attachment !=
+              device::AuthenticatorAttachment::kAny &&
           paired_phone_names().empty()) {
         priority_list.emplace_back(Mechanism::AddPhone());
       }

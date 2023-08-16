@@ -916,7 +916,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
       SCOPED_TRACE(is_passkey_request);
 
       AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
-      tai.request_type = device::FidoRequestType::kMakeCredential;
+      tai.request_type = RequestType::kMakeCredential;
+      tai.make_credential_attachment =
+          device::AuthenticatorAttachment::kPlatform;
       tai.has_win_native_api_authenticator = true;
       tai.win_native_ui_shows_resident_credential_notice = true;
       tai.available_transports.insert(device::FidoTransportProtocol::kHybrid);
@@ -963,7 +965,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
 
 TEST_F(AuthenticatorRequestDialogModelTest, WinNoPlatformAuthenticator) {
   AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
-  tai.request_type = device::FidoRequestType::kMakeCredential;
+  tai.request_type = RequestType::kMakeCredential;
   tai.request_is_internal_only = true;
   tai.win_is_uvpaa = false;
   tai.has_win_native_api_authenticator = true;
@@ -981,9 +983,10 @@ TEST_F(AuthenticatorRequestDialogModelTest, NoAvailableTransports) {
   AuthenticatorRequestDialogModel model(main_rfh());
   model.AddObserver(&mock_observer);
 
+  TransportAvailabilityInfo tai;
+  tai.request_type = RequestType::kGetAssertion;
   EXPECT_CALL(mock_observer, OnStepTransition());
-  model.StartFlow(TransportAvailabilityInfo(),
-                  /*is_conditional_mediation=*/false);
+  model.StartFlow(tai, /*is_conditional_mediation=*/false);
   EXPECT_EQ(Step::kErrorNoAvailableTransports, model.current_step());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -1045,6 +1048,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
     transports_info.is_ble_powered = test.ble_power == BLEPower::ON;
     transports_info.can_power_on_ble_adapter = true;
     transports_info.request_type = test.request_type;
+    transports_info.make_credential_attachment =
+        device::AuthenticatorAttachment::kAny;
     transports_info.available_transports = {AuthenticatorTransport::kHybrid};
     transports_info.is_off_the_record_context =
         test.profile == Profile::INCOGNITO;
@@ -1251,6 +1256,8 @@ TEST_F(AuthenticatorRequestDialogModelTest,
 
   ::device::FidoRequestHandlerBase::TransportAvailabilityInfo transports_info;
   transports_info.request_type = RequestType::kMakeCredential;
+  transports_info.make_credential_attachment =
+      device::AuthenticatorAttachment::kPlatform;
   transports_info.available_transports = {};
   transports_info.has_win_native_api_authenticator = true;
 
@@ -1297,6 +1304,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       device::AuthenticatorType::kOther));
 
   TransportAvailabilityInfo transports_info;
+  transports_info.request_type = RequestType::kGetAssertion;
   transports_info.available_transports = kAllTransports;
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
@@ -1333,6 +1341,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
       device::AuthenticatorType::kOther));
 
   TransportAvailabilityInfo transports_info;
+  transports_info.request_type = RequestType::kGetAssertion;
   transports_info.available_transports = kAllTransports;
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
@@ -1361,8 +1370,11 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUICancelRequest) {
       /*device_id=*/"internal", AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kOther));
 
+  TransportAvailabilityInfo transports_info;
+  transports_info.request_type = RequestType::kGetAssertion;
+
   EXPECT_CALL(mock_observer, OnStepTransition());
-  model.StartFlow(std::move(TransportAvailabilityInfo()),
+  model.StartFlow(transports_info,
                   /*is_conditional_mediation=*/true);
   EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -1431,7 +1443,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIPhonePasskey) {
     TransportAvailabilityInfo tai;
     tai.recognized_credentials = {credential};
     tai.is_ble_powered = true;
-    tai.request_type = device::FidoRequestType::kGetAssertion;
+    tai.request_type = RequestType::kGetAssertion;
     tai.available_transports = {AuthenticatorTransport::kHybrid};
     model->StartFlow(tai, /*is_conditional_mediation=*/true);
     CHECK_EQ(model->current_step(), Step::kConditionalMediation);
@@ -1494,7 +1506,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, InvalidPriorityPhonePref) {
   TransportAvailabilityInfo tai;
   tai.recognized_credentials = {credential};
   tai.is_ble_powered = true;
-  tai.request_type = device::FidoRequestType::kGetAssertion;
+  tai.request_type = RequestType::kGetAssertion;
   tai.available_transports = {AuthenticatorTransport::kHybrid};
   model->StartFlow(tai, /*is_conditional_mediation=*/true);
   ASSERT_EQ(model->current_step(), Step::kConditionalMediation);
@@ -1558,7 +1570,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, PreSelectWithEmptyAllowList) {
       device::AuthenticatorType::kOther));
 
   TransportAvailabilityInfo transports_info;
-  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.request_type = RequestType::kGetAssertion;
   transports_info.available_transports = kAllTransports;
   transports_info.has_empty_allow_list = true;
   transports_info.has_platform_authenticator_credential = device::
@@ -1586,7 +1598,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone) {
                                  absl::nullopt);
   TransportAvailabilityInfo transports_info;
   transports_info.is_ble_powered = true;
-  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.request_type = RequestType::kGetAssertion;
   transports_info.available_transports = {AuthenticatorTransport::kHybrid};
   model.StartFlow(std::move(transports_info),
                   /*is_conditional_mediation=*/false);
@@ -1616,7 +1628,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BluetoothPermissionPrompt) {
       TransportAvailabilityInfo transports_info;
       transports_info.is_ble_powered = true;
       transports_info.ble_access_denied = ble_access_denied;
-      transports_info.request_type = device::FidoRequestType::kGetAssertion;
+      transports_info.request_type = RequestType::kGetAssertion;
       transports_info.available_transports = {
           AuthenticatorTransport::kHybrid,
           AuthenticatorTransport::kUsbHumanInterfaceDevice};
@@ -1654,7 +1666,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, AdvanceThroughCableV2States) {
                                  base::DoNothing(), absl::nullopt);
   TransportAvailabilityInfo transports_info;
   transports_info.is_ble_powered = true;
-  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.request_type = RequestType::kGetAssertion;
   transports_info.available_transports = {AuthenticatorTransport::kHybrid};
   model.StartFlow(std::move(transports_info),
                   /*is_conditional_mediation=*/false);
@@ -1678,7 +1690,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
                                  base::DoNothing(), absl::nullopt);
   TransportAvailabilityInfo transports_info;
   transports_info.is_ble_powered = true;
-  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.request_type = RequestType::kGetAssertion;
   transports_info.available_transports = {AuthenticatorTransport::kHybrid};
   model.StartFlow(std::move(transports_info),
                   /*is_conditional_mediation=*/false);
@@ -1761,7 +1773,7 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   // Set up a model with two local passkeys and a GPM passkey.
   AuthenticatorRequestDialogModel model(main_rfh());
   TransportAvailabilityInfo transports_info;
-  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.request_type = RequestType::kGetAssertion;
   transports_info.available_transports = {AuthenticatorTransport::kInternal};
   transports_info.recognized_credentials = {kCred1, kCred2, kPhoneCred1};
   transports_info.ble_access_denied = false;
