@@ -63,6 +63,8 @@ std::string GetStringNameForRequestContext(
       return "Journeys";
     case proto::RequestContext::CONTEXT_NEW_TAB_PAGE:
       return "NewTabPage";
+    case proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB:
+      return "PageInsightsHub";
   }
   NOTREACHED();
   return std::string();

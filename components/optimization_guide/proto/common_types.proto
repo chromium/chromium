@@ -29,6 +29,8 @@ enum RequestContext {
   CONTEXT_JOURNEYS = 8;
   // Requesting metadata for a user when visiting the new tab page.
   CONTEXT_NEW_TAB_PAGE = 9;
+  // Requesting metadata for a user when visiting the page insights hub.
+  CONTEXT_PAGE_INSIGHTS_HUB = 11;
 }
 
 message FieldTrial {
