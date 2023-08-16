@@ -46,9 +46,6 @@ LoginState::LoggedInUserType GetLoggedInUserTypeFromUser(
       return LoginState::LOGGED_IN_USER_CHILD;
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
       return LoginState::LOGGED_IN_USER_KIOSK;
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-      // NOTE(olsen) There's no LOGGED_IN_USER_ACTIVE_DIRECTORY - is it needed?
-      return LoginState::LOGGED_IN_USER_REGULAR;
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return LoginState::LOGGED_IN_USER_KIOSK;
     case user_manager::NUM_USER_TYPES:

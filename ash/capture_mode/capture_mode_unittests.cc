@@ -6325,7 +6325,6 @@ TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
       {"kiosk app", user_manager::USER_TYPE_KIOSK_APP, false},
       {"arc kiosk app", user_manager::USER_TYPE_ARC_KIOSK_APP, false},
       {"web kiosk app", user_manager::USER_TYPE_WEB_KIOSK_APP, false},
-      {"active dir", user_manager::USER_TYPE_ACTIVE_DIRECTORY, false},
   };
 
   for (const auto& test_case : kUserTypeTestCases) {

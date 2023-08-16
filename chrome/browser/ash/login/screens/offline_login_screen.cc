@@ -153,12 +153,8 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
   // network. See https://crbug.com/386606 for details.
   user_context.SetPasswordKey(Key(password));
   user_context.SetIsUsingPin(false);
-  if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) {
-    CHECK(user_context.GetUserType() ==
-          user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY)
-        << "Incorrect Active Directory user type "
-        << user_context.GetUserType();
-  }
+  CHECK(account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY)
+      << "Incorrect Active Directory user type " << user_context.GetUserType();
   user_context.SetIsUsingOAuth(false);
 
   if (ExistingUserController::current_controller()) {

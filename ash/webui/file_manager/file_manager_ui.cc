@@ -41,7 +41,6 @@ bool IsKioskSession() {
     case user_manager::USER_TYPE_CHILD:
     case user_manager::USER_TYPE_GUEST:
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
       return false;
     case user_manager::USER_TYPE_KIOSK_APP:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:

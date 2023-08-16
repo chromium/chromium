@@ -47,8 +47,6 @@ FatalCrashTelemetry::SessionType GetSessionType(
       return FatalCrashTelemetry::SESSION_TYPE_ARC_KIOSK_APP;
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return FatalCrashTelemetry::SESSION_TYPE_WEB_KIOSK_APP;
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-      return FatalCrashTelemetry::SESSION_TYPE_ACTIVE_DIRECTORY;
     default:
       NOTREACHED_NORETURN();
   }

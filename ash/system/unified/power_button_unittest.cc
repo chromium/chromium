@@ -400,12 +400,6 @@ TEST_F(PowerButtonTest, EmailIsNotShownForPublicAccount) {
 // NOTE: Kiosk user types are not tested because quick settings cannot be
 // accessed in kiosk mode.
 
-TEST_F(PowerButtonTest, EmailIsNotShownForActiveDirectory) {
-  SimulateUserLogin("test@test.com", user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  SimulatePowerButtonPress();
-  EXPECT_EQ(nullptr, GetEmailButton());
-}
-
 TEST_F(PowerButtonTest, ClickingEmailShowsUserChooserView) {
   SimulateUserLogin("user@gmail.com", user_manager::USER_TYPE_REGULAR);
   SimulatePowerButtonPress();

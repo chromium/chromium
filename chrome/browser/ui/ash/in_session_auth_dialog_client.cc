@@ -201,9 +201,7 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
   user_context->SetSyncPasswordData(password_manager::PasswordHashData(
       user->GetAccountId().GetUserEmail(), base::UTF8ToUTF16(secret),
       false /*force_update*/));
-  if (user->GetAccountId().GetAccountType() == AccountType::ACTIVE_DIRECTORY &&
-      (user_context->GetUserType() !=
-       user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY)) {
+  if (user->GetAccountId().GetAccountType() == AccountType::ACTIVE_DIRECTORY) {
     LOG(FATAL) << "Incorrect Active Directory user type "
                << user_context->GetUserType();
   }

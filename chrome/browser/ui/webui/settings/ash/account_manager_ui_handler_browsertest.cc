@@ -68,17 +68,6 @@ std::ostream& operator<<(std::ostream& stream,
                 << ", user_type: " << device_account_info.user_type << "}";
 }
 
-// TODO(b/291075080): Remove USER_TYPE_ACTIVE_DIRECTORY.
-DeviceAccountInfo GetActiveDirectoryDeviceAccountInfo() {
-  return {"fake-ad-id" /*id*/,
-          "primary@example.com" /*email*/,
-          "primary" /*fullName*/,
-          "example.com" /*organization*/,
-          user_manager::USER_TYPE_ACTIVE_DIRECTORY /*user_type*/,
-          account_manager::AccountType::kActiveDirectory /*account_type*/,
-          AccountManager::kActiveDirectoryDummyToken /*token*/};
-}
-
 DeviceAccountInfo GetGaiaDeviceAccountInfo() {
   return {signin::GetTestGaiaIdForEmail("primary@example.com") /*id*/,
           "primary@example.com" /*email*/,
@@ -191,14 +180,7 @@ class AccountManagerUIHandlerTest
     auto user_manager = std::make_unique<FakeChromeUserManager>();
     const user_manager::User* user;
     if (GetDeviceAccountInfo().user_type ==
-        user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY) {
-      user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-          AccountId::AdFromUserEmailObjGuid(GetDeviceAccountInfo().email,
-                                            GetDeviceAccountInfo().id),
-          true, user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY,
-          profile_.get());
-    } else if (GetDeviceAccountInfo().user_type ==
-               user_manager::UserType::USER_TYPE_CHILD) {
+        user_manager::UserType::USER_TYPE_CHILD) {
       user = user_manager->AddChildUser(AccountId::FromUserEmailGaiaId(
           GetDeviceAccountInfo().email, GetDeviceAccountInfo().id));
     } else {
@@ -398,12 +380,10 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    AccountManagerUIHandlerTestSuite,
-    AccountManagerUIHandlerTest,
-    ::testing::Values(GetActiveDirectoryDeviceAccountInfo(),
-                      GetGaiaDeviceAccountInfo(),
-                      GetChildDeviceAccountInfo()));
+INSTANTIATE_TEST_SUITE_P(AccountManagerUIHandlerTestSuite,
+                         AccountManagerUIHandlerTest,
+                         ::testing::Values(GetGaiaDeviceAccountInfo(),
+                                           GetChildDeviceAccountInfo()));
 
 class AccountManagerUIHandlerTestWithArcAccountRestrictions
     : public AccountManagerUIHandlerTest {
@@ -616,8 +596,6 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
 INSTANTIATE_TEST_SUITE_P(
     AccountManagerUIHandlerTestWithArcAccountRestrictionsSuite,
     AccountManagerUIHandlerTestWithArcAccountRestrictions,
-    // USER_TYPE_ACTIVE_DIRECTORY is not supported by Lacros (ARC account
-    // restrictions), so don't test with GetActiveDirectoryDeviceAccountInfo().
     ::testing::Values(GetGaiaDeviceAccountInfo(), GetChildDeviceAccountInfo()));
 
 }  // namespace ash::settings

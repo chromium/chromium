@@ -716,11 +716,8 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
                                              .id());
 
   if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) {
-    if (user_context.GetUserType() !=
-        user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY) {
-      LOG(FATAL) << "Incorrect Active Directory user type "
-                 << user_context.GetUserType();
-    }
+    LOG(FATAL) << "Incorrect Active Directory user type "
+               << user_context.GetUserType();
     user_context.SetIsUsingOAuth(false);
   }
 

@@ -403,7 +403,6 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
       {user_manager::USER_TYPE_KIOSK_APP, false},
       {user_manager::USER_TYPE_CHILD, true},
       {user_manager::USER_TYPE_ARC_KIOSK_APP, true},
-      {user_manager::USER_TYPE_ACTIVE_DIRECTORY, true},
   };
   for (const auto& test_case : kTestCases) {
     const FakeUser user(test_case.user_type);

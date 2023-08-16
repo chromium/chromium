@@ -282,8 +282,7 @@ bool PerUserStateManagerChromeOS::IsUserAllowedToChangeConsent(
   if (!GetDeviceMetricsConsent())
     return false;
 
-  return user_type == user_manager::USER_TYPE_REGULAR ||
-         user_type == user_manager::USER_TYPE_ACTIVE_DIRECTORY;
+  return user_type == user_manager::USER_TYPE_REGULAR;
 }
 
 base::CallbackListSubscription PerUserStateManagerChromeOS::AddObserver(

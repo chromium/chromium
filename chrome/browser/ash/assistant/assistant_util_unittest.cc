@@ -101,7 +101,6 @@ class ScopedLogIn {
       case user_manager::USER_TYPE_CHILD:
         EXPECT_TRUE(IsGaiaAccount());
         return;
-      case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
       case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       case user_manager::USER_TYPE_KIOSK_APP:
       case user_manager::USER_TYPE_ARC_KIOSK_APP:
@@ -121,9 +120,6 @@ class ScopedLogIn {
     switch (user_type) {
       case user_manager::USER_TYPE_REGULAR:
         fake_user_manager_->AddUser(account_id_);
-        return;
-      case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-        fake_user_manager_->AddActiveDirectoryUser(account_id_);
         return;
       case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
         fake_user_manager_->AddPublicAccountUser(account_id_);
@@ -343,16 +339,6 @@ TEST_F(ChromeAssistantUtilTest,
 
   ScopedSpoofGoogleBrandedDevice make_google_branded_device;
   EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
-            IsAssistantAllowedForProfile(profile()));
-}
-
-TEST_F(ChromeAssistantUtilTest,
-       IsAssistantAllowedForProfile_ActiveDirectoryUser) {
-  ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
-                    GetActiveDirectoryUserAccountId(profile()),
-                    user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-
-  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE,
             IsAssistantAllowedForProfile(profile()));
 }
 

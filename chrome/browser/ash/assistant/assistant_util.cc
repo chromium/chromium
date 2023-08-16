@@ -61,9 +61,6 @@ AssistantAllowedState GetErrorForUserType(const Profile* profile) {
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE;
 
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-      return AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE;
-
     case user_manager::USER_TYPE_GUEST:
       return AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE;
 

@@ -33,7 +33,6 @@ bool ProfileCanUseNonComponentExtensions(const Profile* profile) {
   switch (user->GetType()) {
     case user_manager::USER_TYPE_REGULAR:
     case user_manager::USER_TYPE_CHILD:
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
       return true;
 
     case user_manager::USER_TYPE_GUEST:

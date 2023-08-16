@@ -707,12 +707,6 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
       fake_user_manager_->AddArcKioskAppUser(account_id);
       break;
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-      account_id =
-          AccountId::AdFromUserEmailObjGuid(account_id.GetUserEmail(), "guid");
-      fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-          account_id, false, test_case.user_type, testing_profile.get());
-      break;
     default:
       FAIL() << "Invalid test setup. Unexpected user type.";
   }
@@ -737,7 +731,7 @@ INSTANTIATE_TEST_SUITE_P(
             {user_manager::USER_TYPE_KIOSK_APP, false},
             {user_manager::USER_TYPE_CHILD, false},
             {user_manager::USER_TYPE_ARC_KIOSK_APP, false},
-            {user_manager::USER_TYPE_ACTIVE_DIRECTORY, false}}));
+        }));
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

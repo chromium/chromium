@@ -76,9 +76,6 @@ bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile) {
     // Public account users must be able to see personalization app since retail
     // demo mode is implemented as a public account.
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-    // Active directory users should still be able to change wallpaper and other
-    // personalization settings.
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
       return true;
   }
 }

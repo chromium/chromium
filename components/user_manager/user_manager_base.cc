@@ -120,8 +120,6 @@ std::string UserTypeToString(UserType user_type) {
       return "arc-kiosk";
     case USER_TYPE_WEB_KIOSK_APP:
       return "web-kiosk";
-    case USER_TYPE_ACTIVE_DIRECTORY:
-      return "active-directory";
     case NUM_USER_TYPES:
       NOTREACHED();
       return "";
@@ -245,9 +243,9 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
   }
 
   switch (user_type) {
-    case USER_TYPE_REGULAR:  // fallthrough
-    case USER_TYPE_CHILD:    // fallthrough
-    case USER_TYPE_ACTIVE_DIRECTORY:
+    case USER_TYPE_REGULAR:
+      [[fallthrough]];
+    case USER_TYPE_CHILD:
       if (account_id != GetOwnerAccountId() && !user &&
           (IsEphemeralAccountId(account_id) || browser_restart)) {
         RegularUserLoggedInAsEphemeral(account_id, user_type);

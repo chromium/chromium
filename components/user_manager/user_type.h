@@ -44,7 +44,7 @@ typedef enum {
 
   // Active Directory user. Authenticates against Active Directory server. No
   // Gaia account. Could be ephemeral depending on the device policy.
-  USER_TYPE_ACTIVE_DIRECTORY = 8,
+  // USER_TYPE_ACTIVE_DIRECTORY = 8,    // deprecated
 
   // Maximum histogram value.
   NUM_USER_TYPES = 10

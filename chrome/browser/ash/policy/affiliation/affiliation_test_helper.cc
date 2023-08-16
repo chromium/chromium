@@ -153,12 +153,9 @@ void AffiliationTestHelper::LoginUser(const AccountId& account_id) {
       ash::UserSessionManager::GetInstance());
   session_manager_test_api.SetShouldObtainTokenHandleInTests(false);
 
-  const bool is_active_directory =
-      account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY;
-  const user_manager::UserType user_type =
-      is_active_directory ? user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY
-                          : user_manager::UserType::USER_TYPE_REGULAR;
-  ash::UserContext user_context(user_type, account_id);
+  CHECK(account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY);
+  ash::UserContext user_context(user_manager::UserType::USER_TYPE_REGULAR,
+                                account_id);
   user_context.SetKey(ash::Key("password"));
   if (account_id.GetUserEmail() == kEnterpriseUserEmail) {
     user_context.SetRefreshToken(kFakeRefreshToken);

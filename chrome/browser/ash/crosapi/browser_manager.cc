@@ -1801,7 +1801,6 @@ void BrowserManager::PrepareLacrosPolicies() {
       break;
     }
     case user_manager::USER_TYPE_GUEST:
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
       break;
     case user_manager::NUM_USER_TYPES:

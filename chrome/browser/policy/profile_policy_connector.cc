@@ -681,7 +681,6 @@ std::string ProfilePolicyConnector::GetTimeToFirstPolicyLoadMetricSuffix()
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return "Kiosk";
     case user_manager::USER_TYPE_GUEST:
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
     case user_manager::NUM_USER_TYPES:
       // Don't report the metric in uninteresting or unreachable cases.
       return "";

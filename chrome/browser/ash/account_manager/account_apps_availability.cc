@@ -50,20 +50,10 @@ bool IsPrimaryGaiaAccount(const std::string& gaia_id) {
          user->GetAccountId().GetGaiaId() == gaia_id;
 }
 
-bool IsActiveDirectoryUser() {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  // GetPrimaryUser may return nullptr in tests.
-  if (!user)
-    return false;
-
-  return user->GetType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY;
-}
-
 bool IsPrefInitialized(PrefService* prefs) {
   const base::Value::Dict& accounts =
       prefs->GetDict(account_manager::prefs::kAccountAppsAvailability);
-  return accounts.size() > 0 || IsActiveDirectoryUser();
+  return accounts.size() > 0;
 }
 
 void CompleteFindAccountByGaiaId(
@@ -408,11 +398,9 @@ void AccountAppsAvailability::InitAccountsAvailableInArcPref(
     update->Set(account.key.id(), std::move(account_entry));
   }
 
-  if (!IsActiveDirectoryUser()) {
-    // If user type is not active directory, we expect to have at least primary
-    // account in the list.
-    DCHECK(!update->empty());
-  }
+  // User type cannot be active directory, so we expect to have at least
+  // primary account in the list.
+  DCHECK(!update->empty());
 
   is_initialized_ = true;
 

@@ -277,9 +277,7 @@ void GetVersionAndConsent(std::string* out_version, bool* out_consent) {
 }
 
 user_manager::UserType CalculateUserType(const AccountId& account_id) {
-  if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) {
-    return user_manager::USER_TYPE_ACTIVE_DIRECTORY;
-  }
+  CHECK(account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY);
 
   return user_manager::USER_TYPE_REGULAR;
 }

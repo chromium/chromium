@@ -152,8 +152,6 @@ std::string GetPrimaryAccountTypeString() {
       return "child";
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
       return "arc_kiosk_app";
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-      return "active_directory";
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return "web_kiosk_app";
     case user_manager::NUM_USER_TYPES:

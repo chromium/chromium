@@ -83,8 +83,7 @@ void AuthSessionAuthenticator::CompleteLoginImpl(
     std::unique_ptr<UserContext> context) {
   DCHECK(context);
   DCHECK(context->GetUserType() == user_manager::USER_TYPE_REGULAR ||
-         context->GetUserType() == user_manager::USER_TYPE_CHILD ||
-         context->GetUserType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY);
+         context->GetUserType() == user_manager::USER_TYPE_CHILD);
   // For now we don't support empty passwords:
   if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
     bool has_knowledge_factor = !context->GetKey()->GetSecret().empty();
@@ -341,7 +340,6 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
   DCHECK(context);
   DCHECK(context->GetUserType() == user_manager::USER_TYPE_REGULAR ||
          context->GetUserType() == user_manager::USER_TYPE_CHILD ||
-         context->GetUserType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY ||
          context->GetUserType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
   PrepareForNewAttempt("AuthenticateToLogin", "Returning regular user");
 
@@ -366,8 +364,6 @@ void AuthSessionAuthenticator::AuthenticateToUnlock(
   DCHECK(user_context);
   DCHECK(user_context->GetUserType() == user_manager::USER_TYPE_REGULAR ||
          user_context->GetUserType() == user_manager::USER_TYPE_CHILD ||
-         user_context->GetUserType() ==
-             user_manager::USER_TYPE_ACTIVE_DIRECTORY ||
          user_context->GetUserType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
   PrepareForNewAttempt("AuthenticateToUnlock", "Returning regular user");
 

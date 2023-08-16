@@ -292,8 +292,7 @@ int CountRegularUsers(const user_manager::UserList& users) {
     // Allow offline login from the error screen if user of one of these types
     // has already logged in.
     if (user->GetType() == user_manager::USER_TYPE_REGULAR ||
-        user->GetType() == user_manager::USER_TYPE_CHILD ||
-        user->GetType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
+        user->GetType() == user_manager::USER_TYPE_CHILD) {
       regular_users_counter++;
     }
   }

@@ -182,15 +182,6 @@ user_manager::User* FakeChromeUserManager::AddPublicAccountUser(
   return user;
 }
 
-user_manager::User* FakeChromeUserManager::AddActiveDirectoryUser(
-    const AccountId& account_id) {
-  DCHECK(account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY);
-  return AddUserWithAffiliationAndTypeAndProfile(
-      account_id, /*is_affiliated=*/false,
-      user_manager::USER_TYPE_ACTIVE_DIRECTORY,
-      /*profile=*/nullptr);
-}
-
 void FakeChromeUserManager::LoginUser(const AccountId& account_id,
                                       bool set_profile_created_flag) {
   UserLoggedIn(account_id,
