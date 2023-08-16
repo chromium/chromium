@@ -70,6 +70,7 @@ ShelfControlButton::ShelfControlButton(
   }
 
   SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
   views::FocusRing::Get(this)->SetColorId(
       jelly_enabled ? static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)
                     : ui::kColorAshFocusRing);
