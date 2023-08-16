@@ -9278,6 +9278,9 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Autofill with Google"/>
   <int value="2" label="Samsung Pass"/>
   <int value="3" label="LastPass"/>
+  <int value="4" label="Dashlane"/>
+  <int value="5" label="1Password"/>
+  <int value="6" label="Bitwarden"/>
 </enum>
 
 <enum name="AutofillQualitiyMetricType">
