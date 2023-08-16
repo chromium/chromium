@@ -4,13 +4,10 @@
 
 from typing import List, Optional, Union
 from blinkpy.common import path_finder
-from blinkpy.w3c.wpt_metadata import fill_implied_expectations
+from blinkpy.w3c import wpt_metadata
 
 path_finder.bootstrap_wpt_imports()
-
-from wptrunner.manifestexpected import TestNode, data_cls_getter
-from wptrunner.wptmanifest import node as wptnode
-from wptrunner.wptmanifest.backends import static
+from wptrunner.manifestexpected import TestNode
 
 _TEMPLATE = """<html>
 <head>
@@ -32,15 +29,11 @@ def wpt_results_diff(actual: TestNode,
                      expected: Optional[TestNode] = None,
                      test_type: str = 'testharness'):
     if not expected:
-        test_ast = wptnode.DataNode()
-        test_ast.append(wptnode.DataNode(actual.id))
-        expected = static.compile_ast(
-            test_ast,
-            expr_data={},
-            data_cls_getter=data_cls_getter,
-            test_path=actual.root.test_path).get_test(actual.id)
-    fill_implied_expectations(expected, set(actual.subtests), test_type)
-    fill_implied_expectations(actual, set(expected.subtests), test_type)
+        expected = wpt_metadata.make_empty_test(actual)
+    wpt_metadata.fill_implied_expectations(expected, set(actual.subtests),
+                                           test_type)
+    wpt_metadata.fill_implied_expectations(actual, set(expected.subtests),
+                                           test_type)
     return _TEMPLATE % WPTResultsDiffGenerator().generate_tbody(
         expected, actual)
 

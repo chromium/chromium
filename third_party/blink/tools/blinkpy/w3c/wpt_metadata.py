@@ -23,9 +23,23 @@ from wptrunner import (
     wpttest,
 )
 from wptrunner.wptmanifest import node as wptnode
+from wptrunner.wptmanifest.backends import static
 from wptrunner.manifestexpected import TestNode, SubtestNode
 
 RunInfo = Dict[str, Any]
+METADATA_EXTENSION: str = '.ini'
+
+
+def make_empty_test(other: TestNode) -> TestNode:
+    test_ast = wptnode.DataNode()
+    test_ast.append(wptnode.DataNode(other.id))
+    exp = static.compile_ast(test_ast,
+                             expr_data={},
+                             data_cls_getter=manifestexpected.data_cls_getter,
+                             test_path=other.root.test_path)
+    with contextlib.suppress(KeyError):
+        exp.set('type', other.test_type)
+    return exp.get_test(other.id)
 
 
 def fill_implied_expectations(test: TestNode,
@@ -35,6 +49,8 @@ def fill_implied_expectations(test: TestNode,
 
     This is a helper for diffing WPT results.
     """
+    # TODO(crbug.com/1464051): Replace the `test_type` argument with
+    # `test.test_type`.
     default_expected = default_expected_by_type()
     _ensure_expectation(test, default_expected[test_type, False])
     for subtest in test.subtests:
