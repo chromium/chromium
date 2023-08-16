@@ -64,6 +64,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCacheImpl
   void MaybeRefillCache();
   void ScheduleMaybeRefillCache();
 
+  // Batch size and cache low-water mark as determined from feature params at
+  // construction time.
+  const int batch_size_;
+  const size_t cache_low_water_mark_;
+
   // The last time token rates were measured and the counts since then.
   base::TimeTicks last_token_rate_measurement_;
   int64_t tokens_spent_ = 0;

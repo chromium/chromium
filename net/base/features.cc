@@ -371,6 +371,14 @@ const base::FeatureParam<std::string> kIpPrivacyProxyAllowlist{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyAllowlist",
     /*default_value=*/""};
 
+const base::FeatureParam<int> kIpPrivacyAuthTokenCacheBatchSize{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyAuthTokenCacheBatchSize",
+    /*default_value=*/64};
+
+const base::FeatureParam<int> kIpPrivacyAuthTokenCacheLowWaterMark{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyAuthTokenCacheLowWaterMark",
+    /*default_value=*/16};
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).

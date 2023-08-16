@@ -12,12 +12,6 @@ namespace network {
 
 namespace {
 
-// Size of a "batch" of tokens to request in one attempt.
-const int kBatchSize = 64;
-
-// Cache size under which we will request new tokens.
-const int kCacheLowWaterMark = 16;
-
 // Additional time beyond which the token must be valid to be considered
 // not "expired" by `RemoveExpiredTokens`.
 const base::TimeDelta kFreshnessConstant = base::Seconds(5);
@@ -31,7 +25,10 @@ IpProtectionAuthTokenCacheImpl::IpProtectionAuthTokenCacheImpl(
     mojo::PendingRemote<network::mojom::IpProtectionAuthTokenGetter>
         auth_token_getter,
     bool disable_cache_management_for_testing)
-    : disable_cache_management_for_testing_(
+    : batch_size_(net::features::kIpPrivacyAuthTokenCacheBatchSize.Get()),
+      cache_low_water_mark_(
+          net::features::kIpPrivacyAuthTokenCacheLowWaterMark.Get()),
+      disable_cache_management_for_testing_(
           disable_cache_management_for_testing) {
   if (auth_token_getter.is_valid()) {
     auth_token_getter_.Bind(std::move(auth_token_getter));
@@ -77,10 +74,10 @@ void IpProtectionAuthTokenCacheImpl::MaybeRefillCache() {
     return;
   }
 
-  if (cache_.size() < kCacheLowWaterMark) {
+  if (cache_.size() < cache_low_water_mark_) {
     currently_getting_ = true;
     auth_token_getter_->TryGetAuthTokens(
-        kBatchSize,
+        batch_size_,
         base::BindOnce(&IpProtectionAuthTokenCacheImpl::OnGotAuthTokens,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -101,7 +98,7 @@ void IpProtectionAuthTokenCacheImpl::ScheduleMaybeRefillCache() {
 
   base::Time now = base::Time::Now();
   base::TimeDelta delay;
-  if (cache_.size() < kCacheLowWaterMark) {
+  if (cache_.size() < cache_low_water_mark_) {
     // If the cache is below the low-water mark, call now or (more likely) at
     // the requested backoff time.
     if (try_get_auth_tokens_after_.is_null()) {
@@ -215,7 +212,7 @@ void IpProtectionAuthTokenCacheImpl::FillCacheForTesting(
   CHECK(!on_cache_refilled_);
   on_cache_refilled_ = std::move(on_cache_refilled);
   auth_token_getter_->TryGetAuthTokens(
-      kBatchSize,
+      batch_size_,
       base::BindOnce(&IpProtectionAuthTokenCacheImpl::OnGotAuthTokens,
                      weak_ptr_factory_.GetWeakPtr()));
 }
