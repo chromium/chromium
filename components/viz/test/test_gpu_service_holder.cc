@@ -323,7 +323,7 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
   mojo::PendingRemote<mojom::GpuHost> gpu_host_proxy;
   std::ignore = gpu_host_proxy.InitWithNewPipeAndPassReceiver();
   gpu_service_->InitializeWithHost(
-      std::move(gpu_host_proxy), gpu::GpuProcessActivityFlags(),
+      std::move(gpu_host_proxy), gpu::GpuProcessShmCount(),
       gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size()),
       /*sync_point_manager=*/nullptr, /*shared_image_manager=*/nullptr,
       /*scheduler=*/nullptr, /*shutdown_event=*/nullptr);

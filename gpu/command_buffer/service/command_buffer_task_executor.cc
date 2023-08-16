@@ -57,7 +57,7 @@ gles2::ProgramCache* CommandBufferTaskExecutor::program_cache() {
         gpu_preferences_.gpu_program_cache_size, disable_disk_cache,
         gpu_feature_info_.IsWorkaroundEnabled(
             gpu::DISABLE_PROGRAM_CACHING_FOR_TRANSFORM_FEEDBACK),
-        &activity_flags_);
+        &use_shader_cache_shm_count_);
     program_cache_ = owned_program_cache_.get();
   }
   return program_cache_;

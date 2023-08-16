@@ -28,7 +28,7 @@
 #include "components/viz/service/display_embedder/compositor_gpu_thread.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
-#include "gpu/command_buffer/common/activity_flags.h"
+#include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -128,7 +128,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   void InitializeWithHost(
       mojo::PendingRemote<mojom::GpuHost> gpu_host,
-      gpu::GpuProcessActivityFlags activity_flags,
+      gpu::GpuProcessShmCount use_shader_cache_shm_count,
       scoped_refptr<gl::GLSurface> default_offscreen_surface,
       gpu::SyncPointManager* sync_point_manager = nullptr,
       gpu::SharedImageManager* shared_image_manager = nullptr,

@@ -22,7 +22,7 @@ class GrDirectContext;
 
 namespace gpu {
 class GLInProcessContext;
-class GpuProcessActivityFlags;
+class GpuProcessShmCount;
 class RasterInProcessContext;
 
 namespace raster {
@@ -52,7 +52,7 @@ class TestInProcessContextProvider
       TestContextType type,
       bool support_locking,
       gpu::raster::GrShaderCache* gr_shader_cache = nullptr,
-      gpu::GpuProcessActivityFlags* activity_flags = nullptr);
+      gpu::GpuProcessShmCount* use_shader_cache_shm_count = nullptr);
 
   // ContextProvider / RasterContextProvider implementation.
   void AddRef() const override;
@@ -85,7 +85,7 @@ class TestInProcessContextProvider
 
   const TestContextType type_;
   raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache_ = nullptr;
-  raw_ptr<gpu::GpuProcessActivityFlags> activity_flags_ = nullptr;
+  raw_ptr<gpu::GpuProcessShmCount> use_shader_cache_shm_count_ = nullptr;
   bool is_bound_ = false;
 
   base::ThreadChecker main_thread_checker_;

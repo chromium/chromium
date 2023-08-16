@@ -563,7 +563,7 @@ void GpuServiceImpl::UpdateGPUInfoGL() {
 
 void GpuServiceImpl::InitializeWithHost(
     mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
-    gpu::GpuProcessActivityFlags activity_flags,
+    gpu::GpuProcessShmCount use_shader_cache_shm_count,
     scoped_refptr<gl::GLSurface> default_offscreen_surface,
     gpu::SyncPointManager* sync_point_manager,
     gpu::SharedImageManager* shared_image_manager,
@@ -635,7 +635,8 @@ void GpuServiceImpl::InitializeWithHost(
       gpu_preferences_, this, watchdog_thread_.get(), main_runner_, io_runner_,
       scheduler_, sync_point_manager, shared_image_manager,
       gpu_memory_buffer_factory_.get(), gpu_feature_info_,
-      std::move(activity_flags), std::move(default_offscreen_surface),
+      std::move(use_shader_cache_shm_count),
+      std::move(default_offscreen_surface),
       image_decode_accelerator_worker_.get(), vulkan_context_provider(),
       metal_context_provider(), dawn_context_provider(),
       dawn_caching_interface_factory());

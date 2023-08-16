@@ -120,7 +120,7 @@ class VizMainImpl : public mojom::VizMain {
       mojo::PendingRemote<
           discardable_memory::mojom::DiscardableSharedMemoryManager>
           discardable_memory_manager,
-      base::UnsafeSharedMemoryRegion activity_flags_region,
+      base::UnsafeSharedMemoryRegion use_shader_cache_shm_region,
       gfx::FontRenderParams::SubpixelRendering subpixel_rendering) override;
 #if BUILDFLAG(IS_WIN)
   void CreateInfoCollectionGpuService(

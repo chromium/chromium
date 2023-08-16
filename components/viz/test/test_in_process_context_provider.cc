@@ -31,8 +31,8 @@ TestInProcessContextProvider::TestInProcessContextProvider(
     TestContextType type,
     bool support_locking,
     gpu::raster::GrShaderCache* gr_shader_cache,
-    gpu::GpuProcessActivityFlags* activity_flags)
-    : type_(type), activity_flags_(activity_flags) {
+    gpu::GpuProcessShmCount* use_shader_cache_shm_count)
+    : type_(type), use_shader_cache_shm_count_(use_shader_cache_shm_count) {
   CHECK(main_thread_checker_.CalledOnValidThread());
   context_thread_checker_.DetachFromThread();
 
@@ -90,7 +90,7 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
     raster_context_ = std::make_unique<gpu::RasterInProcessContext>();
     auto result = raster_context_->Initialize(
         holder->task_executor(), attribs, gpu::SharedMemoryLimits(),
-        holder->gpu_service()->gr_shader_cache(), activity_flags_);
+        holder->gpu_service()->gr_shader_cache(), use_shader_cache_shm_count_);
     CHECK_EQ(result, gpu::ContextResult::kSuccess);
 
     caps_ = raster_context_->GetCapabilities();

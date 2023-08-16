@@ -65,7 +65,7 @@ ContextResult GLInProcessContext::Initialize(
   auto result = command_buffer_->Initialize(
       attribs, base::SingleThreadTaskRunner::GetCurrentDefault(),
       /*gr_shader_cache=*/nullptr,
-      /*activity_flags=*/nullptr);
+      /*use_shader_cache_shm_count=*/nullptr);
   if (result != ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return result;

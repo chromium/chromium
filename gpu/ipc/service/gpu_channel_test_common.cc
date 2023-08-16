@@ -15,7 +15,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/common/activity_flags.h"
+#include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
@@ -116,7 +116,7 @@ GpuChannelTestCommon::GpuChannelTestCommon(
       task_environment_.GetMainThreadTaskRunner(), scheduler_.get(),
       sync_point_manager_.get(), shared_image_manager_.get(),
       nullptr, /* gpu_memory_buffer_factory */
-      std::move(feature_info), GpuProcessActivityFlags(),
+      std::move(feature_info), GpuProcessShmCount(),
       gl::init::CreateOffscreenGLSurface(display_, gfx::Size()),
       nullptr /* image_decode_accelerator_worker */);
 }

@@ -65,7 +65,7 @@ class GpuTaskSchedulerHelper;
 
 namespace gpu {
 class SharedContextState;
-class GpuProcessActivityFlags;
+class GpuProcessShmCount;
 class SharedImageInterface;
 class SyncPointClientState;
 struct ContextCreationAttribs;
@@ -102,7 +102,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
       const ContextCreationAttribs& attribs,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       gpu::raster::GrShaderCache* gr_shader_cache,
-      GpuProcessActivityFlags* activity_flags);
+      GpuProcessShmCount* use_shader_cache_shm_count);
 
   // CommandBuffer implementation (called on client thread):
   State GetLastState() override;
@@ -181,16 +181,16 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
     const raw_ref<const ContextCreationAttribs> attribs;
     raw_ptr<Capabilities> capabilities;  // Ouptut.
     raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache;
-    raw_ptr<GpuProcessActivityFlags> activity_flags;
+    raw_ptr<GpuProcessShmCount> use_shader_cache_shm_count;
 
     InitializeOnGpuThreadParams(const ContextCreationAttribs& attribs,
                                 Capabilities* capabilities,
                                 gpu::raster::GrShaderCache* gr_shader_cache,
-                                GpuProcessActivityFlags* activity_flags)
+                                GpuProcessShmCount* use_shader_cache_shm_count)
         : attribs(attribs),
           capabilities(capabilities),
           gr_shader_cache(gr_shader_cache),
-          activity_flags(activity_flags) {}
+          use_shader_cache_shm_count(use_shader_cache_shm_count) {}
   };
 
   // Initialize() and Destroy() are called on the client thread, but post tasks

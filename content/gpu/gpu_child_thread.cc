@@ -30,7 +30,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/gpu/content_gpu_client.h"
-#include "gpu/command_buffer/common/activity_flags.h"
+#include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_init.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"

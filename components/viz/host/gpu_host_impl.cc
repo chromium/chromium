@@ -142,7 +142,8 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
   viz_main_->CreateGpuService(
       gpu_service_remote_.BindNewPipeAndPassReceiver(task_runner),
       gpu_host_receiver_.BindNewPipeAndPassRemote(task_runner),
-      std::move(discardable_manager_remote), activity_flags_.CloneRegion(),
+      std::move(discardable_manager_remote),
+      use_shader_cache_shm_count_.CloneRegion(),
       GetFontRenderParams().Get()->subpixel_rendering);
 
 #if BUILDFLAG(IS_OZONE)
@@ -179,8 +180,7 @@ void GpuHostImpl::OnProcessCrashed() {
   // If the GPU process crashed while compiling a shader, we may have invalid
   // cached binaries. Completely clear the shader cache to force shader binaries
   // to be re-created.
-  if (activity_flags_.IsFlagSet(
-          gpu::ActivityFlagsBase::FLAG_LOADING_PROGRAM_BINARY)) {
+  if (use_shader_cache_shm_count_.GetCount() > 0) {
     auto* gpu_disk_cache_factory = delegate_->GetGpuDiskCacheFactory();
     for (auto& [_, cache] : client_id_to_caches_) {
       // This call will temporarily extend the lifetime of the cache (kept

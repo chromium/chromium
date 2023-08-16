@@ -49,7 +49,7 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
     auto context = std::make_unique<RasterInProcessContext>();
     auto result = context->Initialize(
         gpu_thread_holder_.GetTaskExecutor(), attributes, SharedMemoryLimits(),
-        /*gr_shader_cache=*/nullptr, /*activity_flags=*/nullptr);
+        /*gr_shader_cache=*/nullptr, /*use_shader_cache_shm_count=*/nullptr);
     DCHECK_EQ(result, ContextResult::kSuccess);
     return context;
   }

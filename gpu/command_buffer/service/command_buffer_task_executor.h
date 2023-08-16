@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "gpu/command_buffer/common/activity_flags.h"
+#include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
@@ -125,7 +125,7 @@ class GPU_GLES2_EXPORT CommandBufferTaskExecutor {
   raw_ptr<SharedImageManager> shared_image_manager_;
 
   // No-op default initialization is used in in-process mode.
-  GpuProcessActivityFlags activity_flags_;
+  GpuProcessShmCount use_shader_cache_shm_count_;
 };
 
 }  // namespace gpu

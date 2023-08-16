@@ -62,7 +62,7 @@ namespace gpu {
 class DawnContextProvider;
 class ExternalSemaphorePool;
 class GpuDriverBugWorkarounds;
-class GpuProcessActivityFlags;
+class GpuProcessShmCount;
 class ServiceTransferCache;
 
 namespace gles2 {
@@ -105,7 +105,7 @@ class GPU_GLES2_EXPORT SharedContextState
   bool InitializeSkia(const GpuPreferences& gpu_preferences,
                       const GpuDriverBugWorkarounds& workarounds,
                       gpu::raster::GrShaderCache* cache = nullptr,
-                      GpuProcessActivityFlags* activity_flags = nullptr,
+                      GpuProcessShmCount* use_shader_cache_shm_count = nullptr,
                       gl::ProgressReporter* progress_reporter = nullptr);
   bool GrContextIsGL() const {
     return gr_context_type_ == GrContextType::kGL;
@@ -317,11 +317,12 @@ class GPU_GLES2_EXPORT SharedContextState
 
   ~SharedContextState() override;
 
-  bool InitializeGanesh(const GpuPreferences& gpu_preferences,
-                        const GpuDriverBugWorkarounds& workarounds,
-                        gpu::raster::GrShaderCache* cache,
-                        GpuProcessActivityFlags* activity_flags = nullptr,
-                        gl::ProgressReporter* progress_reporter = nullptr);
+  bool InitializeGanesh(
+      const GpuPreferences& gpu_preferences,
+      const GpuDriverBugWorkarounds& workarounds,
+      gpu::raster::GrShaderCache* cache,
+      GpuProcessShmCount* use_shader_cache_shm_count = nullptr,
+      gl::ProgressReporter* progress_reporter = nullptr);
 
   bool InitializeGraphite(const GpuPreferences& gpu_preferences,
                           const GpuDriverBugWorkarounds& workarounds);

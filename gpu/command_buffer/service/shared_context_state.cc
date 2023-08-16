@@ -11,7 +11,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
-#include "gpu/command_buffer/common/activity_flags.h"
+#include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gl_context_virtual.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
@@ -260,7 +260,7 @@ bool SharedContextState::InitializeSkia(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     gpu::raster::GrShaderCache* cache,
-    GpuProcessActivityFlags* activity_flags,
+    GpuProcessShmCount* use_shader_cache_shm_count,
     gl::ProgressReporter* progress_reporter) {
   static crash_reporter::CrashKeyString<16> crash_key("gr-context-type");
   crash_key.Set(
@@ -271,15 +271,15 @@ bool SharedContextState::InitializeSkia(
     return InitializeGraphite(gpu_preferences, workarounds);
   }
 
-  return InitializeGanesh(gpu_preferences, workarounds, cache, activity_flags,
-                          progress_reporter);
+  return InitializeGanesh(gpu_preferences, workarounds, cache,
+                          use_shader_cache_shm_count, progress_reporter);
 }
 
 bool SharedContextState::InitializeGanesh(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     gpu::raster::GrShaderCache* cache,
-    GpuProcessActivityFlags* activity_flags,
+    GpuProcessShmCount* use_shader_cache_shm_count,
     gl::ProgressReporter* progress_reporter) {
   progress_reporter_ = progress_reporter;
   gr_shader_cache_ = cache;
@@ -319,14 +319,14 @@ bool SharedContextState::InitializeGanesh(
       return false;
     }
 
-    if (activity_flags && cache) {
-      // |activity_flags| is safe to capture here since it must outlive the
-      // this context state.
+    if (use_shader_cache_shm_count && cache) {
+      // |use_shader_cache_shm_count| is safe to capture here since it must
+      // outlive the this context state.
       gr_gl_interface->fFunctions.fProgramBinary =
-          [activity_flags](GrGLuint program, GrGLenum binaryFormat,
-                           void* binary, GrGLsizei length) {
-            GpuProcessActivityFlags::ScopedSetFlag scoped_set_flag(
-                activity_flags, ActivityFlagsBase::FLAG_LOADING_PROGRAM_BINARY);
+          [use_shader_cache_shm_count](GrGLuint program, GrGLenum binaryFormat,
+                                       void* binary, GrGLsizei length) {
+            GpuProcessShmCount::ScopedIncrement increment(
+                use_shader_cache_shm_count);
             glProgramBinary(program, binaryFormat, binary, length);
           };
     }

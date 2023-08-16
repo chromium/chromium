@@ -116,7 +116,7 @@ class OopPixelTest : public testing::Test,
     raster_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
             viz::TestContextType::kGpuRaster, /*support_locking=*/false,
-            &gr_shader_cache_, &activity_flags_);
+            &gr_shader_cache_, &use_shader_cache_shm_count_);
     gpu::ContextResult result =
         raster_context_provider_->BindToCurrentSequence();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
@@ -313,7 +313,7 @@ class OopPixelTest : public testing::Test,
   std::unique_ptr<ImageProvider> image_provider_;
   int color_space_id_ = 0;
   gpu::raster::GrShaderCache gr_shader_cache_;
-  gpu::GpuProcessActivityFlags activity_flags_;
+  gpu::GpuProcessShmCount use_shader_cache_shm_count_;
 };
 
 class OopClearPixelTest : public OopPixelTest,
