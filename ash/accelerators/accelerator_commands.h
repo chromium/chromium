@@ -75,8 +75,6 @@ ASH_EXPORT void GroupOrUngroupWindowsInSnapGroup();
 
 ASH_EXPORT bool CanMinimizeSnapGroupWindows();
 
-ASH_EXPORT void MinimizeWindowsInSnapGroup();
-
 ASH_EXPORT bool CanMinimizeTopWindowOnBack();
 
 ASH_EXPORT bool CanPerformMagnifierZoom();
@@ -357,6 +355,10 @@ ASH_EXPORT void ToggleMessageCenterBubble();
 // the first unminimized window. Returns true if a window was minimized or
 // restored.
 ASH_EXPORT bool ToggleMinimized();
+
+// Minimizes the topmost unminimized snap groups. If there is no such snap
+// group, restores the most recently used minimized snap group.
+ASH_EXPORT void ToggleSnapGroupsMinimize();
 
 // Turns the mirror mode on or off.
 ASH_EXPORT void ToggleMirrorMode();

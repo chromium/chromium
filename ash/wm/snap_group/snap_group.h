@@ -27,8 +27,6 @@ class SnapGroup : public aura::WindowObserver {
   aura::Window* window2() const { return window2_; }
 
   // Minimizes the windows in the snap group.
-  // TODO(b/279059840): Implement the restore functinalities. Combine the
-  // minimize and restore in one function.
   void MinimizeWindows();
 
   // aura::WindowObserver:

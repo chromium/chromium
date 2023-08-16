@@ -945,25 +945,30 @@ TEST_F(SnapGroupEntryPointArm1Test, UseShortcutToGroupUnGroupWindows) {
   EXPECT_TRUE(split_view_divider());
 }
 
-// Tests that the windows in snap group can be minimized together with the
-// keyboard shortcut 'Search + Shift + D'.
+// Tests that the windows in snap group can be toggled between been minimized
+// and restored with the keyboard shortcut 'Search + Shift + D', the windows
+// will be remained in a snap group through these operations.
 TEST_F(SnapGroupEntryPointArm1Test, UseShortcutToMinimizeWindows) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
   SnapTwoTestWindowsInArm1(w1.get(), w2.get(), /*horizontal=*/true);
 
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
   // Press the shortcut first time and the windows will be minimized.
   auto* event_generator = GetEventGenerator();
   event_generator->PressAndReleaseKey(ui::VKEY_D,
                                       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(WindowState::Get(w1.get())->IsMinimized());
   EXPECT_TRUE(WindowState::Get(w2.get())->IsMinimized());
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 
-  // Press the shortcut again and the windows state remain the same.
+  // Press the shortcut again and the windows will be unminimized.
   event_generator->PressAndReleaseKey(ui::VKEY_D,
                                       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(WindowState::Get(w1.get())->IsMinimized());
-  EXPECT_TRUE(WindowState::Get(w2.get())->IsMinimized());
+  EXPECT_FALSE(WindowState::Get(w1.get())->IsMinimized());
+  EXPECT_FALSE(WindowState::Get(w2.get())->IsMinimized());
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_TRUE(split_view_divider());
 }
 
 TEST_F(SnapGroupEntryPointArm1Test,

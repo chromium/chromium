@@ -5,10 +5,12 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 
 #include "ash/shell.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_state.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -157,6 +159,38 @@ bool SnapGroupController::IsArm2ManuallyLockEnabled() const {
          !features::kAutomaticallyLockGroup.Get();
 }
 
+void SnapGroupController::MinimizeTopMostSnapGroup() {
+  auto* topmost_snap_group = GetTopmostSnapGroup();
+  topmost_snap_group->MinimizeWindows();
+}
+
+SnapGroup* SnapGroupController::GetTopmostSnapGroup() {
+  auto windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  for (auto* window : windows) {
+    if (auto* snap_group = GetSnapGroupForGivenWindow(window)) {
+      if (!WindowState::Get(snap_group->window1())->IsMinimized() &&
+          !WindowState::Get(snap_group->window2())->IsMinimized()) {
+        return snap_group;
+      }
+    }
+  }
+  return nullptr;
+}
+
+void SnapGroupController::RestoreTopmostSnapGroup() {
+  auto windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  for (auto* window : windows) {
+    if (auto* snap_group = GetSnapGroupForGivenWindow(window)) {
+      CHECK(WindowState::Get(snap_group->window1())->IsMinimized());
+      CHECK(WindowState::Get(snap_group->window2())->IsMinimized());
+      RestoreSnapState(snap_group);
+      return;
+    }
+  }
+}
+
 void SnapGroupController::OnOverviewModeEnded() {
   RestoreSnapGroups();
 }
@@ -187,21 +221,24 @@ void SnapGroupController::RestoreSnapGroups() {
   // order yet, which will be addressed in b/288333989.
   // TODO(b/288334530): Iterate through all the displays and restore the snap
   // groups based on the mru order.
-  base::AutoReset<bool> bypass(&can_enter_overview_, false);
   for (const auto& snap_group : snap_groups_) {
-    CHECK(snap_group);
-    auto* window1 = snap_group->window1();
-    auto* window2 = snap_group->window2();
-
-    auto* root_window = window1->GetRootWindow();
-    SplitViewController* split_view_controller =
-        SplitViewController::Get(root_window);
-
-    split_view_controller->SnapWindow(
-        window1, SplitViewController::SnapPosition::kPrimary);
-    split_view_controller->SnapWindow(
-        window2, SplitViewController::SnapPosition::kSecondary);
+    RestoreSnapState(snap_group.get());
   }
+}
+
+void SnapGroupController::RestoreSnapState(SnapGroup* snap_group) {
+  CHECK(snap_group);
+  auto* window1 = snap_group->window1();
+  auto* window2 = snap_group->window2();
+  auto* root_window = window1->GetRootWindow();
+  SplitViewController* split_view_controller =
+      SplitViewController::Get(root_window);
+
+  base::AutoReset<bool> bypass(&can_enter_overview_, false);
+  split_view_controller->SnapWindow(
+      window1, SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(
+      window2, SplitViewController::SnapPosition::kSecondary);
 }
 
 }  // namespace ash

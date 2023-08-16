@@ -88,6 +88,17 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // create the snap group when the lock option shows up on two windows snapped.
   bool IsArm2ManuallyLockEnabled() const;
 
+  // Minimizes the most recently used and unminimized snap groups.
+  void MinimizeTopMostSnapGroup();
+
+  // Returns the topmost snap group in unminimized state.
+  SnapGroup* GetTopmostSnapGroup();
+
+  // Restores the most recent used snap group to be at the default snapped state
+  // i.e. two windows in the most recent snap group are positioned at primary
+  // and secondary snapped location.
+  void RestoreTopmostSnapGroup();
+
   // OverviewObserver:
   void OnOverviewModeEnded() override;
 
@@ -114,6 +125,9 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // the restore will be instant and the recursive snapping behavior will be
   // avoided.
   void RestoreSnapGroups();
+
+  // Restore the snap state of the windows in the given `snap_group`.
+  void RestoreSnapState(SnapGroup* snap_group);
 
   // Contains all the `SnapGroup`(s), we will have one `SnapGroup` globally for
   // the first iteration but will have multiple in the future iteration.
