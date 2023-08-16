@@ -207,18 +207,9 @@ id<GREYMatcher> DeleteButton() {
       nullptr);
 }
 
-// TODO(crbug.com/1359392): Remove this override when kPasswordsGrouping flag is
-// removed. Matcher for the Delete button in Confirmation Alert for password
+// Matcher for the Delete button in Confirmation Alert for password
 // deletion.
-id<GREYMatcher> DeleteConfirmationButtonWithoutGrouping() {
-  return grey_allOf(ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                        IDS_IOS_CONFIRM_PASSWORD_DELETION)),
-                    grey_interactable(), nullptr);
-}
-
-// Matcher for the Delete button in Confirmation Alert for batch passwords
-// deletion when password grouping is enabled.
-id<GREYMatcher> BatchDeleteConfirmationButtonForGrouping() {
+id<GREYMatcher> BatchDeleteConfirmationButton() {
   return chrome_test_util::AlertAction(
       l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE));
 }
@@ -227,6 +218,13 @@ id<GREYMatcher> BatchDeleteConfirmationButtonForGrouping() {
 // screen.
 id<GREYMatcher> DeleteButtonAtBottom() {
   return grey_accessibilityID(kSettingsToolbarDeleteButtonId);
+}
+
+// Matcher for the "Delete" associated with the blocked site.
+id<GREYMatcher> DeleteBlockedSiteButton() {
+  return grey_allOf(ButtonWithAccessibilityLabel(
+                        l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE)),
+                    grey_interactable(), nullptr);
 }
 
 // Matcher for the "View Password" Button presented when a duplicated credential
@@ -919,9 +917,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 // Checks that deleting a duplicated saved password from password details view
 // goes back to the list-of-passwords view which doesn't display that form
 // anymore.
-// TODO(crbug.com/1465016): This test isn't implemented with grouped passwords
-// yet.
-- (void)DISABLED_testDuplicatedSavedFormDeletionInDetailView {
+- (void)testDuplicatedSavedFormDeletionInDetailView {
   // Save form to be deleted later.
   SavePasswordForm();
   // Save duplicate of the previously saved form to be deleted at the same time.
@@ -944,9 +940,12 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:DeleteButtonForUsernameAndPassword(
+                                   @"concrete username", @"concrete password")]
+      performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteConfirmationButtonWithoutGrouping()]
+  [[EarlGrey selectElementWithMatcher:BatchDeleteConfirmationButton()]
       performAction:grey_tap()];
 
   // Wait until the alert and the detail view are dismissed.
@@ -980,9 +979,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
 // Checks that deleting a blocked form from password details view goes
 // back to the list-of-passwords view which doesn't display that form anymore.
-// TODO(crbug.com/1465016): This test isn't implemented with grouped passwords
-// yet.
-- (void)DISABLED_testBlockedFormDeletionInDetailView {
+- (void)testBlockedFormDeletionInDetailView {
   // Save blocked form to be deleted later.
   GREYAssert([PasswordSettingsAppInterface
                  saveExampleBlockedOrigin:@"https://blocked.com"],
@@ -995,9 +992,10 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:DeleteBlockedSiteButton()]
+      performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteConfirmationButtonWithoutGrouping()]
+  [[EarlGrey selectElementWithMatcher:BatchDeleteConfirmationButton()]
       performAction:grey_tap()];
 
   // Wait until the alert and the detail view are dismissed.
@@ -1032,9 +1030,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 // Checks that deleting a blocked form from password details view goes
 // back to the list-of-passwords view which only displays a previously saved
 // password.
-// TODO(crbug.com/1465016): This test isn't implemented with grouped passwords
-// yet.
-- (void)DISABLED_testBlockedFormDeletionInDetailViewWithSavedForm {
+- (void)testBlockedFormDeletionInDetailViewWithSavedForm {
   // Save blocked form to be deleted later.
   GREYAssert([PasswordSettingsAppInterface
                  saveExampleBlockedOrigin:@"https://blocked.com"],
@@ -1049,9 +1045,10 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:DeleteBlockedSiteButton()]
+      performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteConfirmationButtonWithoutGrouping()]
+  [[EarlGrey selectElementWithMatcher:BatchDeleteConfirmationButton()]
       performAction:grey_tap()];
 
   // Wait until the alert and the detail view are dismissed.
@@ -1201,9 +1198,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 }
 
 // Checks that federated credentials have no password but show the federation.
-// TODO(crbug.com/1465016): This test isn't implemented with grouped passwords
-// yet.
-- (void)DISABLED_testFederated {
+- (void)testFederated {
   GREYAssert([PasswordSettingsAppInterface
                  saveExampleFederatedOrigin:@"https://famous.provider.net"
                                    username:@"federated username"
@@ -1238,7 +1233,8 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
   // Ensure delete button is present after entering editing mode.
-  [[EarlGrey selectElementWithMatcher:DeleteButton()]
+  [[EarlGrey selectElementWithMatcher:DeleteButtonForUsernameAndPassword(
+                                          @"federated username", nil)]
       assertWithMatcher:grey_notNil()];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
@@ -1601,8 +1597,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
       performAction:grey_tap()];
 
     // Tap on the Delete button of the alert dialog.
-  [[EarlGrey
-      selectElementWithMatcher:BatchDeleteConfirmationButtonForGrouping()]
+  [[EarlGrey selectElementWithMatcher:BatchDeleteConfirmationButton()]
       performAction:grey_tap()];
 
   // Verify that the deletion was propagated to the PasswordStore.
@@ -1770,8 +1765,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
       performAction:grey_tap()];
 
     // Tap on the Delete button of the alert dialog.
-  [[EarlGrey
-      selectElementWithMatcher:BatchDeleteConfirmationButtonForGrouping()]
+  [[EarlGrey selectElementWithMatcher:BatchDeleteConfirmationButton()]
       performAction:grey_tap()];
 
   // Verify that the Add button is visible and enabled.
@@ -1922,8 +1916,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   [[EarlGrey selectElementWithMatcher:DeleteButtonAtBottom()]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:BatchDeleteConfirmationButtonForGrouping()]
+  [[EarlGrey selectElementWithMatcher:BatchDeleteConfirmationButton()]
       performAction:grey_tap()];
 
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -1958,9 +1951,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 }
 
 // Test that the user can edit a password that is part of search results.
-// TODO(crbug.com/1465016): This test isn't implemented with grouped passwords
-// yet.
-- (void)DISABLED_testCanEditPasswordsFromASearch {
+- (void)testCanEditPasswordsFromASearch {
   SaveExamplePasswordForms();
   OpenPasswordManager();
 
@@ -1973,11 +1964,12 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   TapNavigationBarEditButton();
 
   // Select password entry to be edited.
-  [GetInteractionForPasswordEntry(@"example12.com, user2")
-      performAction:grey_tap()];
+  [GetInteractionForPasswordEntry(@"example12.com") performAction:grey_tap()];
 
   // Delete it
   [[EarlGrey selectElementWithMatcher:DeleteButtonAtBottom()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:BatchDeleteConfirmationButton()]
       performAction:grey_tap()];
 
   // Filter results in nothing.
@@ -1999,9 +1991,9 @@ void CheckPasswordManagerVisitMetricCount(int count) {
       performAction:grey_replaceText(@"")];
 
   // Only password 1 should show.
-  [GetInteractionForPasswordEntry(@"example11.com, user1")
+  [GetInteractionForPasswordEntry(@"example11.com")
       assertWithMatcher:grey_notNil()];
-  [GetInteractionForPasswordEntry(@"example12.com, user2")
+  [GetInteractionForPasswordEntry(@"example12.com")
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
@@ -2273,8 +2265,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
     [[EarlGrey selectElementWithMatcher:DeleteButton()]
         performAction:grey_tap()];
 
-    [[EarlGrey
-        selectElementWithMatcher:BatchDeleteConfirmationButtonForGrouping()]
+    [[EarlGrey selectElementWithMatcher:BatchDeleteConfirmationButton()]
         performAction:grey_tap()];
 
     // Wait until animation is over.
