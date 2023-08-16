@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/mac/scoped_mach_vm.h"
+#include "base/apple/scoped_mach_vm.h"
 
 #include "base/apple/mach_logging.h"
 
-namespace base::mac {
+namespace base::apple {
 
 void ScopedMachVM::reset(vm_address_t address, vm_size_t size) {
   DCHECK_EQ(address % PAGE_SIZE, 0u);
@@ -33,4 +33,4 @@ void ScopedMachVM::reset_unaligned(vm_address_t address, vm_size_t size) {
   size_ = size;
 }
 
-}  // namespace base::mac
+}  // namespace base::apple

@@ -7,7 +7,7 @@
 #include <mach/vm_map.h>
 
 #include "base/apple/mach_logging.h"
-#include "base/mac/scoped_mach_vm.h"
+#include "base/apple/scoped_mach_vm.h"
 
 namespace base::subtle {
 
@@ -78,7 +78,7 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly(void* mapped_addr) {
   apple::ScopedMachSendRight handle_copy(handle_.release());
 
   void* temp_addr = mapped_addr;
-  mac::ScopedMachVM scoped_memory;
+  apple::ScopedMachVM scoped_memory;
   if (!temp_addr) {
     // Intentionally lower current prot and max prot to |VM_PROT_READ|.
     kern_return_t kr =

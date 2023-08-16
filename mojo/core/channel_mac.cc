@@ -16,13 +16,13 @@
 
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
+#include "base/apple/scoped_mach_vm.h"
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
-#include "base/mac/scoped_mach_vm.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
@@ -650,7 +650,7 @@ class ChannelMac : public Channel,
     }
 
     base::span<const char> payload;
-    base::mac::ScopedMachVM ool_memory;
+    base::apple::ScopedMachVM ool_memory;
     if (transfer_message_ool) {
       auto* descriptor = buffer.Object<mach_msg_ool_descriptor_t>();
       if (descriptor->type != MACH_MSG_OOL_DESCRIPTOR) {
@@ -716,7 +716,7 @@ class ChannelMac : public Channel,
   std::unique_ptr<audit_token_t> peer_audit_token_;
 
   // IO buffer for receiving Mach messages. Only accessed on |io_task_runner_|.
-  base::mac::ScopedMachVM receive_buffer_;
+  base::apple::ScopedMachVM receive_buffer_;
 
   // Handles that were received with a message that are validated and returned
   // in GetReadPlatformHandles(). Only accessed on |io_task_runner_|.
@@ -732,7 +732,7 @@ class ChannelMac : public Channel,
   // shutdown.
   bool reject_writes_ GUARDED_BY(write_lock_) = false;
   // IO buffer for sending Mach messages.
-  base::mac::ScopedMachVM send_buffer_ GUARDED_BY(write_lock_);
+  base::apple::ScopedMachVM send_buffer_ GUARDED_BY(write_lock_);
   // If a message timed out during send in MachMessageSendLocked(), this will
   // be true to indicate that |send_buffer_| contains a message that must
   // be sent. If this is true, then other calls to Write() queue messages onto

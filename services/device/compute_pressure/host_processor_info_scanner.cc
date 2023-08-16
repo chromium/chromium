@@ -9,8 +9,8 @@
 #include <stdint.h>
 
 #include "base/apple/scoped_mach_port.h"
+#include "base/apple/scoped_mach_vm.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_mach_vm.h"
 #include "base/system/sys_info.h"
 #include "services/device/compute_pressure/core_times.h"
 
@@ -47,7 +47,7 @@ bool HostProcessorInfoScanner::Update() {
     return false;
   }
 
-  base::mac::ScopedMachVM vm_owner(
+  base::apple::ScopedMachVM vm_owner(
       reinterpret_cast<vm_address_t>(cpu_infos),
       mach_vm_round_page(number_of_processors *
                          sizeof(processor_cpu_load_info)));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/mac/scoped_mach_vm.h"
+#include "base/apple/scoped_mach_vm.h"
 
 #include <mach/mach.h>
 
@@ -17,7 +17,7 @@
 // allocation will report being part of the previously-deallocated large region.
 // That will cause the GetRegionInfo() expectations to fail.
 
-namespace base::mac {
+namespace base::apple {
 namespace {
 
 void GetRegionInfo(vm_address_t* region_address, vm_size_t* region_size) {
@@ -228,4 +228,4 @@ TEST(ScopedMachVMTest, ResetMustBeAligned) {
 #endif  // DCHECK_IS_ON()
 
 }  // namespace
-}  // namespace base::mac
+}  // namespace base::apple
