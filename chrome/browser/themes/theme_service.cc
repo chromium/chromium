@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
@@ -100,9 +99,7 @@ void WritePackToDiskCallback(BrowserThemePack* pack,
   if (g_dont_write_theme_pack_for_testing)
     return;
 
-  const bool success =
-      pack->WriteToDisk(directory.Append(chrome::kThemePackFilename));
-  base::UmaHistogramBoolean("Browser.ThemeService.WritePackToDisk", success);
+  pack->WriteToDisk(directory.Append(chrome::kThemePackFilename));
 }
 
 }  // namespace

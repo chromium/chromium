@@ -750,16 +750,6 @@ chromium-metrics-reviews@google.com.
   <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
 
-<histogram name="Browser.ThemeService.WritePackToDisk" enum="BooleanSuccess"
-    expires_after="2022-12-25">
-  <owner>etienneb@chromium.org</owner>
-  <owner>sky@chromium.org</owner>
-  <summary>
-    For each attempt to write a theme pack on disk, counts whether the attempt
-    succeeded.
-  </summary>
-</histogram>
-
 <histogram name="Browser.WindowCount.Guest" units="units"
     expires_after="2024-01-14">
   <owner>rhalavati@chromium.org</owner>
