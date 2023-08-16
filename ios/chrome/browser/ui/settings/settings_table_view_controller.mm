@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -140,6 +141,9 @@ namespace {
 
 // The maximum number of time a "new" IPH badge is shown.
 const NSInteger kMaxShowCountNewIPHBadge = 3;
+// The amount of time an install is considered as fresh. Don't show the "new"
+// IPH badge on fresh installs.
+const base::TimeDelta kFreshInstallTimeDelta = base::Days(1);
 
 // Key used for storing NSUserDefault entry to keep track of the last timestamp
 // we've shown the default browser blue dot promo.
@@ -1947,7 +1951,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       prefService->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount);
 
   BadgeType badgeType = BadgeType::kNone;
-  if (showCount < kMaxShowCountNewIPHBadge) {
+
+  const BOOL isFreshInstall = IsFirstRunRecent(kFreshInstallTimeDelta);
+
+  if (!isFreshInstall && showCount < kMaxShowCountNewIPHBadge) {
     badgeType = BadgeType::kNew;
     prefService->SetInteger(prefs::kAddressBarSettingsNewBadgeShownCount,
                             showCount + 1);
