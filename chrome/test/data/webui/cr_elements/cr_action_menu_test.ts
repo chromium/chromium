@@ -334,9 +334,9 @@ suite('CrActionMenu', function() {
   });
 
   test('positioning', function() {
-    // A 40x10 box at (100, 250).
+    // A 40x10 box at (200, 250).
     const config = {
-      left: 100,
+      left: 200,
       top: 250,
       width: 40,
       height: 10,
@@ -344,21 +344,31 @@ suite('CrActionMenu', function() {
       maxY: 2000,
     };
 
-    // Show right and bottom aligned by default.
+    // By default, aligns top-left of menu with top-left of anchor.
     menu.showAtPosition(config);
     assertTrue(dialog.open);
-    assertEquals('100px', dialog.style.left);
-    assertEquals('250px', dialog.style.top);
+    assertEquals(`${config.left}px`, dialog.style.left);
+    assertEquals(`${config.top}px`, dialog.style.top);
     menu.close();
+
+    // Align the menu's bottom-right to the anchor's top-left.
+    menu.showAtPosition(Object.assign({}, config, {
+      anchorAlignmentX: AnchorAlignment.BEFORE_START,
+      anchorAlignmentY: AnchorAlignment.BEFORE_START,
+    }));
+    const menuHeight = dialog.offsetHeight;
+    const menuWidth = dialog.offsetWidth;
+    assertEquals(`${config.top - menuHeight}px`, dialog.style.top);
+    assertEquals(`${config.left - menuWidth}px`, dialog.style.left);
 
     // Center the menu horizontally.
     menu.showAtPosition(Object.assign({}, config, {
       anchorAlignmentX: AnchorAlignment.CENTER,
     }));
-    const menuWidth = dialog.offsetWidth;
-    const menuHeight = dialog.offsetHeight;
-    assertEquals(`${120 - menuWidth / 2}px`, dialog.style.left);
-    assertEquals('250px', dialog.style.top);
+    assertEquals(
+        `${(config.left + config.width / 2) - menuWidth / 2}px`,
+        dialog.style.left);
+    assertEquals(`${config.top}px`, dialog.style.top);
     menu.close();
 
     // Center the menu in both axes.
@@ -366,17 +376,23 @@ suite('CrActionMenu', function() {
       anchorAlignmentX: AnchorAlignment.CENTER,
       anchorAlignmentY: AnchorAlignment.CENTER,
     }));
-    assertEquals(`${120 - menuWidth / 2}px`, dialog.style.left);
-    assertEquals(`${255 - menuHeight / 2}px`, dialog.style.top);
+    assertEquals(
+        `${(config.left + config.width / 2) - menuWidth / 2}px`,
+        dialog.style.left);
+    assertEquals(
+        `${(config.top + config.height / 2) - menuHeight / 2}px`,
+        dialog.style.top);
     menu.close();
 
-    // Left and top align the menu.
+    // Align bottom-right of menu to top-left of anchor.
     menu.showAtPosition(Object.assign({}, config, {
       anchorAlignmentX: AnchorAlignment.BEFORE_END,
       anchorAlignmentY: AnchorAlignment.BEFORE_END,
     }));
-    assertEquals(`${140 - menuWidth}px`, dialog.style.left);
-    assertEquals(`${260 - menuHeight}px`, dialog.style.top);
+    assertEquals(
+        `${config.left + config.width - menuWidth}px`, dialog.style.left);
+    assertEquals(
+        `${config.top + config.height - menuHeight}px`, dialog.style.top);
     menu.close();
 
     // Being left and top aligned at (0, 0) should anchor to the bottom right.
@@ -418,8 +434,8 @@ suite('CrActionMenu', function() {
     document.body.style.direction = 'rtl';
     menu.showAtPosition(config);
     assertTrue(dialog.open);
-    assertEquals(140 - menuWidth, dialog.offsetLeft);
-    assertEquals('250px', dialog.style.top);
+    assertEquals(config.left + config.width - menuWidth, dialog.offsetLeft);
+    assertEquals(`${config.top}px`, dialog.style.top);
     menu.close();
   });
 
