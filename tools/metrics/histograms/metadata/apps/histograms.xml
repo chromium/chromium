@@ -1218,13 +1218,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SuggestedContent.Enabled" enum="BooleanEnabled"
-    expires_after="2023-06-04">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    expires_after="2024-07-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Whether or not the user has enabled Suggested Content in the launcher. This
     is logged once per UMA upload, and only for any user that has the Suggested
-    Content toggle feature flag enabled.
+    Content toggle feature flag enabled. Warning: this histogram was expired
+    from 2023-06-04 to 2023-08-18; data may be missing.
   </summary>
 </histogram>
 
