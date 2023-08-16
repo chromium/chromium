@@ -626,6 +626,71 @@ IN_PROC_BROWSER_TEST_P(WelcomeScreenInsetModeBrowserTest,
   }
 }
 
+class WelcomeScreenSimonBrowserTest
+    : public WelcomeScreenBrowserTest,
+      public testing::WithParamInterface</*OobeSimon*/ bool> {
+ public:
+  WelcomeScreenSimonBrowserTest() {
+    const bool oobe_simon = GetParam();
+
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kFeatureManagementOobeSimon, oobe_simon},
+         {features::kOobeSimon, oobe_simon}});
+  }
+  ~WelcomeScreenSimonBrowserTest() override = default;
+
+  const std::string kGetBackdropDisplayValue =
+      "window.getComputedStyle(document.querySelector('#welcome-backdrop'))"
+      ".getPropertyValue('display')";
+  const std::string kGetCalculatedBackgroundColorInnerContainer =
+      "window.getComputedStyle(document.querySelector('#inner-container'))"
+      ".getPropertyValue('background-color')";
+  const std::string kRgbaTransparent = "rgba(0, 0, 0, 0)";
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, WelcomeScreenSimonBrowserTest, ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(WelcomeScreenSimonBrowserTest, CheckBackdropVisibility) {
+  test::WaitForWelcomeScreen();
+  DisableCssTransitions();
+
+  if (ash::features::IsOobeSimonEnabled()) {
+    test::OobeJS().ExpectVisible("welcome-backdrop");
+    test::OobeJS().ExpectEQ(kGetBackdropDisplayValue, std::string("block"));
+    test::OobeJS().ExpectEQ(kGetCalculatedBackgroundColorInnerContainer,
+                            kRgbaTransparent);
+  } else {
+    test::OobeJS().ExpectEQ(kGetBackdropDisplayValue, std::string("none"));
+    test::OobeJS().ExpectNE(kGetCalculatedBackgroundColorInnerContainer,
+                            kRgbaTransparent);
+  }
+
+  test::OobeJS().ClickOnPath(
+      {"connect", "welcomeScreen", "languageSelectionButton"});
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, {"connect", "languageScreen"})
+      ->Wait();
+  test::OobeJS().ExpectEQ(kGetBackdropDisplayValue, std::string("none"));
+  test::OobeJS().ExpectNE(kGetCalculatedBackgroundColorInnerContainer,
+                          kRgbaTransparent);
+  test::OobeJS().ClickOnPath({"connect", "ok-button-language"});
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, {"connect", "welcomeScreen"})
+      ->Wait();
+
+  test::OobeJS().ClickOnPath(
+      {"connect", "welcomeScreen", "accessibilitySettingsButton"});
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, {"connect", "accessibilityScreen"})
+      ->Wait();
+  test::OobeJS().ExpectEQ(kGetBackdropDisplayValue, std::string("none"));
+  test::OobeJS().ExpectNE(kGetCalculatedBackgroundColorInnerContainer,
+                          kRgbaTransparent);
+}
+
 class WelcomeScreenSystemDevModeBrowserTest : public WelcomeScreenBrowserTest {
  public:
   WelcomeScreenSystemDevModeBrowserTest() = default;
