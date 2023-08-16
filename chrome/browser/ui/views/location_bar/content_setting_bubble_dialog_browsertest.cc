@@ -28,6 +28,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
@@ -112,7 +113,8 @@ class ContentSettingBubbleDialogTest
                       GetPopupNavigationDelegateFactoryForTesting(),
                   &CreateTestPopupNavigationDelegate) {
     scoped_feature_list_.InitWithFeatures(
-        {features::kQuietNotificationPrompts},
+        {features::kQuietNotificationPrompts,
+         permissions::features::kPermissionStorageAccessAPI},
         {permissions::features::kPermissionQuietChip});
   }
 
@@ -209,7 +211,14 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
               custom_handlers::ProtocolHandler::CreateProtocolHandler(
                   "mailto", GURL("https://example.com/")));
       break;
-
+    case ContentSettingsType::STORAGE_ACCESS:
+      // Set a fake URL so the UI displays a consistent string for pixel tests.
+      web_contents->GetController().GetVisibleEntry()->SetVirtualURL(
+          GURL("http://example.com/"));
+      content_settings->OnTwoSitePermissionChanged(
+          content_type, net::SchemefulSite(GURL("https://embedded.com")),
+          CONTENT_SETTING_BLOCK);
+      break;
     default:
       // For all other content_types passed in, mark them as blocked.
       content_settings->OnContentBlocked(content_type);
@@ -332,6 +341,8 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
        ImageType::AUTOMATIC_DOWNLOADS},
       {"midi_sysex", ContentSettingsType::MIDI_SYSEX, ImageType::MIDI_SYSEX},
       {"ads", ContentSettingsType::ADS, ImageType::ADS},
+      {"storage_access", ContentSettingsType::STORAGE_ACCESS,
+       ImageType::STORAGE_ACCESS},
   };
   for (auto content_settings : content_settings_values) {
     if (base::StartsWith(name, content_settings.name,
@@ -423,6 +434,11 @@ IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
 
 IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
                        InvokeUi_notifications_quiet_predicted_very_unlikely) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
+                       InvokeUi_storage_access) {
   ShowAndVerifyUi();
 }
 
