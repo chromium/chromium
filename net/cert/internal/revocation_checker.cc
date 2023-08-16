@@ -110,10 +110,16 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
 
       // TODO(eroman): Duplication of work if there are multiple URLs to try.
       // TODO(eroman): Are there cases where we would need to POST instead?
-      GURL get_url = CreateOCSPGetURL(cert, issuer_cert, ocsp_uri);
+      absl::optional<std::string> get_url_str =
+          CreateOCSPGetURL(cert, issuer_cert, ocsp_uri);
+      if (!get_url_str.has_value()) {
+        // An unexpected failure from BoringSSL, or the input was too large to
+        // base64-encode.
+        continue;
+      }
+      GURL get_url(get_url_str.value());
       if (!get_url.is_valid()) {
-        // A failure here could mean an unexpected failure from BoringSSL, or a
-        // problem concatenating the URL.
+        // Invalid URL.
         continue;
       }
 
