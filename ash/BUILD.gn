@@ -2035,6 +2035,8 @@ component("ash") {
     "system/toast/anchored_nudge.h",
     "system/toast/anchored_nudge_manager_impl.cc",
     "system/toast/anchored_nudge_manager_impl.h",
+    "system/toast/system_nudge_pause_manager_impl.cc",
+    "system/toast/system_nudge_pause_manager_impl.h",
     "system/toast/system_nudge_view.cc",
     "system/toast/system_nudge_view.h",
     "system/toast/toast_manager_impl.cc",

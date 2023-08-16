@@ -19,6 +19,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system_sounds_delegate.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
+#include "ash/system/toast/system_nudge_pause_manager_impl.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -237,6 +238,7 @@ class StickyKeysController;
 class SystemGestureEventFilter;
 class SystemModalContainerEventFilter;
 class SystemNotificationController;
+class SystemNudgePauseManagerImpl;
 class SystemSoundsDelegate;
 class SystemTrayModel;
 class SystemTrayNotifier;
@@ -722,6 +724,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   SystemNotificationController* system_notification_controller() {
     return system_notification_controller_.get();
   }
+  SystemNudgePauseManagerImpl* system_nudge_pause_manager() {
+    return system_nudge_pause_manager_.get();
+  }
   SystemTrayModel* system_tray_model() { return system_tray_model_.get(); }
   SystemTrayNotifier* system_tray_notifier() {
     return system_tray_notifier_.get();
@@ -1040,6 +1045,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<AcceleratorTracker> accelerator_tracker_;
   std::unique_ptr<ShutdownControllerImpl> shutdown_controller_;
   std::unique_ptr<SystemNotificationController> system_notification_controller_;
+  std::unique_ptr<SystemNudgePauseManagerImpl> system_nudge_pause_manager_;
   std::unique_ptr<SystemTrayModel> system_tray_model_;
   std::unique_ptr<SystemTrayNotifier> system_tray_notifier_;
   std::unique_ptr<SystemSoundsDelegate> system_sounds_delegate_;

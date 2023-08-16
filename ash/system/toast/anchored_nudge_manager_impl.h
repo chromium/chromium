@@ -25,7 +25,7 @@ class View;
 namespace ash {
 
 struct AnchoredNudgeData;
-class ScopedAnchoredNudgePause;
+class ScopedNudgePause;
 
 // Class managing anchored nudge requests.
 class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
@@ -40,7 +40,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   void Show(AnchoredNudgeData& nudge_data) override;
   void Cancel(const std::string& id) override;
   void MaybeRecordNudgeAction(NudgeCatalogName catalog_name) override;
-  std::unique_ptr<ScopedAnchoredNudgePause> CreateScopedPause() override;
+  std::unique_ptr<ScopedNudgePause> CreateScopedPause() override;
   bool IsNudgeShown(const std::string& id) override;
 
   // Closes all `shown_nudges_`.
@@ -126,7 +126,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // after its duration has passed. Hovering over the nudge pauses the timer.
   std::map<std::string, PausableTimer> dismiss_timers_;
 
-  // Keeps track of the number of `ScopedAnchoredNudgePause`.
+  // Keeps track of the number of `ScopedNudgePause`.
   int pause_counter_ = 0;
 
   base::WeakPtrFactory<AnchoredNudgeManagerImpl> weak_ptr_factory_{this};

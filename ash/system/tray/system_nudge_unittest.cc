@@ -7,6 +7,8 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/system/scoped_nudge_pause.h"
+#include "ash/public/cpp/system/system_nudge_pause_manager.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/system/tray/system_nudge_controller.h"
@@ -280,6 +282,50 @@ TEST_F(SystemNudgeTest, DismissTimer) {
   // dismissed.
   task_environment()->FastForwardBy(kNudgeShowTime + (kNudgeShowTime / 2));
   EXPECT_FALSE(nudge_controller->GetSystemNudgeForTesting());
+}
+
+TEST_F(SystemNudgeTest, CloseNudgeImmediately) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  auto nudge_controller = std::make_unique<TestSystemNudgeController>();
+
+  // Show a nudge.
+  EXPECT_FALSE(nudge_controller->GetSystemNudgeForTesting());
+  nudge_controller->ShowNudge();
+  auto* nudge = nudge_controller->GetSystemNudgeForTesting();
+  ASSERT_TRUE(nudge);
+
+  // Call `CloseNudge()` to close a nudge immediately.
+  nudge_controller->CloseNudge();
+  EXPECT_FALSE(nudge_controller->GetSystemNudgeForTesting());
+}
+
+TEST_F(SystemNudgeTest, ShowNudgeWithScopedNudgePause) {
+  auto nudge_controller = std::make_unique<TestSystemNudgeController>();
+  auto scoped_nudge_pause = SystemNudgePauseManager::Get()->CreateScopedPause();
+  ASSERT_FALSE(nudge_controller->GetSystemNudgeForTesting());
+
+  // When a `ScopedNudgePause` is present, no nudge will be shown.
+  nudge_controller->ShowNudge();
+  ASSERT_FALSE(nudge_controller->GetSystemNudgeForTesting());
+
+  // Destroy the `ScopedNudgePause`, the nudge doesn't exist either.
+  scoped_nudge_pause.reset();
+  ASSERT_FALSE(nudge_controller->GetSystemNudgeForTesting());
+}
+
+TEST_F(SystemNudgeTest, CancelNudgeWithScopedNudgePause) {
+  auto nudge_controller = std::make_unique<TestSystemNudgeController>();
+  ASSERT_FALSE(nudge_controller->GetSystemNudgeForTesting());
+
+  // Firstly, the nudge will be shown.
+  nudge_controller->ShowNudge();
+  ASSERT_TRUE(nudge_controller->GetSystemNudgeForTesting());
+
+  // After a `ScopedNudgePause` is created, the nudge will be closed
+  // immediately.
+  SystemNudgePauseManager::Get()->CreateScopedPause();
+  ASSERT_FALSE(nudge_controller->GetSystemNudgeForTesting());
 }
 
 }  // namespace ash

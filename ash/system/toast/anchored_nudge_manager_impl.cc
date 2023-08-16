@@ -10,7 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
-#include "ash/public/cpp/system/scoped_anchored_nudge_pause.h"
+#include "ash/public/cpp/system/scoped_nudge_pause.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge.h"
@@ -337,9 +337,9 @@ void AnchoredNudgeManagerImpl::MaybeRecordNudgeAction(
   nudge_registry.erase(it);
 }
 
-std::unique_ptr<ScopedAnchoredNudgePause>
+std::unique_ptr<ScopedNudgePause>
 AnchoredNudgeManagerImpl::CreateScopedPause() {
-  return std::make_unique<ScopedAnchoredNudgePause>();
+  return std::make_unique<ScopedNudgePause>();
 }
 
 void AnchoredNudgeManagerImpl::CloseAllNudges() {

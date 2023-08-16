@@ -174,6 +174,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "ash/system/toast/system_nudge_pause_manager_impl.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
@@ -999,6 +1000,10 @@ Shell::~Shell() {
   // |window_tree_host_manager_|.
   clipboard_history_controller_.reset();
 
+  // Should be destroyed after `clipbaord_history_controller_` and
+  // `autozoom_controller_` since they will destruct `SystemNudgeController`.
+  system_nudge_pause_manager_.reset();
+
   // This also deletes all RootWindows. Note that we invoke Shutdown() on
   // WindowTreeHostManager before resetting |window_tree_host_manager_|, since
   // destruction of its owned RootWindowControllers relies on the value.
@@ -1201,6 +1206,7 @@ void Shell::Init(
   if (features::IsSystemNudgeV2Enabled()) {
     anchored_nudge_manager_ = std::make_unique<AnchoredNudgeManagerImpl>();
   }
+  system_nudge_pause_manager_ = std::make_unique<SystemNudgePauseManagerImpl>();
 
   peripheral_battery_listener_ = std::make_unique<PeripheralBatteryListener>();
 
