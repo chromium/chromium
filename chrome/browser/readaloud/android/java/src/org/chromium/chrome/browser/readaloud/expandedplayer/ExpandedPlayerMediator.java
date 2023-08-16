@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.readaloud.expandedplayer;
 
 import org.chromium.chrome.browser.readaloud.PlayerState;
+import org.chromium.chrome.modules.readaloud.ExpandedPlayer.Observer;
+import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -14,19 +16,24 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class ExpandedPlayerMediator extends EmptyBottomSheetObserver {
     private final BottomSheetController mBottomSheetController;
     private final PropertyModel mModel;
+    private final Observer mObserver;
 
     public ExpandedPlayerMediator(
-            BottomSheetController bottomSheetController, PropertyModel model) {
+            BottomSheetController bottomSheetController, PropertyModel model, Observer observer) {
         mBottomSheetController = bottomSheetController;
         mBottomSheetController.addObserver(this);
         mModel = model;
+        mObserver = observer;
+        mModel.set(ExpandedPlayerProperties.ON_CLOSE_CLICK_KEY,
+                (view) -> { mObserver.onCloseClicked(); });
     }
 
     public void destroy() {
         mBottomSheetController.removeObserver(this);
     }
 
-    public void show() {
+    public void show(Playback playback) {
+        // TODO use playback
         @PlayerState
         int state = getState();
         if (state == PlayerState.SHOWING || state == PlayerState.VISIBLE) {

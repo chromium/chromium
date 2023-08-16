@@ -26,6 +26,8 @@ public class ExpandedPlayerViewBinder {
             }
         } else if (key == ExpandedPlayerProperties.SPEED_KEY) {
             content.setSpeed(model.get(ExpandedPlayerProperties.SPEED_KEY));
+        } else if (key == ExpandedPlayerProperties.ON_CLOSE_CLICK_KEY) {
+            content.setCloseButtonHandler(model.get(ExpandedPlayerProperties.ON_CLOSE_CLICK_KEY));
         }
     }
 }

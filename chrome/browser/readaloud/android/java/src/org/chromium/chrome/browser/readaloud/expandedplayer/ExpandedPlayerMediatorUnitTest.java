@@ -22,6 +22,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.readaloud.PlayerState;
+import org.chromium.chrome.modules.readaloud.ExpandedPlayer;
+import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -31,6 +33,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class ExpandedPlayerMediatorUnitTest {
     @Mock
     private BottomSheetController mBottomSheetController;
+    @Mock
+    private ExpandedPlayer.Observer mObserver;
+    @Mock
+    private Playback mPlayback;
 
     private PropertyModel mModel;
     private ExpandedPlayerMediator mMediator;
@@ -42,7 +48,7 @@ public class ExpandedPlayerMediatorUnitTest {
                                      .with(ExpandedPlayerProperties.STATE_KEY, PlayerState.GONE)
                                      .build());
 
-        mMediator = new ExpandedPlayerMediator(mBottomSheetController, mModel);
+        mMediator = new ExpandedPlayerMediator(mBottomSheetController, mModel, mObserver);
     }
 
     @Test
@@ -59,7 +65,7 @@ public class ExpandedPlayerMediatorUnitTest {
 
     @Test
     public void testShow() {
-        mMediator.show();
+        mMediator.show(mPlayback);
         assertEquals(PlayerState.SHOWING, mMediator.getState());
     }
 
@@ -67,13 +73,13 @@ public class ExpandedPlayerMediatorUnitTest {
     public void testShowAlreadyShowing() {
         mModel.set(ExpandedPlayerProperties.STATE_KEY, PlayerState.SHOWING);
         reset(mModel);
-        mMediator.show();
+        mMediator.show(mPlayback);
         assertEquals(PlayerState.SHOWING, mMediator.getState());
         verify(mModel, never()).set(any(), any());
 
         mModel.set(ExpandedPlayerProperties.STATE_KEY, PlayerState.VISIBLE);
         reset(mModel);
-        mMediator.show();
+        mMediator.show(mPlayback);
         assertEquals(PlayerState.VISIBLE, mMediator.getState());
         verify(mModel, never()).set(any(), any());
     }
@@ -95,7 +101,7 @@ public class ExpandedPlayerMediatorUnitTest {
 
     @Test
     public void testDismiss() {
-        mMediator.show();
+        mMediator.show(mPlayback);
         mMediator.dismiss();
         assertEquals(PlayerState.HIDING, mMediator.getState());
     }

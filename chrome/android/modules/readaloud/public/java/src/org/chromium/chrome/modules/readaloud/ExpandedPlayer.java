@@ -8,19 +8,32 @@ import org.chromium.chrome.browser.readaloud.PlayerState;
 
 /** Interface for controlling the Read Aloud expanded player. */
 public interface ExpandedPlayer {
+    /** Interface for getting updates about the expanded player. */
+    public interface Observer {
+        /** Called when the user has tapped the close button. */
+        void onCloseClicked();
+    }
+
     /**
-     * Bind the player to a Playback object.
-     * @param playback Playback object.
+     * Add an observer.
+     * @param observer Observer to add.
      */
-    default void setPlayback(Playback playback) {}
+    default void addObserver(Observer observer) {}
+
+    /**
+     * Remove an observer. Has no effect if `observer` wasn't previously added.
+     * @param observer Observer to remove.
+     */
+    default void removeObserver(Observer observer) {}
 
     /**
      * Show the expanded player.
      *
      * If current state is GONE or HIDING, switch to SHOWING. No effect if state is
      * VISIBLE or SHOWING.
+     * @param playback Current playback object. Should not be null.
      */
-    default void show() {}
+    default void show(Playback playback) {}
 
     /**
      * Dismiss the expanded player.

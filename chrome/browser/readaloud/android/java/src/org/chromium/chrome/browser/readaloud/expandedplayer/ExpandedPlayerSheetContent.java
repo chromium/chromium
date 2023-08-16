@@ -59,6 +59,11 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mBottomSheetController.hideContent(this, /*animate=*/true);
     }
 
+    void setCloseButtonHandler(View.OnClickListener onClick) {
+        mContentView.findViewById(R.id.readaloud_expanded_player_close_button)
+                .setOnClickListener(onClick);
+    }
+
     @SuppressWarnings({"SetTextI18n", "DefaultLocale"})
     public void setSpeed(float speed) {
         TextView speedButton = (TextView) mContentView.findViewById(R.id.readaloud_playback_speed);

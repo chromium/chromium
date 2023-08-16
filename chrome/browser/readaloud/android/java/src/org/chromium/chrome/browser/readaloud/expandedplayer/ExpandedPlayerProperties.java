@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.readaloud.expandedplayer;
 
+import android.view.View;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -13,5 +15,7 @@ public class ExpandedPlayerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Float> SPEED_KEY =
             new WritableObjectPropertyKey<>();
-    public static final PropertyKey[] ALL_KEYS = {STATE_KEY, SPEED_KEY};
+    public static final WritableObjectPropertyKey<View.OnClickListener> ON_CLOSE_CLICK_KEY =
+            new WritableObjectPropertyKey<>();
+    public static final PropertyKey[] ALL_KEYS = {STATE_KEY, SPEED_KEY, ON_CLOSE_CLICK_KEY};
 }
