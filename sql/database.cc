@@ -380,7 +380,7 @@ void Database::CloseInternal(bool forced) {
     statement_ref->Close(forced);
   open_statements_.clear();
 
-  if (db_) {
+  if (is_open()) {
     // Call to InitScopedBlockingCall() cannot go at the beginning of the
     // function because Close() must be called from destructor to clean
     // statement_cache_, it won't cause any disk access and it most probably
@@ -412,6 +412,13 @@ void Database::CloseInternal(bool forced) {
     // valid `db_` value.
     db_ = nullptr;
   }
+}
+
+bool Database::is_open() const {
+  bool is_closed_due_to_poisoning =
+      poisoned_ && base::FeatureList::IsEnabled(
+                       sql::features::kConsiderPoisonedDatabasesClosed);
+  return static_cast<bool>(db_) && !is_closed_due_to_poisoning;
 }
 
 void Database::Close() {
@@ -1793,7 +1800,7 @@ bool Database::OpenInternal(const std::string& db_file_path,
         << "Database file path conflicts with SQLite magic identifier";
   }
 
-  if (db_) {
+  if (is_open()) {
     DLOG(DCHECK) << "sql::Database is already open.";
     return false;
   }
@@ -1807,8 +1814,6 @@ bool Database::OpenInternal(const std::string& db_file_path,
   // RazeAndPoison().  Until regular Close() is called, the caller
   // should be treating the database as open, but is_open() currently
   // only considers the sqlite3 handle's state.
-  // TODO(shess): Revise is_open() to consider poisoned_, and review
-  // to see if any non-testing code even depends on it.
   DCHECK(!poisoned_) << "sql::Database is already open.";
   poisoned_ = false;
 
@@ -1851,7 +1856,7 @@ bool Database::OpenInternal(const std::string& db_file_path,
     // if an error occurs (see https://www.sqlite.org/c3ref/open.html).
     // Therefore, we'll clear `db_` immediately - particularly before triggering
     // an error callback which may check whether a database connection exists.
-    if (base::FeatureList::IsEnabled(features::kClearDbIfCloseFails) && db_) {
+    if (db_) {
       // Deallocate resources allocated during the failed open.
       // See https://www.sqlite.org/c3ref/close.html.
       sqlite3_close(db_);

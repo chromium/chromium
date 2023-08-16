@@ -391,7 +391,7 @@ class COMPONENT_EXPORT(SQL) Database {
   [[nodiscard]] bool OpenTemporary(base::PassKey<Recovery>);
 
   // Returns true if the database has been successfully opened.
-  bool is_open() const { return static_cast<bool>(db_); }
+  bool is_open() const;
 
   // Closes the database. This is automatically performed on destruction for
   // you, but this allows you to close the database early. You must not call
