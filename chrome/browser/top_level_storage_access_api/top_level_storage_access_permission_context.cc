@@ -29,6 +29,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace {
 
@@ -68,10 +69,18 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
     bool user_gesture,
     permissions::BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(id.global_render_frame_host_id());
+  CHECK(rfh);
   if (!user_gesture ||
       !base::FeatureList::IsEnabled(
           blink::features::kStorageAccessAPIForOriginExtension) ||
       !requesting_origin.is_valid() || !embedding_origin.is_valid()) {
+    if (!user_gesture) {
+      rfh->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "requestStorageAccessFor: Must be handling a user gesture to use.");
+    }
     RecordOutcomeSample(
         TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
@@ -85,10 +94,6 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
-
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(id.global_render_frame_host_id());
-  CHECK(rfh);
 
   net::SchemefulSite embedding_site(embedding_origin);
 

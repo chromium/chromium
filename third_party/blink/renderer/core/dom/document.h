@@ -2194,21 +2194,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void RunPostPrerenderingActivationSteps();
 
-  // Similar to `OnGotExistingStorageAccessPermissionState`, but for the
-  // top-level variant. Allows bypassing user activation checks in the event
-  // that the permission is already granted.
-  void OnGotExistingTopLevelStorageAccessPermissionState(
-      ScriptPromiseResolver* resolver,
-      bool has_user_gesture,
-      mojom::blink::PermissionDescriptorPtr descriptor,
-      mojom::blink::PermissionStatus previous_status);
-
-  // Similar to `OnRequestedStorageAccessPermissionState`, but for the top-level
-  // variant. Used to react to the result of a permission request.
-  void OnRequestedTopLevelStorageAccessPermissionState(
-      ScriptPromiseResolver* resolver,
-      mojom::blink::PermissionStatus status);
-
   // Resolves the promise if the `status` can approve; rejects the promise
   // otherwise, and consumes user activation.
   void ProcessStorageAccessPermissionState(
@@ -2219,7 +2204,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // variant. Notably, does not modify the per-frame storage access bit.
   void ProcessTopLevelStorageAccessPermissionState(
       ScriptPromiseResolver* resolver,
-      bool use_existing_status,
       mojom::blink::PermissionStatus status);
 
   // Fetch the compression dictionary sent in the response header after the
