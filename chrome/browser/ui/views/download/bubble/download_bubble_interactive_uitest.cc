@@ -5,6 +5,7 @@
 #include "base/test/bind.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -197,6 +198,10 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 
+  bool IsPartialViewEnabled() {
+    return download::IsDownloadBubblePartialViewEnabled(browser()->profile());
+  }
+
  private:
   feature_engagement::test::ScopedIphFeatureList test_features_;
 };
@@ -205,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
                        ToolbarIconAndBubbleDetailsShownAfterDownload) {
   RunTestSequence(Do(DownloadTestFile()),
                   WaitForShow(kDownloadToolbarButtonElementId),
-                  Check(DownloadBubbleIsShowingDetails(true)),
+                  Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
                   // Hide the bubble so it's not showing while tearing down the
                   // test browser (which causes a crash on Mac).
                   Do(ChangeBubbleVisibility(false)));
@@ -221,10 +226,10 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
                   PressButton(kDownloadToolbarButtonElementId),
                   // Close the main view.
                   Do(ChangeBubbleVisibility(false)),
-                  // Now download a file to show the partial view.
+                  // Now download a file to show the partial view, if enabled.
                   Do(DownloadTestFile()),
-                  Check(DownloadBubbleIsShowingDetails(true)),
-                  // Hide the partial view. No IPH is shown.
+                  Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
+                  // Hide the partial view, if enabled. No IPH is shown.
                   Do(ChangeBubbleVisibility(false)),
                   Check(DownloadBubbleIsShowingDetails(false)),
                   Check(DownloadBubblePromoIsActive(false)));
@@ -234,11 +239,11 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
                        DownloadBubbleShownAfterDownload_IPHShown) {
   RunTestSequence(Do(DownloadTestFile()),
                   WaitForShow(kDownloadToolbarButtonElementId),
-                  Check(DownloadBubbleIsShowingDetails(true)),
-                  // Hide the partial view. The IPH should be shown.
+                  Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
+                  // Hide the partial view, if enabled. The IPH should be shown.
                   Do(ChangeBubbleVisibility(false)),
                   Check(DownloadBubbleIsShowingDetails(false)),
-                  Check(DownloadBubblePromoIsActive(true)));
+                  Check(DownloadBubblePromoIsActive(IsPartialViewEnabled())));
 }
 
 // This test is only for ChromeOS and Mac where we have immersive fullscreen.
@@ -255,15 +260,15 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
       // No download toolbar icon should be present before the download.
       EnsureNotPresent(kDownloadToolbarButtonElementId),
-      // Download a file to make the partial bubble show up.
+      // Download a file to make the partial bubble show up, if enabled.
       Do(DownloadTestFile()),
       // This step is fine and won't be flaky on ChromeOS, because waiting for
       // the element to show includes waiting for the server to notify us that
       // we are in immersive mode.
       WaitForShow(kDownloadToolbarButtonElementId),
-      Check(DownloadBubbleIsShowingDetails(true)),
-      // Hide the bubble so it's not showing while tearing down the test browser
-      // (which causes a crash on Mac).
+      Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
+      // Hide the bubble, if enabled, so it's not showing while tearing down the
+      // test browser (which causes a crash on Mac).
       // TODO(chlily): Rewrite this test to interact with the UI instead of
       // hiding the bubble artificially, to properly test user journeys.
       Do(ChangeBubbleVisibility(false)), Do(ChangeButtonVisibility(false)),
@@ -276,8 +281,8 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
 // TODO(chlily): Add test coverage for Mac.
 #if !BUILDFLAG(IS_MAC)
 // Test that downloading a file in tab fullscreen (not browser fullscreen)
-// results in an exclusive access bubble, and the partial view displayed after
-// the tab exits fullscreen.
+// results in an exclusive access bubble, and the partial view, if enabled, is
+// displayed after the tab exits fullscreen.
 IN_PROC_BROWSER_TEST_F(
     DownloadBubbleInteractiveUiTest,
     ExclusiveAccessBubbleShownForTabFullscreenDownloadThenPartialView) {
@@ -318,11 +323,14 @@ IN_PROC_BROWSER_TEST_F(
       Check(IsExclusiveAccessBubbleForDownload(true),
             "Exclusive access bubble is for a download"),
       FlushEvents(),
-      // Now exit fullscreen, and the partial view should be shown.
+      // Now exit fullscreen, and the partial view, if enabled, should be shown.
       SendAccelerator(kBrowserViewElementId, fullscreen_accelerator),
-      FlushEvents(), Do(WaitForDownloadBubbleShow(dialog_waiter)),
-      Check(DownloadBubbleIsShowingDetails(true),
-            "Download bubble is showing details after exiting fullscreen"),
+      FlushEvents(),
+      If([&]() { return IsPartialViewEnabled(); },
+         Steps(Do(WaitForDownloadBubbleShow(dialog_waiter)),
+               Check(DownloadBubbleIsShowingDetails(true),
+                     "Download bubble is showing details after exiting "
+                     "fullscreen"))),
       // TODO(chlily): Rewrite this test to interact with the UI instead of
       // hiding the bubble artificially, to properly test user journeys.
       Do(ChangeBubbleVisibility(false)), Do(ChangeButtonVisibility(false)),
