@@ -60,6 +60,12 @@ public class JUnitTestGURLs {
     public static final String GOOGLE_URL_PIG = "http://www.google.com/pig";
     public static final String ABOUT_BLANK = "about:blank";
     public static final String CHROME_ABOUT = "chrome://about";
+    // The following points to: https://pl.wikipedia.org/wiki/Gżegżółka
+    public static final String ESCAPED_PATH_URL_1 =
+            "https://pl.wikipedia.org/wiki/G%C5%BCeg%C5%BC%C3%B3%C5%82ka";
+    public static final String ESCAPED_PATH_URL_1_STRING =
+            "https://pl.wikipedia.org/wiki/Gżegżółka";
+    public static final String INVALID_ESCAPED_PATH_URL_1 = "https://pl.wikipedia.org/wiki/G%X";
 
     // Map of URL string to GURL serialization.
     /* package */ static final Map<String, String> sGURLMap;
@@ -152,6 +158,10 @@ public class JUnitTestGURLs {
                 "68,1,true,0,5,0,-1,0,-1,0,-1,0,-1,6,5,0,-1,0,-1,false,false,about:blank");
         map.put(CHROME_ABOUT,
                 "72,1,true,0,6,0,-1,0,-1,9,5,0,-1,14,1,0,-1,0,-1,false,false,chrome://about/");
+        map.put(ESCAPED_PATH_URL_1,
+                "118,1,true,0,5,0,-1,0,-1,8,16,0,-1,24,35,0,-1,0,-1,false,false,https://pl.wikipedia.org/wiki/G%C5%BCeg%C5%BC%C3%B3%C5%82ka");
+        map.put(INVALID_ESCAPED_PATH_URL_1,
+                "91,1,true,0,5,0,-1,0,-1,8,16,0,-1,24,9,0,-1,0,-1,false,false,https://pl.wikipedia.org/wiki/G%X");
         sGURLMap = Collections.unmodifiableMap(map);
     }
 

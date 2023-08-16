@@ -34,6 +34,9 @@ import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
@@ -169,6 +172,13 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     /** Invoked when user interacts with Edit action button. */
     private void onEditLink(AutocompleteMatch suggestion) {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Edit");
-        mUrlBarDelegate.setOmniboxEditingText(suggestion.getUrl().getSpec());
+        // Pass the decoded URL to the Omnibox to avoid %-encoded unicode characters.
+        var text = suggestion.getUrl().getSpec();
+        try {
+            text = URLDecoder.decode(text, Charset.defaultCharset().name());
+        } catch (UnsupportedEncodingException | IllegalArgumentException e) {
+            // text should not be modified here.
+        }
+        mUrlBarDelegate.setOmniboxEditingText(text);
     }
 }
