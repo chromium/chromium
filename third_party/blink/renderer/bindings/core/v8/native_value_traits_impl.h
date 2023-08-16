@@ -1301,7 +1301,8 @@ struct NativeValueTraits<IDLRecord<K, V>>
       if (seen_keys.Contains(typed_key)) {
         // "4.2.4. If typedKey is already a key in result, set its value to
         //         typedValue.
-        //         Note: This can happen when O is a proxy object."
+        //         Note: This can happen when K is USVString and key contains
+        //         unpaired surrogates."
         const uint32_t pos = seen_keys.at(typed_key);
         result[pos].second = std::move(typed_value);
       } else {
