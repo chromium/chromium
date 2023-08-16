@@ -279,6 +279,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableImageContentSearch() {
+    options.enable_image_content_search = true;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -2444,7 +2449,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchDocumentsProviderWithRecencyOptions")
             .EnableGenericDocumentsProvider()
             .EnableSearchV2(),
-        TestCase("searchFileSystemProvider").EnableSearchV2()
+        TestCase("searchFileSystemProvider").EnableSearchV2(),
+        TestCase("searchImageByContent")
+            .EnableImageContentSearch()
+            .EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")
         ));
@@ -2505,7 +2513,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FeatureIds({"screenplay-a06f961a-17f5-4fbd-8285-49abb000dee1"}),
         TestCase("trashPermanentlyDelete"),
         TestCase("trashRestoreFromToast"),
-//TODO(crbug.com/1425820): Re-enable this test on ChromiumOS MSAN.
+// TODO(crbug.com/1425820): Re-enable this test on ChromiumOS MSAN.
 #if !defined(MEMORY_SANITIZER)
         TestCase("trashRestoreFromToast").EnableCrosComponents(),
 #endif

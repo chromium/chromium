@@ -1083,3 +1083,49 @@ testcase.searchFileSystemProvider = async () => {
       appId, TestEntryInfo.getExpectedRows([expectedFolder]),
       {ignoreLastModifiedTime: true});
 };
+
+/**
+ * Test searching images by content. There are two modes supported: search by
+ * text contained in the image and search by keywords associtated with
+ * objects detected in the image. The first search is known as optical character
+ * recorgnition (OCR), the second as image content annotation (ICA). However,
+ * from the Files app point of view there is no difference and all it knows is
+ * that there are "terms" associated with images processed by the local image
+ * search service. So that's all we test: that we can find images by terms
+ * associated with them.
+ */
+testcase.searchImageByContent = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello, ENTRIES.desktop, ENTRIES.image3]);
+
+  // Pretend that the desktop image was processed by the local search service
+  // and was assigned the keywords 'marsupial' and 'duck'.
+  await sendTestMessage({
+    name: 'setupImageTerms',
+    path: ENTRIES.desktop.targetPath,
+    terms: 'marsupial,duck',
+  });
+  // The second image, image2, had 'ghost' assigned to it.
+  await sendTestMessage({
+    name: 'setupImageTerms',
+    path: ENTRIES.image3.targetPath,
+    terms: 'ghost',
+  });
+
+  await remoteCall.typeSearchText(appId, 'marsupial');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([ENTRIES.desktop]),
+      {ignoreLastModifiedTime: true});
+
+  // Search again, using the second term 'duck'.
+  await remoteCall.typeSearchText(appId, 'duck');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([ENTRIES.desktop]),
+      {ignoreLastModifiedTime: true});
+
+  // Search, using the term 'ghost', assigned to image3.
+  await remoteCall.typeSearchText(appId, 'ghost');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([ENTRIES.image3]),
+      {ignoreLastModifiedTime: true});
+};
