@@ -59,8 +59,6 @@ void PackExtensionJob::Run(
   if (key_file_.empty())
     *key_file_out = root_directory_.AddExtension(kExtensionKeyFileExtension);
 
-  // TODO(aa): Need to internationalize the errors that ExtensionCreator
-  // returns. See bug 20734.
   ExtensionCreator creator;
   if (creator.Run(root_directory_, *crx_file_out, key_file_, *key_file_out,
                   run_flags_)) {

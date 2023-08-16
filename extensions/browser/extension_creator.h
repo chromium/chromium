@@ -75,10 +75,8 @@ class ExtensionCreator {
                        const base::FilePath& private_key_output_path,
                        int run_flags);
 
-  // Validates the manifest by trying to load the extension.
-  bool ValidateManifest(const base::FilePath& extension_dir,
-                        crypto::RSAPrivateKey* key_pair,
-                        int run_flags);
+  // Validates the extension by trying to load it and checking language files.
+  bool ValidateExtension(const base::FilePath& extension_dir, int run_flags);
 
   // Reads private key from |private_key_path|.
   std::unique_ptr<crypto::RSAPrivateKey> ReadInputKey(

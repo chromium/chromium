@@ -110,7 +110,7 @@ void GetAllFallbackLocales(const std::string& default_locale,
 // Fill |valid_locales| with all valid locales under |locale_path|.
 // |valid_locales| is the intersection of the set of locales supported by
 // Chrome and the set of locales specified by |locale_path|.
-// Returns true if vaild_locales contains at least one locale, false otherwise.
+// Returns true if valid_locales contains at least one locale, false otherwise.
 // |error| contains an error message when a locale is corrupt or missing.
 bool GetValidLocales(const base::FilePath& locale_path,
                      std::set<std::string>* valid_locales,
