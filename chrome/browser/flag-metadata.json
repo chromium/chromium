@@ -182,6 +182,11 @@
     "expiry_milestone": 119
   },
   {
+    "name": "android-hats-refactor",
+    "owners": [ "wenyufu", "clank-app-team@google.com" ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "android-improved-bookmarks",
     "owners": ["wylieb", "skym", "bttk"],
     "expiry_milestone": 120

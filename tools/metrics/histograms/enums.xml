@@ -65759,6 +65759,7 @@ from previous Chrome versions.
   <int value="918608729" label="finch-seed-min-download-period"/>
   <int value="919605713"
       label="QuickAnswersAlwaysTriggerForSingleWord:disabled"/>
+  <int value="920563204" label="AndroidHatsRefactor:enabled"/>
   <int value="921536672" label="OfflinePagesDescriptiveFailStatus:enabled"/>
   <int value="921561616" label="WebAssemblyTiering:disabled"/>
   <int value="923752712" label="WelcomeTour:enabled"/>
@@ -67317,6 +67318,7 @@ from previous Chrome versions.
   <int value="1711037950"
       label="AutofillVisualImprovementsForSuggestionUi:disabled"/>
   <int value="1711286384" label="ContextMenuCopyImage:disabled"/>
+  <int value="1711315265" label="AndroidHatsRefactor:disabled"/>
   <int value="1711998812" label="LinkCapturingInfoBar:disabled"/>
   <int value="1712622545" label="Memories:disabled"/>
   <int value="1712697097" label="QuickAnswersV2:disabled"/>

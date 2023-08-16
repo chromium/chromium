@@ -3741,6 +3741,10 @@ const char kAndroidImprovedBookmarksDescription[] =
     "More visual changes to the bookmarks surfaces, with more thumbnails and a "
     "focus on search instead of folders/hierarchy";
 
+const char kAndroidHatsRefactorName[] = "Android Hats Refactor";
+const char kAndroidHatsRefactorDescription[] =
+    "Enables survey structure refactor.";
+
 const char kAnimatedImageDragShadowName[] =
     "Enable animated image drag shadow on Android.";
 const char kAnimatedImageDragShadowDescription[] =
