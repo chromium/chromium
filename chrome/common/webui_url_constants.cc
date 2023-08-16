@@ -225,6 +225,10 @@ const char kChromeUIThemeHost[] = "theme";
 const char kChromeUIThemeURL[] = "chrome://theme/";
 const char kChromeUITranslateInternalsHost[] = "translate-internals";
 const char kChromeUITopChromeDomain[] = "top-chrome";
+#if !BUILDFLAG(IS_ANDROID)
+const char kChromeUIUntrustedHatsHost[] = "hats";
+const char kChromeUIUntrustedHatsURL[] = "chrome-untrusted://hats/";
+#endif  // !BUILDFLAG(IS_ANDROID)
 const char kChromeUIUntrustedImageEditorURL[] =
     "chrome-untrusted://image-editor/";
 const char kChromeUIUntrustedPrintURL[] = "chrome-untrusted://print/";

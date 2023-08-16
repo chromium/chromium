@@ -219,6 +219,10 @@ extern const char kChromeUIThemeHost[];
 extern const char kChromeUIThemeURL[];
 extern const char kChromeUITopChromeDomain[];
 extern const char kChromeUITranslateInternalsHost[];
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kChromeUIUntrustedHatsHost[];
+extern const char kChromeUIUntrustedHatsURL[];
+#endif  // !BUILDFLAG(IS_ANDROID)
 extern const char kChromeUIUntrustedImageEditorURL[];
 extern const char kChromeUIUntrustedPrintURL[];
 extern const char kChromeUIUntrustedThemeURL[];

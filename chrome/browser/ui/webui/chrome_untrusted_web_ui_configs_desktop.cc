@@ -10,6 +10,7 @@
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/webui/feed/feed_ui_config.h"
+#include "chrome/browser/ui/webui/hats/hats_ui.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "components/lens/buildflags.h"
@@ -32,6 +33,7 @@ void RegisterDesktopChromeUntrustedWebUIConfigs() {
   }
   map.AddUntrustedWebUIConfig(
       std::make_unique<ReadAnythingUIUntrustedConfig>());
+  map.AddUntrustedWebUIConfig(std::make_unique<HatsUIConfig>());
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   map.AddUntrustedWebUIConfig(std::make_unique<lens::LensUntrustedUIConfig>());

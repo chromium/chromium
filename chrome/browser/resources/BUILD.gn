@@ -32,6 +32,7 @@ group("resources") {
       "feed:resources",
       "feedback:resources",
       "gaia_auth_host:resources",
+      "hats:resources",
       "history:resources",
       "identity_internals:resources",
       "inline_login:resources",
