@@ -9,8 +9,6 @@
 
 namespace features {
 
-BASE_DECLARE_FEATURE(kPreloadingDesktopSettingsSubPage);
-
 }  // namespace features
 
 #endif  // CHROME_BROWSER_PRELOADING_PRELOADING_FEATURES_H_

@@ -6,11 +6,7 @@
 
 namespace features {
 
-// Forces Chrome to use the Preload pages settings sub page on desktop
-// platforms. This allows a user to choose between no preloading, standard
-// preloading, and extended preloading.
-BASE_FEATURE(kPreloadingDesktopSettingsSubPage,
-             "PreloadingDesktopSettingsSubPage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// TODO(1446230): Add feature for moving preloading subpage to
+// performance settings.
 
 }  // namespace features

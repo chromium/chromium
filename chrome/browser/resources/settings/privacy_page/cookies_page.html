@@ -253,28 +253,15 @@
     <settings-do-not-track-toggle id="doNotTrack"
         prefs="{{prefs}}">
     </settings-do-not-track-toggle>
-    <template is="dom-if" if="[[!showPreloadingSubPage_]]">
-      <settings-toggle-button id="preloadingToggle"
-          class="hr"
-          hidden="[[!pageVisibility.networkPrediction]]"
-          label="$i18n{networkPredictionEnabled}"
-          sub-label="$i18n{networkPredictionEnabledDescCookiesPage}"
-          pref="{{prefs.net.network_prediction_options}}"
-          numeric-unchecked-value="[[networkPredictionUncheckedValue_]]"
-          on-settings-boolean-control-change="onNetworkPredictionChange_">
-      </settings-toggle-button>
-    </template>
-    <template is="dom-if" if="[[showPreloadingSubPage_]]">
-      <cr-link-row id="preloadingLinkRow"
-          class="hr"
-          hidden="[[!pageVisibility.networkPrediction]]"
-          on-click="onPreloadingClick_"
-          label="$i18n{preloadingPageTitle}"
-          sub-label="[[getNetworkPredictionsOptionsLabel_(
-              prefs.net.network_prediction_options.value)]]"
-          role-description="$i18n{networkPredictionEnabledDescCookiesPage}">
-      </cr-link-row>
-    </template>
+    <cr-link-row id="preloadingLinkRow"
+        class="hr"
+        hidden="[[!pageVisibility.networkPrediction]]"
+        on-click="onPreloadingClick_"
+        label="$i18n{preloadingPageTitle}"
+        sub-label="[[getNetworkPredictionsOptionsLabel_(
+            prefs.net.network_prediction_options.value)]]"
+        role-description="$i18n{networkPredictionEnabledDescCookiesPage}">
+    </cr-link-row>
     <cr-link-row id="site-data-trigger" class="hr"
         on-click="onSiteDataClick_" label="$i18n{cookiePageAllSitesLink}"
         role-description="$i18n{subpageArrowRoleDescription}">

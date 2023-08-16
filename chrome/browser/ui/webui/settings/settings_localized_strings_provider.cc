@@ -2014,10 +2014,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddString("advancedProtectionURL",
                          advanced_protection_url.spec());
 
-  html_source->AddBoolean("showPreloadingSubPage",
-                          base::FeatureList::IsEnabled(
-                              features::kPreloadingDesktopSettingsSubPage));
-
   AddPersonalizationOptionsStrings(html_source);
   AddSecureDnsStrings(html_source);
 }
