@@ -11,6 +11,7 @@
 #include "services/webnn/dml/graph_builder.h"
 #include "services/webnn/dml/tensor_desc.h"
 #include "services/webnn/dml/test_base.h"
+#include "services/webnn/dml/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_angle_util_win.h"
 
@@ -29,19 +30,12 @@ void WebNNGraphBuilderTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
   ASSERT_TRUE(InitializeGLDisplay());
   Adapter::EnableDebugLayerForTesting();
-  scoped_refptr<Adapter> adapter = Adapter::GetInstance();
+  scoped_refptr<Adapter> adapter = Adapter::GetInstanceForTesting();
   ASSERT_NE(adapter.get(), nullptr);
   dml_device_ = adapter->dml_device();
   ASSERT_NE(dml_device_.Get(), nullptr);
-
-  // IDMLDevice1::CompileGraph will rely on IDMLDevice1 interface.
-  ComPtr<IDMLDevice1> dml_device1;
-  HRESULT hr = dml_device_->QueryInterface(IID_PPV_ARGS(&dml_device1));
-  if (FAILED(hr)) {
-    DLOG(WARNING) << "Failed to query dml device1 : "
-                  << logging::SystemErrorCodeToString(hr);
-    is_compile_graph_supported_ = false;
-  }
+  is_compile_graph_supported_ =
+      adapter->IsDMLDeviceCompileGraphSupportedForTesting();
 }
 
 // Test building a DML graph with single operator relu.

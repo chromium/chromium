@@ -56,7 +56,7 @@ void WebNNCommandRecorderTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
   ASSERT_TRUE(InitializeGLDisplay());
   Adapter::EnableDebugLayerForTesting();
-  adapter_ = Adapter::GetInstance();
+  adapter_ = Adapter::GetInstanceForTesting();
   ASSERT_NE(adapter_.get(), nullptr);
 }
 

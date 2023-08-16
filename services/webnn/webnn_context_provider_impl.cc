@@ -65,7 +65,10 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   //
   // TODO(crbug.com/1469755): Support getting `Adapter` instance based on
   // `options`.
-  scoped_refptr<dml::Adapter> adapter = dml::Adapter::GetInstance();
+  constexpr DML_FEATURE_LEVEL kMinDMLFeatureLevelForWebNN =
+      DML_FEATURE_LEVEL_4_0;
+  scoped_refptr<dml::Adapter> adapter =
+      dml::Adapter::GetInstance(kMinDMLFeatureLevelForWebNN);
   if (!adapter) {
     std::move(callback).Run(mojom::CreateContextResult::kNotSupported,
                             mojo::NullRemote());

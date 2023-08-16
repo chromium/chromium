@@ -23,6 +23,8 @@ class WebNNContextDMLImplTest : public TestBase {
 TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
+  mojom::CreateContextResult webnn_context_result =
+      mojom::CreateContextResult::kOk;
 
   WebNNContextProviderImpl::Create(
       provider_remote.BindNewPipeAndPassReceiver());
@@ -36,13 +38,21 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
       base::BindLambdaForTesting(
           [&](mojom::CreateContextResult result,
               mojo::PendingRemote<mojom::WebNNContext> remote) {
-            EXPECT_EQ(result, mojom::CreateContextResult::kOk);
-            webnn_context_remote.Bind(std::move(remote));
+            if (result == mojom::CreateContextResult::kOk) {
+              webnn_context_remote.Bind(std::move(remote));
+            }
+            webnn_context_result = result;
             is_callback_called = true;
             run_loop_create_context.Quit();
           }));
   run_loop_create_context.Run();
   EXPECT_TRUE(is_callback_called);
+
+  // Remote is null when result is Unsupported which cannot be bound.
+  SKIP_TEST_IF(webnn_context_result ==
+               mojom::CreateContextResult::kNotSupported);
+
+  EXPECT_EQ(webnn_context_result, mojom::CreateContextResult::kOk);
   ASSERT_TRUE(webnn_context_remote.is_bound());
 
   // Build a simple graph with relu operator.
