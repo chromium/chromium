@@ -96,10 +96,6 @@ extern const char kAutofillEnableCardProductNameDescription[];
 extern const char kAutofillEnforceDelaysInStrikeDatabaseName[];
 extern const char kAutofillEnforceDelaysInStrikeDatabaseDescription[];
 
-// Title and description for the flag to fill promo code fields with Autofill.
-extern const char kAutofillFillMerchantPromoCodeFieldsName[];
-extern const char kAutofillFillMerchantPromoCodeFieldsDescription[];
-
 // Title and description for the flag to control the autofill delay.
 extern const char kAutofillIOSDelayBetweenFieldsName[];
 extern const char kAutofillIOSDelayBetweenFieldsDescription[];

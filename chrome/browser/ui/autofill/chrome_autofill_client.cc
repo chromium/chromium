@@ -239,10 +239,6 @@ ChromeAutofillClient::GetPlusAddressService() {
 }
 
 MerchantPromoCodeManager* ChromeAutofillClient::GetMerchantPromoCodeManager() {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillFillMerchantPromoCodeFields)) {
-    return nullptr;
-  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return MerchantPromoCodeManagerFactory::GetForProfile(profile);

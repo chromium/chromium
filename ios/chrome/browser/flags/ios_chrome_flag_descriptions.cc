@@ -113,12 +113,6 @@ const char kAutofillEnforceDelaysInStrikeDatabaseDescription[] =
     "When enabled, if previous Autofill feature offer was declined, "
     "Chrome will wait for sometime before showing the offer again.";
 
-const char kAutofillFillMerchantPromoCodeFieldsName[] =
-    "Enable Autofill of promo code fields in forms";
-const char kAutofillFillMerchantPromoCodeFieldsDescription[] =
-    "When enabled, Autofill will attempt to fill merchant promo/coupon/gift "
-    "code fields when data is available.";
-
 const char kAutofillIOSDelayBetweenFieldsName[] = "Autofill delay";
 const char kAutofillIOSDelayBetweenFieldsDescription[] =
     "Delay between the different fields of a form being autofilled. In "

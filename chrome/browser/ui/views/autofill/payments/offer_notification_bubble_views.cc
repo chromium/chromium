@@ -62,12 +62,7 @@ void OfferNotificationBubbleViews::Init() {
       InitWithCardLinkedOfferContent();
       return;
     case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillFillMerchantPromoCodeFields)) {
-        InitWithGPayPromoCodeOfferContent();
-      } else {
-        InitWithFreeListingCouponOfferContent();
-      }
+      InitWithGPayPromoCodeOfferContent();
       return;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       InitWithFreeListingCouponOfferContent();
@@ -82,13 +77,7 @@ void OfferNotificationBubbleViews::AddedToWidget() {
       GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_G));
 
   // Set the header image for free listing coupon notification bubble.
-  // If the promo code field autofill feature is off, we also need to add this
-  // image for GPay promo code offer because we are showing the free listing
-  // coupon bubble in this case.
-  if (controller_->GetOffer()->IsFreeListingCouponOffer() ||
-      (!base::FeatureList::IsEnabled(
-           features::kAutofillFillMerchantPromoCodeFields) &&
-       controller_->GetOffer()->IsGPayPromoCodeOffer())) {
+  if (controller_->GetOffer()->IsFreeListingCouponOffer()) {
     ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
     auto* autofill_offers_banner =
         bundle.GetImageSkiaNamed(IDR_AUTOFILL_OFFERS);

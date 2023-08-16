@@ -194,12 +194,6 @@ BASE_FEATURE(kAutofillEnforceDelaysInStrikeDatabase,
              "AutofillEnforceDelaysInStrikeDatabase_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, Autofill will attempt to fill merchant promo/coupon/gift code
-// fields when data is available.
-BASE_FEATURE(kAutofillFillMerchantPromoCodeFields,
-             "AutofillFillMerchantPromoCodeFields_LAUNCHED",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, legal term of save card view and virtual card enroll view will
 // be moved before action buttons and icon will be moved after titles in those
 // views.

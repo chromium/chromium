@@ -240,9 +240,6 @@ TEST_F(SingleFieldFormFillRouterTest,
   for (bool test_field_should_autocomplete : {true, false}) {
     SCOPED_TRACE(testing::Message() << "test_field_should_autocomplete = "
                                     << test_field_should_autocomplete);
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {features::kAutofillFillMerchantPromoCodeFields}, {});
     auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
     test_field_.should_autocomplete = test_field_should_autocomplete;
 
@@ -264,9 +261,6 @@ TEST_F(SingleFieldFormFillRouterTest,
 // Ensure that the router routes to AutocompleteHistoryManager for this
 // OnGetSingleFieldSuggestions call if MerchantPromoCodeManager is not present.
 TEST_F(SingleFieldFormFillRouterTest, MerchantPromoCodeManagerNotPresent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillFillMerchantPromoCodeFields}, {});
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
 
   // This also invalidates the WeakPtr that the `single_field_form_fill_router_`
@@ -292,9 +286,6 @@ TEST_F(SingleFieldFormFillRouterTest, MerchantPromoCodeManagerNotPresent) {
 // OnGetSingleFieldSuggestions call if
 // MerchantPromoCodeManager::OnGetSingleFieldSuggestions() returns false.
 TEST_F(SingleFieldFormFillRouterTest, MerchantPromoCodeManagerReturnedFalse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillFillMerchantPromoCodeFields}, {});
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
 
   // Mock MerchantPromoCodeManager::OnGetSingleFieldSuggestions() returning
@@ -346,9 +337,6 @@ TEST_F(SingleFieldFormFillRouterTest,
 TEST_F(
     SingleFieldFormFillRouterTest,
     FieldNotEligibleForAnySingleFieldFormFiller_OnGetSingleFieldSuggestions) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillFillMerchantPromoCodeFields}, {});
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
 
   EXPECT_CALL(*merchant_promo_code_manager_, OnGetSingleFieldSuggestions)

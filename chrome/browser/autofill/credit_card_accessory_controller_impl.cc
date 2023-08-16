@@ -197,11 +197,8 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
       AccessoryTabType::CREDIT_CARDS, GetTitle(has_suggestions),
       std::move(info_to_add), std::move(footer_commands));
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillFillMerchantPromoCodeFields)) {
-    for (auto* offer : GetPromoCodeOffers()) {
-      data.add_promo_code_info(TranslateOffer(offer));
-    }
+  for (auto* offer : GetPromoCodeOffers()) {
+    data.add_promo_code_info(TranslateOffer(offer));
   }
 
   if (has_suggestions && !allow_filling && autofill_manager) {

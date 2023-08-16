@@ -43,16 +43,14 @@ OfferNotificationBubbleViewsTestBase::OfferNotificationBubbleViewsTestBase(
         /*enabled_features=*/
         {{commerce::kRetailCoupons,
           {{commerce::kRetailCouponsWithCodeParam, "true"}}},
-         {features::kAutofillEnableOfferNotificationForPromoCodes, {}},
-         {features::kAutofillFillMerchantPromoCodeFields, {}}},
+         {features::kAutofillEnableOfferNotificationForPromoCodes, {}}},
         /*disabled_features=*/{});
   } else {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{
             commerce::kRetailCoupons,
-            features::kAutofillEnableOfferNotificationForPromoCodes,
-            features::kAutofillFillMerchantPromoCodeFields});
+            features::kAutofillEnableOfferNotificationForPromoCodes});
   }
 }
 
