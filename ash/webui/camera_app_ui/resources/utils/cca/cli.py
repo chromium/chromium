@@ -61,7 +61,7 @@ class _Command:
             parser: The parser of the current command node.
             func: The handler function of the current command node.
         """
-        for opt in self._options:
+        for opt in reversed(self._options):
             parser.add_argument(*opt.args, **opt.kwargs)
         parser.set_defaults(_cmd=self, _parser=parser)
 
