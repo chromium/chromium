@@ -403,7 +403,8 @@ void SurfaceTreeHost::SubmitEmptyCompositorFrame() {
   frame_callbacks_.emplace();
   active_presentation_callbacks_[frame.metadata.frame_token] =
       PresentationCallbacks();
-  layer_tree_frame_sink_holder_->SubmitCompositorFrame(std::move(frame));
+  layer_tree_frame_sink_holder_->SubmitCompositorFrame(std::move(frame),
+                                                       /*submit_now=*/true);
 }
 
 void SurfaceTreeHost::UpdateHostWindowSizeAndRootSurfaceOrigin() {
