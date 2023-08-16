@@ -94,6 +94,12 @@ constexpr int ToInt(RecordingType type) {
   return static_cast<int>(type);
 }
 
+// The concrete type of the capture session instance.
+enum class SessionType {
+  kNull,
+  kReal,
+};
+
 }  // namespace ash
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_TYPES_H_

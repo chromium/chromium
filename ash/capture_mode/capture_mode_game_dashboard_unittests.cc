@@ -103,7 +103,7 @@ class GameDashboardCaptureModeTest : public AshTestBase {
 
 TEST_F(GameDashboardCaptureModeTest, GameDashboardBehavior) {
   CaptureModeController* controller = StartGameCaptureModeSession();
-  CaptureModeSession* session = controller->capture_mode_session();
+  BaseCaptureModeSession* session = controller->capture_mode_session();
   CaptureModeBehavior* active_behavior = session->active_behavior();
   ASSERT_TRUE(active_behavior);
 
@@ -138,7 +138,8 @@ TEST_F(GameDashboardCaptureModeTest, StartForGameDashboardTest) {
   std::unique_ptr<aura::Window> other_window(
       CreateAppWindow(gfx::Rect(0, 300, 500, 300)));
   CaptureModeController* controller = StartGameCaptureModeSession();
-  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  BaseCaptureModeSession* capture_mode_session =
+      controller->capture_mode_session();
   ASSERT_TRUE(capture_mode_session);
   EXPECT_EQ(capture_mode_session->GetSelectedWindow(), game_window());
 
@@ -169,7 +170,7 @@ TEST_F(GameDashboardCaptureModeTest, CaptureBar) {
   EXPECT_TRUE(GetSettingsButton());
   EXPECT_TRUE(GetCloseButton());
 
-  CaptureModeSession* session = controller->capture_mode_session();
+  BaseCaptureModeSession* session = controller->capture_mode_session();
   EXPECT_EQ(game_window(), session->GetSelectedWindow());
   // Clicking the start recording button should start the video recording.
   ClickOnView(start_recording_button, GetEventGenerator());
@@ -222,7 +223,7 @@ TEST_F(GameDashboardCaptureModeTest, CaptureBarPositionOnDisplayRotation) {
 // notification view with 'Share to YouTube' button and 'delete' buttons.
 TEST_F(GameDashboardCaptureModeTest, NotificationView) {
   CaptureModeController* controller = StartGameCaptureModeSession();
-  CaptureModeSession* session = controller->capture_mode_session();
+  BaseCaptureModeSession* session = controller->capture_mode_session();
   CaptureModeBehavior* active_behavior = session->active_behavior();
   ASSERT_TRUE(active_behavior);
   StartVideoRecordingImmediately();
@@ -422,7 +423,8 @@ TEST_F(GameDashboardCaptureModeTest, MultiDisplay) {
 
   display::Screen* screen = display::Screen::GetScreen();
   auto* controller = StartGameCaptureModeSession();
-  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  BaseCaptureModeSession* capture_mode_session =
+      controller->capture_mode_session();
   auto* event_generator = GetEventGenerator();
   EXPECT_EQ(displays[0].id(),
             screen->GetDisplayNearestWindow(game_window()).id());
@@ -466,7 +468,7 @@ TEST_F(GameDashboardCaptureModeTest, MultiDisplay) {
 TEST_F(GameDashboardCaptureModeTest, NoLabelInTabletMode) {
   auto* controller = StartGameCaptureModeSession();
 
-  CaptureModeSession* session = controller->capture_mode_session();
+  BaseCaptureModeSession* session = controller->capture_mode_session();
   ASSERT_EQ(game_window(), session->GetSelectedWindow());
 
   SwitchToTabletMode();
@@ -480,7 +482,7 @@ TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightFullAboveBar) {
   UpdateDisplay("1000x500");
   game_window()->SetBounds(gfx::Rect(0, 50, 500, 450));
   StartGameCaptureModeSession();
-  CaptureModeSession* session =
+  BaseCaptureModeSession* session =
       CaptureModeController::Get()->capture_mode_session();
   ASSERT_TRUE(session);
 
@@ -507,7 +509,7 @@ TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightFullBelowBar) {
   UpdateDisplay("1000x500");
   game_window()->SetBounds(gfx::Rect(0, 0, 500, 100));
   StartGameCaptureModeSession();
-  CaptureModeSession* session =
+  BaseCaptureModeSession* session =
       CaptureModeController::Get()->capture_mode_session();
   ASSERT_TRUE(session);
 
@@ -538,7 +540,7 @@ TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightConstrainedAboveBar) {
   UpdateDisplay("1000x250");
   game_window()->SetBounds(gfx::Rect(0, 50, 500, 200));
   StartGameCaptureModeSession();
-  CaptureModeSession* session =
+  BaseCaptureModeSession* session =
       CaptureModeController::Get()->capture_mode_session();
   ASSERT_TRUE(session);
 
@@ -565,7 +567,7 @@ TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightConstrainedBelowBar) {
   UpdateDisplay("1000x500");
   game_window()->SetBounds(gfx::Rect(0, 0, 500, 200));
   StartGameCaptureModeSession();
-  CaptureModeSession* session =
+  BaseCaptureModeSession* session =
       CaptureModeController::Get()->capture_mode_session();
   ASSERT_TRUE(session);
 
@@ -594,7 +596,7 @@ TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightMinimumAboveBar) {
   UpdateDisplay("1000x100");
   game_window()->SetBounds(gfx::Rect(0, 50, 500, 50));
   StartGameCaptureModeSession();
-  CaptureModeSession* session =
+  BaseCaptureModeSession* session =
       CaptureModeController::Get()->capture_mode_session();
   ASSERT_TRUE(session);
 
@@ -629,7 +631,7 @@ TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightMinimumBelowBar) {
   UpdateDisplay("1000x100");
   game_window()->SetBounds(gfx::Rect(0, 0, 500, 50));
   StartGameCaptureModeSession();
-  CaptureModeSession* session =
+  BaseCaptureModeSession* session =
       CaptureModeController::Get()->capture_mode_session();
   ASSERT_TRUE(session);
 
@@ -650,6 +652,41 @@ TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightMinimumBelowBar) {
   EXPECT_EQ(
       settings_bounds.size(),
       CaptureModeSettingsTestApi().GetSettingsView()->GetVisibleRect().size());
+}
+
+TEST_F(GameDashboardCaptureModeTest, GameCaptureModeRecordInstantlyTest) {
+  // Start a game dashboard initiated capture mode session and check the initial
+  // configs for game dashboard initiated capture mode.
+  auto* controller = StartGameCaptureModeSession();
+  EXPECT_FALSE(controller->enable_demo_tools());
+  EXPECT_EQ(controller->audio_recording_mode(),
+            features::IsCaptureModeAudioMixingEnabled()
+                ? AudioRecordingMode::kSystemAndMicrophone
+                : AudioRecordingMode::kMicrophone);
+
+  // Update the audio recording mode and demo tools configs for the
+  // game-dashboard initiated capture mode.
+  controller->SetAudioRecordingMode(AudioRecordingMode::kOff);
+  controller->EnableDemoTools(true);
+  controller->Stop();
+
+  // Start the recording with the game dashboard instant recording API.
+  controller->StartRecordingInstantlyForGameDashboard(game_window());
+
+  // Verify that recording starts immediately.
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // Verify that the game dashboard capture mode configs are not overwritten.
+  CaptureModeBehavior* behavior =
+      CaptureModeTestApi().GetBehavior(BehaviorType::kGameDashboard);
+  const auto capture_mode_configs = behavior->capture_mode_configs();
+  EXPECT_EQ(capture_mode_configs.audio_recording_mode,
+            AudioRecordingMode::kOff);
+  EXPECT_TRUE(capture_mode_configs.demo_tools_enabled);
+
+  // Verify that the configs in `CaptureModeController` are restored.
+  EXPECT_EQ(controller->audio_recording_mode(), AudioRecordingMode::kOff);
+  EXPECT_FALSE(controller->enable_demo_tools());
 }
 
 // -----------------------------------------------------------------------------
@@ -926,6 +963,27 @@ TEST_P(GameDashboardCaptureModeHistogramTest,
   const auto file_saved_path = WaitForCaptureFileToBeSaved();
   histogram_tester_.ExpectBucketCount(
       histogram_name, CaptureModeSaveToLocation::kCustomizedFolder, 1);
+}
+
+// Tests that the entry point metrics are recorded correctly for game dashboard
+// initiated capture mode both with and without a capture mode session.
+TEST_P(GameDashboardCaptureModeHistogramTest, EntryPointTest) {
+  constexpr char kCaptureConfigurationBase[] = "EntryPoint";
+  CaptureModeTestApi test_api;
+  const std::string histogram_name =
+      BuildHistogramName(kCaptureConfigurationBase, nullptr,
+                         /*append_ui_mode_suffix=*/true);
+  histogram_tester_.ExpectBucketCount(histogram_name,
+                                      CaptureModeEntryType::kGameDashboard, 0);
+
+  auto* controller = StartGameCaptureModeSession();
+  controller->Stop();
+  histogram_tester_.ExpectBucketCount(histogram_name,
+                                      CaptureModeEntryType::kGameDashboard, 1);
+
+  controller->StartRecordingInstantlyForGameDashboard(game_window());
+  histogram_tester_.ExpectBucketCount(histogram_name,
+                                      CaptureModeEntryType::kGameDashboard, 2);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

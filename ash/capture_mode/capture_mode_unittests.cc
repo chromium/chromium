@@ -330,9 +330,10 @@ class CaptureModeTest : public AshTestBase {
   }
 
   void OpenSettingsView() {
-    CaptureModeSession* session =
-        CaptureModeController::Get()->capture_mode_session();
+    auto* session = static_cast<CaptureModeSession*>(
+        CaptureModeController::Get()->capture_mode_session());
     DCHECK(session);
+    ASSERT_EQ(session->session_type(), SessionType::kReal);
     ClickOnView(CaptureModeSessionTestApi(session)
                     .GetCaptureModeBarView()
                     ->settings_button(),
@@ -2267,7 +2268,9 @@ TEST_F(CaptureModeTest, DISABLED_VerifyWindowRecordingVideoFrames) {
 TEST_F(CaptureModeTest, ReturnFocusToSettingsButtonAfterSettingsMenuIsClosed) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kImage);
-  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  auto* capture_mode_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_mode_session->session_type(), SessionType::kReal);
   CaptureModeSessionTestApi test_api(capture_mode_session);
 
   using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
@@ -2340,7 +2343,9 @@ TEST_F(CaptureModeTest, IgnoreMinimizeWindowsInKWindow) {
 
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
-  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  auto* capture_mode_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_mode_session->session_type(), SessionType::kReal);
   CaptureModeSessionTestApi test_api(capture_mode_session);
   using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
   auto* event_generator = GetEventGenerator();
@@ -2399,7 +2404,9 @@ TEST_F(CaptureModeTest, PartiallyOccludedWindowIsFocusableInKWindow) {
 
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
-  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  auto* capture_mode_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_mode_session->session_type(), SessionType::kReal);
   CaptureModeSessionTestApi test_api(capture_mode_session);
   using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
   auto* event_generator = GetEventGenerator();
@@ -2460,7 +2467,9 @@ TEST_F(CaptureModeTest, IgnoreFullyOccludedWindowWhileTabbingInKWindow) {
 
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
-  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  auto* capture_mode_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_mode_session->session_type(), SessionType::kReal);
   CaptureModeSessionTestApi test_api(capture_mode_session);
   using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
   auto* event_generator = GetEventGenerator();
@@ -2497,7 +2506,9 @@ TEST_F(CaptureModeTest, OnlyAdvanceFocusWhenTabShiftPressed) {
 
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
-  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  auto* capture_mode_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_mode_session->session_type(), SessionType::kReal);
   CaptureModeSessionTestApi test_api(capture_mode_session);
   using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
   auto* event_generator = GetEventGenerator();
@@ -3696,7 +3707,9 @@ TEST_F(CaptureModeTest, KeyboardNavigationTabThroughWindowsOnMultipleDisplays) {
 
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
-  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  auto* capture_mode_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_mode_session->session_type(), SessionType::kReal);
 
   using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
   CaptureModeSessionTestApi test_api(capture_mode_session);
@@ -4428,7 +4441,9 @@ TEST_F(CaptureModeTest, CaptureBarAndSettingsMenuVisibilityDrawingRegion) {
   auto* capture_bar_widget = GetCaptureModeBarWidget();
   ui::Layer* capture_bar_layer = capture_bar_widget->GetLayer();
   EXPECT_TRUE(controller->IsActive());
-  auto* session = CaptureModeController::Get()->capture_mode_session();
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(session->session_type(), SessionType::kReal);
 
   // Test the settings menu and capture bar are hidden when the user clicks to
   // start selecting a region.
@@ -4645,7 +4660,9 @@ TEST_F(CaptureModeTest, CaptureModeDefaultBehavior) {
   CaptureModeController* controller = StartCaptureSession(
       CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   ASSERT_TRUE(controller->IsActive());
-  CaptureModeSession* session = controller->capture_mode_session();
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(session->session_type(), SessionType::kReal);
   const CaptureModeBehavior* active_behavior = session->active_behavior();
   ASSERT_TRUE(active_behavior);
 
@@ -5758,8 +5775,10 @@ TEST_P(ProjectorCaptureModeIntegrationTests, ProjectorBehavior) {
   EXPECT_TRUE(projector_helper_.CanStartProjectorSession());
   StartProjectorModeSession();
   ASSERT_TRUE(controller->IsActive());
-  CaptureModeSession* session = controller->capture_mode_session();
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
   ASSERT_TRUE(session);
+  ASSERT_EQ(session->session_type(), SessionType::kReal);
   const CaptureModeBehavior* projector_active_behavior =
       session->active_behavior();
   ASSERT_TRUE(projector_active_behavior);
@@ -6225,7 +6244,9 @@ class CaptureModeNudgeDismissalTest
 
 TEST_P(CaptureModeNudgeDismissalTest, NudgeDismissedForever) {
   auto* controller = StartSession();
-  auto* capture_session = controller->capture_mode_session();
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
   auto* capture_toast_controller = capture_session->capture_toast_controller();
   auto* nudge_controller = GetUserNudgeController();
   ASSERT_TRUE(nudge_controller);
@@ -6266,7 +6287,9 @@ TEST_F(CaptureModeSettingsTest, NudgeChangesRootWithBar) {
 
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kImage);
-  auto* session = controller->capture_mode_session();
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(session->session_type(), SessionType::kReal);
   auto* capture_toast_controller = session->capture_toast_controller();
 
   EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
@@ -6290,7 +6313,9 @@ TEST_F(CaptureModeSettingsTest, NudgeBehaviorWhenSelectingRegion) {
   event_generator->MoveMouseTo(gfx::Point(100, 500));
 
   auto* controller = StartImageRegionCapture();
-  auto* session = controller->capture_mode_session();
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(session->session_type(), SessionType::kReal);
   EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
 
   // Nudge hides while selecting a region, but doesn't change roots until the

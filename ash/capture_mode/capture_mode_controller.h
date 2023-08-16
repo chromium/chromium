@@ -49,7 +49,7 @@ namespace ash {
 class CaptureModeBehavior;
 class CaptureModeCameraController;
 class CaptureModeObserver;
-class CaptureModeSession;
+class BaseCaptureModeSession;
 
 // Defines a callback type that will be invoked when an attempt to delete the
 // given `path` is completed with the given status `delete_successful`.
@@ -109,7 +109,7 @@ class ASH_EXPORT CaptureModeController
   AudioRecordingMode audio_recording_mode() const {
     return audio_recording_mode_;
   }
-  CaptureModeSession* capture_mode_session() const {
+  BaseCaptureModeSession* capture_mode_session() const {
     return capture_mode_session_.get();
   }
   gfx::Rect user_capture_region() const { return user_capture_region_; }
@@ -122,7 +122,8 @@ class ASH_EXPORT CaptureModeController
 
   // Returns true if a capture mode session is currently active. If you only
   // need to call this method, but don't need the rest of the controller, use
-  // capture_mode_util::IsCaptureModeActive().
+  // capture_mode_util::IsCaptureModeActive(). Note that null sessions can still
+  // return `true`.
   bool IsActive() const;
 
   // Returns the effective audio recording mode, taking into account the
@@ -168,6 +169,10 @@ class ASH_EXPORT CaptureModeController
   // Starts a new capture session with a pre-selected window which will be
   // observed throughout the session and can't be altered.
   void StartForGameDashboard(aura::Window* game_window);
+
+  // Starts recording a pre-selected game window as soon as possible without
+  // starting a countdown by using a null session.
+  void StartRecordingInstantlyForGameDashboard(aura::Window* game_window);
 
   // Stops an existing capture session.
   void Stop();
@@ -333,6 +338,13 @@ class ASH_EXPORT CaptureModeController
  private:
   friend class CaptureModeTestApi;
   friend class VideoRecordingWatcher;
+
+  // Performs the necessary setup common to all start methods (excluding
+  // testing-only methods).
+  void StartInternal(
+      SessionType session_type,
+      CaptureModeEntryType entry_type,
+      OnSessionStartAttemptCallback callback = base::DoNothing());
 
   // Called by |video_recording_watcher_| when the display on which recording is
   // happening changes its bounds such as on display rotation or device scale
@@ -528,7 +540,8 @@ class ASH_EXPORT CaptureModeController
   // whether a pending session initialization should `proceed` or abort due to
   // some restricted contents on the screen. `at_exit_closure` is passed from
   // `Start()` and will be called on the exit of the function.
-  void OnDlpRestrictionCheckedAtSessionInit(CaptureModeEntryType entry_type,
+  void OnDlpRestrictionCheckedAtSessionInit(SessionType session_type,
+                                            CaptureModeEntryType entry_type,
                                             base::OnceClosure at_exit_closure,
                                             bool proceed);
 
@@ -615,7 +628,7 @@ class ASH_EXPORT CaptureModeController
   // a message to the user instructing them to start selecting a region.
   gfx::Rect user_capture_region_;
 
-  std::unique_ptr<CaptureModeSession> capture_mode_session_;
+  std::unique_ptr<BaseCaptureModeSession> capture_mode_session_;
 
   // Remember the user selected preference for audio recording between sessions.
   // Initially, this value is set to `kOff`, ensuring that this is an opt-in

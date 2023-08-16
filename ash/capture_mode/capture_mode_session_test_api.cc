@@ -6,20 +6,26 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
 
 namespace ash {
 
 CaptureModeSessionTestApi::CaptureModeSessionTestApi()
-    : session_(CaptureModeController::Get()->capture_mode_session()) {
+    // Will we have to change this test API to use BaseCaptureModeSession,
+    // despite it not being used for the null session?
+    : session_(static_cast<CaptureModeSession*>(
+          CaptureModeController::Get()->capture_mode_session())) {
   DCHECK(CaptureModeController::Get()->IsActive());
   DCHECK(session_);
+  CHECK_EQ(session_->session_type(), SessionType::kReal);
 }
 
 CaptureModeSessionTestApi::CaptureModeSessionTestApi(
-    CaptureModeSession* session)
-    : session_(session) {
+    BaseCaptureModeSession* session)
+    : session_(static_cast<CaptureModeSession*>(session)) {
   DCHECK(session_);
+  CHECK_EQ(session_->session_type(), SessionType::kReal);
 }
 
 CaptureModeBarView* CaptureModeSessionTestApi::GetCaptureModeBarView() {

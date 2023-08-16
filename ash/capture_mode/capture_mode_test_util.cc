@@ -195,7 +195,7 @@ void ClickOrTapView(const views::View* view,
 views::Widget* GetCaptureModeBarWidget() {
   auto* session = CaptureModeController::Get()->capture_mode_session();
   DCHECK(session);
-  return session->capture_mode_bar_widget();
+  return session->GetCaptureModeBarWidget();
 }
 
 CaptureModeBarView* GetCaptureModeBarView() {

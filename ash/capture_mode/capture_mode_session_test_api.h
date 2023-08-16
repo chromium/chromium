@@ -14,9 +14,9 @@ class Label;
 
 namespace ash {
 
+class BaseCaptureModeSession;
 class CaptureLabelView;
 class CaptureModeBarView;
-class CaptureModeSession;
 class CaptureModeSettingsView;
 class MagnifierGlass;
 class RecordingTypeMenuView;
@@ -26,7 +26,7 @@ class UserNudgeController;
 class CaptureModeSessionTestApi {
  public:
   CaptureModeSessionTestApi();
-  explicit CaptureModeSessionTestApi(CaptureModeSession* session);
+  explicit CaptureModeSessionTestApi(BaseCaptureModeSession* session);
 
   CaptureModeSessionTestApi(CaptureModeSessionTestApi&) = delete;
   CaptureModeSessionTestApi& operator=(CaptureModeSessionTestApi&) = delete;

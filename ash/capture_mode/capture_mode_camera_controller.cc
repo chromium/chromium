@@ -589,8 +589,9 @@ void CaptureModeCameraController::StartDraggingPreview(
   camera_preview_view_->RefreshResizeButtonVisibility();
 
   auto* controller = CaptureModeController::Get();
-  if (controller->IsActive())
+  if (controller->IsActive()) {
     controller->capture_mode_session()->OnCameraPreviewDragStarted();
+  }
 
   // Use cursor compositing instead of the platform cursor when dragging to
   // ensure the cursor is aligned with the camera preview.

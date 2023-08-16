@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_ash_notification_view.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
@@ -15,6 +16,7 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/capture_mode/null_capture_mode_session.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/capture_mode/recording_overlay_view.h"
@@ -472,6 +474,24 @@ int GetFileSizeInKB(const base::FilePath& file_path) {
   return size_in_bytes / 1024;
 }
 
+// Creates a new `CaptureModeSession` based on the given `session_type`. Can be
+// a regular session or a null session.
+std::unique_ptr<BaseCaptureModeSession> CreateSession(
+    SessionType session_type,
+    CaptureModeController* controller,
+    CaptureModeBehavior* active_behavior) {
+  switch (session_type) {
+    case SessionType::kReal:
+      return std::make_unique<CaptureModeSession>(controller, active_behavior);
+
+    case SessionType::kNull:
+      return std::make_unique<NullCaptureModeSession>(controller,
+                                                      active_behavior);
+  }
+
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace
 
 CaptureModeController::CaptureModeController(
@@ -643,35 +663,28 @@ void CaptureModeController::EnableDemoTools(bool enable) {
 
 void CaptureModeController::Start(CaptureModeEntryType entry_type,
                                   OnSessionStartAttemptCallback callback) {
-  // To be invoked at the exit of this function or
-  // `OnDlpRestrictionCheckedAtSessionInit()`.
-  base::ScopedClosureRunner deferred_runner(base::BindOnce(
-      [](base::WeakPtr<CaptureModeController> controller,
-         OnSessionStartAttemptCallback callback, bool was_active) {
-        std::move(callback).Run(!was_active && controller &&
-                                controller->IsActive());
-      },
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback), IsActive()));
-
-  if (capture_mode_session_ || pending_dlp_check_)
-    return;
-
-  if (!delegate_->IsCaptureAllowedByPolicy()) {
-    ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
-    return;
-  }
-
-  pending_dlp_check_ = true;
-  delegate_->CheckCaptureModeInitRestrictionByDlp(base::BindOnce(
-      &CaptureModeController::OnDlpRestrictionCheckedAtSessionInit,
-      weak_ptr_factory_.GetWeakPtr(), entry_type, deferred_runner.Release()));
+  StartInternal(SessionType::kReal, entry_type, std::move(callback));
 }
 
 void CaptureModeController::StartForGameDashboard(aura::Window* game_window) {
   CHECK(GameDashboardController::IsGameWindow(game_window));
   CaptureModeBehavior* behavior = GetBehavior(BehaviorType::kGameDashboard);
   behavior->SetPreSelectedWindow(game_window);
-  Start(CaptureModeEntryType::kGameDashboard);
+  StartInternal(SessionType::kReal, CaptureModeEntryType::kGameDashboard);
+}
+
+void CaptureModeController::StartRecordingInstantlyForGameDashboard(
+    aura::Window* game_window) {
+  CHECK(GameDashboardController::IsGameWindow(game_window));
+  CaptureModeBehavior* behavior = GetBehavior(BehaviorType::kGameDashboard);
+  behavior->SetPreSelectedWindow(game_window);
+  StartInternal(SessionType::kNull, CaptureModeEntryType::kGameDashboard,
+                base::BindOnce([](bool success) {
+                  if (success) {
+                    // Session initialization was successful.
+                    CaptureModeController::Get()->PerformCapture();
+                  }
+                }));
 }
 
 void CaptureModeController::Stop() {
@@ -940,8 +953,10 @@ std::vector<aura::Window*>
 CaptureModeController::GetWindowsForCollisionAvoidance() const {
   std::vector<aura::Window*> windows_to_be_avoided;
   if (IsActive()) {
-    aura::Window* capture_bar_window =
-        capture_mode_session_->capture_mode_bar_widget()->GetNativeWindow();
+    const auto* capture_bar_widget =
+        capture_mode_session_->GetCaptureModeBarWidget();
+    CHECK(capture_bar_widget);
+    auto* capture_bar_window = capture_bar_widget->GetNativeWindow();
     windows_to_be_avoided.push_back(capture_bar_window);
   }
 
@@ -1122,6 +1137,36 @@ void CaptureModeController::AddObserver(CaptureModeObserver* observer) {
 
 void CaptureModeController::RemoveObserver(CaptureModeObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void CaptureModeController::StartInternal(
+    SessionType session_type,
+    CaptureModeEntryType entry_type,
+    OnSessionStartAttemptCallback callback) {
+  // To be invoked at the exit of this function or
+  // `OnDlpRestrictionCheckedAtSessionInit()`.
+  base::ScopedClosureRunner deferred_runner(base::BindOnce(
+      [](base::WeakPtr<CaptureModeController> controller,
+         OnSessionStartAttemptCallback callback, bool was_active) {
+        std::move(callback).Run(!was_active && controller &&
+                                controller->IsActive());
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), IsActive()));
+
+  if (capture_mode_session_ || pending_dlp_check_) {
+    return;
+  }
+
+  if (!delegate_->IsCaptureAllowedByPolicy()) {
+    ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
+    return;
+  }
+
+  pending_dlp_check_ = true;
+  delegate_->CheckCaptureModeInitRestrictionByDlp(base::BindOnce(
+      &CaptureModeController::OnDlpRestrictionCheckedAtSessionInit,
+      weak_ptr_factory_.GetWeakPtr(), session_type, entry_type,
+      deferred_runner.Release()));
 }
 
 void CaptureModeController::PushNewRootSizeToRecordingService(
@@ -2019,6 +2064,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
 }
 
 void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
+    SessionType session_type,
     CaptureModeEntryType entry_type,
     base::OnceClosure at_exit_closure,
     bool proceed) {
@@ -2081,7 +2127,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   delegate_->OnSessionStateChanged(/*started=*/true);
 
   capture_mode_session_ =
-      std::make_unique<CaptureModeSession>(this, GetBehavior(behavior_type));
+      CreateSession(session_type, this, GetBehavior(behavior_type));
   capture_mode_session_->Initialize();
   camera_controller_->OnCaptureSessionStarted();
 }

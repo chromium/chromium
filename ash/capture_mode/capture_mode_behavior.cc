@@ -8,10 +8,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
-#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/game_capture_bar_view.h"
@@ -199,7 +199,7 @@ class GameDashboardBehavior : public CaptureModeBehavior,
     SetCaptureModeSessionConfigs(capture_mode_configs_);
 
     CaptureModeController* controller = CaptureModeController::Get();
-    CaptureModeSession* session = controller->capture_mode_session();
+    BaseCaptureModeSession* session = controller->capture_mode_session();
     CHECK(session);
     if (!pre_selected_window_) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

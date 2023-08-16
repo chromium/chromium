@@ -928,7 +928,7 @@ aura::Window* CaptureModeSessionFocusCycler::GetA11yOverrideWindow() const {
     case FocusGroup::kCaptureWindow:
     case FocusGroup::kSettingsClose:
     case FocusGroup::kPendingSettings:
-      return session_->capture_mode_bar_widget()->GetNativeWindow();
+      return session_->GetCaptureModeBarWidget()->GetNativeWindow();
     case FocusGroup::kCameraPreview:
       return GetCameraPreviewWidget()->GetNativeWindow();
     case FocusGroup::kRecordingTypeMenu:

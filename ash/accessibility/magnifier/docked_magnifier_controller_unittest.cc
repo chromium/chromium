@@ -1027,8 +1027,8 @@ TEST_F(DockedMagnifierTest, CaptureMode) {
 
   // And the magnifier viewport follows the cursor when it's above the capture
   // mode bar.
-  auto* bar_widget = capture_mode_controller->capture_mode_session()
-                         ->capture_mode_bar_widget();
+  const auto* bar_widget = capture_mode_controller->capture_mode_session()
+                               ->GetCaptureModeBarWidget();
   point_of_interest = bar_widget->GetWindowBoundsInScreen().CenterPoint();
   event_generator->MoveMouseTo(point_of_interest);
   TestMagnifierLayerTransform(point_of_interest, root);

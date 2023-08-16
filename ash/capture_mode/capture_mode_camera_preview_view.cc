@@ -8,6 +8,7 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"

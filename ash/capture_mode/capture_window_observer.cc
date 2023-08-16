@@ -98,7 +98,7 @@ void CaptureWindowObserver::OnWindowBoundsChanged(
   // The bounds of the capture bar should be updated accordingly if the bounds
   // of the selected window has been updated.
   if (bar_anchored_to_window_ &&
-      capture_mode_session_->capture_mode_bar_widget()) {
+      capture_mode_session_->GetCaptureModeBarWidget()) {
     capture_mode_session_->RefreshBarWidgetBounds();
   }
 }

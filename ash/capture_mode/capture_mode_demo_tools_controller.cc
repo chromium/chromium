@@ -348,8 +348,9 @@ gfx::Rect CaptureModeDemoToolsController::CalculateKeyComboWidgetBounds()
   if (capture_mode_controller->IsActive() &&
       video_recording_watcher_->recording_source() !=
           CaptureModeSource::kWindow) {
-    auto* capture_bar_widget = capture_mode_controller->capture_mode_session()
-                                   ->capture_mode_bar_widget();
+    const auto* capture_bar_widget =
+        capture_mode_controller->capture_mode_session()
+            ->GetCaptureModeBarWidget();
     DCHECK(capture_bar_widget);
     key_combo_y = std::min(key_combo_y,
                            capture_bar_widget->GetWindowBoundsInScreen().y() -

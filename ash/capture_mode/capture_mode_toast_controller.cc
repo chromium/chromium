@@ -201,7 +201,7 @@ gfx::Rect CaptureModeToastController::CalculateToastWidgetBoundsInScreen()
 
   // Align the centers of the capture mode bar and the toast horizontally.
   const auto bar_widget_bounds_in_screen =
-      capture_session_->capture_mode_bar_widget()->GetWindowBoundsInScreen();
+      capture_session_->GetCaptureModeBarWidget()->GetWindowBoundsInScreen();
   bounds.set_x(bar_widget_bounds_in_screen.CenterPoint().x() -
                preferred_size.width() / 2);
   bounds.set_y(bar_widget_bounds_in_screen.y() - bounds.height() -

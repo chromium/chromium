@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "ash/accessibility/magnifier/magnifier_glass.h"
-#include "ash/ash_export.h"
+#include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_toast_controller.h"
@@ -23,7 +23,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_delegate.h"
-#include "ui/compositor/layer_owner.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
@@ -54,15 +53,17 @@ class WindowDimmer;
 // beneath the layer of the bar widget. This layer is used to paint a dimming
 // shield of the areas that won't be captured, and another bright region showing
 // the one that will be.
+//
+// TODO(hewer): Update the order of the functions and member variables to match
+// `BaseCaptureModeSession` in a follow-up CL.
 class ASH_EXPORT CaptureModeSession
-    : public ui::LayerOwner,
+    : public BaseCaptureModeSession,
       public ui::LayerDelegate,
       public ui::EventHandler,
       public TabletModeObserver,
       public aura::WindowObserver,
       public display::DisplayObserver,
-      public FolderSelectionDialogController::Delegate,
-      public ShellObserver {
+      public FolderSelectionDialogController::Delegate {
  public:
   // Centralized place to control the events, observe windows and create the
   // capture mode needed widgets including `capture_mode_bar_widget_`,
@@ -82,48 +83,19 @@ class ASH_EXPORT CaptureModeSession
   // capture button does not fit inside the capture region.
   static constexpr int kCaptureButtonDistanceFromRegionDp = 24;
 
-  aura::Window* current_root() const { return current_root_; }
-  views::Widget* capture_mode_bar_widget() {
-    return capture_mode_bar_widget_.get();
-  }
   views::Widget* capture_label_widget() { return capture_label_widget_.get(); }
   views::Widget* capture_mode_settings_widget() {
     return capture_mode_settings_widget_.get();
   }
-  void set_can_exit_on_escape(bool value) { can_exit_on_escape_ = value; }
   bool is_selecting_region() const { return is_selecting_region_; }
-  bool is_drag_in_progress() const { return is_drag_in_progress_; }
-  CaptureModeBehavior* active_behavior() { return active_behavior_; }
-  void set_a11y_alert_on_session_exit(bool value) {
-    a11y_alert_on_session_exit_ = value;
-  }
-  bool is_shutting_down() const { return is_shutting_down_; }
-  bool is_stopping_to_start_video_recording() const {
-    return is_stopping_to_start_video_recording_;
-  }
-  void set_is_stopping_to_start_video_recording(bool value) {
-    is_stopping_to_start_video_recording_ = value;
-  }
   CaptureModeToastController* capture_toast_controller() {
     return &capture_toast_controller_;
   }
 
-  // Initializes the capture mode session. This should be called right after the
-  // object is created.
-  void Initialize();
+  // BaseCaptureModeSession:
+  aura::Window* GetSelectedWindow() const override;
 
-  // Shuts down the capture mode session. This should be called right before the
-  // object is destroyed.
-  void Shutdown();
-
-  // Gets the current window selected for |kWindow| capture source. Returns
-  // nullptr if no window is available for selection.
-  aura::Window* GetSelectedWindow() const;
-
-  // Sets the pre-selected window to be observed by `capture_window_observer_`,
-  // once set, the window can't be altered throughout the entire capture
-  // session.
-  void SetPreSelectedWindow(aura::Window* pre_selected_window);
+  void SetPreSelectedWindow(aura::Window* pre_selected_window) override;
 
   // Called when a user toggles the capture source or capture type to announce
   // an accessibility alert. If `trigger_now` is true, it will announce
@@ -131,41 +103,28 @@ class ASH_EXPORT CaptureModeSession
   // the alert.
   void A11yAlertCaptureSource(bool trigger_now);
 
+  // TODO(hewer): Move this to private in a follow-up CL.
   // Called when switching a capture type from another capture type.
   void A11yAlertCaptureType();
 
-  // Called when either the capture source, type, recording type, audio
-  // recording mode or demo tools changes.
-  void OnCaptureSourceChanged(CaptureModeSource new_source);
-  void OnCaptureTypeChanged(CaptureModeType new_type);
-  void OnRecordingTypeChanged();
-  void OnAudioRecordingModeChanged();
-  void OnDemoToolsSettingsChanged();
+  void OnCaptureSourceChanged(CaptureModeSource new_source) override;
+  void OnCaptureTypeChanged(CaptureModeType new_type) override;
+  void OnRecordingTypeChanged() override;
+  void OnAudioRecordingModeChanged() override;
+  void OnDemoToolsSettingsChanged() override;
 
-  // When performing capture, or at the end of the 3-second count down, the DLP
-  // manager is checked for any restricted content. The DLP manager may choose
-  // to show a system-modal dialog to warn the user about some content they're
-  // about to capture. This function is called to prepare for this case by
-  // hiding all the capture mode UIs and stopping the consumption of input
-  // events, so users can interact with the dialog.
-  void OnWaitingForDlpConfirmationStarted();
+  void OnWaitingForDlpConfirmationStarted() override;
 
-  // This function is called when the DLP manager replies back. If `reshow_uis`
-  // is true, then we'll undo the hiding of all the capture mode UIs done in
-  // OnWaitingForDlpConfirmationStarted().
-  void OnWaitingForDlpConfirmationEnded(bool reshow_uis);
+  void OnWaitingForDlpConfirmationEnded(bool reshow_uis) override;
 
   // Called when the settings menu is toggled. If `by_key_event` is true, it
   // means that the settings menu is being opened or closed as a result of a key
   // event (e.g. pressing the space bar) on the settings button.
   void SetSettingsMenuShown(bool shown, bool by_key_event = false);
 
-  // Called when the user performs a capture. Records histograms related to this
-  // session.
-  void ReportSessionHistograms();
+  void ReportSessionHistograms() override;
 
-  // Called when starting 3-seconds count down before recording video.
-  void StartCountDown(base::OnceClosure countdown_finished_callback);
+  void StartCountDown(base::OnceClosure countdown_finished_callback) override;
 
   // Opens the dialog that lets users pick the folder to which they want the
   // captured files to be saved.
@@ -178,30 +137,13 @@ class ASH_EXPORT CaptureModeSession
   // anchored to a pre-selected window.
   bool IsBarAnchoredToWindow() const;
 
-  // Called when the capture folder may have changed to update the set of menu
-  // options in the settings menu and resize it so that it fits its potentially
-  // new contents.
-  void OnCaptureFolderMayHaveChanged();
+  void OnCaptureFolderMayHaveChanged() override;
 
-  // Called when we change the setting to force-use the default downloads folder
-  // as the save folder.
-  void OnDefaultCaptureFolderSelectionChanged();
+  void OnDefaultCaptureFolderSelectionChanged() override;
 
-  // Returns the current parent window for the on-capture-surface widgets such
-  // as `CaptureModeCameraController::camera_preview_widget_` and
-  // `CaptureModeDemoToolsController::key_combo_widget_` when capture mode
-  // session is active.
-  aura::Window* GetOnCaptureSurfaceWidgetParentWindow() const;
+  bool CalculateCameraPreviewTargetVisibility() const override;
 
-  // Returns the confine bounds for the on-capture-surface widgets (such as the
-  // camera preview widget and key combo widget) when capture session is active.
-  gfx::Rect GetCaptureSurfaceConfineBounds() const;
-
-  // Returns the in-session target value that should be used for the visibility
-  // of the camera preview (if any). During the session, things like dragging
-  // the user region may affect the camera preview's visibility, and hence this
-  // function should be consulted.
-  bool CalculateCameraPreviewTargetVisibility() const;
+  views::Widget* GetCaptureModeBarWidget() override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -219,9 +161,6 @@ class ASH_EXPORT CaptureModeSession
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
-
-  // ShellObserver:
-  void OnRootWindowWillShutdown(aura::Window* root_window) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -253,36 +192,26 @@ class ASH_EXPORT CaptureModeSession
   void MaybeUpdateCaptureUisOpacity(
       absl::optional<gfx::Point> cursor_screen_location = absl::nullopt);
 
-  void OnCameraPreviewDragStarted();
+  void OnCameraPreviewDragStarted() override;
   void OnCameraPreviewDragEnded(const gfx::Point& screen_location,
-                                bool is_touch);
+                                bool is_touch) override;
 
-  // Called every time when camera preview is updated.
-  // `capture_surface_became_too_small` indicates whether the camera preview
-  // becomes invisible is due to the capture surface becoming too small.
-  // `did_bounds_or_visibility_change` determines whether the capture UIs'
-  // opacity should be updated.
   void OnCameraPreviewBoundsOrVisibilityChanged(
       bool capture_surface_became_too_small,
-      bool did_bounds_or_visibility_change);
+      bool did_bounds_or_visibility_change) override;
 
-  void OnCameraPreviewDestroyed();
+  void OnCameraPreviewDestroyed() override;
 
-  // If there's a user nudge currently showing, it will be dismissed forever,
-  // and will no longer be shown to the user.
-  void MaybeDismissUserNudgeForever();
+  void MaybeDismissUserNudgeForever() override;
 
   // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
   // the `current_root_`, potentially moving the bar to a new display if
   // `current_root_` is different`.
   void RefreshBarWidgetBounds();
 
-  // Handles changing `root_window_`. For example, moving the mouse cursor to
-  // another display, a display was removed or the game window of the
-  // `kGameDashboard` session was moved to another display. Moves the capture
-  // mode widgets to `new_root` depending on the capture mode source and whether
-  // it was a display removal.
-  void MaybeChangeRoot(aura::Window* new_root);
+  void MaybeChangeRoot(aura::Window* new_root) override;
+
+  std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
 
  private:
   friend class CaptureModeSettingsTestApi;
@@ -315,10 +244,6 @@ class ASH_EXPORT CaptureModeSession
   // could be shown, otherwise, returns false.
   bool CanShowWidget(views::Widget* widget) const;
 
-  // Triggers a selfie camera visibility update during capture mode session on
-  // capture mode type changed.
-  void MaybeUpdateSelfieCamInSessionVisibility();
-
   // If possible, this recreates and shows the nudge that alerts the user about
   // the new folder selection settings. The nudge will be created on top of the
   // the settings button on the capture mode bar.
@@ -332,9 +257,6 @@ class ASH_EXPORT CaptureModeSession
   // Called when the drop-down button in the `capture_label_widget_` is pressed
   // which toggles the recording type menu on and off.
   void OnRecordingTypeDropDownButtonPressed(const ui::Event& event);
-
-  // Gets the bounds of current window selected for |kWindow| capture source.
-  gfx::Rect GetSelectedWindowBounds() const;
 
   // Ensures that the bar widget is on top of everything, and the overlay (which
   // is the |layer()| of this class that paints the capture region) is stacked
@@ -468,15 +390,9 @@ class ASH_EXPORT CaptureModeSession
   // according to the current state.
   void MaybeUpdateRecordingTypeMenu();
 
-  const raw_ptr<CaptureModeController, ExperimentalAsh> controller_;
-
-  // The currently active capture mode behavior for this session which will be
-  // used to configure capture mode session differently with different modes.
-  const raw_ptr<CaptureModeBehavior, ExperimentalAsh> active_behavior_;
-
-  // The current root window on which the capture session is active, which may
-  // change if the user warps the cursor to another display in some situations.
-  raw_ptr<aura::Window, ExperimentalAsh> current_root_;
+  // BaseCaptureModeSession:
+  void InitInternal() override;
+  void ShutdownInternal() override;
 
   views::UniqueWidgetPtr capture_mode_bar_widget_ =
       std::make_unique<views::Widget>();
@@ -514,12 +430,6 @@ class ASH_EXPORT CaptureModeSession
   // True if all UIs (cursors, widgets, and paintings on the layer) of the
   // capture mode session is visible.
   bool is_all_uis_visible_ = true;
-
-  // Whether pressing the escape key can exit the session. This is used when we
-  // find capturable content at the end of the 3-second count down, but we need
-  // to do some extra asynchronous operations before we start the actual
-  // recording. At this point we don't want the user to be able to bail out.
-  bool can_exit_on_escape_ = true;
 
   // Stores the data needed to select a region during a region capture session.
   // This variable indicates if the user is currently selecting a region to
@@ -563,9 +473,6 @@ class ASH_EXPORT CaptureModeSession
   // The object to specify the cursor type.
   std::unique_ptr<CursorSetter> cursor_setter_;
 
-  // True when dragging is in progress.
-  bool is_drag_in_progress_ = false;
-
   // Counter used to track the number of times a user adjusts a capture region.
   // This should be reset when a user creates a new capture region, changes
   // capture sources or when a user performs a capture.
@@ -579,19 +486,8 @@ class ASH_EXPORT CaptureModeSession
   // null if no such window existed.
   raw_ptr<aura::Window, ExperimentalAsh> input_capture_window_ = nullptr;
 
-  // False only when we end the session to start recording.
-  bool a11y_alert_on_session_exit_ = true;
-
   // The display observer between init/shutdown.
   absl::optional<display::ScopedDisplayObserver> display_observer_;
-
-  // True once Shutdown() is called.
-  bool is_shutting_down_ = false;
-
-  // True when the session is being stopped to start video recording, at which
-  // point, it's guaranteed that recording will start and will not be blocked by
-  // any errors, DLP restrictions, or any user cancellation.
-  bool is_stopping_to_start_video_recording_ = false;
 
   // True when we ask the DLP manager to check the screen content before we
   // perform the capture.
