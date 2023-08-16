@@ -1432,8 +1432,12 @@ void RenderProcessHostImpl::ShutDownInProcessRenderer() {
     case 1: {
       RenderProcessHostImpl* host = static_cast<RenderProcessHostImpl*>(
           AllHostsIterator().GetCurrentValue());
-      for (auto& observer : host->observers_)
+      for (auto& observer : host->observers_) {
+        observer.InProcessRendererExiting(host);
+      }
+      for (auto& observer : host->observers_) {
         observer.RenderProcessHostDestroyed(host);
+      }
 #ifndef NDEBUG
       host->is_self_deleted_ = true;
 #endif
