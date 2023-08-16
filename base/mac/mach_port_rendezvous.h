@@ -15,8 +15,8 @@
 #include <string>
 
 #include "base/apple/dispatch_source_mach.h"
+#include "base/apple/scoped_dispatch_object.h"
 #include "base/base_export.h"
-#include "base/mac/scoped_dispatch_object.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"

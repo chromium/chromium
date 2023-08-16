@@ -4,7 +4,7 @@
 
 #include "base/apple/dispatch_source_mach.h"
 
-#include "base/mac/scoped_dispatch_object.h"
+#include "base/apple/scoped_dispatch_object.h"
 
 namespace base {
 

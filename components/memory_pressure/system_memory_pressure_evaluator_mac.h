@@ -8,8 +8,8 @@
 #include <CoreFoundation/CFDate.h>
 #include <dispatch/dispatch.h>
 
+#include "base/apple/scoped_dispatch_object.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_dispatch_object.h"
 #include "base/message_loop/message_pump_apple.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_MAC_SCOPED_DISPATCH_OBJECT_H_
-#define BASE_MAC_SCOPED_DISPATCH_OBJECT_H_
+#ifndef BASE_APPLE_SCOPED_DISPATCH_OBJECT_H_
+#define BASE_APPLE_SCOPED_DISPATCH_OBJECT_H_
 
 #include <dispatch/dispatch.h>
 
@@ -28,9 +28,7 @@ struct ScopedDispatchObjectTraits {
     dispatch_retain(object);
     return object;
   }
-  static void Release(T object) {
-    dispatch_release(object);
-  }
+  static void Release(T object) { dispatch_release(object); }
 };
 
 }  // namespace internal
@@ -41,4 +39,4 @@ using ScopedDispatchObject =
 
 }  // namespace base
 
-#endif  // BASE_MAC_SCOPED_DISPATCH_OBJECT_H_
+#endif  // BASE_APPLE_SCOPED_DISPATCH_OBJECT_H_
