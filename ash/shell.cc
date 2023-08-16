@@ -134,6 +134,7 @@
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/federated/federated_service_controller_impl.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/hotspot/hotspot_icon_animation.h"
 #include "ash/system/hotspot/hotspot_info_cache.h"
@@ -891,6 +892,10 @@ Shell::~Shell() {
   system_tray_model_.reset();
   system_sounds_delegate_.reset();
 
+  // This must be destroyed before `message_center_controller_` in order to
+  // restore the original settings if a focus session was active.
+  focus_mode_controller_.reset();
+
   // MultiDisplayMetricsController has a dependency on `mru_window_tracker_`.
   multi_display_metrics_controller_.reset();
 
@@ -1206,6 +1211,10 @@ void Shell::Init(
 
   capture_mode_controller_ = std::make_unique<CaptureModeController>(
       shell_delegate_->CreateCaptureModeDelegate());
+
+  if (features::IsFocusModeEnabled()) {
+    focus_mode_controller_ = std::make_unique<FocusModeController>();
+  }
 
   if (features::IsGameDashboardEnabled()) {
     game_dashboard_controller_ = std::make_unique<GameDashboardController>(

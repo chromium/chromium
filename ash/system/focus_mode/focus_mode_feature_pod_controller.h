@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_FOCUS_MODE_FOCUS_MODE_FEATURE_POD_CONTROLLER_H_
-#define ASH_WM_FOCUS_MODE_FOCUS_MODE_FEATURE_POD_CONTROLLER_H_
+#ifndef ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_FEATURE_POD_CONTROLLER_H_
+#define ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_FEATURE_POD_CONTROLLER_H_
 
 #include "ash/ash_export.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
@@ -20,7 +20,8 @@ class UnifiedSystemTrayController;
 // Focus Mode is enabled or disabled, and that allows users to navigate to a
 // more detailed page with the Focus Mode settings.
 class ASH_EXPORT FocusModeFeaturePodController
-    : public FeaturePodControllerBase {
+    : public FeaturePodControllerBase,
+      public FocusModeController::Observer {
  public:
   explicit FocusModeFeaturePodController(
       UnifiedSystemTrayController* tray_controller);
@@ -36,7 +37,13 @@ class ASH_EXPORT FocusModeFeaturePodController
   void OnIconPressed() override;
   void OnLabelPressed() override;
 
+  // FocusModeController::Observer:
+  void OnFocusModeChanged(bool in_focus_session) override;
+  void OnTimerTick() override;
+
  private:
+  void UpdateUI();
+
   const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
   raw_ptr<FeaturePodButton, ExperimentalAsh> button_ =
       nullptr;  // Owned by views hierarchy.
@@ -48,4 +55,4 @@ class ASH_EXPORT FocusModeFeaturePodController
 
 }  // namespace ash
 
-#endif  // ASH_WM_FOCUS_MODE_FOCUS_MODE_FEATURE_POD_CONTROLLER_H_
+#endif  // ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_FEATURE_POD_CONTROLLER_H_

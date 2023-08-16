@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_FOCUS_MODE_FOCUS_MODE_DETAILED_VIEW_H_
-#define ASH_WM_FOCUS_MODE_FOCUS_MODE_DETAILED_VIEW_H_
+#ifndef ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_DETAILED_VIEW_H_
+#define ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_DETAILED_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_detailed_view.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
@@ -40,4 +39,4 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView {
 
 }  // namespace ash
 
-#endif  // ASH_WM_FOCUS_MODE_FOCUS_MODE_DETAILED_VIEW_H_
+#endif  // ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_DETAILED_VIEW_H_

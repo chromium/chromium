@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/focus_mode/focus_mode_detailed_view.h"
+#include "ash/system/focus_mode/focus_mode_detailed_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/rounded_container.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
