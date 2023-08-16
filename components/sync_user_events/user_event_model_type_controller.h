@@ -39,7 +39,7 @@ class UserEventModelTypeController : public syncer::ModelTypeController,
   void OnStateChanged(syncer::SyncService* sync) override;
 
  private:
-  raw_ptr<SyncService> sync_service_;
+  const raw_ptr<SyncService> sync_service_;
 };
 
 }  // namespace syncer

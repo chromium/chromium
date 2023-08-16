@@ -82,7 +82,7 @@ class UserEventSyncBridge : public ModelTypeSyncBridge {
   std::multimap<int64_t, sync_pb::UserEventSpecifics>
       in_flight_nav_linked_events_;
 
-  raw_ptr<GlobalIdMapper> global_id_mapper_;
+  const raw_ptr<GlobalIdMapper> global_id_mapper_;
 
   base::WeakPtrFactory<UserEventSyncBridge> weak_ptr_factory_{this};
 };
