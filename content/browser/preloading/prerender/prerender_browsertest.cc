@@ -8160,7 +8160,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
 
   if (GetSpeculationEagerness() == blink::mojom::SpeculationEagerness::kEager) {
     if (IsRetriggerPreloadingOnBFCacheRestorationEnabled()) {
-      // preredering will be processed by retriggering.
+      // Prerendering will be processed by retriggering.
       WaitForPrerenderLoadCompletion(prerendering_url);
       int host_id_retriggered = GetHostForUrl(prerendering_url);
 
@@ -8246,7 +8246,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
     ExpectRestored(FROM_HERE);
 
     if (IsRetriggerPreloadingOnBFCacheRestorationEnabled()) {
-      // Preredering for both the page A and the page B will be processed by
+      // Prerendering for both the page A and the page B will be processed by
       // retriggering.
       WaitForPrerenderLoadCompletion(prerendering_url_a);
       WaitForPrerenderLoadCompletion(prerendering_url_b);
