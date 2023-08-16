@@ -13,12 +13,32 @@
 #include "ui/base/ui_base_features.h"
 
 namespace content_settings {
+namespace {
+
+// Get the local time, round down to midnight on the current day, and then load
+// this time as a base::Time UTC time.  This is unusual, but when we find the
+// TimeDelta::InDays() within GetDaysToExpiration() we want to make sure we're
+// counting actual days in the local timezone, not actual days in UTC time.
+base::Time LocalMidnightAsUTCTime(base::Time t) {
+  base::Time::Exploded exploded;
+  t.LocalExplode(&exploded);
+  exploded.hour = 0;
+  exploded.minute = 0;
+  exploded.second = 0;
+  exploded.millisecond = 0;
+
+  base::Time out;
+  bool result = base::Time::FromUTCExploded(exploded, &out);
+  DCHECK(result);
+  return out;
+}
+
+}  // namespace
 
 // static
 int CookieControlsUtil::GetDaysToExpiration(base::Time expiration) {
-  // TODO(crbug.com/1446230): Apply DST corrections.
-  const base::Time midnight_today = base::Time::Now().LocalMidnight();
-  const base::Time midnight_expiration = expiration.LocalMidnight();
+  const base::Time midnight_today = LocalMidnightAsUTCTime(base::Time::Now());
+  const base::Time midnight_expiration = LocalMidnightAsUTCTime(expiration);
   return (midnight_expiration - midnight_today).InDays();
 }
 
