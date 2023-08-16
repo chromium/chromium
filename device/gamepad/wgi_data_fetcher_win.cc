@@ -515,7 +515,7 @@ std::u16string WgiDataFetcherWin::BuildGamepadIdString(
   // Return early for GamepadId::kUnknownGamepad because
   // GetDeviceIdsFromGamepadId has a DCHECK against it.
   if (gamepad_id == GamepadId::kUnknownGamepad) {
-    return base::StringPrintf(u"%ls (STANDARD GAMEPAD)", display_name.data());
+    return display_name + u" (STANDARD GAMEPAD)";
   }
 
   uint16_t vendor_id, product_id;
@@ -524,9 +524,9 @@ std::u16string WgiDataFetcherWin::BuildGamepadIdString(
   XInputType xinput_type =
       GamepadIdList::Get().GetXInputType(vendor_id, product_id);
   if (xinput_type == kXInputTypeNone) {
-    return base::StringPrintf(
-        u"%ls (STANDARD GAMEPAD Vendor: %04x Product: %04x)",
-        display_name.data(), vendor_id, product_id);
+    return display_name + base::ASCIIToUTF16(base::StringPrintf(
+                              " (STANDARD GAMEPAD Vendor: %04x Product: %04x)",
+                              vendor_id, product_id));
   }
 
   // If the device is an already known XInput device that is now being
