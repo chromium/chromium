@@ -61,3 +61,27 @@ TEST_F(TranslateInfobarBannerOverlayMediatorTest, SetUpConsumer) {
                                                 kInfobarSymbolPointSize),
               consumer.iconImage);
 }
+
+// Ensures that calling the -bannerInfobarButtonWasPressed: after the infobar
+// has been removed does not cause a crash. This could happen if the infobar is
+// removed before the banner has finished appearing.
+TEST_F(TranslateInfobarBannerOverlayMediatorTest,
+       BannerInfobarButtonWasPressedAfterRemoval) {
+  std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
+      InfobarType::kInfobarTypeTranslate,
+      delegate_factory_.CreateFakeTranslateInfoBarDelegate("fr", "en"));
+
+  // Package the infobar into an OverlayRequest, then create a mediator that
+  // uses this request in order to set up a fake consumer.
+  std::unique_ptr<OverlayRequest> request =
+      OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
+          infobar.get(), InfobarOverlayType::kBanner);
+  TranslateInfobarBannerOverlayMediator* mediator =
+      [[TranslateInfobarBannerOverlayMediator alloc]
+          initWithRequest:request.get()];
+
+  // Removes the infobar.
+  infobar = nullptr;
+
+  [mediator bannerInfobarButtonWasPressed:nil];
+}
