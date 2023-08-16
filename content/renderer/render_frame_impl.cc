@@ -5346,6 +5346,16 @@ void RenderFrameImpl::BeginNavigation(
       !info->is_fullscreen_requested;
 
   if (should_do_synchronous_about_blank_navigation) {
+    if (!IsMainFrame()) {
+      // Synchronous about:blank commits on iframes should only be triggered
+      // when first creating the iframe with an unset/about:blank URL, which
+      // means the origin should inherit from the parent.
+      WebLocalFrame* parent = static_cast<WebLocalFrame*>(frame_->Parent());
+      CHECK(parent);
+      CHECK(parent->GetDocument().GetSecurityOrigin().IsSameOriginWith(
+          info->url_request.RequestorOrigin()));
+    }
+
     for (auto& observer : observers_)
       observer.DidStartNavigation(url, info->navigation_type);
     SynchronouslyCommitAboutBlankForBug778318(std::move(info));
