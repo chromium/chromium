@@ -4,7 +4,9 @@
 
 package org.chromium.components.browser_ui.widget.gesture;
 
+import androidx.activity.BackEventCompat;
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -99,4 +101,22 @@ public interface BackPressHandler {
     default ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return new ObservableSupplierImpl<>();
     }
+
+    /**
+     * API 34+ only. Triggered when a back press press is cancelled. In this case,
+     * {@link #handleBackPress()} must not be triggered any more.
+     */
+    default void handleOnBackCancelled() {}
+
+    /**
+     * API 34+ only. Triggered after a back press is started
+     * ({@link #handleOnBackStarted(BackEventCompat)}) and before a back press is released
+     * (either {@link #handleBackPress()} or {@link #handleOnBackCancelled()})
+     */
+    default void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {}
+
+    /**
+     * API 34+ only. Triggered when a back press event is initialized.
+     */
+    default void handleOnBackStarted(@NonNull BackEventCompat backEvent) {}
 }

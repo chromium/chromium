@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
+import androidx.activity.BackEventCompat;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -67,6 +68,7 @@ import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.chrome.browser.gesturenav.TabOnBackGestureHandler;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
@@ -157,6 +159,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -174,6 +177,7 @@ import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetError;
+import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -190,7 +194,7 @@ import java.util.List;
  */
 public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserver, TintObserver,
                                        MenuButtonDelegate, ChromeAccessibilityUtil.Observer,
-                                       TabObscuringHandler.Observer, BackPressHandler {
+                                       TabObscuringHandler.Observer {
     private final IncognitoStateProvider mIncognitoStateProvider;
     private final TabCountProvider mTabCountProvider;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
@@ -383,6 +387,47 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }
     }
 
+    private class OnBackPressHandler implements BackPressHandler {
+        private TabOnBackGestureHandler mHandler;
+
+        @Override
+        public int handleBackPress() {
+            int res = ToolbarManager.this.handleBackPress();
+            mHandler.onBackInvoked();
+            return res;
+        }
+
+        @Override
+        public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+            return ToolbarManager.this.mBackPressStateSupplier;
+        }
+
+        @Override
+        public void handleOnBackCancelled() {
+            mHandler.onBackCancelled();
+        }
+
+        @Override
+        public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+            mHandler.onBackProgressed(backEvent.getTouchX(), backEvent.getTouchY(),
+                    backEvent.getProgress(),
+                    backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
+                            ? BackGestureEventSwipeEdge.LEFT
+                            : BackGestureEventSwipeEdge.RIGHT);
+        }
+
+        @Override
+        public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+            mHandler = TabOnBackGestureHandler.from(mActivityTabProvider.get());
+            mHandler.onBackStarted(backEvent.getTouchX(), backEvent.getTouchY(),
+                    backEvent.getProgress(),
+                    backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
+                            ? BackGestureEventSwipeEdge.LEFT
+                            : BackGestureEventSwipeEdge.RIGHT,
+                    false);
+        }
+    }
+
     /**
      * Creates a ToolbarManager object.
      *
@@ -566,7 +611,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 this::updateButtonStatus, mActivityTabProvider);
         // clang-format on
         if (backPressManager != null && BackPressManager.isEnabled()) {
-            backPressManager.addHandler(this, BackPressHandler.Type.TAB_HISTORY);
+            OnBackPressHandler handler = new OnBackPressHandler();
+            backPressManager.addHandler(handler, BackPressHandler.Type.TAB_HISTORY);
             mLastBackPressMsSupplier = backPressManager::getLastPressMs;
         }
 
@@ -2203,7 +2249,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mBackPressStateSupplier.set(tab != null && mToolbarTabController.canGoBack());
     }
 
-    @Override
     public @BackPressResult int handleBackPress() {
         boolean ret = back();
         if (!ret) {
@@ -2230,7 +2275,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         return ret ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
-    @Override
     public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressStateSupplier;
     }

@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.back_press;
 
 import android.os.Build;
 
+import androidx.activity.BackEventCompat;
+import androidx.annotation.NonNull;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -41,6 +45,15 @@ public class BackPressManagerUnitTest {
         public CallbackHelper getCallbackHelper() {
             return mCallbackHelper;
         }
+
+        @Override
+        public void handleOnBackCancelled() {}
+
+        @Override
+        public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {}
+
+        @Override
+        public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {}
     }
 
     @Test
@@ -66,6 +79,8 @@ public class BackPressManagerUnitTest {
                 h1.getCallbackHelper().getCallCount());
 
         h1.getHandleBackPressChangedSupplier().set(true);
+        Assert.assertEquals(
+                "Should return the active handler", h1, manager.getEnabledBackPressHandler());
         Assert.assertTrue("Callback should be enabled if any of handlers are enabled",
                 manager.getCallback().isEnabled());
         manager.getCallback().handleOnBackPressed();
@@ -98,6 +113,8 @@ public class BackPressManagerUnitTest {
                 manager.getCallback().isEnabled());
 
         h2.getHandleBackPressChangedSupplier().set(true);
+        Assert.assertEquals(
+                "Should return the first active handler", h2, manager.getEnabledBackPressHandler());
         Assert.assertTrue("Callback should be enabled if any of handlers are enabled.",
                 manager.getCallback().isEnabled());
 
@@ -127,6 +144,8 @@ public class BackPressManagerUnitTest {
         h1.getHandleBackPressChangedSupplier().set(true);
         h2.getHandleBackPressChangedSupplier().set(true);
         manager.getCallback().handleOnBackPressed();
+        Assert.assertEquals("Should return the active handler of higher priority", h1,
+                manager.getEnabledBackPressHandler());
         Assert.assertEquals("Enabled handler of higher priority should intercept the back gesture",
                 1, h1.getCallbackHelper().getCallCount());
 
@@ -301,6 +320,70 @@ public class BackPressManagerUnitTest {
         Assert.assertFalse("No handler is enabled", manager.shouldInterceptBackPress());
         Assert.assertFalse("Callback should not be always enabled on non tabbed activity",
                 manager.getCallback().isEnabled());
+    }
+
+    @Test
+    public void testOnBackPressProgressed() {
+        BackPressManager manager = new BackPressManager();
+        EmptyBackPressHandler h1 = Mockito.spy(new EmptyBackPressHandler());
+        EmptyBackPressHandler h2 = Mockito.spy(new EmptyBackPressHandler());
+        manager.addHandler(h1, 0);
+        manager.addHandler(h2, 1);
+        h1.getHandleBackPressChangedSupplier().set(false);
+        h2.getHandleBackPressChangedSupplier().set(true);
+        Assert.assertEquals(
+                "Should return the active handler", h2, manager.getEnabledBackPressHandler());
+        var backEvent = new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_LEFT);
+        manager.getCallback().handleOnBackStarted(backEvent);
+        Mockito.verify(h2).handleOnBackStarted(backEvent);
+
+        backEvent = new BackEventCompat(1, 0, .5f, BackEventCompat.EDGE_LEFT);
+        manager.getCallback().handleOnBackProgressed(backEvent);
+        Mockito.verify(h2).handleOnBackProgressed(backEvent);
+
+        backEvent = new BackEventCompat(2, 0, 1, BackEventCompat.EDGE_LEFT);
+        manager.getCallback().handleOnBackProgressed(backEvent);
+        Mockito.verify(h2).handleOnBackProgressed(backEvent);
+
+        manager.getCallback().handleOnBackPressed();
+        Mockito.verify(h2).handleBackPress();
+
+        Mockito.verify(h2,
+                       Mockito.never().description(
+                               "Cancelled should never be called if back is not cancelled"))
+                .handleOnBackCancelled();
+    }
+
+    @Test
+    public void testOnBackPressCancelled() {
+        BackPressManager manager = new BackPressManager();
+        EmptyBackPressHandler h1 = Mockito.spy(new EmptyBackPressHandler());
+        EmptyBackPressHandler h2 = Mockito.spy(new EmptyBackPressHandler());
+        manager.addHandler(h1, 0);
+        manager.addHandler(h2, 1);
+        h1.getHandleBackPressChangedSupplier().set(false);
+        h2.getHandleBackPressChangedSupplier().set(true);
+        Assert.assertEquals(
+                "Should return the active handler", h2, manager.getEnabledBackPressHandler());
+        var backEvent = new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_LEFT);
+        manager.getCallback().handleOnBackStarted(backEvent);
+        Mockito.verify(h2).handleOnBackStarted(backEvent);
+
+        backEvent = new BackEventCompat(1, 0, .5f, BackEventCompat.EDGE_LEFT);
+        manager.getCallback().handleOnBackProgressed(backEvent);
+        Mockito.verify(h2).handleOnBackProgressed(backEvent);
+
+        backEvent = new BackEventCompat(2, 0, 1, BackEventCompat.EDGE_LEFT);
+        manager.getCallback().handleOnBackProgressed(backEvent);
+        Mockito.verify(h2).handleOnBackProgressed(backEvent);
+
+        manager.getCallback().handleOnBackCancelled();
+        Mockito.verify(h2).handleOnBackCancelled();
+
+        Mockito.verify(h2,
+                       Mockito.never().description(
+                               "handleBackPress should never be called if back is cancelled"))
+                .handleBackPress();
     }
 
     private int getHandlerCount(BackPressManager manager) {

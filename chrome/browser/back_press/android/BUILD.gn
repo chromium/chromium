@@ -42,6 +42,7 @@ robolectric_library("junit") {
     "//chrome/browser/flags:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
     "//third_party/junit:junit",
