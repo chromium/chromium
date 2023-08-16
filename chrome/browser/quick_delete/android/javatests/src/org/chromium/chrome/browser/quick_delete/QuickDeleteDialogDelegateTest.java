@@ -58,7 +58,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
+@EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
 @Batch(Batch.PER_CLASS)
 public class QuickDeleteDialogDelegateTest {
     @Rule

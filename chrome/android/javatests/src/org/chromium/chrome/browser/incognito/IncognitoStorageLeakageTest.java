@@ -50,7 +50,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+@EnableFeatures(ChromeFeatureList.CCT_INCOGNITO)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoStorageLeakageTest {
     private static final String SITE_DATA_HTML_PATH =

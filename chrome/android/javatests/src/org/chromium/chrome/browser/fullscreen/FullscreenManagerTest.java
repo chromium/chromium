@@ -206,7 +206,7 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressExitPersistentFullscreen() {
         testBackPressExitPersistentFullscreenInternal();
     }
@@ -214,7 +214,7 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressExitPersistentFullscreen_backGestureRefactor() {
         testBackPressExitPersistentFullscreenInternal();
     }

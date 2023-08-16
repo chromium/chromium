@@ -126,7 +126,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
@@ -227,7 +227,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS)
     @Config(qualifiers = "sw400dp")
     public void testAdaptToNarrowWindows_widePhoneScreen() {
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
@@ -241,7 +241,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS)
     @Config(qualifiers = "sw600dp")
     public void testRecalculateOmniboxAlignment_tabletToPhoneSwitch_revampDisabled() {
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
@@ -263,7 +263,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
 
     @Test
     @Config(qualifiers = "ldltr-sw600dp")
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
@@ -282,7 +282,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
 
     @Test
     @Config(qualifiers = "ldrtl-sw600dp")
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",

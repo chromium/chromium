@@ -51,7 +51,7 @@ import org.chromium.content_public.browser.WebContents;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
-@DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+@DisableFeatures(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)
 public class CustomTabActivityTabControllerUnitTest {
     @Rule
     public final CustomTabActivityContentTestEnvironment env =

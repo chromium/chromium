@@ -59,7 +59,7 @@ import java.util.List;
 /** A simple test for {@link TileRenderer} using real {@link android.view.View} objects. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
-@EnableFeatures({ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES})
+@EnableFeatures(ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES)
 public class TileRendererTest {
     /**
      * Backend that substitutes normal PostTask operations. Allow us to coordinate task execution

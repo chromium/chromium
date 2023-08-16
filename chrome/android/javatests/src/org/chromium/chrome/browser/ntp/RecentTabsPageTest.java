@@ -69,7 +69,7 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.EMPTY_STATES})
+@EnableFeatures(ChromeFeatureList.EMPTY_STATES)
 public class RecentTabsPageTest {
     private static final String EMAIL = "email@gmail.com";
     private static final String NAME = "Email Emailson";

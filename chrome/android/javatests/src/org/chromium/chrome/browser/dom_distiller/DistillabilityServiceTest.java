@@ -61,7 +61,7 @@ public class DistillabilityServiceTest {
     @Feature({"Distillability-Service"})
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
+    @DisableFeatures(ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE)
     @DisabledTest(message = "Flaky - crbug/1455454")
     public void testServiceAliveAfterNativePage() throws TimeoutException, ExecutionException {
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(

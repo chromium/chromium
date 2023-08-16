@@ -175,7 +175,7 @@ public class MostVisitedTilesLayoutTest {
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    @DisableFeatures({ChromeFeatureList.QUERY_TILES})
+    @DisableFeatures(ChromeFeatureList.QUERY_TILES)
     public void testTilesLayoutAppearance(boolean nightModeEnabled) throws Exception {
         NewTabPage ntp = setUpFakeDataToShowOnNtp(FAKE_MOST_VISITED_URLS.length);
         mRenderTestRule.render(getTilesLayout(ntp),

@@ -74,7 +74,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
     public void testAccessibilitySettings() throws Exception {
         mSettingsActivityTestRule.startSettingsActivity();
         AccessibilitySettings accessibilitySettings = mSettingsActivityTestRule.getFragment();
@@ -124,7 +124,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
     public void testChangedFontPrefSavedOnStop() {
         mSettingsActivityTestRule.startSettingsActivity();
         AccessibilitySettings accessibilitySettings = mSettingsActivityTestRule.getFragment();
@@ -154,7 +154,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
     public void testUnchangedFontPrefNotSavedOnStop() {
         mSettingsActivityTestRule.startSettingsActivity();
         AccessibilitySettings accessibilitySettings = mSettingsActivityTestRule.getFragment();

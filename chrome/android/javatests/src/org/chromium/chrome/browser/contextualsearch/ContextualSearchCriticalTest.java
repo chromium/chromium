@@ -35,7 +35,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION})
+@EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchCriticalTest extends ContextualSearchInstrumentationBase {

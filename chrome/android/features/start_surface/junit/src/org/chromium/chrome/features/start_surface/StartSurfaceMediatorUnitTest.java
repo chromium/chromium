@@ -1607,7 +1607,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     // TODO(crbug.com/1315676): removes this test once the Start surface refactoring is enabled.
     // This is because the StartSurfaceMediator is no longer responsible for the transition between
     // the Start surface and the Tab switcher.
@@ -1706,7 +1706,7 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     // TODO(crbug.com/1315676): Removes this test after the refactoring is enabled by default. This
     // is because the SecondaryTasksSurface will go away.
-    @DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
+    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void testBackPressHandlerOnStartSurfaceWithTabSwitcherCreated() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
@@ -2019,7 +2019,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     public void testUpdateStartSurfaceBackgroundColor() {
         Assert.assertTrue(ChromeFeatureList.sSurfacePolish.isEnabled());
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();

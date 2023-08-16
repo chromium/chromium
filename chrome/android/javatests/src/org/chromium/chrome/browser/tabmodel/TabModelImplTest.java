@@ -151,7 +151,7 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     public void hasOtherRelatedTabs_detectMergedTabs() throws Exception {
         createTabs(3, false, mTestUrl);
 

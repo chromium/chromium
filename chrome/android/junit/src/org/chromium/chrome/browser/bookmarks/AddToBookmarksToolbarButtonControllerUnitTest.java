@@ -50,7 +50,7 @@ import org.chromium.ui.base.TestActivity;
 /** Unit tests for {@link AddToBookmarksToolbarButtonController} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+@EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AddToBookmarksToolbarButtonControllerUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();

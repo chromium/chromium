@@ -36,7 +36,7 @@ import org.chromium.components.feature_engagement.Tracker;
 /** Unit tests for {@link ReadAloudToolbarButtonController} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+@EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 
 public class ReadAloudToolbarButtonControllerUnitTest {
     @Rule

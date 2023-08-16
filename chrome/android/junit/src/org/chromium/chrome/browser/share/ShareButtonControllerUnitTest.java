@@ -118,7 +118,7 @@ public final class ShareButtonControllerUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
     }
 
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     @Test
     public void testIPHCommandHelper() {
         assertNull(mShareButtonController.get(/*tab*/ null).getButtonSpec().getIPHCommandBuilder());
@@ -135,7 +135,7 @@ public final class ShareButtonControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testIPHEvent() {
         doReturn(true).when(mTracker).shouldTriggerHelpUI(
                 FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_SHARE_FEATURE);
@@ -148,7 +148,7 @@ public final class ShareButtonControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testDoNotShowOnDataUrl() {
         doReturn("data").when(mMockGurl).getScheme();
         doReturn(mMockGurl).when(mTab).getUrl();

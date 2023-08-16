@@ -53,7 +53,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE})
+@DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)
 public class InfoBarTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =

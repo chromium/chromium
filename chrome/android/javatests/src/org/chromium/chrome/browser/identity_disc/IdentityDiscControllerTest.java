@@ -152,7 +152,7 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    @DisableFeatures(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY)
     @SuppressWarnings("CheckReturnValue")
     public void testIdentityDiscWithSignin() {
         // When user is signed out and IdentityStatusConsistency is disabled, Identity Disc should
@@ -181,7 +181,7 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    @EnableFeatures(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY)
     public void testIdentityDiscSignedOut_identityStatusConsistencyEnabled() {
         // When user is signed out, a signed-out avatar should be visible on the NTP.
         ViewUtils.waitForVisibleView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
@@ -196,7 +196,7 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    @EnableFeatures(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY)
     public void
     testIdentityDiscSignedOut_signinDisabledByPolicy_identityStatusConsistencyEnabled() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
@@ -224,7 +224,7 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    @EnableFeatures(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY)
     public void testIdentityDiscWithSignin_identityStatusConsistencyEnabled() {
         // Identity Disc should be shown on sign-in state change with a NTP refresh.
         mSigninTestRule.addAccountThenSignin(EMAIL, NAME);
@@ -244,7 +244,7 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    @EnableFeatures(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY)
     public void testIdentityDiscWithSignin_nonDisplayableEmail_identityStatusConsistencyEnabled() {
         // Identity Disc should be shown on sign-in state change with a NTP refresh.
         CoreAccountInfo coreAccountInfo = addAccountWithNonDisplayableEmail(NAME);
@@ -265,7 +265,7 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    @DisableFeatures(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY)
     @SuppressWarnings("CheckReturnValue")
     public void testIdentityDiscWithSigninAndEnableSync() {
         // When user is signed out and IdentityStatusConsistency is disabled, Identity Disc should
@@ -292,7 +292,7 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    @EnableFeatures(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY)
     @SuppressWarnings("CheckReturnValue")
     public void testIdentityDiscWithSigninAndEnableSync_identityStatusConsistencyEnabled() {
         // Identity Disc should be shown on sign-in state change without NTP refresh.
@@ -313,7 +313,7 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    @EnableFeatures(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY)
     public void
     testIdentityDiscWithSigninAndEnableSync_nonDisplayableEmail_identityStatusConsistencyEnabled() {
         // Identity Disc should be shown on sign-in state change without NTP refresh.

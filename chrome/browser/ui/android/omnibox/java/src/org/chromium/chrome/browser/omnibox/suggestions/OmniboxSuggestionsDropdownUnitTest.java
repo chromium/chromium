@@ -137,7 +137,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Test
     @SmallTest
     @Feature("Omnibox")
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
@@ -154,7 +154,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Test
     @SmallTest
     @Feature("Omnibox")
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void testBackgroundColor_withoutOmniboxModernizeVisualUpdateFlags() {
         assertEquals(
                 mDropdown.getStandardBgColor(), ChromeColors.getDefaultThemeColor(mContext, false));

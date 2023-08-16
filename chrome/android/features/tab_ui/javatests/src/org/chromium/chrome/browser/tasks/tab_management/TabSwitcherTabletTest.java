@@ -90,7 +90,7 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 @EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN, ChromeFeatureList.EMPTY_STATES})
-@DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
+@DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
 @Restriction(
         {Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE, UiRestriction.RESTRICTION_TYPE_TABLET})
 @Batch(Batch.PER_CLASS)
@@ -308,7 +308,7 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void testGridTabSwitcher_RefactorEnabled() throws ExecutionException {
         prepareTabs(2, 0);
         // Verifies that the dialog visibility supplier doesn't crash when closing a Tab without the

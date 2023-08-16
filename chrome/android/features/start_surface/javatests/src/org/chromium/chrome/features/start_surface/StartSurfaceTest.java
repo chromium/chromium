@@ -840,7 +840,7 @@ public class StartSurfaceTest {
     @Test
     @SmallTest
     @Feature({"StartSurface"})
-    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    @EnableFeatures(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY)
     public void testRecordHistogramProfileButtonClick_StartSurface() {
         Assume.assumeTrue(mImmediateReturn);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

@@ -1099,7 +1099,7 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     @DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
             ChromeFeatureList.FEED_POSITION_ANDROID})
     // clang-format off

@@ -339,8 +339,8 @@ public class PseudoTabUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    @EnableFeatures({ChromeFeatureList.INSTANT_START})
+    @DisableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
+    @EnableFeatures(ChromeFeatureList.INSTANT_START)
     public void getRelatedTabs_noProvider_groupDisabled_single() {
         doReturn(false).when(mTabModelSelector).isTabStateInitialized();
 
@@ -352,8 +352,8 @@ public class PseudoTabUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    @EnableFeatures({ChromeFeatureList.INSTANT_START})
+    @DisableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
+    @EnableFeatures(ChromeFeatureList.INSTANT_START)
     public void getRelatedTabs_noProvider_groupDisabled_group() {
         doReturn(false).when(mTabModelSelector).isTabStateInitialized();
 

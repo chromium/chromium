@@ -53,7 +53,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for autofill options settings screen. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID})
+@EnableFeatures(ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)
 public class AutofillOptionsTest {
     // Shorthand for frequent enums that can't be static imports.
     private static final @RadioButtonGroupThirdPartyPreference.ThirdPartyOption int DEFAULT =

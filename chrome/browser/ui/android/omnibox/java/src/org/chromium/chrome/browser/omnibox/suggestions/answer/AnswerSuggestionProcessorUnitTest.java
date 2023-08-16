@@ -64,7 +64,7 @@ import java.util.Locale;
  * Tests for {@link AnswerSuggestionProcessor}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE})
+@EnableFeatures(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE)
 public class AnswerSuggestionProcessorUnitTest {
     private static final @AnswerType int ANSWER_TYPES[] = {AnswerType.DICTIONARY,
             AnswerType.FINANCE, AnswerType.KNOWLEDGE_GRAPH, AnswerType.SPORTS, AnswerType.SUNRISE,

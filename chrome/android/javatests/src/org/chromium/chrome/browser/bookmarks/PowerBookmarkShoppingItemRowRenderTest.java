@@ -59,7 +59,7 @@ import java.util.List;
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
+@EnableFeatures(ChromeFeatureList.BOOKMARKS_REFRESH)
 public class PowerBookmarkShoppingItemRowRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams = new NightModeParams().getParameters();

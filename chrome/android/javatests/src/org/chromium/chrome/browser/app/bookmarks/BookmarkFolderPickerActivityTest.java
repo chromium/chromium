@@ -51,7 +51,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+@EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class BookmarkFolderPickerActivityTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =

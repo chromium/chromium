@@ -635,7 +635,7 @@ public class LocationBarTest {
      */
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testFocusLogic_backPress() {
         startActivityNormally();
@@ -651,7 +651,7 @@ public class LocationBarTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testFocusLogic_backPress_Refactored() {
         startActivityNormally();

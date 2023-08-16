@@ -60,7 +60,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
-@EnableFeatures({ChromeFeatureList.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID})
+@EnableFeatures(ChromeFeatureList.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)
 public class TouchToFillCreditCardTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

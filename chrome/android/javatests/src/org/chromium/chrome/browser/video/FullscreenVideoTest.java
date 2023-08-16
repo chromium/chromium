@@ -68,7 +68,7 @@ public class FullscreenVideoTest {
     @Test
     @MediumTest
     @DisabledTest(message = "Flaky https://crbug.com/458368 https://crbug.com/1331504")
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testExitFullscreenNotifiesTabObservers() {
         testExitFullscreenNotifiesTabObserversInternal();
     }
@@ -76,7 +76,7 @@ public class FullscreenVideoTest {
     @Test
     @MediumTest
     @DisabledTest(message = "Flaky https://crbug.com/458368 https://crbug.com/1331504")
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testExitFullscreenNotifiesTabObservers_backGestureRefactor() {
         testExitFullscreenNotifiesTabObserversInternal();
     }

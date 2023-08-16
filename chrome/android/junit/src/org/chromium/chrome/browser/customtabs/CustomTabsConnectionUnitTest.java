@@ -133,7 +133,7 @@ public class CustomTabsConnectionUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.CCT_BOTTOM_BAR_SWIPE_UP_GESTURE})
+    @DisableFeatures(ChromeFeatureList.CCT_BOTTOM_BAR_SWIPE_UP_GESTURE)
     public void updateVisuals_BottomBarSwipeUpGesture_FeatureDisabled() {
         var bundle = new Bundle();
         var pendingIntent = mock(PendingIntent.class);
@@ -145,7 +145,7 @@ public class CustomTabsConnectionUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    @EnableFeatures(ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET)
     public void onActivityLayout_CallbackIsCalledForNamedMethod() {
         int uid = 123;
         int left = 0;

@@ -77,7 +77,7 @@ public class PreWarmingRecycledViewPoolTest {
         mPool = new PreWarmingRecycledViewPool(mAdapter, mContext, mHandler);
     }
 
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL)
     @Test
     public void testCreateViews() {
         doAnswer((invocation -> {
@@ -109,7 +109,7 @@ public class PreWarmingRecycledViewPoolTest {
         }
     }
 
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL)
     @Test
     public void testCreateViews_featureDisabled() {
         doAnswer((invocation -> {
@@ -124,7 +124,7 @@ public class PreWarmingRecycledViewPoolTest {
         verifyNoMoreInteractions(mHandler);
     }
 
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL)
     @Test
     public void testStopCreating() {
         mPool.onNativeInitialized();

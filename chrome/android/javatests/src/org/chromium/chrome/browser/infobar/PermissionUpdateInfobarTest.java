@@ -51,7 +51,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_PERMISSION_UPDATE})
+@DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_PERMISSION_UPDATE)
 public class PermissionUpdateInfobarTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

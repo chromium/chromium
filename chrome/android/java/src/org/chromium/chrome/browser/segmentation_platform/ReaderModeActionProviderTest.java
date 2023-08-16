@@ -53,7 +53,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS})
+@EnableFeatures(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
 public class ReaderModeActionProviderTest {
     @Rule
     public final TestRule mFeatureProcessor = new Features.JUnitProcessor();

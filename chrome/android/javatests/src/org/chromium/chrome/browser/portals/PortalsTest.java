@@ -458,7 +458,7 @@ public class PortalsTest {
     @Feature({"Portals"})
     // See https://crbug.com/1278223#c19. Remove this feature flag once
     // portals are migrated off the multiple webcontents architecture.
-    @DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE})
+    @DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)
     public void testHttpBasicAuthenticationInPortal() throws Exception {
         mActivityTestRule.startMainActivityWithURL(
                 mTestServer.getURL("/chrome/test/data/android/about.html"));

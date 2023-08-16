@@ -223,7 +223,7 @@ public class InterceptNavigationDelegateTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.PRERENDER2})
+    @EnableFeatures(ChromeFeatureList.PRERENDER2)
     public void testExternalAppPrerenderingNavigation() throws TimeoutException {
         // Ensure that a prerendering main frame doesn't call into the delegate.
         sActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_PRERENDERING_PAGE));

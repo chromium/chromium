@@ -248,7 +248,7 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsOneCredentialModern() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
@@ -269,7 +269,7 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsOneCredentialModernHalfState() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
@@ -293,7 +293,7 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsTwoCredentialsModern() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
@@ -315,7 +315,7 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsTwoCredentialsModernHalfState() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
@@ -340,7 +340,7 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsThreeCredentialsModern() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
@@ -362,7 +362,7 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsThreeCredentialsModernHalfState() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(

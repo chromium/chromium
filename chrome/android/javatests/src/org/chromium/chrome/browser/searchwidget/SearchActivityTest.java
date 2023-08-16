@@ -253,7 +253,7 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressFinishActivity() throws Exception {
         SearchActivity searchActivity = startSearchActivity();
 
@@ -275,7 +275,7 @@ public class SearchActivityTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressFinishActivity_BackRefactored() throws Exception {
         SearchActivity searchActivity = startSearchActivity();
 
@@ -618,7 +618,7 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void testupdateAnchorViewLayout_NoEffectIfFlagDisabled() {
         SearchActivity searchActivity = startSearchActivity();
         View anchorView = searchActivity.getAnchorViewForTesting();
@@ -635,7 +635,7 @@ public class SearchActivityTest {
     @Test
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
             "enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
@@ -660,7 +660,7 @@ public class SearchActivityTest {
     @Test
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",

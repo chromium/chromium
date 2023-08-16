@@ -57,7 +57,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP_PROMOS})
-@EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+@EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @Batch(Batch.PER_CLASS)
 public class TabGroupsTest {

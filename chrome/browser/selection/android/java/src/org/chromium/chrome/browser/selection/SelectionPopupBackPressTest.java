@@ -62,7 +62,7 @@ public class SelectionPopupBackPressTest {
     @Test
     @MediumTest
     @Feature({"TextInput", "SmartSelection"})
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressClearSelection() throws TimeoutException {
         testBackPressClearSelectionInternal();
     }
@@ -70,7 +70,7 @@ public class SelectionPopupBackPressTest {
     @Test
     @MediumTest
     @Feature({"TextInput", "SmartSelection"})
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressClearSelection_BackPressRefactor() throws TimeoutException {
         testBackPressClearSelectionInternal();
     }
@@ -78,7 +78,7 @@ public class SelectionPopupBackPressTest {
     @Test
     @MediumTest
     @Feature({"TextInput", "SmartSelection"})
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressHandlerOnTabSwitched() throws ExecutionException {
         mActivityTestRule.startMainActivityOnBlankPage();
         final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
@@ -109,7 +109,7 @@ public class SelectionPopupBackPressTest {
     @Test
     @MediumTest
     @Feature({"TextInput", "SmartSelection"})
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressHandlerOnWebContentChanged() throws ExecutionException {
         mActivityTestRule.startMainActivityOnBlankPage();
         final ChromeTabbedActivity activity = mActivityTestRule.getActivity();

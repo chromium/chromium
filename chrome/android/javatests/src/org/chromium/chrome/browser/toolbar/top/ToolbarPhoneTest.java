@@ -210,7 +210,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
@@ -253,7 +253,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
@@ -291,7 +291,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
@@ -345,7 +345,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void testLocationBarCornerShouldNeverUpdatedWithoutExperiment() {
         LocationBarCoordinator locationBarCoordinator =
                 (LocationBarCoordinator) mToolbar.getLocationBar();
@@ -441,7 +441,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
+    @DisableFeatures(ChromeFeatureList.START_SURFACE_ANDROID)
     @DisableAnimationsTestRule.EnsureAnimationsOn
     public void testEnterTabSwitcher_toolbarVisibleUntilTransitionEnds_startSurfaceDisabled() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -531,8 +531,8 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
+    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ANDROID)
     @DisableAnimationsTestRule.EnsureAnimationsOn
     public void
     testToolbarTabSwitcherButtonNotClickableDuringTransition_startSurfaceEnabled_noAnimation() {
@@ -585,8 +585,8 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
-    @DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @DisableFeatures(ChromeFeatureList.START_SURFACE_ANDROID)
     @DisableAnimationsTestRule.EnsureAnimationsOn
     public void testToolbarTabSwitcherButtonNotClickableDuringTransition_startSurfaceDisabled() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

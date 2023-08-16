@@ -68,7 +68,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES})
+@EnableFeatures(ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES)
 public final class MostVisitedTilesProcessorUnitTest {
     private static final GURL NAV_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
     private static final GURL NAV_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
@@ -325,7 +325,7 @@ public final class MostVisitedTilesProcessorUnitTest {
     // testDecorations_searchTile, which tests that decoration used for search tile is a magnifying
     // glass when the feature is enabled.
     @Test
-    @DisableFeatures({ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES})
+    @DisableFeatures(ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES)
     public void testRepeatableQuery_featureDisabled() {
         List<ListItem> tileList =
                 populateTilePropertiesForTiles(0, new SuggestTile("title", SEARCH_URL, true));

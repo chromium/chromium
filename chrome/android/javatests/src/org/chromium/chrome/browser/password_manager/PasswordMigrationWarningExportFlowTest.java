@@ -83,7 +83,7 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING})
+@EnableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
 public class PasswordMigrationWarningExportFlowTest {
     @Rule
     public ChromeTabbedActivityTestRule mChromeActivityRule = new ChromeTabbedActivityTestRule();

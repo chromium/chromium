@@ -268,7 +268,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    @DisableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
     @DisabledTest(message = "https://crbug.com/1459076")
     public void acceptingSyncEndsFreAndEnablesSync() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
@@ -287,7 +287,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    @EnableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
     @DisabledTest(message = "https://crbug.com/1459076")
     public void acceptingSyncEndsFreAndEnablesSync_tangibleSyncEnabled() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
@@ -306,7 +306,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    @DisableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
     @DisabledTest(message = "https://crbug.com/1459076")
     public void refusingSyncEndsFreAndDoesNotEnableSync() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
@@ -325,7 +325,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    @EnableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
     @DisabledTest(message = "https://crbug.com/1459076")
     public void refusingSyncEndsFreAndDoesNotEnableSync_tangibleSyncEnabled() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);

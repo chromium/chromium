@@ -58,8 +58,8 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testCreateOnLongClickListener() {
         AdaptiveButtonActionMenuCoordinator coordinator = new AdaptiveButtonActionMenuCoordinator();
         View.OnLongClickListener listener = coordinator.createOnLongClickListener(mCallback);
@@ -83,8 +83,8 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testCreateOnLongClickListener_clickHandlerIsNotModified() {
         AdaptiveButtonActionMenuCoordinator coordinator = new AdaptiveButtonActionMenuCoordinator();
         View.OnLongClickListener listener = coordinator.createOnLongClickListener(mCallback);

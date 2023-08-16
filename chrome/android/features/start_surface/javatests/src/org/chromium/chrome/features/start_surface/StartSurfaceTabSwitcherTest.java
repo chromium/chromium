@@ -207,7 +207,7 @@ public class StartSurfaceTabSwitcherTest {
     @MediumTest
     @Feature({"StartSurface", "TabGroup"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @DisabledTest(message = "https://crbug.com/1232695")
     public void testCreateTabWithinTabGroup() throws Exception {
         // Create tab state files for a group with two tabs.

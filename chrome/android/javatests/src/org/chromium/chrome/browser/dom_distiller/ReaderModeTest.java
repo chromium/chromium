@@ -155,7 +155,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.READER_MODE_IN_CCT})
+    @EnableFeatures(ChromeFeatureList.READER_MODE_IN_CCT)
     public void testReaderModeInCCT_Downloaded() throws TimeoutException {
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
         String innerHtml = getInnerHtml(originalTab);

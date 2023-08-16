@@ -157,8 +157,8 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
-    @DisableFeatures({ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT})
+    @EnableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
+    @DisableFeatures(ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT)
     public void testFlagSecureCleared_ForIncognito_WhenIncognitoScreenshotEnabled() {
         mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;
         // In incognito
@@ -188,8 +188,8 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
-    @DisableFeatures({ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT})
+    @EnableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
+    @DisableFeatures(ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT)
     public void testFlagSecureCleared_AfterSwitchingToNonIncognito_ScreenshotEnabled() {
         mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;
 
@@ -204,7 +204,7 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT})
+    @EnableFeatures(ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT)
     @Config(minSdk = Build.VERSION_CODES.TIRAMISU)
     public void testRecentsScreenshotsEnabled_ForAndroidTOrAbove_AfterSwitchingToNonIncognito() {
         // In regular mode.
@@ -219,7 +219,7 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT})
+    @EnableFeatures(ChromeFeatureList.IMPROVED_INCOGNITO_SCREENSHOT)
     @Config(minSdk = Build.VERSION_CODES.TIRAMISU)
     public void testRecentsScreenshotsDisabled_ForAndroidTOrAbove_AfterSwitchingToIncognito() {
         // In incognito
@@ -253,7 +253,7 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
+    @DisableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
     public void testIsShowingIncognito_CurrentModelRegular_GTSEnabled_ReturnsFalse() {
         // Regular mode
         doReturn(mTabModelMock).when(mTabModelSelectorMock).getCurrentModel();
@@ -266,7 +266,7 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
+    @DisableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
     public void
     testIsShowingIncognito_CurrentModelRegular_GTSDisabled_NotOverviewMode_ReturnsFalse() {
         // Regular mode
@@ -284,7 +284,7 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
+    @DisableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
     public void
     testIsShowingIncognito_CurrentModelRegular_GTSDisabled_OverviewMode_NoIncognitoTabs_ReturnsFalse() {
         // Regular mode
@@ -305,7 +305,7 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
+    @DisableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
     public void
     testIsShowingIncognito_CurrentModelRegular_GTSDisabled_OverviewMode_IncognitoTabsPresent_ReturnsTrue() {
         // Regular mode
@@ -325,7 +325,7 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
+    @DisableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
     public void testIsShowingIncognito_CurrentModelIncognito_ReturnsTrue() {
         doReturn(mTabModelMock).when(mTabModelSelectorMock).getCurrentModel();
         doReturn(true).when(mTabModelMock).isIncognito();

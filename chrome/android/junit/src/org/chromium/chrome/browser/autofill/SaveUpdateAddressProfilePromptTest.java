@@ -257,7 +257,7 @@ public class SaveUpdateAddressProfilePromptTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT)
     public void setupAddressNickname_FeatureDisabled() {
         createAndShowPrompt(false);
 

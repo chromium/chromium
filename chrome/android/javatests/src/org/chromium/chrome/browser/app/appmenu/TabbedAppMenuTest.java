@@ -410,7 +410,7 @@ public class TabbedAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_REFRESH)
     public void testAddBookmarkMenuItem() throws IOException {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
@@ -425,7 +425,7 @@ public class TabbedAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main", "RenderTest"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_REFRESH)
     public void testEditBookmarkMenuItem() throws IOException {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
@@ -449,7 +449,7 @@ public class TabbedAppMenuTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Main", "QuickDelete", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
+    @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testQuickDeleteMenu_Shown() throws IOException {
         showAppMenuAndAssertMenuShown();
         int quickDeletePosition = AppMenuTestSupport.findIndexOfMenuItemById(
@@ -460,7 +460,7 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "QuickDelete"})
-    @EnableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
+    @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testQuickDeleteMenu_entryFromMenuItemHistogram() throws IOException {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
@@ -475,7 +475,7 @@ public class TabbedAppMenuTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Main", "QuickDelete"})
-    @EnableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
+    @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testQuickDeleteMenu_NotShownInIncognito() {
         // Hide first any shown app menu as it can interfere with this test.
         hitEnterAndAssertAppMenuDismissed();
@@ -490,7 +490,7 @@ public class TabbedAppMenuTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Main", "QuickDelete"})
-    @DisableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
+    @DisableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testQuickDeleteMenu_NotShown() throws IOException {
         showAppMenuAndAssertMenuShown();
         assertEquals(-1,

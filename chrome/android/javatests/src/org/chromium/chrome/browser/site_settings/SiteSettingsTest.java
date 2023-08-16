@@ -562,7 +562,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testCookiesFPSSubpageIsLaunched() throws Exception {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);

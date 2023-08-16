@@ -91,7 +91,7 @@ import java.util.List;
 @LooperMode(LooperMode.Mode.LEGACY)
 @DisableFeatures(
         {ChromeFeatureList.START_SURFACE_RETURN_TIME, ChromeFeatureList.START_SURFACE_ANDROID})
-@EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
+@EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
 public class TabSwitcherMediatorUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -953,7 +953,7 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPress() {
         initAndAssertAllProperties();
         Assert.assertFalse(mMediator.shouldInterceptBackPress());
@@ -969,7 +969,7 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressAfterSwitchIncognitoMode() {
         initAndAssertAllProperties();
         Assert.assertFalse(mMediator.shouldInterceptBackPress());
@@ -1010,7 +1010,7 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressAfterTabClosedBySite() {
         initAndAssertAllProperties();
         Assert.assertFalse(mMediator.shouldInterceptBackPress());

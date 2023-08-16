@@ -243,7 +243,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
+    @EnableFeatures(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES)
     public void isAllowedThirdParty_noDefaultPolicy() {
         CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
                 "com.dc.joker|com.marvel.thanos");
@@ -526,7 +526,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.CCT_AUTO_TRANSLATE})
+    @DisableFeatures(ChromeFeatureList.CCT_AUTO_TRANSLATE)
     public void getTranslateLanguage_autoTranslateFeatureDisabled() {
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.example.foo");
@@ -543,7 +543,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_AUTO_TRANSLATE})
+    @EnableFeatures(ChromeFeatureList.CCT_AUTO_TRANSLATE)
     public void getTranslateLanguage_autoTranslateExtraMissing() {
         CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES.setForTesting(false);
         CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST.setForTesting(
@@ -563,7 +563,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_AUTO_TRANSLATE})
+    @EnableFeatures(ChromeFeatureList.CCT_AUTO_TRANSLATE)
     public void getTranslateLanguage_autoTranslateWithAllowedPackageName() {
         CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES.setForTesting(false);
         CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST.setForTesting(
@@ -584,7 +584,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_AUTO_TRANSLATE})
+    @EnableFeatures(ChromeFeatureList.CCT_AUTO_TRANSLATE)
     public void getTranslateLanguage_autoTranslateWithoutAllowedPackageName() {
         CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES.setForTesting(false);
         CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST.setForTesting(
@@ -605,7 +605,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_AUTO_TRANSLATE})
+    @EnableFeatures(ChromeFeatureList.CCT_AUTO_TRANSLATE)
     public void getTranslateLanguage_autoTranslateWithFirstPartyAllowed() {
         CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES.setForTesting(true);
         CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST.setForTesting(
@@ -627,7 +627,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_AUTO_TRANSLATE})
+    @EnableFeatures(ChromeFeatureList.CCT_AUTO_TRANSLATE)
     public void getTranslateLanguage_autoTranslateWithThirdPartyPackageName() {
         CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES.setForTesting(true);
         CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST.setForTesting(
@@ -659,7 +659,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.CCT_BOTTOM_BAR_SWIPE_UP_GESTURE})
+    @DisableFeatures(ChromeFeatureList.CCT_BOTTOM_BAR_SWIPE_UP_GESTURE)
     public void getSecondaryToolbarSwipeUpPendingIntent_featureDisabled() {
         Intent intent = new Intent();
         var pendingIntent = mock(PendingIntent.class);

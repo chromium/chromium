@@ -141,7 +141,7 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.TABLET_TOOLBAR_REORDERING})
+    @DisableFeatures(ChromeFeatureList.TABLET_TOOLBAR_REORDERING)
     public void testButtonPosition_ShutoffToolbarReordering() {
         mToolbarTablet.onFinishInflate();
 

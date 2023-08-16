@@ -175,7 +175,7 @@ public class WebappDefaultOfflineTwaTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @EnableFeatures({ChromeFeatureList.PWA_DEFAULT_OFFLINE_PAGE})
+    @EnableFeatures(ChromeFeatureList.PWA_DEFAULT_OFFLINE_PAGE)
     public void testDefaultOfflineTwaWithoutVerification() throws Exception {
         // Test default offline behavior without asset link verification, which causes the app to
         // run in CCT (and is what happens when TWAs load for the first time without network
@@ -186,7 +186,7 @@ public class WebappDefaultOfflineTwaTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @EnableFeatures({ChromeFeatureList.PWA_DEFAULT_OFFLINE_PAGE})
+    @EnableFeatures(ChromeFeatureList.PWA_DEFAULT_OFFLINE_PAGE)
     public void testDefaultOfflineTwaWithVerification() throws Exception {
         testDefaultOfflineTwa(true); // Run with asset link verification.
     }

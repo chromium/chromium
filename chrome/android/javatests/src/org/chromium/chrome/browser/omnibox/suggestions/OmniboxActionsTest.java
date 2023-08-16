@@ -164,7 +164,7 @@ public class OmniboxActionsTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER)
     @EnableFeatures({ChromeFeatureList.HISTORY_JOURNEYS,
             ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_ACTION_CHIP})
     public void

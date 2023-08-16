@@ -335,7 +335,7 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures({ChromeFeatureList.SPARE_TAB})
+    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     public void testCreateAndTakeSpareTabWithInitializeRenderer() {
         // Set the param to true allowing renderer initialization.
         WarmupManager.SPARE_TAB_INITIALIZE_RENDERER.setForTesting(true);
@@ -367,7 +367,7 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures({ChromeFeatureList.SPARE_TAB})
+    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testCreateAndTakeSpareTabWithoutInitializeRenderer() {
         WarmupManager.SPARE_TAB_INITIALIZE_RENDERER.setForTesting(false);
@@ -395,7 +395,7 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures({ChromeFeatureList.SPARE_TAB})
+    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     @UiThreadTest
     public void testTakeSpareTab() {
         var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
@@ -415,7 +415,7 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures({ChromeFeatureList.SPARE_TAB})
+    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     @UiThreadTest
     public void testDestroySpareTab() {
         var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
@@ -474,7 +474,7 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures({ChromeFeatureList.SPARE_TAB})
+    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     public void testLoadURLInSpareTab() {
         var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
                 HISTOGRAM_SPARE_TAB_FINAL_STATUS, SpareTabFinalStatus.TAB_USED);
@@ -507,7 +507,7 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures({ChromeFeatureList.SPARE_TAB})
+    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     public void testMetricsRecordedWithSpareTab() {
         Assert.assertNotNull(mActivityTestRule.getActivity().getCurrentTabCreator());
 

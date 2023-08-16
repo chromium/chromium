@@ -310,7 +310,7 @@ public class RecentlyClosedBridgeTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testOpenRecentlyClosedTab_FromGroupInBulkClosure_InBackgroundTab() {
         if (mTabGroupModelFilter == null) return;
@@ -365,7 +365,7 @@ public class RecentlyClosedBridgeTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testOpenRecentlyClosedTab_FromGroupClosure_InCurrentTab() {
         if (mTabGroupModelFilter == null) return;
@@ -427,7 +427,7 @@ public class RecentlyClosedBridgeTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testOpenRecentlyClosedEntry_Tab_FromMultipleTabs() {
         if (mTabGroupModelFilter == null) return;
@@ -491,7 +491,7 @@ public class RecentlyClosedBridgeTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testOpenRecentlyClosedEntry_Tab_FromGroupClosure() {
         if (mTabGroupModelFilter == null) return;
@@ -542,7 +542,7 @@ public class RecentlyClosedBridgeTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testOpenRecentlyClosedEntry_Group_FromGroupClosure() {
         if (mTabGroupModelFilter == null) return;
@@ -595,7 +595,7 @@ public class RecentlyClosedBridgeTest {
      */
     @Test
     @LargeTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @DisabledTest(message = "https://crbug.com/1403661")
     public void testOpenRecentlyClosedEntry_Group_FromGroupClosure_WithRestart() {
@@ -694,7 +694,7 @@ public class RecentlyClosedBridgeTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testOpenRecentlyClosedEntry_Tab_FromBulkClosure() {
         if (mTabGroupModelFilter == null) return;
@@ -744,7 +744,7 @@ public class RecentlyClosedBridgeTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testOpenRecentlyClosedEntry_Bulk_FromBulkClosure() {
         if (mTabGroupModelFilter == null) return;
@@ -804,7 +804,7 @@ public class RecentlyClosedBridgeTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testOpenMostRecentlyClosedEntry_Group() {
         if (mTabGroupModelFilter == null) return;
@@ -884,7 +884,7 @@ public class RecentlyClosedBridgeTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testOpenMostRecentlyClosedEntry_Bulk() {
         if (mTabGroupModelFilter == null) return;

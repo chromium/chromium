@@ -99,7 +99,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testIPHCommandHelper() {
         assertNull(mVoiceToolbarButtonController.get(/*tab*/ null)
                            .getButtonSpec()
@@ -116,7 +116,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testIPHEvent() {
         doReturn(true).when(mTracker).shouldTriggerHelpUI(
                 FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE);
@@ -129,7 +129,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     // clang-format off
     public void isToolbarMicEnabled_toolbarMic() {
         // clang-format on

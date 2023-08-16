@@ -91,7 +91,7 @@ public class StartSurfaceOnTabletTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
-    @DisableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @DisableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testStartSurfaceOnTabletDisabled() throws IOException {
         StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
@@ -175,7 +175,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
+    @EnableFeatures(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     public void testScrollableMvTilesEnabledOnTablet() throws IOException {
         StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
@@ -197,8 +197,8 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
-    @DisableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
+    @DisableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testScrollableMvTilesDefaultDisabledOnTablet() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -215,7 +215,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @DisableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    @DisableFeatures(ChromeFeatureList.SURFACE_POLISH)
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     public void testSingleTabCardGoneAfterTabClosed() throws IOException {
         StartSurfaceTestUtils.prepareTabStateMetadataFile(
@@ -314,8 +314,8 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @DisableFeatures(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     // clang-format off
     public void testFakeSearchBoxWidthShortenedWith2RowMvTitles() {
         // clang-format on
@@ -344,7 +344,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     // clang-format off
     public void testLogoSizeShrink() {
         // clang-format on
@@ -373,7 +373,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @DisableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @DisableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     // clang-format off
     public void testDefaultLogoSize() {
         // clang-format on
@@ -474,7 +474,7 @@ public class StartSurfaceOnTabletTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     @DisableFeatures(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
     // clang-format off
     public void test2RowMvtMarginOnNtpHomePage() throws IOException {

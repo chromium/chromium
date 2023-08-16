@@ -407,7 +407,7 @@ public class InfoBarContainerTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @EnableFeatures({ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION})
+    @EnableFeatures(ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION)
     public void testSyncWithBrowserControl() throws Exception {
         final TestListener infobarListener = addInfoBarToCurrentTab(false);
         Assert.assertEquals(1, sActivityTestRule.getInfoBars().size());

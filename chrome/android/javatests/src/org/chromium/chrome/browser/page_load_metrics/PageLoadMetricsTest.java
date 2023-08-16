@@ -34,8 +34,8 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({BlinkFeatures.PRERENDER2})
-@DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+@EnableFeatures(BlinkFeatures.PRERENDER2)
+@DisableFeatures(BlinkFeatures.PRERENDER2_MEMORY_CONTROLS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PageLoadMetricsTest {
     @Rule

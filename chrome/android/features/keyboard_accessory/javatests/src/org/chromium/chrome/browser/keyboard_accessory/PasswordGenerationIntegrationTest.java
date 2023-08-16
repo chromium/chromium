@@ -69,7 +69,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(crbug.com/1346583): add resetting logic for"
                 + "FakePasswordStoreAndroidBackend to allow batching")
-@EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+@EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class PasswordGenerationIntegrationTest {
     /**

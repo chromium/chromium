@@ -157,7 +157,7 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testTitlePropagatesToView() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
@@ -185,7 +185,7 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testManageButtonTextPropagatesToView() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
@@ -551,7 +551,7 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testHybridPropertyShowsHybridButton() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)

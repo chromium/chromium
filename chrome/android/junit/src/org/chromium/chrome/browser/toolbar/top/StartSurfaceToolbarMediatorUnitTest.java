@@ -561,7 +561,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     public void testUpdateStartSurfaceToolbarBackgroundColor() {
         assertTrue(ChromeFeatureList.sSurfacePolish.isEnabled());
         createMediator(/*hideIncognitoSwitchWhenNoTabs =*/

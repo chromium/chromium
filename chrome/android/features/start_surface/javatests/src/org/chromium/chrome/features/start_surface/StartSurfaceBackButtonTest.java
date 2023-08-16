@@ -152,7 +152,7 @@ public class StartSurfaceBackButtonTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testShow_SingleAsHomepage_BackButton_ClosableTab() {
         if (!mImmediateReturn) {
@@ -174,7 +174,7 @@ public class StartSurfaceBackButtonTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testShow_SingleAsHomepage_BackButton_ClosableTab_BackGestureRefactor() {
         testShow_SingleAsHomepage_BackButton_ClosableTab();
@@ -353,7 +353,7 @@ public class StartSurfaceBackButtonTest {
     // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     @DisabledTest(message = "https://crbug.com/1246457")
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testSwipeBackOnStartSurfaceHomePage() throws ExecutionException {
         // clang-format on
         verifySwipeBackOnStartSurfaceHomePage();
@@ -364,7 +364,7 @@ public class StartSurfaceBackButtonTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     @DisabledTest(message = "https://crbug.com/1246457")
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testSwipeBackOnStartSurfaceHomePage_BackGestureRefactor()
             throws ExecutionException {
         verifySwipeBackOnStartSurfaceHomePage();

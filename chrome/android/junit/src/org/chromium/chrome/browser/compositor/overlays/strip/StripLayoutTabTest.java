@@ -57,7 +57,7 @@ public class StripLayoutTabTest {
 
     @Test
     @Feature("Tab Strip Redesign")
-    @EnableFeatures({ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP})
+    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testGetTint() {
         int expectedColor;
 

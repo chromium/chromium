@@ -58,7 +58,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_PERMISSION_UPDATE})
+@EnableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_PERMISSION_UPDATE)
 public class PermissionUpdateMessageTest {
     private static final String GEOLOCATION_PAGE =
             "/chrome/test/data/geolocation/geolocation_on_load.html";

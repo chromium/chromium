@@ -51,7 +51,7 @@ import java.util.List;
  * Tests for PaymentDetailsUpdateServiceHelper.
  **/
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({PaymentFeatureList.ANDROID_APP_PAYMENT_UPDATE_EVENTS})
+@EnableFeatures(PaymentFeatureList.ANDROID_APP_PAYMENT_UPDATE_EVENTS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentDetailsUpdateServiceHelperTest {
     private static final int DECODER_STARTUP_TIMEOUT_IN_MS = 10000;

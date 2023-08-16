@@ -416,7 +416,7 @@ public class PasswordSettingsExportTest {
      */
     @Test
     @SmallTest
-    @DisableFeatures({UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING})
+    @DisableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
     @Feature({"Preferences"})
     public void testExportIntent() throws Exception {
         mTestHelper.setPasswordSource(
@@ -470,7 +470,7 @@ public class PasswordSettingsExportTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures({UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING})
+    @EnableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
     @Feature({"Preferences"})
     public void testExportToDownloadsIntent() throws Exception {
         mTestHelper.setPasswordSource(
@@ -531,7 +531,7 @@ public class PasswordSettingsExportTest {
      */
     @Test
     @SmallTest
-    @DisableFeatures({UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING})
+    @DisableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
     @Feature({"Preferences"})
     public void testExportIntentPaused() throws Exception {
         mTestHelper.setPasswordSource(
@@ -739,7 +739,7 @@ public class PasswordSettingsExportTest {
      */
     @Test
     @SmallTest
-    @DisableFeatures({UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING})
+    @DisableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
     @Feature({"Preferences"})
     public void testExportProgressMinimalTime() throws Exception {
         mTestHelper.setPasswordSource(

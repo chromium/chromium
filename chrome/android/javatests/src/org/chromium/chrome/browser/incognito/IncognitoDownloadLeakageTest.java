@@ -64,10 +64,10 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+@EnableFeatures(ChromeFeatureList.CCT_INCOGNITO)
 // TODO(crbug.com/1360906) remove INCOGNITO_DOWNLOADS_WARNING from the disabled features and fix
 // the test accordingly
-@DisableFeatures({ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING})
+@DisableFeatures(ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=UseDownloadOfflineContentProvider"})
 public class IncognitoDownloadLeakageTest {

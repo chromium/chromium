@@ -483,7 +483,7 @@ public class KeyboardAccessoryModernViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES})
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
     public void testCustomIconUrlSet_imageReturnedByPersonalDataManager_customIconSetOnChipView()
             throws InterruptedException {
         GURL customIconUrl = mock(GURL.class);

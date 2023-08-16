@@ -581,7 +581,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testShouldShowNtpAsHomeSurfaceAtStartupOnTablet() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -634,7 +634,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithExistingNtp() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -701,7 +701,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithoutAnyExistingNtp() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -741,7 +741,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithMixedNtps() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -799,7 +799,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testNoAnyTabCase() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -815,7 +815,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testColdStartupWithOnlyLastActiveTabUrl() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 

@@ -316,7 +316,7 @@ public class InstantStartTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @DisableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.ENABLE_ACCESSIBILITY_TAB_SWITCHER,

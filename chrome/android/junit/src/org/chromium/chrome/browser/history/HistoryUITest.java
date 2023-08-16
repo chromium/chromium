@@ -231,7 +231,7 @@ public class HistoryUITest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EMPTY_STATES})
+    @EnableFeatures(ChromeFeatureList.EMPTY_STATES)
     public void testRemove_SingleItem_EmptyState() throws Exception {
         final HistoryItemView itemView = (HistoryItemView) getItemView(2);
 
@@ -266,7 +266,7 @@ public class HistoryUITest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EMPTY_STATES})
+    @EnableFeatures(ChromeFeatureList.EMPTY_STATES)
     public void testRemove_AllItems_EmptyState() throws Exception {
         toggleItemSelection(2);
         toggleItemSelection(3);
@@ -481,7 +481,7 @@ public class HistoryUITest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY)
     public void testSearchViewDismissedByBackPress() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         View toolbarShadow = mHistoryManager.getSelectableListLayout().getToolbarShadowForTests();
@@ -519,7 +519,7 @@ public class HistoryUITest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY)
     public void testSearchViewDismissedByBackPress_Refactored() {
         testSearchViewDismissedByBackPress();
     }

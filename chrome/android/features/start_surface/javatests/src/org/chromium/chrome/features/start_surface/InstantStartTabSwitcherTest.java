@@ -227,7 +227,7 @@ public class InstantStartTabSwitcherTest {
     @SmallTest
     @Feature({"RenderTest"})
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"})
     @DisableIf.Build(message = "Flaky. See https://crbug.com/1091311",
@@ -280,7 +280,7 @@ public class InstantStartTabSwitcherTest {
     @SmallTest
     @Feature({"RenderTest"})
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"})
     @DisableIf.Build(message = "Flaky. See https://crbug.com/1091311",

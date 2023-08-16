@@ -73,13 +73,13 @@ public class HistoryClustersProcessorTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER)
     public void doesProcessSuggestion_featureOff() {
         assertFalse(mProcessor.doesProcessSuggestion(createHistoryClustersSuggestion("foobar"), 1));
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER)
     public void doesProcessSuggestion() {
         assertTrue(mProcessor.doesProcessSuggestion(createHistoryClustersSuggestion("foobar"), 1));
         assertFalse(mProcessor.doesProcessSuggestion(
@@ -87,7 +87,7 @@ public class HistoryClustersProcessorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER)
     public void testPopulateModel() {
         PropertyModel propertyModel = mProcessor.createModel();
         AutocompleteMatch suggestion = createHistoryClustersSuggestion("foobar");
@@ -112,14 +112,14 @@ public class HistoryClustersProcessorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER)
     public void doesProcessSuggestion_suggestionWithNoActions() {
         assertFalse(mProcessor.doesProcessSuggestion(
                 createSearchSuggestionBuilder("foobar").build(), 0));
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER)
     public void doesProcessSuggestion_suggestionWithNoHistoryClusterActions() {
         assertFalse(mProcessor.doesProcessSuggestion(createSearchSuggestionBuilder("foobar")
                                                              .setActions(Arrays.asList(mMockAction))
@@ -128,7 +128,7 @@ public class HistoryClustersProcessorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER)
     public void testOnClick() {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Omnibox.SuggestionUsed.ResumeJourney", 2);
@@ -142,7 +142,7 @@ public class HistoryClustersProcessorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER)
     public void testOnClick_noDelegate() {
         mProcessor = new HistoryClustersProcessor(/*openHistoryClustersDelegate=*/null,
                 ContextUtils.getApplicationContext(), mSuggestionHost, mUrlBarText, mImageSupplier,
@@ -158,7 +158,7 @@ public class HistoryClustersProcessorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER)
     public void testOnLongClick() {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Omnibox.SuggestionUsed.ResumeJourney", 2);

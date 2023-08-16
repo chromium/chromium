@@ -56,7 +56,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+@EnableFeatures(ChromeFeatureList.CCT_INCOGNITO)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoHistoryLeakageTest {
     private static final String TEST_PAGE_1 = "/chrome/test/data/android/google.html";

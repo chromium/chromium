@@ -309,7 +309,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void testStatusBarColorForTabStripRedesignFolioTablet() throws Exception {
         final ChromeActivity activity = sActivityTestRule.getActivity();
@@ -338,7 +338,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void testStatusBarColorForTabStripRedesignDetachedTablet() throws Exception {
         final ChromeActivity activity = sActivityTestRule.getActivity();

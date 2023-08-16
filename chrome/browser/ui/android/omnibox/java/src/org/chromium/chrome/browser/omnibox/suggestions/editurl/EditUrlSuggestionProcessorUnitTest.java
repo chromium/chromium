@@ -303,7 +303,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS)
     public void suggestionView_clickReloadsPage() {
         assertFalse(OmniboxFeatures.noopEditUrlSuggestionClicks());
         mProcessor.populateModel(mMatch, mModel, 0);
@@ -313,7 +313,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS)
     public void suggestionView_clickReturnsToPage() {
         assertTrue(OmniboxFeatures.noopEditUrlSuggestionClicks());
         mProcessor.populateModel(mMatch, mModel, 0);

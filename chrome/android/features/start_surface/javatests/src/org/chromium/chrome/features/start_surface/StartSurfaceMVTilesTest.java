@@ -353,7 +353,7 @@ public class StartSurfaceMVTilesTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     public void test1RowMvtOnStartSurfaceAfterPolish() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
