@@ -176,8 +176,6 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {
   network::TestURLLoaderFactory url_loader_factory;
   bool made_download = false;
 
-  // Incorrect format of response body, XSSI prefix missing. Expecting
-  // early termination and callback to be called with absl::nullopt.
   ConfigureURLLoaderFactoryForRegistrationResponse(
       &url_loader_factory, std::string(kJSONRegistrationParams),
       &made_download);
@@ -199,7 +197,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {
   fetcher->Start(future.GetCallback());
   RunBackgroundTasks();
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  EXPECT_THAT(future.Get<>(), ParamMatching(CreateTestRegistrationParams()));
   ASSERT_TRUE(made_download);
 }
 

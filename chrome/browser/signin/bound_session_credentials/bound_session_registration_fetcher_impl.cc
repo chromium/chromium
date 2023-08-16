@@ -98,13 +98,11 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
   if (net_success && network::IsSuccessfulStatus(*http_response_code)) {
     // JSON responses should start with XSSI-protection prefix which will be
     // removed prior to parsing.
-    if (!base::StartsWith(*response_body, kXSSIPrefix,
-                          base::CompareCase::SENSITIVE)) {
-      // Incorrect format of response, XSSI prefix missing.
-      std::move(callback_).Run(absl::nullopt);
-      return;
+    if (base::StartsWith(*response_body, kXSSIPrefix,
+                         base::CompareCase::SENSITIVE)) {
+      *response_body = response_body->substr(strlen(kXSSIPrefix));
     }
-    *response_body = response_body->substr(strlen(kXSSIPrefix));
+
     absl::optional<base::Value::Dict> maybe_root =
         base::JSONReader::ReadDict(*response_body);
 
