@@ -99,7 +99,6 @@ class ChromeWebAuthnCredentialsDelegateTest
   void SetCredList(std::vector<device::DiscoverableCredentialMetadata> creds) {
 #if !BUILDFLAG(IS_ANDROID)
     AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
-    tai.request_type = device::FidoRequestType::kGetAssertion;
     tai.recognized_credentials = std::move(creds);
     dialog_model()->StartFlow(std::move(tai),
                               /*is_conditional_mediation=*/true);

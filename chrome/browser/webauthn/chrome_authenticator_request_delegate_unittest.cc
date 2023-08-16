@@ -450,9 +450,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
     model->AddObserver(&observer);
     EXPECT_EQ(observer.last_step(),
               AuthenticatorRequestDialogModel::Step::kNotStarted);
-    AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
-    tai.request_type = device::FidoRequestType::kGetAssertion;
-    delegate.OnTransportAvailabilityEnumerated(tai);
+    delegate.OnTransportAvailabilityEnumerated(
+        AuthenticatorRequestDialogModel::TransportAvailabilityInfo());
     EXPECT_EQ(observer.last_step() ==
                   AuthenticatorRequestDialogModel::Step::kConditionalMediation,
               conditional_ui);
@@ -570,7 +569,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
   passkey_model->AddNewPasskeyForTesting(std::move(passkey_other_rp_id));
 
   AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
-  tai.request_type = device::FidoRequestType::kGetAssertion;
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
       .WillOnce([&tai](const auto* _, const auto* new_tai) {
         tai = std::move(*new_tai);
@@ -626,7 +624,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_NoSyncPairedPhones) {
   passkey_model->AddNewPasskeyForTesting(std::move(passkey));
 
   AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
-  tai.request_type = device::FidoRequestType::kGetAssertion;
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
       .WillOnce([&tai](const auto* _, const auto* new_tai) {
         tai = std::move(*new_tai);
@@ -688,7 +685,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
   passkey_model->AddNewPasskeyForTesting(std::move(shadowed_passkey));
 
   AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
-  tai.request_type = device::FidoRequestType::kGetAssertion;
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
       .WillOnce([&tai](const auto* _, const auto* new_tai) {
         tai = std::move(*new_tai);
