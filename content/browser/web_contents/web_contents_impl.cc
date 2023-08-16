@@ -2938,9 +2938,6 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
 
   prefs.viewport_enabled = command_line.HasSwitch(switches::kEnableViewport);
 
-  prefs.threaded_scrolling_enabled =
-      !command_line.HasSwitch(blink::switches::kDisableThreadedScrolling);
-
 #if BUILDFLAG(IS_ANDROID)
   constexpr int kTabletWidthThreshold = 600;
   // TODO(crbug.com/1469720): GetPrimaryDisplay() won't be correct for

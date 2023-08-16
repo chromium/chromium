@@ -35,7 +35,6 @@ BLINK_COMMON_EXPORT extern const char kDisableNewBaseUrlInheritanceBehavior[];
 BLINK_COMMON_EXPORT extern const char kDisablePartialRaster[];
 BLINK_COMMON_EXPORT extern const char kDisablePreferCompositingToLCDText[];
 BLINK_COMMON_EXPORT extern const char kDisableRGBA4444Textures[];
-BLINK_COMMON_EXPORT extern const char kDisableThreadedScrolling[];
 BLINK_COMMON_EXPORT extern const char kDisableZeroCopy[];
 BLINK_COMMON_EXPORT extern const char kDumpRuntimeCallStats[];
 BLINK_COMMON_EXPORT extern const char

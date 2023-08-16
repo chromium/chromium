@@ -76,9 +76,6 @@ const char kDisablePreferCompositingToLCDText[] =
 // Disables RGBA_4444 textures.
 const char kDisableRGBA4444Textures[] = "disable-rgba-4444-textures";
 
-// Disable multithreaded, compositor scrolling of web content.
-const char kDisableThreadedScrolling[] = "disable-threaded-scrolling";
-
 // Disable rasterizer that writes directly to GPU memory associated with tiles.
 const char kDisableZeroCopy[] = "disable-zero-copy";
 
