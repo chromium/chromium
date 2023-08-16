@@ -15,6 +15,7 @@
 #include "ash/utility/layer_util.h"
 #include "ash/utility/transformer_util.h"
 #include "base/command_line.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
@@ -37,6 +38,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -322,8 +324,25 @@ void ScreenRotationAnimator::OnScreenRotationContainerLayerCopiedBeforeRotation(
   for (auto& observer : screen_rotation_animator_observers_)
     observer.OnScreenCopiedBeforeRotation();
 
+  // TODO(http://b/293667233): Remove this once the bug is resolved. It seems
+  // that setting the rotation below can somehow result in the destruction of
+  // `this`.
+  auto* screen = display::Screen::GetScreen();
+  SCOPED_CRASH_KEY_NUMBER("DispRotation", "num_displays_before",
+                          screen->GetNumDisplays());
+  const auto display = screen->GetDisplayNearestWindow(root_window_);
+  SCOPED_CRASH_KEY_BOOL("DispRotation", "display_valid", display.is_valid());
+  SCOPED_CRASH_KEY_BOOL("DispRotation", "is_internal",
+                        display::IsInternalDisplayId(display.id()));
+
+  auto weak_ptr = weak_factory_.GetWeakPtr();
+
   SetRotation(rotation_request->display_id, rotation_request->old_rotation,
               rotation_request->new_rotation, rotation_request->source);
+
+  SCOPED_CRASH_KEY_NUMBER("DispRotation", "num_displays_after",
+                          screen->GetNumDisplays());
+  CHECK(weak_ptr);
 
   RequestCopyScreenRotationContainerLayer(
       std::make_unique<viz::CopyOutputRequest>(

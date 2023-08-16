@@ -172,7 +172,7 @@ class ASH_EXPORT ScreenRotationAnimator {
 
   void StopAnimating();
 
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window> root_window_;
 
   // For current slow rotation animation, there are two states |ROTATING| and
   // |IDLE|. For the smooth rotation animation, we need to send copy request
