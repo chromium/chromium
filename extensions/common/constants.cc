@@ -13,74 +13,6 @@
 
 namespace extensions {
 
-const char kExtensionScheme[] = "chrome-extension";
-
-const base::FilePath::CharType kManifestFilename[] =
-    FILE_PATH_LITERAL("manifest.json");
-const base::FilePath::CharType kDifferentialFingerprintFilename[] =
-    FILE_PATH_LITERAL("manifest.fingerprint");
-const base::FilePath::CharType kLocaleFolder[] =
-    FILE_PATH_LITERAL("_locales");
-const base::FilePath::CharType kMessagesFilename[] =
-    FILE_PATH_LITERAL("messages.json");
-const base::FilePath::CharType kGzippedMessagesFilename[] =
-    FILE_PATH_LITERAL("messages.json.gz");
-const base::FilePath::CharType kPlatformSpecificFolder[] =
-    FILE_PATH_LITERAL("_platform_specific");
-const base::FilePath::CharType kMetadataFolder[] =
-    FILE_PATH_LITERAL("_metadata");
-const base::FilePath::CharType kVerifiedContentsFilename[] =
-    FILE_PATH_LITERAL("verified_contents.json");
-const base::FilePath::CharType kComputedHashesFilename[] =
-    FILE_PATH_LITERAL("computed_hashes.json");
-const base::FilePath::CharType kIndexedRulesetDirectory[] =
-    FILE_PATH_LITERAL("generated_indexed_rulesets");
-
-const char kInstallDirectoryName[] = "Extensions";
-const char kUnpackedInstallDirectoryName[] = "UnpackedExtensions";
-
-const char kTempExtensionName[] = "CRX_INSTALL";
-
-const char kDecodedMessageCatalogsFilename[] = "DECODED_MESSAGE_CATALOGS";
-
-const char kGeneratedBackgroundPageFilename[] =
-    "_generated_background_page.html";
-
-const char kFaviconSourcePath[] = "_favicon";
-
-const char kModulesDir[] = "_modules";
-
-const base::FilePath::CharType kExtensionFileExtension[] =
-    FILE_PATH_LITERAL(".crx");
-const base::FilePath::CharType kExtensionKeyFileExtension[] =
-    FILE_PATH_LITERAL(".pem");
-
-// If auto-updates are turned on, default to running every 5 hours.
-const int kDefaultUpdateFrequencySeconds = 60 * 60 * 5;
-
-const base::FilePath::CharType kLocalAppSettingsDirectoryName[] =
-    FILE_PATH_LITERAL("Local App Settings");
-const base::FilePath::CharType kLocalExtensionSettingsDirectoryName[] =
-    FILE_PATH_LITERAL("Local Extension Settings");
-const base::FilePath::CharType kSyncAppSettingsDirectoryName[] =
-    FILE_PATH_LITERAL("Sync App Settings");
-const base::FilePath::CharType kSyncExtensionSettingsDirectoryName[] =
-    FILE_PATH_LITERAL("Sync Extension Settings");
-const base::FilePath::CharType kManagedSettingsDirectoryName[] =
-    FILE_PATH_LITERAL("Managed Extension Settings");
-const base::FilePath::CharType kStateStoreName[] =
-    FILE_PATH_LITERAL("Extension State");
-const base::FilePath::CharType kRulesStoreName[] =
-    FILE_PATH_LITERAL("Extension Rules");
-const base::FilePath::CharType kScriptsStoreName[] =
-    FILE_PATH_LITERAL("Extension Scripts");
-const char kWebStoreAppId[] = "ahfgeienlihckogmohjhadlkjgocpleb";
-
-const char kSettingsDatabaseUMAClientName[] = "Settings";
-const char kRulesDatabaseUMAClientName[] = "Rules";
-const char kStateDatabaseUMAClientName[] = "State";
-const char kScriptsDatabaseUMAClientName[] = "Scripts";
-
 const uint8_t kWebstoreSignaturesPublicKey[] = {
     0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
     0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00, 0x03, 0x82, 0x01, 0x0f, 0x00,
@@ -111,20 +43,9 @@ const uint8_t kWebstoreSignaturesPublicKey[] = {
 const size_t kWebstoreSignaturesPublicKeySize =
     std::size(kWebstoreSignaturesPublicKey);
 
-const char kUpdateURLData[] = "update_url_data";
-
-const int kMainThreadId = 0;
-
-const char kMimeTypeJpeg[] = "image/jpeg";
-const char kMimeTypePng[] = "image/png";
-
 }  // namespace extensions
 
 namespace extension_misc {
-
-const int kUnknownTabId = -1;
-const int kUnknownWindowId = -1;
-const int kCurrentWindowId = -2;
 
 #if BUILDFLAG(IS_CHROMEOS)
 // TODO(michaelpg): Deprecate old app IDs before adding new ones to avoid bloat.
@@ -193,21 +114,5 @@ bool IsPreinstalledAppId(base::StringPiece app_id) {
   });
   return base::Contains(kPreinstalledApps, app_id);
 }
-
-// Error returned when scripting of a page is denied due to enterprise policy.
-const char kPolicyBlockedScripting[] =
-    "This page cannot be scripted due to an ExtensionsSettings policy.";
-
-const char kIncognitoErrorMessage[] =
-    "You do not have permission to access incognito preferences.";
-
-const char kIncognitoSessionOnlyErrorMessage[] =
-    "You cannot set a preference with scope 'incognito_session_only' when no "
-    "incognito window is open.";
-
-const char kInvalidColorError[] =
-    "The color specification could not be parsed.";
-
-const int kContentVerificationDefaultBlockSize = 4096;
 
 }  // namespace extension_misc

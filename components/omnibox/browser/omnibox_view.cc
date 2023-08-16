@@ -420,7 +420,7 @@ void OmniboxView::UpdateTextStyle(
 
   const bool is_extension_url =
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      url_scheme == base::UTF8ToUTF16(extensions::kExtensionScheme);
+      base::EqualsASCII(url_scheme, extensions::kExtensionScheme);
 #else
       false;
 #endif
