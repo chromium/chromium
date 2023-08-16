@@ -79474,6 +79474,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="30" label="PRICE_INSIGHTS"/>
   <int value="31" label="V8_COMPILE_HINTS"/>
   <int value="33" label="SHOPPING_PAGE_TYPES"/>
+  <int value="34" label="SHOPPING_DISCOUNTS"/>
 </enum>
 
 <enum name="OptOutBlacklistReason">

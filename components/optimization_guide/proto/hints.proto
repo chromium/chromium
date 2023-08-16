@@ -194,6 +194,8 @@ enum OptimizationType {
   // This optimization provides information about shoppinge page types of this
   // page.
   SHOPPING_PAGE_TYPES = 33;
+  // This optimization provides information about shopping discounts for a URL.
+  SHOPPING_DISCOUNTS = 34;
 }
 
 // Presents semantics for how page load URLs should be matched.

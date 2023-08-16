@@ -79,6 +79,8 @@ std::string GetStringNameForOptimizationType(
       return "V8CompileHints";
     case proto::OptimizationType::SHOPPING_PAGE_TYPES:
       return "ShoppingPageTypes";
+    case proto::OptimizationType::SHOPPING_DISCOUNTS:
+      return "ShoppingDiscounts";
   }
 
   // The returned string is used to record histograms for the optimization type.
