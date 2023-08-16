@@ -1036,6 +1036,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestShowScriptsTab) {
   RunTest("testShowScriptsTab", kDebuggerTestPage);
 }
 
+// Tests recorder panel showing.
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestShowRecorderTab) {
+  RunTest("testShowRecorderTab", kDebuggerTestPage);
+}
+
 // Tests that chrome.devtools extension is correctly exposed.
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestDevToolsExtensionAPI) {
   LoadExtension("devtools_extension");
