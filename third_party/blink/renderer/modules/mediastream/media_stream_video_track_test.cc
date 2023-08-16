@@ -414,6 +414,59 @@ TEST_F(MediaStreamVideoTrackTest, DeliverFramesAndGetSettings) {
   sink.DisconnectFromTrack();
 }
 
+TEST_F(MediaStreamVideoTrackTest,
+       DeliveredFrameCounterIncrementsForEnabledTracks) {
+  InitializeSource();
+  MockMediaStreamVideoSink sink;
+  WebMediaStreamTrack track = CreateTrack();
+  sink.ConnectToTrack(track);
+  MediaStreamVideoTrack* const native_track =
+      MediaStreamVideoTrack::From(track);
+  EXPECT_FALSE(native_track->max_frame_rate().has_value());
+
+  const auto kGetDeliverableVideoFrames =
+      base::BindRepeating([](MediaStreamVideoTrack* const native_track) {
+        size_t result = 0u;
+        base::RunLoop run_loop;
+        native_track->AsyncGetDeliverableVideoFramesCount(base::BindOnce(
+            [](size_t* result, base::RunLoop* run_loop,
+               size_t deliverable_frames) {
+              *result = deliverable_frames;
+              run_loop->Quit();
+            },
+            base::Unretained(&result), base::Unretained(&run_loop)));
+        run_loop.Run();
+        return result;
+      });
+
+  // Initially, no fames have been delivered.
+  EXPECT_EQ(kGetDeliverableVideoFrames.Run(native_track), 0u);
+
+  // Deliver a frame an expect counter to increment to 1.
+  DeliverVideoFrameAndWaitForRenderer(
+      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400)), &sink);
+  EXPECT_EQ(kGetDeliverableVideoFrames.Run(native_track), 1u);
+
+  // And another one...
+  DeliverVideoFrameAndWaitForRenderer(
+      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400)), &sink);
+  EXPECT_EQ(kGetDeliverableVideoFrames.Run(native_track), 2u);
+
+  // Disable the track and verify the frame counter does NOT increment.
+  native_track->SetEnabled(false);
+  DeliverVideoFrameAndWaitForRenderer(
+      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400)), &sink);
+  EXPECT_EQ(kGetDeliverableVideoFrames.Run(native_track), 2u);
+
+  // Enable it again, and business as usual...
+  native_track->SetEnabled(true);
+  DeliverVideoFrameAndWaitForRenderer(
+      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400)), &sink);
+  EXPECT_EQ(kGetDeliverableVideoFrames.Run(native_track), 3u);
+
+  sink.DisconnectFromTrack();
+}
+
 TEST_P(MediaStreamVideoTrackTest, PropagatesContentHintType) {
   InitializeSource();
   MockMediaStreamVideoSink sink;

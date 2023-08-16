@@ -83,12 +83,15 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
       const MediaStreamComponent* component,
       const String& id) override;
 
-  // MediaStreamTrack overrides.
+  // MediaStreamTrackPlatform overrides.
   void SetEnabled(bool enabled) override;
   void SetContentHint(
       WebMediaStreamTrack::ContentHintType content_hint) override;
   void StopAndNotify(base::OnceClosure callback) override;
   void GetSettings(MediaStreamTrackPlatform::Settings& settings) const override;
+  void AsyncGetDeliverableVideoFramesCount(
+      base::OnceCallback<void(size_t)> deliverable_video_frames_callback)
+      override;
   MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle() override;
   void AddCropVersionCallback(uint32_t crop_version,
                               base::OnceClosure callback) override;
