@@ -105,7 +105,7 @@ declare_args() {
   enable_media_drm_storage = is_android || is_castos
 
   # Enable HLS manifest parser and demuxer.
-  enable_hls_demuxer = is_android
+  enable_hls_demuxer = false
 
   # Enable inclusion of the HEVC/H265 parser and also enable HEVC/H265 decoding
   # with hardware acceleration assist. Enabled by default for fuzzer builds,
