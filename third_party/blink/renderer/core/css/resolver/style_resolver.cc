@@ -481,31 +481,21 @@ void StyleResolver::SetRuleUsageTracker(StyleRuleUsageTracker* tracker) {
 }
 
 static inline ScopedStyleResolver* ScopedResolverFor(const Element& element) {
-  // For normal elements, returning element->treeScope().scopedStyleResolver()
-  // is enough. Rules for ::cue and custom pseudo elements like
-  // ::-webkit-meter-bar pierce through a single shadow dom boundary and apply
-  // to elements in sub-scopes.
-  //
-  // An assumption here is that these elements belong to scopes without a
-  // ScopedStyleResolver due to the fact that VTT scopes and UA shadow trees
-  // don't have <style> or <link> elements. This is backed up by the DCHECKs
-  // below. The one exception to this assumption are the media controls which
-  // use a <style> element for CSS animations in the shadow DOM. If a <style>
-  // element is present in the shadow DOM then this will also block any
-  // author styling.
-
   TreeScope* tree_scope = &element.GetTreeScope();
   if (ScopedStyleResolver* resolver = tree_scope->GetScopedStyleResolver()) {
-#if DCHECK_IS_ON()
-    if (!element.HasMediaControlAncestor()) {
-      DCHECK(element.ShadowPseudoId().empty());
-    }
-#endif
     DCHECK(!element.IsVTTElement());
     return resolver;
   }
 
-  tree_scope = tree_scope->ParentTreeScope();
+  return nullptr;
+}
+
+static inline ScopedStyleResolver* ParentScopedResolverFor(
+    const Element& element) {
+  // Rules for ::cue and custom pseudo elements like
+  // ::-webkit-meter-bar pierce through a single shadow dom boundary and apply
+  // to elements in sub-scopes.
+  TreeScope* tree_scope = element.GetTreeScope().ParentTreeScope();
   if (!tree_scope) {
     return nullptr;
   }
@@ -647,6 +637,7 @@ static void MatchElementScopeRules(const Element& element,
                                    ElementRuleCollector& collector,
                                    StyleRuleUsageTracker* tracker) {
   ScopedStyleResolver* element_scope_resolver = ScopedResolverFor(element);
+  ScopedStyleResolver* parent_scope_resolver = ParentScopedResolverFor(element);
   if (element_scope_resolver) {
     collector.ClearMatchedRules();
     collector.BeginAddingAuthorRulesForTreeScope(
@@ -654,7 +645,20 @@ static void MatchElementScopeRules(const Element& element,
     element_scope_resolver->CollectMatchingElementScopeRules(collector);
     collector.SortAndTransferMatchedRules(
         CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
-  } else {
+  }
+
+  if (parent_scope_resolver) {
+    collector.ClearMatchedRules();
+    collector.BeginAddingAuthorRulesForTreeScope(
+        parent_scope_resolver->GetTreeScope());
+    parent_scope_resolver->CollectMatchingElementScopeRules(collector);
+    collector.SortAndTransferMatchedRules(
+        CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
+  }
+
+  if (!element_scope_resolver && !parent_scope_resolver) {
+    // TODO(dbaron): Does the choice of scope here matter?  (If so,
+    // should the "&& !" in the condition above change to "|| "?)
     collector.BeginAddingAuthorRulesForTreeScope(element.GetTreeScope());
   }
 
