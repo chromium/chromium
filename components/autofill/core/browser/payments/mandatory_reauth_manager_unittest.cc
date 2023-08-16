@@ -176,6 +176,34 @@ TEST_F(MandatoryReauthManagerTest, AuthenticateWithMessage) {
   EXPECT_FALSE(mandatory_reauth_manager_->GetDeviceAuthenticatorForTesting());
 }
 
+TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_Biometric) {
+  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_EQ(mandatory_reauth_manager_->GetAuthenticationMethod(),
+            MandatoryReauthAuthenticationMethod::kBiometric);
+}
+
+TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_ScreenLock) {
+  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(false));
+  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_EQ(mandatory_reauth_manager_->GetAuthenticationMethod(),
+            MandatoryReauthAuthenticationMethod::kScreenLock);
+}
+
+TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_UnsupportedMethod) {
+  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(false));
+  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
+      .WillByDefault(testing::Return(false));
+
+  EXPECT_EQ(mandatory_reauth_manager_->GetAuthenticationMethod(),
+            MandatoryReauthAuthenticationMethod::kUnsupportedMethod);
+}
+
 // Test that the MandatoryReauthManager returns that we should offer re-auth
 // opt-in if the conditions for offering it are all met for local cards.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {

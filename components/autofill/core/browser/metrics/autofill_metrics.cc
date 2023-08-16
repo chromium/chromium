@@ -3246,9 +3246,7 @@ std::string AutofillMetrics::GetHistogramStringForCardType(
       case CreditCard::RecordType::kVirtualCard:
         return ".VirtualCard";
       case CreditCard::RecordType::kLocalCard:
-        // We do not offer CVC auth for local cards.
-        NOTREACHED();
-        break;
+        return ".LocalCard";
     }
   }
 

@@ -6,9 +6,16 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_MANDATORY_REAUTH_METRICS_H_
 
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
-namespace autofill::autofill_metrics {
+namespace autofill {
+
+namespace payments {
+enum class MandatoryReauthAuthenticationMethod;
+}
+
+namespace autofill_metrics {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -127,10 +134,21 @@ void LogMandatoryReauthOptInOrOutUpdateEvent(
     MandatoryReauthAuthenticationFlowEvent event);
 
 // Logs the status of a mandatory reauth occurrence, such as flow
-// started/succeeded/failed, when the user tries to edit a local card.
+// started/succeeded/failed, when the user tries to edit a local card in
+// Settings page.
 void LogMandatoryReauthSettingsPageEditCardEvent(
     MandatoryReauthAuthenticationFlowEvent event);
 
-}  // namespace autofill::autofill_metrics
+// Logs the status of a mandatory reauth occurrence during checkout flow, such
+// as flow started/succeeded/failed, break down by `card_type` and
+// `authentication_method`.
+void LogMandatoryReauthCheckoutFlowUsageEvent(
+    CreditCard::RecordType card_type,
+    payments::MandatoryReauthAuthenticationMethod authentication_method,
+    MandatoryReauthAuthenticationFlowEvent event);
+
+}  // namespace autofill_metrics
+
+}  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_MANDATORY_REAUTH_METRICS_H_

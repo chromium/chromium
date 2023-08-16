@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 
 namespace autofill::autofill_metrics {
 
@@ -73,6 +74,30 @@ void LogMandatoryReauthSettingsPageEditCardEvent(
     MandatoryReauthAuthenticationFlowEvent event) {
   std::string histogram_name =
       "Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.EditCard";
+  base::UmaHistogramEnumeration(histogram_name, event);
+}
+
+void LogMandatoryReauthCheckoutFlowUsageEvent(
+    CreditCard::RecordType card_type,
+    payments::MandatoryReauthAuthenticationMethod authentication_method,
+    MandatoryReauthAuthenticationFlowEvent event) {
+  std::string histogram_name =
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage" +
+      AutofillMetrics::GetHistogramStringForCardType(card_type);
+  switch (authentication_method) {
+    case payments::MandatoryReauthAuthenticationMethod::kUnknown:
+      histogram_name += ".UnknownMethod";
+      break;
+    case payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod:
+      histogram_name += ".UnsupportedMethod";
+      break;
+    case payments::MandatoryReauthAuthenticationMethod::kBiometric:
+      histogram_name += ".Biometric";
+      break;
+    case payments::MandatoryReauthAuthenticationMethod::kScreenLock:
+      histogram_name += ".ScreenLock";
+      break;
+  }
   base::UmaHistogramEnumeration(histogram_name, event);
 }
 
