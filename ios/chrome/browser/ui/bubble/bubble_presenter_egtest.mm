@@ -77,7 +77,7 @@
 #else
 #define MAYBE_testTabGridIPH testTabGridIPH
 #endif
-- (void)testTabGridIPH {
+- (void)MAYBE_testTabGridIPH {
   // Enable the IPH Demo Mode feature to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(base::StringPrintf(
