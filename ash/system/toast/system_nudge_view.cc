@@ -93,6 +93,12 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
           : views::HighlightBorder::Type::kHighlightBorder1));
 
+  // Since nudges have a large corner radius, we use the shadow on texture
+  // layer. Refer to `ash::SystemShadowOnTextureLayer` for more details.
+  shadow_ =
+      SystemShadow::CreateShadowOnTextureLayer(SystemShadow::Type::kElevation4);
+  shadow_->SetRoundedCornerRadius(kNudgeCornerRadius);
+
   const bool use_toast_style = nudge_data.use_toast_style;
 
   SetOrientation(use_toast_style ? views::LayoutOrientation::kHorizontal
@@ -232,11 +238,6 @@ void SystemNudgeView::UpdateShadowBounds() {
 }
 
 void SystemNudgeView::AddedToWidget() {
-  // Since nudges have a large corner radius, we use the shadow on texture
-  // layer. Refer to `ash::SystemShadowOnTextureLayer` for more details.
-  shadow_ =
-      SystemShadow::CreateShadowOnTextureLayer(SystemShadow::Type::kElevation4);
-  shadow_->SetRoundedCornerRadius(kNudgeCornerRadius);
   shadow_->SetContentBounds(gfx::Rect(kShadowOrigin, GetPreferredSize()));
 
   // Attach the shadow at the bottom of the widget layer.
@@ -257,8 +258,9 @@ void SystemNudgeView::SetLabelsMaxWidth(int max_width) {
 void SystemNudgeView::UpdateToastStyleMargins(bool with_button) {
   SetLabelsMaxWidth(kLabelMaxWidth_ToastStyleNudge);
   body_label_->GetPreferredSize();
-  layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(GetPreferredSize().height() / 2.0f));
+  const int rounded_corner_radius = GetPreferredSize().height() / 2;
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(rounded_corner_radius));
+  shadow_->SetRoundedCornerRadius(rounded_corner_radius);
   SetInteriorMargin(
       body_label_->GetRequiredLines() > 1
           ? with_button ? kMultilineToastStyleNudgeWithButtonInteriorMargin
