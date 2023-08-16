@@ -88,10 +88,7 @@ class Reconfigurer {
     this.shouldSuspend = value;
   }
 
-  /**
-   * Gets the video device ids sorted by preference.
-   */
-  private getDeviceIdCandidates(cameraInfo: CameraInfo): string[] {
+  getDeviceIdsSortedbyPreferredFacing(cameraInfo: CameraInfo): string[] {
     let devices: Array<Camera3DeviceInfo|MediaDeviceInfo>;
     /**
      * Object mapping from device id to facing. Set to null for fake cameras.
@@ -109,20 +106,35 @@ class Reconfigurer {
       devices = cameraInfo.devicesInfo;
     }
 
-    const preferredFacing =
-        this.config?.facing ?? this.initialFacing ?? util.getDefaultFacing();
-    // Put the selected video device id first.
+    const preferredFacing = this.initialFacing ?? util.getDefaultFacing();
     const sorted = devices.map((device) => device.deviceId).sort((a, b) => {
       if (a === b) {
         return 0;
       }
-      if (this.config !== null ? a === this.config.deviceId :
-                                 facings?.[a] === preferredFacing) {
+      if (facings?.[a] === preferredFacing) {
         return -1;
       }
       return 1;
     });
     return sorted;
+  }
+
+  /**
+   * Gets the video device ids sorted by preference.
+   */
+  private getDeviceIdCandidates(cameraInfo: CameraInfo): string[] {
+    const deviceIds = this.getDeviceIdsSortedbyPreferredFacing(cameraInfo);
+    // If there is no preferred device or the device is not in the list,
+    // return devices sorted by preferred facing.
+    if (this.config === null || !deviceIds.includes(this.config.deviceId)) {
+      return deviceIds;
+    }
+    // Put the preferred device on the top of the list.
+    function rotation(devices: string[], leftRotateNum: number): string[] {
+      return devices.slice(leftRotateNum)
+          .concat(devices.slice(0, leftRotateNum));
+    }
+    return rotation(deviceIds, deviceIds.indexOf(this.config.deviceId));
   }
 
   private async getModeCandidates(deviceId: string): Promise<Mode[]> {

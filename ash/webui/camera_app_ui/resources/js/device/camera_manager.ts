@@ -317,17 +317,19 @@ export class CameraManager implements EventListener {
   switchCamera(): Promise<void>|null {
     const promise = this.tryReconfigure(() => {
       state.set(PerfEvent.CAMERA_SWITCHING, true);
-      const devices = this.getCameraInfo().devicesInfo;
+      const deviceIds =
+          this.scheduler.reconfigurer.getDeviceIdsSortedbyPreferredFacing(
+              this.getCameraInfo());
+      if (deviceIds.length === 0) {
+        return;
+      }
       let index =
-          devices.findIndex((entry) => entry.deviceId === this.getDeviceId());
-      if (index === -1) {
-        index = 0;
-      }
-      if (devices.length > 0) {
-        index = (index + 1) % devices.length;
-        assert(this.scheduler.reconfigurer.config !== null);
-        this.scheduler.reconfigurer.config.deviceId = devices[index].deviceId;
-      }
+          deviceIds.findIndex((deviceId) => deviceId === this.getDeviceId());
+      // findIndex() may return -1, which means the device is not in the list.
+      // In this case, we will try to switch to the preferred facing device.
+      index = (index + 1) % deviceIds.length;
+      assertExists(this.scheduler.reconfigurer.config).deviceId =
+          deviceIds[index];
     });
     if (promise === null) {
       return null;
