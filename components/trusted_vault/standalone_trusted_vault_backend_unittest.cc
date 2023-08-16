@@ -287,9 +287,10 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   const base::FilePath file_path_;
   const base::FilePath deprecated_file_path_;
-  raw_ptr<testing::NiceMock<MockDelegate>, DanglingUntriaged> delegate_;
+  raw_ptr<testing::NiceMock<MockDelegate>, DanglingUntriaged> delegate_ =
+      nullptr;
   raw_ptr<testing::NiceMock<MockTrustedVaultConnection>, DanglingUntriaged>
-      connection_;
+      connection_ = nullptr;
   base::SimpleTestClock clock_;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
 };
