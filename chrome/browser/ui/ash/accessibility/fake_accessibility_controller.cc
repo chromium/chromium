@@ -100,6 +100,9 @@ void FakeAccessibilityController::
     DisableSwitchAccessDisableConfirmationDialogTesting() {}
 
 void FakeAccessibilityController::
+    DisableSwitchAccessEnableNotificationTesting() {}
+
+void FakeAccessibilityController::
     UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
         int download_progress) {}
 

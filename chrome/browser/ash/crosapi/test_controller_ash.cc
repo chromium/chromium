@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -719,21 +720,32 @@ void TestControllerAsh::IsSavedDeskStorageReady(
 void TestControllerAsh::SetAssistiveTechnologyEnabled(
     crosapi::mojom::AssistiveTechnologyType at_type,
     bool enabled) {
+  ash::AccessibilityManager* manager = ash::AccessibilityManager::Get();
   switch (at_type) {
     case crosapi::mojom::AssistiveTechnologyType::kChromeVox:
-      ash::AccessibilityManager::Get()->EnableSpokenFeedback(enabled);
+      manager->EnableSpokenFeedback(enabled);
       break;
     case mojom::AssistiveTechnologyType::kSelectToSpeak:
-      ash::AccessibilityManager::Get()->SetSelectToSpeakEnabled(enabled);
+      manager->SetSelectToSpeakEnabled(enabled);
       break;
-    case mojom::AssistiveTechnologyType::kSwitchAccess:
+    case mojom::AssistiveTechnologyType::kSwitchAccess: {
       // Don't show "are you sure you want to turn off switch access?" dialog
       // during these tests, as it causes a side-effect for future tests run
       // in series.
-      ash::AccessibilityController::Get()
-          ->DisableSwitchAccessDisableConfirmationDialogTesting();
-      ash::AccessibilityManager::Get()->SetSwitchAccessEnabled(enabled);
+      auto* controller = ash::AccessibilityController::Get();
+      controller->DisableSwitchAccessDisableConfirmationDialogTesting();
+      // Don't show the dialog saying Switch Access was enabled.
+      controller->DisableSwitchAccessEnableNotificationTesting();
+      // Set some Switch Access prefs so that the os://settings page is not
+      // opened (this is done if settings are not configured on first use):
+      manager->SetSwitchAccessKeysForTest(
+          {'1', 'A'}, ash::prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes);
+      manager->SetSwitchAccessKeysForTest(
+          {'2', 'B'},
+          ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes);
+      manager->SetSwitchAccessEnabled(enabled);
       break;
+    }
     case mojom::AssistiveTechnologyType::kUnknown:
       LOG(ERROR) << "Cannot enable unknown AssistiveTechnologyType";
       break;

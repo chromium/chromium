@@ -2076,6 +2076,11 @@ void AccessibilityControllerImpl::
   no_switch_access_disable_confirmation_dialog_for_testing_ = true;
 }
 
+void AccessibilityControllerImpl::
+    DisableSwitchAccessEnableNotificationTesting() {
+  skip_switch_access_notification_ = true;
+}
+
 void AccessibilityControllerImpl::OnTabletModeStarted() {
   if (spoken_feedback().enabled())
     ShowAccessibilityNotification(
