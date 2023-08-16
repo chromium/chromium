@@ -12779,6 +12779,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSMagicStackShortcutsFreshSignal" not_user_triggered="true">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Recorded when a valid user action related to Reading List, Bookmarks, Recent
+    Tabs, or History occurs.
+  </description>
+</action>
+
 <action name="IOSMobileReloadCrashedRenderer" not_user_triggered="true">
   <owner>thegreenfrog@google.com</owner>
   <owner>ajuma@google.com</owner>

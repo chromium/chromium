@@ -30,6 +30,9 @@ class ContentSuggestionsViewControllerTest : public PlatformTest {
         initWithLocalState:&pref_service_];
     pref_service_.registry()->RegisterIntegerPref(
         prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness, -1);
+    pref_service_.registry()->RegisterIntegerPref(
+        prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness,
+        -1);
     view_controller_.contentSuggestionsMetricsRecorder = metrics_recorder_;
     histogram_tester_.reset(new base::HistogramTester());
   }
