@@ -14635,6 +14635,22 @@
             ]
         }
     ],
+    "SystemInfoAnswerCardsInLauncher": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LauncherSystemInfoAnswerCards"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabAudioMuting": [
         {
             "platforms": [
