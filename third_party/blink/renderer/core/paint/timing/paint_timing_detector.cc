@@ -458,7 +458,19 @@ bool PaintTimingDetector::NotifyMetricsIfLargestTextPaintChanged(
   if (!HasLargestTextPaintChanged(text_paint_time, text_paint_size)) {
     return false;
   }
-  if (lcp_details_.largest_text_paint_size_ < text_paint_size) {
+  // If soft nav LCP is being recorded for LCP, because lcp_details is not
+  // reset, if its text paint size is not smaller than the new text paint size
+  // corresponding to the 1st soft nav, this new text paint size would not be
+  // updated. The 2nd condition is to fix this. For subsequent soft
+  // navigations, because record_soft_navigation_lcp_for_ukm_ is true, the
+  // soft_navigation_lcp_details_for_ukm_ is always updated to the lcp_details_.
+  // the 2nd condition
+  // soft_navigation_lcp_details_for_ukm_.largest_text_paint_size_ <
+  // text_paint_size is effectively the same the 1st condition.
+  if (lcp_details_.largest_text_paint_size_ < text_paint_size ||
+      (record_soft_navigation_lcp_for_ukm_ &&
+       soft_navigation_lcp_details_for_ukm_.largest_text_paint_size_ <
+           text_paint_size)) {
     DCHECK(!text_paint_time.is_null());
     lcp_details_.largest_text_paint_time_ = text_paint_time;
     lcp_details_.largest_text_paint_size_ = text_paint_size;

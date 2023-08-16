@@ -74,9 +74,16 @@ class ContentfulPaintTimingInfo {
 
   // Returns true iff this object does not represent any paint.
   bool Empty() const {
-    // size_ and time_ should both be set or both be unset.
-    DCHECK((size_ != 0u && time_) || (size_ == 0u && !time_));
-    return !time_;
+    // We set timings at the renderer side only when size is >0. Therefore it
+    // could be either size == 0 and time is not set or size > 0 and time is
+    // set. Note that when time is set, it could be 0.
+    CHECK((size_ != 0u && time_.has_value()) ||
+          (size_ == 0u && !time_.has_value()));
+
+    // Returns if timing is not set because of 0 size.
+    // TODO(crbug.com/1473188) We should revisit if we should check timing being
+    // 0 too.
+    return (size_ == 0u && !time_.has_value());
   }
 
   // Returns true iff this object does not represent any paint OR represents an
