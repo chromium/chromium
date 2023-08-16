@@ -46,8 +46,6 @@ enum class DebugDataType {
   kSourceStorageLimit = 2,
   kSourceSuccess = 3,
   kSourceUnknownError = 4,
-  // TODO(tquintanilla): Add interop test for `kSourceDestinationRateLimit`
-  // case.
   kSourceDestinationRateLimit = 5,
   kTriggerNoMatchingSource = 6,
   kTriggerAttributionsPerSourceDestinationLimit = 7,
