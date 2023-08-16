@@ -213,6 +213,12 @@
     width: 16px;
   }
 
+  @media (forced-colors: active) {
+    #customizeIcon {
+      background-color: ButtonText;
+    }
+  }
+
   :host-context([chrome-refresh-2023]) #customizeButton {
     --cr-button-height: 32px;
   }
