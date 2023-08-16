@@ -137,11 +137,8 @@
         ],
         'mixins': [
           'skia_gold_test',
+          'has_native_resultdb_integration',
         ],
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single'
-        },
       },
     },
 
@@ -392,23 +389,21 @@
     'chrome_android_finch_smoke_tests': {
       'variations_android_smoke_tests': {
         'isolate_name': 'variations_desktop_smoke_tests',
+        'mixins': [
+          'has_native_resultdb_integration'
+        ],
         'args': [
           '--target-platform=android',
         ],
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single'
-        },
       },
       'variations_webview_smoke_tests': {
         'isolate_name': 'variations_desktop_smoke_tests',
         'args': [
           '--target-platform=webview',
         ],
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single'
-        },
+        'mixins': [
+          'has_native_resultdb_integration'
+        ],
       },
     },
     'chrome_finch_smoke_tests': {
