@@ -595,10 +595,10 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
 
   client_->DidMediaMetadataChange(
       HasAudio(), HasVideo(), media::AudioCodec::kUnknown,
-      media::VideoCodec::kUnknown, media::MediaContentType::OneShot,
+      media::VideoCodec::kUnknown, media::MediaContentType::kOneShot,
       /* is_encrypted_media */ false);
   delegate_->DidMediaMetadataChange(delegate_id_, HasAudio(), HasVideo(),
-                                    media::MediaContentType::OneShot);
+                                    media::MediaContentType::kOneShot);
 
   return WebMediaPlayer::LoadTiming::kImmediate;
 }
@@ -739,10 +739,10 @@ void WebMediaPlayerMS::ReloadVideo() {
   // focus changes. See https://crbug.com/596516 for more details.
   client_->DidMediaMetadataChange(
       HasAudio(), HasVideo(), media::AudioCodec::kUnknown,
-      media::VideoCodec::kUnknown, media::MediaContentType::OneShot,
+      media::VideoCodec::kUnknown, media::MediaContentType::kOneShot,
       /* is_encrypted_media */ false);
   delegate_->DidMediaMetadataChange(delegate_id_, HasAudio(), HasVideo(),
-                                    media::MediaContentType::OneShot);
+                                    media::MediaContentType::kOneShot);
 }
 
 void WebMediaPlayerMS::ReloadAudio() {
@@ -801,10 +801,10 @@ void WebMediaPlayerMS::ReloadAudio() {
   // focus changes. See https://crbug.com/596516 for more details.
   client_->DidMediaMetadataChange(
       HasAudio(), HasVideo(), media::AudioCodec::kUnknown,
-      media::VideoCodec::kUnknown, media::MediaContentType::OneShot,
+      media::VideoCodec::kUnknown, media::MediaContentType::kOneShot,
       /* is_encrypted_media */ false);
   delegate_->DidMediaMetadataChange(delegate_id_, HasAudio(), HasVideo(),
-                                    media::MediaContentType::OneShot);
+                                    media::MediaContentType::kOneShot);
 }
 
 void WebMediaPlayerMS::Play() {

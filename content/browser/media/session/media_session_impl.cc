@@ -404,9 +404,9 @@ bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
                                  int player_id) {
   media::MediaContentType media_content_type = observer->GetMediaContentType();
 
-  if (media_content_type == media::MediaContentType::OneShot)
+  if (media_content_type == media::MediaContentType::kOneShot)
     return AddOneShotPlayer(observer, player_id);
-  if (media_content_type == media::MediaContentType::Pepper)
+  if (media_content_type == media::MediaContentType::kPepper)
     return AddPepperPlayer(observer, player_id);
 
   observer->OnSetVolumeMultiplier(player_id, GetVolumeMultiplier());
@@ -414,7 +414,7 @@ bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
     observer->OnSetAudioSinkId(player_id, audio_device_id_for_origin_.value());
 
   AudioFocusType required_audio_focus_type;
-  if (media_content_type == media::MediaContentType::Persistent)
+  if (media_content_type == media::MediaContentType::kPersistent)
     required_audio_focus_type = AudioFocusType::kGain;
   else
     required_audio_focus_type = AudioFocusType::kGainTransientMayDuck;

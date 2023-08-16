@@ -126,7 +126,7 @@ TEST_F(RendererWebMediaPlayerDelegateTest, PlaySuspendsLowEndIdleDelegates) {
   // Calling play on the first player should suspend the other idle player.
   EXPECT_CALL(observer_2_, OnIdleTimeout());
   delegate_manager_->DidMediaMetadataChange(
-      delegate_id_1, true, true, media::MediaContentType::Persistent);
+      delegate_id_1, true, true, media::MediaContentType::kPersistent);
   delegate_manager_->DidPlay(delegate_id_1);
   delegate_manager_->SetIdle(delegate_id_1, false);
   tick_clock_.Advance(base::Microseconds(1));

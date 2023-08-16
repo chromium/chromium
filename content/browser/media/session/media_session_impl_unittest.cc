@@ -117,7 +117,7 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::SetUp();
 
     player_observer_ = std::make_unique<MockMediaSessionPlayerObserver>(
-        main_rfh(), media::MediaContentType::Persistent);
+        main_rfh(), media::MediaContentType::kPersistent);
     mock_media_session_service_ =
         std::make_unique<testing::NiceMock<MockMediaSessionServiceImpl>>(
             main_rfh());
@@ -303,11 +303,11 @@ TEST_F(MediaSessionImplTest, PepperForcesDuckAndRequestsFocus) {
   int player_id = player_observer_->StartNewPlayer();
 
   {
-    player_observer_->SetMediaContentType(media::MediaContentType::Pepper);
+    player_observer_->SetMediaContentType(media::MediaContentType::kPepper);
     MockMediaSessionMojoObserver observer(*GetMediaSession());
     GetMediaSession()->AddPlayer(player_observer_.get(), player_id);
     observer.WaitForState(MediaSessionInfo::SessionState::kActive);
-    player_observer_->SetMediaContentType(media::MediaContentType::Persistent);
+    player_observer_->SetMediaContentType(media::MediaContentType::kPersistent);
   }
 
   EXPECT_TRUE(GetForceDuck(GetMediaSession()));

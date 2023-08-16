@@ -81,7 +81,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   }
 
   media::MediaContentType GetMediaContentType() const override {
-    return media::MediaContentType::Persistent;
+    return media::MediaContentType::kPersistent;
   }
 
   RenderFrameHost* render_frame_host() const override {

@@ -172,7 +172,7 @@ class MediaSessionImplServiceRoutingTest
   void StartPlayerForFrame(TestRenderFrameHost* frame,
                            MediaAudioVideoState audio_video_state =
                                MediaAudioVideoState::kAudioOnly) {
-    StartPlayerForFrame(frame, media::MediaContentType::Persistent,
+    StartPlayerForFrame(frame, media::MediaContentType::kPersistent,
                         audio_video_state);
   }
 
@@ -815,7 +815,7 @@ TEST_F(MediaSessionImplServiceRoutingTest, DefaultActionsAlwaysSupported) {
 TEST_F(MediaSessionImplServiceRoutingTest,
        DefaultActionsRemovedIfUncontrollable) {
   CreateServiceForFrame(main_frame_);
-  StartPlayerForFrame(main_frame_, media::MediaContentType::OneShot);
+  StartPlayerForFrame(main_frame_, media::MediaContentType::kOneShot);
 
   {
     media_session::test::MockMediaSessionMojoObserver observer(

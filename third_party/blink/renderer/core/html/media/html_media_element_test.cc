@@ -1210,7 +1210,7 @@ TEST_P(HTMLMediaElementTest, SendMediaMetadataChangedToObserver) {
   media::AudioCodec audio_codec = media::AudioCodec::kUnknown;
   media::VideoCodec video_codec = media::VideoCodec::kUnknown;
   media::MediaContentType media_content_type =
-      media::MediaContentType::Transient;
+      media::MediaContentType::kTransient;
 
   NotifyMediaMetadataChanged(has_audio, has_video, audio_codec, video_codec,
                              media_content_type, is_encrypted_media);
@@ -1219,7 +1219,7 @@ TEST_P(HTMLMediaElementTest, SendMediaMetadataChangedToObserver) {
   // Change values and test again.
   has_audio = true;
   has_video = false;
-  media_content_type = media::MediaContentType::OneShot;
+  media_content_type = media::MediaContentType::kOneShot;
   NotifyMediaMetadataChanged(has_audio, has_video, audio_codec, video_codec,
                              media_content_type, is_encrypted_media);
   EXPECT_TRUE(ReceivedMessageMediaMetadataChanged(has_audio, has_video,
@@ -1253,7 +1253,7 @@ TEST_P(HTMLMediaElementTest, SendRemotePlaybackMetadataChangeToObserver) {
   bool is_remote_playback_started = false;
   bool is_encrypted_media = false;
   NotifyMediaMetadataChanged(true, true, audio_codec, video_codec,
-                             media::MediaContentType::Transient,
+                             media::MediaContentType::kTransient,
                              is_encrypted_media);
   NotifyRemotePlaybackDisabled(is_remote_playback_disabled);
   EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(

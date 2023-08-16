@@ -139,7 +139,7 @@ class CONTENT_EXPORT MediaSessionController
       media::AudioDeviceDescription::kDefaultDeviceId;
   bool supports_audio_output_device_switching_ = true;
   media::MediaContentType media_content_type_ =
-      media::MediaContentType::Persistent;
+      media::MediaContentType::kPersistent;
 
   base::WeakPtrFactory<MediaSessionController> weak_factory_{this};
 };

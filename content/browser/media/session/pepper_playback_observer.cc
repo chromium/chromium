@@ -73,8 +73,8 @@ void PepperPlaybackObserver::PepperStartsPlayback(
   players_map_[id] = std::make_unique<PepperPlayerDelegate>(
       render_frame_host, pp_instance,
       base::FeatureList::IsEnabled(media::kAudioFocusDuckFlash)
-          ? media::MediaContentType::Pepper
-          : media::MediaContentType::OneShot);
+          ? media::MediaContentType::kPepper
+          : media::MediaContentType::kOneShot);
 
   MediaSessionImpl::Get(contents_)->AddPlayer(players_map_[id].get(),
                                               PepperPlayerDelegate::kPlayerId);
