@@ -47,7 +47,7 @@ TEST_F(NGFragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // 2. |AssociateLogicalLineItems|
     // 3. |AddLine|.
     NGFragmentItemsBuilder items_builder(
-        inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr});
+        inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
     NGLogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
     items_builder.AddLine(*line_fragment1, LogicalOffset());
@@ -68,7 +68,7 @@ TEST_F(NGFragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // container box. Then runs worklet, and add line boxes to the container
     // box.
     NGFragmentItemsBuilder items_builder(
-        inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr});
+        inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
     NGLogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
     NGLogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
@@ -89,7 +89,7 @@ TEST_F(NGFragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // Custom layout can reorder line boxes. In this test, line boxes are added
     // to the container box in the reverse order.
     NGFragmentItemsBuilder items_builder(
-        inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr});
+        inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
     NGLogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
     NGLogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
@@ -110,7 +110,7 @@ TEST_F(NGFragmentItemsBuilderTest, MultipleLogicalLineItems) {
   {
     // Custom layout may not add all line boxes.
     NGFragmentItemsBuilder items_builder(
-        inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr});
+        inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
     NGLogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
     NGLogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
