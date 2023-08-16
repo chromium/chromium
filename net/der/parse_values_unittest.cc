@@ -351,7 +351,7 @@ TEST(ParseValuesTest, ParseBitStringSevenOneBits) {
 
   EXPECT_EQ(1u, bit_string->unused_bits());
   EXPECT_EQ(1u, bit_string->bytes().Length());
-  EXPECT_EQ(0xFE, bit_string->bytes().UnsafeData()[0]);
+  EXPECT_EQ(0xFE, bit_string->bytes()[0]);
 
   EXPECT_TRUE(bit_string->AssertsBit(0));
   EXPECT_TRUE(bit_string->AssertsBit(1));

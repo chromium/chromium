@@ -348,8 +348,8 @@ TEST(ParserTest, ReadBitString) {
 
   EXPECT_EQ(1u, bit_string->unused_bits());
   ASSERT_EQ(2u, bit_string->bytes().Length());
-  EXPECT_EQ(0xAA, bit_string->bytes().UnsafeData()[0]);
-  EXPECT_EQ(0xBE, bit_string->bytes().UnsafeData()[1]);
+  EXPECT_EQ(0xAA, bit_string->bytes()[0]);
+  EXPECT_EQ(0xBE, bit_string->bytes()[1]);
 }
 
 // Tries reading a BIT STRING. This should fail because the tag is not for a

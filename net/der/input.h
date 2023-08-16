@@ -56,6 +56,8 @@ class NET_EXPORT_PRIVATE Input {
   // is not an option.
   constexpr const uint8_t* UnsafeData() const { return data_.data(); }
 
+  constexpr uint8_t operator[](size_t idx) const { return data_[idx]; }
+
   // Returns a copy of the data represented by this object as a std::string.
   std::string AsString() const;
 
