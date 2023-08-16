@@ -665,18 +665,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.HistoryClusters.ExhaustedEligibleClusters"
-    enum="Boolean" expires_after="2023-10-08">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>tiborg@chromium.org</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Records whether all eligible clusters for the requested time period were
-    candidates for being shown in the history clusters module. Only logged on
-    the 1P NTP and the history clusters module is enabled.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.HistoryClusters.HasCartForTopCluster"
     enum="Boolean" expires_after="2024-02-11">
   <owner>yuezhanggg@chromium.org</owner>
