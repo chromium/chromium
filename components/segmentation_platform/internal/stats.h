@@ -86,27 +86,35 @@ void RecordMaintenanceCompactionResult(proto::SignalType signal_type,
 void RecordMaintenanceSignalIdentifierCount(size_t count);
 
 // Model Delivery metrics.
-// Records whether any incoming ML model had metadata attached that we were able
-// to parse.
+// Records whether any incoming ML had metadata attached that
+// we were able to parse.
 void RecordModelDeliveryHasMetadata(SegmentId segment_id, bool has_metadata);
-// Records the number of tensor features an updated ML model has.
+// Records the number of tensor features an updated server or embedded model
+// has.
 void RecordModelDeliveryMetadataFeatureCount(SegmentId segment_id,
+                                             proto::ModelSource model_source,
                                              size_t count);
-// Records the result of validating the metadata of an incoming ML model.
-// Recorded before and after it has been merged with the already stored
-// metadata.
+// Records the result of validating the metadata of an incoming server or
+// embedded model. Recorded before and after it has been merged with the already
+// stored metadata.
 void RecordModelDeliveryMetadataValidation(
     SegmentId segment_id,
+    proto::ModelSource model_source,
     bool processed,
     metadata_utils::ValidationResult validation_result);
-// Record what type of model metadata we received.
-void RecordModelDeliveryReceived(SegmentId segment_id);
-// Records the result of attempting to save an updated version of the model
-// metadata.
-void RecordModelDeliverySaveResult(SegmentId segment_id, bool success);
+// Record what type of server or embedded model metadata we received .
+void RecordModelDeliveryReceived(SegmentId segment_id,
+                                 proto::ModelSource model_source);
+// Records the result of attempting to save an updated version of the server or
+// embedded model metadata.
+void RecordModelDeliverySaveResult(SegmentId segment_id,
+                                   proto::ModelSource model_source,
+                                   bool success);
 // Records whether the currently stored segment_id matches the incoming
-// segment_id, as these are expected to match.
-void RecordModelDeliverySegmentIdMatches(SegmentId segment_id, bool matches);
+// segment_id for a particular model_source, as these are expected to match.
+void RecordModelDeliverySegmentIdMatches(SegmentId segment_id,
+                                         proto::ModelSource model_source,
+                                         bool matches);
 
 // Model Execution metrics.
 // Records the duration of processing a single ML feature. This only takes into

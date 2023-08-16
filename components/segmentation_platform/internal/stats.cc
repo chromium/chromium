@@ -195,6 +195,12 @@ float ZeroValueFraction(const std::vector<float>& tensor) {
   return static_cast<float>(zero_values) / static_cast<float>(tensor.size());
 }
 
+// For server models to keep the same name as before, empty string is returned.
+std::string GetModelSourceAsString(proto::ModelSource model_source) {
+  // Should map to ModelSource variant string in
+  // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
+  return (model_source == proto::DEFAULT_MODEL_SOURCE ? "Default" : "");
+}
 }  // namespace
 
 void RecordModelUpdateTimeDifference(SegmentId segment_id,
@@ -328,42 +334,55 @@ void RecordModelDeliveryHasMetadata(SegmentId segment_id, bool has_metadata) {
 }
 
 void RecordModelDeliveryMetadataFeatureCount(SegmentId segment_id,
+                                             ModelSource model_source,
                                              size_t count) {
-  base::UmaHistogramCounts1000(
-      "SegmentationPlatform.ModelDelivery.Metadata.FeatureCount." +
-          SegmentIdToHistogramVariant(segment_id),
-      count);
+  base::UmaHistogramCounts1000("SegmentationPlatform." +
+                                   GetModelSourceAsString(model_source) +
+                                   "ModelDelivery.Metadata.FeatureCount." +
+                                   SegmentIdToHistogramVariant(segment_id),
+                               count);
 }
 
 void RecordModelDeliveryMetadataValidation(
     SegmentId segment_id,
+    proto::ModelSource model_source,
     bool processed,
     metadata_utils::ValidationResult validation_result) {
   // Should map to ValidationPhase variant string in
   // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
   std::string validation_phase = processed ? "Processed" : "Incoming";
   base::UmaHistogramEnumeration(
-      "SegmentationPlatform.ModelDelivery.Metadata.Validation." +
-          validation_phase + "." + SegmentIdToHistogramVariant(segment_id),
+      "SegmentationPlatform." + GetModelSourceAsString(model_source) +
+          "ModelDelivery.Metadata.Validation." + validation_phase + "." +
+          SegmentIdToHistogramVariant(segment_id),
       validation_result);
 }
 
-void RecordModelDeliveryReceived(SegmentId segment_id) {
-  base::UmaHistogramSparse("SegmentationPlatform.ModelDelivery.Received",
+void RecordModelDeliveryReceived(SegmentId segment_id,
+                                 proto::ModelSource model_source) {
+  base::UmaHistogramSparse("SegmentationPlatform." +
+                               GetModelSourceAsString(model_source) +
+                               "ModelDelivery.Received",
                            segment_id);
 }
 
-void RecordModelDeliverySaveResult(SegmentId segment_id, bool success) {
-  base::UmaHistogramBoolean("SegmentationPlatform.ModelDelivery.SaveResult." +
-                                SegmentIdToHistogramVariant(segment_id),
-                            success);
+void RecordModelDeliverySaveResult(SegmentId segment_id,
+                                   proto::ModelSource model_source,
+                                   bool success) {
+  base::UmaHistogramBoolean(
+      "SegmentationPlatform." + GetModelSourceAsString(model_source) +
+          "ModelDelivery.SaveResult." + SegmentIdToHistogramVariant(segment_id),
+      success);
 }
 
-void RecordModelDeliverySegmentIdMatches(SegmentId segment_id, bool matches) {
-  base::UmaHistogramBoolean(
-      "SegmentationPlatform.ModelDelivery.SegmentIdMatches." +
-          SegmentIdToHistogramVariant(segment_id),
-      matches);
+void RecordModelDeliverySegmentIdMatches(SegmentId segment_id,
+                                         proto::ModelSource model_source,
+                                         bool matches) {
+  base::UmaHistogramBoolean("SegmentationPlatform." +
+                                GetModelSourceAsString(model_source) +
+                                "ModelDelivery.SegmentIdMatches." +
+                                SegmentIdToHistogramVariant(segment_id),
+                            matches);
 }
 
 void RecordModelExecutionDurationFeatureProcessing(SegmentId segment_id,

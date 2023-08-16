@@ -232,6 +232,81 @@ chromium-metrics-reviews@google.com.
   <token key="SegmentationKey" variants="SegmentationKey"/>
 </histogram>
 
+<histogram
+    name="SegmentationPlatform.DefaultModelDelivery.Metadata.FeatureCount.{SegmentationModel}"
+    units="features" expires_after="2024-08-14">
+  <owner>ritikagup@google.com</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records how many tensor features an updated {SegmentationModel} segmentation
+    model requires in its metadata. Recorded only for embedded model.
+
+    Recorded every time the {SegmentationModel} model is updated, which can
+    happen at any time, but usually happens at least once during startup.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+</histogram>
+
+<histogram
+    name="SegmentationPlatform.DefaultModelDelivery.Metadata.Validation.{ValidationPhase}.{SegmentationModel}"
+    enum="SegmentationPlatformValidationResult" expires_after="2024-08-14">
+  <owner>ritikagup@google.com</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the result of metadata validation {ValidationPhase} the metadata has
+    been merged with the existing metadata for {SegmentationModel}. Recorded
+    only for embedded model.
+
+    Recorded every time the {SegmentationModel} model is updated, which can
+    happen at any time, but usually happens at least once during startup.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+  <token key="ValidationPhase" variants="ValidationPhase"/>
+</histogram>
+
+<histogram name="SegmentationPlatform.DefaultModelDelivery.Received"
+    enum="SegmentationPlatformSegmentationModel" expires_after="2024-08-14">
+  <owner>ritikagup@google.com</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records what type of model has been received.
+
+    Recorded every time a model is updated, which can happen at any time, but
+    usually happens at least once during startup. Recorded only for embedded
+    model.
+  </summary>
+</histogram>
+
+<histogram
+    name="SegmentationPlatform.DefaultModelDelivery.SaveResult.{SegmentationModel}"
+    enum="BooleanSuccess" expires_after="2024-08-14">
+  <owner>ritikagup@google.com</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records whether an updated {SegmentationModel} segmentation model was
+    successfully saved. Recorded only for embedded model.
+
+    Recorded every time the {SegmentationModel} model is updated, which can
+    happen at any time, but usually happens at least once during startup.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+</histogram>
+
+<histogram
+    name="SegmentationPlatform.DefaultModelDelivery.SegmentIdMatches.{SegmentationModel}"
+    enum="BooleanYesNo" expires_after="2024-08-14">
+  <owner>ritikagup@google.com</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records whether an updated {SegmentationModel} segmentation model type
+    matches what was stored for that type. Recorded only for embedded model.
+
+    Recorded every time the {SegmentationModel} model is updated, which can
+    happen at any time, but usually happens at least once during startup.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+</histogram>
+
 <histogram name="SegmentationPlatform.DeviceCountByOsType.{OsType}"
     units="devices" expires_after="2023-10-01">
   <owner>junzou@chromium.org</owner>
@@ -410,7 +485,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
     Records how many tensor features an updated {SegmentationModel} segmentation
-    model requires in its metadata.
+    model requires in its metadata. Recorded only for server model.
 
     Recorded every time the {SegmentationModel} model is updated, which can
     happen at any time, but usually happens at least once during startup.
@@ -426,7 +501,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
     Records the result of metadata validation {ValidationPhase} the metadata has
-    been merged with the existing metadata for {SegmentationModel}.
+    been merged with the existing metadata for {SegmentationModel}. Recorded
+    only for server model.
 
     Recorded every time the {SegmentationModel} model is updated, which can
     happen at any time, but usually happens at least once during startup.
@@ -444,7 +520,8 @@ chromium-metrics-reviews@google.com.
     Records what type of model has been received.
 
     Recorded every time a model is updated, which can happen at any time, but
-    usually happens at least once during startup.
+    usually happens at least once during startup. Recorded only for server
+    model.
   </summary>
 </histogram>
 
@@ -456,7 +533,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
     Records whether an updated {SegmentationModel} segmentation model was
-    successfully saved.
+    successfully saved. Recorded only for server model.
 
     Recorded every time the {SegmentationModel} model is updated, which can
     happen at any time, but usually happens at least once during startup.
@@ -472,7 +549,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
     Records whether an updated {SegmentationModel} segmentation model type
-    matches what was stored for that type.
+    matches what was stored for that type. Recorded only for server model.
 
     Recorded every time the {SegmentationModel} model is updated, which can
     happen at any time, but usually happens at least once during startup.
