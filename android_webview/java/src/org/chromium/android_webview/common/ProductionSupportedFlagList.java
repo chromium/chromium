@@ -493,6 +493,14 @@ public final class ProductionSupportedFlagList {
                     "Enables new limits policy for SpeculationRules Prefetch."),
             Flag.baseFeature(BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_SUPPORT,
                     "Enables support for CSS vertical writing mode on form controls"),
+            Flag.baseFeature(BlinkFeatures.FIX_GESTURE_SCROLL_QUEUING_BUG,
+                    "Queues gesture scrolls that do not hit a blocking handler, "
+                            + "while handling events that hit a blocking handler instantly"
+                            + " as this behaviour was flipped before this fix."),
+            Flag.baseFeature(BlinkFeatures.QUEUE_BLOCKING_GESTURE_SCROLLS,
+                    "Queues all gesture scrolls regardless of blocking status on the"
+                            + "compositor for more consistency and scrolling performance"
+                            + "improvement"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
