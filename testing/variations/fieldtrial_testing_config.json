@@ -9050,6 +9050,22 @@
             ]
         }
     ],
+    "LofnPermissiveUsbPassthrough": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootPermissiveUsbPassthrough"
+                    ],
+                    "min_os_version": "15575.0.0"
+                }
+            ]
+        }
+    ],
     "LowerMemoryLimitForNonMainRenderers": [
         {
             "platforms": [
