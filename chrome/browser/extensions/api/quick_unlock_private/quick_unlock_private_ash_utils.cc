@@ -148,8 +148,9 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSessionStarted(
     return;
   }
 
-  const cryptohome::AuthFactor* password_factor =
-      user_context->GetAuthFactorsData().FindOnlinePasswordFactor();
+  const auto* password_factor =
+      user_context->GetAuthFactorsData().FindFactorByType(
+          cryptohome::AuthFactorType::kPassword);
   if (!password_factor) {
     LOG(ERROR) << "Could not find password key";
     std::move(callback).Run(

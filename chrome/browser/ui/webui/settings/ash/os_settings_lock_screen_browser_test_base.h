@@ -23,10 +23,15 @@ namespace ash::settings {
 class OSSettingsLockScreenBrowserTestBase
     : public MixinBasedInProcessBrowserTest {
  public:
+  enum class PasswordType {
+    kGaia,
+    kLocal,
+  };
   // The password of the user that is set up by this fixture.
   static constexpr char kPassword[] = "the-password";
 
-  OSSettingsLockScreenBrowserTestBase();
+  explicit OSSettingsLockScreenBrowserTestBase(
+      PasswordType = PasswordType::kGaia);
   ~OSSettingsLockScreenBrowserTestBase() override;
 
   void SetUpOnMainThread() override;
@@ -49,6 +54,7 @@ class OSSettingsLockScreenBrowserTestBase
   const AccountId& GetAccountId();
 
  protected:
+  PasswordType password_type_;
   CryptohomeMixin cryptohome_{&mixin_host_};
   LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, LoggedInUserMixin::LogInType::kRegular,

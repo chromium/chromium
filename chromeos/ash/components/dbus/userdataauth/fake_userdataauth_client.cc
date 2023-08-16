@@ -69,11 +69,16 @@ const std::string kUserDataDirNamePrefix = "u-";
 const std::string kUserDataDirNameSuffix = "-hash";
 
 // Label of the recovery auth factor.
-const std::string kCryptohomeRecoveryKeyLabel = "recovery";
 // Label of the kiosk auth factor.
 const std::string kCryptohomePublicMountLabel = "publicmount";
-// Label of the GAIA password key
+
+// Labels used of of various types of auth factors used by chrome. These must
+// be kept in sync with the labels in cryptohome_key_constants.{cc,h}, which
+// cannot be included into this file because that would result in circular
+// dependencies.
 const std::string kCryptohomeGaiaKeyLabel = "gaia";
+const std::string kCryptohomeRecoveryKeyLabel = "recovery";
+const std::string kCryptohomeLocalPasswordKeyLabel = "local-password";
 
 }  // namespace
 
@@ -831,7 +836,8 @@ void FakeUserDataAuthClient::StartAuthSession(
             {kCryptohomeRecoveryKeyLabel, std::move(factor)});
       };
     } else {
-      if (!user_state.auth_factors.contains(kCryptohomeGaiaKeyLabel)) {
+      if (!user_state.auth_factors.contains(kCryptohomeGaiaKeyLabel) &&
+          !user_state.auth_factors.contains(kCryptohomeLocalPasswordKeyLabel)) {
         LOG(ERROR) << "Listing GAIA password key even though it was not set up";
         FakeAuthFactor factor{PasswordFactor()};
         user_state.auth_factors.insert(

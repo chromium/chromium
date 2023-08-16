@@ -62,6 +62,26 @@ void CryptohomeMixin::AddGaiaPassword(const AccountId& user,
                                                  cryptohome_key);
 }
 
+void CryptohomeMixin::AddLocalPassword(const AccountId& user,
+                                       std::string password) {
+  auto account_identifier =
+      cryptohome::CreateAccountIdentifierFromAccountId(user);
+
+  // Hash the password, as only hashed passwords appear at the userdataauth
+  // level.
+  Key key(std::move(password));
+  key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
+                SystemSaltGetter::ConvertRawSaltToHexString(
+                    FakeCryptohomeMiscClient::GetStubSystemSalt()));
+
+  // Add the password key to the user.
+  cryptohome::Key cryptohome_key;
+  cryptohome_key.mutable_data()->set_label(kCryptohomeLocalPasswordKeyLabel);
+  cryptohome_key.set_secret(key.GetSecret());
+  FakeUserDataAuthClient::TestApi::Get()->AddKey(account_identifier,
+                                                 cryptohome_key);
+}
+
 void CryptohomeMixin::AddCryptohomePin(const AccountId& user,
                                        const std::string& pin) {
   auto account_identifier =

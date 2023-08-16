@@ -30,6 +30,7 @@ class CryptohomeMixin : public InProcessBrowserTestMixin,
   void MarkUserAsExisting(const AccountId& user);
   std::string AddSession(const AccountId& user, bool authenticated);
   void AddGaiaPassword(const AccountId& user, std::string password);
+  void AddLocalPassword(const AccountId& user, std::string password);
   void AddCryptohomePin(const AccountId& user, const std::string& pin);
   void SetPinLocked(const AccountId& user, bool locked);
   bool HasPinFactor(const AccountId& user);

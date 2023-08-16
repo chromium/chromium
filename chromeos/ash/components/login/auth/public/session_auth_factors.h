@@ -60,10 +60,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
   const cryptohome::AuthFactor* FindRecoveryFactor() const;
   const std::vector<cryptohome::AuthFactorType> GetSessionFactors() const;
 
- private:
   const cryptohome::AuthFactor* FindFactorByType(
       cryptohome::AuthFactorType type) const;
 
+ private:
   // Depending on the state of eatures::IsUseAuthFactorsEnabled() only
   // one of these two vectors would be filled.
   std::vector<cryptohome::KeyDefinition> keys_;
