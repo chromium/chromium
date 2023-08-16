@@ -6009,14 +6009,6 @@ const char kEapGtcWifiAuthenticationName[] = "EAP-GTC WiFi Authentication";
 const char kEapGtcWifiAuthenticationDescription[] =
     "Allows configuration of WiFi networks using EAP-GTC authentication";
 
-const char kAudioPeripheralVolumeGranularityName[] =
-    "Audio Peripheral Volume Granularity";
-const char kAudioPeripheralVolumeGranularityDescription[] =
-    "Change audio peripheral volume granularity as close as peripheral "
-    "reported. "
-    "If the reported volume granularity are too small or too big. use 25 steps "
-    "instead.";
-
 const char kEcheSWAName[] = "Enable Eche feature";
 const char kEcheSWADescription[] = "This is the main flag for enabling Eche.";
 

@@ -482,11 +482,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "audio-peripheral-volume-granularity",
-    "owners": ["whalechang@google.com"],
-    "expiry_milestone": 117
-  },
-  {
     "name": "audio-suppress-set-rtc-audio-active",
     "owners": [ "aaronyu", "chromeos-audio@google.com" ],
     "expiry_milestone": 125

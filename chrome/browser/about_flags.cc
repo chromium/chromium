@@ -5772,11 +5772,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEapGtcWifiAuthenticationName,
      flag_descriptions::kEapGtcWifiAuthenticationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEapGtcWifiAuthentication)},
-    {"audio-peripheral-volume-granularity",
-     flag_descriptions::kAudioPeripheralVolumeGranularityName,
-     flag_descriptions::kAudioPeripheralVolumeGranularityDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kAudioPeripheralVolumeGranularity)},
-
     {"eche-swa", flag_descriptions::kEcheSWAName,
      flag_descriptions::kEcheSWADescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEcheSWA)},

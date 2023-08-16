@@ -913,25 +913,17 @@ void CrasAudioHandler::SetOutputMuteLockedBySecurityCurtain(bool mute_on) {
 }
 
 void CrasAudioHandler::AdjustOutputVolumeToAudibleLevel() {
-  if (features::IsAudioPeripheralVolumeGranularityEnabled()) {
-    if (output_volume_ <= kMuteThresholdPercent) {
-      for (const auto& item : audio_devices_) {
-        int unmute_volume = kDefaultUnmuteVolumePercent;
-        const AudioDevice& device = item.second;
-        if (!device.is_input && device.active) {
-          if (device.type == AudioDeviceType::kUsb) {
-            int32_t number_of_volume_steps = device.number_of_volume_steps;
-            DCHECK(number_of_volume_steps > 0);
-            unmute_volume = 100 / number_of_volume_steps;
-          }
-          SetOutputNodeVolumePercent(device.id, unmute_volume);
+  if (output_volume_ <= kMuteThresholdPercent) {
+    for (const auto& item : audio_devices_) {
+      int unmute_volume = kDefaultUnmuteVolumePercent;
+      const AudioDevice& device = item.second;
+      if (!device.is_input && device.active) {
+        if (device.type == AudioDeviceType::kUsb) {
+          int32_t number_of_volume_steps = device.number_of_volume_steps;
+          DCHECK(number_of_volume_steps > 0);
+          unmute_volume = 100 / number_of_volume_steps;
         }
-      }
-    } else {
-      if (output_volume_ <= kMuteThresholdPercent) {
-        // Avoid the situation when sound has been unmuted, but the volume
-        // is set to a very low value, so user still can't hear any sound.
-        SetOutputVolumePercent(kDefaultUnmuteVolumePercent);
+        SetOutputNodeVolumePercent(device.id, unmute_volume);
       }
     }
   }

@@ -215,11 +215,6 @@ BASE_FEATURE(kAudioHFPNbsWarning,
              "AudioHFPNbsWarning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Peripheral volume change by hardware reported steps
-BASE_FEATURE(kAudioPeripheralVolumeGranularity,
-             "AudioPeripheralVolumeGranularity",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the AudioSourceFetcher resamples the audio for speech
 // recongnition.
 BASE_FEATURE(kAudioSourceFetcherResampling,
@@ -3085,10 +3080,6 @@ bool IsInlineSyncStatusOldEventsEnabled() {
 
 bool IsEapGtcWifiAuthenticationEnabled() {
   return base::FeatureList::IsEnabled(kEapGtcWifiAuthentication);
-}
-
-bool IsAudioPeripheralVolumeGranularityEnabled() {
-  return base::FeatureList::IsEnabled(kAudioPeripheralVolumeGranularity);
 }
 
 bool IsAudioSourceFetcherResamplingEnabled() {

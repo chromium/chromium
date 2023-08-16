@@ -1684,11 +1684,7 @@ void VolumeDown() {
     if (!audio_handler->IsOutputMuted()) {
       AcceleratorController::PlayVolumeAdjustmentSound();
     }
-    if (features::IsAudioPeripheralVolumeGranularityEnabled()) {
-      audio_handler->DecreaseOutputVolumeByOneStep(kStepPercentage);
-    } else {
-      audio_handler->AdjustOutputVolumeByPercent(-kStepPercentage);
-    }
+    audio_handler->DecreaseOutputVolumeByOneStep(kStepPercentage);
     return;
   }
 
@@ -1699,10 +1695,7 @@ void VolumeDown() {
       audio_handler->SetOutputMute(true);
     else
       AcceleratorController::PlayVolumeAdjustmentSound();
-    if (features::IsAudioPeripheralVolumeGranularityEnabled())
-      audio_handler->DecreaseOutputVolumeByOneStep(kStepPercentage);
-    else
-      audio_handler->AdjustOutputVolumeByPercent(-kStepPercentage);
+    audio_handler->DecreaseOutputVolumeByOneStep(kStepPercentage);
   }
 }
 
@@ -1719,11 +1712,7 @@ void VolumeUp() {
       audio_handler->SetOutputMute(false);
     }
     play_sound = audio_handler->GetOutputVolumePercent() != 100;
-    if (features::IsAudioPeripheralVolumeGranularityEnabled()) {
-      audio_handler->IncreaseOutputVolumeByOneStep(kStepPercentage);
-    } else {
-      audio_handler->AdjustOutputVolumeByPercent(kStepPercentage);
-    }
+    audio_handler->IncreaseOutputVolumeByOneStep(kStepPercentage);
 
     if (play_sound) {
       AcceleratorController::PlayVolumeAdjustmentSound();
@@ -1737,11 +1726,7 @@ void VolumeUp() {
     play_sound = true;
   } else {
     play_sound = audio_handler->GetOutputVolumePercent() != 100;
-    if (features::IsAudioPeripheralVolumeGranularityEnabled()) {
-      audio_handler->IncreaseOutputVolumeByOneStep(kStepPercentage);
-    } else {
-      audio_handler->AdjustOutputVolumeByPercent(kStepPercentage);
-    }
+    audio_handler->IncreaseOutputVolumeByOneStep(kStepPercentage);
   }
 
   if (play_sound) {

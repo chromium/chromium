@@ -3451,9 +3451,6 @@ extern const char kEnableSuspendToDiskAllowS4Description[];
 extern const char kEapGtcWifiAuthenticationName[];
 extern const char kEapGtcWifiAuthenticationDescription[];
 
-extern const char kAudioPeripheralVolumeGranularityName[];
-extern const char kAudioPeripheralVolumeGranularityDescription[];
-
 extern const char kEcheSWAName[];
 extern const char kEcheSWADescription[];
 
