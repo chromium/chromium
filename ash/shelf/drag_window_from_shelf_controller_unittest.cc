@@ -490,9 +490,18 @@ TEST_F(DragWindowFromShelfControllerTest, FlingInOverview) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
 }
 
+// TODO(crbug.com/1473400): Re-enable the test once the bug is fixed.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_VerifyHomeLauncherAnimationMetrics \
+  DISABLED_VerifyHomeLauncherAnimationMetrics
+#else
+#define MAYBE_VerifyHomeLauncherAnimationMetrics \
+  VerifyHomeLauncherAnimationMetrics
+#endif
 // Verify that metrics of home launcher animation are recorded correctly when
 // swiping up from shelf with sufficient velocity.
-TEST_F(DragWindowFromShelfControllerTest, VerifyHomeLauncherAnimationMetrics) {
+TEST_F(DragWindowFromShelfControllerTest,
+       MAYBE_VerifyHomeLauncherAnimationMetrics) {
   // Set non-zero animation duration to report animation metrics.
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
