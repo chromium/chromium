@@ -8,6 +8,7 @@
 #import "base/format_macros.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -104,10 +105,12 @@ bool CanHistorySyncOptInBePresented(
     // Don't show history sync opt-in screen if no signed-in user account.
     return false;
   }
-  if (IsSyncDisabledByPolicy(sync_service) ||
-      IsManagedSyncDataType(sync_service, syncer::UserSelectableType::kTabs) ||
-      IsManagedSyncDataType(sync_service,
-                            syncer::UserSelectableType::kHistory)) {
+  if (sync_service->HasDisableReason(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
+      sync_service->GetUserSettings()->IsTypeManagedByPolicy(
+          syncer::UserSelectableType::kTabs) ||
+      sync_service->GetUserSettings()->IsTypeManagedByPolicy(
+          syncer::UserSelectableType::kHistory)) {
     // Skip History Sync Opt-in if sync is disabled, or if history or tabs sync
     // is disabled by policy.
     return false;

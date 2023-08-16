@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync/service/sync_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -16,8 +17,8 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/system_identity.h"
+#import "ios/chrome/browser/sync/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
-#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
@@ -246,8 +247,10 @@
       _consumer.signinStatus = SigninScreenConsumerSigninStatusDisabled;
       break;
   }
-  _consumer.syncEnabled = !IsSyncDisabledByPolicy(_syncService) &&
-                          !HasManagedSyncDataType(_syncService);
+  _consumer.syncEnabled =
+      !_syncService->HasDisableReason(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) &&
+      !HasManagedSyncDataType(_syncService);
   self.consumer.isManaged = IsApplicationManagedByPlatform();
   if (!_firstRun) {
     self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;

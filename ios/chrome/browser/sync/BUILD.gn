@@ -6,6 +6,8 @@ source_set("sync") {
   sources = [
     "device_info_sync_service_factory.h",
     "device_info_sync_service_factory.mm",
+    "enterprise_utils.cc",
+    "enterprise_utils.h",
     "ios_chrome_sync_client.h",
     "ios_chrome_sync_client.mm",
     "ios_chrome_synced_tab_delegate.h",

@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/sync/enterprise_utils.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
@@ -1080,7 +1081,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
   if (_syncService->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
-      HasManagedSyncType(_syncService)) {
+      HasManagedSyncDataType(_syncService)) {
     // Sync is now disabled, so mark the SetUpList item complete so that it
     // cannot be used again.
     set_up_list_prefs::MarkItemComplete(_localState,

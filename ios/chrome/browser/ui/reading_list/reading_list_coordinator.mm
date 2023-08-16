@@ -20,6 +20,7 @@
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
@@ -689,8 +690,9 @@
 - (BOOL)isSyncDisabledByAdministrator {
   const bool syncDisabledPolicy = _syncService->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
-  const bool syncTypesDisabledPolicy = IsManagedSyncDataType(
-      _syncService, syncer::UserSelectableType::kReadingList);
+  const bool syncTypesDisabledPolicy =
+      _syncService->GetUserSettings()->IsTypeManagedByPolicy(
+          syncer::UserSelectableType::kReadingList);
   return syncDisabledPolicy || syncTypesDisabledPolicy;
 }
 

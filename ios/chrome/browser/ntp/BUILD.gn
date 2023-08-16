@@ -81,6 +81,7 @@ source_set("set_up_list") {
     "//components/sync/service",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
   ]
 }
 

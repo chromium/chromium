@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ntp/set_up_list_metrics.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/sync/enterprise_utils.h"
 
 using set_up_list_prefs::SetUpListItemState;
 
@@ -90,15 +91,6 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
 
 }  // namespace
 
-bool HasManagedSyncType(syncer::SyncService* sync_service) {
-  for (syncer::UserSelectableType type : syncer::UserSelectableTypeSet::All()) {
-    if (sync_service->GetUserSettings()->IsTypeManagedByPolicy(type)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 @interface SetUpList () <PrefObserverDelegate>
 @end
 
@@ -123,7 +115,7 @@ bool HasManagedSyncType(syncer::SyncService* sync_service) {
   if (IsSigninEnabled(authService) &&
       !syncService->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) &&
-      !HasManagedSyncType(syncService)) {
+      !HasManagedSyncDataType(syncService)) {
     AddItemIfNotNil(items, BuildItem(SetUpListItemType::kSignInSync, prefs,
                                      localState, authService));
   }

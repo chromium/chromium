@@ -24,6 +24,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -61,6 +63,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/sync/enterprise_utils.h"
 #import "ios/chrome/browser/sync/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -278,8 +281,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     return YES;
   }
 
-  if (IsManagedSyncDataType(self.syncService,
-                            syncer::UserSelectableType::kTabs)) {
+  if (self.syncService->GetUserSettings()->IsTypeManagedByPolicy(
+          syncer::UserSelectableType::kTabs)) {
     // Return YES if the data type is disabled by the SyncTypesListDisabled
     // policy.
     return YES;

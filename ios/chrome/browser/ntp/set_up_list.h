@@ -16,11 +16,6 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-// TODO(crbug.com/1468530): HasManagedSyncDataType() is in /ui/ and can't be
-// included here, so this is momentarily duplicated (with a different name to
-// avoid conflicts). Move the file and delete this copy.
-bool HasManagedSyncType(syncer::SyncService* sync_service);
-
 // Contains a list of items to display in the Set Up List UI on the NTP / Home.
 @interface SetUpList : NSObject
 

@@ -2,4 +2,5 @@ include_rules = [
   "+ios/chrome/browser/default_browser/utils.h",
   "+ios/chrome/browser/signin",
   "+ios/chrome/browser/discover_feed/feed_constants.h",
+  "+ios/chrome/browser/sync/enterprise_utils.h",
 ]

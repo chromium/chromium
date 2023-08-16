@@ -36,10 +36,10 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/constants.h"
+#import "ios/chrome/browser/sync/enterprise_utils.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_central_account_item.h"
-#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
@@ -1270,7 +1270,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 
 // Returns YES if the given type is managed by policies (i.e. is not syncable)
 - (BOOL)isManagedSyncSettingsDataType:(syncer::UserSelectableType)type {
-  return IsManagedSyncDataType(_syncService, type) ||
+  return _syncService->GetUserSettings()->IsTypeManagedByPolicy(type) ||
          (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
           self.isSyncDisabledByAdministrator);
 }
