@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview Base class for Text-to-Speech engines that actually transform
- * text to speech.
- */
-
 import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import * as ttsTypes from '../common/tts_types.js';
@@ -23,7 +18,8 @@ import {TtsInterface} from './tts_interface.js';
 let PropertyValues;
 
 /**
- * Creates a new instance.
+ * Base class for Text-to-Speech engines that actually transform
+ * text to speech (as opposed to logging or other behaviors).
  * @implements {TtsInterface}
  */
 export class AbstractTts {

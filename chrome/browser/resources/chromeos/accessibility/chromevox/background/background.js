@@ -62,7 +62,7 @@ const Dir = constants.Dir;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
-/** ChromeVox background page. */
+/** ChromeVox background context. */
 export class Background extends ChromeVoxState {
   constructor() {
     super();
