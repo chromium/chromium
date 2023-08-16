@@ -12,6 +12,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace plus_addresses {
 
 // Represents a psuedo-profile-like object for use on a given facet.
@@ -25,16 +29,19 @@ typedef base::OnceCallback<void(const std::string&)> PlusAddressCallback;
 // Not intended for widespread use.
 class PlusAddressService : public KeyedService {
  public:
-  // Default constructor/destructor only, for now.
+  // Used to simplify testing in cases where calls depending on the
+  // identity manager can be mocked out.
   PlusAddressService();
   ~PlusAddressService() override;
+
+  // Initialize the PlusAddressService with the `IdentityManager`.
+  explicit PlusAddressService(signin::IdentityManager* identity_manager);
 
   // Returns `true` when plus addresses are supported. Currently requires only
   // that the `kPlusAddressesEnabled` base::Feature is enabled.
   // Virtual to allow overriding the behavior in tests. This allows external
   // tests (e.g., those in autofill that depend on this class) to substitute
   // their own behavior.
-  // TODO(crbug.com/1467623): also take signin state into account.
   // TODO(crbug.com/1467623): react to `origin` parameter.
   virtual bool SupportsPlusAddresses(url::Origin origin);
   // Get a plus address, if one exists, for the passed-in origin. Note that all
@@ -70,6 +77,10 @@ class PlusAddressService : public KeyedService {
   // Used to drive the `IsPlusAddress` function, and derived from the values of
   // `plus_profiles`.
   std::unordered_set<std::string> plus_addresses_;
+
+  // Stores pointer to IdentityManager instance. It must outlive the
+  // PlusAddressService and can be null during tests.
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 }  // namespace plus_addresses

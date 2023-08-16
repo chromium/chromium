@@ -9,7 +9,10 @@ source_set("plus_addresses") {
     "plus_address_service.cc",
     "plus_address_service.h",
   ]
-  deps = [ "//net" ]
+  deps = [
+    "//components/signin/public/identity_manager",
+    "//net",
+  ]
   public_deps = [
     "//base",
     "//components/keyed_service/core",
@@ -25,5 +28,6 @@ source_set("unit_tests") {
   deps = [
     ":plus_addresses",
     "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
   ]
 }
