@@ -107,10 +107,10 @@ public class PerformActions {
         UiObject2 firstAutofill =
                 mDevice.findObject(By.res("org.chromium.webview_ui_test", "text"));
         if (firstAutofill == null) {
-            Log.d(TAG, "Autofill element is not found");
+            Log.d(TAG, "Autofill element was not found");
             return false;
         } else {
-            Log.d(TAG, "Autofill element is not found");
+            Log.d(TAG, "Autofill element was found");
             firstAutofill.click();
             return true;
         }
