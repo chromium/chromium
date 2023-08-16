@@ -154,6 +154,21 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
           return opensExternally;
         },
       },
+
+      /**
+       * Whether to show the overscroll history navigation setting.
+       */
+      showOverscrollHistoryNavigationToggle_: {
+        type: Boolean,
+        value: function() {
+          let showOverscroll = false;
+          // <if expr="is_win or is_linux">
+          showOverscroll = loadTimeData.getBoolean(
+              'overscrollHistoryNavigationSettingEnabled');
+          // </if>
+          return showOverscroll;
+        },
+      },
     };
   }
 
@@ -168,6 +183,7 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   private showAccessibilityLabelsSetting_: boolean;
   private showPdfOcrToggle_: boolean;
   private captionSettingsOpensExternally_: boolean;
+  private showOverscrollHistoryNavigationToggle_: boolean;
 
 
   override ready() {

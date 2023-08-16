@@ -286,6 +286,12 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
     {"focusHighlightLabel",
      IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION},
 #endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+    {"overscrollHistoryNavigationTitle",
+     IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_TITLE},
+    {"overscrollHistoryNavigationSubtitle",
+     IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_SUBTITLE},
+#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -302,6 +308,9 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("pdfOcrEnabled",
                           base::FeatureList::IsEnabled(features::kPdfOcr));
 #endif
+  html_source->AddBoolean("overscrollHistoryNavigationSettingEnabled",
+                          base::FeatureList::IsEnabled(
+                              features::kOverscrollHistoryNavigationSetting));
 
   AddCaptionSubpageStrings(html_source);
 }

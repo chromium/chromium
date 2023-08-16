@@ -520,6 +520,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kAccessibilityPdfOcrAlwaysActive] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif
+#if defined(USE_AURA)
+  (*s_allowlist)[::prefs::kOverscrollHistoryNavigationEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+#endif
 
   (*s_allowlist)[::prefs::kCaretBrowsingEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;

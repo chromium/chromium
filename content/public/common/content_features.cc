@@ -740,6 +740,11 @@ BASE_FEATURE(kOverscrollHistoryNavigation,
              "OverscrollHistoryNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Setting to control overscroll history navigation.
+BASE_FEATURE(kOverscrollHistoryNavigationSetting,
+             "OverscrollHistoryNavigationSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether web apps can run periodic tasks upon network connectivity.
 BASE_FEATURE(kPeriodicBackgroundSync,
              "PeriodicBackgroundSync",
