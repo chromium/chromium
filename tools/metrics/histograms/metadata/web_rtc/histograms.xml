@@ -1458,7 +1458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ProvisionalAnswer"
-    enum="PeerConnectionProvisionalAnswer" expires_after="2023-08-08">
+    enum="PeerConnectionProvisionalAnswer" expires_after="2024-02-08">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
