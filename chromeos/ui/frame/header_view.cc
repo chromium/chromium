@@ -78,8 +78,6 @@ HeaderView::HeaderView(views::Widget* target_widget,
       target_widget,
       (frame_view ? static_cast<views::View*>(frame_view) : this),
       caption_button_container_);
-
-  UpdateHeaderRoundedCorners();
 }
 
 void HeaderView::Init() {
@@ -165,6 +163,10 @@ void HeaderView::SetWidthInPixels(int width_in_pixels) {
           : views::PaintInfo::ScaleType::kScaleWithEdgeSnapping);
 }
 
+void HeaderView::SetHeaderCornerRadius(int radius) {
+  frame_header_->SetHeaderCornerRadius(radius);
+}
+
 void HeaderView::Layout() {
   did_layout_ = true;
   header_content_view_->SetBoundsRect(GetLocalBounds());
@@ -193,14 +195,6 @@ void HeaderView::OnWindowPropertyChanged(aura::Window* window,
     return;
 
   DCHECK_EQ(target_widget_->GetNativeWindow(), window);
-
-  // Headers as part of frames in chromeOS have rounded frames for certain
-  // window states. If these states changes, we need to update the rounded
-  // corners accordingly. See `chromeos::GetFrameCornerRadius()` for more
-  // details.
-  if (CanPropertyEffectFrameRadius(key)) {
-    UpdateHeaderRoundedCorners();
-  }
 
   if (key == aura::client::kAvatarIconKey) {
     gfx::ImageSkia* const avatar_icon =
@@ -386,15 +380,6 @@ void HeaderView::UpdateCaptionButtonsVisibility() {
     return;
 
   caption_button_container_->SetVisible(should_paint_);
-}
-
-void HeaderView::UpdateHeaderRoundedCorners() {
-  if (!target_widget_) {
-    return;
-  }
-
-  frame_header_->SetHeaderCornerRadius(
-      GetFrameCornerRadius(target_widget_->GetNativeWindow()));
 }
 
 BEGIN_METADATA(HeaderView, views::View)

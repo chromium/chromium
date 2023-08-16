@@ -96,7 +96,7 @@ class NonClientFrameViewAshTestWidgetDelegate
   }
 
   chromeos::HeaderView* header_view() const {
-    return non_client_frame_view_->header_view_;
+    return non_client_frame_view_->GetHeaderView();
   }
 
  private:
