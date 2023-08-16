@@ -69,13 +69,6 @@ class ChromeProcessSingleton {
   // Retrieve the chrome process singleton instance for the current process.
   static ChromeProcessSingleton* GetInstance();
 
-  // Setup the experiment for the early process singleton. Remove this code
-  // when the experiment is over (http://www.crbug.com/1340599).
-  static void SetupEarlySingletonFeature(const base::CommandLine& command_line);
-  static void RegisterEarlySingletonFeature();
-  static bool IsEarlySingletonFeatureEnabled();
-  static bool ShouldMergeMetrics();
-
  private:
   bool NotificationCallback(const base::CommandLine& command_line,
                             const base::FilePath& current_directory);
