@@ -25,7 +25,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_interception_apple.h"
 #endif
 
 using base::allocator::dispatcher::AllocationSubsystem;

@@ -24,7 +24,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/allocator/partition_allocator/partition_alloc_base/mac/foundation_util.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/apple/foundation_util.h"
 #if BUILDFLAG(IS_IOS)
 #include "base/allocator/partition_allocator/partition_alloc_base/ios/ios_util.h"
 #elif BUILDFLAG(IS_MAC)
@@ -32,7 +32,7 @@
 #else
 #error "Unknown platform"
 #endif
-#include "base/allocator/partition_allocator/partition_alloc_base/mac/scoped_cftyperef.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/apple/scoped_cftyperef.h"
 
 #include <Availability.h>
 #include <Security/Security.h>
@@ -141,7 +141,7 @@ bool UseMapJit() {
     return false;
   }
 
-  return base::mac::CFCast<CFBooleanRef>(jit_entitlement.get()) ==
+  return base::apple::CFCast<CFBooleanRef>(jit_entitlement.get()) ==
          kCFBooleanTrue;
 }
 #elif BUILDFLAG(IS_IOS)

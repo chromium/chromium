@@ -20,7 +20,7 @@
 #endif
 
 #if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_interception_apple.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/ios/ios_util.h"
 #include "base/metrics/histogram_functions.h"

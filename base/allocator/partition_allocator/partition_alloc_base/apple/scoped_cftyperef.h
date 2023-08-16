@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MAC_SCOPED_CFTYPEREF_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MAC_SCOPED_CFTYPEREF_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_APPLE_SCOPED_CFTYPEREF_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_APPLE_SCOPED_CFTYPEREF_H_
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/allocator/partition_allocator/partition_alloc_base/mac/scoped_typeref.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/apple/scoped_typeref.h"
 
 namespace partition_alloc::internal::base {
 
@@ -45,4 +45,4 @@ using ScopedCFTypeRef =
 
 }  // namespace partition_alloc::internal::base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MAC_SCOPED_CFTYPEREF_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_APPLE_SCOPED_CFTYPEREF_H_

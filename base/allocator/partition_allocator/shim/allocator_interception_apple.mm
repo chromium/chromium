@@ -15,7 +15,7 @@
 // only reason to intercept these calls is to re-label OOM crashes with slightly
 // more details.
 
-#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_interception_apple.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
@@ -28,12 +28,12 @@
 #include <new>
 
 #include "base/allocator/partition_allocator/oom.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/apple/mach_logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/mac/mach_logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
+#include "base/allocator/partition_allocator/shim/malloc_zone_functions_apple.h"
 #include "base/allocator/partition_allocator/third_party/apple_apsl/CFBase.h"
 #include "build/build_config.h"
 

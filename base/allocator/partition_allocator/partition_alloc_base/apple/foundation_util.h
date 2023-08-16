@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MAC_FOUNDATION_UTIL_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MAC_FOUNDATION_UTIL_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_APPLE_FOUNDATION_UTIL_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_APPLE_FOUNDATION_UTIL_H_
 
 #include <CoreFoundation/CoreFoundation.h>
 
-namespace partition_alloc::internal::base::mac {
+namespace partition_alloc::internal::base::apple {
 
 // CFCast<>() and CFCastStrict<>() cast a basic CFTypeRef to a more
 // specific CoreFoundation type. The compatibility of the passed
@@ -53,6 +53,6 @@ PA_CF_CAST_DECL(CFUUID);
 
 #undef PA_CF_CAST_DECL
 
-}  // namespace partition_alloc::internal::base::mac
+}  // namespace partition_alloc::internal::base::apple
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MAC_FOUNDATION_UTIL_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_APPLE_FOUNDATION_UTIL_H_

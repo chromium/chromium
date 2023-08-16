@@ -156,8 +156,9 @@ Time TimeNowFromSystemTimeIgnoringOverride() {
 Time Time::FromCFAbsoluteTime(CFAbsoluteTime t) {
   static_assert(std::numeric_limits<CFAbsoluteTime>::has_infinity,
                 "CFAbsoluteTime must have an infinity value");
-  if (t == 0)
+  if (t == 0) {
     return Time();  // Consider 0 as a null Time.
+  }
   return (t == std::numeric_limits<CFAbsoluteTime>::infinity())
              ? Max()
              : (UnixEpoch() +
@@ -167,8 +168,9 @@ Time Time::FromCFAbsoluteTime(CFAbsoluteTime t) {
 CFAbsoluteTime Time::ToCFAbsoluteTime() const {
   static_assert(std::numeric_limits<CFAbsoluteTime>::has_infinity,
                 "CFAbsoluteTime must have an infinity value");
-  if (is_null())
+  if (is_null()) {
     return 0;  // Consider 0 as a null Time.
+  }
   return is_max() ? std::numeric_limits<CFAbsoluteTime>::infinity()
                   : (CFAbsoluteTime{(*this - UnixEpoch()).InSecondsF()} -
                      kCFAbsoluteTimeIntervalSince1970);
