@@ -35,6 +35,9 @@ using these commands:
     pdbstr -r -p:out\release\base_unittests.exe.pdb -s:srcsrv >results.txt
 
 In Chrome official builds this script is invoked in the official symbols step by
-  recipes\recipe_modules\chrome\resources\official_utils.py
+  recipes\recipe_modules\chrome\resources\pdb_processing.py
 which calls UpdatePDB. official_utils.py is found in
   https://chrome-internal.googlesource.com/chrome/tools/release/scripts
+
+The full path is:
+  https://chrome-internal.googlesource.com/chrome/tools/release/scripts/+/refs/heads/main/recipes/recipe_modules/chrome/resources/pdb_processing.py

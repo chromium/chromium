@@ -243,6 +243,9 @@ def ExtractGitInfo(local_filename):
                           cwd=local_file_dir, raise_on_failure=False)
 
   if not file_info:
+    # If this message is being printed then it may be necessary to add a new
+    # entry to tools/symsrc/indexing-exclusions.txt to prevent the expensive
+    # calls from happening.
     print('No results from running git log %s in %s. This can be expensive.' %
           (local_file_basename, local_file_dir))
     return
@@ -464,7 +467,7 @@ def UpdatePDB(pdb_filename,
   for dir in dirs:
     if dir:
       if not os.path.exists(dir):
-        raise Exception('Exclusion directory %s does not exist.' % dir)
+        print('Warning: Exclusion directory %s does not exist.' % dir)
       dir = (os.path.abspath(dir)).lower()
       for directory, _, _ in os.walk(dir):
         dir_exclusion_list[directory.lower()] = True
