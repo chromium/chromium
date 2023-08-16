@@ -84,6 +84,7 @@ source_set("tests") {
     ":webnn",
     "//base",
     "//base/test:test_support",
+    "//components/ml/webnn",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/test_support:test_utils",
     "//services/webnn/public/mojom",

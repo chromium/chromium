@@ -19,6 +19,8 @@ namespace webnn {
 
 namespace {
 
+WebNNContextProviderImpl::BackendForTesting* g_backend_for_testing = nullptr;
+
 using webnn::mojom::CreateContextOptionsPtr;
 using webnn::mojom::WebNNContextProvider;
 
@@ -42,9 +44,21 @@ void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {
   impls_.erase(it);
 }
 
+// static
+void WebNNContextProviderImpl::SetBackendForTesting(
+    BackendForTesting* backend_for_testing) {
+  g_backend_for_testing = backend_for_testing;
+}
+
 void WebNNContextProviderImpl::CreateWebNNContext(
     CreateContextOptionsPtr options,
     WebNNContextProvider::CreateWebNNContextCallback callback) {
+  if (g_backend_for_testing) {
+    g_backend_for_testing->CreateWebNNContext(impls_, this, std::move(options),
+                                              std::move(callback));
+    return;
+  }
+
 #if BUILDFLAG(IS_WIN)
   // Get the default `Adapter` instance which is created for the adapter queried
   // from ANGLE. At the current stage, all `ContextImpl` share this instance.

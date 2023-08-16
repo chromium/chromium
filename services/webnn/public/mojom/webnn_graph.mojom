@@ -4,6 +4,8 @@
 
 module webnn.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
+
 // Represents the `MLOperand` which describes not only input and constant
 // operand, but also the output operand of operator.
 struct Operand {
@@ -146,10 +148,23 @@ struct GraphInfo {
   array<Operator> operators;
 };
 
+enum ComputeResult {
+  kOk,
+  // The input for inference is invalid.
+  kInvalidInputs,
+  // Something has gone wrong during execution of the graph.
+  kUnknownError,
+};
+
 // WebNNGraph runs in the GPU process and is called by the renderer process to
 // execute the computational graph. Graph execution is performed by calling
 // hardware accelerated OS machine learning APIs.
 interface WebNNGraph {
-  // TODO(crbug.com/1273291): Add `Compute` method to execute computational
-  // graph with system framework.
+  // Called by the renderer process to carry out the computational workload of
+  // the compiled graph. The key of map is the name of input/output to identify
+  // the tensor in the graph, the value is the shared memory to reduce memory
+  // copy for inference.
+  Compute(map<string, mojo_base.mojom.BigBuffer>  named_inputs)
+      => (ComputeResult result,
+          map<string, mojo_base.mojom.BigBuffer>? named_outputs);
 };

@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "components/ml/webnn/graph_validation_utils.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -427,7 +427,27 @@ bool ValidateOperator(const IdToOperandMap& id_to_operand_map,
 
 }  // namespace
 
-WebNNGraphImpl::WebNNGraphImpl() = default;
+WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
+    const mojom::GraphInfoPtr& graph_info) {
+  // Calculate the byte length of inputs for validating before computing.
+  for (auto& input_id : graph_info->input_operands) {
+    const mojom::OperandPtr& operand =
+        graph_info->id_to_operand_map.at(input_id);
+    // The `operand` is valid and the byte length of it was already verified in
+    // `ValidateGraph` function.
+    CHECK(operand);
+    auto byte_length = ValidateAndCalculateByteLength(
+        GetBytesPerElement(operand->data_type), operand->dimensions);
+    CHECK(byte_length.has_value());
+    input_name_to_byte_length_map[operand->name.value()] = byte_length.value();
+  }
+}
+
+WebNNGraphImpl::ComputeResourceInfo::~ComputeResourceInfo() = default;
+
+WebNNGraphImpl::WebNNGraphImpl(
+    std::unique_ptr<ComputeResourceInfo> compute_resource_info)
+    : compute_resource_info_(std::move(compute_resource_info)) {}
 
 WebNNGraphImpl::~WebNNGraphImpl() = default;
 
@@ -473,6 +493,27 @@ bool WebNNGraphImpl::ValidateGraph(const mojom::GraphInfoPtr& graph_info) {
   }
 
   return true;
+}
+
+void WebNNGraphImpl::Compute(
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
+    mojom::WebNNGraph::ComputeCallback callback) {
+  // Validate the inputs for computation match the built graph's expected.
+  if (!base::ranges::equal(
+          named_inputs, compute_resource_info_->input_name_to_byte_length_map,
+          [](const auto& iter_a, const auto& iter_b) {
+            // Compare the input name with the key of map and the byte length of
+            // buffer with value of map.
+            return iter_a.first == iter_b.first &&
+                   iter_a.second.size() == iter_b.second;
+          })) {
+    std::move(callback).Run(mojom::ComputeResult::kInvalidInputs,
+                            absl::nullopt);
+    return;
+  }
+
+  // Call ComputeImpl() implemented by an `mojom::WebNNGraph` backend.
+  ComputeImpl(std::move(named_inputs), std::move(callback));
 }
 
 }  // namespace webnn

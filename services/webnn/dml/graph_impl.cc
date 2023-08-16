@@ -4,6 +4,7 @@
 
 #include "services/webnn/dml/graph_impl.h"
 
+#include "base/bits.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
@@ -247,8 +248,10 @@ bool CreateOperatorNodeForGemm(const IdToOperandMap& id_to_operand_map,
 
 GraphImpl::GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
                      ComPtr<ID3D12Resource> persistent_buffer,
-                     ComPtr<IDMLCompiledOperator> compiled_operator)
-    : persistent_buffer_(std::move(persistent_buffer)),
+                     ComPtr<IDMLCompiledOperator> compiled_operator,
+                     std::unique_ptr<ComputeResourceInfo> compute_resource_info)
+    : WebNNGraphImpl(std::move(compute_resource_info)),
+      persistent_buffer_(std::move(persistent_buffer)),
       command_recorder_(std::move(command_recorder)),
       compiled_operator_(std::move(compiled_operator)) {}
 
@@ -266,6 +269,7 @@ ComPtr<IDMLCompiledOperator> GraphImpl::CompileOnBackgroundThread(
 void GraphImpl::OnCompilationComplete(
     mojom::WebNNContext::CreateGraphCallback callback,
     std::unique_ptr<CommandRecorder> command_recorder,
+    std::unique_ptr<ComputeResourceInfo> compute_resource_info,
     ComPtr<IDMLCompiledOperator> compiled_operator) {
   if (!compiled_operator) {
     DLOG(ERROR) << "Failed to compile the graph.";
@@ -341,10 +345,10 @@ void GraphImpl::OnCompilationComplete(
   //  completes.
   command_queue->ReferenceUntilCompleted(compiled_operator);
 
-  hr = command_queue->WaitAsync(
-      base::BindOnce(&GraphImpl::OnInitializationComplete,
-                     std::move(command_recorder), std::move(persistent_buffer),
-                     std::move(compiled_operator), std::move(callback)));
+  hr = command_queue->WaitAsync(base::BindOnce(
+      &GraphImpl::OnInitializationComplete, std::move(command_recorder),
+      std::move(persistent_buffer), std::move(compiled_operator),
+      std::move(compute_resource_info), std::move(callback)));
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to wait the initialization completed: "
                 << logging::SystemErrorCodeToString(hr);
@@ -357,6 +361,7 @@ void GraphImpl::OnInitializationComplete(
     std::unique_ptr<CommandRecorder> command_recorder,
     ComPtr<ID3D12Resource> persistent_buffer,
     ComPtr<IDMLCompiledOperator> compiled_operator,
+    std::unique_ptr<ComputeResourceInfo> compute_resource_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
   scoped_refptr<CommandQueue> command_queue(
       command_recorder->GetCommandQueue());
@@ -364,9 +369,9 @@ void GraphImpl::OnInitializationComplete(
   mojo::PendingRemote<mojom::WebNNGraph> blink_remote;
   // The receiver bound to GraphImpl.
   mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
-      base::WrapUnique(new GraphImpl(std::move(command_recorder),
-                                     std::move(persistent_buffer),
-                                     std::move(compiled_operator))),
+      base::WrapUnique(new GraphImpl(
+          std::move(command_recorder), std::move(persistent_buffer),
+          std::move(compiled_operator), std::move(compute_resource_info))),
       blink_remote.InitWithNewPipeAndPassReceiver());
   command_queue->ReleaseCompletedResources();
   std::move(callback).Run(std::move(blink_remote));
@@ -476,7 +481,66 @@ void GraphImpl::CreateAndBuild(
       base::BindOnce(&GraphImpl::CompileOnBackgroundThread,
                      std::move(graph_outputs), std::move(graph_builder)),
       base::BindOnce(&GraphImpl::OnCompilationComplete, std::move(callback),
-                     std::move(command_recorder)));
+                     std::move(command_recorder),
+                     std::make_unique<ComputeResourceInfo>(graph_info)));
+}
+
+void GraphImpl::ComputeImpl(
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
+    mojom::WebNNGraph::ComputeCallback callback) {
+  // Copy all array buffers of inputs to an upload heap and create a committed
+  // resource which is mapped to the heap.
+  //
+  // Calculate the total byte length of inputs array buffer to create an upload
+  // buffer which can be read by GPU.
+  base::CheckedNumeric<size_t> total_byte_length(0);
+  base::flat_map<std::string, size_t> input_to_byte_offset_map;
+  for (auto& [input_name, input_buffer] : named_inputs) {
+    // There is only one upload heap for all inputs, the byte offset is used to
+    // get the copied address for each input tensor.
+    input_to_byte_offset_map[input_name] = total_byte_length.ValueOrDie();
+
+    // The buffer has a minimum base address alignment requirement of 16 bytes
+    // in the macro `DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT`:
+    // https://learn.microsoft.com/en-us/windows/win32/direct3d12/direct3d-directml-constants
+    total_byte_length += base::bits::AlignUp<size_t>(
+        input_buffer.size(), DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
+    if (!total_byte_length.IsValid()) {
+      DLOG(ERROR) << "Failed to calculate the total byte length of inputs.";
+      std::move(callback).Run(mojom::ComputeResult::kUnknownError,
+                              absl::nullopt);
+      return;
+    }
+  }
+  // Create the upload heap and a resource that is mapped to the heap.
+  ComPtr<ID3D12Resource> input_upload_buffer;
+  HRESULT hr = command_recorder_->CreateUploadBuffer(
+      total_byte_length.ValueOrDie(), input_upload_buffer);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to create upload buffer for inputs: "
+                << logging::SystemErrorCodeToString(hr);
+    std::move(callback).Run(mojom::ComputeResult::kUnknownError, absl::nullopt);
+    return;
+  }
+  // Map entire resource to copy the array buffer of input one by one with byte
+  // offset.
+  void* mapped_upload_buffer = nullptr;
+  hr = input_upload_buffer->Map(0, nullptr, &mapped_upload_buffer);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to map upload buffer for inputs: "
+                << logging::SystemErrorCodeToString(hr);
+    std::move(callback).Run(mojom::ComputeResult::kUnknownError, absl::nullopt);
+    return;
+  }
+  for (auto& [input_name, input_buffer] : named_inputs) {
+    memcpy(static_cast<uint8_t*>(mapped_upload_buffer) +
+               input_to_byte_offset_map.at(input_name),
+           input_buffer.data(), input_buffer.size());
+  }
+  input_upload_buffer->Unmap(0, nullptr);
+
+  // TODO(crbug.com/1273291): Execute the compiled operator with inputs/outputs.
+  std::move(callback).Run(mojom::ComputeResult::kUnknownError, absl::nullopt);
 }
 
 }  // namespace webnn::dml

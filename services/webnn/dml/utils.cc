@@ -4,6 +4,7 @@
 
 #include "services/webnn/dml/utils.h"
 
+#include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -69,7 +70,8 @@ uint64_t CalculateDMLBufferTensorSize(
   // the nearest 4 bytes according to the alignment requirement:
   // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize
   base::CheckedNumeric<uint64_t> buffer_tensor_size =
-      (CalculateElementCount(dimensions, strides) * element_size + 3) & ~3ull;
+      base::bits::AlignUp<uint64_t>(
+          CalculateElementCount(dimensions, strides) * element_size, 4);
 
   return buffer_tensor_size.ValueOrDie();
 }

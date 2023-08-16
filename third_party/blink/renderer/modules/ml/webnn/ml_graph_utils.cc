@@ -168,6 +168,7 @@ std::unique_ptr<NamedArrayBufferViewsInfo> TransferNamedArrayBufferViews(
     const MLNamedArrayBufferViews& source_views,
     ExceptionState& exception_state) {
   auto views_info = std::make_unique<NamedArrayBufferViewsInfo>();
+  views_info->reserve(source_views.size());
   for (const auto& [name, source_view] : source_views) {
     auto view_info =
         TransferArrayBufferView(isolate, source_view, exception_state);
@@ -182,6 +183,7 @@ std::unique_ptr<NamedArrayBufferViewsInfo> TransferNamedArrayBufferViews(
 MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
     std::unique_ptr<NamedArrayBufferViewsInfo> views_info) {
   auto* target_views = MakeGarbageCollected<MLNamedArrayBufferViews>();
+  target_views->reserve(views_info->size());
   for (auto& [name, view_info] : *views_info) {
     target_views->push_back(
         std::make_pair(name, CreateArrayBufferView(std::move(view_info))));

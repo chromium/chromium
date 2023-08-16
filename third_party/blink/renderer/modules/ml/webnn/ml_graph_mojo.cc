@@ -6,6 +6,7 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
@@ -153,10 +154,82 @@ void MLGraphMojo::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
                                    const MLNamedArrayBufferViews& outputs,
                                    ScriptPromiseResolver* resolver,
                                    ExceptionState& exception_state) {
-  // TODO(crbug.com/1273291): Support async compute.
-  NOTIMPLEMENTED();
-  resolver->Reject(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNotSupportedError, "Async compute not implemented."));
+  // TransferNamedArrayBufferViews deteches input and output array buffers, so
+  // JavaScript can't modify them during Compute().
+  auto inputs_info = TransferNamedArrayBufferViews(
+      resolver->GetScriptState()->GetIsolate(), inputs, exception_state);
+  if (!inputs_info) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError,
+        "Invalid inputs: " + exception_state.Message()));
+    return;
+  }
+  auto outputs_info = TransferNamedArrayBufferViews(
+      resolver->GetScriptState()->GetIsolate(), outputs, exception_state);
+  if (!outputs_info) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError,
+        "Invalid outputs: " + exception_state.Message()));
+    return;
+  }
+
+  // The inputs were already verified in the base class so we can fill the
+  // buffer directly with the input tensors.
+  HashMap<String, mojo_base::BigBuffer> name_to_buffer_map;
+  for (const auto& [name, input_info] : *inputs_info) {
+    name_to_buffer_map.insert(
+        name,
+        base::make_span(static_cast<const uint8_t*>(input_info.contents.Data()),
+                        input_info.contents.DataLength()));
+  }
+  remote_graph_->Compute(
+      std::move(name_to_buffer_map),
+      WTF::BindOnce(&MLGraphMojo::OnDidCompute, WrapPersistent(this),
+                    WrapPersistent(resolver), std::move(inputs_info),
+                    std::move(outputs_info)));
+}
+
+void MLGraphMojo::OnDidCompute(
+    ScriptPromiseResolver* resolver,
+    std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> inputs_info,
+    std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
+        outputs_info,
+    webnn::mojom::blink::ComputeResult mojo_result,
+    const absl::optional<HashMap<String, mojo_base::BigBuffer>> mojo_outputs) {
+  if (mojo_result != webnn::mojom::blink::ComputeResult::kOk ||
+      !mojo_outputs.has_value()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kOperationError,
+        "Failed to obtain the computation result."));
+    return;
+  }
+  for (const auto& [output_name, output_view_info] : *outputs_info) {
+    // The verification before computing ensures the `ml_outputs` match graph's
+    // expectation, so we only need to verify the result `mojo_outputs` from
+    // WebNN Service here.
+    auto output_buffer_iter = mojo_outputs->find(output_name);
+    if (output_buffer_iter == mojo_outputs->end()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError,
+          "There is an unknown output tensor in the computation result: " +
+              output_name));
+      return;
+    }
+    const auto output_byte_length = output_view_info.contents.DataLength();
+    if (output_buffer_iter->value.size() != output_byte_length) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kUnknownError,
+          "The output tensor size does not match graph's expectation: " +
+              output_name));
+      return;
+    }
+    memcpy(output_view_info.contents.Data(), output_buffer_iter->value.data(),
+           output_byte_length);
+  }
+  auto* result = MLComputeResult::Create();
+  result->setInputs(*CreateNamedArrayBufferViews(std::move(inputs_info)));
+  result->setOutputs(*CreateNamedArrayBufferViews(std::move(outputs_info)));
+  resolver->Resolve(result);
 }
 
 void MLGraphMojo::ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,

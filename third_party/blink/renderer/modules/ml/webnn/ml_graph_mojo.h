@@ -9,6 +9,7 @@
 #include "services/webnn/public/mojom/webnn_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -47,6 +48,16 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
                         const MLNamedArrayBufferViews& outputs,
                         ScriptPromiseResolver* resolver,
                         ExceptionState& exception_state) override;
+  // The callback of computing `WebNNGraph` by calling hardware accelerated OS
+  // machine learning APIs.
+  void OnDidCompute(
+      ScriptPromiseResolver* resolver,
+      std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
+          inputs_info,
+      std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
+          outputs_info,
+      webnn::mojom::blink::ComputeResult mojo_result,
+      const absl::optional<HashMap<String, mojo_base::BigBuffer>> mojo_outputs);
 
   void ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
                        const MLNamedArrayBufferViews& outputs,

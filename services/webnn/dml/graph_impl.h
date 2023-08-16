@@ -48,7 +48,8 @@ class GraphImpl final : public WebNNGraphImpl {
  private:
   GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
             Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer,
-            Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator);
+            Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
+            std::unique_ptr<ComputeResourceInfo> compute_resource_info);
 
   // The method compiles all DML operators into an IDMLCompiledOperator
   // which can be dispatched to GPU. Since IDMLDevice1::CompileGraph called in
@@ -66,6 +67,7 @@ class GraphImpl final : public WebNNGraphImpl {
   static void OnCompilationComplete(
       mojom::WebNNContext::CreateGraphCallback callback,
       std::unique_ptr<CommandRecorder> command_recorder,
+      std::unique_ptr<ComputeResourceInfo> compute_resource_info,
       Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator);
 
   // Create the GraphImpl instance and bind it to the mojom::WebNNGraph
@@ -77,7 +79,15 @@ class GraphImpl final : public WebNNGraphImpl {
       std::unique_ptr<CommandRecorder> command_recorder,
       Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer,
       Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
+      std::unique_ptr<ComputeResourceInfo> compute_resource_info,
       mojom::WebNNContext::CreateGraphCallback callback);
+
+  // Execute the compiled platform graph asynchronously. The `named_inputs` was
+  // validated in base class so we can use them to compute directly, the result
+  // of inference will be returned to renderer process with the `callback`.
+  void ComputeImpl(
+      base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
+      mojom::WebNNGraph::ComputeCallback callback) override;
 
   // The persistent buffer will be initialized after the initialization work on
   // GPU is completed and will be used for the following graph executions. It

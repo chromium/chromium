@@ -5,14 +5,146 @@
 #include "services/webnn/webnn_graph_impl.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/ml/webnn/graph_validation_utils.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_service.mojom.h"
+#include "services/webnn/webnn_context_impl.h"
+#include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webnn {
 
 namespace {
+
+// A fake WebNNGraph Mojo interface implementation that binds a pipe for
+// computing graph message.
+class FakeWebNNGraphImpl final : public WebNNGraphImpl {
+ public:
+  explicit FakeWebNNGraphImpl(
+      std::unique_ptr<ComputeResourceInfo> compute_resource_info)
+      : WebNNGraphImpl(std::move(compute_resource_info)) {}
+  ~FakeWebNNGraphImpl() override = default;
+
+  static void CreateAndBuild(
+      const mojom::GraphInfoPtr& graph_info,
+      mojom::WebNNContext::CreateGraphCallback callback) {
+    mojo::PendingRemote<mojom::WebNNGraph> blink_remote;
+    // The receiver bound to FakeWebNNGraphImpl.
+    mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
+        std::make_unique<FakeWebNNGraphImpl>(
+            std::make_unique<ComputeResourceInfo>(graph_info)),
+        blink_remote.InitWithNewPipeAndPassReceiver());
+    std::move(callback).Run(std::move(blink_remote));
+  }
+
+ private:
+  // Return the `kOk` result for testing the validation of inputs and outputs in
+  // `WebNNGraphImpl::Compute()` function.
+  void ComputeImpl(base::flat_map<std::string, mojo_base::BigBuffer> inputs,
+                   mojom::WebNNGraph::ComputeCallback callback) override {
+    std::move(callback).Run(mojom::ComputeResult::kOk, absl::nullopt);
+  }
+};
+
+// A fake WebNNContext Mojo interface implementation that binds a pipe for
+// creating graph message.
+class FakeWebNNContextImpl final : public WebNNContextImpl {
+ public:
+  FakeWebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
+                       WebNNContextProviderImpl* context_provider)
+      : WebNNContextImpl(std::move(receiver), context_provider) {}
+  ~FakeWebNNContextImpl() override = default;
+
+ private:
+  void CreateGraphImpl(
+      mojom::GraphInfoPtr graph_info,
+      mojom::WebNNContext::CreateGraphCallback callback) override {
+    FakeWebNNGraphImpl::CreateAndBuild(std::move(graph_info),
+                                       std::move(callback));
+  }
+};
+
+// Helper class to create the FakeWebNNContext that is intended to test
+// the graph validation steps and computation resources.
+class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
+ public:
+  void CreateWebNNContext(
+      std::vector<std::unique_ptr<WebNNContextImpl>>& context_impls,
+      WebNNContextProviderImpl* context_provider_impl,
+      mojom::CreateContextOptionsPtr options,
+      mojom::WebNNContextProvider::CreateWebNNContextCallback callback)
+      override {
+    mojo::PendingRemote<mojom::WebNNContext> blink_remote;
+    // The receiver bound to FakeWebNNContext.
+    context_impls.push_back(std::make_unique<FakeWebNNContextImpl>(
+        blink_remote.InitWithNewPipeAndPassReceiver(), context_provider_impl));
+    std::move(callback).Run(mojom::CreateContextResult::kOk,
+                            std::move(blink_remote));
+  }
+};
+
+bool ValidateInputsForComputing(
+    mojom::GraphInfoPtr graph_info,
+    base::flat_map<std::string, mojo_base::BigBuffer> inputs) {
+  // Creates WebNN Context mojo interface with the provider.
+  mojo::Remote<mojom::WebNNContextProvider> provider_remote;
+  WebNNContextProviderImpl::Create(
+      provider_remote.BindNewPipeAndPassReceiver());
+  base::RunLoop run_loop_create_context;
+  bool is_callback_called = false;
+  mojo::Remote<mojom::WebNNContext> webnn_context;
+  auto options = mojom::CreateContextOptions::New();
+  provider_remote->CreateWebNNContext(
+      std::move(options),
+      base::BindLambdaForTesting(
+          [&](mojom::CreateContextResult result,
+              mojo::PendingRemote<mojom::WebNNContext> remote) {
+            EXPECT_EQ(result, mojom::CreateContextResult::kOk);
+            webnn_context.Bind(std::move(remote));
+            is_callback_called = true;
+            run_loop_create_context.Quit();
+          }));
+  run_loop_create_context.Run();
+  EXPECT_TRUE(is_callback_called);
+
+  // Creates WebNN Graph mojo interface with the graph information which is
+  // validated before compiling.
+  mojo::Remote<mojom::WebNNGraph> webnn_graph;
+  base::RunLoop run_loop_create_graph;
+  is_callback_called = false;
+  webnn_context->CreateGraph(
+      std::move(graph_info),
+      base::BindLambdaForTesting(
+          [&](mojo::PendingRemote<mojom::WebNNGraph> remote) {
+            webnn_graph.Bind(std::move(remote));
+            is_callback_called = true;
+            run_loop_create_graph.Quit();
+          }));
+  run_loop_create_graph.Run();
+  EXPECT_TRUE(is_callback_called);
+
+  // Validate the inputs in the `Compute` function.
+  base::RunLoop run_loop_compute;
+  is_callback_called = false;
+  bool valid = false;
+  webnn_graph->Compute(
+      std::move(inputs),
+      base::BindLambdaForTesting(
+          [&](mojom::ComputeResult result,
+              absl::optional<base::flat_map<std::string, mojo_base::BigBuffer>>
+                  ouputs) {
+            valid =
+                result == mojom::ComputeResult::kInvalidInputs ? false : true;
+            is_callback_called = true;
+            run_loop_compute.Quit();
+          }));
+  run_loop_compute.Run();
+  EXPECT_TRUE(is_callback_called);
+  return valid;
+}
 
 }  // namespace
 
@@ -21,11 +153,19 @@ class WebNNGraphImplTest : public testing::Test {
   WebNNGraphImplTest(const WebNNGraphImplTest&) = delete;
   WebNNGraphImplTest& operator=(const WebNNGraphImplTest&) = delete;
 
+  void SetUp() override {
+    WebNNContextProviderImpl::SetBackendForTesting(&backend_for_testing);
+  }
+  void TearDown() override {
+    WebNNContextProviderImpl::SetBackendForTesting(nullptr);
+  }
+
  protected:
   WebNNGraphImplTest() = default;
   ~WebNNGraphImplTest() override = default;
 
  private:
+  FakeWebNNBackend backend_for_testing;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -779,6 +919,68 @@ TEST_F(WebNNGraphImplTest, SoftmaxTest) {
                              .dimensions = {2, 5}},
                   .expected = false}
         .Test();
+  }
+}
+
+TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
+  const std::vector<uint32_t> dimensions = {3, 5};
+  // Build the graph with mojo type.
+  GraphInfoBuilder builder;
+  uint64_t lhs_operand_id =
+      builder.BuildInput("lhs", dimensions, mojom::Operand::DataType::kUint8);
+  uint64_t rhs_operand_id =
+      builder.BuildInput("rhs", dimensions, mojom::Operand::DataType::kUint8);
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", dimensions, mojom::Operand::DataType::kUint8);
+  builder.BuildOperator(mojom::Operator::Kind::kAdd,
+                        {lhs_operand_id, rhs_operand_id}, {output_operand_id});
+  EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), true);
+
+  auto byte_length =
+      ValidateAndCalculateByteLength(sizeof(uint8_t), dimensions).value();
+  {
+    // Validate the inputs match the expected.
+    base::flat_map<std::string, mojo_base::BigBuffer> inputs;
+    inputs["lhs"] = std::vector<uint8_t>(byte_length);
+    inputs["rhs"] = std::vector<uint8_t>(byte_length);
+    EXPECT_EQ(
+        ValidateInputsForComputing(builder.CloneGraphInfo(), std::move(inputs)),
+        true);
+  }
+  {
+    // Test the invalid inputs for invalid input size.
+    base::flat_map<std::string, mojo_base::BigBuffer> inputs;
+    inputs["lhs"] = std::vector<uint8_t>(byte_length);
+    EXPECT_EQ(
+        ValidateInputsForComputing(builder.CloneGraphInfo(), std::move(inputs)),
+        false);
+  }
+  {
+    // Test the invalid inputs for invalid input name.
+    base::flat_map<std::string, mojo_base::BigBuffer> inputs;
+    inputs["a_different_input_name"] = std::vector<uint8_t>(byte_length);
+    inputs["rhs"] = std::vector<uint8_t>(byte_length);
+    EXPECT_EQ(
+        ValidateInputsForComputing(builder.CloneGraphInfo(), std::move(inputs)),
+        false);
+  }
+  {
+    // Test the invalid inputs for invalid first input byte length.
+    base::flat_map<std::string, mojo_base::BigBuffer> inputs;
+    inputs["lhs"] = std::vector<uint8_t>(20);
+    inputs["rhs"] = std::vector<uint8_t>(byte_length);
+    EXPECT_EQ(
+        ValidateInputsForComputing(builder.CloneGraphInfo(), std::move(inputs)),
+        false);
+  }
+  {
+    // Test the invalid inputs for invalid second input byte length.
+    base::flat_map<std::string, mojo_base::BigBuffer> inputs;
+    inputs["lhs"] = std::vector<uint8_t>(byte_length);
+    inputs["rhs"] = std::vector<uint8_t>(20);
+    EXPECT_EQ(
+        ValidateInputsForComputing(builder.CloneGraphInfo(), std::move(inputs)),
+        false);
   }
 }
 

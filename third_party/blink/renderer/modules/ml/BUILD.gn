@@ -124,5 +124,6 @@ source_set("unit_tests") {
 
   if (!is_chromeos) {
     sources += [ "webnn/ml_graph_test_mojo.cc" ]
+    deps += [ "//components/ml/webnn" ]
   }
 }

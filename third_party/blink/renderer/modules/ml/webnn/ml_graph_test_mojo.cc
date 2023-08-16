@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -27,6 +28,12 @@ namespace blink {
 
 namespace blink_mojom = webnn::mojom::blink;
 
+// Helper struct to create faked mojom result of inference.
+struct ComputeResult {
+  blink_mojom::ComputeResult result;
+  WTF::HashMap<WTF::String, WTF::Vector<uint8_t>> output;
+};
+
 class MLGraphTestMojo : public MLGraphTestBase {
  public:
   void SetGraphInfo(blink_mojom::GraphInfoPtr graph_info) {
@@ -35,20 +42,50 @@ class MLGraphTestMojo : public MLGraphTestBase {
 
   blink_mojom::GraphInfoPtr GetGraphInfo() { return std::move(graph_info_); }
 
+  void SetComputeResult(const ComputeResult& compute_result) {
+    compute_result_ = std::move(compute_result);
+  }
+
+  const ComputeResult& GetComputeResult() const { return compute_result_; }
+
+  void SetInputArrayBuffers(HashMap<String, mojo_base::BigBuffer> buffers) {
+    input_array_buffers_ = std::move(buffers);
+  }
+
+  const HashMap<String, mojo_base::BigBuffer>& GetInputArrayBuffers() const {
+    return input_array_buffers_;
+  }
+
  private:
   blink_mojom::GraphInfoPtr graph_info_;
+  HashMap<String, mojo_base::BigBuffer> input_array_buffers_;
+  ComputeResult compute_result_;
 };
 
 class FakeWebNNGraph : public blink_mojom::WebNNGraph {
  public:
-  FakeWebNNGraph() = default;
+  explicit FakeWebNNGraph(MLGraphTestMojo& helper) : helper_(helper) {}
   FakeWebNNGraph(const FakeWebNNGraph&) = delete;
   FakeWebNNGraph(FakeWebNNGraph&&) = delete;
   ~FakeWebNNGraph() override = default;
 
  private:
-  // Override methods from webnn::mojom::WebNNGraph.
-  // TODO(crbug.com/1273291): Add build and compute methods.
+  void Compute(HashMap<String, mojo_base::BigBuffer> inputs,
+               blink_mojom::WebNNGraph::ComputeCallback callback) override {
+    // Set the input array buffers for validation in the test.
+    helper_.SetInputArrayBuffers(std::move(inputs));
+
+    // Return the compute result with shared memory.
+    auto& compute_result = helper_.GetComputeResult();
+    HashMap<String, mojo_base::BigBuffer> mojo_outputs;
+    for (const auto& [name, output_data] : compute_result.output) {
+      mojo_outputs.insert(
+          name, base::make_span(output_data.data(), output_data.size()));
+    }
+    std::move(callback).Run(compute_result.result, std::move(mojo_outputs));
+  }
+
+  MLGraphTestMojo& helper_;
 };
 
 class FakeWebNNContext : public blink_mojom::WebNNContext {
@@ -67,7 +104,7 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
     mojo::PendingRemote<blink_mojom::WebNNGraph> blink_remote;
     // The receiver bind to FakeWebNNGraph.
     mojo::MakeSelfOwnedReceiver<blink_mojom::WebNNGraph>(
-        std::make_unique<FakeWebNNGraph>(),
+        std::make_unique<FakeWebNNGraph>(helper_),
         blink_remote.InitWithNewPipeAndPassReceiver());
 
     std::move(callback).Run(std::move(blink_remote));
@@ -1119,6 +1156,113 @@ TEST_P(MLGraphTestMojo, SoftmaxTest) {
                   .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
                                .dimensions = {1, 5}}}
         .Test(*this, scope, builder);
+  }
+}
+
+TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device preference.
+  options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  const Vector<uint32_t> dimensions = {3, 5};
+  const wtf_size_t number_of_elements = base::checked_cast<wtf_size_t>(
+      webnn::ValidateAndCalculateElementsNumber(dimensions).value());
+
+  // Build the graph.
+  auto* lhs_operand =
+      BuildInput(builder, "lhs", dimensions, V8MLOperandType::Enum::kUint8,
+                 scope.GetExceptionState());
+  auto* rhs_operand =
+      BuildInput(builder, "rhs", dimensions, V8MLOperandType::Enum::kUint8,
+                 scope.GetExceptionState());
+  auto* output_operand = BuildElementWiseBinary(
+      scope, builder, ElementWiseBinaryKind::kAdd, lhs_operand, rhs_operand);
+  auto [graph, build_exception] =
+      BuildGraph(scope, builder, {{"output", output_operand}});
+  ASSERT_NE(graph, nullptr);
+
+  MLNamedArrayBufferViews inputs(
+      {{"lhs", CreateArrayBufferViewForOperand(lhs_operand)},
+       {"rhs", CreateArrayBufferViewForOperand(rhs_operand)}});
+  MLNamedArrayBufferViews outputs(
+      {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+
+  {
+    // Compute successfully.
+    SetComputeResult(ComputeResult{
+        .result = blink_mojom::ComputeResult::kOk,
+        .output = {{"output", Vector<uint8_t>(number_of_elements, 2)}}});
+    auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<uint8_t>(outputs[0].second);
+    EXPECT_EQ(results, Vector<uint8_t>(number_of_elements, 2));
+
+    // Compute again successfully.
+    SetComputeResult(ComputeResult{
+        .result = blink_mojom::ComputeResult::kOk,
+        .output = {{"output", Vector<uint8_t>(number_of_elements, 7)}}});
+    compute_exception = ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    results = GetArrayBufferViewValues<uint8_t>(outputs[0].second);
+    EXPECT_EQ(results, Vector<uint8_t>(number_of_elements, 7));
+
+    // Validate the input array buffers.
+    auto& name_to_buffer_map = GetInputArrayBuffers();
+    auto lhs_input_iter = name_to_buffer_map.find("lhs");
+    EXPECT_NE(lhs_input_iter, name_to_buffer_map.end());
+    EXPECT_EQ(lhs_input_iter->value.size(), number_of_elements);
+    auto rhs_input_iter = name_to_buffer_map.find("rhs");
+    EXPECT_NE(rhs_input_iter, name_to_buffer_map.end());
+    EXPECT_EQ(rhs_input_iter->value.size(), number_of_elements);
+  }
+  {
+    // Unknown error.
+    SetComputeResult(
+        ComputeResult{.result = blink_mojom::ComputeResult::kUnknownError});
+    auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_NE(compute_exception, nullptr);
+    EXPECT_EQ(compute_exception->name(), "OperationError");
+    EXPECT_EQ(compute_exception->message(),
+              "Failed to obtain the computation result.");
+  }
+  {
+    // Reset the inputs which are detached in above failed tests.
+    inputs[0].second = CreateArrayBufferViewForOperand(lhs_operand);
+    inputs[1].second = CreateArrayBufferViewForOperand(rhs_operand);
+    outputs[0].second = CreateArrayBufferViewForOperand(output_operand);
+    // Output name in computation result isn't expected.
+    SetComputeResult(
+        ComputeResult{.result = blink_mojom::ComputeResult::kOk,
+                      .output = {{"a_different_out_name",
+                                  Vector<uint8_t>(number_of_elements)}}});
+    auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_NE(compute_exception, nullptr);
+    EXPECT_EQ(compute_exception->name(), "OperationError");
+    EXPECT_EQ(
+        compute_exception->message(),
+        "There is an unknown output tensor in the computation result: output");
+  }
+  {
+    // Reset the inputs which are detached in above failed tests.
+    inputs[0].second = CreateArrayBufferViewForOperand(lhs_operand);
+    inputs[1].second = CreateArrayBufferViewForOperand(rhs_operand);
+    outputs[0].second = CreateArrayBufferViewForOperand(output_operand);
+    // The size of output in computation result isn't expected.
+    SetComputeResult(
+        ComputeResult{.result = blink_mojom::ComputeResult::kOk,
+                      .output = {{"output", Vector<uint8_t>(20)}}});
+    auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_NE(compute_exception, nullptr);
+    EXPECT_EQ(compute_exception->name(), "UnknownError");
+    EXPECT_EQ(
+        compute_exception->message(),
+        "The output tensor size does not match graph's expectation: output");
   }
 }
 
