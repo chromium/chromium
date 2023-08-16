@@ -113,3 +113,14 @@ TEST_F(SyncErrorInfobarBannerOverlayMediatorTest, MainAction) {
   EXPECT_CALL(*delegate_, Accept());
   [mediator_ bannerInfobarButtonWasPressed:nil];
 }
+
+// Ensures that calling the -bannerInfobarButtonWasPressed: after the infobar
+// has been removed does not cause a crash. This could happen if the infobar is
+// removed before the banner has finished appearing.
+TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
+       BannerInfobarButtonWasPressedAfterRemoval) {
+  // Removes the infobar.
+  infobar_ = nullptr;
+
+  [mediator_ bannerInfobarButtonWasPressed:nil];
+}
