@@ -181,17 +181,11 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
     expiry_time = base::Time::FromDoubleT(*metadata_expiry_time);
 
     // If the lifetime was stored explicitly, we should use that instead of
-    // assuming what it was.
+    // assuming what it was. Users may edit the preferences file directly, so we
+    // cannot assume the lifetime field is present and valid.
     base::Value* stored_lifetime = dict->Find(kNonRenewingLifetimeKey);
-    // TODO(https://crbug.com/1455435): The use of `ComputeLifetime` here is
-    // temporary, while there are on-disk dictionaries that have expirations but
-    // no lifetimes. All such dictionaries expire after a week, so this code can
-    // be removed after 1 milestone (in M117). In M117+, we can just CHECK that
-    // the lifetime is present in the dictionary, and use that directly.
     setting_lifetime = content_settings::RuleMetaData::ComputeLifetime(
-        stored_lifetime ? base::ValueToTimeDelta(*stored_lifetime)
-                              .value_or(base::TimeDelta())
-                        : base::TimeDelta(),
+        base::ValueToTimeDelta(stored_lifetime).value_or(base::TimeDelta()),
         /*expiration=*/expiry_time);
   }
   content_settings::ContentSettingConstraints constraints(expiry_time -

@@ -343,12 +343,8 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
       expired_patterns_to_remove.push_back(pattern_str);
       continue;
     }
-    // TODO(https://crbug.com/1455435): The use of ComputeLifetime here should
-    // be temporary. Once all persisted RuleMetaData instances include
-    // lifetimes, we can remove this, and just use the stored lifetime directly.
-    // We can do this after all lifetime-less settings have expired.
-    // Realistically this will take only one or two milestones, so this can
-    // safely be removed in M118 or M119.
+    // Users may edit the stored fields directly, so we cannot assume their
+    // presence and validity.
     base::TimeDelta lifetime = content_settings::RuleMetaData::ComputeLifetime(
         /*lifetime=*/GetLifetime(settings_dictionary),
         /*expiration=*/expiration);

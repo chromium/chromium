@@ -55,8 +55,7 @@ class RuleMetaData {
                                 base::TimeDelta lifetime);
 
   // Computes the setting's lifetime, based on the lifetime and expiration that
-  // were read from persistent storage. This is a helper to deal with missing
-  // lifetime data during migration/rollout.
+  // were read from persistent storage.
   static base::TimeDelta ComputeLifetime(base::TimeDelta lifetime,
                                          base::Time expiration);
 
