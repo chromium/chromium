@@ -116,6 +116,7 @@ void CustomizeChromePageHandler::ScrollToSection(
 }
 
 void CustomizeChromePageHandler::SetDefaultColor() {
+  theme_service_->UseDeviceTheme(false);
   theme_service_->UseDefaultTheme();
 }
 

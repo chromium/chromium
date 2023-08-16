@@ -70,6 +70,19 @@
   :host-context([chrome-refresh-2023]) #editThemeButton {
     margin-bottom: 16px;
   }
+
+  #followThemeToggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 8px 0;
+    padding: 10px var(--sp-card-inline-padding);
+  }
+
+  #followThemeToggleTitle {
+    font-size: inherit;
+    line-height: inherit;
+  }
 </style>
 <customize-chrome-theme-snapshot id="themeSnapshot"
     on-edit-theme-click="onEditThemeClicked_"
@@ -92,6 +105,14 @@
     hidden$="[[!showFirstPartyThemeView_]]">
 </cr-theme-color-picker>
 <hr class="sp-hr">
+<div id="followThemeToggle" class="sp-card-content"
+    hidden$="[[!showDeviceThemeToggle_]]">
+  <div id="followThemeToggleTitle">$i18n{followThemeToggle}</div>
+  <cr-toggle id="followThemeToggleControl" title="$i18n{followThemeToggle}"
+      checked="[[theme_.followDeviceTheme]]"
+      on-change="onFollowThemeToggleChange_">
+  </cr-toggle>
+</div>
 <customize-chrome-hover-button id="setClassicChromeButton"
     hidden$="[[!showClassicChromeButton_]]"
     label="$i18n{resetToClassicChrome}"
