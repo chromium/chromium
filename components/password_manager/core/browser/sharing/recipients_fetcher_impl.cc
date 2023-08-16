@@ -22,7 +22,8 @@ namespace {
 
 bool HasServerRequestCompletedWithSuccess(
     const PasswordSharingRecipientsDownloader& request) {
-  return request.GetHttpError() == net::HTTP_OK &&
+  return request.GetAuthError().state() == GoogleServiceAuthError::NONE &&
+         request.GetHttpError() == net::HTTP_OK &&
          request.GetNetError() == net::OK;
 }
 

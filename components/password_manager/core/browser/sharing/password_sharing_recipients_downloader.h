@@ -56,6 +56,7 @@ class PasswordSharingRecipientsDownloader {
   // Returns request failure. Must be called once the request is complete.
   int GetNetError() const;
   int GetHttpError() const;
+  GoogleServiceAuthError GetAuthError() const;
 
   // Visible for tests.
   static GURL GetPasswordSharingRecipientsURL(version_info::Channel channel);
@@ -65,6 +66,7 @@ class PasswordSharingRecipientsDownloader {
                           signin::AccessTokenInfo access_token_info);
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
   void SendRequest(const signin::AccessTokenInfo& access_token_info);
+  void StartFetchingAccessToken();
 
   // Used to determine Sync server URL and user agent.
   const version_info::Channel channel_;
@@ -90,6 +92,14 @@ class PasswordSharingRecipientsDownloader {
   // error code or request timed out.
   int net_error_ = 0;
   int http_error_ = 0;
+
+  // Whether there was a retry request for an access token. Used to retry
+  // fetching the access token only once.
+  // TODO(crbug.com/1454712): consider using backoff strategy instead.
+  bool access_token_retried_ = false;
+
+  // Contains the last error code while requesting an access token.
+  GoogleServiceAuthError last_auth_error_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -56,6 +56,14 @@ class RecipientsFetcherImplTest : public testing::Test {
         response.SerializeAsString());
   }
 
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return &identity_test_env_;
+  }
+
+  network::TestURLLoaderFactory* test_url_loader_factory() {
+    return &test_url_loader_factory_;
+  }
+
  protected:
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
@@ -200,9 +208,28 @@ TEST_F(RecipientsFetcherImplTest,
   RunUntilIdle();
 }
 
-// TODO(crbug.com/1454712) Implement test case once the error handling in the
-// PasswordSharingRecipientsDownloader is implemented.
-TEST_F(RecipientsFetcherImplTest, FetchRecipientDuringAuthError) {}
+TEST_F(RecipientsFetcherImplTest, FetchRecipientDuringAuthError) {
+  identity_test_env()->SetAutomaticIssueOfAccessTokens(false);
+  base::MockCallback<RecipientsFetcher::FetchFamilyMembersCallback> callback;
+
+  // Create the RecipientFetcher and make a request.
+  RecipientsFetcherImpl recipient_fetcher = CreateRecipientFetcher();
+  recipient_fetcher.FetchFamilyMembers(callback.Get());
+
+  // Simulate the permanent Auth error.
+  EXPECT_CALL(
+      callback,
+      Run(IsEmpty(), Eq(FetchFamilyMembersRequestStatus::kNetworkError)));
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  RunUntilIdle();
+
+  // Double check that there were not network requests to the server.
+  EXPECT_EQ(test_url_loader_factory()->total_requests(), 0u);
+}
 
 }  // namespace
 }  // namespace password_manager

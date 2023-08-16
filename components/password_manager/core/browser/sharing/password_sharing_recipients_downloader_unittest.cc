@@ -53,6 +53,8 @@ class PasswordSharingRecipientsDownloaderTest : public testing::Test {
         response.SerializeAsString());
   }
 
+  signin::IdentityTestEnvironment* identity_env() { return &identity_env_; }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -75,6 +77,35 @@ TEST_F(PasswordSharingRecipientsDownloaderTest, ShouldDownloadRecipients) {
   EXPECT_EQ(response->result(), PasswordSharingRecipientsResponse::SUCCESS);
   EXPECT_EQ(downloader->GetHttpError(), net::HTTP_OK);
   EXPECT_EQ(downloader->GetNetError(), net::OK);
+}
+
+TEST_F(PasswordSharingRecipientsDownloaderTest,
+       ShouldRetryAccessTokenFetchOnceOnTransientError) {
+  identity_env()->SetAutomaticIssueOfAccessTokens(false);
+
+  base::MockOnceClosure callback;
+  std::unique_ptr<PasswordSharingRecipientsDownloader> downloader =
+      CreateDownloader();
+  downloader->Start(callback.Get());
+
+  // Return a transient error on access token request and verify that the
+  // `callback` hasn't been called yet.
+  EXPECT_CALL(callback, Run).Times(0);
+  ASSERT_TRUE(identity_env()->IsAccessTokenRequestPending());
+  identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+  EXPECT_EQ(downloader->GetAuthError().state(),
+            GoogleServiceAuthError::CONNECTION_FAILED);
+
+  // Return another transient error on access token request, the `callback`
+  // should be called this time.
+  EXPECT_CALL(callback, Run);
+  ASSERT_TRUE(identity_env()->IsAccessTokenRequestPending());
+  identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+
+  EXPECT_EQ(downloader->GetAuthError().state(),
+            GoogleServiceAuthError::CONNECTION_FAILED);
 }
 
 }  // namespace
