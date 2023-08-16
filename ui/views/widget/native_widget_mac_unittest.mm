@@ -1426,8 +1426,10 @@ TEST_F(NativeWidgetMacTest, ShowAnimationControl) {
 }
 
 // Tests behavior of window-modal dialogs, displayed as sheets.
-#if defined(ARCH_CPU_ARM64)
+#if defined(ARCH_CPU_ARM64) || BUILDFLAG(IS_MAC)
 // Bulk-disabled as part of arm64 bot stabilization: https://crbug.com/1154345
+// Disabled on Mac 10.15 and 10.11 failing ([parent_close_button isEnabled])
+// crbug.com/1473423
 #define MAYBE_WindowModalSheet DISABLED_WindowModalSheet
 #else
 #define MAYBE_WindowModalSheet WindowModalSheet
