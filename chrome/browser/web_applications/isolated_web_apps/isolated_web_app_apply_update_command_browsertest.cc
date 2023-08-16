@@ -44,24 +44,6 @@ using ::testing::Lt;
 using ::testing::Optional;
 using ::testing::Property;
 
-constexpr base::StringPiece kTestManifest = R"({
-      "name": "$1",
-      "version": "$2",
-      "id": "/",
-      "scope": "/",
-      "start_url": "/",
-      "display": "standalone",
-      "icons": [
-        {
-          "src": "256x256-green.png",
-          "sizes": "256x256",
-          "type": "image/png"
-        }
-      ]
-    })";
-
-constexpr base::StringPiece kTestIconUrl = "/256x256-green.png";
-
 std::string GetTestIconInString() {
   SkBitmap icon_bitmap = CreateSquareIcon(256, SK_ColorGREEN);
   SkDynamicMemoryWStream stream;
@@ -112,11 +94,12 @@ class IsolatedWebAppApplyUpdateCommandBrowserTest
                     const std::string& app_name,
                     const base::FilePath& path) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    TestSignedWebBundleBuilder builder(key_pair_);
-    builder.AddManifest(base::ReplaceStringPlaceholders(
-        kTestManifest, {app_name, version.GetString()}, nullptr));
-    builder.AddPngImage(kTestIconUrl, GetTestIconInString());
-    ASSERT_THAT(base::WriteFile(path, builder.Build().data), IsTrue());
+    TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault(
+        TestSignedWebBundleBuilder::BuildOptions()
+            .SetVersion(version)
+            .SetKeyPair(key_pair_)
+            .SetAppName(app_name));
+    ASSERT_THAT(base::WriteFile(path, bundle.data), IsTrue());
   }
 
   void Install() {

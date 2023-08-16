@@ -67,13 +67,23 @@ class TestSignedWebBundleBuilder {
     BuildOptions(BuildOptions&&);
     ~BuildOptions();
 
+    BuildOptions& SetKeyPair(web_package::WebBundleSigner::KeyPair key_pair) {
+      key_pair_ = std::move(key_pair);
+      return *this;
+    }
+
     BuildOptions& SetVersion(base::Version version) {
       version_ = std::move(version);
       return *this;
     }
 
-    BuildOptions& SetPrimaryUrl(base::StringPiece primary_url) {
-      primary_url_ = primary_url;
+    BuildOptions& SetPrimaryUrl(GURL primary_url) {
+      primary_url_ = std::move(primary_url);
+      return *this;
+    }
+
+    BuildOptions& SetAppName(const std::string& app_name) {
+      app_name_ = app_name;
       return *this;
     }
 
@@ -93,10 +103,12 @@ class TestSignedWebBundleBuilder {
       return *this;
     }
 
+    web_package::WebBundleSigner::KeyPair key_pair_;
     base::Version version_;
-    base::StringPiece primary_url_;
+    std::string app_name_;
+    absl::optional<GURL> primary_url_;
     absl::optional<GURL> base_url_;
-    base::StringPiece index_html_content_;
+    absl::optional<base::StringPiece> index_html_content_;
     web_package::WebBundleSigner::ErrorsForTesting errors_for_testing_;
   };
 
@@ -111,7 +123,7 @@ class TestSignedWebBundleBuilder {
 
   // Adds the primary url to the bundle. DO NOT use this for IWAs - primary URLs
   // are not supported in IWAs.
-  void AddPrimaryUrl(base::StringPiece url);
+  void AddPrimaryUrl(GURL url);
 
   TestSignedWebBundle Build();
   static TestSignedWebBundle BuildDefault(

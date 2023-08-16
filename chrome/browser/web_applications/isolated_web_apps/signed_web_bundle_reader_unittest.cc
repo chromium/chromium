@@ -157,7 +157,7 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest,
       parse_status_future;
 
   auto reader = CreateReaderAndInitialize(
-      TestSignedWebBundleBuilder::BuildOptions().SetPrimaryUrl(kUrl.spec()),
+      TestSignedWebBundleBuilder::BuildOptions().SetPrimaryUrl(kUrl),
       parse_status_future.GetCallback());
 
   auto parse_status = parse_status_future.Take();
