@@ -1802,6 +1802,36 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
 }
 
+IN_PROC_BROWSER_TEST_P(
+    StorageAccessAPIWithFirstPartySetsBrowserTest,
+    Permission_AutograntedForServiceDomainWithExistingGrant) {
+  SetBlockThirdPartyCookies(true);
+
+  // Manually create a grant for the service site. Other test cases show that
+  // the service site cannot create this grant on its own, but such a grant can
+  // be created via other APIs (namely `document.requestStorageAccessFor`).
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_lifetime(base::Days(30));
+  constraints.set_session_model(
+      content_settings::SessionModel::NonRestorableUserSession);
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetContentSettingDefaultScope(GetURL(kHostD), GetURL(kHostA),
+                                      ContentSettingsType::STORAGE_ACCESS,
+                                      CONTENT_SETTING_ALLOW, constraints);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostD));
+
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostD), NoCookiesWithContent());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  EXPECT_TRUE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostD), CookieBundle("cross-site=d.test"));
+
+  EXPECT_EQ(QueryPermission(GetFrame()), "granted");
+}
+
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
                        Permission_AutodeniedOutsideFirstPartySet) {
   // If enabled, this will override and disable the autodenial, which does not
