@@ -917,19 +917,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mIntentHandlingTimeMs = SystemClock.uptimeMillis();
             super.onNewIntent(intent);
 
-            // When onNewIntent() comes, calling launchIntent() may trigger a static layout is
-            // showing without even canceling the overview layout which is about to show. It
-            // leaves the StartSurfaceState to be SHOWING_START instead of NOT_SHOWN, since
-            // hiding the overview layout won't be called. Thus we need to reset the
-            // StartSurfaceState to prevent it being a wrong state. See crbug.com/1298740.
-            if (ReturnToChromeUtil.isStartSurfaceEnabled(this)
-                    && getCurrentTabModel().getCount() > 0 && !isTablet()
-                    && !shouldShowOverviewPageOnStart() && !isInOverviewMode()
-                    && mStartSurfaceSupplier.get() != null) {
-                mStartSurfaceSupplier.get().setStartSurfaceState(
-                        StartSurfaceState.NOT_SHOWN, NewTabPageLaunchOrigin.UNKNOWN);
-            }
-
             boolean shouldShowRegularOverviewMode = IntentUtils.safeGetBooleanExtra(
                     intent, IntentHandler.EXTRA_OPEN_REGULAR_OVERVIEW_MODE, false);
             if (shouldShowRegularOverviewMode && IntentHandler.wasIntentSenderChrome(intent)) {
@@ -1699,11 +1686,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                           : OmniboxFocusReason.UNFOCUS);
 
             if (tabModel.getCount() > 0 && isInOverviewMode() && !isTablet()
-                    && !shouldShowOverviewPageOnStart()) {
+                    && !shouldShowOverviewPageOnStart(intent)) {
                 boolean wasStartSurfaceHomepageShowing = mStartSurfaceSupplier.hasValue()
                         && mStartSurfaceSupplier.get().isHomepageShown();
 
-                mLayoutManager.showLayout(LayoutType.BROWSING, true);
+                // Hides the overview page if we want to navigate the URL in the current Tab which
+                // isn't visible.
+                if (tabOpenType == TabOpenType.CLOBBER_CURRENT_TAB) {
+                    hideOverview();
+                }
 
                 // If the Start Surface was showing, the ContentView for the currently selected Tab
                 // behind the Start Surface may not yet be attached and therefore the Tab may not
@@ -2995,11 +2986,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     @Override
-    public boolean shouldShowOverviewPageOnStart() {
+    public boolean shouldShowOverviewPageOnStart(Intent intent) {
         assert mInactivityTracker != null;
         assert getTabModelSelector() != null;
         return ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                this, getIntent(), getTabModelSelector(), mInactivityTracker, isTablet());
+                this, intent, getTabModelSelector(), mInactivityTracker, isTablet());
+    }
+
+    private boolean shouldShowOverviewPageOnStart() {
+        return shouldShowOverviewPageOnStart(getIntent());
     }
 
     @Override
