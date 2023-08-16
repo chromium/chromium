@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_FACTORY_H_
 
+#include <list>
 #include <memory>
 
 #include "base/task/single_thread_task_runner.h"
@@ -134,10 +135,13 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
 
   void AllowIndexedDB(ExecutionContext* context,
                       base::OnceCallback<void()> callback);
-  void DidAllowIndexedDB(base::OnceCallback<void()> callback,
-                         bool allow_access);
+  void DidAllowIndexedDB(bool allow_access);
 
+  // Whether the context has permission to use IDB.
   absl::optional<bool> allowed_;
+  // Holds requests that were paused while `allowed_` is being fetched. These
+  // will all be invoked in order when `allowed_` is decided.
+  Vector<base::OnceClosure> callbacks_waiting_on_permission_decision_;
 
   mojo::PendingAssociatedRemote<mojom::blink::IDBFactoryClient>
   AttachRemoteClient(std::unique_ptr<IDBFactoryClient> client);

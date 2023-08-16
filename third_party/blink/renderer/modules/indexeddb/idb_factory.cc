@@ -31,6 +31,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/task/bind_post_task.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -312,11 +313,9 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
     // callback synchronously, and thus we'd dispatch the error event
     // synchronously. As per IDB spec, firing the event at the request has to be
     // asynchronous.
-    context->GetTaskRunner(TaskType::kDatabaseAccess)
-        ->PostTask(FROM_HERE, std::move(do_open));
-  } else {
-    AllowIndexedDB(context, std::move(do_open));
+    do_open = base::BindPostTask(task_runner_, std::move(do_open));
   }
+  AllowIndexedDB(context, std::move(do_open));
   return request;
 }
 
@@ -407,11 +406,9 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
     // callback synchronously, and thus we'd dispatch the error event
     // synchronously. As per IDB spec, firing the event at the request has to be
     // asynchronous.
-    context->GetTaskRunner(TaskType::kDatabaseAccess)
-        ->PostTask(FROM_HERE, std::move(do_delete));
-  } else {
-    AllowIndexedDB(context, std::move(do_delete));
+    do_delete = base::BindPostTask(task_runner_, std::move(do_delete));
   }
+  AllowIndexedDB(context, std::move(do_delete));
   return request;
 }
 
@@ -469,47 +466,44 @@ void IDBFactory::AllowIndexedDB(ExecutionContext* context,
                                 base::OnceCallback<void()> callback) {
   DCHECK(context->IsContextThread());
   SECURITY_DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
-  auto wrapped_callback =
-      WTF::BindOnce(&IDBFactory::DidAllowIndexedDB, WrapWeakPersistent(this),
-                    std::move(callback));
 
   if (allowed_.has_value()) {
-    std::move(wrapped_callback).Run(allowed_.value());
+    std::move(callback).Run();
     return;
   }
+  callbacks_waiting_on_permission_decision_.push_back(std::move(callback));
 
   WebContentSettingsClient* settings_client = nullptr;
 
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     LocalFrame* frame = window->GetFrame();
     if (!frame) {
-      std::move(wrapped_callback).Run(false);
+      DidAllowIndexedDB(false);
       return;
     }
-    settings_client = window->GetFrame()->GetContentSettingsClient();
+    settings_client = frame->GetContentSettingsClient();
   } else {
     settings_client = To<WorkerGlobalScope>(context)->ContentSettingsClient();
   }
 
   if (!settings_client) {
-    std::move(wrapped_callback).Run(true);
+    DidAllowIndexedDB(true);
     return;
   }
+
   settings_client->AllowStorageAccess(
       WebContentSettingsClient::StorageType::kIndexedDB,
-      std::move(wrapped_callback));
+      WTF::BindOnce(&IDBFactory::DidAllowIndexedDB, WrapWeakPersistent(this)));
 }
 
-void IDBFactory::DidAllowIndexedDB(base::OnceCallback<void()> callback,
-                                   bool allow_access) {
-  if (allowed_.has_value()) {
-    DCHECK_EQ(allowed_.value(), allow_access);
-  } else {
-    allowed_ = allow_access;
-  }
+void IDBFactory::DidAllowIndexedDB(bool allow_access) {
+  DCHECK(!allowed_.has_value());
+  allowed_ = allow_access;
 
-  std::move(callback).Run();
-  return;
+  for (auto& callback : callbacks_waiting_on_permission_decision_) {
+    std::move(callback).Run();
+  }
+  callbacks_waiting_on_permission_decision_.clear();
 }
 
 mojo::PendingAssociatedRemote<mojom::blink::IDBFactoryClient>
