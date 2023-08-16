@@ -72,7 +72,7 @@ void PushNotificationBrowserStateService::OnPrimaryAccountChanged(
   if (!service->DeviceTokenIsSet()) {
     return;
   }
-  const signin::ConsentLevel consent_level = signin::ConsentLevel::kSync;
+  const signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin;
 
   switch (event.GetEventTypeFor(consent_level)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
