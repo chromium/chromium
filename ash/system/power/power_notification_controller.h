@@ -127,6 +127,8 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
 
   // Has the low power notification been crossed?
   bool low_power_crossed_ = false;
+
+  const double battery_saver_activation_charge_percent_;
 };
 
 }  // namespace ash

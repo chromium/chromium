@@ -296,9 +296,14 @@ const base::FeatureParam<BatterySaverNotificationBehavior>::Option
 };
 const base::FeatureParam<BatterySaverNotificationBehavior>
     kBatterySaverNotificationBehavior{
-        &kBatterySaver, "BatterSaverNotificationBehavior",
+        &kBatterySaver, "BatterySaverNotificationBehavior",
         BatterySaverNotificationBehavior::kFullyAutoEnable,
         &battery_saver_notification_options};
+
+// Determines the charge percent of when we will activate Battery Saver
+// automatically and send a notification.
+const base::FeatureParam<double> kBatterySaverActivationChargePercent{
+    &kBatterySaver, "BatterySaverActivationChargePercent", 20};
 
 // Make Battery Saver on all the time, even when charged or charging.
 BASE_FEATURE(kBatterySaverAlwaysOn,

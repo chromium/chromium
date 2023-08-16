@@ -33,9 +33,6 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
     kAlwaysOn,
   };
 
-  // The battery charge percent at which battery saver is activated.
-  static const double kActivationChargePercent;
-
   explicit BatterySaverController(PrefService* local_state);
   BatterySaverController(const BatterySaverController&) = delete;
   BatterySaverController& operator=(const BatterySaverController&) = delete;
@@ -77,6 +74,8 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   // Used to debounce changes to the pref and state in Power Manager.
   bool active_ = false;
+
+  const double activation_charge_percent_;
 
   bool always_on_ = false;
 

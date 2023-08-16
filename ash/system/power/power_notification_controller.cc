@@ -97,7 +97,9 @@ const char PowerNotificationController::kUsbNotificationId[] = "usb-charger";
 
 PowerNotificationController::PowerNotificationController(
     message_center::MessageCenter* message_center)
-    : message_center_(message_center) {
+    : message_center_(message_center),
+      battery_saver_activation_charge_percent_(
+          features::kBatterySaverActivationChargePercent.Get()) {
   PowerStatus::Get()->AddObserver(this);
   battery_saver_previously_active_ = PowerStatus::Get()->IsBatterySaverActive();
 }
@@ -115,7 +117,7 @@ void PowerNotificationController::MaybeResetNotificationAvailability(
     low_power_crossed_ = false;
   }
 
-  if (battery_percent > BatterySaverController::kActivationChargePercent) {
+  if (battery_percent > battery_saver_activation_charge_percent_) {
     threshold_crossed_ = false;
   }
 }
@@ -235,7 +237,7 @@ PowerNotificationController::HandleBatterySaverNotifications() {
   const int remaining_percentage = status.GetRoundedBatteryPercent();
 
   const bool is_20_percent_or_lower_notification =
-      remaining_percentage <= BatterySaverController::kActivationChargePercent;
+      remaining_percentage <= battery_saver_activation_charge_percent_;
 
   const bool low_power_minutes_notification =
       remaining_minutes <= PowerNotificationController::kLowPowerMinutes &&

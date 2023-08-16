@@ -247,7 +247,7 @@ TEST_F(BatteryNotificationTest, LowPowerBatterySaverOptInNotification) {
 
 TEST_F(BatteryNotificationTest, ThresholdBatterySaverOptOutNotification) {
   // Set the battery percentage to the threshold amount.
-  SetPowerStatus(BatterySaverController::kActivationChargePercent);
+  SetPowerStatus(features::kBatterySaverActivationChargePercent.Get());
 
   // Expect a notification with 'turning on battery saver', and a
   // 'turn off' button to appear.
@@ -268,7 +268,7 @@ TEST_F(BatteryNotificationTest, ThresholdBatterySaverOptOutNotification) {
 
 TEST_F(BatteryNotificationTest, ThresholdBatterySaverOptInNotification) {
   // Set the battery percentage to the threshold amount.
-  SetPowerStatus(BatterySaverController::kActivationChargePercent);
+  SetPowerStatus(features::kBatterySaverActivationChargePercent.Get());
 
   // Expect a regular Low Power notification, and a 'turn on battery saver'
   // button to appear.

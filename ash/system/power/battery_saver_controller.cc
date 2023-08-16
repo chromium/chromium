@@ -21,11 +21,10 @@
 
 namespace ash {
 
-// static
-const double BatterySaverController::kActivationChargePercent = 20.0;
-
 BatterySaverController::BatterySaverController(PrefService* local_state)
     : local_state_(local_state),
+      activation_charge_percent_(
+          features::kBatterySaverActivationChargePercent.Get()),
       always_on_(features::IsBatterySaverAlwaysOn()),
       previously_plugged_in_(PowerStatus::Get()->IsMainsChargerConnected()) {
   power_status_observation_.Observe(PowerStatus::Get());
@@ -56,7 +55,7 @@ void BatterySaverController::MaybeResetNotificationAvailability(
     low_power_crossed_ = false;
   }
 
-  if (battery_percent > kActivationChargePercent) {
+  if (battery_percent > activation_charge_percent_) {
     threshold_crossed_ = false;
   }
 }
@@ -92,7 +91,7 @@ void BatterySaverController::OnPowerStatusChanged() {
   const bool charger_unplugged = previously_plugged_in_ && !on_AC_power;
 
   const bool percent_breached_threshold =
-      battery_percent <= kActivationChargePercent;
+      battery_percent <= activation_charge_percent_;
   const bool minutes_breached_threshold =
       battery_remaining_minutes <=
       PowerNotificationController::kLowPowerMinutes;
@@ -138,7 +137,7 @@ void BatterySaverController::OnPowerStatusChanged() {
       break;
     case features::kOptInThenAutoEnable:
       // In this case, we don't do anything when we get to
-      // kActivationChargePercent. However, when we get to 15 minutes
+      // activation_charge_percent_. However, when we get to 15 minutes
       // remaining, we auto enable.
       if (low_power_conditions_met) {
         low_power_crossed_ = true;
