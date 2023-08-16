@@ -18,7 +18,9 @@ that configures submodules, and each submodule entry contains the path to the
 submodule's worktree and the URL of the submodule. Gitlink is a special type of
 file in the Git database that tracks a submodule commit.
 
-You can find an example of Git dependency below:
+You can find an example of Git dependency below. Note that gclient-condition is
+a custom property used by gclient and not git. It's identical to `condition` in
+`DEPS` and the allowed variables are defined in `vars = {` section of `DEPS`.
 
 `.gitmodules`:
 
@@ -26,6 +28,7 @@ You can find an example of Git dependency below:
 [submodule "third_party/catapult"]
 	path = third_party/catapult
 	url = https://chromium.googlesource.com/catapult.git
+	gclient-condition = checkout_linux
 ```
 
 gitlink entry, retrieved using `git ls-files -s -- third_party/catapult`:
@@ -38,7 +41,8 @@ Corresponding DEPS entry would look like:
 
 ```
   'third_party/catapult': {
-    'url': 'https://chromium.googlesource.com/catapult.git@0b39a694c0b61392d1180520ed1c13e390029c41'
+    'url': 'https://chromium.googlesource.com/catapult.git@0b39a694c0b61392d1180520ed1c13e390029c41',
+    'condition': 'checkout_linux',
 }
 ```
 
