@@ -3559,6 +3559,8 @@ class CalendarHeaderView extends View {
         this.onNavigationButtonClick.bind(this));
     this._previousMonthButton.element.setAttribute(
         'aria-label', global.params.axShowPreviousMonth);
+    this._previousMonthButton.element.setAttribute(
+        'title', global.params.axShowPreviousMonth);
 
     /**
      * @type {!CalendarNavigationButton}
@@ -3574,6 +3576,8 @@ class CalendarHeaderView extends View {
         this.onNavigationButtonClick.bind(this));
     this._nextMonthButton.element.setAttribute(
         'aria-label', global.params.axShowNextMonth);
+    this._nextMonthButton.element.setAttribute(
+        'title', global.params.axShowNextMonth);
 
     if (global.params.isLocaleRTL) {
       this._nextMonthButton.element.innerHTML =
