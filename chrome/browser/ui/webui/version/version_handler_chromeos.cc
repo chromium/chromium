@@ -48,12 +48,12 @@ void VersionHandlerChromeOS::HandleRequestVersionInfo(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&chromeos::version_loader::GetVersion,
                      chromeos::version_loader::VERSION_FULL),
-      base::BindOnce(&VersionHandlerChromeOS::OnVersion,
+      base::BindOnce(&VersionHandlerChromeOS::OnPlatformVersion,
                      weak_factory_.GetWeakPtr()));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&chromeos::version_loader::GetFirmware),
-      base::BindOnce(&VersionHandlerChromeOS::OnOSFirmware,
+      base::BindOnce(&VersionHandlerChromeOS::OnFirmwareVersion,
                      weak_factory_.GetWeakPtr()));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -92,14 +92,14 @@ void VersionHandlerChromeOS::HandleCrosUrlVersionRedirect(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void VersionHandlerChromeOS::OnVersion(
+void VersionHandlerChromeOS::OnPlatformVersion(
     const absl::optional<std::string>& version) {
-  FireWebUIListener("return-os-version",
+  FireWebUIListener("return-platform-version",
                     base::Value(version.value_or("0.0.0.0")));
 }
 
-void VersionHandlerChromeOS::OnOSFirmware(const std::string& version) {
-  FireWebUIListener("return-os-firmware-version", base::Value(version));
+void VersionHandlerChromeOS::OnFirmwareVersion(const std::string& version) {
+  FireWebUIListener("return-firmware-version", base::Value(version));
 }
 
 void VersionHandlerChromeOS::OnArcAndArcAndroidSdkVersions(

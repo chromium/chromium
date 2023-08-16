@@ -54,7 +54,7 @@ function handlePathInfo(
   getRequiredElement('profile_path').textContent = profilePath;
 }
 
-// <if expr="chromeos_ash or is_win">
+// <if expr="is_win">
 /**
  * Callback from the backend with the OS version to display.
  * @param osVersion The OS version to display.
@@ -66,9 +66,17 @@ function returnOsVersion(osVersion: string) {
 
 // <if expr="chromeos_ash">
 /**
+ * Callback from the backend with the ChromeOS platform version to display.
+ * @param platformVersion The platform version to display.
+ */
+function returnPlatformVersion(platformVersion: string) {
+  getRequiredElement('platform_version').textContent = platformVersion;
+}
+
+/**
  * Callback from the backend with the firmware version to display.
  */
-function returnOsFirmwareVersion(firmwareVersion: string) {
+function returnFirmwareVersion(firmwareVersion: string) {
   getRequiredElement('firmware_version').textContent = firmwareVersion;
 }
 
@@ -132,11 +140,12 @@ function copyOSContentToClipboard() {
 
 /* All the work we do onload. */
 function initialize() {
-  // <if expr="chromeos_ash or is_win">
+  // <if expr="is_win">
   addWebUiListener('return-os-version', returnOsVersion);
   // </if>
   // <if expr="chromeos_ash">
-  addWebUiListener('return-os-firmware-version', returnOsFirmwareVersion);
+  addWebUiListener('return-platform-version', returnPlatformVersion);
+  addWebUiListener('return-firmware-version', returnFirmwareVersion);
   addWebUiListener(
       'return-arc-and-arc-android-sdk-versions',
       returnArcAndArcAndroidSdkVersions);
