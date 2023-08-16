@@ -595,6 +595,12 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::LooseLineSpacing)
       .SetProperty("veryLooseLineSpacing",
                    &ReadAnythingAppController::VeryLooseLineSpacing)
+      .SetProperty("standardLetterSpacing",
+                   &ReadAnythingAppController::StandardLetterSpacing)
+      .SetProperty("wideLetterSpacing",
+                   &ReadAnythingAppController::WideLetterSpacing)
+      .SetProperty("veryWideLetterSpacing",
+                   &ReadAnythingAppController::VeryWideLetterSpacing)
       .SetProperty("isWebUIToolbarVisible",
                    &ReadAnythingAppController::IsWebUIToolbarEnabled)
       .SetProperty("isSelectable", &ReadAnythingAppController::IsSelectable)
@@ -617,8 +623,22 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnLooseLineSpacing)
       .SetMethod("onVeryLooseLineSpacing",
                  &ReadAnythingAppController::OnVeryLooseLineSpacing)
+      .SetMethod("onStandardLetterSpacing",
+                 &ReadAnythingAppController::OnStandardLetterSpacing)
+      .SetMethod("onWideLetterSpacing",
+                 &ReadAnythingAppController::OnWideLetterSpacing)
+      .SetMethod("onVeryWideLetterSpacing",
+                 &ReadAnythingAppController::OnVeryWideLetterSpacing)
+      .SetMethod("onLightTheme", &ReadAnythingAppController::OnLightTheme)
+      .SetMethod("onDefaultTheme", &ReadAnythingAppController::OnDefaultTheme)
+      .SetMethod("onDarkTheme", &ReadAnythingAppController::OnDarkTheme)
+      .SetMethod("onYellowTheme", &ReadAnythingAppController::OnYellowTheme)
+      .SetMethod("onBlueTheme", &ReadAnythingAppController::OnBlueTheme)
+      .SetMethod("onFontChange", &ReadAnythingAppController::OnFontChange)
       .SetMethod("getLineSpacingValue",
                  &ReadAnythingAppController::GetLineSpacingValue)
+      .SetMethod("getLetterSpacingValue",
+                 &ReadAnythingAppController::GetLetterSpacingValue)
       .SetMethod("onSelectionChange",
                  &ReadAnythingAppController::OnSelectionChange)
       .SetMethod("setContentForTesting",
@@ -676,11 +696,25 @@ float ReadAnythingAppController::LineSpacing() const {
 int ReadAnythingAppController::StandardLineSpacing() {
   return static_cast<int>(read_anything::mojom::LineSpacing::kStandard);
 }
+
 int ReadAnythingAppController::LooseLineSpacing() {
   return static_cast<int>(read_anything::mojom::LineSpacing::kLoose);
 }
+
 int ReadAnythingAppController::VeryLooseLineSpacing() {
   return static_cast<int>(read_anything::mojom::LineSpacing::kVeryLoose);
+}
+
+int ReadAnythingAppController::StandardLetterSpacing() {
+  return static_cast<int>(read_anything::mojom::LetterSpacing::kStandard);
+}
+
+int ReadAnythingAppController::WideLetterSpacing() {
+  return static_cast<int>(read_anything::mojom::LetterSpacing::kWide);
+}
+
+int ReadAnythingAppController::VeryWideLetterSpacing() {
+  return static_cast<int>(read_anything::mojom::LetterSpacing::kVeryWide);
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
@@ -841,6 +875,45 @@ void ReadAnythingAppController::OnVeryLooseLineSpacing() {
       read_anything::mojom::LineSpacing::kVeryLoose);
 }
 
+void ReadAnythingAppController::OnStandardLetterSpacing() {
+  page_handler_->OnLetterSpaceChange(
+      read_anything::mojom::LetterSpacing::kStandard);
+}
+
+void ReadAnythingAppController::OnWideLetterSpacing() {
+  page_handler_->OnLetterSpaceChange(
+      read_anything::mojom::LetterSpacing::kWide);
+}
+
+void ReadAnythingAppController::OnVeryWideLetterSpacing() {
+  page_handler_->OnLetterSpaceChange(
+      read_anything::mojom::LetterSpacing::kVeryWide);
+}
+
+void ReadAnythingAppController::OnLightTheme() {
+  page_handler_->OnColorChange(read_anything::mojom::Colors::kLight);
+}
+
+void ReadAnythingAppController::OnDefaultTheme() {
+  page_handler_->OnColorChange(read_anything::mojom::Colors::kDefault);
+}
+
+void ReadAnythingAppController::OnDarkTheme() {
+  page_handler_->OnColorChange(read_anything::mojom::Colors::kDark);
+}
+
+void ReadAnythingAppController::OnYellowTheme() {
+  page_handler_->OnColorChange(read_anything::mojom::Colors::kYellow);
+}
+
+void ReadAnythingAppController::OnBlueTheme() {
+  page_handler_->OnColorChange(read_anything::mojom::Colors::kYellow);
+}
+
+void ReadAnythingAppController::OnFontChange(const std::string& font) {
+  page_handler_->OnFontChange(font);
+}
+
 double ReadAnythingAppController::GetLineSpacingValue(int line_spacing) const {
   if (line_spacing >
       static_cast<int>(read_anything::mojom::LineSpacing::kMaxValue)) {
@@ -850,6 +923,18 @@ double ReadAnythingAppController::GetLineSpacingValue(int line_spacing) const {
 
   return model_.GetLineSpacingValue(
       static_cast<read_anything::mojom::LineSpacing>(line_spacing));
+}
+
+double ReadAnythingAppController::GetLetterSpacingValue(
+    int letter_spacing) const {
+  if (letter_spacing >
+      static_cast<int>(read_anything::mojom::LetterSpacing::kMaxValue)) {
+    return model_.GetLetterSpacingValue(
+        read_anything::mojom::LetterSpacing::kDefaultValue);
+  }
+
+  return model_.GetLetterSpacingValue(
+      static_cast<read_anything::mojom::LetterSpacing>(letter_spacing));
 }
 
 void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,

@@ -72,22 +72,27 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   }
 
   private onDefaultTheme_() {
+    chrome.readingMode.onDefaultTheme();
     this.updateTheme_('');
   }
 
   private onLightTheme_() {
+    chrome.readingMode.onLightTheme();
     this.updateTheme_('-light');
   }
 
   private onDarkTheme_() {
+    chrome.readingMode.onDarkTheme();
     this.updateTheme_('-dark');
   }
 
   private onBlueTheme_() {
+    chrome.readingMode.onBlueTheme();
     this.updateTheme_('-blue');
   }
 
   private onYellowTheme_() {
+    chrome.readingMode.onYellowTheme();
     this.updateTheme_('-yellow');
   }
 
@@ -165,25 +170,30 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   }
 
   private onLetterSpacingStandardClick_() {
-    this.onLetterSpacingClick_('0');
+    chrome.readingMode.onStandardLetterSpacing();
+    this.onLetterSpacingClick_(chrome.readingMode.standardLetterSpacing);
   }
 
   private onLetterSpacingWideClick_() {
-    this.onLetterSpacingClick_('.05');
+    chrome.readingMode.onWideLetterSpacing();
+    this.onLetterSpacingClick_(chrome.readingMode.wideLetterSpacing);
   }
 
   private onLetterSpacingVeryWideClick_() {
-    this.onLetterSpacingClick_('.1');
+    chrome.readingMode.onVeryWideLetterSpacing();
+    this.onLetterSpacingClick_(chrome.readingMode.veryWideLetterSpacing);
   }
 
-  private onLetterSpacingClick_(letterSpacing: string) {
+  private onLetterSpacingClick_(letterSpacing: number) {
     if (this.contentPage) {
-      this.contentPage.updateLetterSpacing(letterSpacing);
+      this.contentPage.updateLetterSpacing(
+          chrome.readingMode.getLetterSpacingValue(letterSpacing));
     }
     this.closeMenus_();
   }
 
   private onFontClick_(fontName: string) {
+    chrome.readingMode.onFontChange(fontName);
     if (this.contentPage) {
       this.contentPage.updateFont(fontName);
     }

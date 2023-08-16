@@ -407,7 +407,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
   }
 
-  updateLetterSpacing(newLetterSpacing: string) {
+  updateLetterSpacing(newLetterSpacing: number) {
     this.updateStyles({
       '--letter-spacing': newLetterSpacing + 'em',
     });

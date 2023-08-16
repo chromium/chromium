@@ -111,6 +111,9 @@ class ReadAnythingAppController
   int StandardLineSpacing();
   int LooseLineSpacing();
   int VeryLooseLineSpacing();
+  int StandardLetterSpacing();
+  int WideLetterSpacing();
+  int VeryWideLetterSpacing();
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) const;
   std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;
   std::string GetLanguage(ui::AXNodeID ax_node_id) const;
@@ -132,7 +135,17 @@ class ReadAnythingAppController
   void OnStandardLineSpacing();
   void OnLooseLineSpacing();
   void OnVeryLooseLineSpacing();
+  void OnStandardLetterSpacing();
+  void OnWideLetterSpacing();
+  void OnVeryWideLetterSpacing();
+  void OnLightTheme();
+  void OnDefaultTheme();
+  void OnDarkTheme();
+  void OnYellowTheme();
+  void OnBlueTheme();
+  void OnFontChange(const std::string& font);
   double GetLineSpacingValue(int line_spacing) const;
+  double GetLetterSpacingValue(int letter_spacing) const;
 
   void Distill();
   void Draw();

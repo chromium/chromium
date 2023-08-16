@@ -35,6 +35,9 @@ declare namespace chrome {
     let standardLineSpacing: number;
     let looseLineSpacing: number;
     let veryLooseLineSpacing: number;
+    let standardLetterSpacing: number;
+    let wideLetterSpacing: number;
+    let veryWideLetterSpacing: number;
 
     // Whether the WebUI toolbar feature flag is enabled.
     let isWebUIToolbarVisible: boolean;
@@ -92,9 +95,28 @@ declare namespace chrome {
     function onLooseLineSpacing(): void;
     function onVeryLooseLineSpacing(): void;
 
+    // Called when the letter spacing is changed via the webui toolbar.
+    function onStandardLetterSpacing(): void;
+    function onWideLetterSpacing(): void;
+    function onVeryWideLetterSpacing(): void;
+
+    // Called when the color theme is changed via the webui toolbar.
+    function onDefaultTheme(): void;
+    function onLightTheme(): void;
+    function onDarkTheme(): void;
+    function onYellowTheme(): void;
+    function onBlueTheme(): void;
+
+    // Called when the font is changed via the webui toolbar.
+    function onFontChange(font: string): void;
+
     // Returns the actual spacing value to use based on the given lineSpacing
     // category.
     function getLineSpacingValue(lineSpacing: number): number;
+
+    // Returns the actual spacing value to use based on the given letterSpacing
+    // category.
+    function getLetterSpacingValue(letterSpacing: number): number;
 
     // Called when a user makes a selection change. AnchorNodeID and
     // focusAXNodeID are AXNodeIDs which identify the anchor and focus AXNodes
