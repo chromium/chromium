@@ -1203,8 +1203,8 @@ chromium-metrics-reviews@google.com.
     if the OS skips providing/requesting any frames of audio. This value is
     aggregated over a period of 1000 OS callbacks (every 10 seconds for buffer
     size 10 ms) and is logged at the end of each collection interval. Not
-    recorded for streams shorter than 1000 callbacks. Reported on Windows and
-    Mac.
+    recorded for streams shorter than 1000 callbacks. Reported on Windows, Mac
+    and ChromeOS.
   </summary>
   <token key="Type">
     <variant name="Capture"/>
