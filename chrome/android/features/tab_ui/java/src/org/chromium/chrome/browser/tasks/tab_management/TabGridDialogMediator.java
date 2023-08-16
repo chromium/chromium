@@ -318,6 +318,12 @@ public class TabGridDialogMediator
     void hideDialog(boolean showAnimation) {
         if (!mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE)) return;
 
+        // Save the title first so that the animation has the correct title.
+        saveCurrentGroupModifiedTitle();
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
+            mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
+        }
+
         if (!showAnimation) {
             mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
         } else {
@@ -329,10 +335,6 @@ public class TabGridDialogMediator
         if (mTabSelectionEditorControllerSupplier != null
                 && mTabSelectionEditorControllerSupplier.hasValue()) {
             mTabSelectionEditorControllerSupplier.get().hide();
-        }
-        saveCurrentGroupModifiedTitle();
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-            mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
         }
         // Hide view first. Listener will reset tabs on #finishedHiding.
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
