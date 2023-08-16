@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Limits.VariationKeySize.{Size}" units="KiB"
-    expires_after="2023-09-22">
+    expires_after="2024-03-12">
   <owner>dalerogerson@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
