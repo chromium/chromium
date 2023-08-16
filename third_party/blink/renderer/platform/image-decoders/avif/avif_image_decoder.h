@@ -167,9 +167,8 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
 
   const AnimationOption animation_option_;
 
-  // Used temporarily for incremental decoding and for some YUV to RGB color
-  // conversions.
-  Vector<uint8_t> previous_last_decoded_row_;
+  // Used temporarily during incremental decoding.
+  Vector<uint32_t> previous_last_decoded_row_;
 };
 
 }  // namespace blink
