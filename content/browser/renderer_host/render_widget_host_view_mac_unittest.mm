@@ -10,10 +10,10 @@
 #include <stdint.h>
 #include <tuple>
 
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/command_line.h"
 #include "base/containers/queue.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -560,7 +560,7 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
 
  private:
   // This class isn't derived from PlatformTest.
-  base::mac::ScopedNSAutoreleasePool pool_;
+  base::apple::ScopedNSAutoreleasePool pool_;
 
   base::SimpleTestTickClock mock_clock_;
 };

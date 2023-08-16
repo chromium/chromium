@@ -6,8 +6,8 @@
 
 #include <AppKit/AppKit.h>
 
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/public/common/drop_data.h"
@@ -24,7 +24,7 @@ class WebDragDestTest : public content::RenderViewHostImplTestHarness {
     drag_dest_ = [[WebDragDest alloc] initWithWebContentsImpl:contents()];
   }
 
-  base::mac::ScopedNSAutoreleasePool pool_;
+  base::apple::ScopedNSAutoreleasePool pool_;
   WebDragDest* __strong drag_dest_;
 };
 

@@ -9,11 +9,11 @@
 #include <atomic>
 
 #include "base/apple/mach_logging.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/time/time_override.h"
@@ -162,7 +162,7 @@ void MessagePumpKqueue::Run(Delegate* delegate) {
     RunSimplified(delegate);
   } else {
     while (keep_running_) {
-      mac::ScopedNSAutoreleasePool pool;
+      apple::ScopedNSAutoreleasePool pool;
 
       bool do_more_work = DoInternalWork(delegate, nullptr);
       if (!keep_running_)
@@ -195,7 +195,7 @@ void MessagePumpKqueue::RunSimplified(Delegate* delegate) {
   DoInternalWork(delegate, nullptr);
 
   while (keep_running_) {
-    mac::ScopedNSAutoreleasePool pool;
+    apple::ScopedNSAutoreleasePool pool;
 
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();
     if (!keep_running_)

@@ -40,7 +40,7 @@
 #include "services/network/transitional_url_loader_factory_owner.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_WIN)
@@ -76,7 +76,7 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
 
 #if BUILDFLAG(IS_APPLE)
   // Needed so we don't leak objects when threads are created.
-  base::mac::ScopedNSAutoreleasePool pool;
+  base::apple::ScopedNSAutoreleasePool pool;
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)

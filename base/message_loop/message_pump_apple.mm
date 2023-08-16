@@ -11,11 +11,11 @@
 #include <memory>
 
 #include "base/apple/call_with_eh_frame.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_policy.h"
 #include "base/metrics/histogram_samples.h"
@@ -86,7 +86,7 @@ class OptionalAutoreleasePool {
   OptionalAutoreleasePool& operator=(const OptionalAutoreleasePool&) = delete;
 
  private:
-  absl::optional<base::mac::ScopedNSAutoreleasePool> pool_;
+  absl::optional<base::apple::ScopedNSAutoreleasePool> pool_;
 };
 
 class MessagePumpCFRunLoopBase::ScopedModeEnabler {

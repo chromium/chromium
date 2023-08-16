@@ -43,8 +43,8 @@
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(IS_APPLE)
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
@@ -76,7 +76,7 @@ namespace content {
 TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
     TestBlinkWebUnitTestSupport::SchedulerType scheduler_type) {
 #if BUILDFLAG(IS_APPLE)
-  base::mac::ScopedNSAutoreleasePool autorelease_pool;
+  base::apple::ScopedNSAutoreleasePool autorelease_pool;
 #endif
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)

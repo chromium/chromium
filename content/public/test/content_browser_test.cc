@@ -142,7 +142,7 @@ void ContentBrowserTest::PreRunTestOnMainThread() {
   // deallocation via an autorelease pool (such as browser window closure and
   // browser shutdown). To avoid this, the following pool is recycled after each
   // time code is directly executed.
-  pool_ = new base::mac::ScopedNSAutoreleasePool;
+  pool_ = new base::apple::ScopedNSAutoreleasePool;
 #endif
 
   // Pump startup related events.

@@ -58,7 +58,7 @@
 #include "testing/multiprocess_func_list.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_IOS)
@@ -363,7 +363,7 @@ TestSuite::~TestSuite() {
 // Initialize().  See bug 6436.
 int TestSuite::Run() {
 #if BUILDFLAG(IS_APPLE)
-  mac::ScopedNSAutoreleasePool scoped_pool;
+  apple::ScopedNSAutoreleasePool scoped_pool;
 #endif
 
   std::string client_func =

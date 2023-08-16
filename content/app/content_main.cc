@@ -67,7 +67,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "content/app/mac_init.h"
 #endif
 
@@ -186,7 +186,7 @@ RunContentProcess(ContentMainParams params,
 #endif
   int exit_code = -1;
 #if BUILDFLAG(IS_MAC)
-  std::unique_ptr<base::mac::ScopedNSAutoreleasePool> autorelease_pool;
+  std::unique_ptr<base::apple::ScopedNSAutoreleasePool> autorelease_pool;
 #endif
 
   // A flag to indicate whether Main() has been called before. On Android, we
@@ -277,7 +277,7 @@ RunContentProcess(ContentMainParams params,
     // loop, but we don't want to leave them hanging around until the app quits.
     // Each "main" needs to flush this pool right before it goes into its main
     // event loop to get rid of the cruft.
-    autorelease_pool = std::make_unique<base::mac::ScopedNSAutoreleasePool>();
+    autorelease_pool = std::make_unique<base::apple::ScopedNSAutoreleasePool>();
     params.autorelease_pool = autorelease_pool.get();
     InitializeMac();
 #endif

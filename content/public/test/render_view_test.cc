@@ -75,7 +75,7 @@
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -387,7 +387,7 @@ void RenderViewTest::SetUp() {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  autorelease_pool_ = std::make_unique<base::mac::ScopedNSAutoreleasePool>();
+  autorelease_pool_ = std::make_unique<base::apple::ScopedNSAutoreleasePool>();
 #endif
   command_line_ =
       std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);

@@ -94,7 +94,7 @@
 #include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "chrome/test/base/scoped_bundle_swizzler_mac.h"
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
@@ -854,7 +854,7 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
   // deallocation via an autorelease pool (such as browser window closure and
   // browser shutdown). To avoid this, the following pool is recycled after each
   // time code is directly executed.
-  autorelease_pool_ = new base::mac::ScopedNSAutoreleasePool;
+  autorelease_pool_ = new base::apple::ScopedNSAutoreleasePool;
 #endif
 
   // Pump any pending events that were created as a result of creating a

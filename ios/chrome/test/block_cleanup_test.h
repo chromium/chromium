@@ -9,7 +9,7 @@
 
 #import <memory>
 
-#import "base/mac/scoped_nsautorelease_pool.h"
+#import "base/apple/scoped_nsautorelease_pool.h"
 #import "testing/platform_test.h"
 
 // Extends PlatformTest to provide a TearDown() method that spins the runloop
@@ -27,7 +27,7 @@ class BlockCleanupTest : public PlatformTest {
   void SpinRunLoop(NSTimeInterval cleanup_time);
 
  private:
-  std::unique_ptr<base::mac::ScopedNSAutoreleasePool> pool_;
+  std::unique_ptr<base::apple::ScopedNSAutoreleasePool> pool_;
 };
 
 #endif  // IOS_CHROME_TEST_BLOCK_CLEANUP_TEST_H_

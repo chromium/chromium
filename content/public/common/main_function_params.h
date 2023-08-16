@@ -19,10 +19,8 @@ namespace sandbox {
 struct SandboxInterfaceInfo;
 }
 #elif BUILDFLAG(IS_MAC)
-namespace base {
-namespace mac {
+namespace base::apple {
 class ScopedNSAutoreleasePool;
-}
 }
 #endif
 
@@ -52,7 +50,7 @@ struct CONTENT_EXPORT MainFunctionParams {
 #elif BUILDFLAG(IS_MAC)
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #union
-  RAW_PTR_EXCLUSION base::mac::ScopedNSAutoreleasePool* autorelease_pool =
+  RAW_PTR_EXCLUSION base::apple::ScopedNSAutoreleasePool* autorelease_pool =
       nullptr;
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   bool zygote_child = false;

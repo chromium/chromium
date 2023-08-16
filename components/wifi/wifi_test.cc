@@ -27,7 +27,7 @@
 #include "components/wifi/wifi_service.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
 namespace wifi {
@@ -73,7 +73,7 @@ class WiFiTest {
 
 #if BUILDFLAG(IS_APPLE)
   // Without this there will be a mem leak on osx.
-  base::mac::ScopedNSAutoreleasePool scoped_pool_;
+  base::apple::ScopedNSAutoreleasePool scoped_pool_;
 #endif
 
   std::unique_ptr<WiFiService> wifi_service_;

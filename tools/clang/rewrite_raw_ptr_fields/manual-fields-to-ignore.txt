@@ -246,7 +246,7 @@ device::(anonymous namespace)::CBORExtract_RequiredInOptionalMap_Test::TestBody(
 
 # Populated manually - pointer to Objective-C object
 gfx::ScopedNSGraphicsContextSaveGState::context_
-base::mac::ScopedNSAutoreleasePool::autorelease_pool_
+base::apple::ScopedNSAutoreleasePool::autorelease_pool_
 content::ThemeHelperMac::theme_observer_
 content::PopupMenuHelper::menu_runner_
 content::ShellJavaScriptDialog::helper_

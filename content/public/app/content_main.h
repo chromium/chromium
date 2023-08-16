@@ -16,11 +16,11 @@
 #include <windows.h>
 #endif
 
-namespace base {
-namespace mac {
+#if BUILDFLAG(IS_MAC)
+namespace base::apple {
 class ScopedNSAutoreleasePool;
 }
-}
+#endif
 
 namespace sandbox {
 struct SandboxInterfaceInfo;
@@ -71,7 +71,7 @@ struct CONTENT_EXPORT ContentMainParams {
 
 #if BUILDFLAG(IS_MAC)
   // The outermost autorelease pool to pass to main entry points.
-  raw_ptr<base::mac::ScopedNSAutoreleasePool> autorelease_pool = nullptr;
+  raw_ptr<base::apple::ScopedNSAutoreleasePool> autorelease_pool = nullptr;
 #endif
 
   // Returns a copy of this ContentMainParams without the move-only data

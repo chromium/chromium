@@ -49,7 +49,7 @@
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
 const char kCreateWebSocketPath[] =
@@ -229,7 +229,7 @@ HttpHandler::HttpHandler(
       url_base_(url_base),
       received_shutdown_(false) {
 #if BUILDFLAG(IS_MAC)
-  base::mac::ScopedNSAutoreleasePool autorelease_pool;
+  base::apple::ScopedNSAutoreleasePool autorelease_pool;
 #endif
   context_getter_ = new URLRequestContextGetter(io_task_runner_);
   socket_factory_ = CreateSyncWebSocketFactory(context_getter_.get());

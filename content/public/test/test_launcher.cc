@@ -68,7 +68,7 @@
 // To avoid conflicts with the macro from the Windows SDK...
 #undef GetCommandLine
 #elif BUILDFLAG(IS_MAC)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #endif
 

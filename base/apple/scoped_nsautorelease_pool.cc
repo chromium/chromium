@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 
 // Note that this uses the direct runtime interface to the autorelease pool.
 // https://clang.llvm.org/docs/AutomaticReferenceCounting.html#runtime-support
@@ -13,7 +13,7 @@ void* objc_autoreleasePoolPush(void);
 void objc_autoreleasePoolPop(void* pool);
 }
 
-namespace base::mac {
+namespace base::apple {
 
 ScopedNSAutoreleasePool::ScopedNSAutoreleasePool()
     : autorelease_pool_(objc_autoreleasePoolPush()) {}
@@ -31,4 +31,4 @@ void ScopedNSAutoreleasePool::Recycle() {
   autorelease_pool_ = objc_autoreleasePoolPush();
 }
 
-}  // namespace base::mac
+}  // namespace base::apple

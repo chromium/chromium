@@ -41,7 +41,7 @@
 #include "rlz/win/lib/machine_deal.h"
 #endif
 
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/threading/thread.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -608,7 +608,7 @@ TEST_F(RlzLibTest, SendFinancialPing) {
     return;
 
 #if BUILDFLAG(IS_APPLE)
-  base::mac::ScopedNSAutoreleasePool pool;
+  base::apple::ScopedNSAutoreleasePool pool;
 #endif
 
   network::TestURLLoaderFactory test_url_loader_factory;
@@ -679,7 +679,7 @@ TEST_F(RlzLibTest, SendFinancialPingDuringShutdown) {
     return;
 
 #if BUILDFLAG(IS_APPLE)
-  base::mac::ScopedNSAutoreleasePool pool;
+  base::apple::ScopedNSAutoreleasePool pool;
 #endif
 
   base::Thread io_thread("rlz_unittest_io_thread");

@@ -35,9 +35,9 @@ namespace base {
 class CommandLine;
 
 #if BUILDFLAG(IS_MAC)
-namespace mac {
+namespace apple {
 class ScopedNSAutoreleasePool;
-}  // namespace mac
+}  // namespace apple
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
@@ -345,7 +345,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 
 #if BUILDFLAG(IS_MAC)
   // Returns the autorelease pool in use inside RunTestOnMainThreadLoop().
-  base::mac::ScopedNSAutoreleasePool* AutoreleasePool() const {
+  base::apple::ScopedNSAutoreleasePool* AutoreleasePool() const {
     return autorelease_pool_;
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -433,7 +433,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   feature_engagement::test::ScopedIphFeatureList block_all_iph_feature_list_;
 
 #if BUILDFLAG(IS_MAC)
-  raw_ptr<base::mac::ScopedNSAutoreleasePool, DanglingUntriaged>
+  raw_ptr<base::apple::ScopedNSAutoreleasePool, DanglingUntriaged>
       autorelease_pool_ = nullptr;
   std::unique_ptr<ScopedBundleSwizzlerMac> bundle_swizzler_;
 

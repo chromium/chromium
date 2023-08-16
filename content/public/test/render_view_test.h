@@ -243,7 +243,7 @@ class RenderViewTest : public testing::Test {
   mojo::BinderMap binders_;
 
 #if BUILDFLAG(IS_MAC)
-  std::unique_ptr<base::mac::ScopedNSAutoreleasePool> autorelease_pool_;
+  std::unique_ptr<base::apple::ScopedNSAutoreleasePool> autorelease_pool_;
 #endif
 
  private:

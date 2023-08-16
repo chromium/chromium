@@ -10,7 +10,7 @@
 
 #include <memory>
 
-#import "base/mac/scoped_nsautorelease_pool.h"
+#import "base/apple/scoped_nsautorelease_pool.h"
 #include "testing/platform_test.h"
 #include "ui/display/screen.h"
 
@@ -86,7 +86,7 @@ class CocoaTestHelper {
 
   display::ScopedNativeScreen screen_;
 
-  base::mac::ScopedNSAutoreleasePool pool_;
+  base::apple::ScopedNSAutoreleasePool pool_;
 
   // Windows which existed at the beginning of the test.
   WeakWindowVector initial_windows_;

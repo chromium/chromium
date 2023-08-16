@@ -60,7 +60,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/message_loop/message_pump_apple.h"
 #include "third_party/blink/public/web/web_view.h"
 #endif  // BUILDFLAG(IS_MAC)
@@ -151,7 +151,7 @@ int RendererMain(MainFunctionParams parameters) {
   const base::CommandLine& command_line = *parameters.command_line;
 
 #if BUILDFLAG(IS_MAC)
-  base::mac::ScopedNSAutoreleasePool* pool = parameters.autorelease_pool;
+  base::apple::ScopedNSAutoreleasePool* pool = parameters.autorelease_pool;
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

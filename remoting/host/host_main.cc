@@ -29,7 +29,7 @@
 #include "remoting/host/usage_stats_consent.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_WIN)
@@ -170,7 +170,7 @@ MainRoutineFn SelectMainRoutine(const std::string& process_type) {
 int HostMain(int argc, char** argv) {
 #if BUILDFLAG(IS_APPLE)
   // Needed so we don't leak objects when threads are created.
-  base::mac::ScopedNSAutoreleasePool pool;
+  base::apple::ScopedNSAutoreleasePool pool;
 #endif
 
   base::CommandLine::Init(argc, argv);

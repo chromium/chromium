@@ -66,7 +66,7 @@
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
 // This is a simple utility that initializes an mcs client and

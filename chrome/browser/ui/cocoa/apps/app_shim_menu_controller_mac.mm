@@ -4,8 +4,8 @@
 
 #import "chrome/browser/ui/cocoa/apps/app_shim_menu_controller_mac.h"
 
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/containers/adapters.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -414,7 +414,7 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
   // must be drained before the window finishes -dealloc. In this method, an
   // autorelease is sent by the invocation of [NSApp windows].
   // http://crbug.com/406944.
-  base::mac::ScopedNSAutoreleasePool pool;
+  base::apple::ScopedNSAutoreleasePool pool;
 
   NSString* name = [notification name];
   if ([name isEqualToString:NSWindowDidBecomeMainNotification]) {

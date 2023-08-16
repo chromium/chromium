@@ -10,7 +10,7 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
       base::CommandLine::ForCurrentProcess()->GetArgs();
 
 #if BUILDFLAG(IS_MAC)
-  base::mac::ScopedNSAutoreleasePool pool;
+  base::apple::ScopedNSAutoreleasePool pool;
 #endif
 
   std::unique_ptr<const char* []> argsArray(new const char*[args.size() + 1]);
@@ -59,4 +59,3 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-
