@@ -124,6 +124,13 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 #else
                      false);
 #endif
+
+  source->AddBoolean(
+      "extensionsCardEnabled",
+      base::FeatureList::IsEnabled(
+          ntp_features::kCustomizeChromeSidePanelExtensionsCard) &&
+          features::IsChromeWebuiRefresh2023());
+
   webui::SetupChromeRefresh2023(source);
 
   webui::SetupWebUIDataSource(

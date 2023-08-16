@@ -91,6 +91,14 @@
         <customize-chrome-cards></customize-chrome-cards>
       </div>
     </template>
+    <template is="dom-if" if="[[extensionsCardEnabled_]]" restamp>
+      <hr class="sp-cards-separator">
+      <div id="extensions" class="section sp-card">
+        <sp-heading hide-back-button>
+          <h2 slot="heading">Extensions</h2>
+        </sp-heading>
+      </div>
+    </template>
   </div>
   <customize-chrome-categories on-back-click="onBackClick_"
       on-collection-select="onCollectionSelect_" page-name="categories"

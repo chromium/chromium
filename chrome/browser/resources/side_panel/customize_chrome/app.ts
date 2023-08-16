@@ -78,6 +78,10 @@ export class AppElement extends AppElementBase {
         type: Object,
         value: null,
       },
+      extensionsCardEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('extensionsCardEnabled'),
+      },
     };
   }
 
