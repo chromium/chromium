@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.AppHelpIsLoaded" enum="Boolean" expires_after="2023-08-27">
+<histogram name="GPU.AppHelpIsLoaded" enum="Boolean" expires_after="2024-02-27">
   <owner>zmo@chromium.org</owner>
   <owner>spvw@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
