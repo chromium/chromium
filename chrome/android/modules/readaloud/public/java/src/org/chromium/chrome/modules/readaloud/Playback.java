@@ -4,8 +4,73 @@
 
 package org.chromium.chrome.modules.readaloud;
 
+import androidx.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Represents a single audio playback session. */
 public interface Playback {
+    /**
+     * Metadata describing the content of the playback
+     */
+    interface Metadata {
+        String languageCode();
+        String title();
+        String publisher();
+        String author();
+        String fullText();
+        TextPart[] paragraphs();
+        long estimatedDurationSeconds();
+        String canonicalUrl();
+    }
+
+    /**
+     * Represents a single text part.
+     * This might be a paragraph, a sentence or any semantic unit of the article.
+     */
+    interface TextPart {
+        // The index of the text part's paragraph in the full article.
+        int getParagraphIndex();
+        // The offset of the text part in the full text.
+        int getOffset();
+        // The length of the text part, in characters.
+        int getLength();
+
+        @TextType
+        int getType();
+    }
+
+    /**
+     * Type of a text portion.
+     */
+    @IntDef({TextType.TEXT_TYPE_UNSPECIFIED, TextType.TEXT_TYPE_NORMAL, TextType.TEXT_TYPE_TITLE,
+            TextType.TEXT_TYPE_PUBLISHER_AND_AUTHOR, TextType.TEXT_TYPE_PUBLISHER,
+            TextType.TEXT_TYPE_AUTHOR})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface TextType {
+        // Unspecified.
+        int TEXT_TYPE_UNSPECIFIED = 0;
+        // Normal text (without a particular role).
+        int TEXT_TYPE_NORMAL = 1;
+        // The title of a document.
+        int TEXT_TYPE_TITLE = 2;
+        // The publisher and author part of the document.
+        int TEXT_TYPE_PUBLISHER_AND_AUTHOR = 3;
+        // The publisher or the document.
+        int TEXT_TYPE_PUBLISHER = 4;
+        // The author of the document.
+        int TEXT_TYPE_AUTHOR = 5;
+    }
+
+    /**
+     * Returns the metadata represented by this playback.
+     * @return Metadata with language, title, publisher, full text, etc.
+     */
+    default Metadata getMetadata() {
+        return null;
+    }
+
     /**
      * Add a listener to be called on playback events.
      * @param listener Listener.
