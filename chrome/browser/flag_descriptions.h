@@ -3496,6 +3496,9 @@ extern const char kPanelSelfRefresh2Description[];
 extern const char kEnableVariableRefreshRateName[];
 extern const char kEnableVariableRefreshRateDescription[];
 
+extern const char kEnableVariableRefreshRateAlwaysOnName[];
+extern const char kEnableVariableRefreshRateAlwaysOnDescription[];
+
 extern const char kEnforceAshExtensionKeeplistName[];
 extern const char kEnforceAshExtensionKeeplistDescription[];
 

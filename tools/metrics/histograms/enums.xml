@@ -60057,6 +60057,7 @@ from previous Chrome versions.
   <int value="-1971086581" label="print-scaling"/>
   <int value="-1970672551" label="CanvasContextLostInBackground:disabled"/>
   <int value="-1969636234" label="OmniboxRefinedFocusState:disabled"/>
+  <int value="-1969627578" label="EnableVariableRefreshRateAlwaysOn:disabled"/>
   <int value="-1969625771" label="MessagesForAndroidOfferNotification:enabled"/>
   <int value="-1968796101"
       label="OmniboxRemoveExcessiveRecycledViewClearCalls:disabled"/>
@@ -66399,6 +66400,7 @@ from previous Chrome versions.
   <int value="1243890754" label="ForbidSyncXHRInPageDismissal:disabled"/>
   <int value="1244050764" label="LauncherPulsingBlocksRefresh:disabled"/>
   <int value="1244972195" label="ReducedWifiPollingInterval:enabled"/>
+  <int value="1245500257" label="EnableVariableRefreshRateAlwaysOn:enabled"/>
   <int value="1245889469" label="enable-surface-worker"/>
   <int value="1246022849"
       label="MessagesForAndroidAutoDarkWebContents:disabled"/>

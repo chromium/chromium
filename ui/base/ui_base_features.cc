@@ -428,7 +428,14 @@ BASE_FEATURE(kEnableVariableRefreshRate,
              "EnableVariableRefreshRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsVariableRefreshRateEnabled() {
-  return base::FeatureList::IsEnabled(kEnableVariableRefreshRate);
+  return base::FeatureList::IsEnabled(kEnableVariableRefreshRate) ||
+         base::FeatureList::IsEnabled(kEnableVariableRefreshRateAlwaysOn);
+}
+BASE_FEATURE(kEnableVariableRefreshRateAlwaysOn,
+             "EnableVariableRefreshRateAlwaysOn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsVariableRefreshRateAlwaysOn() {
+  return base::FeatureList::IsEnabled(kEnableVariableRefreshRateAlwaysOn);
 }
 
 // Fixes b/267944900.

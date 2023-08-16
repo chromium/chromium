@@ -6005,6 +6005,12 @@ const char kEnableVariableRefreshRateDescription[] =
     "Enable the variable refresh rate (Adaptive Sync) setting for capable "
     "displays.";
 
+const char kEnableVariableRefreshRateAlwaysOnName[] =
+    "Enable Variable Refresh Rate Always On";
+const char kEnableVariableRefreshRateAlwaysOnDescription[] =
+    "Enable the variable refresh (Adaptive Sync) setting for capable displays "
+    "at all times.";
+
 const char kEapGtcWifiAuthenticationName[] = "EAP-GTC WiFi Authentication";
 const char kEapGtcWifiAuthenticationDescription[] =
     "Allows configuration of WiFi networks using EAP-GTC authentication";

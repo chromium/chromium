@@ -3774,6 +3774,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-variable-refresh-rate-always-on",
+    "owners": [ "aswolfers", "chromeos-gfx-compositor@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-variations-google-group-filtering",
     "owners": [ "ljjlee", "chrome-metrics-team@google.com" ],
     "expiry_milestone": 119
