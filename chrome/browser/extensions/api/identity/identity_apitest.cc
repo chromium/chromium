@@ -81,6 +81,7 @@
 #include "extensions/common/api/oauth2.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 #include "net/cookies/cookie_util.h"
@@ -1057,7 +1058,7 @@ class GetAuthTokenFunctionTest
 
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
-  std::string extension_id_;
+  ExtensionId extension_id_;
   std::set<std::string> oauth_scopes_;
   std::unique_ptr<ExtensionFunction::ScopedUserGestureForTests> user_gesture_;
 };
