@@ -91,6 +91,12 @@ chromium-metrics-reviews@google.com.
       summary="Speech recognition happened on remote servers"/>
 </variants>
 
+<variants name="ScreenCaptureClient">
+  <variant name="GameDashboard"
+      summary="Game dashboard initiated capture mode"/>
+  <variant name="Projector" summary="Projector initiated capture mode"/>
+</variants>
+
 <variants name="SplitViewResizeModes">
   <variant name=".ClamshellMode.SingleWindow" summary=""/>
   <variant name=".ClamshellMode.WithOverview" summary=""/>
@@ -1845,44 +1851,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.GameDashboard.CaptureConfiguration.{TabletOrClamshell}"
-    enum="CaptureModeConfiguration" expires_after="2024-05-27">
-  <owner>michelefan@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Recorded whenever a Game Dashboard initiated a screen capture is performed
-    in {TabletOrClamshell}. The recorded enum indicates the configuration used
-    for the Game Dashboard initiated capture, i.e. the capture source and the
-    capture type.
-  </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
-</histogram>
-
-<histogram
-    name="Ash.CaptureModeController.GameDashboard.DemoToolsEnabledOnRecordingStart.{TabletOrClamshell}"
-    enum="BooleanEnabled" expires_after="2024-05-27">
-  <owner>michelefan@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Records whether a Game Dashboard initiated recording starts with demo tools
-    feature enabled or not in {TabletOrClamshell}.
-  </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
-</histogram>
-
-<histogram
-    name="Ash.CaptureModeController.GameDashboard.RecordingStartsWithCamera.{TabletOrClamshell}"
-    enum="BooleanEnabled" expires_after="2024-05-27">
-  <owner>michelefan@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Records whether a Game Dashboard initiated recording starts with camera on
-    or not in {TabletOrClamshell}.
-  </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
-</histogram>
-
-<histogram
     name="Ash.CaptureModeController.GameDashboard.SaveLocation.{TabletOrClamshell}"
     enum="CaptureModeSaveToLocation" expires_after="2024-05-27">
   <owner>michelefan@chromium.org</owner>
@@ -1901,23 +1869,9 @@ chromium-metrics-reviews@google.com.
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
-    Records the size of the successfully recorded WebM file by the Game
-    Dashboard initiated capture mode in {TabletOrClamshell}. This metric will
-    not be recorded if a file was not successfully saved.
-  </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
-</histogram>
-
-<histogram
-    name="Ash.CaptureModeController.GameDashboard.ScreenRecordingLength.{TabletOrClamshell}"
-    units="seconds" expires_after="2024-05-27">
-  <owner>michelefan@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Records the time of a successful video recording in capture mode entered
-    from the Game Dashboard in {TabletOrClamshell}. This metric will not be
-    recorded if a file was not successfully saved. The upper limit of this
-    histogram is 3 hours.
+    Records the size of the successfully recorded WebM file by the Game Dahboard
+    initiated capture mode in {TabletOrClamshell}. This metric will not be
+    recorded if a file was not successfully saved.
   </summary>
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
@@ -1971,21 +1925,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.Projector.CaptureConfiguration.{TabletOrClamshell}"
-    enum="CaptureModeConfiguration" expires_after="2023-10-17">
-  <owner>michelefan@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Within a {TabletOrClamshell} capture session entered from the projector app,
-    the histogram records the number of times a user adjusts a capture region,
-    which includes the moving and resizing. The count is recorded and reset when
-    a user performs a capture.The count is only reset when a user creates a new
-    region or switches capture sources.
-  </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
-</histogram>
-
-<histogram
     name="Ash.CaptureModeController.Projector.CaptureRegionAdjusted.{TabletOrClamshell}"
     units="adjustments" expires_after="2023-10-17">
   <owner>michelefan@chromium.org</owner>
@@ -1997,45 +1936,6 @@ chromium-metrics-reviews@google.com.
     times the user adjusts the region. This counts each time they move the
     region or resize it. It is reset whenever a user creates a new region or the
     count is recorded.
-  </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
-</histogram>
-
-<histogram
-    name="Ash.CaptureModeController.Projector.DemoToolsEnabledOnRecordingStart.{TabletOrClamshell}"
-    enum="BooleanEnabled" expires_after="2024-01-12">
-  <owner>michelefan@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Records whether a Projector-initiated recording starts with demo tools
-    feature enabled or not in {TabletOrClamshell}.
-  </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
-</histogram>
-
-<histogram
-    name="Ash.CaptureModeController.Projector.RecordingStartsWithCamera.{TabletOrClamshell}"
-    enum="BooleanEnabled" expires_after="2023-10-17">
-  <owner>michelefan@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Records whether a Projector-initiated recording starts with camera on or not
-    in {TabletOrClamshell}.
-  </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
-</histogram>
-
-<histogram
-    name="Ash.CaptureModeController.Projector.ScreenRecordingLength.{TabletOrClamshell}"
-    units="seconds" expires_after="2023-10-17">
-  <owner>afakhry@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Records the time of a successful video recording in capture mode entered
-    from the projector app in {TabletOrClamshell}. This metric will not be
-    recorded if a file was not successfully saved. The upper limit of this
-    histogram is 3 hours.
   </summary>
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
@@ -2191,17 +2091,69 @@ chromium-metrics-reviews@google.com.
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
-    Recorded at the end of a client-initiated capture mode session in
+    Recorded at the end of a {Client}-initiated capture mode session in
     {TabletOrClamshell} to report the user's audio recording mode setting, only
     if video recording was selected, and the recording type supports audio
     recording.
   </summary>
   <token key="TabletOrClamshell" variants="DisplayModes"/>
-  <token key="Client">
-    <variant name="GameDashboard"
-        summary="The session started from Game Dashboard"/>
-    <variant name="Projector" summary="The session started from Projector"/>
-  </token>
+  <token key="Client" variants="ScreenCaptureClient"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.{Client}.CaptureConfiguration.{TabletOrClamshell}"
+    enum="CaptureModeConfiguration" expires_after="2024-05-27">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever a {Client}-initiated a screen capture is performed in
+    {TabletOrClamshell}. The recorded enum indicates the configuration used for
+    the Game Dashboard initiated capture, i.e. the capture source and the
+    capture type.
+  </summary>
+  <token key="Client" variants="ScreenCaptureClient"/>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.{Client}.DemoToolsEnabledOnRecordingStart.{TabletOrClamshell}"
+    enum="BooleanEnabled" expires_after="2024-05-27">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records whether a {Client}-initiated recording starts with demo tools
+    feature enabled or not in {TabletOrClamshell}.
+  </summary>
+  <token key="Client" variants="ScreenCaptureClient"/>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.{Client}.RecordingStartsWithCamera.{TabletOrClamshell}"
+    enum="BooleanEnabled" expires_after="2024-05-27">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records whether a {Client}-initiated recording starts with camera on or not
+    in {TabletOrClamshell}.
+  </summary>
+  <token key="Client" variants="ScreenCaptureClient"/>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.{Client}.ScreenRecordingLength.{TabletOrClamshell}"
+    units="seconds" expires_after="2024-05-27">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the time of a successful video recording in capture mode entered
+    from the client session in {TabletOrClamshell}. This metric will not be
+    recorded if a file was not successfully saved. The upper limit of this
+    histogram is 3 hours.
+  </summary>
+  <token key="Client" variants="ScreenCaptureClient"/>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.DarkTheme.Settings.IsDarkModeEnabled" enum="Boolean"
