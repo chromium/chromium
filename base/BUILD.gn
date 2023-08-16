@@ -5002,7 +5002,9 @@ source_set("partition_alloc_test_support") {
 
 # This group makes visible those targets in subdirectories that are not
 # explicitly depended on.
-group("gn_all") {
-  testonly = true
-  deps = [ "//base/tracing:perfetto_diff_tests" ]
+if (enable_base_tracing) {
+  group("gn_all") {
+    testonly = true
+    deps = [ "//base/tracing:perfetto_diff_tests" ]
+  }
 }
