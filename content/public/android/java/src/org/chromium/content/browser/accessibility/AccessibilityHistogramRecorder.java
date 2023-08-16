@@ -359,6 +359,12 @@ public class AccessibilityHistogramRecorder {
             RecordHistogram.recordLongTimesHistogram(
                     USAGE_ACCESSIBILITY_ALWAYS_ON_TIME, now - mTimeOfNativeInitialization);
         }
+
+        // When the auto-disable feature is running, the accessibility engine will be disabled in
+        // the background, and native initialization time will be reset at that point.
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2)) return;
+
+        // Reset value.
         mTimeOfNativeInitialization = -1;
     }
 }
