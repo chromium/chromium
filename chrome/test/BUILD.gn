@@ -8892,8 +8892,14 @@ test("unit_tests") {
   }
 
   if (is_linux && use_dbus) {
-    sources += [ "../browser/dbus_memory_pressure_evaluator_linux_unittest.cc" ]
-    deps += [ "//dbus:test_support" ]
+    sources += [
+      "../browser/dbus_memory_pressure_evaluator_linux_unittest.cc",
+      "../browser/ui/views/dark_mode_manager_linux_unittest.cc",
+    ]
+    deps += [
+      "//dbus:test_support",
+      "//ui/linux:test_support",
+    ]
   }
 
   if (is_android || is_chromeos_ash || is_win) {

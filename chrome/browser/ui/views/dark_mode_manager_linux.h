@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -14,12 +15,16 @@
 
 namespace dbus {
 class Bus;
+class ErrorResponse;
 class ObjectProxy;
 class Response;
 class Signal;
 }  // namespace dbus
 
 namespace ui {
+
+class LinuxUiTheme;
+class DarkModeManagerLinuxTest;
 
 // Observes the system color scheme preference using
 // org.freedesktop.portal.Settings. Falls back to the toolkit preference if
@@ -28,11 +33,33 @@ namespace ui {
 class DarkModeManagerLinux : public NativeThemeObserver {
  public:
   DarkModeManagerLinux();
+  DarkModeManagerLinux(scoped_refptr<dbus::Bus> bus,
+                       LinuxUiTheme* default_linux_ui_theme,
+                       const std::vector<LinuxUiTheme*>* linux_ui_themes,
+                       std::vector<NativeTheme*> native_themes);
   DarkModeManagerLinux(const DarkModeManagerLinux&) = delete;
   DarkModeManagerLinux& operator=(const DarkModeManagerLinux&) = delete;
   ~DarkModeManagerLinux() override;
 
+  bool prefer_dark_theme() const { return prefer_dark_theme_; }
+
  private:
+  friend class DarkModeManagerLinuxTest;
+  FRIEND_TEST_ALL_PREFIXES(DarkModeManagerLinuxTest, UseNativeThemeSetting);
+  FRIEND_TEST_ALL_PREFIXES(DarkModeManagerLinuxTest, UsePortalSetting);
+
+  constexpr static char kFreedesktopSettingsService[] =
+      "org.freedesktop.portal.Desktop";
+  constexpr static char kFreedesktopSettingsObjectPath[] =
+      "/org/freedesktop/portal/desktop";
+  constexpr static char kFreedesktopSettingsInterface[] =
+      "org.freedesktop.portal.Settings";
+  constexpr static char kSettingChangedSignal[] = "SettingChanged";
+  constexpr static char kReadMethod[] = "Read";
+  constexpr static char kSettingsNamespace[] = "org.freedesktop.appearance";
+  constexpr static char kColorSchemeKey[] = "color-scheme";
+  constexpr static int kFreedesktopColorSchemeDark = 1;
+
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
@@ -42,9 +69,13 @@ class DarkModeManagerLinux : public NativeThemeObserver {
                          bool connected);
   void OnPortalSettingChanged(dbus::Signal* signal);
   void OnReadColorSchemeResponse(dbus::Response* response);
+  void OnReadColorSchemeError(dbus::ErrorResponse* error);
 
   // Sets `prefer_dark_theme_` and propagates to the web theme.
   void SetColorScheme(bool prefer_dark_theme, bool from_toolkit_theme);
+
+  raw_ptr<const std::vector<LinuxUiTheme*>> linux_ui_themes_;
+  std::vector<NativeTheme*> native_themes_;
 
   scoped_refptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> settings_proxy_;
