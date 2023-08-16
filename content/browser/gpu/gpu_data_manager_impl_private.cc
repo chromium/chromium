@@ -1202,14 +1202,10 @@ void GpuDataManagerImplPrivate::TerminateInfoCollectionGpuProcess() {
 #endif
 
 void GpuDataManagerImplPrivate::PostCreateThreads() {
-  // TODO(crbug.com/1465064): Skip info collection on Windows, where some Vulkan
-  // drivers are crashing in amdvlk64.dll
-#if !BUILDFLAG(IS_WIN)
   // Launch the info collection GPU process to collect Dawn info.
   // Not to affect Chrome startup, this is done in a delayed mode, i.e., 120
   // seconds after Chrome startup.
   RequestDawnInfo(/*delayed=*/true, /*collect_metrics=*/true);
-#endif
 
 #if BUILDFLAG(IS_WIN)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
