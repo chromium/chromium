@@ -110,6 +110,11 @@ BASE_FEATURE(kNtpDriveModuleSegmentation,
              "NtpDriveModuleSegmentation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, six files show in the NTP Drive module, instead of three.
+BASE_FEATURE(kNtpDriveModuleShowSixFiles,
+             "NtpDriveModuleShowSixFiles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, handles navigations from the Most Visited tiles explicitly and
 // overrides the navigation's transition type to bookmark navigation before the
 // navigation is issued.

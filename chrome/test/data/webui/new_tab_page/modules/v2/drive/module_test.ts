@@ -19,7 +19,7 @@ suite('DriveV2Module', () => {
     handler = installMock(DriveHandlerRemote, DriveProxy.setHandler);
   });
 
-  test('module appears on render', async () => {
+  test('shows all retrieved files on render', async () => {
     const data = {
       files: [
         {
@@ -32,23 +32,70 @@ suite('DriveV2Module', () => {
         {
           justificationText: 'Edited yesterday',
           title: 'Bar',
-          id: '234',
+          id: '132',
           mimeType: 'application/vnd.google-apps.document',
           itemUrl: {url: 'https://bar.com'},
         },
         {
           justificationText: 'Created today',
           title: 'Baz',
-          id: '345',
+          id: '213',
           mimeType: 'application/vnd.google-apps.presentation',
           itemUrl: {url: 'https://baz.com'},
         },
         {
           justificationText: 'Created yesterday',
           title: 'Qux',
-          id: '345',
+          id: '231',
           mimeType: 'application/vnd.google-apps.presentation',
           itemUrl: {url: 'https://qux.com'},
+        },
+        {
+          justificationText: 'Edited last week',
+          title: 'FooBar',
+          id: '312',
+          mimeType: 'application/vnd.google-apps.spreadsheet',
+          itemUrl: {url: 'https://foo.com'},
+        },
+        {
+          justificationText: 'Edited yesterday',
+          title: 'BazQux',
+          id: '321',
+          mimeType: 'application/vnd.google-apps.document',
+          itemUrl: {url: 'https://bar.com'},
+        },
+      ],
+    };
+    handler.setResultFor('getFiles', Promise.resolve(data));
+
+    const module =
+        await driveV2Descriptor.initialize(0) as DriveV2ModuleElement;
+    assertTrue(!!module);
+    document.body.append(module);
+    await handler.whenCalled('getFiles');
+    module.$.fileRepeat.render();
+    const items = Array.from(module.shadowRoot!.querySelectorAll('.file'));
+
+    assertTrue(isVisible(module.$.files));
+    assertEquals(6, items.length);
+  });
+
+  test('parses file data correctly', async () => {
+    const data = {
+      files: [
+        {
+          justificationText: 'Edited last week',
+          title: 'Foo',
+          id: '123',
+          mimeType: 'application/vnd.google-apps.spreadsheet',
+          itemUrl: {url: 'https://foo.com'},
+        },
+        {
+          justificationText: 'Edited yesterday',
+          title: 'Bar',
+          id: '132',
+          mimeType: 'application/vnd.google-apps.document',
+          itemUrl: {url: 'https://bar.com'},
         },
       ],
     };
@@ -65,7 +112,7 @@ suite('DriveV2Module', () => {
         module.shadowRoot!.querySelectorAll<HTMLAnchorElement>('.file');
 
     assertTrue(isVisible(module.$.files));
-    assertEquals(3, items.length);
+    assertEquals(2, items.length);
     assertEquals(
         'Bar',
         items[1]!.querySelector<HTMLElement>('.file-title')!.textContent);

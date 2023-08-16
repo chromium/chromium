@@ -2717,6 +2717,9 @@ extern const char kNtpDriveModuleDescription[];
 extern const char kNtpDriveModuleSegmentationName[];
 extern const char kNtpDriveModuleSegmentationDescription[];
 
+extern const char kNtpDriveModuleShowSixFilesName[];
+extern const char kNtpDriveModuleShowSixFilesDescription[];
+
 #if !defined(OFFICIAL_BUILD)
 extern const char kNtpDummyModulesName[];
 extern const char kNtpDummyModulesDescription[];

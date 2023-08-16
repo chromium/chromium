@@ -4689,6 +4689,11 @@ const char kNtpDriveModuleSegmentationDescription[] =
     "Uses segmentation data to decide whether to show the Drive module on the "
     "New Tab Page.";
 
+const char kNtpDriveModuleShowSixFilesName[] =
+    "NTP Drive Module Show Six Files";
+const char kNtpDriveModuleShowSixFilesDescription[] =
+    "Shows six files in the NTP Drive module, instead of three.";
+
 #if !defined(OFFICIAL_BUILD)
 const char kNtpDummyModulesName[] = "NTP Dummy Modules";
 const char kNtpDummyModulesDescription[] =

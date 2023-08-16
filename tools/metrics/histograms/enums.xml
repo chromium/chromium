@@ -62770,6 +62770,7 @@ from previous Chrome versions.
   <int value="-616414905" label="ThumbnailCacheRefactor:disabled"/>
   <int value="-615974325" label="ArcMouseWheelSmoothScroll:disabled"/>
   <int value="-615254902" label="SystemJapanesePhysicalTyping:enabled"/>
+  <int value="-614919871" label="NtpDriveModuleShowSixFiles:enabled"/>
   <int value="-614223913"
       label="ClickToCallContextMenuForSelectedText:enabled"/>
   <int value="-613596048" label="new-canvas-2d-api"/>
@@ -66454,6 +66455,7 @@ from previous Chrome versions.
   <int value="1266525177"
       label="AutofillUpstreamUseGooglePayOnAndroidBranding:disabled"/>
   <int value="1266886673" label="delay-reload-stop-button-change"/>
+  <int value="1267279578" label="NtpDriveModuleShowSixFiles:disabled"/>
   <int value="1267585140" label="ShareSheetMigrationAndroid:enabled"/>
   <int value="1268470658" label="disable-android-password-link"/>
   <int value="1268678442" label="KerberosSettingsSection:disabled"/>

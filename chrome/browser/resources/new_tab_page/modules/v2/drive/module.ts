@@ -83,7 +83,7 @@ async function createDriveElement(): Promise<DriveModuleElement|null> {
     return null;
   }
   const element = new DriveModuleElement();
-  element.files = files.slice(0, 3);
+  element.files = files;
   return element;
 }
 
