@@ -13,6 +13,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace gfx {
+class Point;
+}  // namespace gfx
+
 namespace views {
 class View;
 }  // namespace views
@@ -21,21 +25,35 @@ namespace ash {
 class WindowMiniViewHeaderView;
 class WindowPreviewView;
 
-// Defines the interface that extracts the focus installation and update logic
-// to be used by `WindowMiniView` and `GroupContainerView`.
-class FocusableView : public views::View {
+// Defines the interface that extracts the window, visual updates, focus
+// installation and update logic to be used or implemented by `WindowMiniView`
+// and `GroupContainerView`.
+class WindowMiniViewBase : public views::View {
  public:
-  METADATA_HEADER(FocusableView);
+  METADATA_HEADER(WindowMiniViewBase);
 
-  FocusableView(const FocusableView&) = delete;
-  FocusableView& operator=(const FocusableView&) = delete;
-  ~FocusableView() override;
+  WindowMiniViewBase(const WindowMiniViewBase&) = delete;
+  WindowMiniViewBase& operator=(const WindowMiniViewBase&) = delete;
+  ~WindowMiniViewBase() override;
+
+  // Returns true if a preview of the given `window` is contained in `this`.
+  virtual bool Contains(aura::Window* window) const = 0;
+
+  // If `screen_point` is within the screen bounds of a preview view inside
+  // this, returns the window represented by this view, nullptr otherwise.
+  virtual aura::Window* GetWindowAtPoint(
+      const gfx::Point& screen_point) const = 0;
+
+  // Shows the preview and icon. For performance reasons, these are not created
+  // on construction. This should be called at most one time during the lifetime
+  // of `this`.
+  virtual void RefreshItemVisuals() = 0;
 
   // Shows or hides a focus ring around this.
   void UpdateFocusState(bool focus);
 
  protected:
-  FocusableView();
+  WindowMiniViewBase();
 
  private:
   void InstallFocusRing();
@@ -46,8 +64,8 @@ class FocusableView : public views::View {
 
 // WindowMiniView is a view which contains a header and optionally a mirror of
 // the given window. Displaying the mirror is chosen by the subclass by calling
-// |SetShowPreview| in their constructors (or later on if they like).
-class ASH_EXPORT WindowMiniView : public FocusableView,
+// `SetShowPreview` in their constructors (or later on if they like).
+class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
                                   public aura::WindowObserver {
  public:
   METADATA_HEADER(WindowMiniView);
@@ -84,6 +102,10 @@ class ASH_EXPORT WindowMiniView : public FocusableView,
 
   // Sets or hides rounded corners on |preview_view_|, if it exists.
   void UpdatePreviewRoundedCorners(bool show);
+
+  // WindowMiniViewBase:
+  bool Contains(aura::Window* window) const override;
+  aura::Window* GetWindowAtPoint(const gfx::Point& screen_point) const override;
 
  protected:
   explicit WindowMiniView(aura::Window* source_window);

@@ -5,6 +5,7 @@
 #include "ash/wm/window_cycle/window_cycle_view.h"
 
 #include <algorithm>
+#include <vector>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -17,13 +18,13 @@
 #include "ash/style/tab_slider_button.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_item_view.h"
+#include "ash/wm/window_mini_view.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -231,9 +232,8 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     // use trilinear filtering in InitLayerOwner().
     auto* view = mirror_container_->AddChildView(
         std::make_unique<WindowCycleItemView>(window));
-    window_view_map_[window] = view;
-
-    no_previews_set_.insert(view);
+    cycle_views_.push_back(view);
+    no_previews_list_.push_back(view);
   }
 
   // The insets in the WindowCycleItemView are coming from its border, which
@@ -241,8 +241,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   // insets such that the spacing between the contents of the views rather
   // than the views themselves is |kBetweenChildPaddingDp|.
   const gfx::Insets cycle_item_insets =
-      window_view_map_.empty() ? gfx::Insets()
-                               : window_view_map_.begin()->second->GetInsets();
+      cycle_views_.empty() ? gfx::Insets() : cycle_views_.front()->GetInsets();
   layout->set_between_child_spacing(kBetweenChildPaddingDp -
                                     cycle_item_insets.width());
 
@@ -331,9 +330,8 @@ void WindowCycleView::UpdateWindows(const WindowList& windows) {
   for (auto* window : windows) {
     auto* view = mirror_container_->AddChildView(
         std::make_unique<WindowCycleItemView>(window));
-    window_view_map_[window] = view;
-
-    no_previews_set_.insert(view);
+    cycle_views_.push_back(view);
+    no_previews_list_.push_back(view);
   }
 
   // If there was an ongoing drag session, it's now been completed so reset
@@ -382,14 +380,15 @@ void WindowCycleView::SetTargetWindow(aura::Window* target) {
   // Hide the focus border of the previous target window and show the focus
   // border of the new one.
   if (target_window_) {
-    auto target_it = window_view_map_.find(target_window_);
-    if (target_it != window_view_map_.end())
-      target_it->second->UpdateFocusState(/*focus=*/false);
+    if (auto* view = GetCycleViewForWindow(target_window_)) {
+      view->UpdateFocusState(/*focus=*/false);
+    }
   }
+
   target_window_ = target;
-  auto target_it = window_view_map_.find(target_window_);
-  if (target_it != window_view_map_.end())
-    target_it->second->UpdateFocusState(/*focus=*/true);
+  if (auto* view = GetCycleViewForWindow(target_window_)) {
+    view->UpdateFocusState(/*focus=*/true);
+  }
 
   // Focus the target window if the user is not currently switching the mode
   // while ChromeVox is on.
@@ -401,13 +400,16 @@ void WindowCycleView::SetTargetWindow(aura::Window* target) {
   auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
   const bool chromevox_enabled = a11y_controller->spoken_feedback().enabled();
   const bool is_switching_mode = window_cycle_controller->IsSwitchingMode();
-  if (!target_window_ || (chromevox_enabled && is_switching_mode))
+  if (!target_window_ || (chromevox_enabled && is_switching_mode)) {
     return;
+  }
 
+  auto* cycle_view = GetCycleViewForWindow(target_window_);
+  CHECK(cycle_view);
   if (GetWidget()) {
-    window_view_map_[target_window_]->RequestFocus();
+    cycle_view->RequestFocus();
   } else {
-    SetInitiallyFocusedView(window_view_map_[target_window_]);
+    SetInitiallyFocusedView(cycle_view);
     // When alt-tab mode selection is available, announce via ChromeVox the
     // current mode and the directional cue for mode switching.
     if (window_cycle_controller->IsInteractiveAltTabModeAllowed()) {
@@ -422,12 +424,12 @@ void WindowCycleView::SetTargetWindow(aura::Window* target) {
 
 void WindowCycleView::HandleWindowDestruction(aura::Window* destroying_window,
                                               aura::Window* new_target) {
-  auto view_iter = window_view_map_.find(destroying_window);
-  WindowCycleItemView* preview = view_iter->second;
+  WindowMiniViewBase* preview = GetCycleViewForWindow(destroying_window);
+  CHECK(preview);
   views::View* parent = preview->parent();
-  DCHECK_EQ(mirror_container_, parent);
-  window_view_map_.erase(view_iter);
-  no_previews_set_.erase(preview);
+  CHECK_EQ(mirror_container_, parent);
+  base::Erase(cycle_views_, preview);
+  base::Erase(no_previews_list_, preview);
   delete preview;
 
   // With one of its children now gone, we must re-layout |mirror_container_|.
@@ -440,9 +442,8 @@ void WindowCycleView::HandleWindowDestruction(aura::Window* destroying_window,
 
 void WindowCycleView::DestroyContents() {
   is_destroying_ = true;
-
-  window_view_map_.clear();
-  no_previews_set_.clear();
+  cycle_views_.clear();
+  no_previews_list_.clear();
   target_window_ = nullptr;
   current_window_ = nullptr;
   defer_widget_bounds_update_ = false;
@@ -493,9 +494,10 @@ bool WindowCycleView::IsTabSliderFocused() const {
 
 aura::Window* WindowCycleView::GetWindowAtPoint(
     const gfx::Point& screen_point) {
-  for (const auto& entry : window_view_map_) {
-    if (entry.second->GetBoundsInScreen().Contains(screen_point))
-      return entry.first;
+  for (const auto* view : cycle_views_) {
+    if (auto* window = view->GetWindowAtPoint(screen_point)) {
+      return window;
+    }
   }
   return nullptr;
 }
@@ -554,7 +556,7 @@ void WindowCycleView::Layout() {
 
   gfx::RectF target_bounds;
   if (current_window_ || !is_interactive_alt_tab_mode_allowed) {
-    views::View* target_view = window_view_map_[current_window_];
+    views::View* target_view = GetCycleViewForWindow(current_window_);
     target_bounds = gfx::RectF(target_view->GetLocalBounds());
     views::View::ConvertRectToTarget(target_view, mirror_container_,
                                      &target_bounds);
@@ -648,13 +650,13 @@ void WindowCycleView::Layout() {
   // coordinates intersects |this|), create the rest of its elements and
   // remove it from the set.
   const gfx::RectF local_bounds(GetLocalBounds());
-  for (auto it = no_previews_set_.begin(); it != no_previews_set_.end();) {
-    WindowCycleItemView* view = *it;
+  for (auto it = no_previews_list_.begin(); it != no_previews_list_.end();) {
+    WindowMiniViewBase* view = *it;
     gfx::RectF bounds(view->GetLocalBounds());
     views::View::ConvertRectToTarget(view, this, &bounds);
     if (bounds.Intersects(local_bounds)) {
-      view->ShowPreview();
-      it = no_previews_set_.erase(it);
+      view->RefreshItemVisuals();
+      it = no_previews_list_.erase(it);
     } else {
       ++it;
     }
@@ -691,6 +693,16 @@ gfx::Rect WindowCycleView::GetContentContainerBounds() const {
   if (empty_mirror_container && no_recent_items_label_)
     return gfx::Rect(no_recent_items_label_->GetPreferredSize());
   return gfx::Rect(mirror_container_->GetPreferredSize());
+}
+
+WindowMiniViewBase* WindowCycleView::GetCycleViewForWindow(
+    aura::Window* window) const {
+  for (auto* view : cycle_views_) {
+    if (view->Contains(window)) {
+      return view;
+    }
+  }
+  return nullptr;
 }
 
 BEGIN_METADATA(WindowCycleView, views::WidgetDelegateView)

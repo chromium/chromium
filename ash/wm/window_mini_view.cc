@@ -90,9 +90,9 @@ gfx::RoundedCornersF GetRoundedCornerForPreviewView(
 
 }  // namespace
 
-FocusableView::~FocusableView() = default;
+WindowMiniViewBase::~WindowMiniViewBase() = default;
 
-void FocusableView::UpdateFocusState(bool focus) {
+void WindowMiniViewBase::UpdateFocusState(bool focus) {
   if (is_focused_ == focus) {
     return;
   }
@@ -101,11 +101,11 @@ void FocusableView::UpdateFocusState(bool focus) {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-FocusableView::FocusableView() {
+WindowMiniViewBase::WindowMiniViewBase() {
   InstallFocusRing();
 }
 
-void FocusableView::InstallFocusRing() {
+void WindowMiniViewBase::InstallFocusRing() {
   // In order to show the focus ring out of the content view, `border_inset`
   // needs to be counted when setting the insets for the focus ring.
   views::InstallRoundRectHighlightPathGenerator(
@@ -118,13 +118,13 @@ void FocusableView::InstallFocusRing() {
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetHasFocusPredicate(
       base::BindRepeating([](const views::View* view) {
-        const auto* v = views::AsViewClass<FocusableView>(view);
+        const auto* v = views::AsViewClass<WindowMiniViewBase>(view);
         CHECK(v);
         return v->is_focused_;
       }));
 }
 
-BEGIN_METADATA(FocusableView, views::View)
+BEGIN_METADATA(WindowMiniViewBase, views::View)
 END_METADATA
 
 WindowMiniView::~WindowMiniView() = default;
@@ -196,6 +196,15 @@ void WindowMiniView::UpdatePreviewRoundedCorners(bool show) {
       source_window_, backdrop_view_, preview_view_->GetBoundsInScreen(), scale,
       show));
   layer->SetIsFastRoundedCorner(true);
+}
+
+bool WindowMiniView::Contains(aura::Window* window) const {
+  return source_window_ == window;
+}
+
+aura::Window* WindowMiniView::GetWindowAtPoint(
+    const gfx::Point& screen_point) const {
+  return GetBoundsInScreen().Contains(screen_point) ? source_window_ : nullptr;
 }
 
 gfx::Rect WindowMiniView::GetHeaderBounds() const {
@@ -282,7 +291,7 @@ void WindowMiniView::OnWindowTitleChanged(aura::Window* window) {
   header_view_->UpdateTitleLabel(window);
 }
 
-BEGIN_METADATA(WindowMiniView, FocusableView)
+BEGIN_METADATA(WindowMiniView, WindowMiniViewBase)
 END_METADATA
 
 }  // namespace ash

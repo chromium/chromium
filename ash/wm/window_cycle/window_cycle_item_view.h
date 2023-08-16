@@ -7,15 +7,18 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_mini_view.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace ash {
+
+class SnapGroup;
 
 // This view represents a single aura::Window by displaying a title and a
 // thumbnail of the window's contents.
@@ -32,11 +35,6 @@ class ASH_EXPORT WindowCycleItemView : public WindowMiniView {
   // scaling and padding).
   static constexpr int kFixedPreviewHeightDp = 256;
 
-  // Shows the preview and icon. For performance reasons, these are not created
-  // on construction. This should be called at most one time during the lifetime
-  // of |this|.
-  void ShowPreview();
-
   // WindowMiniView:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -44,18 +42,29 @@ class ASH_EXPORT WindowCycleItemView : public WindowMiniView {
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
+
+  // WindowMiniViewBase:
+  void RefreshItemVisuals() override;
 };
 
 // Container view used to host multiple `WindowCycleItemView`s and be the focus
 // target for window groups while tabbing in window cycle view.
-class GroupContainerView : public FocusableView {
+class GroupContainerView : public WindowMiniViewBase {
  public:
   METADATA_HEADER(GroupContainerView);
 
-  GroupContainerView();
+  explicit GroupContainerView(SnapGroup* snap_group);
   GroupContainerView(const GroupContainerView&) = delete;
   GroupContainerView& operator=(const GroupContainerView&) = delete;
   ~GroupContainerView() override;
+
+  // WindowMiniViewBase:
+  bool Contains(aura::Window* window) const override;
+  aura::Window* GetWindowAtPoint(const gfx::Point& screen_point) const override;
+
+ private:
+  raw_ptr<WindowCycleItemView, ExperimentalAsh> mini_view1_;
+  raw_ptr<WindowCycleItemView, ExperimentalAsh> mini_view2_;
 };
 
 }  // namespace ash
