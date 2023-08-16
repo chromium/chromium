@@ -1471,7 +1471,10 @@
     'multipaste': {
      'filepath': 'ash/clipboard/|'\
                  'ash/public/cpp/.*clipboard.*|'\
-                 'chrome/browser/ui/ash/clipboard.*',
+                 'chrome/browser/ash/crosapi/clipboard_history.*|'\
+                 'chrome/browser/lacros/clipboard_history.*|'\
+                 'chrome/browser/ui/ash/clipboard.*|'\
+                 'chromeos/ui/clipboard_history/',
     },
     'nacl': {
       'filepath': 'chrome/nacl/|chrome/test/nacl/|'\
