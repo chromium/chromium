@@ -49,6 +49,16 @@ class MockReadAnythingUntrustedPageHandler
               OnLineSpaceChange,
               (read_anything::mojom::LineSpacing line_spacing),
               (override));
+  MOCK_METHOD(void,
+              OnLetterSpaceChange,
+              (read_anything::mojom::LetterSpacing letter_spacing),
+              (override));
+  MOCK_METHOD(void, OnFontChange, (const std::string& font), (override));
+  MOCK_METHOD(void, OnFontSizeChange, (double font_size), (override));
+  MOCK_METHOD(void,
+              OnColorChange,
+              (read_anything::mojom::Colors color),
+              (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {

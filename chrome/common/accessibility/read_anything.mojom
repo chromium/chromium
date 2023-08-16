@@ -83,6 +83,22 @@ interface UntrustedPageHandler {
   // the webui toolbar.
   OnLineSpaceChange(read_anything.mojom.LineSpacing line_spacing);
 
+  // Informs the browser controller that the user updated the letter spacing via
+  // the webui toolbar.
+  OnLetterSpaceChange(read_anything.mojom.LetterSpacing letter_spacing);
+
+  // Informs the browser controller that the user updated the font name via
+  // the webui toolbar.
+  OnFontChange(string font);
+
+  // Informs the browser controller that the user updated the font size via
+  // the webui toolbar.
+  OnFontSizeChange(double font_size);
+
+  // Informs the browser controller that the user updated the color theme via
+  // the webui toolbar.
+  OnColorChange(read_anything.mojom.Colors color);
+
   // Informs the browser controller that a link was clicked in the WebUI. The
   // browser controller responds by performing a click action on the link in
   // the target tree, which is in the main frame of the currently active web

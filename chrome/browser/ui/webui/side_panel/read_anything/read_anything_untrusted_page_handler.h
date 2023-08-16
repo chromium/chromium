@@ -62,6 +62,11 @@ class ReadAnythingUntrustedPageHandler
   void OnCopy() override;
   void OnLineSpaceChange(
       read_anything::mojom::LineSpacing line_spacing) override;
+  void OnLetterSpaceChange(
+      read_anything::mojom::LetterSpacing letter_spacing) override;
+  void OnFontChange(const std::string& font) override;
+  void OnFontSizeChange(double font_size) override;
+  void OnColorChange(read_anything::mojom::Colors color) override;
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
                      ui::AXNodeID target_node_id) override;
   void OnSelectionChange(const ui::AXTreeID& target_tree_id,

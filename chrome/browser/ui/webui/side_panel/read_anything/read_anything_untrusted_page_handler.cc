@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -99,6 +100,27 @@ void ReadAnythingUntrustedPageHandler::OnLineSpaceChange(
   browser_->profile()->GetPrefs()->SetInteger(
       prefs::kAccessibilityReadAnythingLineSpacing,
       static_cast<size_t>(line_spacing));
+}
+
+void ReadAnythingUntrustedPageHandler::OnLetterSpaceChange(
+    read_anything::mojom::LetterSpacing letter_spacing) {
+  browser_->profile()->GetPrefs()->SetInteger(
+      prefs::kAccessibilityReadAnythingLetterSpacing,
+      static_cast<size_t>(letter_spacing));
+}
+void ReadAnythingUntrustedPageHandler::OnFontChange(const std::string& font) {
+  browser_->profile()->GetPrefs()->SetString(
+      prefs::kAccessibilityReadAnythingFontName, font);
+}
+void ReadAnythingUntrustedPageHandler::OnFontSizeChange(double font_size) {
+  double saved_font_size = std::min(font_size, kReadAnythingMaximumFontScale);
+  browser_->profile()->GetPrefs()->SetDouble(
+      prefs::kAccessibilityReadAnythingFontScale, saved_font_size);
+}
+void ReadAnythingUntrustedPageHandler::OnColorChange(
+    read_anything::mojom::Colors color) {
+  browser_->profile()->GetPrefs()->SetInteger(
+      prefs::kAccessibilityReadAnythingColorInfo, static_cast<size_t>(color));
 }
 
 void ReadAnythingUntrustedPageHandler::OnLinkClicked(
