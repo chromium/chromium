@@ -119,10 +119,9 @@ bool UseSeparateGLTexture(SharedContextState* context_state,
   return true;
 }
 
-bool UseTexStorage2D(SharedContextState* context_state) {
-  auto* gl_context = context_state->real_context();
-  const auto* version_info = gl_context->GetVersionInfo();
-  const auto& ext = gl_context->GetCurrentGL()->Driver->ext;
+bool UseTexStorage2D() {
+  const auto* version_info = gl::g_current_gl_version;
+  const auto& ext = gl::g_current_gl_driver->ext;
   return ext.b_GL_EXT_texture_storage || ext.b_GL_ARB_texture_storage ||
          version_info->is_es3 || version_info->IsAtLeastGL(4, 2);
 }
@@ -778,7 +777,7 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
 
   if (use_separate_gl_texture()) {
     DCHECK(!memory_object);
-    if (UseTexStorage2D(context_state_.get())) {
+    if (UseTexStorage2D()) {
       api->glTexStorage2DEXTFn(GL_TEXTURE_2D, 1,
                                format_desc.storage_internal_format,
                                plane_size.width(), plane_size.height());
