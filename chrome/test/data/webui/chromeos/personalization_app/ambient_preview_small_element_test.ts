@@ -84,6 +84,48 @@ suite('AmbientPreviewSmallTest', function() {
     assertEquals(null, container.querySelector('#imageContainer'));
   });
 
+  test('shows placeholders while waiting for assets to load', async () => {
+    // Only AmbientModeEnabled is set.
+    personalizationStore.data.ambient.ambientModeEnabled = true;
+    // Null indicates that albums have not yet loaded.
+    personalizationStore.data.ambient.albums = null;
+    ambientPreviewSmallElement = initElement(AmbientPreviewSmall);
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientPreviewSmallElement);
+
+    const container = ambientPreviewSmallElement.$.container;
+    assertEquals('imagePlaceholder', container.firstElementChild?.id);
+
+    const textPlaceholder = container.querySelector('#textPlaceholder');
+    assertTrue(!!textPlaceholder, 'textPlaceholder element exists');
+    for (const child of textPlaceholder.children) {
+      assertTrue(
+          child.classList.contains('placeholder'),
+          'every element has placeholder class');
+    }
+
+    assertEquals(null, container.querySelector('#imageContainer'));
+  });
+
+  test('ends loading early if ambient mode is disabled', async () => {
+    personalizationStore.data.ambient.ambientModeEnabled = false;
+    ambientPreviewSmallElement = initElement(AmbientPreviewSmall);
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientPreviewSmallElement);
+
+    const zeroStateTextContainer =
+        ambientPreviewSmallElement.shadowRoot!.getElementById(
+            'zeroStateTextContainer');
+    assertTrue(!!zeroStateTextContainer);
+    const textSpan =
+        zeroStateTextContainer.firstElementChild as HTMLSpanElement;
+    assertTrue(!!textSpan);
+    assertEquals('span', textSpan.tagName.toLowerCase());
+    assertEquals(
+        ambientPreviewSmallElement.i18n('ambientModeMainPageZeroStateMessage'),
+        textSpan.innerText.trim());
+  });
+
   test('shows image when loaded', async () => {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
