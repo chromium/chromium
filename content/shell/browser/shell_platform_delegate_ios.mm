@@ -10,6 +10,7 @@
 #include "base/files/file.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_config.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/shell/app/resource.h"
 #include "content/shell/browser/color_chooser/shell_color_chooser_ios.h"
 #include "content/shell/browser/shell.h"
@@ -95,6 +96,7 @@ static const char kAllTracingCategories[] = "*";
 - (void)startTracingWithCategories:(const char*)categories;
 - (UIAlertController*)actionSheetWithTitle:(nullable NSString*)title
                                    message:(nullable NSString*)message;
+- (void)voiceOverStatusDidChange;
 @end
 
 @implementation ContentShellWindowDelegate
@@ -282,6 +284,19 @@ static const char kAllTracingCategories[] = "*";
                        constant:-16.0],
     [_field.heightAnchor constraintEqualToConstant:32.0],
   ]];
+
+  // Enable Accessibility if VoiceOver is already running.
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    content::BrowserAccessibilityState::GetInstance()->OnScreenReaderDetected();
+  }
+
+  // Register for VoiceOver notifications.
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(voiceOverStatusDidChange)
+             name:UIAccessibilityVoiceOverStatusDidChangeNotification
+           object:nil];
+
   UIView* web_contents_view = _shell->web_contents()->GetNativeView().Get();
   [_contentView addSubview:web_contents_view];
 }
@@ -425,6 +440,15 @@ static const char kAllTracingCategories[] = "*";
   return alertController;
 }
 
+- (void)voiceOverStatusDidChange {
+  content::BrowserAccessibilityState* accessibility_state =
+      content::BrowserAccessibilityState::GetInstance();
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    accessibility_state->OnScreenReaderDetected();
+  } else {
+    accessibility_state->OnScreenReaderStopped();
+  }
+}
 @end
 
 @implementation TracingHandler
