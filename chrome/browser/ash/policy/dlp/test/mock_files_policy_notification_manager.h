@@ -38,6 +38,13 @@ class MockFilesPolicyNotificationManager
               (override));
 
   MOCK_METHOD(void,
+              AddConnectorsBlockedFiles,
+              (file_manager::io_task::IOTaskId task_id,
+               std::vector<base::FilePath> blocked_files,
+               dlp::FileAction action),
+              (override));
+
+  MOCK_METHOD(void,
               ShowDlpWarning,
               (OnDlpRestrictionCheckedCallback callback,
                absl::optional<file_manager::io_task::IOTaskId> task_id,
@@ -47,9 +54,22 @@ class MockFilesPolicyNotificationManager
               (override));
 
   MOCK_METHOD(void,
+              ShowConnectorsWarning,
+              (OnDlpRestrictionCheckedCallback callback,
+               file_manager::io_task::IOTaskId task_id,
+               std::vector<base::FilePath> warning_files,
+               dlp::FileAction action),
+              (override));
+
+  MOCK_METHOD(void,
               ShowFilesPolicyNotification,
               (const std::string& notification_id,
                const file_manager::io_task::ProgressStatus& status),
+              (override));
+
+  MOCK_METHOD(void,
+              OnIOTaskResumed,
+              (file_manager::io_task::IOTaskId task_id),
               (override));
 };
 

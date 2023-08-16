@@ -118,7 +118,7 @@ class FilesPolicyNotificationManager
 
   // Runs warning callback for the corresponding IOTask with should_proceed set
   // to true.
-  void OnIOTaskResumed(file_manager::io_task::IOTaskId task_id);
+  virtual void OnIOTaskResumed(file_manager::io_task::IOTaskId task_id);
 
   // Force shows a desktop notification for all tracked IO tasks with blocked
   // files.

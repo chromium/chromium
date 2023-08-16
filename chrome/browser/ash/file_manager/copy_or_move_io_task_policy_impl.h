@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -87,6 +88,22 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   // `progress_.sources[idx]`.
   void MaybeScanForDisallowedFiles(size_t idx);
 
+  // Called when scanning is completed.
+  void ScanningCompleted();
+
+  // Shows a warning for the connectors.
+  // Returns whether the warning was shown.
+  bool MaybeShowConnectorsWarning();
+
+  // Notify FilesPolicyNotificationManager of files that were blocked by
+  // enterprise connectors to show proper blocked dialog.
+  // This is not done if the new UI for enterprise connectors is disabled.
+  void MaybeSendConnectorsBlockedFilesNotification();
+
+  // Called after the warning dialog is proceed or cancelled.
+  // This resumes the transfer and allows for the warned files to be
+  void OnConnectorsWarnDialogResult(bool should_proceed);
+
   // Checks `file_transfer_analysis_delegates_[idx]` whether a transfer is
   // allowed for the source-destination-pair.
   // If it is allowed, callback will be called with `base::File::FILE_OK`.
@@ -123,6 +140,8 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
 
   // The number of files blocked by policies.
   size_t blocked_files_ = 0;
+
+  std::vector<base::FilePath> connectors_blocked_files_;
   // The name of the first blocked file, if any. Used for notifications.
   std::string blocked_file_name_;
 
