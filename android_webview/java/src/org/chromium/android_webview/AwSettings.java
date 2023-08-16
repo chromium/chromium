@@ -19,6 +19,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.android_webview.autofill.ChromeAutocompleteSafeModeAction;
 import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.settings.ForceDarkBehavior;
 import org.chromium.android_webview.settings.ForceDarkMode;
@@ -43,6 +44,7 @@ import java.util.Set;
  * Methods in this class can be called from any thread, including threads created by
  * the client of WebView.
  */
+@Lifetime.WebView
 @JNINamespace("android_webview")
 public class AwSettings {
     private static final String TAG = "AwSettings";

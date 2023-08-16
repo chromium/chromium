@@ -20,6 +20,7 @@ namespace android_webview {
 class AwContentsOriginMatcher;
 class AwRenderViewHostExt;
 
+// Lifetime: WebView
 class AwSettings : public content::WebContentsObserver {
  public:
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview.settings
