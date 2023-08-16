@@ -12,9 +12,9 @@
 
 #include <type_traits>
 
+#include "base/apple/scoped_typeref.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/mac/scoped_typeref.h"
 
 #if defined(__has_feature) && __has_feature(objc_arc)
 #error "Do not use scoped_nsobject in ARC code; use __strong instead."

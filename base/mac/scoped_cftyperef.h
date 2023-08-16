@@ -7,7 +7,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/mac/scoped_typeref.h"
+#include "base/apple/scoped_typeref.h"
 
 namespace base {
 

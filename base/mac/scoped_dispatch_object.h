@@ -7,7 +7,7 @@
 
 #include <dispatch/dispatch.h>
 
-#include "base/mac/scoped_typeref.h"
+#include "base/apple/scoped_typeref.h"
 
 #if __OBJC__
 // In Objective-C ARC, dispatch types are Objective-C types, and must be managed

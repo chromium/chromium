@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_MAC_SCOPED_TYPEREF_H_
-#define BASE_MAC_SCOPED_TYPEREF_H_
+#ifndef BASE_APPLE_SCOPED_TYPEREF_H_
+#define BASE_APPLE_SCOPED_TYPEREF_H_
 
 #include "base/check.h"
 #include "base/memory/scoped_policy.h"
@@ -44,10 +44,10 @@ namespace base {
 // with |ASSUME| for the former and |RETAIN| for the latter. The default policy
 // is to |ASSUME|.
 
-template<typename T>
+template <typename T>
 struct ScopedTypeRefTraits;
 
-template<typename T, typename Traits = ScopedTypeRefTraits<T>>
+template <typename T, typename Traits = ScopedTypeRefTraits<T>>
 class ScopedTypeRef {
  public:
   using element_type = T;
@@ -56,22 +56,24 @@ class ScopedTypeRef {
       element_type object = Traits::InvalidValue(),
       base::scoped_policy::OwnershipPolicy policy = base::scoped_policy::ASSUME)
       : object_(object) {
-    if (object_ && policy == base::scoped_policy::RETAIN)
+    if (object_ && policy == base::scoped_policy::RETAIN) {
       object_ = Traits::Retain(object_);
+    }
   }
 
-  ScopedTypeRef(const ScopedTypeRef<T, Traits>& that)
-      : object_(that.object_) {
-    if (object_)
+  ScopedTypeRef(const ScopedTypeRef<T, Traits>& that) : object_(that.object_) {
+    if (object_) {
       object_ = Traits::Retain(object_);
+    }
   }
 
   // This allows passing an object to a function that takes its superclass.
   template <typename R, typename RTraits>
   explicit ScopedTypeRef(const ScopedTypeRef<R, RTraits>& that_as_subclass)
       : object_(that_as_subclass.get()) {
-    if (object_)
+    if (object_) {
       object_ = Traits::Retain(object_);
+    }
   }
 
   ScopedTypeRef(ScopedTypeRef<T, Traits>&& that) : object_(that.object_) {
@@ -79,8 +81,9 @@ class ScopedTypeRef {
   }
 
   ~ScopedTypeRef() {
-    if (object_)
+    if (object_) {
       Traits::Release(object_);
+    }
   }
 
   ScopedTypeRef& operator=(const ScopedTypeRef<T, Traits>& that) {
@@ -103,10 +106,12 @@ class ScopedTypeRef {
   void reset(element_type object = Traits::InvalidValue(),
              base::scoped_policy::OwnershipPolicy policy =
                  base::scoped_policy::ASSUME) {
-    if (object && policy == base::scoped_policy::RETAIN)
+    if (object && policy == base::scoped_policy::RETAIN) {
       object = Traits::Retain(object);
-    if (object_)
+    }
+    if (object_) {
       Traits::Release(object_);
+    }
     object_ = object;
   }
 
@@ -143,4 +148,4 @@ class ScopedTypeRef {
 
 }  // namespace base
 
-#endif  // BASE_MAC_SCOPED_TYPEREF_H_
+#endif  // BASE_APPLE_SCOPED_TYPEREF_H_

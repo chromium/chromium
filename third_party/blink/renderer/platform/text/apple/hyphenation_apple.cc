@@ -5,7 +5,8 @@
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
 
 #include <CoreFoundation/CoreFoundation.h>
-#include "base/mac/scoped_typeref.h"
+
+#include "base/apple/scoped_typeref.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
