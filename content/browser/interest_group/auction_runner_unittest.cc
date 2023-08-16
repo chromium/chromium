@@ -229,7 +229,6 @@ std::string MakeBidScript(const url::Origin& seller,
                           const std::string& debug_loss_report_url = "",
                           const std::string& debug_win_report_url = "",
                           bool report_reject_reason = false) {
-  // TODO(morlovich): Use JsReplace.
   constexpr char kBidScript[] = R"(
     const seller = "%s";
     const bid = %s;
