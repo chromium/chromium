@@ -1103,27 +1103,29 @@ grit("generate_components_resources") {
   }
 }
 
-grit("generate_components_scaled_resources") {
-  source = "../components/resources/components_scaled_resources.grd"
+if (webview_includes_weblayer) {
+  grit("generate_components_scaled_resources") {
+    source = "../components/resources/components_scaled_resources.grd"
 
-  # See :generate_webui_resources for an explanation of the allowlist
-  _allowlist = rebase_path("$target_gen_dir/grit_resources_allowlist.txt",
-                           root_build_dir)
+    # See :generate_webui_resources for an explanation of the allowlist
+    _allowlist = rebase_path("$target_gen_dir/grit_resources_allowlist.txt",
+                             root_build_dir)
 
-  grit_flags = [
-    "-w",
-    _allowlist,
-  ]
-  outputs = [
-    "grit/components_scaled_resources.h",
-    "grit/components_scaled_resources_map.cc",
-    "grit/components_scaled_resources_map.h",
-    "components_resources_100_percent.pak",
-    "components_resources_200_percent.pak",
-    "components_resources_300_percent.pak",
-  ]
+    grit_flags = [
+      "-w",
+      _allowlist,
+    ]
+    outputs = [
+      "grit/components_scaled_resources.h",
+      "grit/components_scaled_resources_map.cc",
+      "grit/components_scaled_resources_map.h",
+      "components_resources_100_percent.pak",
+      "components_resources_200_percent.pak",
+      "components_resources_300_percent.pak",
+    ]
 
-  deps = [ ":concatenate_resources_allowlists" ]
+    deps = [ ":concatenate_resources_allowlists" ]
+  }
 }
 
 grit("generate_components_strings") {

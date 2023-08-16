@@ -10,19 +10,20 @@ import("//weblayer/variables.gni")
 
 template("system_webview_bundle") {
   _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
-  _base_target_name = get_label_info(invoker.base_module_target, "name")
-  _base_target_gen_dir =
-      get_label_info(invoker.base_module_target, "target_gen_dir")
-  _base_module_build_config =
-      "$_base_target_gen_dir/${_base_target_name}.build_config.json"
-  _rebased_base_module_build_config =
-      rebase_path(_base_module_build_config, root_build_dir)
-  _base_module_version_code =
-      "@FileArg($_rebased_base_module_build_config:deps_info:version_code)"
 
   assert(_is_trichrome == defined(invoker.static_library_provider))
 
   if (webview_includes_weblayer) {
+    _base_target_name = get_label_info(invoker.base_module_target, "name")
+    _base_target_gen_dir =
+        get_label_info(invoker.base_module_target, "target_gen_dir")
+    _base_module_build_config =
+        "$_base_target_gen_dir/${_base_target_name}.build_config.json"
+    _rebased_base_module_build_config =
+        rebase_path(_base_module_build_config, root_build_dir)
+    _base_module_version_code =
+        "@FileArg($_rebased_base_module_build_config:deps_info:version_code)"
+
     # TODO(crbug.com/1105096): If WebView starts using
     # //components/module_installer, it will probably make sense to refactor
     # chrome_feature_module() to be used here.
