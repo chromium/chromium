@@ -12,6 +12,7 @@
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/output_config.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 
@@ -251,6 +252,10 @@ void RecordSegmentSelectionComputed(
 void RecordClassificationResultComputed(
     const Config& config,
     const proto::PredictionResult& new_result) {
+  if (new_result.output_config().predictor().PredictorType_case() ==
+      proto::Predictor::kGenericPredictor) {
+    return;
+  }
   PostProcessor post_processor;
   int new_result_top_label = post_processor.GetIndexOfTopLabel(new_result);
   std::string computed_hist =

@@ -68,6 +68,19 @@ proto::PredictionResult CreatePredictionResultWithBinaryClassifier() {
   return result;
 }
 
+proto::PredictionResult CreatePredictionResultWithGenericPredictor() {
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+  writer.AddOutputConfigForGenericPredictor({"output1", "output2"});
+
+  proto::PredictionResult prediction_result;
+  prediction_result.add_result(0.8f);
+  prediction_result.add_result(0.2f);
+  prediction_result.mutable_output_config()->Swap(
+      model_metadata.mutable_output_config());
+  return prediction_result;
+}
+
 class RequestHandlerTest : public testing::Test {
  public:
   RequestHandlerTest() = default;
@@ -122,6 +135,36 @@ TEST_F(RequestHandlerTest, GetPredictionResult) {
                 std::make_unique<SegmentResultProvider::SegmentResult>(
                     SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
                     CreatePredictionResultWithBinaryClassifier(),
+                    /*rank=*/2);
+            std::move(options->callback).Run(std::move(result));
+          }));
+
+  base::RunLoop loop;
+  RawResult result(PredictionStatus::kFailed);
+  request_handler_->GetPredictionResult(
+      options, scoped_refptr<InputContext>(),
+      base::BindOnce(&RequestHandlerTest::OnGetPredictionResult,
+                     base::Unretained(this), loop.QuitClosure()));
+  loop.Run();
+}
+
+TEST_F(RequestHandlerTest, GetGenericPredictionResult) {
+  PredictionOptions options;
+  options.on_demand_execution = true;
+
+  EXPECT_CALL(*training_data_collector_,
+              OnDecisionTime(kSegmentId, _,
+                             proto::TrainingOutputs::TriggerConfig::ONDEMAND))
+      .WillOnce(Return(TrainingRequestId::FromUnsafeValue(15)));
+  EXPECT_CALL(*result_provider_, GetSegmentResult(_))
+      .WillOnce(Invoke(
+          [](std::unique_ptr<SegmentResultProvider::GetResultOptions> options) {
+            EXPECT_TRUE(options->ignore_db_scores);
+            EXPECT_EQ(options->segment_id, kSegmentId);
+            auto result =
+                std::make_unique<SegmentResultProvider::SegmentResult>(
+                    SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
+                    CreatePredictionResultWithGenericPredictor(),
                     /*rank=*/2);
             std::move(options->callback).Run(std::move(result));
           }));
