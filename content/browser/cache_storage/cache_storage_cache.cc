@@ -280,17 +280,17 @@ bool VaryMatches(const blink::FetchAPIRequestHeadersMap& request,
   return true;
 }
 
-// Check a batch operation list for duplicate entries.  A StackVector
-// must be passed to store any resulting duplicate URL strings.  Returns
-// true if any duplicates were found.
-bool FindDuplicateOperations(
-    const std::vector<blink::mojom::BatchOperationPtr>& operations,
-    std::vector<std::string>* duplicate_url_list_out) {
+// Checks a batch operation list for duplicate entries. Returns any duplicate
+// URL strings that were found. If the return value is empty, then there were no
+// duplicates.
+std::vector<std::string> FindDuplicateOperations(
+    const std::vector<blink::mojom::BatchOperationPtr>& operations) {
   using blink::mojom::BatchOperation;
-  DCHECK(duplicate_url_list_out);
+
+  std::vector<std::string> duplicate_url_list;
 
   if (operations.size() < 2) {
-    return false;
+    return duplicate_url_list;
   }
 
   // Create a temporary sorted vector of the operations to support quickly
@@ -330,8 +330,8 @@ bool FindDuplicateOperations(
 
     // If this entry already matches a duplicate we found, then just skip
     // ahead to find any remaining duplicates.
-    if (!duplicate_url_list_out->empty() &&
-        outer_op->request->url.spec() == duplicate_url_list_out->back()) {
+    if (!duplicate_url_list.empty() &&
+        outer_op->request->url.spec() == duplicate_url_list.back()) {
       continue;
     }
 
@@ -354,13 +354,13 @@ bool FindDuplicateOperations(
           VaryMatches(outer_op->request->headers, inner_op->request->headers,
                       outer_op->response->response_type,
                       outer_op->response->headers)) {
-        duplicate_url_list_out->push_back(inner_op->request->url.spec());
+        duplicate_url_list.push_back(inner_op->request->url.spec());
         break;
       }
     }
   }
 
-  return !duplicate_url_list_out->empty();
+  return duplicate_url_list;
 }
 
 GURL RemoveQueryParam(const GURL& url) {
@@ -770,11 +770,13 @@ void CacheStorageCache::BatchOperation(
   // "If the result of running Query Cache with operation’s request,
   //  operation’s options, and addedItems is not empty, throw an
   //  InvalidStateError DOMException."
-  std::vector<std::string> duplicate_url_list;
-  if (FindDuplicateOperations(operations, &duplicate_url_list)) {
+
+  if (const auto duplicate_url_list = FindDuplicateOperations(operations);
+      !duplicate_url_list.empty()) {
     // If we found any duplicates we need to at least warn the user.  Format
     // the URL list into a comma-separated list.
-    std::string url_list_string = base::JoinString(duplicate_url_list, ", ");
+    const std::string url_list_string =
+        base::JoinString(duplicate_url_list, ", ");
 
     // Place the duplicate list into an error message.
     message.emplace(
