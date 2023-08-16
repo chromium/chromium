@@ -47,10 +47,10 @@
 #include <cmath>
 #include <string>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/deps/safe_int.h"
 #include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/framework/port/logging.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

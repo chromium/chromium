@@ -19,11 +19,11 @@
 #include <iostream>
 #include <string>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/time_series_header.pb.h"
 #include "mediapipe/framework/port/logging.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace time_series_util {
@@ -80,7 +80,7 @@ absl::Status IsTimeSeriesHeaderValid(const TimeSeriesHeader& header) {
 
 absl::Status FillTimeSeriesHeaderIfValid(const Packet& header_packet,
                                          TimeSeriesHeader* header) {
-  CHECK(header);
+  ABSL_CHECK(header);
   if (header_packet.IsEmpty()) {
     return tool::StatusFail("No header found.");
   }
@@ -93,7 +93,7 @@ absl::Status FillTimeSeriesHeaderIfValid(const Packet& header_packet,
 
 absl::Status FillMultiStreamTimeSeriesHeaderIfValid(
     const Packet& header_packet, MultiStreamTimeSeriesHeader* header) {
-  CHECK(header);
+  ABSL_CHECK(header);
   if (header_packet.IsEmpty()) {
     return tool::StatusFail("No header found.");
   }

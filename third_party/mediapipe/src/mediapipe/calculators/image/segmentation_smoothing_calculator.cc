@@ -32,7 +32,6 @@
 #endif  // !MEDIAPIPE_DISABLE_GPU
 
 #if !MEDIAPIPE_DISABLE_OPENCV
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/formats/image_frame_opencv.h"
 #include "mediapipe/framework/formats/image_opencv.h"
 #include "mediapipe/framework/port/opencv_core_inc.h"
@@ -111,7 +110,7 @@ REGISTER_CALCULATOR(SegmentationSmoothingCalculator);
 
 absl::Status SegmentationSmoothingCalculator::GetContract(
     CalculatorContract* cc) {
-  ABSL_CHECK_GE(cc->Inputs().NumEntries(), 1);
+  RET_CHECK_GE(cc->Inputs().NumEntries(), 1);
 
   cc->Inputs().Tag(kCurrentMaskTag).Set<Image>();
   cc->Inputs().Tag(kPreviousMaskTag).Set<Image>();

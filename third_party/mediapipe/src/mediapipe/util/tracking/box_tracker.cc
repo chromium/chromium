@@ -19,7 +19,6 @@
 #include <fstream>
 #include <limits>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "absl/synchronization/mutex.h"
 #include "absl/time/clock.h"
@@ -28,6 +27,7 @@
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/util/tracking/measure_time.h"
 #include "mediapipe/util/tracking/tracking.pb.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -38,7 +38,7 @@ static constexpr int kInitCheckpoint = -1;
 void MotionBoxStateQuadToVertices(const MotionBoxState::Quad& quad,
                                   std::vector<Vector2_f>* vertices) {
   ABSL_CHECK_EQ(TimedBox::kNumQuadVertices * 2, quad.vertices_size());
-  CHECK(vertices != nullptr);
+  ABSL_CHECK(vertices != nullptr);
   vertices->clear();
   for (int i = 0; i < TimedBox::kNumQuadVertices; ++i) {
     vertices->push_back(
@@ -49,7 +49,7 @@ void MotionBoxStateQuadToVertices(const MotionBoxState::Quad& quad,
 void VerticesToMotionBoxStateQuad(const std::vector<Vector2_f>& vertices,
                                   MotionBoxState::Quad* quad) {
   ABSL_CHECK_EQ(TimedBox::kNumQuadVertices, vertices.size());
-  CHECK(quad != nullptr);
+  ABSL_CHECK(quad != nullptr);
   for (const Vector2_f& vertex : vertices) {
     quad->add_vertices(vertex.x());
     quad->add_vertices(vertex.y());
@@ -57,7 +57,7 @@ void VerticesToMotionBoxStateQuad(const std::vector<Vector2_f>& vertices,
 }
 
 void MotionBoxStateFromTimedBox(const TimedBox& box, MotionBoxState* state) {
-  CHECK(state);
+  ABSL_CHECK(state);
   state->set_pos_x(box.left);
   state->set_pos_y(box.top);
   state->set_width(box.right - box.left);
@@ -91,7 +91,7 @@ void MotionBoxStateFromTimedBox(const TimedBox& box, MotionBoxState* state) {
 }
 
 void TimedBoxFromMotionBoxState(const MotionBoxState& state, TimedBox* box) {
-  CHECK(box);
+  ABSL_CHECK(box);
   const float scale_dx = state.width() * (state.scale() - 1.0f) * 0.5f;
   const float scale_dy = state.height() * (state.scale() - 1.0f) * 0.5f;
   box->left = state.pos_x() - scale_dx;
@@ -486,12 +486,12 @@ void BoxTracker::CancelTracking(int id, int checkpoint) {
 
 bool BoxTracker::GetTimedPosition(int id, int64_t time_msec, TimedBox* result,
                                   std::vector<MotionBoxState>* states) {
-  CHECK(result);
+  ABSL_CHECK(result);
 
   MotionBoxState* lhs_box_state = nullptr;
   MotionBoxState* rhs_box_state = nullptr;
   if (states) {
-    CHECK(options_.record_path_states())
+    ABSL_CHECK(options_.record_path_states())
         << "Requesting corresponding tracking states requires option "
         << "record_path_states to be set";
     states->resize(1);
@@ -908,7 +908,7 @@ void BoxTracker::TrackingImpl(const TrackingImplArgs& a) {
 
 bool TimedBoxAtTime(const PathSegment& segment, int64_t time_msec,
                     TimedBox* box, MotionBoxState* state) {
-  CHECK(box);
+  ABSL_CHECK(box);
 
   if (segment.empty()) {
     return false;
@@ -1032,7 +1032,7 @@ bool BoxTracker::WaitForAllOngoingTracks(int timeout_us) {
 bool BoxTracker::GetTrackingData(int id, int64_t request_time_msec,
                                  TrackingData* tracking_data,
                                  int* tracking_data_msec) {
-  CHECK(tracking_data);
+  ABSL_CHECK(tracking_data);
 
   int chunk_idx = ChunkIdxFromTime(request_time_msec);
 

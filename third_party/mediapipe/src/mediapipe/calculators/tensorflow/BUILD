@@ -366,15 +366,15 @@ cc_library(
     name = "pack_media_sequence_calculator",
     srcs = ["pack_media_sequence_calculator.cc"],
     deps = [
+        ":pack_media_sequence_calculator_cc_proto",
         "//mediapipe/calculators/image:opencv_image_encoder_calculator_cc_proto",
-        "//mediapipe/calculators/tensorflow:pack_media_sequence_calculator_cc_proto",
         "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework/formats:classification_cc_proto",
         "//mediapipe/framework/formats:detection_cc_proto",
         "//mediapipe/framework/formats:location",
         "//mediapipe/framework/formats:location_opencv",
         "//mediapipe/framework/port:opencv_imgcodecs",
         "//mediapipe/framework/port:ret_check",
-        "//mediapipe/framework/port:status",
         "//mediapipe/util/sequence:media_sequence",
         "//mediapipe/util/sequence:media_sequence_util",
         "@com_google_absl//absl/container:flat_hash_map",
@@ -406,8 +406,13 @@ cc_library(
     alwayslink = 1,
 )
 
-# This dependency removed tensorflow_jellyfish_deps and xprofilez_with_server because they failed
-# Boq conformance test. Weigh your use case to see if this will work for you.
+# This dependency removed the following 3 targets because they failed Boq conformance test:
+#
+# tensorflow_jellyfish_deps
+# jfprof_lib
+# xprofilez_with_server
+#
+# If you need them plz consider tensorflow_inference_calculator_no_envelope_loader.
 cc_library(
     name = "tensorflow_inference_calculator_for_boq",
     srcs = ["tensorflow_inference_calculator.cc"],
@@ -920,21 +925,21 @@ cc_test(
     srcs = ["pack_media_sequence_calculator_test.cc"],
     deps = [
         ":pack_media_sequence_calculator",
+        ":pack_media_sequence_calculator_cc_proto",
         "//mediapipe/calculators/image:opencv_image_encoder_calculator_cc_proto",
-        "//mediapipe/calculators/tensorflow:pack_media_sequence_calculator_cc_proto",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework:calculator_runner",
         "//mediapipe/framework:timestamp",
+        "//mediapipe/framework/formats:classification_cc_proto",
         "//mediapipe/framework/formats:detection_cc_proto",
-        "//mediapipe/framework/formats:image_frame",
         "//mediapipe/framework/formats:location",
         "//mediapipe/framework/formats:location_opencv",
         "//mediapipe/framework/port:gtest_main",
         "//mediapipe/framework/port:opencv_imgcodecs",
         "//mediapipe/util/sequence:media_sequence",
-        "@com_google_absl//absl/container:flat_hash_map",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest_main",
         "@org_tensorflow//tensorflow/core:protos_all_cc",
     ],
 )

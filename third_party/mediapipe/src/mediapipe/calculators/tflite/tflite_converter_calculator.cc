@@ -15,7 +15,6 @@
 #include <string>
 #include <vector>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/calculators/tflite/tflite_converter_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/image_frame.h"
@@ -47,6 +46,7 @@
 #include "mediapipe/gpu/MPPMetalUtil.h"
 #include "mediapipe/gpu/gpu_buffer.h"
 #include "tensorflow/lite/delegates/gpu/metal_delegate.h"
+#include "absl/log/absl_check.h"
 #endif  // MEDIAPIPE_TFLITE_METAL_INFERENCE
 
 namespace {

@@ -18,7 +18,6 @@
 #include <utility>
 #include <vector>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/calculators/util/non_max_suppression_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/detection.pb.h"
@@ -27,6 +26,7 @@
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/rectangle.h"
 #include "mediapipe/framework/port/status.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -48,7 +48,7 @@ bool RetainMaxScoringLabelOnly(Detection* detection) {
   if (detection->label_id_size() == 0 && detection->label_size() == 0) {
     return false;
   }
-  CHECK(detection->label_id_size() == detection->score_size() ||
+  ABSL_CHECK(detection->label_id_size() == detection->score_size() ||
         detection->label_size() == detection->score_size())
       << "Number of scores must be equal to number of detections.";
 

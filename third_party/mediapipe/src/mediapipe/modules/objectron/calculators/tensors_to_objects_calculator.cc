@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "Eigen/Dense"
-#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
@@ -31,6 +30,7 @@
 #include "mediapipe/modules/objectron/calculators/decoder.h"
 #include "mediapipe/modules/objectron/calculators/tensor_util.h"
 #include "mediapipe/modules/objectron/calculators/tensors_to_objects_calculator.pb.h"
+#include "absl/log/absl_check.h"
 
 namespace {
 constexpr char kInputStreamTag[] = "TENSORS";

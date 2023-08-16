@@ -20,7 +20,6 @@
 #include <string>
 #include <utility>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/calculator_state.h"
 #include "mediapipe/framework/counter.h"
 #include "mediapipe/framework/graph_service.h"
@@ -31,6 +30,7 @@
 #include "mediapipe/framework/port/any_proto.h"
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/timestamp.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

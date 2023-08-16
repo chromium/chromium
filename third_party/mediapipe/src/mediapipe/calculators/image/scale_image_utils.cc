@@ -18,11 +18,11 @@
 
 #include <string>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_split.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace scale_image {
@@ -41,10 +41,10 @@ absl::Status FindCropDimensions(int input_width, int input_height,    //
                                 const std::string& max_aspect_ratio,  //
                                 int* crop_width, int* crop_height,    //
                                 int* col_start, int* row_start) {
-  CHECK(crop_width);
-  CHECK(crop_height);
-  CHECK(col_start);
-  CHECK(row_start);
+  ABSL_CHECK(crop_width);
+  ABSL_CHECK(crop_height);
+  ABSL_CHECK(col_start);
+  ABSL_CHECK(row_start);
 
   double min_aspect_ratio_q = 0.0;
   double max_aspect_ratio_q = 0.0;
@@ -97,8 +97,8 @@ absl::Status FindOutputDimensions(int input_width,             //
                                   bool preserve_aspect_ratio,  //
                                   int scale_to_multiple_of,    //
                                   int* output_width, int* output_height) {
-  CHECK(output_width);
-  CHECK(output_height);
+  ABSL_CHECK(output_width);
+  ABSL_CHECK(output_height);
 
   if (target_max_area > 0 && input_width * input_height > target_max_area) {
     preserve_aspect_ratio = true;

@@ -20,7 +20,6 @@
 #include <cmath>
 #include <memory>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "mediapipe/framework/port/logging.h"
@@ -31,6 +30,7 @@
 #include "mediapipe/util/tracking/motion_models.h"
 #include "mediapipe/util/tracking/motion_models.pb.h"
 #include "mediapipe/util/tracking/region_flow.pb.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -106,7 +106,7 @@ inline std::string EncodeVectorToString(const std::vector<T>& vec) {
 
 template <typename T>
 inline bool DecodeFromStringView(absl::string_view str, T* result) {
-  CHECK(result != nullptr);
+  ABSL_CHECK(result != nullptr);
   if (sizeof(*result) != str.size()) {
     return false;
   }
@@ -117,7 +117,7 @@ inline bool DecodeFromStringView(absl::string_view str, T* result) {
 template <typename T>
 inline bool DecodeVectorFromStringView(absl::string_view str,
                                        std::vector<T>* result) {
-  CHECK(result != nullptr);
+  ABSL_CHECK(result != nullptr);
   if (str.size() % sizeof(T) != 0) return false;
   result->clear();
   result->reserve(str.size() / sizeof(T));
@@ -135,7 +135,7 @@ inline bool DecodeVectorFromStringView(absl::string_view str,
 void FlowPackager::PackFlow(const RegionFlowFeatureList& feature_list,
                             const CameraMotion* camera_motion,
                             TrackingData* tracking_data) const {
-  CHECK(tracking_data);
+  ABSL_CHECK(tracking_data);
   ABSL_CHECK_GT(feature_list.frame_width(), 0);
   ABSL_CHECK_GT(feature_list.frame_height(), 0);
 
@@ -274,8 +274,8 @@ void FlowPackager::PackFlow(const RegionFlowFeatureList& feature_list,
 
 void FlowPackager::EncodeTrackingData(const TrackingData& tracking_data,
                                       BinaryTrackingData* binary_data) const {
-  CHECK(options_.binary_tracking_data_support());
-  CHECK(binary_data != nullptr);
+  ABSL_CHECK(options_.binary_tracking_data_support());
+  ABSL_CHECK(binary_data != nullptr);
 
   int32_t frame_flags = 0;
   const bool high_profile = options_.use_high_profile();
@@ -603,7 +603,7 @@ std::string PopSubstring(int len, absl::string_view* piece) {
 
 void FlowPackager::DecodeTrackingData(const BinaryTrackingData& container_data,
                                       TrackingData* tracking_data) const {
-  CHECK(tracking_data != nullptr);
+  ABSL_CHECK(tracking_data != nullptr);
 
   absl::string_view data(container_data.data());
   int32_t frame_flags = 0;
@@ -790,7 +790,7 @@ void FlowPackager::DecodeTrackingData(const BinaryTrackingData& container_data,
 
 void FlowPackager::BinaryTrackingDataToContainer(
     const BinaryTrackingData& binary_data, TrackingContainer* container) const {
-  CHECK(container != nullptr);
+  ABSL_CHECK(container != nullptr);
   container->Clear();
   container->set_header("TRAK");
   container->set_version(1);
@@ -807,7 +807,7 @@ void FlowPackager::BinaryTrackingDataFromContainer(
 
 void FlowPackager::DecodeMetaData(const TrackingContainer& container_data,
                                   MetaData* meta_data) const {
-  CHECK(meta_data != nullptr);
+  ABSL_CHECK(meta_data != nullptr);
 
   ABSL_CHECK_EQ("META", container_data.header());
   ABSL_CHECK_EQ(1, container_data.version()) << "Unsupported version.";
@@ -834,7 +834,7 @@ void FlowPackager::DecodeMetaData(const TrackingContainer& container_data,
 void FlowPackager::FinalizeTrackingContainerFormat(
     std::vector<uint32_t>* timestamps,
     TrackingContainerFormat* container_format) {
-  CHECK(container_format != nullptr);
+  ABSL_CHECK(container_format != nullptr);
 
   // Compute binary sizes of track_data.
   const int num_frames = container_format->track_data_size();
@@ -878,7 +878,7 @@ void FlowPackager::FinalizeTrackingContainerFormat(
 
 void FlowPackager::FinalizeTrackingContainerProto(
     std::vector<uint32_t>* timestamps, TrackingContainerProto* proto) {
-  CHECK(proto != nullptr);
+  ABSL_CHECK(proto != nullptr);
 
   // Compute binary sizes of track_data.
   const int num_frames = proto->track_data_size();
@@ -924,7 +924,7 @@ void FlowPackager::InitializeMetaData(int num_frames,
 
 void FlowPackager::AddContainerToString(const TrackingContainer& container,
                                         std::string* binary_data) {
-  CHECK(binary_data != nullptr);
+  ABSL_CHECK(binary_data != nullptr);
   std::string header_string(container.header());
   ABSL_CHECK_EQ(4, header_string.size());
 
@@ -937,10 +937,10 @@ void FlowPackager::AddContainerToString(const TrackingContainer& container,
 
 std::string FlowPackager::SplitContainerFromString(
     absl::string_view* binary_data, TrackingContainer* container) {
-  CHECK(binary_data != nullptr);
-  CHECK(container != nullptr);
+  ABSL_CHECK(binary_data != nullptr);
+  ABSL_CHECK(container != nullptr);
   ABSL_CHECK_GE(binary_data->size(), 12) << "Data does not contain "
-                                         << "valid container";
+                                    << "valid container";
 
   container->set_header(PopSubstring(4, binary_data));
 
@@ -962,7 +962,7 @@ std::string FlowPackager::SplitContainerFromString(
 
 void FlowPackager::TrackingContainerFormatToBinary(
     const TrackingContainerFormat& container_format, std::string* binary) {
-  CHECK(binary != nullptr);
+  ABSL_CHECK(binary != nullptr);
   binary->clear();
 
   AddContainerToString(container_format.meta_data(), binary);
@@ -975,13 +975,13 @@ void FlowPackager::TrackingContainerFormatToBinary(
 
 void FlowPackager::TrackingContainerFormatFromBinary(
     const std::string& binary, TrackingContainerFormat* container_format) {
-  CHECK(container_format != nullptr);
+  ABSL_CHECK(container_format != nullptr);
   container_format->Clear();
 
   absl::string_view data(binary);
 
   ABSL_CHECK_EQ("META", SplitContainerFromString(
-                            &data, container_format->mutable_meta_data()));
+                       &data, container_format->mutable_meta_data()));
   MetaData meta_data;
   DecodeMetaData(container_format->meta_data(), &meta_data);
 
@@ -991,12 +991,12 @@ void FlowPackager::TrackingContainerFormatFromBinary(
   }
 
   ABSL_CHECK_EQ("TERM", SplitContainerFromString(
-                            &data, container_format->mutable_term_data()));
+                       &data, container_format->mutable_term_data()));
 }
 
 void FlowPackager::SortRegionFlowFeatureList(
     float scale_x, float scale_y, RegionFlowFeatureList* feature_list) const {
-  CHECK(feature_list != nullptr);
+  ABSL_CHECK(feature_list != nullptr);
   // Sort features lexicographically.
   std::sort(feature_list->mutable_feature()->begin(),
             feature_list->mutable_feature()->end(),

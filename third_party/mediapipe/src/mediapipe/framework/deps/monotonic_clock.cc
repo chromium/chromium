@@ -16,10 +16,10 @@
 
 #include "absl/base/macros.h"
 #include "absl/base/thread_annotations.h"
-#include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "absl/time/time.h"
 #include "mediapipe/framework/port/logging.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -61,7 +61,7 @@ class MonotonicClockImpl : public MonotonicClock {
 
   // Absolve this object of responsibility for state_.
   void ReleaseState() {
-    CHECK(state_owned_);
+    ABSL_CHECK(state_owned_);
     state_owned_ = false;
   }
 

@@ -22,7 +22,6 @@
 #include "absl/container/flat_hash_set.h"
 #include "absl/container/node_hash_map.h"
 #include "absl/container/node_hash_set.h"
-#include "absl/log/absl_check.h"
 #include "absl/strings/numbers.h"
 #include "mediapipe/calculators/video/box_tracker_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -38,6 +37,7 @@
 #include "mediapipe/util/tracking/box_tracker.h"
 #include "mediapipe/util/tracking/tracking.h"
 #include "mediapipe/util/tracking/tracking_visualization_utilities.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -316,10 +316,10 @@ void ConvertCoordinateForRotation(float in_top, float in_left, float in_bottom,
                                   float in_right, int rotation, float* out_top,
                                   float* out_left, float* out_bottom,
                                   float* out_right) {
-  CHECK(out_top != nullptr);
-  CHECK(out_left != nullptr);
-  CHECK(out_bottom != nullptr);
-  CHECK(out_right != nullptr);
+  ABSL_CHECK(out_top != nullptr);
+  ABSL_CHECK(out_left != nullptr);
+  ABSL_CHECK(out_bottom != nullptr);
+  ABSL_CHECK(out_right != nullptr);
   const float in_center_x = (in_left + in_right) * 0.5f;
   const float in_center_y = (in_top + in_bottom) * 0.5f;
   const float in_width = in_right - in_left;
@@ -374,7 +374,7 @@ void ConvertCoordinateForRotation(float in_top, float in_left, float in_bottom,
 
 void AddStateToPath(const MotionBoxState& state, int64_t time_msec,
                     PathSegment* path) {
-  CHECK(path);
+  ABSL_CHECK(path);
   TimedBox result;
   TimedBoxFromMotionBoxState(state, &result);
   result.time_msec = time_msec;
@@ -650,7 +650,7 @@ absl::Status BoxTrackerCalculator::Process(CalculatorContext* cc) {
   // present at this frame.
   TimedBoxProtoList box_track_list;
 
-  CHECK(box_tracker_ || track_stream)
+  ABSL_CHECK(box_tracker_ || track_stream)
       << "Expected either batch or streaming mode";
 
   // Corresponding list of box states for rendering. For each id present at
@@ -1167,8 +1167,8 @@ void BoxTrackerCalculator::StreamTrack(const TrackingData& data,
                                        int64_t duration_ms, bool forward,
                                        MotionBoxMap* box_map,
                                        std::vector<int>* failed_ids) {
-  CHECK(box_map);
-  CHECK(failed_ids);
+  ABSL_CHECK(box_map);
+  ABSL_CHECK(failed_ids);
 
   // Cache the actively discarded tracked ids from the new tracking data.
   for (const int discarded_id :

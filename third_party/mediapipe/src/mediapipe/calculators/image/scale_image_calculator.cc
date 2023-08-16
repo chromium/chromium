@@ -18,7 +18,6 @@
 #include <memory>
 #include <string>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/substitute.h"
 #include "libyuv/scale.h"
@@ -38,6 +37,7 @@
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/util/image_frame_util.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

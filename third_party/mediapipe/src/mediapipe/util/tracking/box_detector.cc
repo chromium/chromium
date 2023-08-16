@@ -16,7 +16,6 @@
 
 #include <vector>
 
-#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "mediapipe/framework/port/opencv_calib3d_inc.h"
 #include "mediapipe/framework/port/opencv_imgproc_inc.h"
@@ -24,6 +23,7 @@
 #include "mediapipe/util/tracking/box_detector.pb.h"
 #include "mediapipe/util/tracking/box_tracker.h"
 #include "mediapipe/util/tracking/measure_time.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -44,7 +44,7 @@ void ScaleBox(float scale_x, float scale_y, TimedBoxProto *box) {
 }
 
 cv::Mat ConvertDescriptorsToMat(const std::vector<std::string> &descriptors) {
-  CHECK(!descriptors.empty()) << "empty descriptors.";
+  ABSL_CHECK(!descriptors.empty()) << "empty descriptors.";
 
   const int descriptors_dims = descriptors[0].size();
   ABSL_CHECK_GT(descriptors_dims, 0);
@@ -683,7 +683,7 @@ void BoxDetectorInterface::AddBoxDetectorIndex(const BoxDetectorIndex &index) {
       }
 
       ABSL_CHECK_EQ(frame_entry.keypoints_size(),
-                    frame_entry.descriptors_size() * 2);
+               frame_entry.descriptors_size() * 2);
 
       const int num_features = frame_entry.descriptors_size();
       ABSL_CHECK_GT(num_features, 0);

@@ -28,13 +28,16 @@
 #ifndef MEDIAPIPE_FRAMEWORK_TOOL_SINK_H_
 #define MEDIAPIPE_FRAMEWORK_TOOL_SINK_H_
 
+#include <functional>
 #include <string>
 #include <vector>
 
 #include "absl/base/macros.h"
+#include "absl/status/status.h"
 #include "mediapipe/framework/calculator_base.h"
 #include "mediapipe/framework/packet_type.h"
 #include "mediapipe/framework/port/status.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -203,6 +206,16 @@ class CallbackWithHeaderCalculator : public CalculatorBase {
   // the current implementation, or in the Process() call when the header stream
   // has the packet.
   Packet header_packet_;
+};
+
+// Produces an output packet with the PostStream timestamp containing the
+// input side packet.
+class MediaPipeInternalSidePacketToPacketStreamCalculator
+    : public CalculatorBase {
+ public:
+  static absl::Status GetContract(CalculatorContract* cc);
+  absl::Status Open(CalculatorContext* cc) final;
+  absl::Status Process(CalculatorContext* cc) final;
 };
 
 }  // namespace tool

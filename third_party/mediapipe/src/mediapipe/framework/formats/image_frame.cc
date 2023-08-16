@@ -23,12 +23,12 @@
 #include <algorithm>
 #include <utility>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/formats/image_format.pb.h"
 #include "mediapipe/framework/port/aligned_malloc_and_free.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/proto_ns.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -100,7 +100,7 @@ void ImageFrame::Reset(ImageFormat::Format format, int width, int height,
   width_ = width;
   height_ = height;
   ABSL_CHECK_NE(ImageFormat::UNKNOWN, format_);
-  CHECK(IsValidAlignmentNumber(alignment_boundary));
+  ABSL_CHECK(IsValidAlignmentNumber(alignment_boundary));
   width_step_ = width * NumberOfChannels() * ByteDepth();
   if (alignment_boundary == 1) {
     pixel_data_ = {new uint8_t[height * width_step_],
@@ -223,7 +223,7 @@ bool ImageFrame::IsContiguous() const {
 }
 
 bool ImageFrame::IsAligned(uint32_t alignment_boundary) const {
-  CHECK(IsValidAlignmentNumber(alignment_boundary));
+  ABSL_CHECK(IsValidAlignmentNumber(alignment_boundary));
   if (!pixel_data_) {
     return false;
   }
@@ -383,7 +383,7 @@ void ImageFrame::CopyPixelData(ImageFormat::Format format, int width,
 }
 
 void ImageFrame::CopyToBuffer(uint8_t* buffer, int buffer_size) const {
-  CHECK(buffer);
+  ABSL_CHECK(buffer);
   ABSL_CHECK_EQ(1, ByteDepth());
   const int data_size = width_ * height_ * NumberOfChannels();
   ABSL_CHECK_LE(data_size, buffer_size);
@@ -398,7 +398,7 @@ void ImageFrame::CopyToBuffer(uint8_t* buffer, int buffer_size) const {
 }
 
 void ImageFrame::CopyToBuffer(uint16_t* buffer, int buffer_size) const {
-  CHECK(buffer);
+  ABSL_CHECK(buffer);
   ABSL_CHECK_EQ(2, ByteDepth());
   const int data_size = width_ * height_ * NumberOfChannels();
   ABSL_CHECK_LE(data_size, buffer_size);
@@ -413,7 +413,7 @@ void ImageFrame::CopyToBuffer(uint16_t* buffer, int buffer_size) const {
 }
 
 void ImageFrame::CopyToBuffer(float* buffer, int buffer_size) const {
-  CHECK(buffer);
+  ABSL_CHECK(buffer);
   ABSL_CHECK_EQ(4, ByteDepth());
   const int data_size = width_ * height_ * NumberOfChannels();
   ABSL_CHECK_LE(data_size, buffer_size);

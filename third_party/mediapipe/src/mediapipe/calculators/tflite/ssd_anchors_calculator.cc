@@ -16,11 +16,11 @@
 #include <utility>
 #include <vector>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/calculators/tflite/ssd_anchors_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/object_detection/anchor.pb.h"
 #include "mediapipe/framework/port/ret_check.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -277,7 +277,7 @@ absl::Status SsdAnchorsCalculator::GenerateAnchors(
     }
     ABSL_CHECK_EQ(options.feature_map_height_size(), kNumLayers);
     ABSL_CHECK_EQ(options.feature_map_height_size(),
-                  options.feature_map_width_size());
+             options.feature_map_width_size());
   } else {
     ABSL_CHECK_EQ(options.strides_size(), kNumLayers);
   }

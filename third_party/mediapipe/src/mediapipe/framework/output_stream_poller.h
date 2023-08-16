@@ -17,8 +17,8 @@
 
 #include <memory>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/graph_output_stream.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

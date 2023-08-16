@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/calculators/tensor/tensors_to_landmarks_calculator.pb.h"
 #include "mediapipe/framework/api2/node.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/landmark.pb.h"
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/framework/port/ret_check.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace api2 {

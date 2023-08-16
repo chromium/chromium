@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "mediapipe/util/tracking/motion_models_cv.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -41,7 +42,7 @@ void ModelCvConvert<AffineModel>::ToCvMat(const AffineModel& model,
 
 void ModelCvConvert<Homography>::ToCvMat(const Homography& model,
                                          cv::Mat* matrix) {
-  CHECK(matrix != nullptr);
+  ABSL_CHECK(matrix != nullptr);
   matrix->create(3, 3, CV_32FC1);
   matrix->at<float>(0, 0) = model.h_00();
   matrix->at<float>(0, 1) = model.h_01();

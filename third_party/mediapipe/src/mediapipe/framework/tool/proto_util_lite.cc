@@ -25,6 +25,7 @@
 #include "mediapipe/framework/port/statusor.h"
 #include "mediapipe/framework/tool/field_data.pb.h"
 #include "mediapipe/framework/type_map.h"
+#include "absl/log/absl_check.h"
 
 #define RET_CHECK_NO_LOG(cond) RET_CHECK(cond).SetNoLogging()
 
@@ -411,7 +412,7 @@ static absl::Status DeserializeValue(const FieldValue& bytes,
     }
     case W::TYPE_GROUP:
     case W::TYPE_MESSAGE:
-      CHECK(false) << "DeserializeValue cannot deserialize a Message.";
+      ABSL_CHECK(false) << "DeserializeValue cannot deserialize a Message.";
     case W::TYPE_UINT32:
       return ReadPrimitive<uint32_t, W::TYPE_UINT32>(&input, result);
     case W::TYPE_ENUM:

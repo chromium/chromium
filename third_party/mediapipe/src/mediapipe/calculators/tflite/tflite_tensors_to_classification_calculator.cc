@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "absl/container/node_hash_map.h"
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "mediapipe/calculators/tflite/tflite_tensors_to_classification_calculator.pb.h"
@@ -31,6 +30,7 @@
 #include "mediapipe/util/android/file/base/helpers.h"
 #else
 #include "mediapipe/framework/port/file_helpers.h"
+#include "absl/log/absl_check.h"
 #endif
 
 namespace mediapipe {

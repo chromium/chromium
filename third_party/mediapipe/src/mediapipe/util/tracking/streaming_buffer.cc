@@ -14,8 +14,8 @@
 
 #include "mediapipe/util/tracking/streaming_buffer.h"
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -24,7 +24,7 @@ StreamingBuffer::StreamingBuffer(
     : overlap_(overlap) {
   ABSL_CHECK_GE(overlap, 0);
   for (auto& item : data_configuration) {
-    CHECK(data_config_.find(item.first) == data_config_.end())
+    ABSL_CHECK(data_config_.find(item.first) == data_config_.end())
         << "Tag " << item.first << " already exists";
     data_config_[item.first] = item.second;
     // Init deque.
@@ -46,7 +46,7 @@ bool StreamingBuffer::HasTags(const std::vector<std::string>& tags) const {
 }
 
 int StreamingBuffer::BufferSize(const std::string& tag) const {
-  CHECK(HasTag(tag));
+  ABSL_CHECK(HasTag(tag));
   return data_.find(tag)->second.size();
 }
 
@@ -120,7 +120,7 @@ bool StreamingBuffer::TruncateBuffer(bool flush) {
 }
 
 void StreamingBuffer::DiscardDatum(const std::string& tag, int num_frames) {
-  CHECK(HasTag(tag));
+  ABSL_CHECK(HasTag(tag));
   auto& queue = data_[tag];
   if (queue.empty()) {
     return;
@@ -131,7 +131,7 @@ void StreamingBuffer::DiscardDatum(const std::string& tag, int num_frames) {
 
 void StreamingBuffer::DiscardDatumFromEnd(const std::string& tag,
                                           int num_frames) {
-  CHECK(HasTag(tag));
+  ABSL_CHECK(HasTag(tag));
   auto& queue = data_[tag];
   if (queue.empty()) {
     return;

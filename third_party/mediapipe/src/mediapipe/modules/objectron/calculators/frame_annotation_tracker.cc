@@ -19,6 +19,7 @@
 #include "mediapipe/modules/objectron/calculators/annotation_data.pb.h"
 #include "mediapipe/modules/objectron/calculators/box_util.h"
 #include "mediapipe/util/tracking/box_tracker.pb.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -35,7 +36,7 @@ void FrameAnnotationTracker::AddDetectionResult(
 FrameAnnotation FrameAnnotationTracker::ConsolidateTrackingResult(
     const TimedBoxProtoList& tracked_boxes,
     absl::flat_hash_set<int>* cancel_object_ids) {
-  CHECK(cancel_object_ids != nullptr);
+  ABSL_CHECK(cancel_object_ids != nullptr);
   FrameAnnotation frame_annotation;
   std::vector<int64_t> keys_to_be_deleted;
   for (const auto& detected_obj : detected_objects_) {

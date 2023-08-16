@@ -19,8 +19,8 @@
 
 #include "absl/container/flat_hash_map.h"
 #include "absl/functional/function_ref.h"
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/logging.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -44,9 +44,7 @@ class ResourceCache {
       ABSL_CHECK_EQ(entry->request_count, 0);
       entry->request_count = 1;
       entry_list_.Append(entry);
-      if (entry->prev != nullptr) {
-        ABSL_CHECK_GE(entry->prev->request_count, 1);
-      }
+      if (entry->prev != nullptr) ABSL_CHECK_GE(entry->prev->request_count, 1);
     } else {
       entry = map_it->second.get();
       ++entry->request_count;

@@ -17,7 +17,6 @@
 #include <memory>
 #include <unordered_set>
 
-#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/numbers.h"
 #include "mediapipe/calculators/video/box_detector_calculator.pb.h"
@@ -44,6 +43,7 @@
 #include "mediapipe/util/android/file/base/helpers.h"
 #else
 #include "mediapipe/framework/port/file_helpers.h"
+#include "absl/log/absl_check.h"
 #endif
 
 namespace mediapipe {
@@ -277,7 +277,7 @@ absl::Status BoxDetectorCalculator::Process(CalculatorContext* cc) {
                                        ? &(cc->Inputs().Tag(kDescriptorsTag))
                                        : nullptr;
 
-  CHECK(track_stream != nullptr || video_stream != nullptr ||
+  ABSL_CHECK(track_stream != nullptr || video_stream != nullptr ||
         (feature_stream != nullptr && descriptor_stream != nullptr))
       << "One and only one of {tracking_data, input image frame, "
          "feature/descriptor} need to be valid.";
@@ -296,7 +296,7 @@ absl::Status BoxDetectorCalculator::Process(CalculatorContext* cc) {
 
     const TrackingData& tracking_data = track_stream->Get<TrackingData>();
 
-    CHECK(tracked_boxes_stream != nullptr) << "tracked_boxes needed.";
+    ABSL_CHECK(tracked_boxes_stream != nullptr) << "tracked_boxes needed.";
 
     const TimedBoxProtoList tracked_boxes =
         tracked_boxes_stream->Get<TimedBoxProtoList>();

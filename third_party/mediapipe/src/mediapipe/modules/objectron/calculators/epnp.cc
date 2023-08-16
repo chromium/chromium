@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include "mediapipe/modules/objectron/calculators/epnp.h"
-
 #include "absl/log/absl_check.h"
 
 namespace mediapipe {

@@ -33,6 +33,7 @@ limitations under the License.
 #include "mediapipe/tasks/cc/core/proto/model_resources_calculator.pb.h"
 #include "mediapipe/tasks/cc/text/text_embedder/proto/text_embedder_graph_options.pb.h"
 #include "mediapipe/tasks/cc/text/utils/text_model_utils.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe::tasks::text::text_embedder {
 namespace {
@@ -86,7 +87,7 @@ class TextEmbedderGraph : public core::ModelTaskGraph {
  public:
   absl::StatusOr<CalculatorGraphConfig> GetConfig(
       SubgraphContext* sc) override {
-    CHECK(sc != nullptr);
+    ABSL_CHECK(sc != nullptr);
     ASSIGN_OR_RETURN(const ModelResources* model_resources,
                      CreateModelResources<proto::TextEmbedderGraphOptions>(sc));
     Graph graph;

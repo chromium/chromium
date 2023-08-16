@@ -64,12 +64,12 @@
 #include <vector>
 
 #include "absl/base/macros.h"
-#include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/demangle.h"
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/tool/status_util.h"
 #include "mediapipe/framework/tool/type_util.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
-#include "absl/log/absl_check.h"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
+#include "absl/strings/str_format.h"
 #include "mediapipe/calculators/tensor/tensor_converter_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/image_frame.h"
@@ -23,7 +26,8 @@
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/framework/port.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/util/resource_util.h"
+#include "mediapipe/gpu/gpu_buffer_format.h"
+#include "mediapipe/gpu/gpu_origin.pb.h"
 
 #if !MEDIAPIPE_DISABLE_GPU
 #include "mediapipe/gpu/gpu_buffer.h"
@@ -39,15 +43,40 @@
 #if MEDIAPIPE_OPENGL_ES_VERSION < MEDIAPIPE_OPENGL_ES_31
 #include "mediapipe/gpu/gl_simple_shaders.h"
 #include "mediapipe/gpu/shader_util.h"
+#include "absl/log/absl_check.h"
 #endif  // MEDIAPIPE_OPENGL_ES_VERSION < MEDIAPIPE_OPENGL_ES_31
 #endif  // MEDIAPIPE_METAL_ENABLED
 #endif  // !MEDIAPIPE_DISABLE_GPU
 
 namespace {
+
 constexpr int kWorkgroupSize = 8;  // Block size for GPU shader.
 // Commonly used to compute the number of blocks to launch in a kernel.
 int NumGroups(const int size, const int group_size) {  // NOLINT
   return (size + group_size - 1) / group_size;
+}
+
+absl::StatusOr<bool> ShouldFlipVertically(
+    const mediapipe::TensorConverterCalculatorOptions& options) {
+  if (!options.has_gpu_origin()) {
+    return options.flip_vertically();
+  }
+
+  switch (options.gpu_origin()) {
+    case mediapipe::GpuOrigin::TOP_LEFT:
+      return false;
+    case mediapipe::GpuOrigin::DEFAULT:
+    case mediapipe::GpuOrigin::CONVENTIONAL:
+      // TOP_LEFT on Metal, BOTTOM_LEFT on OpenGL.
+#ifdef __APPLE__
+      return false;
+#else
+      return true;
+#endif
+  }
+
+  return absl::InvalidArgumentError(
+      absl::StrFormat("Unhandled GPU origin %i", options.gpu_origin()));
 }
 
 typedef Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
@@ -59,6 +88,7 @@ constexpr char kImageFrameTag[] = "IMAGE";
 constexpr char kGpuBufferTag[] = "IMAGE_GPU";
 constexpr char kTensorsTag[] = "TENSORS";
 constexpr char kMatrixTag[] = "MATRIX";
+
 }  // namespace
 
 namespace mediapipe {
@@ -379,16 +409,27 @@ absl::Status TensorConverterCalculator::InitGpu(CalculatorContext* cc) {
   // Get input image sizes.
   const auto& input =
       cc->Inputs().Tag(kGpuBufferTag).Get<mediapipe::GpuBuffer>();
-  mediapipe::ImageFormat::Format format =
-      mediapipe::ImageFormatForGpuBufferFormat(input.format());
+  mediapipe::GpuBufferFormat format = input.format();
   const bool include_alpha = (max_num_channels_ == 4);
   const bool single_channel = (max_num_channels_ == 1);
-  if (!(format == mediapipe::ImageFormat::GRAY8 ||
-        format == mediapipe::ImageFormat::SRGB ||
-        format == mediapipe::ImageFormat::SRGBA))
-    RET_CHECK_FAIL() << "Unsupported GPU input format.";
-  if (include_alpha && (format != mediapipe::ImageFormat::SRGBA))
-    RET_CHECK_FAIL() << "Num input channels is less than desired output.";
+
+  RET_CHECK(format == mediapipe::GpuBufferFormat::kBGRA32 ||
+            format == mediapipe::GpuBufferFormat::kRGB24 ||
+            format == mediapipe::GpuBufferFormat::kRGBA32 ||
+            format == mediapipe::GpuBufferFormat::kRGBAFloat128 ||
+            format == mediapipe::GpuBufferFormat::kRGBAHalf64 ||
+            format == mediapipe::GpuBufferFormat::kGrayFloat32 ||
+            format == mediapipe::GpuBufferFormat::kGrayHalf16 ||
+            format == mediapipe::GpuBufferFormat::kOneComponent8)
+      << "Unsupported GPU input format: " << static_cast<uint32_t>(format);
+  if (include_alpha) {
+    RET_CHECK(format == mediapipe::GpuBufferFormat::kBGRA32 ||
+              format == mediapipe::GpuBufferFormat::kRGBA32 ||
+              format == mediapipe::GpuBufferFormat::kRGBAFloat128 ||
+              format == mediapipe::GpuBufferFormat::kRGBAHalf64)
+        << "Num input channels is less than desired output, input format: "
+        << static_cast<uint32_t>(format);
+  }
 
 #if MEDIAPIPE_METAL_ENABLED
   id<MTLDevice> device = gpu_helper_.mtlDevice;
@@ -594,7 +635,7 @@ absl::Status TensorConverterCalculator::LoadOptions(CalculatorContext* cc) {
   }
 
   // Get y-flip mode.
-  flip_vertically_ = options.flip_vertically();
+  ASSIGN_OR_RETURN(flip_vertically_, ShouldFlipVertically(options));
 
   // Get row_major_matrix mode.
   row_major_matrix_ = options.row_major_matrix();

@@ -24,10 +24,10 @@
 #include <limits>
 #include <type_traits>
 
-#include "absl/log/absl_check.h"
 #include "absl/utility/utility.h"
 #include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/framework/port/logging.h"
+#include "absl/log/absl_check.h"
 
 template <typename T>
 class Vector2;

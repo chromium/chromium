@@ -14,7 +14,6 @@
 
 #include "mediapipe/framework/formats/location_opencv.h"
 
-#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/substitute.h"
 #include "mediapipe/framework/formats/annotation/rasterization.pb.h"
@@ -22,12 +21,13 @@
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/opencv_imgproc_inc.h"
 #include "mediapipe/framework/port/statusor.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
 namespace {
 Rectangle_i MaskToRectangle(const LocationData& location_data) {
-  CHECK(location_data.mask().has_rasterization());
+  ABSL_CHECK(location_data.mask().has_rasterization());
   const auto& rasterization = location_data.mask().rasterization();
   if (rasterization.interval_size() == 0) {
     return Rectangle_i(0, 0, 0, 0);

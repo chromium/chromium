@@ -34,6 +34,7 @@
 #include "absl/synchronization/blocking_counter.h"
 #include "mediapipe/framework/port/threadpool.h"
 #include "mediapipe/util/cpu_util.h"
+#include "absl/log/absl_check.h"
 #endif  // !MEDIAPIPE_MOBILE && !MEDIAPIPE_LITE
 
 namespace mediapipe {
@@ -78,7 +79,7 @@ absl::Status RunGenerateAndValidateTypes(
     const PacketGeneratorOptions& extendable_options,
     const PacketSet& input_side_packets, PacketSet* output_side_packets,
     const std::string& package) {
-  CHECK(output_side_packets);
+  ABSL_CHECK(output_side_packets);
   // Get static access to functions.
   ASSIGN_OR_RETURN(
       auto static_access,

@@ -14,8 +14,8 @@
 
 #include "mediapipe/modules/objectron/calculators/model.h"
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/logging.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

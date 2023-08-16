@@ -25,7 +25,6 @@
 #include <memory>
 #include <vector>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/opencv_core_inc.h"
@@ -35,6 +34,7 @@
 #include "mediapipe/util/tracking/region_flow.pb.h"
 #include "mediapipe/util/tracking/tone_estimation.pb.h"
 #include "mediapipe/util/tracking/tone_models.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -151,7 +151,7 @@ template <int C>
 void ToneEstimation::ComputeClipMask(const ClipMaskOptions& options,
                                      const cv::Mat& frame,
                                      ClipMask<C>* clip_mask) {
-  CHECK(clip_mask != nullptr);
+  ABSL_CHECK(clip_mask != nullptr);
   ABSL_CHECK_EQ(frame.channels(), C);
 
   // Over / Underexposure handling.
@@ -224,7 +224,7 @@ void ToneEstimation::ComputeToneMatches(
     const ClipMask<C>& curr_clip_mask,  // Optional.
     const ClipMask<C>& prev_clip_mask,  // Optional.
     ColorToneMatches* color_tone_matches, cv::Mat* debug_output) {
-  CHECK(color_tone_matches != nullptr);
+  ABSL_CHECK(color_tone_matches != nullptr);
   ABSL_CHECK_EQ(curr_frame.channels(), C);
   ABSL_CHECK_EQ(prev_frame.channels(), C);
 

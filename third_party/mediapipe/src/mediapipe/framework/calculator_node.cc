@@ -19,7 +19,6 @@
 #include <unordered_map>
 #include <utility>
 
-#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
@@ -47,6 +46,7 @@
 #include "mediapipe/framework/tool/status_util.h"
 #include "mediapipe/framework/tool/tag_map.h"
 #include "mediapipe/framework/tool/validate_name.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -60,7 +60,7 @@ const PacketType* GetPacketType(const PacketTypeSet& packet_type_set,
   } else {
     id = packet_type_set.GetId(tag, 0);
   }
-  CHECK(id.IsValid()) << "Internal mediapipe error.";
+  ABSL_CHECK(id.IsValid()) << "Internal mediapipe error.";
   return &packet_type_set.Get(id);
 }
 
@@ -367,7 +367,7 @@ bool CalculatorNode::Closed() const {
 }
 
 void CalculatorNode::SetMaxInputStreamQueueSize(int max_queue_size) {
-  CHECK(input_stream_handler_);
+  ABSL_CHECK(input_stream_handler_);
   input_stream_handler_->SetMaxQueueSize(max_queue_size);
 }
 
@@ -696,7 +696,7 @@ void CalculatorNode::InputStreamHeadersReady() {
   {
     absl::MutexLock lock(&status_mutex_);
     ABSL_CHECK_EQ(status_, kStatePrepared) << DebugName();
-    CHECK(!input_stream_headers_ready_called_);
+    ABSL_CHECK(!input_stream_headers_ready_called_);
     input_stream_headers_ready_called_ = true;
     input_stream_headers_ready_ = true;
     ready_for_open = input_side_packets_ready_;
@@ -711,7 +711,7 @@ void CalculatorNode::InputSidePacketsReady() {
   {
     absl::MutexLock lock(&status_mutex_);
     ABSL_CHECK_EQ(status_, kStatePrepared) << DebugName();
-    CHECK(!input_side_packets_ready_called_);
+    ABSL_CHECK(!input_side_packets_ready_called_);
     input_side_packets_ready_called_ = true;
     input_side_packets_ready_ = true;
     ready_for_open = input_stream_headers_ready_;
@@ -791,7 +791,7 @@ std::string CalculatorNode::DebugInputStreamNames() const {
 }
 
 std::string CalculatorNode::DebugName() const {
-  DCHECK(calculator_state_);
+  ABSL_DCHECK(calculator_state_);
   return calculator_state_->NodeName();
 }
 
@@ -895,8 +895,8 @@ absl::Status CalculatorNode::ProcessNode(
         // too.
         // If the streams are closed, there shouldn't be more input.
         ABSL_CHECK_EQ(calculator_context_manager_.NumberOfContextTimestamps(
-                          *calculator_context),
-                      1);
+                     *calculator_context),
+                 1);
         return CloseNode(absl::OkStatus(), /*graph_run_ended=*/false);
       } else {
         RET_CHECK_FAIL()
@@ -911,7 +911,7 @@ absl::Status CalculatorNode::ProcessNode(
 void CalculatorNode::SetQueueSizeCallbacks(
     InputStreamManager::QueueSizeCallback becomes_full_callback,
     InputStreamManager::QueueSizeCallback becomes_not_full_callback) {
-  CHECK(input_stream_handler_);
+  ABSL_CHECK(input_stream_handler_);
   input_stream_handler_->SetQueueSizeCallbacks(
       std::move(becomes_full_callback), std::move(becomes_not_full_callback));
 }

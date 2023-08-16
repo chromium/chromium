@@ -17,16 +17,16 @@
 
 #include "absl/container/flat_hash_map.h"
 #include "absl/strings/match.h"
+#include "absl/strings/strip.h"
 #include "mediapipe/calculators/image/opencv_image_encoder_calculator.pb.h"
 #include "mediapipe/calculators/tensorflow/pack_media_sequence_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
+#include "mediapipe/framework/formats/classification.pb.h"
 #include "mediapipe/framework/formats/detection.pb.h"
 #include "mediapipe/framework/formats/location.h"
 #include "mediapipe/framework/formats/location_opencv.h"
-#include "mediapipe/framework/port/canonical_errors.h"
 #include "mediapipe/framework/port/opencv_imgcodecs_inc.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/util/sequence/media_sequence.h"
 #include "mediapipe/util/sequence/media_sequence_util.h"
 #include "tensorflow/core/example/example.pb.h"
@@ -36,6 +36,7 @@ namespace mediapipe {
 
 const char kSequenceExampleTag[] = "SEQUENCE_EXAMPLE";
 const char kImageTag[] = "IMAGE";
+const char kImageLabelPrefixTag[] = "IMAGE_LABEL_";
 const char kFloatContextFeaturePrefixTag[] = "FLOAT_CONTEXT_FEATURE_";
 const char kFloatFeaturePrefixTag[] = "FLOAT_FEATURE_";
 const char kIntFeaturePrefixTag[] = "INT_FEATURE_";
@@ -56,7 +57,8 @@ namespace mpms = mediapipe::mediasequence;
 // SequenceExample will conform to the description in media_sequence.h.
 //
 // The supported input stream tags are "IMAGE", which stores the encoded
-// images from the OpenCVImageEncoderCalculator, "FORWARD_FLOW_ENCODED", which
+// images from the OpenCVImageEncoderCalculator, "IMAGE_LABEL", which stores
+// image labels from vector<Classification>, "FORWARD_FLOW_ENCODED", which
 // stores the encoded optical flow from the same calculator, "BBOX" which stores
 // bounding boxes from vector<Detections>, and streams with the
 // "FLOAT_FEATURE_${NAME}" pattern, which stores the values from vector<float>'s
@@ -112,6 +114,10 @@ class PackMediaSequenceCalculator : public CalculatorBase {
 
     for (const auto& tag : cc->Inputs().GetTags()) {
       if (absl::StartsWith(tag, kImageTag)) {
+        if (absl::StartsWith(tag, kImageLabelPrefixTag)) {
+          cc->Inputs().Tag(tag).Set<std::vector<Classification>>();
+          continue;
+        }
         std::string key = "";
         if (tag != kImageTag) {
           int tag_length = sizeof(kImageTag) / sizeof(*kImageTag) - 1;
@@ -164,8 +170,8 @@ class PackMediaSequenceCalculator : public CalculatorBase {
       }
     }
 
-    CHECK(cc->Outputs().HasTag(kSequenceExampleTag) ||
-          cc->OutputSidePackets().HasTag(kSequenceExampleTag))
+    RET_CHECK(cc->Outputs().HasTag(kSequenceExampleTag) ||
+              cc->OutputSidePackets().HasTag(kSequenceExampleTag))
         << "Neither the output stream nor the output side packet is set to "
            "output the sequence example.";
     if (cc->Outputs().HasTag(kSequenceExampleTag)) {
@@ -199,6 +205,16 @@ class PackMediaSequenceCalculator : public CalculatorBase {
             .replace_data_instead_of_append()) {
       for (const auto& tag : cc->Inputs().GetTags()) {
         if (absl::StartsWith(tag, kImageTag)) {
+          if (absl::StartsWith(tag, kImageLabelPrefixTag)) {
+            std::string key =
+                std::string(absl::StripPrefix(tag, kImageLabelPrefixTag));
+            mpms::ClearImageLabelString(key, sequence_.get());
+            mpms::ClearImageLabelConfidence(key, sequence_.get());
+            if (!key.empty() || mpms::HasImageEncoded(*sequence_)) {
+              mpms::ClearImageTimestamp(key, sequence_.get());
+            }
+            continue;
+          }
           std::string key = "";
           if (tag != kImageTag) {
             int tag_length = sizeof(kImageTag) / sizeof(*kImageTag) - 1;
@@ -227,6 +243,7 @@ class PackMediaSequenceCalculator : public CalculatorBase {
           mpms::ClearBBoxNumRegions(key, sequence_.get());
           mpms::ClearBBoxLabelString(key, sequence_.get());
           mpms::ClearBBoxLabelIndex(key, sequence_.get());
+          mpms::ClearBBoxLabelConfidence(key, sequence_.get());
           mpms::ClearBBoxClassString(key, sequence_.get());
           mpms::ClearBBoxClassIndex(key, sequence_.get());
           mpms::ClearBBoxTrackString(key, sequence_.get());
@@ -343,6 +360,24 @@ class PackMediaSequenceCalculator : public CalculatorBase {
       if (absl::StartsWith(tag, kImageTag) &&
           !cc->Inputs().Tag(tag).IsEmpty()) {
         std::string key = "";
+        if (absl::StartsWith(tag, kImageLabelPrefixTag)) {
+          std::string key =
+              std::string(absl::StripPrefix(tag, kImageLabelPrefixTag));
+          std::vector<std::string> labels;
+          std::vector<float> confidences;
+          for (const auto& classification :
+               cc->Inputs().Tag(tag).Get<std::vector<Classification>>()) {
+            labels.push_back(classification.label());
+            confidences.push_back(classification.score());
+          }
+          if (!key.empty() || mpms::HasImageEncoded(*sequence_)) {
+            mpms::AddImageTimestamp(key, cc->InputTimestamp().Value(),
+                                    sequence_.get());
+          }
+          mpms::AddImageLabelString(key, labels, sequence_.get());
+          mpms::AddImageLabelConfidence(key, confidences, sequence_.get());
+          continue;
+        }
         if (tag != kImageTag) {
           int tag_length = sizeof(kImageTag) / sizeof(*kImageTag) - 1;
           if (tag[tag_length] == '_') {
@@ -393,6 +428,7 @@ class PackMediaSequenceCalculator : public CalculatorBase {
             mpms::ClearBBoxNumRegions(prefix, sequence_.get());
             mpms::ClearBBoxLabelString(prefix, sequence_.get());
             mpms::ClearBBoxLabelIndex(prefix, sequence_.get());
+            mpms::ClearBBoxLabelConfidence(prefix, sequence_.get());
             mpms::ClearBBoxClassString(prefix, sequence_.get());
             mpms::ClearBBoxClassIndex(prefix, sequence_.get());
             mpms::ClearBBoxTrackString(prefix, sequence_.get());
@@ -460,6 +496,7 @@ class PackMediaSequenceCalculator : public CalculatorBase {
         }
         std::vector<Location> predicted_locations;
         std::vector<std::string> predicted_class_strings;
+        std::vector<float> predicted_class_confidences;
         std::vector<int> predicted_label_ids;
         for (auto& detection :
              cc->Inputs().Tag(tag).Get<std::vector<Detection>>()) {
@@ -488,6 +525,9 @@ class PackMediaSequenceCalculator : public CalculatorBase {
             if (detection.label_id_size() > 0) {
               predicted_label_ids.push_back(detection.label_id(0));
             }
+            if (detection.score_size() > 0) {
+              predicted_class_confidences.push_back(detection.score(0));
+            }
           }
         }
         if (!predicted_locations.empty()) {
@@ -500,6 +540,10 @@ class PackMediaSequenceCalculator : public CalculatorBase {
           }
           if (!predicted_label_ids.empty()) {
             mpms::AddBBoxLabelIndex(key, predicted_label_ids, sequence_.get());
+          }
+          if (!predicted_class_confidences.empty()) {
+            mpms::AddBBoxLabelConfidence(key, predicted_class_confidences,
+                                         sequence_.get());
           }
         }
       }

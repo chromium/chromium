@@ -37,6 +37,7 @@
 #include <CoreVideo/CoreVideo.h>
 
 #include "mediapipe/objc/CFHolder.h"
+#include "absl/log/absl_check.h"
 
 #if TARGET_OS_OSX
 
@@ -295,7 +296,7 @@ class GlContext : public std::enable_shared_from_this<GlContext> {
   // TOOD: const result?
   template <class T>
   T& GetCachedAttachment(const Attachment<T>& attachment) {
-    DCHECK(IsCurrent());
+    ABSL_DCHECK(IsCurrent());
     internal::AttachmentPtr<void>& entry = attachments_[&attachment];
     if (entry == nullptr) {
       entry = attachment.factory()(*this);

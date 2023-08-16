@@ -24,7 +24,6 @@
 #include <vector>
 
 #include "absl/base/macros.h"
-#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
@@ -34,6 +33,7 @@
 #include "mediapipe/framework/tool/tag_map_helper.h"
 #include "mediapipe/framework/tool/validate_name.h"
 #include "mediapipe/framework/type_map.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace internal {

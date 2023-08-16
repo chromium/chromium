@@ -25,7 +25,7 @@
 
 #include "absl/container/fixed_array.h"
 #include "absl/container/flat_hash_set.h"
-#include "absl/log/absl_check.h"
+#include "absl/log/log.h"
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
@@ -66,6 +66,7 @@
 #include "mediapipe/gpu/gpu_service.h"
 #include "mediapipe/gpu/graph_support.h"
 #include "mediapipe/util/cpu_util.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -75,6 +76,11 @@ namespace {
 // threshold.
 constexpr int kMaxNumAccumulatedErrors = 1000;
 constexpr char kApplicationThreadExecutorType[] = "ApplicationThreadExecutor";
+
+// Do not log status payloads, but do include stack traces.
+constexpr absl::StatusToStringMode kStatusLogFlags =
+    absl::StatusToStringMode::kWithEverything &
+    (~absl::StatusToStringMode::kWithPayload);
 
 }  // namespace
 
@@ -156,7 +162,7 @@ absl::Status CalculatorGraph::InitializePacketGeneratorGraph(
   Executor* default_executor = nullptr;
   if (!use_application_thread_) {
     default_executor = executors_[""].get();
-    CHECK(default_executor);
+    ABSL_CHECK(default_executor);
   }
   // If default_executor is nullptr, then packet_generator_graph_ will create
   // its own DelegatingExecutor to use the application thread.
@@ -383,6 +389,7 @@ absl::Status CalculatorGraph::InitializeDefaultExecutor(
         "", std::make_shared<internal::DelegatingExecutor>(
                 std::bind(&internal::Scheduler::AddApplicationThreadTask,
                           &scheduler_, std::placeholders::_1))));
+    VLOG(1) << "Using default executor and application thread.";
     return absl::OkStatus();
   }
 
@@ -402,6 +409,8 @@ absl::Status CalculatorGraph::InitializeDefaultExecutor(
   }
   MP_RETURN_IF_ERROR(
       CreateDefaultThreadPool(default_executor_options, num_threads));
+  VLOG(1) << absl::StrCat("Using default executor with num_threads: ",
+                          num_threads);
   return absl::OkStatus();
 }
 
@@ -708,7 +717,7 @@ absl::Status CalculatorGraph::PrepareForRun(
   absl::Status error_status;
   if (has_error_) {
     GetCombinedErrors(&error_status);
-    LOG(ERROR) << error_status;
+    LOG(ERROR) << error_status.ToString(kStatusLogFlags);
     return error_status;
   }
 
@@ -787,7 +796,7 @@ absl::Status CalculatorGraph::PrepareForRun(
   }
 
   if (GetCombinedErrors(&error_status)) {
-    LOG(ERROR) << error_status;
+    LOG(ERROR) << error_status.ToString(kStatusLogFlags);
     CleanupAfterRun(&error_status);
     return error_status;
   }
@@ -851,7 +860,7 @@ absl::Status CalculatorGraph::WaitUntilIdle() {
   VLOG(2) << "Scheduler idle.";
   absl::Status status = absl::OkStatus();
   if (GetCombinedErrors(&status)) {
-    LOG(ERROR) << status;
+    LOG(ERROR) << status.ToString(kStatusLogFlags);
   }
   return status;
 }
@@ -1053,8 +1062,7 @@ void CalculatorGraph::RecordError(const absl::Status& error) {
 }
 
 bool CalculatorGraph::GetCombinedErrors(absl::Status* error_status) {
-  return GetCombinedErrors("CalculatorGraph::Run() failed in Run: ",
-                           error_status);
+  return GetCombinedErrors("CalculatorGraph::Run() failed: ", error_status);
 }
 
 bool CalculatorGraph::GetCombinedErrors(const std::string& error_prefix,
@@ -1093,7 +1101,7 @@ void CalculatorGraph::CallStatusHandlers(GraphRunState graph_run_state,
     absl::StatusOr<std::unique_ptr<internal::StaticAccessToStatusHandler>>
         static_access_statusor = internal::StaticAccessToStatusHandlerRegistry::
             CreateByNameInNamespace(validated_graph_->Package(), handler_type);
-    CHECK(static_access_statusor.ok()) << handler_type << " is not registered.";
+    ABSL_CHECK(static_access_statusor.ok()) << handler_type << " is not registered.";
     auto static_access = std::move(static_access_statusor).value();
     absl::Status handler_result;
     if (graph_run_state == GraphRunState::PRE_RUN) {
@@ -1134,7 +1142,7 @@ void CalculatorGraph::UpdateThrottledNodes(InputStreamManager* stream,
     upstream_nodes =
         &validated_graph_->CalculatorInfos()[node_index].AncestorSources();
   }
-  CHECK(upstream_nodes);
+  ABSL_CHECK(upstream_nodes);
   std::vector<CalculatorNode*> nodes_to_schedule;
 
   {
@@ -1341,7 +1349,7 @@ void CalculatorGraph::CleanupAfterRun(absl::Status* status) {
     // Obtain the combined status again, so that it includes the new errors
     // added by CallStatusHandlers.
     GetCombinedErrors(status);
-    CHECK(!status->ok());
+    ABSL_CHECK(!status->ok());
   } else {
     MEDIAPIPE_CHECK_OK(*status);
   }

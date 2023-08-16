@@ -16,9 +16,9 @@
 
 #include <numeric>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_format.h"
 #include "mediapipe/util/tracking/region_flow.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -185,7 +185,7 @@ CameraMotion InvertCameraMotion(const CameraMotion& motion) {
 void SubtractCameraMotionFromFeatures(
     const std::vector<CameraMotion>& camera_motions,
     std::vector<RegionFlowFeatureList*>* feature_lists) {
-  CHECK(feature_lists != nullptr);
+  ABSL_CHECK(feature_lists != nullptr);
   ABSL_CHECK_GE(camera_motions.size(), feature_lists->size());
   if (feature_lists->empty()) {
     return;

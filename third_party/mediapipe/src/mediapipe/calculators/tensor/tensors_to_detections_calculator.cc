@@ -15,7 +15,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "mediapipe/calculators/tensor/tensors_to_detections_calculator.pb.h"
@@ -714,8 +713,8 @@ absl::Status TensorsToDetectionsCalculator::LoadOptions(CalculatorContext* cc) {
 
   // Check if the output size is equal to the requested boxes and keypoints.
   ABSL_CHECK_EQ(options_.num_keypoints() * options_.num_values_per_keypoint() +
-                    kNumCoordsPerBox,
-                num_coords_);
+               kNumCoordsPerBox,
+           num_coords_);
 
   if (kSideInIgnoreClasses(cc).IsConnected()) {
     RET_CHECK(!kSideInIgnoreClasses(cc).IsEmpty());
@@ -1156,11 +1155,10 @@ void main() {
     // TODO support better filtering.
     if (class_index_set_.is_allowlist) {
       ABSL_CHECK_EQ(class_index_set_.values.size(),
-                    IsClassIndexAllowed(0) ? num_classes_ : num_classes_ - 1)
+               IsClassIndexAllowed(0) ? num_classes_ : num_classes_ - 1)
           << "Only all classes  >= class 0  or  >= class 1";
     } else {
-      ABSL_CHECK_EQ(class_index_set_.values.size(),
-                    IsClassIndexAllowed(0) ? 0 : 1)
+      ABSL_CHECK_EQ(class_index_set_.values.size(), IsClassIndexAllowed(0) ? 0 : 1)
           << "Only ignore class 0 is allowed";
     }
 
@@ -1323,6 +1321,7 @@ kernel void decodeKernel(
   const std::string score_src = absl::Substitute(
       R"(
 #include <metal_stdlib>
+#include "absl/log/absl_check.h"
 
 using namespace metal;
 
@@ -1382,11 +1381,10 @@ kernel void scoreKernel(
   // TODO support better filtering.
   if (class_index_set_.is_allowlist) {
     ABSL_CHECK_EQ(class_index_set_.values.size(),
-                  IsClassIndexAllowed(0) ? num_classes_ : num_classes_ - 1)
+             IsClassIndexAllowed(0) ? num_classes_ : num_classes_ - 1)
         << "Only all classes  >= class 0  or  >= class 1";
   } else {
-    ABSL_CHECK_EQ(class_index_set_.values.size(),
-                  IsClassIndexAllowed(0) ? 0 : 1)
+    ABSL_CHECK_EQ(class_index_set_.values.size(), IsClassIndexAllowed(0) ? 0 : 1)
         << "Only ignore class 0 is allowed";
   }
 

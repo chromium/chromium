@@ -23,11 +23,12 @@
 #include "mediapipe/util/tflite/operations/transpose_conv_bias.h"
 #include "tensorflow/lite/builtin_op_data.h"
 #include "tensorflow/lite/mutable_op_resolver.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
 void MediaPipe_RegisterTfLiteOpResolver(tflite::MutableOpResolver *resolver) {
-  CHECK(resolver != nullptr);
+  ABSL_CHECK(resolver != nullptr);
   resolver->AddCustom("MaxPoolingWithArgmax2D",
                       tflite_operations::RegisterMaxPoolingWithArgmax2D());
   resolver->AddCustom("MaxUnpooling2D",

@@ -20,8 +20,8 @@
 #import "mediapipe/gpu/metal_shared_resources.h"
 #import "GTMDefines.h"
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/ret_check.h"
+#include "absl/log/absl_check.h"
 
 @interface MPPMetalHelper () {
   mediapipe::GpuResources* _gpuResources;

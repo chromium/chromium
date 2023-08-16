@@ -20,7 +20,6 @@
 #include <string>
 #include <vector>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/string_view.h"
@@ -38,6 +37,7 @@
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/port.h"
 #include "mediapipe/framework/port/status_macros.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -47,7 +47,7 @@ void RescaleImageFrame(const ImageFrame& source_frame, const int width,
                        const int height, const int alignment_boundary,
                        const int open_cv_interpolation_algorithm,
                        ImageFrame* destination_frame) {
-  CHECK(destination_frame);
+  ABSL_CHECK(destination_frame);
   ABSL_CHECK_EQ(ImageFormat::SRGB, source_frame.Format());
 
   cv::Mat source_mat = ::mediapipe::formats::MatView(&source_frame);
@@ -62,7 +62,7 @@ void RescaleImageFrame(const ImageFrame& source_frame, const int width,
 void RescaleSrgbImage(const cv::Mat& source, const int width, const int height,
                       const int open_cv_interpolation_algorithm,
                       cv::Mat* destination) {
-  CHECK(destination);
+  ABSL_CHECK(destination);
 
   // Convert input_mat into 16 bit per channel linear RGB space.
   cv::Mat input_mat16;
@@ -142,7 +142,7 @@ void ImageFrameToYUVNV12Image(const ImageFrame& image_frame,
 
 void YUVImageToImageFrame(const YUVImage& yuv_image, ImageFrame* image_frame,
                           bool use_bt709) {
-  CHECK(image_frame);
+  ABSL_CHECK(image_frame);
   int width = yuv_image.width();
   int height = yuv_image.height();
   image_frame->Reset(ImageFormat::SRGB, width, height, 16);
@@ -167,7 +167,7 @@ void YUVImageToImageFrame(const YUVImage& yuv_image, ImageFrame* image_frame,
 
 void YUVImageToImageFrameFromFormat(const YUVImage& yuv_image,
                                     ImageFrame* image_frame) {
-  CHECK(image_frame);
+  ABSL_CHECK(image_frame);
   int width = yuv_image.width();
   int height = yuv_image.height();
   image_frame->Reset(ImageFormat::SRGB, width, height, 16);

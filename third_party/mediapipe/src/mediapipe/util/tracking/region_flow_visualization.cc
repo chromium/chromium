@@ -19,12 +19,12 @@
 #include <memory>
 #include <numeric>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/util/tracking/measure_time.h"
 #include "mediapipe/util/tracking/parallel_invoker.h"
 #include "mediapipe/util/tracking/region_flow.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -48,7 +48,7 @@ void VisualizeRegionFlowImpl(const RegionFlowFrame& region_flow_frame,
 
 void VisualizeRegionFlow(const RegionFlowFrame& region_flow_frame,
                          cv::Mat* output) {
-  CHECK(output);
+  ABSL_CHECK(output);
   VisualizeRegionFlowImpl(region_flow_frame, output);
 }
 
@@ -119,7 +119,7 @@ void VisualizeRegionFlowFeatures(const RegionFlowFeatureList& feature_list,
                                  const cv::Scalar& outlier,
                                  bool irls_visualization, float scale_x,
                                  float scale_y, cv::Mat* output) {
-  CHECK(output);
+  ABSL_CHECK(output);
   VisualizeRegionFlowFeaturesImpl(feature_list, color, outlier,
                                   irls_visualization, scale_x, scale_y, output);
 }
@@ -187,7 +187,7 @@ void VisualizeLongFeatureStream(const LongFeatureStream& stream,
                                 const cv::Scalar& outlier, int min_track_length,
                                 int max_points_per_track, float scale_x,
                                 float scale_y, cv::Mat* output) {
-  CHECK(output);
+  ABSL_CHECK(output);
   VisualizeLongFeatureStreamImpl(stream, color, outlier, min_track_length,
 
                                  max_points_per_track, scale_x, scale_y,

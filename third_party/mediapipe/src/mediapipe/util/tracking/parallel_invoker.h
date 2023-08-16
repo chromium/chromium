@@ -71,7 +71,6 @@
 
 #include <memory>
 
-#include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/port/logging.h"
 
@@ -81,6 +80,7 @@
 #ifdef __APPLE__
 #include <dispatch/dispatch.h>
 #include <stdatomic.h>
+#include "absl/log/absl_check.h"
 #endif
 
 #endif  // PARALLEL_INVOKER_ACTIVE
@@ -285,8 +285,7 @@ inline void CheckAndSetInvokerOptions() {
 
   ABSL_CHECK_LT(flags_parallel_invoker_mode, PARALLEL_INVOKER_MAX_VALUE)
       << "Invalid invoker mode specified.";
-  ABSL_CHECK_GE(flags_parallel_invoker_mode, 0)
-      << "Invalid invoker mode specified.";
+  ABSL_CHECK_GE(flags_parallel_invoker_mode, 0) << "Invalid invoker mode specified.";
 }
 
 // Performs parallel iteration from [start to end), scheduling grain_size

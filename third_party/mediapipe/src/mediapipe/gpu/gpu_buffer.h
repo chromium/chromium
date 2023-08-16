@@ -42,6 +42,7 @@
 #include "mediapipe/gpu/gpu_buffer_storage_cv_pixel_buffer.h"
 #else
 #include "mediapipe/gpu/gl_texture_buffer.h"
+#include "absl/log/absl_check.h"
 #endif  // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
 #endif  // MEDIAPIPE_DISABLE_GPU
 
@@ -74,7 +75,7 @@ class GpuBuffer {
   // GpuBuffers in a portable way from the framework, e.g. using
   // GpuBufferMultiPool.
   explicit GpuBuffer(std::shared_ptr<internal::GpuBufferStorage> storage) {
-    CHECK(storage) << "Cannot construct GpuBuffer with null storage";
+    ABSL_CHECK(storage) << "Cannot construct GpuBuffer with null storage";
     holder_ = std::make_shared<StorageHolder>(std::move(storage));
   }
 

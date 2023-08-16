@@ -24,11 +24,11 @@
 #include <utility>
 #include <vector>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/vector.h"
 #include "mediapipe/util/tracking/motion_models.h"
 #include "mediapipe/util/tracking/region_flow.pb.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -235,7 +235,7 @@ template <>
 inline void RegionFlowFeatureListViaTransform(
     const MixtureHomography& mix, RegionFlowFeatureList* flow_feature_list,
     float a, float b, bool set_match, const MixtureRowWeights* row_weights) {
-  CHECK(row_weights) << "Row weights required for mixtures.";
+  ABSL_CHECK(row_weights) << "Row weights required for mixtures.";
 
   for (auto& feature : *flow_feature_list->mutable_feature()) {
     const float* weights = row_weights->RowWeights(feature.y());
@@ -276,7 +276,7 @@ std::pair<float, bool> GetFilteredWeightImpl(const Predicate& predicate,
 template <class Predicate>
 int FilterRegionFlowFeatureList(const Predicate& predicate, float reset_value,
                                 RegionFlowFeatureList* flow_feature_list) {
-  CHECK(flow_feature_list != nullptr);
+  ABSL_CHECK(flow_feature_list != nullptr);
   int num_passing_features = 0;
   for (auto& feature : *flow_feature_list->mutable_feature()) {
     std::pair<float, bool> filter_result =
@@ -297,7 +297,7 @@ int FilterRegionFlowFeatureWeights(const Predicate& predicate,
                                    float reset_value,
                                    const RegionFlowFeatureList& feature_list,
                                    std::vector<float>* result_weights) {
-  CHECK(result_weights != nullptr);
+  ABSL_CHECK(result_weights != nullptr);
   result_weights->clear();
 
   int num_passing_features = 0;
@@ -319,8 +319,8 @@ template <class Predicate>
 void SelectFeaturesFromList(const Predicate& predicate,
                             RegionFlowFeatureList* feature_list,
                             RegionFlowFeatureView* feature_view) {
-  CHECK(feature_list != nullptr);
-  CHECK(feature_view != nullptr);
+  ABSL_CHECK(feature_list != nullptr);
+  ABSL_CHECK(feature_view != nullptr);
   for (auto& feature : *feature_list->mutable_feature()) {
     if (predicate(feature)) {
       feature_view->push_back(&feature);
@@ -330,8 +330,8 @@ void SelectFeaturesFromList(const Predicate& predicate,
 
 inline void SelectAllFeaturesFromList(RegionFlowFeatureList* feature_list,
                                       RegionFlowFeatureView* feature_view) {
-  CHECK(feature_list != nullptr);
-  CHECK(feature_view != nullptr);
+  ABSL_CHECK(feature_list != nullptr);
+  ABSL_CHECK(feature_view != nullptr);
   for (auto& feature : *feature_list->mutable_feature()) {
     feature_view->push_back(&feature);
   }
@@ -343,7 +343,7 @@ inline void SelectAllFeaturesFromList(RegionFlowFeatureList* feature_list,
 template <class Predicate>
 void SortRegionFlowFeatureView(const Predicate& predicate,
                                RegionFlowFeatureView* feature_view) {
-  CHECK(feature_view != nullptr);
+  ABSL_CHECK(feature_view != nullptr);
   std::sort(feature_view->begin(), feature_view->end(), predicate);
 }
 
@@ -591,7 +591,7 @@ void BuildFeatureGrid(
     std::vector<std::vector<int>>* feature_taps_5,  // Optional.
     Vector2_i* num_grid_bins,                       // Optional.
     std::vector<FeatureGrid<Feature>>* feature_grids) {
-  CHECK(feature_grids);
+  ABSL_CHECK(feature_grids);
   ABSL_CHECK_GT(grid_resolution, 0.0f);
 
   const int num_frames = feature_views.size();

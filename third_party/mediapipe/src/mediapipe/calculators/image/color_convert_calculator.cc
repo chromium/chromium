@@ -21,12 +21,13 @@
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/source_location.h"
 #include "mediapipe/framework/port/status_builder.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace {
 void SetColorChannel(int channel, uint8 value, cv::Mat* mat) {
-  CHECK(mat->depth() == CV_8U);
-  CHECK(channel < mat->channels());
+  ABSL_CHECK(mat->depth() == CV_8U);
+  ABSL_CHECK(channel < mat->channels());
   const int step = mat->channels();
   for (int r = 0; r < mat->rows; ++r) {
     uint8* row_ptr = mat->ptr<uint8>(r);

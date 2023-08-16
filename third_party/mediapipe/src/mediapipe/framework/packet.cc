@@ -22,6 +22,7 @@
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/port/status_builder.h"
 #include "mediapipe/framework/tool/type_util.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace packet_internal {
@@ -135,9 +136,9 @@ absl::Status Packet::ValidateAsProtoMessageLite() const {
 }
 
 const proto_ns::MessageLite& Packet::GetProtoMessageLite() const {
-  CHECK(holder_ != nullptr) << "The packet is empty.";
+  ABSL_CHECK(holder_ != nullptr) << "The packet is empty.";
   const proto_ns::MessageLite* proto = holder_->GetProtoMessageLite();
-  CHECK(proto != nullptr) << "The Packet stores '" << holder_->DebugTypeName()
+  ABSL_CHECK(proto != nullptr) << "The Packet stores '" << holder_->DebugTypeName()
                           << "', it cannot be converted to MessageLite type.";
   return *proto;
 }

@@ -34,8 +34,8 @@
 
 #ifndef __EMSCRIPTEN__
 #include "absl/debugging/leak_check.h"
-#include "absl/log/absl_check.h"
 #include "mediapipe/gpu/gl_thread_collector.h"
+#include "absl/log/absl_check.h"
 #endif
 
 #ifndef GL_MAJOR_VERSION
@@ -75,7 +75,7 @@ GlContext::DedicatedThread::DedicatedThread() {
 
 GlContext::DedicatedThread::~DedicatedThread() {
   if (IsCurrentThread()) {
-    CHECK(self_destruct_);
+    ABSL_CHECK(self_destruct_);
     ABSL_CHECK_EQ(pthread_detach(gl_thread_id_), 0);
   } else {
     // Give an invalid job to signal termination.
@@ -169,7 +169,7 @@ void GlContext::DedicatedThread::RunWithoutWaiting(GlVoidFunction gl_func) {
   // non-calculator tasks in the presence of GL source calculators, calculator
   // tasks must always be scheduled as new tasks, or another solution needs to
   // be set up to avoid starvation. See b/78522434.
-  CHECK(gl_func);
+  ABSL_CHECK(gl_func);
   PutJob(std::move(gl_func));
 }
 
@@ -495,10 +495,10 @@ absl::Status GlContext::SwitchContext(ContextBinding* saved_context,
   }
   // Check that the context object is consistent with the native context.
   if (old_context_obj && saved_context) {
-    DCHECK(old_context_obj->context_ == saved_context->context);
+    ABSL_DCHECK(old_context_obj->context_ == saved_context->context);
   }
   if (new_context_obj) {
-    DCHECK(new_context_obj->context_ == new_context.context);
+    ABSL_DCHECK(new_context_obj->context_ == new_context.context);
   }
 
   if (new_context_obj && (old_context_obj == new_context_obj)) {
@@ -538,7 +538,7 @@ GlContext::ContextBinding GlContext::ThisContextBinding() {
 }
 
 absl::Status GlContext::EnterContext(ContextBinding* saved_context) {
-  DCHECK(HasContext());
+  ABSL_DCHECK(HasContext());
   return SwitchContext(saved_context, ThisContextBinding());
 }
 
@@ -849,7 +849,7 @@ bool GlContext::IsAnyContextCurrent() {
 std::shared_ptr<GlSyncPoint>
 GlContext::CreateSyncTokenForCurrentExternalContext(
     const std::shared_ptr<GlContext>& delegate_graph_context) {
-  CHECK(delegate_graph_context);
+  ABSL_CHECK(delegate_graph_context);
   if (!IsAnyContextCurrent()) return nullptr;
   if (delegate_graph_context->ShouldUseFenceSync()) {
     return std::shared_ptr<GlSyncPoint>(
@@ -900,7 +900,7 @@ void GlContext::WaitForGlFinishCountPast(int64_t count_to_pass) {
     // from the GlContext, and we must wait for gl_finish_count_ to pass it.
     // Therefore, we need to do at most one more glFinish call. This DCHECK
     // is used for documentation and sanity-checking purposes.
-    DCHECK(gl_finish_count_ >= count_to_pass);
+    ABSL_DCHECK(gl_finish_count_ >= count_to_pass);
     if (gl_finish_count_ == count_to_pass) {
       glFinish();
       GlFinishCalled();
@@ -921,7 +921,7 @@ void GlContext::WaitForGlFinishCountPast(int64_t count_to_pass) {
     // it can signal the right condition variable if it is asked to do a
     // glFinish.
     absl::MutexLock other_lock(&other->mutex_);
-    DCHECK(!other->context_waiting_on_);
+    ABSL_DCHECK(!other->context_waiting_on_);
     other->context_waiting_on_ = this;
   }
   // We do not schedule this action using Run because we don't necessarily
@@ -965,12 +965,12 @@ void GlContext::WaitForGlFinishCountPast(int64_t count_to_pass) {
 }
 
 void GlContext::WaitSyncToken(const std::shared_ptr<GlSyncPoint>& token) {
-  CHECK(token);
+  ABSL_CHECK(token);
   token->Wait();
 }
 
 bool GlContext::SyncTokenIsReady(const std::shared_ptr<GlSyncPoint>& token) {
-  CHECK(token);
+  ABSL_CHECK(token);
   return token->IsReady();
 }
 
@@ -1032,7 +1032,7 @@ void GlContext::LogUncheckedGlErrors(bool had_gl_errors) {
 const GlTextureInfo& GlTextureInfoForGpuBufferFormat(GpuBufferFormat format,
                                                      int plane) {
   std::shared_ptr<GlContext> ctx = GlContext::GetCurrent();
-  CHECK(ctx != nullptr);
+  ABSL_CHECK(ctx != nullptr);
   return GlTextureInfoForGpuBufferFormat(format, plane, ctx->GetGlVersion());
 }
 

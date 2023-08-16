@@ -44,9 +44,9 @@
 #include <limits>
 #include <type_traits>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/deps/strong_int.h"
 #include "mediapipe/framework/port/logging.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace intops {
@@ -68,8 +68,8 @@ class SafeIntStrongIntValidator {
     // Check that the underlying integral type provides a range that is
     // compatible with two's complement.
     if (std::numeric_limits<T>::is_signed) {
-      ABSL_CHECK_EQ(
-          -1, std::numeric_limits<T>::min() + std::numeric_limits<T>::max())
+      ABSL_CHECK_EQ(-1,
+               std::numeric_limits<T>::min() + std::numeric_limits<T>::max())
           << "unexpected integral bounds";
     }
 

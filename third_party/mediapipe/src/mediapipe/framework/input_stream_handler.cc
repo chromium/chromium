@@ -14,12 +14,12 @@
 
 #include "mediapipe/framework/input_stream_handler.h"
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/substitute.h"
 #include "mediapipe/framework/collection_item_id.h"
 #include "mediapipe/framework/mediapipe_profiling.h"
 #include "mediapipe/framework/port/ret_check.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 using SyncSet = InputStreamHandler::SyncSet;
@@ -112,7 +112,7 @@ void InputStreamHandler::SetHeader(CollectionItemId id, const Packet& header) {
 
 void InputStreamHandler::UpdateInputShardHeaders(
     InputStreamShardSet* input_shards) {
-  CHECK(input_shards);
+  ABSL_CHECK(input_shards);
   for (CollectionItemId id = input_stream_managers_.BeginId();
        id < input_stream_managers_.EndId(); ++id) {
     input_shards->Get(id).SetHeader(input_stream_managers_.Get(id)->Header());
@@ -199,7 +199,7 @@ bool InputStreamHandler::ScheduleInvocations(int max_allowance,
                           TraceEvent(TraceEvent::READY_FOR_PROCESS)
                               .set_node_id(calculator_context->NodeId()));
     } else {
-      CHECK(node_readiness == NodeReadiness::kReadyForClose);
+      ABSL_CHECK(node_readiness == NodeReadiness::kReadyForClose);
       // If any parallel invocations are in progress or a calculator context has
       // been prepared for Close(), we shouldn't prepare another calculator
       // context for Close().
@@ -303,7 +303,7 @@ void InputStreamHandler::SetNextTimestampBound(CollectionItemId id,
 
 void InputStreamHandler::ClearCurrentInputs(
     CalculatorContext* calculator_context) {
-  CHECK(calculator_context);
+  ABSL_CHECK(calculator_context);
   calculator_context_manager_->PopInputTimestampFromContext(calculator_context);
   for (auto& input : calculator_context->Inputs()) {
     // Invokes InputStreamShard's private method to clear packet.
@@ -318,20 +318,18 @@ void InputStreamHandler::Close() {
 }
 
 void InputStreamHandler::SetBatchSize(int batch_size) {
-  CHECK(!calculator_run_in_parallel_ || batch_size == 1)
+  ABSL_CHECK(!calculator_run_in_parallel_ || batch_size == 1)
       << "Batching cannot be combined with parallel execution.";
-  CHECK(!late_preparation_ || batch_size == 1)
+  ABSL_CHECK(!late_preparation_ || batch_size == 1)
       << "Batching cannot be combined with late preparation.";
-  ABSL_CHECK_GE(batch_size, 1)
-      << "Batch size has to be greater than or equal to 1.";
+  ABSL_CHECK_GE(batch_size, 1) << "Batch size has to be greater than or equal to 1.";
   // Source nodes shouldn't specify batch_size even if it's set to 1.
-  ABSL_CHECK_GE(NumInputStreams(), 0)
-      << "Source nodes cannot batch input packets.";
+  ABSL_CHECK_GE(NumInputStreams(), 0) << "Source nodes cannot batch input packets.";
   batch_size_ = batch_size;
 }
 
 void InputStreamHandler::SetLatePreparation(bool late_preparation) {
-  CHECK(batch_size_ == 1 || !late_preparation_)
+  ABSL_CHECK(batch_size_ == 1 || !late_preparation_)
       << "Batching cannot be combined with late preparation.";
   late_preparation_ = late_preparation;
 }
@@ -407,8 +405,8 @@ Timestamp SyncSet::MinPacketTimestamp() const {
 
 void SyncSet::FillInputSet(Timestamp input_timestamp,
                            InputStreamShardSet* input_set) {
-  CHECK(input_timestamp.IsAllowedInStream());
-  CHECK(input_set);
+  ABSL_CHECK(input_timestamp.IsAllowedInStream());
+  ABSL_CHECK(input_set);
   for (CollectionItemId id : stream_ids_) {
     const auto& stream = input_stream_handler_->input_stream_managers_.Get(id);
     int num_packets_dropped = 0;

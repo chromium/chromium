@@ -15,13 +15,13 @@
 // Converts a single int or vector<int> or vector<vector<int>> to 1D (or 2D)
 // tf::Tensor.
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/calculators/tensorflow/vector_int_to_tensor_calculator_options.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/types.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

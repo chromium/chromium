@@ -27,6 +27,7 @@ limitations under the License.
 #include "mediapipe/framework/formats/yuv_image.h"
 #include "mediapipe/gpu/gpu_buffer_format.h"
 #include "mediapipe/util/frame_buffer/frame_buffer_util.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -87,7 +88,7 @@ std::shared_ptr<FrameBuffer> YuvImageToFrameBuffer(
   FrameBuffer::Dimension dimension{/*width=*/yuv_image->width(),
                                    /*height=*/yuv_image->height()};
   std::vector<FrameBuffer::Plane> planes;
-  CHECK(yuv_image->mutable_data(0) != nullptr && yuv_image->stride(0) > 0)
+  ABSL_CHECK(yuv_image->mutable_data(0) != nullptr && yuv_image->stride(0) > 0)
       << "Invalid YuvImage. Expected plane at index 0 to be non-null and have "
          "stride > 0.";
   planes.emplace_back(
@@ -97,7 +98,7 @@ std::shared_ptr<FrameBuffer> YuvImageToFrameBuffer(
   switch (format) {
     case FrameBuffer::Format::kNV12:
     case FrameBuffer::Format::kNV21: {
-      CHECK(yuv_image->mutable_data(1) != nullptr && yuv_image->stride(1) > 0)
+      ABSL_CHECK(yuv_image->mutable_data(1) != nullptr && yuv_image->stride(1) > 0)
           << "Invalid YuvImage. Expected plane at index 1 to be non-null and "
              "have stride > 0.";
       planes.emplace_back(
@@ -108,7 +109,7 @@ std::shared_ptr<FrameBuffer> YuvImageToFrameBuffer(
     }
     case FrameBuffer::Format::kYV12:
     case FrameBuffer::Format::kYV21: {
-      CHECK(yuv_image->mutable_data(1) != nullptr && yuv_image->stride(1) > 0 &&
+      ABSL_CHECK(yuv_image->mutable_data(1) != nullptr && yuv_image->stride(1) > 0 &&
             yuv_image->mutable_data(2) != nullptr && yuv_image->stride(2) > 0)
           << "Invalid YuvImage. Expected planes at indices 1 and 2 to be "
              "non-null and have stride > 0.";
@@ -156,7 +157,7 @@ std::shared_ptr<ImageFrame> YuvImageToImageFrame(
 
 GpuBufferStorageYuvImage::GpuBufferStorageYuvImage(
     std::shared_ptr<YUVImage> yuv_image) {
-  CHECK(GpuBufferFormatForFourCC(yuv_image->fourcc()) !=
+  ABSL_CHECK(GpuBufferFormatForFourCC(yuv_image->fourcc()) !=
         GpuBufferFormat::kUnknown)
       << "Invalid format. Only FOURCC_NV12, FOURCC_NV21, FOURCC_YV12 and "
          "FOURCC_I420 are supported.";

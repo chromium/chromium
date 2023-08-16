@@ -22,8 +22,8 @@
 
 #include "Eigen/Core"
 #include "Eigen/Dense"
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_format.h"
+#include "absl/log/absl_check.h"
 
 // Set to true to use catmull rom mixture weights instead of Gaussian weights
 // for homography mixture estimation.
@@ -64,7 +64,7 @@ TranslationModel ModelAdapter<TranslationModel>::FromHomography(
 
 void ModelAdapter<TranslationModel>::GetJacobianAtPoint(const Vector2_f& pt,
                                                         float* jacobian) {
-  DCHECK(jacobian);
+  ABSL_DCHECK(jacobian);
   jacobian[0] = 1;
   jacobian[1] = 0;
   jacobian[2] = 0;
@@ -116,7 +116,7 @@ SimilarityModel ModelAdapter<SimilarityModel>::FromArgs(float dx, float dy,
 
 SimilarityModel ModelAdapter<SimilarityModel>::FromFloatPointer(
     const float* args, bool identity_parametrization) {
-  DCHECK(args);
+  ABSL_DCHECK(args);
   SimilarityModel model;
   model.set_dx(args[0]);
   model.set_dy(args[1]);
@@ -127,7 +127,7 @@ SimilarityModel ModelAdapter<SimilarityModel>::FromFloatPointer(
 
 SimilarityModel ModelAdapter<SimilarityModel>::FromDoublePointer(
     const double* args, bool identity_parametrization) {
-  DCHECK(args);
+  ABSL_DCHECK(args);
   SimilarityModel model;
   model.set_dx(args[0]);
   model.set_dy(args[1]);
@@ -314,7 +314,7 @@ LinearSimilarityModel ModelAdapter<LinearSimilarityModel>::AddIdentity(
 
 void ModelAdapter<LinearSimilarityModel>::GetJacobianAtPoint(
     const Vector2_f& pt, float* jacobian) {
-  DCHECK(jacobian);
+  ABSL_DCHECK(jacobian);
   // First row.
   jacobian[0] = 1;
   jacobian[1] = 0;
@@ -412,7 +412,7 @@ AffineModel ModelAdapter<AffineModel>::AddIdentity(
 
 void ModelAdapter<AffineModel>::GetJacobianAtPoint(const Vector2_f& pt,
                                                    float* jacobian) {
-  DCHECK(jacobian);
+  ABSL_DCHECK(jacobian);
   // First row.
   jacobian[0] = 1;
   jacobian[1] = 0;
@@ -605,7 +605,7 @@ bool ModelAdapter<Homography>::IsAffine(const Homography& model) {
 
 void ModelAdapter<Homography>::GetJacobianAtPoint(const Vector2_f& pt,
                                                   float* jacobian) {
-  DCHECK(jacobian);
+  ABSL_DCHECK(jacobian);
   // First row.
   jacobian[0] = pt.x();
   jacobian[1] = pt.y();

@@ -32,6 +32,7 @@
 #include "mediapipe/framework/formats/tensor_mtl_buffer_view.h"
 #else
 #include <cstdlib>
+#include "absl/log/absl_check.h"
 #endif  // MEDIAPIPE_METAL_ENABLED
 
 namespace mediapipe {
@@ -347,7 +348,7 @@ Tensor::OpenGlBufferView Tensor::GetOpenGlBufferReadView() const {
       void* ptr =
           glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, bytes(),
                            GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_WRITE_BIT);
-      CHECK(ptr) << "glMapBufferRange failed: " << glGetError();
+      ABSL_CHECK(ptr) << "glMapBufferRange failed: " << glGetError();
       std::memcpy(ptr, cpu_buffer_, bytes());
       glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
     }
@@ -537,7 +538,7 @@ Tensor::CpuReadView Tensor::GetCpuReadView() const {
       valid_ |= kValidCpu;
       return {ptr, std::move(lock), [ahwb = ahwb_] {
                 auto error = AHardwareBuffer_unlock(ahwb, nullptr);
-                CHECK(error == 0) << "AHardwareBuffer_unlock " << error;
+                ABSL_CHECK(error == 0) << "AHardwareBuffer_unlock " << error;
               }};
     }
   }
@@ -621,7 +622,7 @@ Tensor::CpuWriteView Tensor::GetCpuWriteView(
     if (ptr) {
       return {ptr, std::move(lock), [ahwb = ahwb_, fence_fd = &fence_fd_] {
                 auto error = AHardwareBuffer_unlock(ahwb, fence_fd);
-                CHECK(error == 0) << "AHardwareBuffer_unlock " << error;
+                ABSL_CHECK(error == 0) << "AHardwareBuffer_unlock " << error;
               }};
     }
   }

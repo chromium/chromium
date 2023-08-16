@@ -18,7 +18,6 @@
 #include <cmath>
 #include <memory>
 
-#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/substitute.h"
 #include "mediapipe/framework/formats/annotation/locus.pb.h"
@@ -32,6 +31,7 @@
 #include "mediapipe/framework/port/statusor.h"
 #include "mediapipe/framework/tool/status_util.h"
 #include "mediapipe/framework/type_map.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -40,7 +40,7 @@ namespace {
 // the location_data, the tightest bounding box, that contains all pixels
 // encoded in the rasterizations.
 Rectangle_i MaskToRectangle(const LocationData& location_data) {
-  CHECK(location_data.mask().has_rasterization());
+  ABSL_CHECK(location_data.mask().has_rasterization());
   const auto& rasterization = location_data.mask().rasterization();
   if (rasterization.interval_size() == 0) {
     return Rectangle_i(0, 0, 0, 0);
@@ -64,7 +64,7 @@ Location::Location() {}
 
 Location::Location(const LocationData& location_data)
     : location_data_(location_data) {
-  CHECK(IsValidLocationData(location_data_));
+  ABSL_CHECK(IsValidLocationData(location_data_));
 }
 
 Location Location::CreateGlobalLocation() {
@@ -159,7 +159,7 @@ Rectangle_i Location::GetBBox<Rectangle_i>() const {
 }
 
 Location& Location::Scale(const float scale) {
-  CHECK(!location_data_.has_mask())
+  ABSL_CHECK(!location_data_.has_mask())
       << "Location mask scaling is not implemented.";
   ABSL_CHECK_GT(scale, 0.0f);
   switch (location_data_.format()) {

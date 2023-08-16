@@ -23,6 +23,7 @@
 #include "mediapipe/framework/port/status_builder.h"
 #include "mediapipe/gpu/gl_context.h"
 #include "mediapipe/gpu/gl_context_internal.h"
+#include "absl/log/absl_check.h"
 
 #ifndef EGL_OPENGL_ES3_BIT_KHR
 #define EGL_OPENGL_ES3_BIT_KHR 0x00000040
@@ -114,7 +115,7 @@ GlContext::StatusOrGlContext GlContext::Create(EGLContext share_context,
 
 absl::Status GlContext::CreateContextInternal(EGLContext share_context,
                                               int gl_version) {
-  CHECK(gl_version == 2 || gl_version == 3);
+  ABSL_CHECK(gl_version == 2 || gl_version == 3);
 
   const EGLint config_attr[] = {
       // clang-format off

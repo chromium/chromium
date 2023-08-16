@@ -17,10 +17,10 @@
 
 #include <vector>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/util/tracking/camera_motion.pb.h"
 #include "mediapipe/util/tracking/motion_models.h"
 #include "mediapipe/util/tracking/region_flow.pb.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -238,10 +238,10 @@ void DownsampleMotionModels(
     std::vector<CameraMotion::Type>* downsampled_types) {
   if (model_type) {
     ABSL_CHECK_EQ(models.size(), model_type->size());
-    CHECK(downsampled_models) << "Expecting output models.";
+    ABSL_CHECK(downsampled_models) << "Expecting output models.";
   }
 
-  CHECK(downsampled_models);
+  ABSL_CHECK(downsampled_models);
   downsampled_models->clear();
   if (downsampled_types) {
     downsampled_types->clear();
@@ -277,7 +277,7 @@ void DownsampleMotionModels(
 template <class Container>
 void SubsampleEntities(const Container& input, int downsample_factor,
                        Container* output) {
-  CHECK(output);
+  ABSL_CHECK(output);
   output->clear();
 
   if (input.empty()) {

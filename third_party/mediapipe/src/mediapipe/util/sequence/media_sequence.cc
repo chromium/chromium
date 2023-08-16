@@ -17,11 +17,11 @@
 #include <cmath>
 #include <limits>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_split.h"
 #include "mediapipe/framework/port/opencv_imgcodecs_inc.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/util/sequence/media_sequence_util.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace mediasequence {
@@ -531,7 +531,7 @@ std::unique_ptr<mediapipe::Matrix> GetAudioFromFeatureAt(
     const std::string& prefix, const tensorflow::SequenceExample& sequence,
     int index) {
   const auto& flat_data = GetFeatureFloatsAt(prefix, sequence, index);
-  CHECK(HasFeatureNumChannels(prefix, sequence))
+  ABSL_CHECK(HasFeatureNumChannels(prefix, sequence))
       << "GetAudioAt requires num_channels context to be specified as key: "
       << merge_prefix(prefix, kFeatureNumChannelsKey);
   int num_channels = GetFeatureNumChannels(prefix, sequence);

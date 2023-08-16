@@ -15,7 +15,6 @@
 #include <memory>
 #include <string>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_replace.h"
 #include "mediapipe/calculators/image/bilateral_filter_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -33,6 +32,7 @@
 #include "mediapipe/gpu/gl_calculator_helper.h"
 #include "mediapipe/gpu/gl_simple_shaders.h"
 #include "mediapipe/gpu/shader_util.h"
+#include "absl/log/absl_check.h"
 #endif  // !MEDIAPIPE_DISABLE_GPU
 
 namespace mediapipe {
@@ -113,7 +113,7 @@ class BilateralFilterCalculator : public CalculatorBase {
 REGISTER_CALCULATOR(BilateralFilterCalculator);
 
 absl::Status BilateralFilterCalculator::GetContract(CalculatorContract* cc) {
-  ABSL_CHECK_GE(cc->Inputs().NumEntries(), 1);
+  RET_CHECK_GE(cc->Inputs().NumEntries(), 1);
 
   if (cc->Inputs().HasTag(kInputFrameTag) &&
       cc->Inputs().HasTag(kInputFrameTagGpu)) {

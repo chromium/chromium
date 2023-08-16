@@ -23,12 +23,12 @@
 #include <string>
 #include <vector>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/opencv_core_inc.h"
 #include "mediapipe/framework/port/vector.h"
 #include "mediapipe/util/tracking/tone_models.pb.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 // Abstract Adapter for tone models.
@@ -247,7 +247,7 @@ typedef MixtureToneAdapter<AffineToneModelTraits> MixtureAffineToneModelAdapter;
 template <class T>
 GainBiasModel ToneModelAdapter<GainBiasModel>::FromPointer(const T* args,
                                                            bool identity) {
-  DCHECK(args);
+  ABSL_DCHECK(args);
   GainBiasModel model;
   const float id_shift = identity ? 1.0f : 0.0f;
   model.set_gain_c1(args[0] + id_shift);
@@ -347,7 +347,7 @@ inline float ToneModelAdapter<GainBiasModel>::GetParameter(
 template <class T>
 AffineToneModel ToneModelAdapter<AffineToneModel>::FromPointer(const T* args,
                                                                bool identity) {
-  DCHECK(args);
+  ABSL_DCHECK(args);
   AffineToneModel model;
   const float id_shift = identity ? 1.0f : 0.0f;
   model.set_g_00(args[0] + id_shift);
@@ -370,7 +370,7 @@ AffineToneModel ToneModelAdapter<AffineToneModel>::FromPointer(const T* args,
 template <class T>
 void ToneModelAdapter<AffineToneModel>::ToPointerPad(
     const AffineToneModel& model, bool pad_square, T* args) {
-  DCHECK(args);
+  ABSL_DCHECK(args);
   args[0] = model.g_00();
   args[1] = model.g_01();
   args[2] = model.g_02();
@@ -593,7 +593,7 @@ template <int C>
 void ToneModelMethods<Model, Adapter>::MapImageIndependent(
     const Model& model, bool log_domain, bool normalized_model,
     const cv::Mat& input, cv::Mat* output) {
-  CHECK(output != nullptr);
+  ABSL_CHECK(output != nullptr);
   ABSL_CHECK_EQ(input.channels(), C);
   ABSL_CHECK_EQ(output->channels(), C);
 

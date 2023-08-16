@@ -22,6 +22,7 @@
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/packet.h"
 #include "mediapipe/framework/port/status.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -125,7 +126,7 @@ class ServiceBinding {
  public:
   bool IsAvailable() { return service_ != nullptr; }
   T& GetObject() {
-    CHECK(service_) << "Service is unavailable.";
+    ABSL_CHECK(service_) << "Service is unavailable.";
     return *service_;
   }
 

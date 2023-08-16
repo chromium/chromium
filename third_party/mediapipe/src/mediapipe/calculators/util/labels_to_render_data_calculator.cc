@@ -19,7 +19,6 @@
 #include <string>
 #include <vector>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/calculators/util/labels_to_render_data_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -30,6 +29,7 @@
 #include "mediapipe/framework/port/statusor.h"
 #include "mediapipe/util/color.pb.h"
 #include "mediapipe/util/render_data.pb.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -115,8 +115,7 @@ absl::Status LabelsToRenderDataCalculator::Process(CalculatorContext* cc) {
     video_height_ = video_header.height;
     return absl::OkStatus();
   } else {
-    ABSL_CHECK_EQ(options_.location(),
-                  LabelsToRenderDataCalculatorOptions::TOP_LEFT)
+    ABSL_CHECK_EQ(options_.location(), LabelsToRenderDataCalculatorOptions::TOP_LEFT)
         << "Only TOP_LEFT is supported without VIDEO_PRESTREAM.";
   }
 

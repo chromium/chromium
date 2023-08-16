@@ -17,7 +17,6 @@
 #include <cmath>  // for ceil
 #include <memory>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/calculators/core/packet_thinner_calculator.pb.h"
 #include "mediapipe/framework/calculator_context.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -26,6 +25,7 @@
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/tool/options_util.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -161,7 +161,7 @@ absl::Status PacketThinnerCalculator::Open(CalculatorContext* cc) {
 
   thinner_type_ = options.thinner_type();
   // This check enables us to assume only two thinner types exist in Process()
-  CHECK(thinner_type_ == PacketThinnerCalculatorOptions::ASYNC ||
+  ABSL_CHECK(thinner_type_ == PacketThinnerCalculatorOptions::ASYNC ||
         thinner_type_ == PacketThinnerCalculatorOptions::SYNC)
       << "Unsupported thinner type.";
 
@@ -178,8 +178,7 @@ absl::Status PacketThinnerCalculator::Open(CalculatorContext* cc) {
   } else {
     period_ = TimestampDiff(options.period());
   }
-  ABSL_CHECK_LT(TimestampDiff(0), period_)
-      << "Specified period must be positive.";
+  ABSL_CHECK_LT(TimestampDiff(0), period_) << "Specified period must be positive.";
 
   if (options.has_start_time()) {
     start_time_ = Timestamp(options.start_time());

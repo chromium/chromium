@@ -14,10 +14,10 @@
 
 #include "mediapipe/framework/output_stream_handler.h"
 
-#include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/collection_item_id.h"
 #include "mediapipe/framework/output_stream_shard.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -32,7 +32,7 @@ absl::Status OutputStreamHandler::InitializeOutputStreamManagers(
 
 absl::Status OutputStreamHandler::SetupOutputShards(
     OutputStreamShardSet* output_shards) {
-  CHECK(output_shards);
+  ABSL_CHECK(output_shards);
   for (CollectionItemId id = output_stream_managers_.BeginId();
        id < output_stream_managers_.EndId(); ++id) {
     OutputStreamManager* manager = output_stream_managers_.Get(id);
@@ -53,7 +53,7 @@ void OutputStreamHandler::PrepareForRun(
 }
 
 void OutputStreamHandler::Open(OutputStreamShardSet* output_shards) {
-  CHECK(output_shards);
+  ABSL_CHECK(output_shards);
   PropagateOutputPackets(Timestamp::Unstarted(), output_shards);
   for (auto& manager : output_stream_managers_) {
     manager->PropagateHeader();
@@ -63,7 +63,7 @@ void OutputStreamHandler::Open(OutputStreamShardSet* output_shards) {
 
 void OutputStreamHandler::PrepareOutputs(Timestamp input_timestamp,
                                          OutputStreamShardSet* output_shards) {
-  CHECK(output_shards);
+  ABSL_CHECK(output_shards);
   for (CollectionItemId id = output_stream_managers_.BeginId();
        id < output_stream_managers_.EndId(); ++id) {
     output_stream_managers_.Get(id)->ResetShard(&output_shards->Get(id));
@@ -150,7 +150,7 @@ void OutputStreamHandler::Close(OutputStreamShardSet* output_shards) {
 
 void OutputStreamHandler::PropagateOutputPackets(
     Timestamp input_timestamp, OutputStreamShardSet* output_shards) {
-  CHECK(output_shards);
+  ABSL_CHECK(output_shards);
   for (CollectionItemId id = output_stream_managers_.BeginId();
        id < output_stream_managers_.EndId(); ++id) {
     OutputStreamManager* manager = output_stream_managers_.Get(id);

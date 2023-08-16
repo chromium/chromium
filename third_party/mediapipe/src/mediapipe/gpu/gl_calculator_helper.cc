@@ -14,7 +14,6 @@
 
 #include "mediapipe/gpu/gl_calculator_helper.h"
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/formats/image.h"
 #include "mediapipe/framework/formats/image_frame.h"
 #include "mediapipe/framework/legacy_calculator_support.h"
@@ -23,6 +22,7 @@
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/gpu/gpu_buffer.h"
 #include "mediapipe/gpu/gpu_service.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -37,7 +37,7 @@ void GlCalculatorHelper::InitializeInternal(CalculatorContext* cc,
 }
 
 absl::Status GlCalculatorHelper::Open(CalculatorContext* cc) {
-  CHECK(cc);
+  ABSL_CHECK(cc);
   auto gpu_service = cc->Service(kGpuService);
   RET_CHECK(gpu_service.IsAvailable())
       << "GPU service not available. Did you forget to call "
@@ -195,8 +195,8 @@ GpuBuffer GlCalculatorHelper::GpuBufferCopyingImageFrame(
 
 void GlCalculatorHelper::GetGpuBufferDimensions(const GpuBuffer& pixel_buffer,
                                                 int* width, int* height) {
-  CHECK(width);
-  CHECK(height);
+  ABSL_CHECK(width);
+  ABSL_CHECK(height);
   *width = pixel_buffer.width();
   *height = pixel_buffer.height();
 }

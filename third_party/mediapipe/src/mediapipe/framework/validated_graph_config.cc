@@ -46,6 +46,7 @@
 #include "mediapipe/framework/tool/subgraph_expansion.h"
 #include "mediapipe/framework/tool/validate.h"
 #include "mediapipe/framework/tool/validate_name.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -744,7 +745,7 @@ int ValidatedGraphConfig::SorterIndexForNode(NodeTypeInfo::NodeRef node) const {
     case NodeTypeInfo::NodeType::CALCULATOR:
       return generators_.size() + node.index;
     default:
-      CHECK(false);
+      ABSL_CHECK(false);
   }
 }
 

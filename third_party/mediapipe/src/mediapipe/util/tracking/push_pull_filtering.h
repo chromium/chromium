@@ -33,10 +33,10 @@
 #include <string>
 #include <vector>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/opencv_core_inc.h"
 #include "mediapipe/util/tracking/image_util.h"
 #include "mediapipe/util/tracking/push_pull_filtering.pb.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -447,7 +447,7 @@ template <int C, class FilterWeightMultiplier>
 void PushPullFiltering<C, FilterWeightMultiplier>::AllocatePyramid(
     const cv::Size& domain_size, int border, int type, bool allocate_base_level,
     std::vector<cv::Mat>* pyramid) {
-  CHECK(pyramid != nullptr);
+  ABSL_CHECK(pyramid != nullptr);
   pyramid->clear();
   pyramid->reserve(16);  // Do not anticipate videos with dimensions
                          // larger than 2^16.
@@ -469,7 +469,7 @@ void PushPullFiltering<C, FilterWeightMultiplier>::AllocatePyramid(
 template <int C, class FilterWeightMultiplier>
 void PushPullFiltering<C, FilterWeightMultiplier>::InitializeImagePyramid(
     const cv::Mat& input_frame, std::vector<cv::Mat>* pyramid) {
-  CHECK(pyramid != nullptr);
+  ABSL_CHECK(pyramid != nullptr);
   ABSL_CHECK_GT(pyramid->size(), 0);
 
   cv::Mat base_level((*pyramid)[0],
@@ -745,7 +745,7 @@ void PushPullFiltering<C, FilterWeightMultiplier>::PerformPushPull(
     const std::vector<float>* data_weights, const cv::Mat* input_frame,
     cv::Mat* results) {
   ABSL_CHECK_EQ(data_locations.size(), data_values.size());
-  CHECK(results != nullptr);
+  ABSL_CHECK(results != nullptr);
 
   if (data_weights) {
     ABSL_CHECK_EQ(data_weights->size(), data_locations.size());
@@ -807,7 +807,7 @@ void PushPullFiltering<C, FilterWeightMultiplier>::PerformPushPullMat(
     int readout_level,           // Default: 0.
     const cv::Mat* input_frame,  // Optional.
     cv::Mat* results) {
-  CHECK(results != nullptr);
+  ABSL_CHECK(results != nullptr);
 
   // Create mip-map view (concat displacements with downsample_pyramid).
   std::vector<cv::Mat*> mip_map(PyramidLevels());
@@ -885,7 +885,7 @@ void PushPullFiltering<C, FilterWeightMultiplier>::PerformPushPullImpl(
   }
 
   if (use_bilateral_) {
-    CHECK(input_frame != nullptr);
+    ABSL_CHECK(input_frame != nullptr);
     InitializeImagePyramid(*input_frame, &input_frame_pyramid_);
   }
 

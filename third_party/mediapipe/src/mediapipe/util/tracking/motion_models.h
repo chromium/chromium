@@ -21,13 +21,13 @@
 #include <vector>
 
 #include "absl/container/node_hash_map.h"
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/singleton.h"
 #include "mediapipe/framework/port/vector.h"
 #include "mediapipe/util/tracking/camera_motion.pb.h"
 #include "mediapipe/util/tracking/motion_models.pb.h"
 #include "mediapipe/util/tracking/region_flow.pb.h"  // NOLINT
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -867,7 +867,7 @@ inline MixtureRowWeights* MixtureRowWeightsFromCameraMotion(
 template <class Model>
 void SmoothModels(const Model& sigma_time_model, const Model* model_sigma,
                   std::vector<Model>* models) {
-  CHECK(models);
+  ABSL_CHECK(models);
 
   const int num_models = models->size();
 
@@ -967,7 +967,7 @@ inline TranslationModel ModelAdapter<TranslationModel>::FromArgs(float dx,
 
 inline TranslationModel ModelAdapter<TranslationModel>::FromFloatPointer(
     const float* args, bool) {
-  DCHECK(args);
+  ABSL_DCHECK(args);
   TranslationModel model;
   model.set_dx(args[0]);
   model.set_dy(args[1]);
@@ -976,7 +976,7 @@ inline TranslationModel ModelAdapter<TranslationModel>::FromFloatPointer(
 
 inline TranslationModel ModelAdapter<TranslationModel>::FromDoublePointer(
     const double* args, bool) {
-  DCHECK(args);
+  ABSL_DCHECK(args);
   TranslationModel model;
   model.set_dx(args[0]);
   model.set_dy(args[1]);
@@ -1056,7 +1056,7 @@ inline LinearSimilarityModel ModelAdapter<LinearSimilarityModel>::FromArgs(
 inline LinearSimilarityModel
 ModelAdapter<LinearSimilarityModel>::FromFloatPointer(
     const float* args, bool identity_parametrization) {
-  DCHECK(args);
+  ABSL_DCHECK(args);
   LinearSimilarityModel model;
   const float id_shift = identity_parametrization ? 1.f : 0.f;
   model.set_dx(args[0]);
@@ -1069,7 +1069,7 @@ ModelAdapter<LinearSimilarityModel>::FromFloatPointer(
 inline LinearSimilarityModel
 ModelAdapter<LinearSimilarityModel>::FromDoublePointer(
     const double* args, bool identity_parametrization) {
-  DCHECK(args);
+  ABSL_DCHECK(args);
   LinearSimilarityModel model;
   const float id_shift = identity_parametrization ? 1.f : 0.f;
   model.set_dx(args[0]);
@@ -1182,7 +1182,7 @@ inline AffineModel ModelAdapter<AffineModel>::FromArgs(float dx, float dy,
 
 inline AffineModel ModelAdapter<AffineModel>::FromFloatPointer(
     const float* args, bool identity_parametrization) {
-  DCHECK(args);
+  ABSL_DCHECK(args);
   AffineModel model;
   const float id_shift = identity_parametrization ? 1.f : 0.f;
   model.set_dx(args[0]);
@@ -1196,7 +1196,7 @@ inline AffineModel ModelAdapter<AffineModel>::FromFloatPointer(
 
 inline AffineModel ModelAdapter<AffineModel>::FromDoublePointer(
     const double* args, bool identity_parametrization) {
-  DCHECK(args);
+  ABSL_DCHECK(args);
   AffineModel model;
   const float id_shift = identity_parametrization ? 1.f : 0.f;
   model.set_dx(args[0]);
@@ -1325,7 +1325,7 @@ inline Homography ModelAdapter<Homography>::FromArgs(float h_00, float h_01,
 
 inline Homography ModelAdapter<Homography>::FromFloatPointer(
     const float* args, bool identity_parametrization) {
-  DCHECK(args);
+  ABSL_DCHECK(args);
   Homography model;
   const float id_shift = identity_parametrization ? 1.f : 0.f;
   model.set_h_00(id_shift + args[0]);
@@ -1341,7 +1341,7 @@ inline Homography ModelAdapter<Homography>::FromFloatPointer(
 
 inline Homography ModelAdapter<Homography>::FromDoublePointer(
     const double* args, bool identity_parametrization) {
-  DCHECK(args);
+  ABSL_DCHECK(args);
   Homography model;
   const float id_shift = identity_parametrization ? 1.f : 0.f;
   model.set_h_00(id_shift + args[0]);

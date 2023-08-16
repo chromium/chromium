@@ -18,11 +18,11 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_join.h"
 #include "mediapipe/framework/deps/threadpool.h"
 #include "mediapipe/framework/port/logging.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

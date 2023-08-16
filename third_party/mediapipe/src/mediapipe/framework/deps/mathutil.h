@@ -23,9 +23,9 @@
 #include <limits>
 #include <type_traits>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/framework/port/logging.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -355,7 +355,7 @@ class MathUtil {
   template <typename T>  // T models LessThanComparable.
   static const T& Clamp(const T& low, const T& high, const T& value) {
     // Prevents errors in ordering the arguments.
-    DCHECK(!(high < low));
+    ABSL_DCHECK(!(high < low));
     if (high < value) return high;
     if (value < low) return low;
     return value;

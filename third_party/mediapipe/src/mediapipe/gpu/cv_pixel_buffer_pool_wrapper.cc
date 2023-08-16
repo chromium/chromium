@@ -17,10 +17,10 @@
 #include <tuple>
 
 #include "CoreFoundation/CFBase.h"
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/objc/CFHolder.h"
 #include "mediapipe/objc/util.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -59,7 +59,7 @@ CFHolder<CVPixelBufferRef> CvPixelBufferPoolWrapper::GetBuffer() {
       ++threshold;
     }
   }
-  CHECK(!err) << "Error creating pixel buffer: " << err;
+  ABSL_CHECK(!err) << "Error creating pixel buffer: " << err;
   count_ = threshold;
   return MakeCFHolderAdopting(buffer);
 }
@@ -78,7 +78,7 @@ CFHolder<CVPixelBufferRef> CvPixelBufferPoolWrapper::CreateBufferWithoutPool(
   CVPixelBufferRef buffer;
   CVReturn err = CreateCVPixelBufferWithoutPool(spec.width, spec.height,
                                                 cv_format, &buffer);
-  CHECK(!err) << "Error creating pixel buffer: " << err;
+  ABSL_CHECK(!err) << "Error creating pixel buffer: " << err;
   return MakeCFHolderAdopting(buffer);
 }
 

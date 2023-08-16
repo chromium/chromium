@@ -18,6 +18,7 @@
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/util/color.pb.h"
 #include "mediapipe/util/render_data.pb.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -41,8 +42,8 @@ RenderAnnotation::Rectangle* NewRect(
   annotation->set_thickness(options.thickness());
 
   if (options.has_top_left_thickness()) {
-    CHECK(!options.oval());
-    CHECK(!options.filled());
+    ABSL_CHECK(!options.oval());
+    ABSL_CHECK(!options.filled());
     annotation->mutable_rectangle()->set_top_left_thickness(
         options.top_left_thickness());
   }

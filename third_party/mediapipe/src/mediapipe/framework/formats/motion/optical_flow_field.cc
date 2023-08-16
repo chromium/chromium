@@ -18,7 +18,6 @@
 
 #include <cmath>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "mediapipe/framework/deps/mathutil.h"
@@ -30,6 +29,7 @@
 #include "mediapipe/framework/port/point2.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/type_map.h"
+#include "absl/log/absl_check.h"
 
 namespace {
 
@@ -41,8 +41,8 @@ const float kFloFileHeaderOnRead = 202021.25;
 
 void CartesianToPolarCoordinates(const cv::Mat& cartesian, cv::Mat* magnitudes,
                                  cv::Mat* angles) {
-  CHECK(magnitudes != nullptr);
-  CHECK(angles != nullptr);
+  ABSL_CHECK(magnitudes != nullptr);
+  ABSL_CHECK(angles != nullptr);
   cv::Mat cartesian_components[2];
   cv::split(cartesian, cartesian_components);
   cv::cartToPolar(cartesian_components[0], cartesian_components[1], *magnitudes,
@@ -192,8 +192,8 @@ void OpticalFlowField::ConvertToProto(OpticalFlowFieldData* proto) const {
 
 bool OpticalFlowField::FollowFlow(float x, float y, float* new_x,
                                   float* new_y) const {
-  CHECK(new_x);
-  CHECK(new_y);
+  ABSL_CHECK(new_x);
+  ABSL_CHECK(new_y);
   if (x < 0 || x > flow_data_.cols - 1 ||  // horizontal bounds
       y < 0 || y > flow_data_.rows - 1) {  // vertical bounds
     return false;

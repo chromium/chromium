@@ -25,7 +25,6 @@
 #include "Eigen/Dense"
 #include "Eigen/SVD"
 #include "absl/algorithm/container.h"
-#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/opencv_calib3d_inc.h"
@@ -34,6 +33,7 @@
 #include "mediapipe/util/tracking/flow_packager.pb.h"
 #include "mediapipe/util/tracking/measure_time.h"
 #include "mediapipe/util/tracking/motion_models.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -159,7 +159,7 @@ bool PointWithinInlierExtent(const Vector2_f pt, const MotionBoxState& state) {
 bool LinearSimilarityL2Solve(
     const std::vector<const MotionVector*>& motion_vectors,
     const std::vector<float>& weights, LinearSimilarityModel* model) {
-  CHECK(model);
+  ABSL_CHECK(model);
   if (motion_vectors.size() < 4) {
     LOG(ERROR) << "Requiring at least 4 input vectors for sufficient solve.";
     return false;
@@ -235,7 +235,7 @@ bool LinearSimilarityL2Solve(
 // Taken from MotionEstimation::HomographyL2NormalEquationSolve
 bool HomographyL2Solve(const std::vector<const MotionVector*>& motion_vectors,
                        const std::vector<float>& weights, Homography* model) {
-  CHECK(model);
+  ABSL_CHECK(model);
 
   cv::Mat matrix(8, 8, CV_32F);
   cv::Mat solution(8, 1, CV_32F);
@@ -375,7 +375,7 @@ bool HomographyL2Solve(const std::vector<const MotionVector*>& motion_vectors,
 void TransformQuadInMotionBoxState(const MotionBoxState& curr_pos,
                                    const Homography& homography,
                                    MotionBoxState* next_pos) {
-  CHECK(next_pos != nullptr);
+  ABSL_CHECK(next_pos != nullptr);
   if (!curr_pos.has_pos_x() || !curr_pos.has_pos_y() || !curr_pos.has_width() ||
       !curr_pos.has_height()) {
     LOG(ERROR) << "Previous box does not exist, cannot transform!";
@@ -647,7 +647,7 @@ std::array<Vector2_f, 4> MotionBoxCorners(const MotionBoxState& state,
 
 bool MotionBoxLines(const MotionBoxState& state, const Vector2_f& scaling,
                     std::array<Vector3_f, 4>* box_lines) {
-  CHECK(box_lines);
+  ABSL_CHECK(box_lines);
   std::array<Vector2_f, 4> corners = MotionBoxCorners(state, scaling);
   for (int k = 0; k < 4; ++k) {
     const Vector2_f diff = corners[(k + 1) % 4] - corners[k];
@@ -666,8 +666,8 @@ bool MotionBoxLines(const MotionBoxState& state, const Vector2_f& scaling,
 
 void MotionBoxBoundingBox(const MotionBoxState& state, Vector2_f* top_left,
                           Vector2_f* bottom_right) {
-  CHECK(top_left);
-  CHECK(bottom_right);
+  ABSL_CHECK(top_left);
+  ABSL_CHECK(bottom_right);
 
   std::array<Vector2_f, 4> corners = MotionBoxCorners(state);
 
@@ -688,7 +688,7 @@ void MotionBoxBoundingBox(const MotionBoxState& state, Vector2_f* top_left,
 
 void MotionBoxInlierLocations(const MotionBoxState& state,
                               std::vector<Vector2_f>* inlier_pos) {
-  CHECK(inlier_pos);
+  ABSL_CHECK(inlier_pos);
   inlier_pos->clear();
   for (int k = 0; k < state.inlier_id_match_pos_size(); k += 2) {
     inlier_pos->push_back(
@@ -699,7 +699,7 @@ void MotionBoxInlierLocations(const MotionBoxState& state,
 
 void MotionBoxOutlierLocations(const MotionBoxState& state,
                                std::vector<Vector2_f>* outlier_pos) {
-  CHECK(outlier_pos);
+  ABSL_CHECK(outlier_pos);
   outlier_pos->clear();
   for (int k = 0; k < state.outlier_id_match_pos_size(); k += 2) {
     outlier_pos->push_back(
@@ -737,7 +737,7 @@ std::array<Vector2_f, 4> GetCornersOfRotatedRect(const MotionBoxState& state,
 }
 
 void InitializeQuadInMotionBoxState(MotionBoxState* state) {
-  CHECK(state != nullptr);
+  ABSL_CHECK(state != nullptr);
   // Every quad has 4 vertices. Each vertex has x and y 2 coordinates. So
   // a total of 8 floating point values.
   if (state->quad().vertices_size() != 8) {
@@ -1152,7 +1152,7 @@ void ComputeSpatialPrior(bool interpolate, bool use_next_position,
                                     update_pos->spatial_confidence().end());
 
   ABSL_CHECK_EQ(old_confidence.size(), old_prior.size());
-  CHECK(old_confidence.empty() ||
+  ABSL_CHECK(old_confidence.empty() ||
         grid_size * grid_size == old_confidence.size())
       << "Empty or priors of constant size expected";
 
@@ -1282,9 +1282,9 @@ void MotionBox::GetStartPosition(const MotionBoxState& curr_pos,
                                  float aspect_ratio, float* expand_mag,
                                  Vector2_f* top_left,
                                  Vector2_f* bottom_right) const {
-  CHECK(top_left);
-  CHECK(bottom_right);
-  CHECK(expand_mag);
+  ABSL_CHECK(top_left);
+  ABSL_CHECK(bottom_right);
+  ABSL_CHECK(expand_mag);
 
   MotionBoxBoundingBox(curr_pos, top_left, bottom_right);
 
@@ -1311,8 +1311,8 @@ void MotionBox::GetSpatialGaussWeights(const MotionBoxState& box_state,
                                        const Vector2_f& inv_box_domain,
                                        float* spatial_gauss_x,
                                        float* spatial_gauss_y) const {
-  CHECK(spatial_gauss_x);
-  CHECK(spatial_gauss_y);
+  ABSL_CHECK(spatial_gauss_x);
+  ABSL_CHECK(spatial_gauss_y);
 
   // Space sigma depends on how much the tracked object fills the rectangle.
   // We get this information from the inlier extent of the previous
@@ -1341,7 +1341,7 @@ bool ComputeGridPositions(const Vector2_f& top_left,
                           const Vector2_f& bottom_right,
                           const std::vector<const MotionVector*>& vectors,
                           std::vector<Vector2_f>* grid_positions) {
-  CHECK(grid_positions);
+  ABSL_CHECK(grid_positions);
 
   // Slightly larger domain to avoid boundary issues.
   const Vector2_f inv_grid_domain(
@@ -1474,8 +1474,8 @@ MotionBox::DistanceWeightsComputer::DistanceWeightsComputer(
            std::min(kMaxBoxCenterBlendWeight, current_state.prior_weight()));
   if (tracking_degrees_ ==
       TrackStepOptions::TRACKING_DEGREE_OBJECT_PERSPECTIVE) {
-    CHECK(initial_state.has_quad());
-    CHECK(current_state.has_quad());
+    ABSL_CHECK(initial_state.has_quad());
+    ABSL_CHECK(current_state.has_quad());
     homography_ =
         ComputeHomographyFromQuad(current_state.quad(), initial_state.quad());
     box_center_transformed_ =
@@ -1562,10 +1562,10 @@ bool MotionBox::GetVectorsAndWeights(
     const std::vector<const MotionBoxState*>& history,
     std::vector<const MotionVector*>* vectors, std::vector<float>* weights,
     int* number_of_good_prior, int* number_of_cont_inliers) const {
-  CHECK(weights);
-  CHECK(vectors);
-  CHECK(number_of_good_prior);
-  CHECK(number_of_cont_inliers);
+  ABSL_CHECK(weights);
+  ABSL_CHECK(vectors);
+  ABSL_CHECK(number_of_good_prior);
+  ABSL_CHECK(number_of_cont_inliers);
 
   const int num_max_vectors = end_idx - start_idx;
   weights->clear();
@@ -1913,9 +1913,9 @@ void MotionBox::EstimateObjectMotion(
     const Vector2_f& irls_scale, std::vector<float>* weights,
     Vector2_f* object_translation, LinearSimilarityModel* object_similarity,
     Homography* object_homography) const {
-  CHECK(object_translation);
-  CHECK(object_similarity);
-  CHECK(object_homography);
+  ABSL_CHECK(object_translation);
+  ABSL_CHECK(object_similarity);
+  ABSL_CHECK(object_homography);
 
   const int num_vectors = motion_vectors.size();
   ABSL_CHECK_EQ(num_vectors, prior_weights.size());
@@ -2008,8 +2008,8 @@ void MotionBox::EstimateTranslation(
     const std::vector<const MotionVector*>& motion_vectors,
     const std::vector<float>& prior_weights, const Vector2_f& irls_scale,
     std::vector<float>* weights, Vector2_f* translation) const {
-  CHECK(weights);
-  CHECK(translation);
+  ABSL_CHECK(weights);
+  ABSL_CHECK(translation);
 
   const int iterations = options_.irls_iterations();
 
@@ -2058,8 +2058,8 @@ bool MotionBox::EstimateSimilarity(
     const std::vector<const MotionVector*>& motion_vectors,
     const std::vector<float>& prior_weights, const Vector2_f& irls_scale,
     std::vector<float>* weights, LinearSimilarityModel* lin_sim) const {
-  CHECK(weights);
-  CHECK(lin_sim);
+  ABSL_CHECK(weights);
+  ABSL_CHECK(lin_sim);
 
   const int iterations = options_.irls_iterations();
   LinearSimilarityModel object_similarity;
@@ -2098,7 +2098,7 @@ bool MotionBox::EstimateHomography(
     const std::vector<const MotionVector*>& motion_vectors,
     const std::vector<float>& prior_weights, const Vector2_f& irls_scale,
     std::vector<float>* weights, Homography* object_homography) const {
-  CHECK(weights);
+  ABSL_CHECK(weights);
 
   const int iterations = options_.irls_iterations();
   Homography homography;
@@ -2308,12 +2308,12 @@ void MotionBox::ScoreAndRecordInliers(
     std::vector<float>* inlier_weights, std::vector<float>* inlier_density,
     int* continued_inliers, int* swapped_inliers, float* motion_inliers_out,
     float* kinetic_average_out) const {
-  CHECK(inlier_weights);
-  CHECK(inlier_density);
-  CHECK(continued_inliers);
-  CHECK(swapped_inliers);
-  CHECK(motion_inliers_out);
-  CHECK(kinetic_average_out);
+  ABSL_CHECK(inlier_weights);
+  ABSL_CHECK(inlier_density);
+  ABSL_CHECK(continued_inliers);
+  ABSL_CHECK(swapped_inliers);
+  ABSL_CHECK(motion_inliers_out);
+  ABSL_CHECK(kinetic_average_out);
 
   std::unordered_map<int, int> prev_inliers;
   MotionBoxInliers(curr_pos, &prev_inliers);
@@ -2434,9 +2434,9 @@ void MotionBox::ComputeInlierCenterAndExtent(
     const std::vector<float>& weights, const std::vector<float>& density,
     const MotionBoxState& box_state, float* min_inlier_sum, Vector2_f* center,
     Vector2_f* extent) const {
-  CHECK(min_inlier_sum);
-  CHECK(center);
-  CHECK(extent);
+  ABSL_CHECK(min_inlier_sum);
+  ABSL_CHECK(center);
+  ABSL_CHECK(extent);
 
   float weight_sum = 0;
   float inlier_sum = 0;
@@ -2653,7 +2653,7 @@ void MotionBox::TrackStepImplDeNormalized(
     const MotionVectorFrame& motion_frame,
     const std::vector<const MotionBoxState*>& history,
     MotionBoxState* next_pos) const {
-  CHECK(next_pos);
+  ABSL_CHECK(next_pos);
 
   constexpr float kDefaultPeriodMs = 1000.0f / kTrackingDefaultFps;
   float temporal_scale = (motion_frame.duration_ms == 0)
@@ -3163,7 +3163,7 @@ void MotionBox::TrackStepImplDeNormalized(
 
 void MotionVectorFrameFromTrackingData(const TrackingData& tracking_data,
                                        MotionVectorFrame* motion_vector_frame) {
-  CHECK(motion_vector_frame != nullptr);
+  ABSL_CHECK(motion_vector_frame != nullptr);
 
   const auto& motion_data = tracking_data.motion_data();
   float aspect_ratio = tracking_data.frame_aspect();
@@ -3289,7 +3289,7 @@ void FeatureAndDescriptorFromTrackingData(
 
 void InvertMotionVectorFrame(const MotionVectorFrame& input,
                              MotionVectorFrame* output) {
-  CHECK(output != nullptr);
+  ABSL_CHECK(output != nullptr);
 
   output->background_model.CopyFrom(ModelInvert(input.background_model));
   output->valid_background_model = input.valid_background_model;
@@ -3342,7 +3342,7 @@ void GetFeatureIndicesWithinBox(const std::vector<Vector2_f>& features,
                                 const Vector2_f& box_scaling,
                                 float max_enlarge_size, int min_num_features,
                                 std::vector<int>* inlier_indices) {
-  CHECK(inlier_indices);
+  ABSL_CHECK(inlier_indices);
   inlier_indices->clear();
 
   if (features.empty()) return;

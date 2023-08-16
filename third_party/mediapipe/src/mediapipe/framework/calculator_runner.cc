@@ -22,6 +22,7 @@
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -139,7 +140,7 @@ CalculatorRunner::CalculatorRunner(const std::string& calculator_type,
 #if !defined(MEDIAPIPE_PROTO_LITE)
 CalculatorRunner::CalculatorRunner(const std::string& node_config_string) {
   CalculatorGraphConfig::Node node_config;
-  CHECK(
+  ABSL_CHECK(
       proto_ns::TextFormat::ParseFromString(node_config_string, &node_config));
   MEDIAPIPE_CHECK_OK(InitializeFromNodeConfig(node_config));
 }
@@ -149,7 +150,7 @@ CalculatorRunner::CalculatorRunner(const std::string& calculator_type,
                                    int num_inputs, int num_outputs,
                                    int num_side_packets) {
   node_config_.set_calculator(calculator_type);
-  CHECK(proto_ns::TextFormat::ParseFromString(options_string,
+  ABSL_CHECK(proto_ns::TextFormat::ParseFromString(options_string,
                                               node_config_.mutable_options()));
   SetNumInputs(num_inputs);
   SetNumOutputs(num_outputs);
@@ -188,7 +189,7 @@ void CalculatorRunner::SetNumInputSidePackets(int n) {
 }
 
 void CalculatorRunner::InitializeInputs(const tool::TagAndNameInfo& info) {
-  CHECK(graph_ == nullptr);
+  ABSL_CHECK(graph_ == nullptr);
   MEDIAPIPE_CHECK_OK(
       tool::SetFromTagAndNameInfo(info, node_config_.mutable_input_stream()));
   inputs_.reset(new StreamContentsSet(info));
@@ -196,7 +197,7 @@ void CalculatorRunner::InitializeInputs(const tool::TagAndNameInfo& info) {
 }
 
 void CalculatorRunner::InitializeOutputs(const tool::TagAndNameInfo& info) {
-  CHECK(graph_ == nullptr);
+  ABSL_CHECK(graph_ == nullptr);
   MEDIAPIPE_CHECK_OK(
       tool::SetFromTagAndNameInfo(info, node_config_.mutable_output_stream()));
   outputs_.reset(new StreamContentsSet(info));
@@ -205,7 +206,7 @@ void CalculatorRunner::InitializeOutputs(const tool::TagAndNameInfo& info) {
 
 void CalculatorRunner::InitializeInputSidePackets(
     const tool::TagAndNameInfo& info) {
-  CHECK(graph_ == nullptr);
+  ABSL_CHECK(graph_ == nullptr);
   MEDIAPIPE_CHECK_OK(tool::SetFromTagAndNameInfo(
       info, node_config_.mutable_input_side_packet()));
   input_side_packets_.reset(new PacketSet(info));

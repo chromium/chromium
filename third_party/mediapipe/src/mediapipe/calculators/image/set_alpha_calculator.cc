@@ -14,7 +14,6 @@
 
 #include <memory>
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/calculators/image/set_alpha_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/calculator_options.pb.h"
@@ -143,7 +142,7 @@ class SetAlphaCalculator : public CalculatorBase {
 REGISTER_CALCULATOR(SetAlphaCalculator);
 
 absl::Status SetAlphaCalculator::GetContract(CalculatorContract* cc) {
-  ABSL_CHECK_GE(cc->Inputs().NumEntries(), 1);
+  RET_CHECK_GE(cc->Inputs().NumEntries(), 1);
 
   bool use_gpu = false;
 

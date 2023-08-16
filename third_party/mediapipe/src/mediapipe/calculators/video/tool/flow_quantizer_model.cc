@@ -14,9 +14,9 @@
 
 #include "mediapipe/calculators/video/tool/flow_quantizer_model.h"
 
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/type_map.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

@@ -19,7 +19,6 @@
 
 #include "Eigen/Core"
 #include "Eigen/Dense"
-#include "absl/log/absl_check.h"
 #include "absl/status/status.h"
 #include "mediapipe/framework/port/canonical_errors.h"
 #include "mediapipe/framework/port/logging.h"
@@ -29,6 +28,7 @@
 #include "mediapipe/modules/objectron/calculators/box.h"
 #include "mediapipe/modules/objectron/calculators/epnp.h"
 #include "mediapipe/modules/objectron/calculators/types.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -202,7 +202,7 @@ std::vector<cv::Point> Decoder::ExtractCenterKeypoints(
 absl::Status Decoder::Lift2DTo3D(
     const Eigen::Matrix<float, 4, 4, Eigen::RowMajor>& projection_matrix,
     bool portrait, FrameAnnotation* estimated_box) const {
-  CHECK(estimated_box != nullptr);
+  ABSL_CHECK(estimated_box != nullptr);
 
   for (auto& annotation : *estimated_box->mutable_annotations()) {
     ABSL_CHECK_EQ(kNumKeypoints, annotation.keypoints_size());

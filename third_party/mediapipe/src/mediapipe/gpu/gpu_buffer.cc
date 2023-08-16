@@ -10,6 +10,7 @@
 
 #if MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
 #include "mediapipe/objc/util.h"
+#include "absl/log/absl_check.h"
 #endif  // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
 
 namespace mediapipe {
@@ -127,10 +128,10 @@ internal::GpuBufferStorage& GpuBuffer::GetStorageForViewOrDie(
     TypeId view_provider_type, bool for_writing) const {
   auto* chosen_storage =
       GpuBuffer::GetStorageForView(view_provider_type, for_writing);
-  CHECK(chosen_storage) << "no view provider found for requested view "
+  ABSL_CHECK(chosen_storage) << "no view provider found for requested view "
                         << view_provider_type.name() << "; storages available: "
                         << (holder_ ? holder_->DebugString() : "invalid");
-  DCHECK(chosen_storage->can_down_cast_to(view_provider_type));
+  ABSL_DCHECK(chosen_storage->can_down_cast_to(view_provider_type));
   return *chosen_storage;
 }
 

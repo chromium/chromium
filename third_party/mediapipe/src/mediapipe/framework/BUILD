@@ -44,6 +44,9 @@ bzl_library(
         "encode_binary_proto.bzl",
     ],
     visibility = ["//visibility:public"],
+    deps = [
+        "@bazel_skylib//lib:paths",
+    ],
 )
 
 alias(
@@ -179,8 +182,8 @@ cc_library(
         ":timestamp",
         "//mediapipe/framework/deps:registration",
         "//mediapipe/framework/port:logging",
-        "//mediapipe/framework/port:status",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status",
     ],
 )
 
@@ -269,6 +272,8 @@ cc_library(
     ],
     deps = [
         ":calculator_base",
+        ":calculator_context",
+        ":calculator_contract",
         ":calculator_graph",
         ":calculator_registry",
         ":counter_factory",
@@ -355,6 +360,7 @@ cc_library(
         "@com_google_absl//absl/container:fixed_array",
         "@com_google_absl//absl/container:flat_hash_map",
         "@com_google_absl//absl/container:flat_hash_set",
+        "@com_google_absl//absl/log",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
@@ -1649,6 +1655,7 @@ cc_test(
         ":packet",
         ":packet_test_cc_proto",
         ":type_map",
+        "//mediapipe/framework/api2:builder",
         "//mediapipe/framework/port:core_proto",
         "//mediapipe/framework/port:gtest_main",
         "@com_google_absl//absl/strings",

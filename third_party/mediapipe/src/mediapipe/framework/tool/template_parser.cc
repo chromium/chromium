@@ -37,6 +37,7 @@
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/tool/calculator_graph_template.pb.h"
 #include "mediapipe/framework/tool/proto_util_lite.h"
+#include "absl/log/absl_check.h"
 
 using mediapipe::proto_ns::Descriptor;
 using mediapipe::proto_ns::DynamicMessageFactory;
@@ -471,7 +472,7 @@ class TemplateParser::Parser::ParserImpl {
                     "\" stored in google.protobuf.Any.");
         return false;
       }
-      DO(ConsumeAnyValue(value_descriptor, &serialized_value));
+      DO(ConsumeAnyValue(any_value_field, value_descriptor, &serialized_value));
       if (singular_overwrite_policy_ == FORBID_SINGULAR_OVERWRITES) {
         // Fail if any_type_url_field has already been specified.
         if ((!any_type_url_field->is_repeated() &&
@@ -565,7 +566,7 @@ class TemplateParser::Parser::ParserImpl {
 
     // Skips unknown or reserved fields.
     if (field == NULL) {
-      CHECK(allow_unknown_field_ || allow_unknown_extension_ || reserved_field);
+      ABSL_CHECK(allow_unknown_field_ || allow_unknown_extension_ || reserved_field);
 
       // Try to guess the type of this field.
       // If this field is not a message, there should be a ":" between the
@@ -709,7 +710,7 @@ class TemplateParser::Parser::ParserImpl {
     // If the parse information tree is not NULL, create a nested one
     // for the nested message.
     ParseInfoTree* parent = parse_info_tree_;
-    if (parent != NULL) {
+    if (parent) {
       parse_info_tree_ = parent->CreateNested(field);
     }
 
@@ -1191,8 +1192,20 @@ class TemplateParser::Parser::ParserImpl {
 
   // A helper function for reconstructing Any::value. Consumes a text of
   // full_type_name, then serializes it into serialized_value.
-  bool ConsumeAnyValue(const Descriptor* value_descriptor,
+  bool ConsumeAnyValue(const FieldDescriptor* field,
+                       const Descriptor* value_descriptor,
                        std::string* serialized_value) {
+    if (--recursion_limit_ < 0) {
+      ReportError("Message is too deep");
+      return false;
+    }
+    // If the parse information tree is not NULL, create a nested one
+    // for the nested message.
+    ParseInfoTree* parent = parse_info_tree_;
+    if (parent) {
+      parse_info_tree_ = parent->CreateNested(field);
+    }
+
     DynamicMessageFactory factory;
     const Message* value_prototype = factory.GetPrototype(value_descriptor);
     if (value_prototype == NULL) {
@@ -1214,6 +1227,11 @@ class TemplateParser::Parser::ParserImpl {
       }
       value->AppendToString(serialized_value);
     }
+
+    ++recursion_limit_;
+
+    // Reset the parse information tree.
+    parse_info_tree_ = parent;
     return true;
   }
 
@@ -1380,7 +1398,7 @@ bool DeterministicallySerialize(const Message& proto, std::string* result) {
 void SerializeField(const Message* message, const FieldDescriptor* field,
                     std::vector<ProtoUtilLite::FieldValue>* result) {
   ProtoUtilLite::FieldValue message_bytes;
-  CHECK(DeterministicallySerialize(*message, &message_bytes));
+  ABSL_CHECK(DeterministicallySerialize(*message, &message_bytes));
   ProtoUtilLite::FieldAccess access(
       field->number(), static_cast<ProtoUtilLite::FieldType>(field->type()));
   MEDIAPIPE_CHECK_OK(access.SetMessage(message_bytes));
@@ -1685,13 +1703,13 @@ class TemplateParser::Parser::MediaPipeParserImpl
       const std::vector<ProtoUtilLite::FieldValue>& args) {
     auto field_type = static_cast<ProtoUtilLite::FieldType>(field->type());
     ProtoUtilLite::FieldValue message_bytes;
-    CHECK(message->SerializePartialToString(&message_bytes));
+    ABSL_CHECK(message->SerializePartialToString(&message_bytes));
     int count;
     MEDIAPIPE_CHECK_OK(ProtoUtilLite::GetFieldCount(
         message_bytes, {{field->number(), 0}}, field_type, &count));
     MEDIAPIPE_CHECK_OK(ProtoUtilLite::ReplaceFieldRange(
         &message_bytes, {{field->number(), count}}, 0, field_type, args));
-    CHECK(message->ParsePartialFromString(message_bytes));
+    ABSL_CHECK(message->ParsePartialFromString(message_bytes));
   }
 
   // Parse and record a template definition for the current field path.

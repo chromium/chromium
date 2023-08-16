@@ -26,12 +26,12 @@
 #include <vector>
 
 #include "absl/container/flat_hash_set.h"
-#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/vector.h"
 #include "mediapipe/util/tracking/flow_packager.pb.h"
 #include "mediapipe/util/tracking/motion_models.h"
 #include "mediapipe/util/tracking/motion_models.pb.h"
 #include "mediapipe/util/tracking/tracking.pb.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -121,7 +121,7 @@ void MotionBoxBoundingBox(const MotionBoxState& state, Vector2_f* top_left,
 // existing score.
 inline void MotionBoxInliers(const MotionBoxState& state,
                              std::unordered_map<int, int>* inliers) {
-  CHECK(inliers);
+  ABSL_CHECK(inliers);
   const int num_inliers = state.inlier_ids_size();
   ABSL_DCHECK_EQ(num_inliers, state.inlier_length_size());
 

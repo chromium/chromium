@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "absl/container/btree_map.h"
-#include "absl/log/absl_check.h"
 #include "absl/strings/string_view.h"
 #include "google/protobuf/message_lite.h"
 #include "mediapipe/framework/api2/port.h"
@@ -19,6 +18,7 @@
 #include "mediapipe/framework/calculator_contract.h"
 #include "mediapipe/framework/port/any_proto.h"
 #include "mediapipe/framework/port/ret_check.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace api2 {
@@ -194,7 +194,7 @@ class SourceImpl {
   template <typename U,
             typename std::enable_if<AllowConnection<U>{}, int>::type = 0>
   Src& ConnectTo(const Dst<U>& dest) {
-    CHECK(dest.base_.source == nullptr);
+    ABSL_CHECK(dest.base_.source == nullptr);
     dest.base_.source = base_;
     base_->dests_.emplace_back(&dest.base_);
     return *this;
@@ -783,7 +783,7 @@ class Graph {
     config->set_calculator(node.type_);
     node.in_streams_.Visit(
         [&](const TagIndexLocation& loc, const DestinationBase& endpoint) {
-          CHECK(endpoint.source != nullptr);
+          ABSL_CHECK(endpoint.source != nullptr);
           config->add_input_stream(TaggedName(loc, endpoint.source->name_));
         });
     node.out_streams_.Visit(
@@ -792,7 +792,7 @@ class Graph {
         });
     node.in_sides_.Visit([&](const TagIndexLocation& loc,
                              const DestinationBase& endpoint) {
-      CHECK(endpoint.source != nullptr);
+      ABSL_CHECK(endpoint.source != nullptr);
       config->add_input_side_packet(TaggedName(loc, endpoint.source->name_));
     });
     node.out_sides_.Visit(
@@ -813,7 +813,7 @@ class Graph {
     config->set_packet_generator(node.type_);
     node.in_sides_.Visit([&](const TagIndexLocation& loc,
                              const DestinationBase& endpoint) {
-      CHECK(endpoint.source != nullptr);
+      ABSL_CHECK(endpoint.source != nullptr);
       config->add_input_side_packet(TaggedName(loc, endpoint.source->name_));
     });
     node.out_sides_.Visit(
@@ -830,7 +830,7 @@ class Graph {
   absl::Status UpdateBoundaryConfig(CalculatorGraphConfig* config) {
     graph_boundary_.in_streams_.Visit(
         [&](const TagIndexLocation& loc, const DestinationBase& endpoint) {
-          CHECK(endpoint.source != nullptr);
+          ABSL_CHECK(endpoint.source != nullptr);
           config->add_output_stream(TaggedName(loc, endpoint.source->name_));
         });
     graph_boundary_.out_streams_.Visit(
@@ -839,7 +839,7 @@ class Graph {
         });
     graph_boundary_.in_sides_.Visit([&](const TagIndexLocation& loc,
                                         const DestinationBase& endpoint) {
-      CHECK(endpoint.source != nullptr);
+      ABSL_CHECK(endpoint.source != nullptr);
       config->add_output_side_packet(TaggedName(loc, endpoint.source->name_));
     });
     graph_boundary_.out_sides_.Visit(

@@ -20,6 +20,7 @@ limitations under the License.
 
 #include "mediapipe/framework/formats/frame_buffer.h"
 #include "mediapipe/framework/formats/image_frame.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -43,7 +44,7 @@ std::shared_ptr<FrameBuffer> ImageFrameToFrameBuffer(
     std::shared_ptr<ImageFrame> image_frame) {
   FrameBuffer::Format format =
       FrameBufferFormatForImageFrameFormat(image_frame->Format());
-  CHECK(format != FrameBuffer::Format::kUNKNOWN)
+  ABSL_CHECK(format != FrameBuffer::Format::kUNKNOWN)
       << "Invalid format. Only SRGB, SRGBA and GRAY8 are supported.";
   const FrameBuffer::Dimension dimension{/*width=*/image_frame->Width(),
                                          /*height=*/image_frame->Height()};

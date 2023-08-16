@@ -22,13 +22,14 @@
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
 namespace {
 absl::Status FillTimeSeriesHeaderIfValid(const Packet& header_packet,
                                          TimeSeriesHeader* header) {
-  CHECK(header);
+  ABSL_CHECK(header);
   if (header_packet.IsEmpty()) {
     return absl::UnknownError("No header found.");
   }

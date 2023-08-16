@@ -18,6 +18,7 @@
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status_builder.h"
 #include "mediapipe/framework/tool/fill_packet_set.h"
+#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -82,7 +83,7 @@ absl::Status InputSidePacketHandler::SetInternal(CollectionItemId id,
 
 void InputSidePacketHandler::TriggerErrorCallback(
     const absl::Status& status) const {
-  CHECK(error_callback_);
+  ABSL_CHECK(error_callback_);
   error_callback_(status);
 }
 

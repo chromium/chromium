@@ -37,6 +37,7 @@
 #include "absl/time/clock.h"
 #include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/framework/port/logging.h"
+#include "absl/log/absl_check.h"
 
 extern bool flags_measure_time;
 
@@ -101,7 +102,7 @@ class ScopedWallTimer {
         show_output_(show_output),
         accumulator_(accumulator) {
     if (show_output_) {
-      CHECK(accumulator_);
+      ABSL_CHECK(accumulator_);
       start_time_ = GetWallTime();
     }
   }
