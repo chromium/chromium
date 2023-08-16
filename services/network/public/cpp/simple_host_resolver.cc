@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/simple_host_resolver.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_anonymization_key.h"
@@ -17,8 +18,10 @@ namespace network {
 class SimpleHostResolverImpl : public SimpleHostResolver,
                                public ResolveHostClientBase {
  public:
-  explicit SimpleHostResolverImpl(mojom::NetworkContext* network_context)
-      : network_context_(network_context) {
+  SimpleHostResolverImpl(mojom::NetworkContext* network_context,
+                         NetworkContextFactory network_context_factory)
+      : network_context_(network_context),
+        network_context_factory_(std::move(network_context_factory)) {
     receivers_.set_disconnect_handler(
         base::BindRepeating(&SimpleHostResolverImpl::OnReceiverDisconnected,
                             base::Unretained(this)));
@@ -30,9 +33,9 @@ class SimpleHostResolverImpl : public SimpleHostResolver,
       mojom::ResolveHostParametersPtr optional_parameters,
       ResolveHostCallback callback) override {
     mojo::PendingReceiver<mojom::ResolveHostClient> receiver;
-    network_context_->ResolveHost(std::move(host), network_anonymization_key,
-                                  std::move(optional_parameters),
-                                  receiver.InitWithNewPipeAndPassRemote());
+    GetNetworkContext()->ResolveHost(std::move(host), network_anonymization_key,
+                                     std::move(optional_parameters),
+                                     receiver.InitWithNewPipeAndPassRemote());
     receivers_.Add(this, std::move(receiver), std::move(callback));
   }
 
@@ -60,7 +63,18 @@ class SimpleHostResolverImpl : public SimpleHostResolver,
              /*endpoint_results_with_metadata=*/absl::nullopt);
   }
 
+  mojom::NetworkContext* GetNetworkContext() const {
+    if (network_context_factory_) {
+      return network_context_factory_.Run();
+    }
+    return network_context_;
+  }
+
+  // This is kept as `raw_ptr` to help track potential UAFs.
   const raw_ptr<mojom::NetworkContext> network_context_;
+
+  NetworkContextFactory network_context_factory_;
+
   mojo::ReceiverSet<mojom::ResolveHostClient,
                     SimpleHostResolver::ResolveHostCallback>
       receivers_;
@@ -68,8 +82,18 @@ class SimpleHostResolverImpl : public SimpleHostResolver,
 
 // static
 std::unique_ptr<SimpleHostResolver> SimpleHostResolver::Create(
+    SimpleHostResolver::NetworkContextFactory network_context_factory) {
+  return std::make_unique<SimpleHostResolverImpl>(
+      /*network_context=*/nullptr,
+      /*network_context_factory=*/std::move(network_context_factory));
+}
+
+// static
+std::unique_ptr<SimpleHostResolver> SimpleHostResolver::Create(
     network::mojom::NetworkContext* network_context) {
-  return std::make_unique<SimpleHostResolverImpl>(network_context);
+  return std::make_unique<SimpleHostResolverImpl>(
+      /*network_context=*/network_context,
+      /*network_context_factory=*/base::NullCallback());
 }
 
 }  // namespace network
