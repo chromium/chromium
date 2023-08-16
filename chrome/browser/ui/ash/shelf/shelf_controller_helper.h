@@ -61,6 +61,9 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   static float GetPromiseAppProgress(Profile* profile,
                                      const std::string& string_package_id);
 
+  // Check whether this item is a registered promise app.
+  static bool IsPromiseApp(Profile* profile, const std::string& id);
+
   // Convert promise status into general app status.
   static ash::AppStatus ConvertPromiseStatusToAppStatus(
       apps::PromiseStatus promise_status);

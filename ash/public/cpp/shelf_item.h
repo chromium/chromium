@@ -64,6 +64,10 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
 
   // Whether the item has a notification.
   bool has_notification = false;
+
+  // Whether the item represents a promise app (an app that is pending or
+  // currently undergoing installation).
+  bool is_promise_app = false;
 };
 
 typedef std::vector<ShelfItem> ShelfItems;

@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ash/app_list/app_service/app_service_promise_app_item.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -252,6 +253,10 @@ void ChromeAppListItem::SetChromePosition(
 
 void ChromeAppListItem::SetIsEphemeral(bool is_ephemeral) {
   metadata_->is_ephemeral = is_ephemeral;
+}
+
+bool ChromeAppListItem::IsPromiseApp() const {
+  return GetItemType() == AppServicePromiseAppItem::kItemType;
 }
 
 bool ChromeAppListItem::CompareForTest(const ChromeAppListItem* other) const {

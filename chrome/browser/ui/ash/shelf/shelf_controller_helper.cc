@@ -188,6 +188,14 @@ float ShelfControllerHelper::GetPromiseAppProgress(
 }
 
 // static
+bool ShelfControllerHelper::IsPromiseApp(Profile* profile,
+                                         const std::string& id) {
+  return apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->PromiseAppRegistryCache()
+      ->GetPromiseAppForStringPackageId(id);
+}
+
+// static
 ash::AppStatus ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
     apps::PromiseStatus promise_status) {
   switch (promise_status) {

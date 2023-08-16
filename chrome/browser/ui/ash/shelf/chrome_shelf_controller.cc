@@ -1455,6 +1455,8 @@ ash::ShelfID ChromeShelfController::InsertAppItem(
   if (ash::features::ArePromiseIconsEnabled()) {
     item.progress = ShelfControllerHelper::GetPromiseAppProgress(
         latest_active_profile_, item_delegate->shelf_id().app_id);
+    item.is_promise_app = ShelfControllerHelper::IsPromiseApp(
+        latest_active_profile_, item_delegate->shelf_id().app_id);
   }
   model_->AddAt(index, item, std::move(item_delegate));
 
@@ -1651,8 +1653,21 @@ void ChromeShelfController::ShelfItemAdded(int index) {
     }
 
     if (ash::features::ArePromiseIconsEnabled()) {
-      item.progress = ShelfControllerHelper::GetPromiseAppProgress(
+      float progress = ShelfControllerHelper::GetPromiseAppProgress(
           latest_active_profile_, id.app_id);
+      // If the item is set to the default progress value despite the promise
+      // app having real progress, we need to update this.
+      if (item.progress < 0 && progress >= 0) {
+        needs_update = true;
+        item.progress = progress;
+      }
+
+      bool is_promise_app = ShelfControllerHelper::IsPromiseApp(
+          latest_active_profile_, id.app_id);
+      if (is_promise_app != item.is_promise_app) {
+        needs_update = true;
+        item.is_promise_app = is_promise_app;
+      }
     }
 
     if (needs_update)

@@ -98,6 +98,9 @@ class ChromeAppListItem {
   void SetChromePosition(const syncer::StringOrdinal& position);
   void SetIsEphemeral(bool is_ephemeral);
 
+  // Checks whether the item is for a promise app.
+  bool IsPromiseApp() const;
+
   // Call |Activate()| and dismiss launcher if necessary.
   void PerformActivate(int event_flags);
 
