@@ -60,13 +60,25 @@ suite(destination_dialog_cros_interactive_test.suiteName, function() {
         false /* saveToDriveDisabled */,
         '' /* serializedDefaultDestinationSelectionRulesStr */);
     return nativeLayer.whenCalled('getPrinterCapabilities').then(() => {
+      const provisionalDestination = {
+        extensionId: 'ABC123',
+        extensionName: 'ABC Printing',
+        id: 'XYZDevice',
+        name: 'XYZ',
+        provisional: true,
+      };
+
+      // Set the extension destinations and force the destination store to
+      // reload printers.
+      nativeLayer.setExtensionDestinations([[provisionalDestination]]);
+
       // Retrieve a reference to dialog
       dialog = destinationSettings.$.destinationDialog.get();
     });
   });
 
   // Tests that the search input text field is automatically focused when the
-  // dialog is shown.
+  // dialog is shown and there are destinations available.
   test(
       destination_dialog_cros_interactive_test.TestNames.FocusSearchBox,
       function() {
