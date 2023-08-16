@@ -6,22 +6,39 @@ package org.chromium.chrome.browser.readaloud.miniplayer;
 
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.chrome.browser.readaloud.PlayerState;
+import org.chromium.chrome.browser.readaloud.miniplayer.MiniPlayerCoordinator.Observer;
+import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator class responsible for controlling Read Aloud mini player. */
-public class MiniPlayerMediator {
+class MiniPlayerMediator {
     private final PropertyModel mModel;
+    private final Observer mObserver;
 
-    public MiniPlayerMediator(PropertyModel model) {
+    MiniPlayerMediator(PropertyModel model, Observer observer) {
         mModel = model;
-        mModel.set(MiniPlayerProperties.ON_CLOSE_CLICK_KEY, (view) -> { dismiss(); });
+        mObserver = observer;
+        mModel.set(
+                MiniPlayerProperties.ON_CLOSE_CLICK_KEY, (view) -> { mObserver.onCloseClicked(); });
+        mModel.set(MiniPlayerProperties.ON_EXPAND_CLICK_KEY,
+                (view) -> { mObserver.onExpandRequested(); });
     }
 
-    public void show() {
+    @PlayerState
+    int getState() {
+        return mModel.get(MiniPlayerProperties.PLAYER_STATE_KEY);
+    }
+
+    void show(boolean animate, @Nullable Playback playback) {
+        mModel.set(MiniPlayerProperties.ANIMATE_KEY, animate);
         mModel.set(MiniPlayerProperties.VIEW_VISIBILITY_KEY, View.VISIBLE);
     }
 
-    public void dismiss() {
+    void dismiss(boolean animate) {
+        mModel.set(MiniPlayerProperties.ANIMATE_KEY, animate);
         mModel.set(MiniPlayerProperties.VIEW_VISIBILITY_KEY, View.GONE);
     }
 }

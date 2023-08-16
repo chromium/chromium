@@ -11,14 +11,20 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Keys for Read Aloud mini player model properties. */
 public class MiniPlayerProperties {
+    public static final WritableObjectPropertyKey<Integer> PLAYER_STATE_KEY =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Integer> VIEW_VISIBILITY_KEY =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Boolean> ANIMATE_KEY =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View.OnClickListener> ON_CLOSE_CLICK_KEY =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<View.OnClickListener> ON_EXPAND_CLICK_KEY =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> TITLE_KEY =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> PUBLISHER_KEY =
             new WritableObjectPropertyKey<>();
-    public static final PropertyKey[] ALL_KEYS = {
-            VIEW_VISIBILITY_KEY, ON_CLOSE_CLICK_KEY, TITLE_KEY, PUBLISHER_KEY};
+    public static final PropertyKey[] ALL_KEYS = {PLAYER_STATE_KEY, VIEW_VISIBILITY_KEY,
+            ANIMATE_KEY, ON_CLOSE_CLICK_KEY, ON_EXPAND_CLICK_KEY, TITLE_KEY, PUBLISHER_KEY};
 }

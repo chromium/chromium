@@ -23,6 +23,9 @@ public class MiniPlayerViewBinder {
         } else if (key == MiniPlayerProperties.ON_CLOSE_CLICK_KEY) {
             view.findViewById(R.id.readaloud_mini_player_close_button)
                     .setOnClickListener(model.get(MiniPlayerProperties.ON_CLOSE_CLICK_KEY));
+        } else if (key == MiniPlayerProperties.ON_EXPAND_CLICK_KEY) {
+            view.findViewById(R.id.readaloud_mini_player_title_and_publisher)
+                    .setOnClickListener(model.get(MiniPlayerProperties.ON_EXPAND_CLICK_KEY));
         } else if (key == MiniPlayerProperties.TITLE_KEY) {
             ((TextView) view.findViewById(R.id.readaloud_mini_player_title))
                     .setText(model.get(MiniPlayerProperties.TITLE_KEY));

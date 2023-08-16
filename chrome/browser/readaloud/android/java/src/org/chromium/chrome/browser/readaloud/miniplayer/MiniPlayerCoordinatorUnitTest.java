@@ -11,6 +11,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.view.View;
 import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,12 +20,15 @@ import android.widget.TextView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.readaloud.R;
+import org.chromium.chrome.browser.readaloud.miniplayer.MiniPlayerCoordinator.Observer;
 
 /** Unit tests for {@link MiniPlayerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -40,6 +44,15 @@ public class MiniPlayerCoordinatorUnitTest {
     private TextView mTitleView;
     @Mock
     private TextView mPublisherView;
+    @Mock
+    private LinearLayout mTitleAndPublisherView;
+    @Mock
+    private Observer mObserver;
+
+    @Captor
+    private ArgumentCaptor<View.OnClickListener> mCloseCaptor;
+    @Captor
+    private ArgumentCaptor<View.OnClickListener> mExpandCaptor;
 
     private MiniPlayerCoordinator mCoordinator;
 
@@ -50,6 +63,9 @@ public class MiniPlayerCoordinatorUnitTest {
         doReturn(mCloseButton)
                 .when(mView)
                 .findViewById(eq(R.id.readaloud_mini_player_close_button));
+        doReturn(mTitleAndPublisherView)
+                .when(mView)
+                .findViewById(eq(R.id.readaloud_mini_player_title_and_publisher));
         doReturn(mTitleView).when(mView).findViewById(eq(R.id.readaloud_mini_player_title));
         doReturn(mPublisherView).when(mView).findViewById(eq(R.id.readaloud_mini_player_publisher));
         mCoordinator = new MiniPlayerCoordinator(mViewStub);
@@ -57,12 +73,36 @@ public class MiniPlayerCoordinatorUnitTest {
 
     @Test
     public void testShowInflatesViewOnce() {
-        mCoordinator.show();
+        mCoordinator.show(/*animate=*/false, /*playback=*/null);
         verify(mViewStub, times(1)).inflate();
 
         // Second show() shouldn't inflate the stub again.
         reset(mViewStub);
-        mCoordinator.show();
+        mCoordinator.show(/*animate=*/false, /*playback=*/null);
         verify(mViewStub, never()).inflate();
+    }
+
+    @Test
+    public void testObserveClose() {
+        mCoordinator.addObserver(mObserver);
+        mCoordinator.show(/*animate=*/false, /*playback=*/null);
+
+        verify(mCloseButton).setOnClickListener(mCloseCaptor.capture());
+
+        mCloseCaptor.getValue().onClick(mCloseButton);
+
+        verify(mObserver, times(1)).onCloseClicked();
+    }
+
+    @Test
+    public void testObserveExpand() {
+        mCoordinator.addObserver(mObserver);
+        mCoordinator.show(/*animate=*/false, /*playback=*/null);
+
+        verify(mTitleAndPublisherView).setOnClickListener(mExpandCaptor.capture());
+
+        mExpandCaptor.getValue().onClick(mTitleAndPublisherView);
+
+        verify(mObserver, times(1)).onExpandRequested();
     }
 }

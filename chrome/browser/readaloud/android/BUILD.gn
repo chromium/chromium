@@ -18,6 +18,7 @@ android_library("java") {
     ":expanded_player_java",
     ":hooks_java",
     ":java_resources",
+    ":player_state_java",
     "//base:base_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/modules/readaloud/public:java",

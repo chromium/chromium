@@ -13,7 +13,9 @@ found in the LICENSE file.
     android:layout_gravity="start|bottom"
     android:orientation="vertical"
     android:animateLayoutChanges="true"
-    android:visibility="gone">
+    android:visibility="gone"
+    android:clickable="true"
+    android:focusable="true">
 
     <!-- Shadow -->
     <ImageView
@@ -49,11 +51,14 @@ found in the LICENSE file.
 
             <!-- Title and publisher -->
             <LinearLayout
+                android:id="@+id/readaloud_mini_player_title_and_publisher"
                 android:layout_weight="1"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true">
                 <TextView
                     android:id="@+id/readaloud_mini_player_title"
                     android:layout_width="wrap_content"
