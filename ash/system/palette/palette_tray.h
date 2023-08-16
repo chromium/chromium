@@ -122,7 +122,7 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
 
  private:
   friend class PaletteTrayTestApi;
-  friend class StatusAreaTesterHandler;
+  friend class StatusAreaInternalsHandler;
 
   // ui::InputDeviceObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;

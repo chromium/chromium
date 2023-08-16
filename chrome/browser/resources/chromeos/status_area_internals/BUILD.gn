@@ -5,10 +5,10 @@
 import("//ui/webui/resources/tools/build_webui.gni")
 
 build_webui("build") {
-  grd_prefix = "status_area_tester"
+  grd_prefix = "status_area_internals"
 
   static_files = [ "main.html" ]
-  web_component_files = [ "status_area_tester.ts" ]
+  web_component_files = [ "status_area_internals.ts" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [

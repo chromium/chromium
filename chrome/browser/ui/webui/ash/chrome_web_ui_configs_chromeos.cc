@@ -97,7 +97,7 @@
 #include "chrome/browser/ui/webui/ash/slow_ui.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_credentials_dialog.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
-#include "chrome/browser/ui/webui/ash/status_area_tester/status_area_tester_ui.h"
+#include "chrome/browser/ui/webui/ash/status_area_internals/status_area_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/vc_tray_tester/vc_tray_tester_ui.h"
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
@@ -321,7 +321,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<VmUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<SampleSystemWebAppUIConfig>());
-  map.AddWebUIConfig(std::make_unique<StatusAreaTesterUIConfig>());
+  map.AddWebUIConfig(std::make_unique<StatusAreaInternalsUIConfig>());
 #if !defined(USE_REAL_DBUS_CLIENTS)
   map.AddWebUIConfig(std::make_unique<DeviceEmulatorUIConfig>());
 #endif  // !defined(USE_REAL_DBUS_CLIENTS)

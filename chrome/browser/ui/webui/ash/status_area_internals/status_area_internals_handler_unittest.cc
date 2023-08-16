@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/status_area_tester/status_area_tester_handler.h"
+#include "chrome/browser/ui/webui/ash/status_area_internals/status_area_internals_handler.h"
 
 #include <memory>
 
@@ -20,17 +20,18 @@
 
 namespace ash {
 
-class StatusAreaTesterHandlerTest : public AshTestBase {
+class StatusAreaInternalsHandlerTest : public AshTestBase {
  public:
-  StatusAreaTesterHandlerTest()
+  StatusAreaInternalsHandlerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  StatusAreaTesterHandlerTest(const StatusAreaTesterHandlerTest&) = delete;
-  StatusAreaTesterHandlerTest& operator=(const StatusAreaTesterHandlerTest&) =
+  StatusAreaInternalsHandlerTest(const StatusAreaInternalsHandlerTest&) =
       delete;
-  ~StatusAreaTesterHandlerTest() override = default;
+  StatusAreaInternalsHandlerTest& operator=(
+      const StatusAreaInternalsHandlerTest&) = delete;
+  ~StatusAreaInternalsHandlerTest() override = default;
 
   void SetUp() override {
-    handler_ = std::make_unique<StatusAreaTesterHandler>();
+    handler_ = std::make_unique<StatusAreaInternalsHandler>();
     handler_->SetWebUiForTesting(&web_ui_);
     handler_->RegisterMessages();
 
@@ -52,31 +53,31 @@ class StatusAreaTesterHandlerTest : public AshTestBase {
  private:
   content::TestWebUI web_ui_;
 
-  std::unique_ptr<StatusAreaTesterHandler> handler_;
+  std::unique_ptr<StatusAreaInternalsHandler> handler_;
 };
 
 // Sending `kToggleIme` message from the web UI should update the visibility of
 // IME tray accordingly.
-TEST_F(StatusAreaTesterHandlerTest, ToggleImeTray) {
+TEST_F(StatusAreaInternalsHandlerTest, ToggleImeTray) {
   auto* ime_tray = GetStatusAreaWidget()->ime_menu_tray();
   EXPECT_FALSE(ime_tray->GetVisible());
 
   base::Value::List args;
   args.Append(true);
-  SendMessage(StatusAreaTesterHandler::kToggleIme, args);
+  SendMessage(StatusAreaInternalsHandler::kToggleIme, args);
 
   EXPECT_TRUE(ime_tray->GetVisible());
 
   args.clear();
   args.Append(false);
-  SendMessage(StatusAreaTesterHandler::kToggleIme, args);
+  SendMessage(StatusAreaInternalsHandler::kToggleIme, args);
 
   EXPECT_FALSE(ime_tray->GetVisible());
 }
 
-// Sending `kToggleIme` message from the web UI should update the visibility of
-// palette tray accordingly.
-TEST_F(StatusAreaTesterHandlerTest, TogglePaletteTray) {
+// Sending `kTogglePalette` message from the web UI should update the visibility
+// of palette tray accordingly.
+TEST_F(StatusAreaInternalsHandlerTest, TogglePaletteTray) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kEnableStylusTools, true);
 
@@ -85,13 +86,13 @@ TEST_F(StatusAreaTesterHandlerTest, TogglePaletteTray) {
 
   base::Value::List args;
   args.Append(true);
-  SendMessage(StatusAreaTesterHandler::kTogglePalette, args);
+  SendMessage(StatusAreaInternalsHandler::kTogglePalette, args);
 
   EXPECT_TRUE(palette_tray->GetVisible());
 
   args.clear();
   args.Append(false);
-  SendMessage(StatusAreaTesterHandler::kTogglePalette, args);
+  SendMessage(StatusAreaInternalsHandler::kTogglePalette, args);
 
   EXPECT_FALSE(palette_tray->GetVisible());
 }

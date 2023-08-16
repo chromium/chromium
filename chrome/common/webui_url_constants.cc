@@ -395,8 +395,8 @@ const char kChromeUISmbShareHost[] = "smb-share-dialog";
 const char kChromeUISmbShareURL[] = "chrome://smb-share-dialog/";
 const char kChromeUISmbCredentialsHost[] = "smb-credentials-dialog";
 const char kChromeUISmbCredentialsURL[] = "chrome://smb-credentials-dialog/";
-const char kChromeUIStatusAreaTesterHost[] = "status-area-tester";
-const char kChromeUIStatusAreaTesterURL[] = "chrome://status-area-tester";
+const char kChromeUIStatusAreaInternalsHost[] = "status-area-internals";
+const char kChromeUIStatusAreaInternalsURL[] = "chrome://status-area-internals";
 const char kChromeUISysInternalsHost[] = "sys-internals";
 const char kChromeUISysInternalsUrl[] = "chrome://sys-internals";
 const char kChromeUIUntrustedCroshHost[] = "crosh";
@@ -451,7 +451,7 @@ bool IsSystemWebUIHost(base::StringPiece host) {
     kChromeUISetTimeHost,
     kChromeUISmbCredentialsHost,
     kChromeUISmbShareHost,
-    kChromeUIStatusAreaTesterHost,
+    kChromeUIStatusAreaInternalsHost,
     kChromeUIVcTrayTesterHost,
     kChromeUIEmojiPickerHost,
 #if BUILDFLAG(PLATFORM_CFM)

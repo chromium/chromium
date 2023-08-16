@@ -2,45 +2,49 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/status_area_tester/status_area_tester_handler.h"
+#include "chrome/browser/ui/webui/ash/status_area_internals/status_area_internals_handler.h"
 
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/palette/palette_tray.h"
+#include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui.h"
 
 namespace ash {
 
 // static
-const char StatusAreaTesterHandler::kToggleIme[] = "toggleIme";
-const char StatusAreaTesterHandler::kTogglePalette[] = "togglePalette";
+const char StatusAreaInternalsHandler::kToggleIme[] = "toggleIme";
+const char StatusAreaInternalsHandler::kTogglePalette[] = "togglePalette";
 
-StatusAreaTesterHandler::StatusAreaTesterHandler() = default;
+StatusAreaInternalsHandler::StatusAreaInternalsHandler() = default;
 
-StatusAreaTesterHandler::~StatusAreaTesterHandler() = default;
+StatusAreaInternalsHandler::~StatusAreaInternalsHandler() = default;
 
-void StatusAreaTesterHandler::RegisterMessages() {
+void StatusAreaInternalsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      kToggleIme, base::BindRepeating(&StatusAreaTesterHandler::ToggleImeTray,
-                                      weak_pointer_factory_.GetWeakPtr()));
+      kToggleIme,
+      base::BindRepeating(&StatusAreaInternalsHandler::ToggleImeTray,
+                          weak_pointer_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       kTogglePalette,
-      base::BindRepeating(&StatusAreaTesterHandler::TogglePaletteTray,
+      base::BindRepeating(&StatusAreaInternalsHandler::TogglePaletteTray,
                           weak_pointer_factory_.GetWeakPtr()));
 }
 
-void StatusAreaTesterHandler::SetWebUiForTesting(content::WebUI* web_ui) {
+void StatusAreaInternalsHandler::SetWebUiForTesting(content::WebUI* web_ui) {
   DCHECK(web_ui);
   set_web_ui(web_ui);
 }
 
-void StatusAreaTesterHandler::ToggleImeTray(const base::Value::List& args) {
+void StatusAreaInternalsHandler::ToggleImeTray(const base::Value::List& args) {
   AllowJavascript();
 
   // Parse JS args.
@@ -48,7 +52,8 @@ void StatusAreaTesterHandler::ToggleImeTray(const base::Value::List& args) {
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(/*show=*/toggled);
 }
 
-void StatusAreaTesterHandler::TogglePaletteTray(const base::Value::List& args) {
+void StatusAreaInternalsHandler::TogglePaletteTray(
+    const base::Value::List& args) {
   AllowJavascript();
 
   // Parse JS args.
