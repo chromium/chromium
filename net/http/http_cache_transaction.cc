@@ -96,14 +96,6 @@ enum ExternallyConditionalizedType {
   EXTERNALLY_CONDITIONALIZED_MAX
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class RestrictedPrefetchReused {
-  kNotReused = 0,
-  kReused = 1,
-  kMaxValue = kReused
-};
-
 bool ShouldByPassCacheForFirstPartySets(
     const absl::optional<int64_t>& clear_at_run_id,
     const absl::optional<int64_t>& written_at_run_id) {
@@ -167,78 +159,6 @@ bool HeaderMatches(const HttpRequestHeaders& headers,
     }
   }
   return false;
-}
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PrefetchReuseState : uint8_t {
-  kNone = 0,
-
-  // Bit 0 represents if it's reused first time
-  kFirstReuse = 1 << 0,
-
-  // Bit 1 represents if it's reused within the time window
-  kReusedWithinTimeWindow = 1 << 1,
-
-  // Bit 2-3 represents the freshness based on cache headers
-  kFresh = 0 << 2,
-  kAlwaysValidate = 1 << 2,
-  kExpired = 2 << 2,
-  kStale = 3 << 2,
-
-  // histograms require a named max value
-  kBitMaskForAllAttributes = kStale | kReusedWithinTimeWindow | kFirstReuse,
-  kMaxValue = kBitMaskForAllAttributes
-};
-
-using PrefetchReuseStateUnderlyingType =
-    std::underlying_type_t<PrefetchReuseState>;
-
-PrefetchReuseStateUnderlyingType ToUnderlying(PrefetchReuseState state) {
-  DCHECK_LE(PrefetchReuseState::kNone, state);
-  DCHECK_LE(state, PrefetchReuseState::kMaxValue);
-
-  return static_cast<PrefetchReuseStateUnderlyingType>(state);
-}
-
-PrefetchReuseState ToReuseState(PrefetchReuseStateUnderlyingType value) {
-  PrefetchReuseState state = static_cast<PrefetchReuseState>(value);
-  DCHECK_LE(PrefetchReuseState::kNone, state);
-  DCHECK_LE(state, PrefetchReuseState::kMaxValue);
-  return state;
-}
-
-PrefetchReuseState ComputePrefetchReuseState(ValidationType type,
-                                             bool first_reuse,
-                                             bool reused_within_time_window,
-                                             bool validate_flag) {
-  PrefetchReuseStateUnderlyingType reuse_state =
-      ToUnderlying(PrefetchReuseState::kNone);
-
-  if (first_reuse) {
-    reuse_state |= ToUnderlying(PrefetchReuseState::kFirstReuse);
-  }
-
-  if (reused_within_time_window) {
-    reuse_state |= ToUnderlying(PrefetchReuseState::kReusedWithinTimeWindow);
-  }
-
-  if (validate_flag) {
-    reuse_state |= ToUnderlying(PrefetchReuseState::kAlwaysValidate);
-  } else {
-    switch (type) {
-      case VALIDATION_SYNCHRONOUS:
-        reuse_state |= ToUnderlying(PrefetchReuseState::kExpired);
-        break;
-      case VALIDATION_ASYNCHRONOUS:
-        reuse_state |= ToUnderlying(PrefetchReuseState::kStale);
-        break;
-      case VALIDATION_NONE:
-        reuse_state |= ToUnderlying(PrefetchReuseState::kFresh);
-        break;
-    }
-  }
-  return ToReuseState(reuse_state);
 }
 
 }  // namespace
@@ -1718,11 +1638,6 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
       updated_prefetch_response_->restricted_prefetch = false;
     }
 
-    base::UmaHistogramEnumeration("HttpCache.RestrictedPrefetchReuse",
-                                  restricted_prefetch_reuse
-                                      ? RestrictedPrefetchReused::kReused
-                                      : RestrictedPrefetchReused::kNotReused);
-
     TransitionToState(STATE_WRITE_UPDATED_PREFETCH_RESPONSE);
     return OK;
   }
@@ -2981,17 +2896,6 @@ ValidationType HttpCache::Transaction::RequiresValidation() {
         response_time_in_cache < base::Minutes(kPrefetchReuseMins);
     bool first_reuse = response_.unused_since_prefetch;
 
-    base::UmaHistogramLongTimes("HttpCache.PrefetchReuseTime",
-                                response_time_in_cache);
-    if (first_reuse) {
-      base::UmaHistogramLongTimes("HttpCache.PrefetchFirstReuseTime",
-                                  response_time_in_cache);
-    }
-
-    base::UmaHistogramEnumeration(
-        "HttpCache.PrefetchReuseState",
-        ComputePrefetchReuseState(validation_required_by_headers, first_reuse,
-                                  reused_within_time_window, validate_flag));
     // The first use of a resource after prefetch within a short window skips
     // validation.
     if (first_reuse && reused_within_time_window) {

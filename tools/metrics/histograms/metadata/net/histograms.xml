@@ -330,52 +330,6 @@ chromium-metrics-reviews@google.com.
   <summary>For each http cache transaction, the recorded pattern.</summary>
 </histogram>
 
-<histogram name="HttpCache.PrefetchFirstReuseTime" units="ms"
-    expires_after="2023-09-03">
-  <owner>nrosenthal@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The time between the prefetch has been saved to cache and the time it was
-    reused for the first time. Recorded when a request matches a previously
-    cached prefetch response.
-  </summary>
-</histogram>
-
-<histogram name="HttpCache.PrefetchReuseState" enum="PrefetchReuseState"
-    expires_after="2024-01-14">
-  <owner>nrosenthal@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    For each request that matched a previously prefetched cached response,
-    record the cache state of the entry. - Is it the first reuse of the entry? -
-    Is it reused within the allotted time window? - Would the entry be
-    reused/revalidated if not for the prefetch time window? Recorded when a
-    request matches a previously cached prefetch response.
-  </summary>
-</histogram>
-
-<histogram name="HttpCache.PrefetchReuseTime" units="ms"
-    expires_after="2023-09-03">
-  <owner>nrosenthal@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The time between the prefetch has been saved to cache and the time it was
-    reused, including subsequent attempts to reuse beyond the first. Recorded
-    when a request matches a previously cached prefetch response.
-  </summary>
-</histogram>
-
-<histogram name="HttpCache.RestrictedPrefetchReuse"
-    enum="RestrictedPrefetchReused" expires_after="2023-08-13">
-  <owner>nrosenthal@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    For each http cache transaction, recorded whether a restricted prefetch (a
-    cross-origin prefetch with as=document) was reused, when response read from
-    the cache completes.
-  </summary>
-</histogram>
-
 <histogram name="HttpCache.TotalDiskCacheTimePerTransaction.{AccessType}"
     units="ms" expires_after="2023-11-16">
   <owner>bashi@chromium.org</owner>

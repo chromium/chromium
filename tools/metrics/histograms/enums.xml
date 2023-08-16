@@ -85832,54 +85832,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="6" label="Failed, Redirect was ineligible"/>
 </enum>
 
-<enum name="PrefetchReuseState">
-  <int value="0" label="0">
-    Reused fresh cache: outside time window and already reused
-  </int>
-  <int value="1" label="1">Reused fresh cache: outside time window</int>
-  <int value="2" label="2">Reused fresh cache: already reused</int>
-  <int value="3" label="3">
-    Reused: first reuse within time window, cache entry is fresh
-  </int>
-  <int value="4" label="4">
-    Not reused: outside time window and already reused, cache always validates
-    due to headers
-  </int>
-  <int value="5" label="5">
-    Not reused: outside time window and cache always validates due to headers
-  </int>
-  <int value="6" label="6">
-    Not reused: already reused and cache always validates due to headers
-  </int>
-  <int value="7" label="7">
-    Reused: cache headers are set to always validate, overriding since it's the
-    first reuse within time window
-  </int>
-  <int value="8" label="8">
-    Not reused: outside time window and already reused, cache entry expired
-  </int>
-  <int value="9" label="9">
-    Not reused: outside time window and cache entry expired
-  </int>
-  <int value="10" label="10">
-    Not reused: already reused and cache entry expired
-  </int>
-  <int value="11" label="11">
-    Reused: cache age expired, overriding since it's the first reuse within time
-    window
-  </int>
-  <int value="12" label="12">
-    Reused while revalidating: outside time window and already reused
-  </int>
-  <int value="13" label="13">
-    Reused while revalidating: outside time window
-  </int>
-  <int value="14" label="14">Reused while revalidating: already reused</int>
-  <int value="15" label="15">
-    Reused, skipped revalidation: first reuse within time window
-  </int>
-</enum>
-
 <enum name="PrefetchStatus">
   <int value="0" label="undefined"/>
   <int value="1" label="success from cache"/>
@@ -93220,11 +93172,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="File not found"/>
   <int value="1" label="Closed by interrupt exception"/>
   <int value="2" label="IO exception"/>
-</enum>
-
-<enum name="RestrictedPrefetchReused">
-  <int value="0" label="Restricted prefetch not reused"/>
-  <int value="1" label="Restricted prefetch reused"/>
 </enum>
 
 <enum name="ReusedPasswordType">
