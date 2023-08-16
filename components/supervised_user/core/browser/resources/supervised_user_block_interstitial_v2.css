@@ -5,16 +5,16 @@
 .banner {
   align-items: center;
   box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
+  box-sizing: border-box;
   border-radius: 4px;
   display: flex;
   flex-direction: row;
-  padding: 0px 20px;
+  padding: 12px 20px;
   margin-bottom: 24px;
+  width: 100%;
+  justify-content: start;
  }
 
- #banner-message {
-   padding: 12px 0px;
- }
 body {
   --avatar-stroke-color: var(--google-gray-50);
   --custodian-name-color: #333333;
@@ -87,7 +87,8 @@ button:active {
 #family-link-kite-icon {
   height: 20px;
   width: 20px;
-  padding-right: 16px;
+  margin-right: 16px;
+  overflow: visible;
 }
 
 .banner-header {
