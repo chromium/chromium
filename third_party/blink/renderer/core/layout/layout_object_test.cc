@@ -646,7 +646,7 @@ TEST_F(LayoutObjectTest, ShouldCheckLayoutForPaintInvalidation) {
   object->SetShouldDoFullPaintInvalidation();
   EXPECT_TRUE(object->ShouldDoFullPaintInvalidation());
   EXPECT_EQ(PaintInvalidationReason::kLayout,
-            object->FullPaintInvalidationReason());
+            object->PaintInvalidationReasonForPrePaint());
   EXPECT_TRUE(object->ShouldCheckLayoutForPaintInvalidation());
   EXPECT_TRUE(parent->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(parent->ShouldCheckLayoutForPaintInvalidation());
@@ -676,7 +676,7 @@ TEST_F(LayoutObjectTest, ShouldCheckLayoutForPaintInvalidation) {
   object->SetShouldDoFullPaintInvalidationWithoutLayoutChange(
       PaintInvalidationReason::kStyle);
   EXPECT_EQ(PaintInvalidationReason::kStyle,
-            object->FullPaintInvalidationReason());
+            object->PaintInvalidationReasonForPrePaint());
   EXPECT_TRUE(object->ShouldDoFullPaintInvalidation());
   EXPECT_FALSE(object->ShouldCheckLayoutForPaintInvalidation());
   EXPECT_TRUE(parent->ShouldCheckForPaintInvalidation());

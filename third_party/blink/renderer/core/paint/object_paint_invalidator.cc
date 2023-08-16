@@ -49,8 +49,9 @@ ObjectPaintInvalidatorWithContext::ComputePaintInvalidationReason() {
   if (context_.fragment_data->PaintOffset() != context_.old_paint_offset)
     return PaintInvalidationReason::kLayout;
 
-  if (object_.ShouldDoFullPaintInvalidation())
-    return object_.FullPaintInvalidationReason();
+  if (object_.ShouldDoFullPaintInvalidation()) {
+    return object_.PaintInvalidationReasonForPrePaint();
+  }
 
   if (object_.GetDocument().InForcedColorsMode() && object_.IsLayoutBlockFlow())
     return PaintInvalidationReason::kBackplate;

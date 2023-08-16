@@ -839,20 +839,21 @@ TEST_F(LayoutBoxTest, DelayedInvalidation) {
 
   obj->ClearPaintInvalidationFlags();
   EXPECT_FALSE(obj->ShouldDoFullPaintInvalidation());
-  EXPECT_EQ(obj->FullPaintInvalidationReason(), PaintInvalidationReason::kNone);
+  EXPECT_EQ(obj->PaintInvalidationReasonForPrePaint(),
+            PaintInvalidationReason::kNone);
   EXPECT_FALSE(obj->ShouldDelayFullPaintInvalidation());
 
   // CanDeferInvalidation::kYes results in a deferred invalidation.
   obj->ImageChanged(image, ImageResourceObserver::CanDeferInvalidation::kYes);
   EXPECT_FALSE(obj->ShouldDoFullPaintInvalidation());
-  EXPECT_EQ(obj->FullPaintInvalidationReason(),
+  EXPECT_EQ(obj->PaintInvalidationReasonForPrePaint(),
             PaintInvalidationReason::kImage);
   EXPECT_TRUE(obj->ShouldDelayFullPaintInvalidation());
 
   // CanDeferInvalidation::kNo results in a immediate invalidation.
   obj->ImageChanged(image, ImageResourceObserver::CanDeferInvalidation::kNo);
   EXPECT_TRUE(obj->ShouldDoFullPaintInvalidation());
-  EXPECT_EQ(obj->FullPaintInvalidationReason(),
+  EXPECT_EQ(obj->PaintInvalidationReasonForPrePaint(),
             PaintInvalidationReason::kImage);
   EXPECT_FALSE(obj->ShouldDelayFullPaintInvalidation());
 }

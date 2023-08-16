@@ -835,7 +835,7 @@ TEST_P(PaintAndRasterInvalidationTest, DelayedFullPaintInvalidation) {
   EXPECT_FALSE(target->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(target->ShouldDelayFullPaintInvalidation());
   EXPECT_EQ(PaintInvalidationReason::kStyle,
-            target->FullPaintInvalidationReason());
+            target->PaintInvalidationReasonForPrePaint());
   EXPECT_FALSE(target->ShouldCheckLayoutForPaintInvalidation());
   EXPECT_TRUE(target->ShouldCheckForPaintInvalidation());
   EXPECT_TRUE(target->Parent()->ShouldCheckForPaintInvalidation());
@@ -846,7 +846,7 @@ TEST_P(PaintAndRasterInvalidationTest, DelayedFullPaintInvalidation) {
   EXPECT_FALSE(target->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(target->ShouldDelayFullPaintInvalidation());
   EXPECT_EQ(PaintInvalidationReason::kStyle,
-            target->FullPaintInvalidationReason());
+            target->PaintInvalidationReasonForPrePaint());
   EXPECT_FALSE(target->ShouldCheckLayoutForPaintInvalidation());
   EXPECT_TRUE(target->ShouldCheckForPaintInvalidation());
   EXPECT_TRUE(target->Parent()->ShouldCheckForPaintInvalidation());
@@ -862,7 +862,7 @@ TEST_P(PaintAndRasterInvalidationTest, DelayedFullPaintInvalidation) {
           target->Id(), target->DebugName(), gfx::Rect(0, 4000, 100, 100),
           PaintInvalidationReason::kStyle}));
   EXPECT_EQ(PaintInvalidationReason::kNone,
-            target->FullPaintInvalidationReason());
+            target->PaintInvalidationReasonForPrePaint());
   EXPECT_FALSE(target->ShouldDelayFullPaintInvalidation());
   EXPECT_FALSE(target->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(target->Parent()->ShouldCheckForPaintInvalidation());

@@ -711,6 +711,76 @@ TEST_P(CompositingTest, HitTestOpaqueness) {
                 ->hit_test_opaqueness());
 }
 
+TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
+  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    return;
+  }
+
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <div id="parent">
+      <div id="target" style="will-change: transform; width: 50px; height: 50px;
+                              background: blue">
+      </div>
+    </div>
+  )HTML");
+
+  Element* parent = GetElementById("parent");
+  Element* target = GetElementById("target");
+  const LayoutBox* target_box = target->GetLayoutBox();
+  EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
+  ASSERT_FALSE(target_box->Layer()->SelfNeedsRepaint());
+  auto* display_item_client = static_cast<const DisplayItemClient*>(target_box);
+  ASSERT_TRUE(display_item_client->IsValid());
+  const cc::Layer* target_layer =
+      CcLayersByDOMElementId(RootCcLayer(), "target")[0];
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            target_layer->hit_test_opaqueness());
+
+  target->SetInlineStyleProperty(CSSPropertyID::kPointerEvents, "none");
+  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+  // Change of PointerEvents should not invalidate the painting layer, but not
+  // the display item client.
+  EXPECT_EQ(EPointerEvents::kNone, target_box->StyleRef().UsedPointerEvents());
+  EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
+  EXPECT_TRUE(display_item_client->IsValid());
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
+            target_layer->hit_test_opaqueness());
+
+  target->RemoveInlineStyleProperty(CSSPropertyID::kPointerEvents);
+  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+  EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
+  EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
+  EXPECT_TRUE(display_item_client->IsValid());
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            target_layer->hit_test_opaqueness());
+
+  parent->setAttribute(html_names::kInertAttr, AtomicString(""));
+  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+  EXPECT_EQ(EPointerEvents::kNone, target_box->StyleRef().UsedPointerEvents());
+  // Change of parent inert attribute (affecting target's used pointer events)
+  // should invalidate the painting layer but not the display item client.
+  EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
+  EXPECT_TRUE(display_item_client->IsValid());
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
+            target_layer->hit_test_opaqueness());
+
+  parent->removeAttribute(html_names::kInertAttr);
+  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+  EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
+  EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
+  EXPECT_TRUE(display_item_client->IsValid());
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            target_layer->hit_test_opaqueness());
+}
+
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {
  public:
   void InitializeWithHTML(const String& html) {

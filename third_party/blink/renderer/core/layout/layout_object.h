@@ -2924,10 +2924,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool IsRelayoutBoundary() const;
 
-  PaintInvalidationReason FullPaintInvalidationReason() const {
+  PaintInvalidationReason PaintInvalidationReasonForPrePaint() const {
     NOT_DESTROYED();
     return static_cast<PaintInvalidationReason>(
-        full_paint_invalidation_reason_);
+        paint_invalidation_reason_for_pre_paint_);
   }
   bool ShouldDoFullPaintInvalidation() const {
     NOT_DESTROYED();
@@ -2935,8 +2935,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       DCHECK(!bitfields_.SubtreeShouldDoFullPaintInvalidation());
       return false;
     }
-    if (FullPaintInvalidationReason() != PaintInvalidationReason::kNone) {
-      DCHECK(IsFullPaintInvalidationReason(FullPaintInvalidationReason()));
+    if (IsFullPaintInvalidationReason(PaintInvalidationReasonForPrePaint())) {
       DCHECK(ShouldCheckForPaintInvalidation());
       return true;
     }
@@ -2956,6 +2955,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       PaintInvalidationReason = PaintInvalidationReason::kLayout);
   void SetShouldDoFullPaintInvalidationWithoutLayoutChange(
       PaintInvalidationReason reason);
+
+  void SetShouldInvalidatePaintForHitTest();
+  bool ShouldInvalidatePaintForHitTestOnly() const {
+    NOT_DESTROYED();
+    return PaintInvalidationReasonForPrePaint() ==
+           PaintInvalidationReason::kHitTest;
+  }
 
   void ClearPaintInvalidationFlags();
 
@@ -3802,11 +3808,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // These are not in LayoutObjectBitfields, to fill the gap between
   // the inherited DisplayItemClient data fields and bitfields_.
 
-  // This is set by Set[Subtree]ShouldDoFullPaintInvalidation, and cleared
-  // during PrePaint in this object's InvalidatePaint(). It's different from
+  // This is set by Set[Subtree]ShouldDoFullPaintInvalidation() or
+  // SetShouldInvalidatePaintForHitTest(), and cleared during PrePaint in this
+  // object's InvalidatePaint(). It's different from
   // DisplayItemClient::GetPaintInvalidationReason() which is set during
   // PrePaint and cleared in PaintController::FinishCycle().
-  unsigned full_paint_invalidation_reason_ : 6;
+  unsigned paint_invalidation_reason_for_pre_paint_ : 6;
 
   // This is the cached 'position' value of this object
   // (see ComputedStyle::position).

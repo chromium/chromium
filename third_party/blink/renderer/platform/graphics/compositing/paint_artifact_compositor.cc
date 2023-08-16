@@ -368,6 +368,11 @@ bool NeedsFullUpdateAfterPaintingChunk(
     return true;
   }
 
+  // Hit test opaqueness of the paint chunk may affect that of cc::Layer.
+  if (previous.hit_test_opaqueness != repainted.hit_test_opaqueness) {
+    return true;
+  }
+
   // Debugging for https://crbug.com/1237389 and https://crbug.com/1230104.
   // Before returning that a full update is not needed, check that the
   // properties are changed, which would indicate a missing call to

@@ -444,7 +444,7 @@ LayoutBlockFlow* LayoutObject::CreateBlockFlowOrListItem(
 }
 
 LayoutObject::LayoutObject(Node* node)
-    : full_paint_invalidation_reason_(
+    : paint_invalidation_reason_for_pre_paint_(
           static_cast<unsigned>(PaintInvalidationReason::kNone)),
       positioned_state_(kIsStaticallyPositioned),
       selection_state_(static_cast<unsigned>(SelectionState::kNone)),
@@ -3099,6 +3099,12 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     GetDocument().EnsureCSSToggleInference().MarkNeedsRebuild();
   }
 
+  if (old_style &&
+      old_style->UsedPointerEvents() != StyleRef().UsedPointerEvents()) {
+    // UsedPointerEvents affects hit test opaqueness.
+    SetShouldInvalidatePaintForHitTest();
+  }
+
   if (StyleRef().AnchorName())
     MarkMayHaveAnchorQuery();
 }
@@ -4541,10 +4547,21 @@ void LayoutObject::SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(
   // Only full invalidation reasons are allowed.
   DCHECK(IsFullPaintInvalidationReason(reason));
   bitfields_.SetShouldDelayFullPaintInvalidation(false);
-  if (reason > FullPaintInvalidationReason()) {
+  if (reason > PaintInvalidationReasonForPrePaint()) {
     SetShouldCheckForPaintInvalidationWithoutLayoutChange();
-    full_paint_invalidation_reason_ = static_cast<unsigned>(reason);
-    DCHECK_EQ(reason, FullPaintInvalidationReason());
+    paint_invalidation_reason_for_pre_paint_ = static_cast<unsigned>(reason);
+    DCHECK_EQ(reason, PaintInvalidationReasonForPrePaint());
+  }
+}
+
+void LayoutObject::SetShouldInvalidatePaintForHitTest() {
+  NOT_DESTROYED();
+  if (PaintInvalidationReasonForPrePaint() <
+      PaintInvalidationReason::kHitTest) {
+    SetShouldCheckForPaintInvalidationWithoutLayoutChange();
+    paint_invalidation_reason_for_pre_paint_ =
+        static_cast<unsigned>(PaintInvalidationReason::kHitTest);
+    DCHECK(ShouldInvalidatePaintForHitTestOnly());
   }
 }
 
@@ -4612,7 +4629,7 @@ void LayoutObject::SetMayNeedPaintInvalidationAnimatedBackgroundImage() {
 void LayoutObject::SetShouldDelayFullPaintInvalidation() {
   NOT_DESTROYED();
   // Should have already set a full paint invalidation reason.
-  DCHECK(IsFullPaintInvalidationReason(FullPaintInvalidationReason()));
+  DCHECK(IsFullPaintInvalidationReason(PaintInvalidationReasonForPrePaint()));
   // Subtree full paint invalidation can't be delayed.
   if (bitfields_.SubtreeShouldDoFullPaintInvalidation()) {
     return;
@@ -4633,7 +4650,7 @@ void LayoutObject::SetShouldDelayFullPaintInvalidation() {
 void LayoutObject::ClearShouldDelayFullPaintInvalidation() {
   // This will clear ShouldDelayFullPaintInvalidation() flag.
   SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(
-      FullPaintInvalidationReason());
+      PaintInvalidationReasonForPrePaint());
 }
 
 void LayoutObject::ClearPaintInvalidationFlags() {
@@ -4644,7 +4661,7 @@ void LayoutObject::ClearPaintInvalidationFlags() {
   DCHECK(!ShouldCheckForPaintInvalidation() || PaintInvalidationStateIsDirty());
 #endif
   if (!ShouldDelayFullPaintInvalidation()) {
-    full_paint_invalidation_reason_ =
+    paint_invalidation_reason_for_pre_paint_ =
         static_cast<unsigned>(PaintInvalidationReason::kNone);
     bitfields_.SetBackgroundNeedsFullPaintInvalidation(false);
   }
