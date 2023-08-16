@@ -72,10 +72,9 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
       const base::RepeatingCallback<void(RenderProcessHost*)>& cb);
 
  private:
-  // Release ownership of |host| as a possible spare renderer.  Called when
-  // |host| has either been 1) claimed to be used in a navigation or 2) shutdown
-  // somewhere else.
-  void ReleaseSpareRenderProcessHost(RenderProcessHost* host);
+  // Release ownership of the spare renderer. Called when the spare has either
+  // been 1) claimed to be used in a navigation or 2) shutdown somewhere else.
+  void ReleaseSpareRenderProcessHost();
 
   // RenderProcessHostObserver:
   void RenderProcessReady(RenderProcessHost* host) override;

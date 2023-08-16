@@ -165,7 +165,7 @@ SpareRenderProcessHostManager::MaybeTakeSpareRenderProcessHost(
 
     DCHECK_EQ(SpareProcessMaybeTakeAction::kSpareTaken, action);
     returned_process = spare_render_process_host_;
-    ReleaseSpareRenderProcessHost(spare_render_process_host_);
+    ReleaseSpareRenderProcessHost();
   } else if (!RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
     // If the spare shouldn't be kept around, then discard it as soon as we
     // find that the current spare was mismatched.
@@ -220,34 +220,32 @@ SpareRenderProcessHostManager::RegisterSpareRenderProcessHostChangedCallback(
   return spare_render_process_host_changed_callback_list_.Add(cb);
 }
 
-void SpareRenderProcessHostManager::ReleaseSpareRenderProcessHost(
-    RenderProcessHost* host) {
-  if (spare_render_process_host_ && spare_render_process_host_ == host) {
-    spare_render_process_host_->RemoveObserver(this);
-    spare_render_process_host_ = nullptr;
-    spare_render_process_host_changed_callback_list_.Notify(nullptr);
-  }
+void SpareRenderProcessHostManager::ReleaseSpareRenderProcessHost() {
+  CHECK(spare_render_process_host_);
+
+  spare_render_process_host_->RemoveObserver(this);
+  spare_render_process_host_ = nullptr;
+  spare_render_process_host_changed_callback_list_.Notify(nullptr);
 }
 
 void SpareRenderProcessHostManager::RenderProcessReady(
     RenderProcessHost* host) {
-  if (host == spare_render_process_host_) {
-    spare_render_process_host_changed_callback_list_.Notify(
-        spare_render_process_host_);
-  }
+  CHECK_EQ(spare_render_process_host_, host);
+  spare_render_process_host_changed_callback_list_.Notify(
+      spare_render_process_host_);
 }
 
 void SpareRenderProcessHostManager::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
-  if (host == spare_render_process_host_) {
-    CleanupSpareRenderProcessHost();
-  }
+  CHECK_EQ(spare_render_process_host_, host);
+  CleanupSpareRenderProcessHost();
 }
 
 void SpareRenderProcessHostManager::RenderProcessHostDestroyed(
     RenderProcessHost* host) {
-  ReleaseSpareRenderProcessHost(host);
+  CHECK_EQ(spare_render_process_host_, host);
+  ReleaseSpareRenderProcessHost();
 }
 
 }  // namespace content
