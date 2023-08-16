@@ -133,6 +133,9 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
     if (host->GetType() == DevToolsAgentHost::kTypeSharedWorker) {
       return true;
     }
+    if (host->GetType() == DevToolsAgentHost::kTypeSharedStorageWorklet) {
+      return true;
+    }
     if (host->GetType() == DevToolsAgentHost::kTypeTab) {
       return true;
     }
