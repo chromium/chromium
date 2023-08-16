@@ -584,26 +584,31 @@ void WebsiteMetrics::SetTabInActivated(content::WebContents* web_contents) {
     return;
   }
 
-  auto current_time = base::TimeTicks::Now();
+  const auto current_time = base::TimeTicks::Now();
   DCHECK_GE(current_time, it->second.start_time);
   it->second.running_time_in_five_minutes +=
       current_time - it->second.start_time;
   it->second.is_activated = false;
-  it->second.running_time_in_two_hours +=
-      GetRandomNoise() * it->second.running_time_in_five_minutes;
-  it->second.running_time_in_five_minutes = base::TimeDelta();
 }
 
 void WebsiteMetrics::SaveUsageTime() {
   base::Value::Dict dict;
   for (auto& it : url_infos_) {
     if (it.second.is_activated) {
-      auto current_time = base::TimeTicks::Now();
+      // Continued usage of active web content.
+      const auto current_time = base::TimeTicks::Now();
+      DCHECK_GE(current_time, it.second.start_time);
       it.second.running_time_in_five_minutes +=
           current_time - it.second.start_time;
       it.second.start_time = current_time;
     }
+
     if (!it.second.running_time_in_five_minutes.is_zero()) {
+      // Notify observers before we normalize raw usage data.
+      for (auto& observer : observers_) {
+        observer.OnUrlUsage(it.first, it.second.running_time_in_five_minutes);
+      }
+
       // Based on the privacy review result, randomly multiply a noise factor to
       // the raw data collected in a 5 minutes slot.
       it.second.running_time_in_two_hours +=
