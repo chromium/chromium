@@ -171,8 +171,8 @@ class ProfileSigninConfirmationHelperTest : public testing::Test {
   base::ScopedTempDir profile_dir_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<TestingPrefStoreWithCustomReadError> user_prefs_;
-  raw_ptr<BookmarkModel> model_;
+  const raw_ptr<TestingPrefStoreWithCustomReadError> user_prefs_;
+  const raw_ptr<BookmarkModel> model_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
