@@ -447,7 +447,7 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
 
 void InstalledLoader::RecordExtensionsMetricsForTesting() {
   RecordExtensionsMetrics(/*profile=*/extension_service_->profile(),
-                          /*log_user_profile_histograms=*/false);
+                          /*is_user_profile=*/false);
 }
 
 void InstalledLoader::RecordExtensionsIncrementedMetricsForTesting(
@@ -456,9 +456,8 @@ void InstalledLoader::RecordExtensionsIncrementedMetricsForTesting(
 }
 
 // TODO(crbug.com/1163038): Separate out Webstore/Offstore metrics.
-void InstalledLoader::RecordExtensionsMetrics(
-    Profile* profile,
-    bool should_record_incremented_metrics) {
+void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
+                                              bool is_user_profile) {
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(profile);
   int app_user_count = 0;
@@ -489,6 +488,8 @@ void InstalledLoader::RecordExtensionsMetrics(
   int web_request_count = 0;
   int enabled_not_allowlisted_count = 0;
   int disabled_not_allowlisted_count = 0;
+
+  bool should_record_incremented_metrics = is_user_profile;
 
   const ExtensionSet& extensions = extension_registry_->enabled_extensions();
   for (ExtensionSet::const_iterator iter = extensions.begin();
@@ -568,6 +569,48 @@ void InstalledLoader::RecordExtensionsMetrics(
       web_request_count++;
     }
 
+    // 10 is arbitrarily chosen.
+    static constexpr int kMaxManifestVersion = 10;
+    // ManifestVersion split by location for items of type
+    // Manifest::TYPE_EXTENSION. An ungrouped histogram is below, includes all
+    // extension-y types (such as platform apps and hosted apps), and doesn't
+    // include unpacked or component locations.
+    if (extension->is_extension() && is_user_profile) {
+      const char* location_histogram_name = nullptr;
+      switch (extension->location()) {
+        case mojom::ManifestLocation::kInternal:
+          location_histogram_name =
+              "Extensions.ManifestVersionByLocation.Internal";
+          break;
+        case mojom::ManifestLocation::kExternalPref:
+        case mojom::ManifestLocation::kExternalPrefDownload:
+        case mojom::ManifestLocation::kExternalRegistry:
+          location_histogram_name =
+              "Extensions.ManifestVersionByLocation.External";
+          break;
+        case mojom::ManifestLocation::kComponent:
+        case mojom::ManifestLocation::kExternalComponent:
+          location_histogram_name =
+              "Extensions.ManifestVersionByLocation.Component";
+          break;
+        case mojom::ManifestLocation::kExternalPolicy:
+        case mojom::ManifestLocation::kExternalPolicyDownload:
+          location_histogram_name =
+              "Extensions.ManifestVersionByLocation.Policy";
+          break;
+        case mojom::ManifestLocation::kCommandLine:
+        case mojom::ManifestLocation::kUnpacked:
+          location_histogram_name =
+              "Extensions.ManifestVersionByLocation.Unpacked";
+          break;
+        case mojom::ManifestLocation::kInvalidLocation:
+          NOTREACHED_NORETURN();
+      }
+      base::UmaHistogramExactLinear(location_histogram_name,
+                                    extension->manifest_version(),
+                                    kMaxManifestVersion);
+    }
+
     // From now on, don't count component extensions, since they are only
     // extensions as an implementation detail. Continue to count unpacked
     // extensions for a few metrics.
@@ -600,10 +643,11 @@ void InstalledLoader::RecordExtensionsMetrics(
 
     UMA_HISTOGRAM_ENUMERATION("Extensions.ManifestVersion",
                               extension->manifest_version(),
-                              10);  // 10 is arbitrarily chosen.
+                              kMaxManifestVersion);
     if (should_record_incremented_metrics) {
       UMA_HISTOGRAM_ENUMERATION("Extensions.ManifestVersion2",
-                                extension->manifest_version(), 10);
+                                extension->manifest_version(),
+                                kMaxManifestVersion);
     }
 
     // We might have wanted to count legacy packaged apps here, too, since they

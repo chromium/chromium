@@ -62,11 +62,11 @@ class InstalledLoader {
   // extension that is already installed.
   int GetCreationFlags(const ExtensionInfo* info);
 
-  // Record metrics related to the loaded extensions.
-  // `log_user_profile_histograms` being `true` causes profile-specific
-  // incremented histograms to emit.
-  void RecordExtensionsMetrics(Profile* profile,
-                               bool log_user_profile_histograms);
+  // Records metrics related to the loaded extensions.
+  // `is_user_profile` indicates that this is a profile where users can install
+  // extensions, specifically profiles that can have non-component extensions
+  // installed. This causes incremented histograms to emit.
+  void RecordExtensionsMetrics(Profile* profile, bool is_user_profile);
 
   raw_ptr<ExtensionService> extension_service_;
   raw_ptr<ExtensionRegistry> extension_registry_;

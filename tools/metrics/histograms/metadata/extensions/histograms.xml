@@ -3528,6 +3528,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.ManifestVersionByLocation.{ManifestLocation}"
+    units="manifest version" expires_after="2024-08-14">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The manifest version of an enabled {ManifestLocation}. Emitted for every
+    enabled extension (not for other extension-y items, like platform apps) on
+    profile startup for user profiles (profiles where users can install
+    extensions, specifically profiles that can have non-component extensions
+    installed).
+  </summary>
+  <token key="ManifestLocation">
+    <variant name="Component"
+        summary="component extension (ManifestLocations kComponent and
+                 kExternalComponent)"/>
+    <variant name="External"
+        summary="external extension (ManifestLocations, kExternalPref,
+                 kExternalPrefDownload, and kExternalRegistry)"/>
+    <variant name="Internal"
+        summary="internal extension (ManifestLocation::kInternal; likely
+                 user-installed)"/>
+    <variant name="Policy"
+        summary="policy-installed extension (ManifestLocations
+                 kExternalPolicy and kExternalPolicyDownload)"/>
+    <variant name="Unpacked"
+        summary="unpacked and developer extension (ManifestLocations
+                 kCommandLine and kUnpacked)"/>
+  </token>
+</histogram>
+
 <histogram
     name="Extensions.Messaging.ExtensionPortsCreated{ExtensionMessagingPortCreationTime}"
     units="number of ports" expires_after="M85">
