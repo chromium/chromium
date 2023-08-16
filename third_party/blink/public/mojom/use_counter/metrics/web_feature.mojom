@@ -3967,6 +3967,7 @@ enum WebFeature {
   kSharedDictionaryUsedWithSharedBrotli = 4627,
   kSharedDictionaryUsedWithSharedZstd = 4628,
   kZstdContentEncoding = 4629,
+  kGetAllScreensMedia = 4630,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

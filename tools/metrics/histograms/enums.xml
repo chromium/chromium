@@ -43523,6 +43523,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4627" label="SharedDictionaryUsedWithSharedBrotli"/>
   <int value="4628" label="SharedDictionaryUsedWithSharedZstd"/>
   <int value="4629" label="ZstdContentEncoding"/>
+  <int value="4630" label="GetAllScreensMedia"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
