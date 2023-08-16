@@ -13,14 +13,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 
 namespace content {
 class BrowserContext;
-class NotificationDetails;
 class WebContents;
 }
 
@@ -39,56 +37,58 @@ class ExtensionTestNotificationObserver {
   ~ExtensionTestNotificationObserver();
 
  protected:
-  class NotificationSet : public content::NotificationObserver,
-                          public extensions::ProcessManagerObserver {
+  class NotificationSet : public extensions::ProcessManagerObserver {
    public:
-    NotificationSet();
+    explicit NotificationSet(ProcessManager* manager);
 
     NotificationSet(const NotificationSet&) = delete;
     NotificationSet& operator=(const NotificationSet&) = delete;
 
     ~NotificationSet() override;
 
-    void Add(int type, const content::NotificationSource& source);
-    void Add(int type);
-    void AddExtensionFrameUnregistration(extensions::ProcessManager* manager);
-    void AddWebContentsDestroyed(extensions::ProcessManager* manager);
-
-    // Notified any time an Add()ed notification is received.
+    // Notified any time a notification is received.
     // The details of the notification are dropped.
     base::RepeatingClosureList& closure_list() { return closure_list_; }
 
    private:
     class ForwardingWebContentsObserver;
 
-    // content::NotificationObserver:
-    void Observe(int type,
-                 const content::NotificationSource& source,
-                 const content::NotificationDetails& details) override;
-
     // extensions::ProcessManagerObserver:
     void OnExtensionFrameUnregistered(
         const std::string& extension_id,
         content::RenderFrameHost* render_frame_host) override;
 
+    void OnWebContentsCreated(content::WebContents* web_contents);
+    void StartObservingWebContents(content::WebContents* web_contents);
+
+    void DidStopLoading(content::WebContents* web_contents);
     void WebContentsDestroyed(content::WebContents* web_contents);
 
-    content::NotificationRegistrar notification_registrar_;
     base::RepeatingClosureList closure_list_;
+
     base::ScopedObservation<extensions::ProcessManager,
                             extensions::ProcessManagerObserver>
         process_manager_observation_{this};
+
+    base::CallbackListSubscription web_contents_creation_subscription_ =
+        content::RegisterWebContentsCreationCallback(
+            base::BindRepeating(&NotificationSet::OnWebContentsCreated,
+                                base::Unretained(this)));
 
     std::map<content::WebContents*,
              std::unique_ptr<ForwardingWebContentsObserver>>
         web_contents_observers_;
   };
 
+  // A callback that returns true if the condition has been met and takes no
+  // arguments.
+  using ConditionCallback = base::RepeatingCallback<bool(void)>;
+
   // Wait for |condition_| to be met. |notification_set| is the set of
   // notifications to wait for and to check |condition| when observing. This
   // can be NULL if we are instead waiting for a different observer method, like
   // OnPageActionsUpdated().
-  void WaitForCondition(const base::RepeatingCallback<bool(void)>& condition,
+  void WaitForCondition(const ConditionCallback& condition,
                         NotificationSet* notification_set);
 
   // Quits the message loop if |condition_| is met.
@@ -99,7 +99,7 @@ class ExtensionTestNotificationObserver {
  private:
   // The condition for which we are waiting. This should be checked in any
   // observing methods that could trigger it.
-  base::RepeatingCallback<bool(void)> condition_;
+  ConditionCallback condition_;
 
   // The closure to quit the currently-running message loop.
   base::OnceClosure quit_closure_;
