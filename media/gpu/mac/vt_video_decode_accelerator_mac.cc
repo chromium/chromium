@@ -12,12 +12,12 @@
 #include <iterator>
 #include <memory>
 
+#include "base/apple/osstatus_logging.h"
 #include "base/atomic_sequence_num.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/mac_logging.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_policy.h"

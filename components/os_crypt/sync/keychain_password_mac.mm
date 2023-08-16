@@ -6,8 +6,8 @@
 
 #import <Security/Security.h>
 
+#include "base/apple/osstatus_logging.h"
 #include "base/base64.h"
-#include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"

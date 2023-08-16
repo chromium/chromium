@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/apple/bridging.h"
+#include "base/apple/osstatus_logging.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -17,7 +18,6 @@
 #include "base/mac/authorization_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/launchd.h"
-#include "base/mac/mac_logging.h"
 #include "base/mac/scoped_authorizationref.h"
 #include "base/mac/scoped_launch_data.h"
 #include "base/memory/ptr_util.h"

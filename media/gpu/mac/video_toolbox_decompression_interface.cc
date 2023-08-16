@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "base/apple/osstatus_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/mac_logging.h"
 #include "media/base/media_log.h"
 #include "media/gpu/mac/video_toolbox_decode_metadata.h"
 #include "media/gpu/mac/video_toolbox_decompression_session.h"

@@ -16,11 +16,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/osstatus_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"

@@ -4,8 +4,8 @@
 
 #include "media/gpu/mac/video_toolbox_decompression_session.h"
 
+#include "base/apple/osstatus_logging.h"
 #include "base/logging.h"
-#include "base/mac/mac_logging.h"
 #include "media/base/media_log.h"
 
 #define OSSTATUS_MEDIA_DLOG_ERROR(status, msg)                  \

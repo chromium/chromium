@@ -9,10 +9,10 @@
 #include <memory>
 #include <string>
 
+#include "base/apple/osstatus_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mac_logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_mach_port.h"

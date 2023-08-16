@@ -6,9 +6,9 @@
 
 #include <CommonCrypto/CommonDigest.h>
 
+#include "base/apple/osstatus_logging.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
 #include "crypto/sha2.h"

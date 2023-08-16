@@ -4,9 +4,9 @@
 
 #include "media/filters/mac/audio_toolbox_audio_encoder.h"
 
+#include "base/apple/osstatus_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/mac_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_buffer.h"

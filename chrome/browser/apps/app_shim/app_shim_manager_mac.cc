@@ -12,6 +12,7 @@
 
 #include "apps/app_lifetime_monitor_factory.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/osstatus_logging.h"
 #include "base/barrier_closure.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -22,7 +23,6 @@
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mac_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"

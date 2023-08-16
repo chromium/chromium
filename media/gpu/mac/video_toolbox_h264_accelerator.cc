@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/mac/mac_logging.h"
+#include "base/apple/osstatus_logging.h"
 #include "base/sys_byteorder.h"
 #include "media/base/media_log.h"
 

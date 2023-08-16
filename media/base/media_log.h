@@ -30,7 +30,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/mac_logging.h"
+#include "base/apple/osstatus_logging.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
 namespace media {

@@ -6,6 +6,7 @@
 
 #include <Security/Security.h>
 
+#include "base/apple/osstatus_logging.h"
 #include "base/atomicops.h"
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mac_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"

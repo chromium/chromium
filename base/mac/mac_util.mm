@@ -17,10 +17,10 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/osstatus_logging.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mac_logging.h"
 #include "base/mac/scoped_aedesc.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"

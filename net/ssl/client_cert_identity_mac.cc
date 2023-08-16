@@ -6,7 +6,7 @@
 
 #include <Security/SecIdentity.h>
 
-#include "base/mac/mac_logging.h"
+#include "base/apple/osstatus_logging.h"
 #include "net/ssl/ssl_platform_key_mac.h"
 #include "net/ssl/ssl_private_key.h"
 
