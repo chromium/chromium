@@ -44,40 +44,11 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
 
 InstallableData::~InstallableData() = default;
 
-bool InstallableData::NoBlockingErrors() const {
-  return FirstNoBlockingError() == NO_ERROR_DETECTED;
-}
-
-InstallableStatusCode InstallableData::FirstNoBlockingError() const {
-  for (auto e : errors) {
-    switch (e) {
-      case WARN_NOT_OFFLINE_CAPABLE:
-        continue;
-      case NO_MATCHING_SERVICE_WORKER:
-#if !BUILDFLAG(IS_ANDROID)
-        if (base::FeatureList::IsEnabled(
-                features::kCreateShortcutIgnoresManifest)) {
-          continue;
-        }
-#endif
-        [[fallthrough]];
-      default:
-        return e;
-    }
+InstallableStatusCode InstallableData::GetFirstError() const {
+  if (errors.empty()) {
+    return NO_ERROR_DETECTED;
   }
-  return NO_ERROR_DETECTED;
-}
-
-bool InstallableData::HasErrorOnlyServiceWorkerErrors() const {
-  if (errors.empty() || errors[0] == NO_ERROR_DETECTED)
-    return false;
-
-  for (auto error : errors) {
-    if (error != NO_MATCHING_SERVICE_WORKER && error != NOT_OFFLINE_CAPABLE) {
-      return false;
-    }
-  }
-  return true;
+  return errors[0];
 }
 
 }  // namespace webapps

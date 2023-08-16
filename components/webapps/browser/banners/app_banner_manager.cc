@@ -364,8 +364,8 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
     return;
   }
   UpdateState(State::ACTIVE);
-  if (!data.NoBlockingErrors()) {
-    Stop(data.errors[0]);
+  if (!data.errors.empty()) {
+    Stop(data.GetFirstError());
     return;
   }
 
@@ -432,12 +432,11 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   if (data.valid_manifest)
     TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_REQUESTED);
 
-  bool is_installable = data.NoBlockingErrors();
+  bool is_installable = data.errors.empty();
 
   if (!is_installable) {
-    DCHECK(!data.errors.empty());
     SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kNo);
-    Stop(data.errors[0]);
+    Stop(data.GetFirstError());
     return;
   }
 

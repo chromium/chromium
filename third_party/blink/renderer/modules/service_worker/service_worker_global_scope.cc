@@ -153,6 +153,10 @@ namespace {
 constexpr char kServiceWorkerGlobalScopeTraceScope[] =
     "ServiceWorkerGlobalScope";
 
+// The default timeout for offline events in a service worker. The  value is
+// the same as the update interval value in the event queue.
+constexpr int kDefaultTimeoutSecondsForOfflineEvent = 10;
+
 void DidSkipWaiting(ScriptPromiseResolver* resolver, bool success) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
@@ -1978,11 +1982,6 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForMainResource(
     DispatchFetchEventForMainResourceCallback callback) {
   DCHECK(IsContextThread());
 
-  // The timeout for offline events in a service worker. The default value is
-  // the same as the update interval value in the event queue.
-  static const base::FeatureParam<int> kCustomTimeoutForOfflineEvent{
-      &features::kCheckOfflineCapability, "timeout_second", 10};
-
   const int event_id = event_queue_->NextEventId();
   fetch_event_callbacks_.Set(event_id, std::move(callback));
 
@@ -2001,7 +2000,7 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForMainResource(
                       /*corp_checker=*/nullptr, absl::nullopt),
         WTF::BindOnce(&ServiceWorkerGlobalScope::AbortCallbackForFetchEvent,
                       WrapWeakPersistent(this)),
-        base::Seconds(kCustomTimeoutForOfflineEvent.Get()));
+        base::Seconds(kDefaultTimeoutSecondsForOfflineEvent));
   } else {
     event_queue_->EnqueueNormal(
         event_id,

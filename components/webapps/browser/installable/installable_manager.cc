@@ -536,9 +536,7 @@ void InstallableManager::WorkOnTask() {
   const InstallableParams& params = task_queue_.Current().params;
 
   auto errors = GetErrors(params);
-  bool check_passed = errors.empty() || (errors.size() == 1 &&
-                                         errors[0] == WARN_NOT_OFFLINE_CAPABLE);
-  if ((!check_passed && !params.is_debug_mode) || IsComplete(params)) {
+  if ((!errors.empty() && !params.is_debug_mode) || IsComplete(params)) {
     // Yield the UI thread before processing the next task. If this object is
     // deleted in the meantime, the next task naturally won't run.
     sequenced_task_runner_->PostTask(
@@ -736,32 +734,6 @@ void InstallableManager::OnDidCheckHasServiceWorker(
 
   switch (capability) {
     case content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER:
-      if (base::FeatureList::IsEnabled(
-              blink::features::kCheckOfflineCapability)) {
-        const bool enforce_offline_capability =
-            (blink::features::kCheckOfflineCapabilityParam.Get() ==
-             blink::features::CheckOfflineCapabilityMode::kEnforce);
-
-        if (!manifest().start_url.is_valid()) {
-          worker_->has_worker = false;
-          worker_->error = NO_URL_FOR_SERVICE_WORKER;
-          worker_->fetched = true;
-          WorkOnTask();
-          return;
-        }
-
-        // Dispatch a fetch event to `start_url` while simulating an offline
-        // environment and see if the site supports an offline page.
-        service_worker_context_->CheckOfflineCapability(
-            manifest().start_url,
-            blink::StorageKey::CreateFirstParty(
-                url::Origin::Create(manifest().start_url)),
-            base::BindOnce(&InstallableManager::OnDidCheckOfflineCapability,
-                           weak_factory_.GetWeakPtr(),
-                           check_service_worker_start_time,
-                           enforce_offline_capability));
-        return;
-      }
       worker_->has_worker = true;
       break;
     case content::ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER:
@@ -784,50 +756,13 @@ void InstallableManager::OnDidCheckHasServiceWorker(
       break;
   }
 
-  // These are recorded in OnDidCheckOfflineCapability() when
-  // CheckOfflineCapability is enabled.
-  if (!base::FeatureList::IsEnabled(blink::features::kCheckOfflineCapability)) {
     InstallableMetrics::RecordCheckServiceWorkerTime(
         base::TimeTicks::Now() - check_service_worker_start_time);
     InstallableMetrics::RecordCheckServiceWorkerStatus(
         InstallableMetrics::ConvertFromServiceWorkerCapability(capability));
-  }
 
-  worker_->fetched = true;
-  WorkOnTask();
-}
-
-void InstallableManager::OnDidCheckOfflineCapability(
-    base::TimeTicks check_service_worker_start_time,
-    bool enforce_offline_capability,
-    content::OfflineCapability capability,
-    int64_t service_worker_registration_id) {
-  InstallableMetrics::RecordCheckServiceWorkerTime(
-      base::TimeTicks::Now() - check_service_worker_start_time);
-  InstallableMetrics::RecordCheckServiceWorkerStatus(
-      InstallableMetrics::ConvertFromOfflineCapability(capability));
-
-  switch (capability) {
-    case content::OfflineCapability::kSupported:
-      worker_->has_worker = true;
-      break;
-    case content::OfflineCapability::kUnsupported:
-      if (enforce_offline_capability) {
-        worker_->has_worker = false;
-        worker_->error = NOT_OFFLINE_CAPABLE;
-      } else {
-        // No enforcement means that we are just recording metrics and logging a
-        // warning.
-        worker_->has_worker = true;
-        worker_->error = WARN_NOT_OFFLINE_CAPABLE;
-        LogToConsole(web_contents(), WARN_NOT_OFFLINE_CAPABLE,
-                     blink::mojom::ConsoleMessageLevel::kWarning);
-      }
-      break;
-  }
-
-  worker_->fetched = true;
-  WorkOnTask();
+    worker_->fetched = true;
+    WorkOnTask();
 }
 
 void InstallableManager::CheckAndFetchBestPrimaryIcon(bool prefer_maskable) {

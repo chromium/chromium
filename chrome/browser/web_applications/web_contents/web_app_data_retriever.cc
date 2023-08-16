@@ -251,7 +251,7 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
 
   Observe(nullptr);
 
-  const bool is_installable = data.NoBlockingErrors();
+  const bool is_installable = data.errors.empty();
   DCHECK(!is_installable || data.valid_manifest);
 
   blink::mojom::ManifestPtr opt_manifest;
@@ -262,7 +262,7 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
   DCHECK(!check_installability_callback_.is_null());
   std::move(check_installability_callback_)
       .Run(std::move(opt_manifest), *data.manifest_url, data.valid_manifest,
-           data.FirstNoBlockingError());
+           data.GetFirstError());
 }
 
 void WebAppDataRetriever::OnIconsDownloaded(

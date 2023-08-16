@@ -113,7 +113,6 @@ class InstallableManager
   friend class content::WebContentsUserData<InstallableManager>;
   friend class AddToHomescreenDataFetcherTest;
   friend class InstallableManagerBrowserTest;
-  friend class InstallableManagerOfflineCapabilityBrowserTest;
   friend class InstallableManagerUnitTest;
   friend class TestInstallableManager;
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest,
@@ -123,12 +122,9 @@ class InstallableManager
                            CheckLazyServiceWorkerNoFetchHandlerFails);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest,
                            ManifestUrlChangeFlushesState);
-  FRIEND_TEST_ALL_PREFIXES(InstallableManagerOfflineCapabilityBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest,
                            CheckLazyServiceWorkerPassesWhenWaiting);
-  FRIEND_TEST_ALL_PREFIXES(InstallableManagerOfflineCapabilityBrowserTest,
-                           CheckWebapp);
-  FRIEND_TEST_ALL_PREFIXES(InstallableManagerOfflineCapabilityBrowserTest,
-                           CheckNotOfflineCapableStartUrl);
+  FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest, CheckWebapp);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerInPrerenderingBrowserTest,
                            InstallableManagerInPrerendering);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerInPrerenderingBrowserTest,
@@ -260,11 +256,6 @@ class InstallableManager
   void OnDidCheckHasServiceWorker(
       base::TimeTicks check_service_worker_start_time,
       content::ServiceWorkerCapability capability);
-  void OnDidCheckOfflineCapability(
-      base::TimeTicks check_service_worker_start_time,
-      bool enforce_offline_capability,
-      content::OfflineCapability capability,
-      int64_t service_worker_registration_id);
 
   void CheckAndFetchBestPrimaryIcon(bool prefer_maskable);
   void TryFetchingNextIcon();

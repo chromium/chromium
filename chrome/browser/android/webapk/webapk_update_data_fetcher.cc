@@ -170,7 +170,7 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
   // observing too. It is based on our assumption that it is invalid for
   // web developers to change the Web Manifest location. When it does
   // change, we will treat the new Web Manifest as the one of another WebAPK.
-  if (!data.NoBlockingErrors() || blink::IsEmptyManifest(*data.manifest) ||
+  if (!data.errors.empty() || blink::IsEmptyManifest(*data.manifest) ||
       !webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(
           *data.manifest)) {
     return;

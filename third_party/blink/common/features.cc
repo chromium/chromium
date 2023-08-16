@@ -449,21 +449,6 @@ BASE_FEATURE(kCheckHTMLParserBudgetLessOften,
              "CheckHTMLParserBudgetLessOften",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Dispatches a fake fetch event to a service worker to check the offline
-// capability of the site before promoting installation.
-// See https://crbug.com/965802 for more details.
-BASE_FEATURE(kCheckOfflineCapability,
-             "CheckOfflineCapability",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<CheckOfflineCapabilityMode>::Option
-    check_offline_capability_types[] = {
-        {CheckOfflineCapabilityMode::kWarnOnly, "warn_only"},
-        {CheckOfflineCapabilityMode::kEnforce, "enforce"}};
-const base::FeatureParam<CheckOfflineCapabilityMode>
-    kCheckOfflineCapabilityParam{&kCheckOfflineCapability, "check_mode",
-                                 CheckOfflineCapabilityMode::kWarnOnly,
-                                 &check_offline_capability_types};
-
 // Enable `sec-ch-dpr` client hint.
 BASE_FEATURE(kClientHintsDPR,
              "ClientHintsDPR",

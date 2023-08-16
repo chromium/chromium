@@ -118,7 +118,7 @@ void TestAppBannerManagerDesktop::OnDidGetManifest(
   // set twice, reset it here.
   if (base::Contains(result.errors, MANIFEST_URL_CHANGED)) {
     installable_.reset();
-  } else if (!result.NoBlockingErrors()) {
+  } else if (!result.errors.empty()) {
     // AppBannerManagerDesktop does not call
     // |OnDidPerformInstallableWebAppCheck| to complete the installability check
     // in this case, instead it early exits with failure.
@@ -129,7 +129,7 @@ void TestAppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(
     const InstallableData& result) {
   debug_log_.Append("OnDidPerformInstallableWebAppCheck");
   AppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(result);
-  SetInstallable(result.NoBlockingErrors());
+  SetInstallable(result.errors.empty());
 }
 
 void TestAppBannerManagerDesktop::ResetCurrentPageData() {

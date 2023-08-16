@@ -215,7 +215,7 @@ void AmbientBadgeManager::PerformWorkerCheckForAmbientBadge(
 }
 
 void AmbientBadgeManager::OnWorkerCheckResult(const InstallableData& data) {
-  if (!data.NoBlockingErrors()) {
+  if (!data.errors.empty()) {
     return;
   }
   passed_worker_check_ = true;
@@ -227,7 +227,7 @@ void AmbientBadgeManager::OnWorkerCheckResult(const InstallableData& data) {
 
 void AmbientBadgeManager::MaybeShowAmbientBadgeSmart(
     const InstallableData& data) {
-  if (data.NoBlockingErrors()) {
+  if (data.errors.empty()) {
     passed_worker_check_ = true;
   }
 

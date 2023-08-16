@@ -56,25 +56,9 @@ struct InstallableData {
 
   ~InstallableData();
 
-  // Returns true if `errors` is empty or only has `WARN_NOT_OFFLINE_CAPABLE`
-  // or `NO_MATCHING_SERVICE_WORKER`.
-  // `WARN_NOT_OFFLINE_CAPABLE` only logs a warning message in DevTools and
-  // should not change the behavior.
-  // `NO_MATCHING_SERVICE_WORKER` is optional if the feature
-  // `CreateShortcutIgnoresManifest` is active, since then the "Install" button
-  // should show for any website that has a manifest.
-  // TODO(https://crbug.com/965802): Remove `WARN_NOT_OFFLINE_CAPABLE` once the
-  // CheckOfflineCapability feature is enabled with 'enforce' mode by default in
-  // M93.
-  bool NoBlockingErrors() const;
-
-  // Returns the first no blocking error if any one exist. Otherwise returns
+  // Returns the first error if any one exist. Otherwise returns
   // NO_ERROR_DETECTED.
-  InstallableStatusCode FirstNoBlockingError() const;
-
-  // Returns true if there is any |errors| and all errors are service worker
-  // errors, i.e.|NO_MATCHING_SERVICE_WORKER| or |NOT_OFFLINE_CAPABLE|.
-  bool HasErrorOnlyServiceWorkerErrors() const;
+  InstallableStatusCode GetFirstError() const;
 
   // Contains all errors encountered during the InstallableManager::GetData
   // call. Empty if no errors were encountered.

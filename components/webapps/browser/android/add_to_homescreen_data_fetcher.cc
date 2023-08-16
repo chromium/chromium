@@ -228,9 +228,8 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
   // Do this after updating from the manifest for the case where a site has
   // a manifest with name and standalone specified, but no icons.
   if (blink::IsEmptyManifest(*data.manifest) || !data.primary_icon) {
-    DCHECK_GT(data.errors.size(), 0u);
-    if (!data.errors.empty())
-      installable_status_code_ = data.errors[0];
+    DCHECK(!data.errors.empty());
+    installable_status_code_ = data.GetFirstError();
     observer_->OnUserTitleAvailable(shortcut_info_.user_title,
                                     shortcut_info_.url,
                                     /*is_webapk_compatible=*/false);
@@ -260,11 +259,10 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
     return;
 
   bool webapk_compatible =
-      (data.NoBlockingErrors() && data.valid_manifest &&
-       data.worker_check_passed &&
+      (data.errors.empty() && data.valid_manifest &&
        WebappsUtils::AreWebManifestUrlsWebApkCompatible(*data.manifest));
-  if (!webapk_compatible && !data.errors.empty()) {
-    installable_status_code_ = data.errors[0];
+  if (!webapk_compatible) {
+    installable_status_code_ = data.GetFirstError();
   }
   observer_->OnUserTitleAvailable(
       webapk_compatible ? shortcut_info_.name : shortcut_info_.user_title,
