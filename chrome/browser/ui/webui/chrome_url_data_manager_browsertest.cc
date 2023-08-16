@@ -114,7 +114,13 @@ class ChromeURLDataManagerTest : public InProcessBrowserTest {
 
 // Makes sure navigating to the new tab page results in a http status code
 // of 200.
-IN_PROC_BROWSER_TEST_F(ChromeURLDataManagerTest, 200) {
+// TODO(crbug.com/1473471) Test Failing on Mac11 tests
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_200 DISABLED_200
+#else
+#define MAYBE_200 200
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeURLDataManagerTest, MAYBE_200) {
   NavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
