@@ -25,6 +25,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_notifier_impl.h"
@@ -587,6 +588,7 @@ void AppListClientImpl::InitializeAsIfNewUserLoginForTest() {
 }
 
 void AppListClientImpl::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "AppListClientImpl::OnSessionStateChanged");
   // Return early if the current user is not new or the session is not active.
   if (!user_manager::UserManager::Get()->IsCurrentUserNew() ||
       !IsSessionActive()) {
