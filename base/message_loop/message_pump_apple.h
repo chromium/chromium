@@ -2,33 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// The basis for all native run loops on the Mac is the CFRunLoop.  It can be
-// used directly, it can be used as the driving force behind the similar
+// The basis for all native run loops on macOS/iOS is the CFRunLoop.  It can
+// be used directly, it can be used as the driving force behind the similar
 // Foundation NSRunLoop, and it can be used to implement higher-level event
 // loops such as the NSApplication event loop.
 //
 // This file introduces a basic CFRunLoop-based implementation of the
-// MessagePump interface called CFRunLoopBase.  CFRunLoopBase contains all
-// of the machinery necessary to dispatch events to a delegate, but does not
-// implement the specific run loop.  Concrete subclasses must provide their
-// own DoRun and DoQuit implementations.
+// MessagePump interface called CFRunLoopBase.  CFRunLoopBase contains all of
+// the machinery necessary to dispatch events to a delegate, but does not
+// implement the specific run loop.  Concrete subclasses must provide their own
+// DoRun and DoQuit implementations.
 //
 // A concrete subclass that just runs a CFRunLoop loop is provided in
-// MessagePumpCFRunLoop.  For an NSRunLoop, the similar MessagePumpNSRunLoop
-// is provided.
+// MessagePumpCFRunLoop.  For an NSRunLoop, the similar MessagePumpNSRunLoop is
+// provided.
 //
 // For the application's event loop, an implementation based on AppKit's
 // NSApplication event system is provided in MessagePumpNSApplication.
 //
-// Typically, MessagePumpNSApplication only makes sense on a Cocoa
-// application's main thread.  If a CFRunLoop-based message pump is needed on
-// any other thread, one of the other concrete subclasses is preferable.
-// message_pump_mac::Create is defined, which returns a new NSApplication-based
-// or NSRunLoop-based MessagePump subclass depending on which thread it is
-// called on.
+// Typically, MessagePumpNSApplication only makes sense on a Cocoa application's
+// main thread.  If a CFRunLoop-based message pump is needed on any other
+// thread, one of the other concrete subclasses is preferable.
+// message_pump_apple::Create is defined, which returns a new
+// NSApplication-based or NSRunLoop-based MessagePump subclass depending on
+// which thread it is called on.
 
-#ifndef BASE_MESSAGE_LOOP_MESSAGE_PUMP_MAC_H_
-#define BASE_MESSAGE_LOOP_MESSAGE_PUMP_MAC_H_
+#ifndef BASE_MESSAGE_LOOP_MESSAGE_PUMP_APPLE_H_
+#define BASE_MESSAGE_LOOP_MESSAGE_PUMP_APPLE_H_
 
 #include "base/message_loop/message_pump.h"
 
@@ -187,7 +187,8 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // Observer callback responsible for performing idle-priority work, before
   // the run loop goes to sleep.  Associated with |pre_wait_observer_|.
   static void PreWaitObserver(CFRunLoopObserverRef observer,
-                              CFRunLoopActivity activity, void* info);
+                              CFRunLoopActivity activity,
+                              void* info);
 
   static void AfterWaitObserver(CFRunLoopObserverRef observer,
                                 CFRunLoopActivity activity,
@@ -196,13 +197,15 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // Observer callback called before the run loop processes any sources.
   // Associated with |pre_source_observer_|.
   static void PreSourceObserver(CFRunLoopObserverRef observer,
-                                CFRunLoopActivity activity, void* info);
+                                CFRunLoopActivity activity,
+                                void* info);
 
   // Observer callback called when the run loop starts and stops, at the
   // beginning and end of calls to CFRunLoopRun.  This is used to maintain
   // |nesting_level_|.  Associated with |enter_exit_observer_|.
   static void EnterExitObserver(CFRunLoopObserverRef observer,
-                                CFRunLoopActivity activity, void* info);
+                                CFRunLoopActivity activity,
+                                void* info);
 
   // Called by EnterExitObserver after performing maintenance on
   // |nesting_level_|. This allows subclasses an opportunity to perform
@@ -398,7 +401,7 @@ class MessagePumpCrApplication : public MessagePumpNSApplication {
 };
 #endif  // BUILDFLAG(IS_IOS)
 
-namespace message_pump_mac {
+namespace message_pump_apple {
 
 // If not on the main thread, returns a new instance of
 // MessagePumpNSRunLoop.
@@ -411,11 +414,11 @@ namespace message_pump_mac {
 BASE_EXPORT std::unique_ptr<MessagePump> Create();
 
 #if !BUILDFLAG(IS_IOS)
-  // If a pump is created before the required CrAppProtocol is
-  // created, the wrong MessagePump subclass could be used.
-  // UsingCrApp() returns false if the message pump was created before
-  // NSApp was initialized, or if NSApp does not implement
-  // CrAppProtocol.  NSApp must be initialized before calling.
+// If a pump is created before the required CrAppProtocol is
+// created, the wrong MessagePump subclass could be used.
+// UsingCrApp() returns false if the message pump was created before
+// NSApp was initialized, or if NSApp does not implement
+// CrAppProtocol.  NSApp must be initialized before calling.
 BASE_EXPORT bool UsingCrApp();
 
 // Wrapper to query -[NSApp isHandlingSendEvent] from C++ code.
@@ -423,7 +426,7 @@ BASE_EXPORT bool UsingCrApp();
 BASE_EXPORT bool IsHandlingSendEvent();
 #endif  // !BUILDFLAG(IS_IOS)
 
-}  // namespace message_pump_mac
+}  // namespace message_pump_apple
 
 // Tasks posted to the message loop are posted under this mode, as well
 // as kCFRunLoopCommonModes.
@@ -431,4 +434,4 @@ extern const CFStringRef BASE_EXPORT kMessageLoopExclusiveRunLoopMode;
 
 }  // namespace base
 
-#endif  // BASE_MESSAGE_LOOP_MESSAGE_PUMP_MAC_H_
+#endif  // BASE_MESSAGE_LOOP_MESSAGE_PUMP_APPLE_H_

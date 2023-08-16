@@ -153,8 +153,8 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   // If the message loop was initialized before NSApp is setup, the
   // message pump will be setup incorrectly.  Failing this implies
   // that RegisterBrowserCrApp() should be called earlier.
-  CHECK(base::message_pump_mac::UsingCrApp())
-      << "message_pump_mac::Create() is using the wrong pump implementation"
+  CHECK(base::message_pump_apple::UsingCrApp())
+      << "message_pump_apple::Create() is using the wrong pump implementation"
       << " for " << [[self className] UTF8String];
 
   return app;

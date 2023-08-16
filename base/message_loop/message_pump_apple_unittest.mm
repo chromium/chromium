@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/message_loop/message_pump_mac.h"
+#include "base/message_loop/message_pump_apple.h"
 
 #include "base/cancelable_callback.h"
 #include "base/functional/bind.h"
@@ -19,7 +19,7 @@
 
 namespace {
 
-// Internal constants from message_pump_mac.mm.
+// Internal constants from message_pump_apple.mm.
 constexpr int kAllModesMask = 0xf;
 constexpr int kNSApplicationModalSafeModeMask = 0x3;
 
@@ -47,7 +47,7 @@ void RunTaskInMode(CFRunLoopMode mode, OnceClosure task) {
 }  // namespace
 
 // Tests the correct behavior of ScopedPumpMessagesInPrivateModes.
-TEST(MessagePumpMacTest, ScopedPumpMessagesInPrivateModes) {
+TEST(MessagePumpAppleTest, ScopedPumpMessagesInPrivateModes) {
   test::SingleThreadTaskEnvironment task_environment(
       test::SingleThreadTaskEnvironment::MainThreadType::UI);
 
@@ -96,7 +96,7 @@ TEST(MessagePumpMacTest, ScopedPumpMessagesInPrivateModes) {
 
 // Tests that private message loop modes are not pumped while a modal dialog is
 // present.
-TEST(MessagePumpMacTest, ScopedPumpMessagesAttemptWithModalDialog) {
+TEST(MessagePumpAppleTest, ScopedPumpMessagesAttemptWithModalDialog) {
   test::SingleThreadTaskEnvironment task_environment(
       test::SingleThreadTaskEnvironment::MainThreadType::UI);
 
@@ -117,7 +117,7 @@ TEST(MessagePumpMacTest, ScopedPumpMessagesAttemptWithModalDialog) {
   EXPECT_EQ(NSAlertFirstButtonReturn, result);
 }
 
-TEST(MessagePumpMacTest, QuitWithModalWindow) {
+TEST(MessagePumpAppleTest, QuitWithModalWindow) {
   test::SingleThreadTaskEnvironment task_environment(
       test::SingleThreadTaskEnvironment::MainThreadType::UI);
   NSWindow* window =

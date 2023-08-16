@@ -8,7 +8,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/mac/mac_util.h"
-#import "base/message_loop/message_pump_mac.h"
+#import "base/message_loop/message_pump_apple.h"
 #include "base/numerics/safe_conversions.h"
 #import "skia/ext/skia_utils_mac.h"
 #import "ui/base/cocoa/menu_controller.h"

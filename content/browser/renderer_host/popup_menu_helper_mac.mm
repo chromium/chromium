@@ -5,7 +5,7 @@
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
 
 #import "base/mac/scoped_sending_event.h"
-#import "base/message_loop/message_pump_mac.h"
+#import "base/message_loop/message_pump_apple.h"
 #include "base/task/current_thread.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"

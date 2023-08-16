@@ -33,7 +33,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "base/message_loop/message_pump_mac.h"
+#include "base/message_loop/message_pump_apple.h"
 #endif
 
 constexpr gfx::Size ExtensionPopup::kMinSize;
@@ -376,7 +376,7 @@ void ExtensionPopup::CloseDeferredIfNecessary(
 #if BUILDFLAG(IS_MAC)
   // On Mac, defer close if we're in a nested run loop (for example, showing a
   // context menu) to avoid messaging deallocated objects.
-  if (base::message_pump_mac::IsHandlingSendEvent()) {
+  if (base::message_pump_apple::IsHandlingSendEvent()) {
     deferred_close_weak_ptr_factory_.InvalidateWeakPtrs();
     auto weak_ptr = deferred_close_weak_ptr_factory_.GetWeakPtr();
     CFRunLoopPerformBlock(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode, ^{

@@ -11,7 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/mac/mac_util.h"
 #import "base/mac/scoped_sending_event.h"
-#import "base/message_loop/message_pump_mac.h"
+#import "base/message_loop/message_pump_apple.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/current_thread.h"

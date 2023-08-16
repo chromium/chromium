@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/message_loop/message_pump_mac.h"
+#import "base/message_loop/message_pump_apple.h"
 
 #import <Foundation/Foundation.h>
 
@@ -57,14 +57,13 @@ enum { kCommonModeMask = 0x1, kAllModesMask = 0xf };
 // in all modes, but that interacts badly with app modal dialogs (e.g. NSAlert).
 enum { kNSApplicationModalSafeModeMask = 0x3 };
 
-void NoOp(void* info) {
-}
+void NoOp(void* info) {}
 
 constexpr CFTimeInterval kCFTimeIntervalMax =
     std::numeric_limits<CFTimeInterval>::max();
 
 #if !BUILDFLAG(IS_IOS)
-// Set to true if message_pump_mac::Create() is called before NSApp is
+// Set to true if message_pump_apple::Create() is called before NSApp is
 // initialized.  Only accessed from the main thread.
 bool g_not_using_cr_app = false;
 
@@ -171,8 +170,9 @@ void MessagePumpCFRunLoopBase::Run(Delegate* delegate) {
 }
 
 void MessagePumpCFRunLoopBase::Quit() {
-  if (DoQuit())
+  if (DoQuit()) {
     OnDidQuit();
+  }
 }
 
 void MessagePumpCFRunLoopBase::OnDidQuit() {
@@ -192,16 +192,18 @@ void MessagePumpCFRunLoopBase::ScheduleDelayedWork(
 
   if (g_enable_optimizations.load(std::memory_order_relaxed)) {
     // No-op if the delayed run time hasn't changed.
-    if (next_work_info.delayed_run_time == delayed_work_scheduled_at_)
+    if (next_work_info.delayed_run_time == delayed_work_scheduled_at_) {
       return;
+    }
   } else {
     // Preserve the old behavior of not adjusting the timer when
     // `delayed_run_time.is_max()`.
     //
     // TODO(crbug.com/1335524): Remove this once the
     // "MessagePumpMacDelayedWorkOptimizations" feature is shipped.
-    if (next_work_info.delayed_run_time.is_max())
+    if (next_work_info.delayed_run_time.is_max()) {
       return;
+    }
   }
 
   if (next_work_info.delayed_run_time.is_max()) {
@@ -355,8 +357,9 @@ void MessagePumpCFRunLoopBase::SetModeMask(int mode_mask) {
 
 int MessagePumpCFRunLoopBase::GetModeMask() const {
   int mask = 0;
-  for (size_t i = 0; i < kNumModes; ++i)
+  for (size_t i = 0; i < kNumModes; ++i) {
     mask |= enabled_modes_[i] ? (0x1 << i) : 0;
+  }
   return mask;
 }
 
@@ -421,8 +424,9 @@ bool MessagePumpCFRunLoopBase::RunWork() {
     delegateless_work_ = true;
     return false;
   }
-  if (!keep_running())
+  if (!keep_running()) {
     return false;
+  }
 
   // The NSApplication-based run loop only drains the autorelease pool at each
   // UI event (NSEvent).  The autorelease pool is not drained for each
@@ -457,8 +461,9 @@ void MessagePumpCFRunLoopBase::RunIdleWork() {
     // stack but foreign code is spinning the CFRunLoop.
     return;
   }
-  if (!keep_running())
+  if (!keep_running()) {
     return;
+  }
   // The NSApplication-based run loop only drains the autorelease pool at each
   // UI event (NSEvent).  The autorelease pool is not drained for each
   // CFRunLoopSource target that's run.  Use a local pool for any autoreleased
@@ -466,8 +471,9 @@ void MessagePumpCFRunLoopBase::RunIdleWork() {
   // released promptly even in the absence of UI events.
   OptionalAutoreleasePool autorelease_pool(this);
   bool did_work = delegate_->DoIdleWork();
-  if (did_work)
+  if (did_work) {
     CFRunLoopSourceSignal(work_source_);
+  }
 }
 
 // Called from the run loop.
@@ -632,8 +638,7 @@ void MessagePumpCFRunLoopBase::EnterExitObserver(CFRunLoopObserverRef observer,
 
 // Called by MessagePumpCFRunLoopBase::EnterExitRunLoop.  The default
 // implementation is a no-op.
-void MessagePumpCFRunLoopBase::EnterExitRunLoop(CFRunLoopActivity activity) {
-}
+void MessagePumpCFRunLoopBase::EnterExitRunLoop(CFRunLoopActivity activity) {}
 
 MessagePumpCFRunLoop::MessagePumpCFRunLoop()
     : MessagePumpCFRunLoopBase(kCommonModeMask), quit_pending_(false) {}
@@ -650,9 +655,8 @@ void MessagePumpCFRunLoop::DoRun(Delegate* delegate) {
   int result;
   do {
     OptionalAutoreleasePool autorelease_pool(this);
-    result = CFRunLoopRunInMode(kCFRunLoopDefaultMode,
-                                kCFTimeIntervalMax,
-                                false);
+    result =
+        CFRunLoopRunInMode(kCFRunLoopDefaultMode, kCFTimeIntervalMax, false);
   } while (result != kCFRunLoopRunStopped && result != kCFRunLoopRunFinished);
 }
 
@@ -676,8 +680,7 @@ bool MessagePumpCFRunLoop::DoQuit() {
 
 // Called by MessagePumpCFRunLoopBase::EnterExitObserver.
 void MessagePumpCFRunLoop::EnterExitRunLoop(CFRunLoopActivity activity) {
-  if (activity == kCFRunLoopExit &&
-      nesting_level() == run_nesting_level() &&
+  if (activity == kCFRunLoopExit && nesting_level() == run_nesting_level() &&
       quit_pending_) {
     // Quit was called while loops other than those managed by this object
     // were running further inside a run loop managed by this object.  Now
@@ -850,8 +853,9 @@ void MessagePumpNSApplication::EnterExitRunLoop(CFRunLoopActivity activity) {
   if (activity == kCFRunLoopEntry && quit_pending_ &&
       nesting_level() <= run_nesting_level() && NSApp.modalWindow == nil) {
     quit_pending_ = false;
-    if (DoQuit())
+    if (DoQuit()) {
       OnDidQuit();
+    }
   }
 }
 
@@ -891,7 +895,7 @@ MessagePumpCrApplication::~MessagePumpCrApplication() = default;
 // before it sends the event through the event handling mechanism, and
 // returning it to its previous value once the event has been sent.
 bool MessagePumpCrApplication::ShouldCreateAutoreleasePool() {
-  if (message_pump_mac::IsHandlingSendEvent()) {
+  if (message_pump_apple::IsHandlingSendEvent()) {
     return false;
   }
   return MessagePumpNSApplication::ShouldCreateAutoreleasePool();
@@ -899,15 +903,16 @@ bool MessagePumpCrApplication::ShouldCreateAutoreleasePool() {
 
 #endif  // BUILDFLAG(IS_IOS)
 
-namespace message_pump_mac {
+namespace message_pump_apple {
 
 std::unique_ptr<MessagePump> Create() {
   if (NSThread.isMainThread) {
 #if BUILDFLAG(IS_IOS)
     return std::make_unique<MessagePumpUIApplication>();
 #else
-    if ([NSApp conformsToProtocol:@protocol(CrAppProtocol)])
+    if ([NSApp conformsToProtocol:@protocol(CrAppProtocol)]) {
       return std::make_unique<MessagePumpCrApplication>();
+    }
 
     // The main-thread MessagePump implementations REQUIRE an NSApp.
     // Executables which have specific requirements for their
@@ -947,6 +952,6 @@ bool IsHandlingSendEvent() {
 
 #endif  // !BUILDFLAG(IS_IOS)
 
-}  // namespace message_pump_mac
+}  // namespace message_pump_apple
 
 }  // namespace base

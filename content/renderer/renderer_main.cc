@@ -61,7 +61,7 @@
 #include <unistd.h>
 
 #include "base/mac/scoped_nsautorelease_pool.h"
-#include "base/message_loop/message_pump_mac.h"
+#include "base/message_loop/message_pump_apple.h"
 #include "third_party/blink/public/web/web_view.h"
 #endif  // BUILDFLAG(IS_MAC)
 

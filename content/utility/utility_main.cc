@@ -71,7 +71,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "base/message_loop/message_pump_mac.h"
+#include "base/message_loop/message_pump_apple.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

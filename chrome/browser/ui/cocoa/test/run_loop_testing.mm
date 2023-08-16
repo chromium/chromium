@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/message_loop/message_pump_mac.h"
+#include "base/message_loop/message_pump_apple.h"
 
 // This class is scheduled with a delayed selector to quit the message pump.
 @interface CocoaQuitTask : NSObject {

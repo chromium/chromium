@@ -36,7 +36,7 @@ using MessagePumpForUI = MessagePumpForUI;
 using MessagePumpForUI = MessagePumpForUI;
 #elif BUILDFLAG(IS_APPLE)
 // MessagePumpForUI isn't bound to a specific impl on Mac. While each impl can
-// be represented by a plain MessagePump: message_pump_mac::Create() must be
+// be represented by a plain MessagePump: message_pump_apple::Create() must be
 // used to instantiate the right impl.
 using MessagePumpForUI = MessagePump;
 #elif BUILDFLAG(IS_NACL) || BUILDFLAG(IS_AIX)

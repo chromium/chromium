@@ -14,8 +14,8 @@
   DCHECK([app conformsToProtocol:@protocol(CrAppControlProtocol)])
       << "Existing NSApp (class " << [[app className] UTF8String]
       << ") does not conform to required protocol.";
-  DCHECK(base::message_pump_mac::UsingCrApp())
-      << "message_pump_mac::Create() was called before "
+  DCHECK(base::message_pump_apple::UsingCrApp())
+      << "message_pump_apple::Create() was called before "
       << "+[MockCrApp sharedApplication]";
   return app;
 }

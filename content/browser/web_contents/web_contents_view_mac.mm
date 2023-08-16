@@ -12,7 +12,7 @@
 
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_sending_event.h"
-#import "base/message_loop/message_pump_mac.h"
+#import "base/message_loop/message_pump_apple.h"
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
@@ -407,7 +407,7 @@ void WebContentsViewMac::SetOverscrollControllerEnabled(bool enabled) {
 // would fire when the event-tracking loop polls for events.  So we need to
 // bounce the message via Cocoa, instead.
 bool WebContentsViewMac::CloseTabAfterEventTrackingIfNeeded() {
-  if (!base::message_pump_mac::IsHandlingSendEvent()) {
+  if (!base::message_pump_apple::IsHandlingSendEvent()) {
     return false;
   }
 

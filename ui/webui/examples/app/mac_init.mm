@@ -7,7 +7,7 @@
 #include "base/observer_list.h"
 
 #import "base/mac/scoped_sending_event.h"
-#import "base/message_loop/message_pump_mac.h"
+#import "base/message_loop/message_pump_apple.h"
 #import "content/public/browser/native_event_processor_mac.h"
 #import "content/public/browser/native_event_processor_observer_mac.h"
 
