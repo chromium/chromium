@@ -1,6 +1,6 @@
 {
-  "version": "23.12",
-  "log_list_timestamp": "2023-08-08T12:56:33Z",
+  "version": "24.6",
+  "log_list_timestamp": "2023-08-16T12:55:08Z",
   "operators": [
     {
       "name": "Google",
@@ -178,8 +178,8 @@
           "url": "https://nessie2023.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2019-10-31T19:22:00Z"
+            "retired": {
+              "timestamp": "2023-08-25T00:00:00Z"
             }
           },
           "temporal_interval": {
