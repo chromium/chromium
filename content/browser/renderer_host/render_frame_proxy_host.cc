@@ -824,6 +824,12 @@ void RenderFrameProxyHost::AdvanceFocus(
                 target_rfh->GetSiteInstance()->group())
           : nullptr;
 
+  if (source_rfh && (source_rfh->HasTransientUserActivation() ||
+                     source_rfh->FocusSourceHasTransientUserActivation())) {
+    target_rfh->ActivateFocusSourceUserActivation();
+    source_rfh->DeactivateFocusSourceUserActivation();
+  }
+
   target_rfh->AdvanceFocus(focus_type, source_proxy);
   target_rfh->delegate()->OnAdvanceFocus(source_rfh);
 }

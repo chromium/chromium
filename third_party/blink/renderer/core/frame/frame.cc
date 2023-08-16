@@ -608,6 +608,10 @@ bool Frame::AllowFocusWithoutUserActivation() {
   if (!features::IsFencedFramesEnabled())
     return true;
 
+  if (IsDetached()) {
+    return true;
+  }
+
   if (!IsInFencedFrameTree())
     return true;
 

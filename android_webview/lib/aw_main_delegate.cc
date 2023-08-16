@@ -219,6 +219,7 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
       features.EnableIfNotSet(blink::features::kFencedFrames);
       features.EnableIfNotSet(blink::features::kFencedFramesAPIChanges);
       features.EnableIfNotSet(blink::features::kFencedFramesDefaultMode);
+      features.EnableIfNotSet(::features::kFencedFramesEnforceFocus);
       features.EnableIfNotSet(blink::features::kSharedStorageAPI);
       features.EnableIfNotSet(::features::kPrivacySandboxAdsAPIsOverride);
     }

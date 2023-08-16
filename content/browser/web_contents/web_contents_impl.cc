@@ -8214,6 +8214,17 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
                         "frame_tree_node", node, "source_site_instance_group",
                         source);
 
+  if (GetFocusedFrameTree()->GetFocusedFrame()) {
+    RenderFrameHostImpl* focused_rfh =
+        GetFocusedFrameTree()->GetFocusedFrame()->current_frame_host();
+    // This is only enforced for focus changes that cross a fenced frame
+    // boundary.
+    if (!node->current_frame_host()->VerifyFencedFrameFocusChange(
+            focused_rfh)) {
+      return;
+    }
+  }
+
   // Focus will not be in a consistent state until the focused frame tree is
   // also updated (if necessary).
   RenderFrameHostImpl::UpdateAXFocusDeferScope focus_defer_scope(

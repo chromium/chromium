@@ -1301,6 +1301,7 @@ void RenderWidgetHostImpl::LostFocus() {
   if (owner_delegate_) {
     owner_delegate_->RenderWidgetLostFocus();
   }
+  has_lost_focus_ = true;
 }
 
 void RenderWidgetHostImpl::Focus() {

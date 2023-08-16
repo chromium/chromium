@@ -634,16 +634,15 @@ void DOMWindow::focus(v8::Isolate* isolate) {
   if (!page)
     return;
 
-  if (!frame->AllowFocusWithoutUserActivation()) {
+  bool allow_focus_without_user_activation =
+      frame->AllowFocusWithoutUserActivation();
+
+  if (!allow_focus_without_user_activation &&
+      !frame->HasTransientUserActivation()) {
     // Disallow script focus that crosses a fenced frame boundary on a
     // frame that doesn't have transient user activation. Note: all calls to
     // DOMWindow::focus come from JavaScript calls in the web platform
-    if (!frame->HasTransientUserActivation())
-      return;
-    // Fenced frames should consume user activation when attempting to pull
-    // focus across a fenced boundary into itself.
-    if (frame->IsInFencedFrameTree())
-      LocalFrame::ConsumeTransientUserActivation(DynamicTo<LocalFrame>(frame));
+    return;
   }
 
   RecordWindowProxyAccessMetrics(
@@ -684,6 +683,14 @@ void DOMWindow::focus(v8::Isolate* isolate) {
 
   page->GetFocusController().FocusDocumentView(GetFrame(),
                                                true /* notifyEmbedder */);
+
+  // TODO(crbug.com/1458985) Remove the IsInFencedFrameTree condition once
+  // fenced frames are enabled by default.
+  if (!allow_focus_without_user_activation && frame->IsInFencedFrameTree()) {
+    // Fenced frames should consume user activation when attempting to pull
+    // focus across a fenced boundary into itself.
+    LocalFrame::ConsumeTransientUserActivation(DynamicTo<LocalFrame>(frame));
+  }
 }
 
 void DOMWindow::blur() {

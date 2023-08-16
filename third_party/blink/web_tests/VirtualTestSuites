@@ -1726,7 +1726,7 @@
     ],
     "args": [
       "--enable-privacy-sandbox-ads-apis",
-      "--enable-features=FencedFramesDefaultMode,PrivacySandboxAggregationService:trusted_server_url/https%3A%2F%2Fweb-platform.test%3A8444%2Fwpt_internal%2Fattribution-reporting%2Fresources%2FpublicKeys",
+      "--enable-features=FencedFramesDefaultMode,PrivacySandboxAggregationService:trusted_server_url/https%3A%2F%2Fweb-platform.test%3A8444%2Fwpt_internal%2Fattribution-reporting%2Fresources%2FpublicKeys,FencedFramesEnforceFocus",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jan 1, 2024"
@@ -1761,7 +1761,7 @@
     "exclusive_tests": [
       "external/wpt/shared-storage"
     ],
-    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIM118",
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIM118,FencedFramesEnforceFocus",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jan 1, 2024"
   },
@@ -1774,7 +1774,7 @@
     "exclusive_tests": [
       "external/wpt/shared-storage-selecturl-limit/"
     ],
-    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit",
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,FencedFramesEnforceFocus,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jan 1, 2024"
   },
@@ -1809,7 +1809,7 @@
       "external/wpt/fetch/private-network-access/fenced-frame.tentative.https.window.js",
       "external/wpt/fetch/private-network-access/fenced-frame-no-preflight-required.tentative.https.window.js"
     ],
-    "args": ["--enable-features=FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,NoncedPartitionedCookies,Fledge,InterestGroupStorage,AdInterestGroupAPI,AllowURNsInIframes,BiddingAndScoringDebugReportingAPI,ComputePressure",
+    "args": ["--enable-features=FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,NoncedPartitionedCookies,Fledge,InterestGroupStorage,AdInterestGroupAPI,AllowURNsInIframes,BiddingAndScoringDebugReportingAPI,ComputePressure,FencedFramesEnforceFocus",
              "--enable-blink-features=FencedFramesAPIChanges,FencedFramesDefaultMode",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 31, 2023"

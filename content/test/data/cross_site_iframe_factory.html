@@ -1,5 +1,5 @@
 <html>
-<!-- This page can create whatever iframe structure you want, across whatever
+<!-- This page can create whatever frame structure you want, across whatever
 sites you want. This is useful for testing site isolation.
 
 Example usage in a browsertest, explained:
@@ -8,16 +8,16 @@ Example usage in a browsertest, explained:
       GetURL("a.com", "/cross_site_iframe_factory.html?a(b(c,d))");
 
 When you navigate to the above URL, the outer document (on a.com) will create a
-single iframe:
+single frame:
 
   <iframe id="child-0" src="http://b.com:1234/cross_site_iframe_factory.html?b(c(),d())">
 
-Inside of which, then, are created the two leaf iframes:
+Inside of which, then, are created the two leaf frames:
 
   <iframe id="child-0" src="http://c.com:1234/cross_site_iframe_factory.html?c()">
   <iframe id="child-1" src="http://d.com:1234/cross_site_iframe_factory.html?d()">
 
-Add iframe options by enclosing them in '{' and '}' characters after the
+Add frame options by enclosing them in '{' and '}' characters after the
 hostname (multiple options can be separated with commas):
 
   cross_site_iframe_factory.html?a(b{allowfullscreen}(),c{sandbox-allow-scripts}(d))
@@ -27,7 +27,7 @@ Will create two iframes:
   <iframe id="child-0" src="http://b.com:1234/cross_site_iframe_factory.html?b()" allowfullscreen>
   <iframe id="child-1" src="http://c.com:1234/cross_site_iframe_factory.html?c{sandbox-allow-scripts}(d())" sandbox="allow-scripts">
 
-To specify the site for each iframe, you can use a simple identifier like "a"
+To specify the site for each frame, you can use a simple identifier like "a"
 or "b", and ".com" will be automatically appended. You can also specify a port
 number to use for each site by using a label like "a:12345". If no port number
 is given, the port will default to the port number of the top level frame.
@@ -41,6 +41,7 @@ These options are supported:
   sandbox-{flagname} - Adds {flagname} to the "sandbox" attribute
   with-shared-worker - Creates a shared worker in each frame.
   with-worker - Creates a dedicated worker in each frame.
+  fenced - Creates a <fencedframe> instead of an <iframe>.
 
 To make this page work, your browsertest needs a MockHostResolver, like:
 
@@ -59,6 +60,13 @@ body {
   text-align: center;
 }
 iframe {
+  border-radius: 7px;
+  border-style: solid;
+  vertical-align: top;
+  margin: 2px;
+  box-shadow: 2px 2px 2px #888888;
+}
+fencedframe {
   border-radius: 7px;
   border-style: solid;
   vertical-align: top;
@@ -140,9 +148,9 @@ function canonicalizeSiteAndPort(siteString, defaultPort) {
 }
 
 /**
- * Parses the list of iframe options and applies them to the provided element.
+ * Parses the list of frame options and applies them to the provided element.
  */
-function applyIFrameOptions(element, options) {
+function applyFrameOptions(element, options) {
   var sandbox = false;
   var sandboxArguments = [];
   var allowFeatures = [];
@@ -219,6 +227,19 @@ function renderOutsideParentView(attributes) {
  function shouldCreateSharedWorker(attributes) {
   for (var attribute of attributes) {
     if (attribute == "with-shared-worker") {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Determines whether or not the frame created should be a fenced frame by
+ * checking whether "fenced" is among the list of attributes.
+ */
+ function shouldCreateFencedFrame(attributes) {
+  for (var attribute of attributes) {
+    if (attribute == "fenced") {
       return true;
     }
   }
@@ -313,7 +334,7 @@ function main() {
   layout(frameTree);
 
   for (var i = 0; i < frameTree.children.length; i++) {
-    // Compute the URL for this iframe.
+    // Compute the URL for this frame.
     let url = frameTree.children[i].value;
     let siteAndPort = url;
     if (!isUrl(url)) {
@@ -326,26 +347,32 @@ function main() {
       url += '?' + encodeURIComponent(subtreeString);      // query
     }
 
-    // Construct the iframe.
-    var iframe = document.createElement('iframe');
-    iframe.src = url;
-    iframe.id = "child-" + i;
-    iframe.style.borderColor = borderColorForSite(siteAndPort);
-    iframe.width = frameTree.children[i].layoutX;
-    iframe.height = frameTree.children[i].layoutY;
+    // Construct the frame.
+    const frame_type = shouldCreateFencedFrame(frameTree.children[i].attributes) ?
+        'fencedframe' : 'iframe';
+    var frame = document.createElement(frame_type);
+    if (frame_type == 'iframe') {
+      frame.src = url;
+    } else {
+      frame.config = new FencedFrameConfig(url);
+    }
+    frame.id = "child-" + i;
+    frame.style.borderColor = borderColorForSite(siteAndPort);
+    frame.width = frameTree.children[i].layoutX;
+    frame.height = frameTree.children[i].layoutY;
 
-    // If needed, position the iframe.
+    // If needed, position the frame.
     if (renderOutsideParentView(frameTree.children[i].attributes)) {
-        iframe.style.position = "fixed";
-        iframe.style.top = "150%";
-        iframe.style.left = "150%";
+        frame.style.position = "fixed";
+        frame.style.top = "150%";
+        frame.style.left = "150%";
     }
 
     // Apply any additional attributes.
-    applyIFrameOptions(iframe, frameTree.children[i].attributes);
+    applyFrameOptions(frame, frameTree.children[i].attributes);
 
-    // Add the iframe to the document.
-    document.body.appendChild(iframe);
+    // Add the frame to the document.
+    document.body.appendChild(frame);
   }
 }
 

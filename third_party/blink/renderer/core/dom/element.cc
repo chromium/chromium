@@ -5190,6 +5190,7 @@ void Element::Focus(const FocusParams& params) {
   }
 
   FocusOptions* focus_options = nullptr;
+  bool should_consume_user_activation = false;
   if (params.gate_on_user_activation) {
     LocalFrame& frame = *GetDocument().GetFrame();
     if (!frame.AllowFocusWithoutUserActivation() &&
@@ -5204,14 +5205,9 @@ void Element::Focus(const FocusParams& params) {
       focus_options->setPreventScroll(true);
     }
 
-    // Fenced frames should consume user activation when attempting to pull
-    // focus across a fenced boundary into itself.
-    // TODO(crbug.com/848778) Right now the browser can't verify that the
-    // renderer properly consumed user activation. When user activation code is
-    // migrated to the browser, move this logic to the browser as well.
-    if (!frame.AllowFocusWithoutUserActivation() &&
-        frame.IsInFencedFrameTree()) {
-      LocalFrame::ConsumeTransientUserActivation(&frame);
+    // Wait to consume user activation until after the focus takes place.
+    if (!frame.AllowFocusWithoutUserActivation()) {
+      should_consume_user_activation = true;
     }
   }
 
@@ -5302,6 +5298,15 @@ void Element::Focus(const FocusParams& params) {
     } else {
       chrome_client.ClearKeyboardTriggeredTooltip(*GetDocument().GetFrame());
     }
+  }
+
+  if (should_consume_user_activation) {
+    // Fenced frames should consume user activation when attempting to pull
+    // focus across a fenced boundary into itself.
+    // TODO(crbug.com/848778) Right now the browser can't verify that the
+    // renderer properly consumed user activation. When user activation code is
+    // migrated to the browser, move this logic to the browser as well.
+    LocalFrame::ConsumeTransientUserActivation(GetDocument().GetFrame());
   }
 }
 

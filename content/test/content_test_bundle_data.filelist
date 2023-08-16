@@ -5401,6 +5401,7 @@ data/cross_site_document_blocking/request.html
 data/cross_site_document_blocking/request_target.html
 data/cross_site_document_blocking/service_worker.js
 data/cross_site_iframe_factory.html
+data/cross_site_iframe_factory.html.mock-http-headers
 data/cross_site_scroll_into_view_factory.html
 data/cross_site_scroll_into_view_factory.html.mock-http-headers
 data/csp_sandboxed_frame.html
@@ -5514,6 +5515,8 @@ data/fenced_frames/basic_fenced_frame_src.html
 data/fenced_frames/basic_fenced_frame_src_navigate_on_click.html
 data/fenced_frames/basic_iframe.html
 data/fenced_frames/basic_iframe.html.mock-http-headers
+data/fenced_frames/button.html
+data/fenced_frames/button.html.mock-http-headers
 data/fenced_frames/empty.html
 data/fenced_frames/empty.html.mock-http-headers
 data/fenced_frames/empty404.html

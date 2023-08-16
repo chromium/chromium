@@ -1950,6 +1950,8 @@ source_set("browser") {
     "renderer_host/text_input_manager.h",
     "renderer_host/transient_allow_popup.cc",
     "renderer_host/transient_allow_popup.h",
+    "renderer_host/transient_focus_source_user_activation.cc",
+    "renderer_host/transient_focus_source_user_activation.h",
     "renderer_host/ui_events_helper.cc",
     "renderer_host/ui_events_helper.h",
     "renderer_host/view_transition_commit_deferring_condition.cc",

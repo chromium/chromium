@@ -428,6 +428,11 @@ BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,
              "FedCmWithoutWellKnownEnforcement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables browser-side focus verification when crossing fenced boundaries.
+BASE_FEATURE(kFencedFramesEnforceFocus,
+             "FencedFramesEnforceFocus",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the MDocs API in the IdentityCredential.
 BASE_FEATURE(kWebIdentityMDocs,
              "WebIdentityMDocs",

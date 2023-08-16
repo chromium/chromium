@@ -80,6 +80,12 @@ class FencedFrameTestHelper {
   // This method will return nullptr if no fenced frames were created.
   static RenderFrameHost* GetMostRecentlyAddedFencedFrame(RenderFrameHost* rfh);
 
+  // Returns a vector of all child fenced frames given a parent `rfh`. This can
+  // be used by embedders who must create multiple fenced frames from script but
+  // need to get their inner root RenderFrameHosts.
+  static std::vector<RenderFrameHost*> GetChildFencedFrameHosts(
+      RenderFrameHost* rfh);
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
