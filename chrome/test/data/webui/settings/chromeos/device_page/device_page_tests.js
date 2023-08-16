@@ -2504,10 +2504,14 @@ suite('SettingsDevicePage', function() {
     await fakeSystemDisplay.getLayoutCalled.promise;
     assertEquals(1, displayPage.displays.length);
 
+    const displayNightLight =
+        displayPage.shadowRoot.querySelector('settings-display-night-light');
+    assert(displayNightLight);
+
     const temperature =
-        displayPage.shadowRoot.querySelector('#nightLightTemperatureDiv');
-    const schedule =
-        displayPage.shadowRoot.querySelector('#nightLightScheduleTypeDropDown');
+        displayNightLight.shadowRoot.getElementById('nightLightTemperatureDiv');
+    const schedule = displayNightLight.shadowRoot.getElementById(
+        'nightLightScheduleTypeDropDown');
 
     // Night Light is off, so temperature is hidden. Schedule is always shown.
     assertTrue(temperature.hidden);
