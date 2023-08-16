@@ -4999,3 +4999,10 @@ source_set("partition_alloc_test_support") {
     configs += [ "//build/config/compiler:optimize_speed" ]
   }
 }
+
+# This group makes visible those targets in subdirectories that are not
+# explicitly depended on.
+group("gn_all") {
+  testonly = true
+  deps = [ "//base/tracing:perfetto_diff_tests" ]
+}
