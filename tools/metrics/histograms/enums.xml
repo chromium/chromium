@@ -43520,6 +43520,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4624" label="V8RTCEncodedVideoFrame_SetTimestamp_Method"/>
   <int value="4625" label="V8RTCEncodedAudioFrame_SetTimestamp_Method"/>
   <int value="4626" label="CSSAtRuleViewTransitions"/>
+  <int value="4627" label="SharedDictionaryUsedWithSharedBrotli"/>
+  <int value="4628" label="SharedDictionaryUsedWithSharedZstd"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -2987,6 +2987,13 @@ void DocumentLoader::RecordUseCountersForCommit() {
     CountUse(frame_->IsOutermostMainFrame()
                  ? WebFeature::kSharedDictionaryUsedForMainFrameNavigation
                  : WebFeature::kSharedDictionaryUsedForSubFrameNavigation);
+    AtomicString content_encoding =
+        response_.HttpHeaderField(http_names::kContentEncoding);
+    if (content_encoding.LowerASCII() == "sbr") {
+      CountUse(WebFeature::kSharedDictionaryUsedWithSharedBrotli);
+    } else if (content_encoding.LowerASCII() == "zstd-d") {
+      CountUse(WebFeature::kSharedDictionaryUsedWithSharedZstd);
+    }
   }
   if (response_.IsSignedExchangeInnerResponse()) {
     CountUse(WebFeature::kSignedExchangeInnerResponse);

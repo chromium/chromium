@@ -1036,6 +1036,15 @@ void ResourceLoader::DidReceiveResponseInternal(
     fetcher_->GetUseCounter().CountUse(WebFeature::kSharedDictionaryUsed);
     fetcher_->GetUseCounter().CountUse(
         WebFeature::kSharedDictionaryUsedForSubresource);
+    AtomicString content_encoding =
+        response.HttpHeaderField(http_names::kContentEncoding);
+    if (content_encoding.LowerASCII() == "sbr") {
+      fetcher_->GetUseCounter().CountUse(
+          WebFeature::kSharedDictionaryUsedWithSharedBrotli);
+    } else if (content_encoding.LowerASCII() == "zstd-d") {
+      fetcher_->GetUseCounter().CountUse(
+          WebFeature::kSharedDictionaryUsedWithSharedZstd);
+    }
   }
 
   if (response.HasAuthorizationCoveredByWildcardOnPreflight()) {
