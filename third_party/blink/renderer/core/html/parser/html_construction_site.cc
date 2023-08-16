@@ -892,7 +892,6 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
           DeclarativeShadowRootType::kStreamingOpen ||
       declarative_shadow_root_type ==
           DeclarativeShadowRootType::kStreamingClosed) {
-    DCHECK(RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled());
     // Attach the shadow root now
     auto focus_delegation = template_stack_item->GetAttributeItem(
                                 html_names::kShadowrootdelegatesfocusAttr)

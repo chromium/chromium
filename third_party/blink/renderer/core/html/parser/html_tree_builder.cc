@@ -1010,11 +1010,8 @@ DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
   // crbug.com/1396384 tracks the eventual removal of the old behavior.
   Attribute* type_attribute_streaming =
       token->GetAttributeItem(html_names::kShadowrootmodeAttr);
-  bool streaming =
-      type_attribute_streaming &&
-      RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled();
   String shadow_mode;
-  if (streaming) {
+  if (type_attribute_streaming) {
     shadow_mode = type_attribute_streaming->Value();
   } else {
     Attribute* type_attribute_non_streaming =
@@ -1038,14 +1035,17 @@ DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
 
   if (include_shadow_roots) {
     if (EqualIgnoringASCIICase(shadow_mode, "open")) {
-      return streaming ? DeclarativeShadowRootType::kStreamingOpen
-                       : DeclarativeShadowRootType::kOpen;
+      return type_attribute_streaming
+                 ? DeclarativeShadowRootType::kStreamingOpen
+                 : DeclarativeShadowRootType::kOpen;
     } else if (EqualIgnoringASCIICase(shadow_mode, "closed")) {
-      return streaming ? DeclarativeShadowRootType::kStreamingClosed
-                       : DeclarativeShadowRootType::kClosed;
+      return type_attribute_streaming
+                 ? DeclarativeShadowRootType::kStreamingClosed
+                 : DeclarativeShadowRootType::kClosed;
     }
   }
-  String attribute_in_use = streaming ? "shadowrootmode" : "shadowroot";
+  String attribute_in_use =
+      type_attribute_streaming ? "shadowrootmode" : "shadowroot";
   if (!include_shadow_roots) {
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,

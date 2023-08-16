@@ -3493,10 +3493,6 @@
       status: "experimental",
     },
     {
-      name: "StreamingDeclarativeShadowDOM",
-      status: "stable",
-    },
-    {
       name: "StrictMimeTypesForWorkers",
       status: "experimental",
       base_feature: "none",

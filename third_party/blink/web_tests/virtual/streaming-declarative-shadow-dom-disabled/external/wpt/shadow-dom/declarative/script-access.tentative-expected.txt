@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_equals: No template ever for streaming declarative Shadow DOM expected null but got Element node <template shadowrootmode="open">
-  <slot></slot>
-  <!-- E...
-Harness: the test ran to completion.
-

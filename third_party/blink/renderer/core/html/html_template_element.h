@@ -71,7 +71,6 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
   // be used by HTMLConstructionSite.
   DocumentFragment* TemplateContentForHTMLConstructionSite() const {
     if (declarative_shadow_root_) {
-      DCHECK(RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled());
       return declarative_shadow_root_.Get();
     }
     return ContentInternal();
@@ -93,7 +92,6 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
   }
 
   void SetDeclarativeShadowRoot(ShadowRoot& shadow) {
-    DCHECK(RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled());
     DCHECK(declarative_shadow_root_type_ ==
                DeclarativeShadowRootType::kStreamingOpen ||
            declarative_shadow_root_type_ ==
@@ -129,7 +127,6 @@ ALWAYS_INLINE bool HTMLTemplateElement::IsNonStreamingDeclarativeShadowRoot()
       return true;
     case DeclarativeShadowRootType::kStreamingOpen:
     case DeclarativeShadowRootType::kStreamingClosed:
-      DCHECK(RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled());
       return false;
   }
 }

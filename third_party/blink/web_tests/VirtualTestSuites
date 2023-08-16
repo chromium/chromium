@@ -1150,24 +1150,14 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "streaming-declarative-shadow-dom-disabled",
-    "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/shadow-dom/declarative"
-    ],
-    "args": ["--disable-features=StreamingDeclarativeShadowDOM",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Feb 1, 2024"
-  },
-  {
     "prefix": "non-streaming-declarative-shadow-dom-disabled",
     "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/shadow-dom/declarative"
     ],
-    "args": ["--disable-features=DeprecatedNonStreamingDeclarativeShadowDOM"],
+    "args": ["--disable-features=DeprecatedNonStreamingDeclarativeShadowDOM",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Feb 1, 2024"
   },
   {
@@ -1204,7 +1194,7 @@
       "html/details_summary/details-inline.html"
     ],
     "args": ["--disable-blink-features=DetailsStyling",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],  
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Apr 1, 2024"
   },
   {
@@ -1863,7 +1853,7 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
-  
+
   "The following tests never pass in the default Blink test runner due to",
   "forced frame updates, but still pass in the full browser.",
   {

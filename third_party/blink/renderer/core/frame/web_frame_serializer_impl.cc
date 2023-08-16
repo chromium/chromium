@@ -374,7 +374,6 @@ void WebFrameSerializerImpl::OpenTagToString(Element* element,
   // Complete the open tag for element when it has child/children.
   if (element->HasChildren() || param->have_added_contents_before_end ||
       (element->AuthorShadowRoot() &&
-       RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled() &&
        RuntimeEnabledFeatures::SaveAsWithDeclarativeShadowDOMEnabled())) {
     result.Append('>');
   }
@@ -396,7 +395,6 @@ void WebFrameSerializerImpl::EndTagToString(Element* element,
   // Write end tag when element has child/children.
   if (element->HasChildren() || param->have_added_contents_before_end ||
       (element->AuthorShadowRoot() &&
-       RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled() &&
        RuntimeEnabledFeatures::SaveAsWithDeclarativeShadowDOMEnabled())) {
     result.Append("</");
     result.Append(element->nodeName().DeprecatedLower());
@@ -427,7 +425,6 @@ void WebFrameSerializerImpl::EndTagToString(Element* element,
 void WebFrameSerializerImpl::ShadowRootTagToString(ShadowRoot* shadow_root,
                                                    SerializeDomParam* param) {
   CHECK(!shadow_root->IsUserAgent());
-  DCHECK(RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled());
 
   StringBuilder result;
   result.Append("<template shadowrootmode=");
@@ -453,7 +450,6 @@ void WebFrameSerializerImpl::BuildContentForNode(Node* node,
       // Process the ShadowRoot into a <template> if present.
       auto* shadow_root = element->AuthorShadowRoot();
       if (shadow_root &&
-          RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled() &&
           RuntimeEnabledFeatures::SaveAsWithDeclarativeShadowDOMEnabled()) {
         ShadowRootTagToString(shadow_root, param);
         for (Node* child = shadow_root->firstChild(); child;
