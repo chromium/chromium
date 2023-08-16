@@ -198,9 +198,9 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
       mapped_size + static_cast<size_t>(static_cast<uint8_t*>(start_address) -
                                         aligned_start_address);
 
-#if BUILDFLAG(IS_MAC)
-  // On macOS, use mach_vm_region instead of mincore for performance
-  // (crbug.com/742042).
+#if BUILDFLAG(IS_APPLE)
+  // On macOS and iOS, use mach_vm_region|vm_region_64 instead of mincore for
+  // performance (crbug.com/742042).
   mach_vm_size_t dummy_size = 0;
   mach_vm_address_t address =
       reinterpret_cast<mach_vm_address_t>(aligned_start_address);
@@ -216,7 +216,7 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
   size_t resident_pages =
       info.private_pages_resident + info.shared_pages_resident;
 
-  // On macOS, measurements for private memory footprint overcount by
+  // On macOS and iOS, measurements for private memory footprint overcount by
   // faulted pages in anonymous shared memory. To discount for this, we touch
   // all the resident pages in anonymous shared memory here, thus making them
   // faulted as well. This relies on two assumptions:

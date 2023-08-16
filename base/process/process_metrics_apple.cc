@@ -254,7 +254,7 @@ MachVMRegionResult GetTopInfo(mach_port_t task,
                      mac::ScopedMachSendRight::Receiver(object_name).get());
 #else
       vm_region_64(task, reinterpret_cast<vm_address_t*>(address),
-                   reinterpret_cast<vm_size_t*>(size), VM_REGION_BASIC_INFO_64,
+                   reinterpret_cast<vm_size_t*>(size), VM_REGION_TOP_INFO,
                    reinterpret_cast<vm_region_info_t>(info), &info_count,
                    mac::ScopedMachSendRight::Receiver(object_name).get());
 #endif

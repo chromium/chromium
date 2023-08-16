@@ -628,9 +628,7 @@ BASE_EXPORT MachVMRegionResult GetBasicInfo(mach_port_t task,
                                             mach_vm_size_t* size,
                                             mach_vm_address_t* address,
                                             vm_region_basic_info_64* info);
-#endif  // BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(IS_MAC)
 // Returns info on the first memory region at or after |address|, including
 // resident memory and share mode. On Success, |size| reflects the size of the
 // memory region.
@@ -641,7 +639,7 @@ BASE_EXPORT MachVMRegionResult GetTopInfo(mach_port_t task,
                                           mach_vm_size_t* size,
                                           mach_vm_address_t* address,
                                           vm_region_top_info_data_t* info);
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace base
 
