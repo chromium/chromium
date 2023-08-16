@@ -250,6 +250,7 @@ public class SyncConsentFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC + ":group_id/4"})
+    @DisabledTest(message = "crbug.com/1473253")
     public void testTangibleSyncConsentFragmentVariantDDefaultAccount() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
