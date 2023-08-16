@@ -290,9 +290,6 @@ suite('<settings-cups-printers-entry>', () => {
   // Verify the correct button label is shown for discovered printers when the
   // "print-preview-discovered-printers" flag is disabled.
   test('discoveredPrintersButtonLabel_flagOff', () => {
-    loadTimeData.overrideValues({
-      isPrintPreviewDiscoveredPrintersEnabled: false,
-    });
     printerEntryTestElement.printerEntry =
         createPrinterEntry(PrinterType.DISCOVERED);
     flush();
