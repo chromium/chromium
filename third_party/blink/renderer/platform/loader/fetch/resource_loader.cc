@@ -1032,12 +1032,15 @@ void ResourceLoader::DidReceiveResponseInternal(
                             response_arrival - request_start);
   }
 
+  AtomicString content_encoding =
+      response.HttpHeaderField(http_names::kContentEncoding);
+  if (content_encoding.LowerASCII() == "zstd") {
+    fetcher_->GetUseCounter().CountUse(WebFeature::kZstdContentEncoding);
+  }
   if (response.DidUseSharedDictionary()) {
     fetcher_->GetUseCounter().CountUse(WebFeature::kSharedDictionaryUsed);
     fetcher_->GetUseCounter().CountUse(
         WebFeature::kSharedDictionaryUsedForSubresource);
-    AtomicString content_encoding =
-        response.HttpHeaderField(http_names::kContentEncoding);
     if (content_encoding.LowerASCII() == "sbr") {
       fetcher_->GetUseCounter().CountUse(
           WebFeature::kSharedDictionaryUsedWithSharedBrotli);

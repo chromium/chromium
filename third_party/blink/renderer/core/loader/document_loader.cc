@@ -2981,14 +2981,17 @@ void DocumentLoader::RecordUseCountersForCommit() {
           mojom::blink::DocumentPolicyFeature::kForceLoadAtTop)) {
     CountUse(WebFeature::kForceLoadAtTop);
   }
+  AtomicString content_encoding =
+      response_.HttpHeaderField(http_names::kContentEncoding);
+  if (content_encoding.LowerASCII() == "zstd") {
+    CountUse(WebFeature::kZstdContentEncoding);
+  }
   if (response_.DidUseSharedDictionary()) {
     CountUse(WebFeature::kSharedDictionaryUsed);
     CountUse(WebFeature::kSharedDictionaryUsedForNavigation);
     CountUse(frame_->IsOutermostMainFrame()
                  ? WebFeature::kSharedDictionaryUsedForMainFrameNavigation
                  : WebFeature::kSharedDictionaryUsedForSubFrameNavigation);
-    AtomicString content_encoding =
-        response_.HttpHeaderField(http_names::kContentEncoding);
     if (content_encoding.LowerASCII() == "sbr") {
       CountUse(WebFeature::kSharedDictionaryUsedWithSharedBrotli);
     } else if (content_encoding.LowerASCII() == "zstd-d") {

@@ -43522,6 +43522,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4626" label="CSSAtRuleViewTransitions"/>
   <int value="4627" label="SharedDictionaryUsedWithSharedBrotli"/>
   <int value="4628" label="SharedDictionaryUsedWithSharedZstd"/>
+  <int value="4629" label="ZstdContentEncoding"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
