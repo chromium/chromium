@@ -86,10 +86,12 @@ public class CapturedSitesInstructions {
         String url;
         String selector;
         String expectedValue;
+        boolean force;
         switch (type) {
             case "loadPage":
                 url = action.getString("url");
-                return Action.createLoadPageAction(url);
+                force = action.has("force") && action.getBoolean("force");
+                return Action.createLoadPageAction(url, force);
             case "click":
                 selector = action.getString("selector");
                 return Action.createClickAction(selector);
@@ -107,5 +109,9 @@ public class CapturedSitesInstructions {
 
     public Action getNextAction() {
         return mActions.poll();
+    }
+
+    public boolean isEmpty() {
+        return mActions.isEmpty();
     }
 }

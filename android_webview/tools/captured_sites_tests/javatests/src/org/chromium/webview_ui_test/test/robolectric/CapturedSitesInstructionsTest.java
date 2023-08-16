@@ -20,13 +20,14 @@ import org.chromium.webview_ui_test.test.util.Action;
 import org.chromium.webview_ui_test.test.util.CapturedSitesInstructions;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /** Unit testing for CapturedSitesInstructions. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class CapturedSitesInstructionsTest {
     @Test
     @SmallTest
-    public void missing_fails() {
+    public void verifyBuild_failsIfNoTestFile() {
         String mUrl = "missing.test";
         assertThrows(IOException.class, () -> new CapturedSitesInstructions(mUrl));
     }
@@ -36,14 +37,14 @@ public final class CapturedSitesInstructionsTest {
 
     @Test
     @SmallTest
-    public void empty_json_fails() {
+    public void verifyBuild_failsIfTestEmpty() {
         JSONObject test = new JSONObject();
         assertThrows(JSONException.class, () -> new CapturedSitesInstructions(test));
     }
 
     @Test
     @SmallTest
-    public void test_no_actions_other_than_load() throws Throwable {
+    public void verifyBuild_succeedsWithOnlyStartingUrl() throws Throwable {
         JSONObject test = new JSONObject();
         test.put("actions", new JSONArray());
         test.put("startingURL", "google.com");
@@ -55,10 +56,55 @@ public final class CapturedSitesInstructionsTest {
         action = actions.getNextAction();
         assertNull(actions.getNextAction());
     }
+    // Creates CapturedSistes insturctions for LoadPage tests.
+    private CapturedSitesInstructions loadPageForceHelper(Optional<Boolean> force)
+            throws Throwable {
+        JSONObject test = new JSONObject();
+        JSONArray jsonActions = new JSONArray();
+        test.put("startingURL", "google.com");
+        JSONObject obj = new JSONObject();
+        obj.put("type", "loadPage");
+        obj.put("url", "myUrl");
+        if (force.isPresent()) {
+            obj.put("force", force.get().toString());
+        }
+        jsonActions.put(obj);
+        test.put("actions", jsonActions);
+        return new CapturedSitesInstructions(test);
+    }
 
     @Test
     @SmallTest
-    public void test_actions_full() throws Throwable {
+    public void verifyBuild_succeedsWithLoadPageForce() throws Throwable {
+        CapturedSitesInstructions actions = loadPageForceHelper(Optional.of(true));
+        actions.getNextAction(); // Skip startingURL
+        Action action = actions.getNextAction();
+        assertTrue(action.toString().contains("myUrl"));
+        assertTrue(action.toString().contains("Forcing load of"));
+    }
+    @Test
+    @SmallTest
+    public void verifyBuild_succeedsWithLoadPageNoForce() throws Throwable {
+        CapturedSitesInstructions actions = loadPageForceHelper(Optional.of(false));
+        actions.getNextAction(); // Skip startingURL
+        Action action = actions.getNextAction();
+        assertTrue(action.toString().contains("myUrl"));
+        assertTrue(action.toString().contains("Entering"));
+    }
+
+    @Test
+    @SmallTest
+    public void verifyBuild_succeedsWithLoadPageNullForce() throws Throwable {
+        CapturedSitesInstructions actions = loadPageForceHelper(Optional.empty());
+        actions.getNextAction(); // Skip startingURL
+        Action action = actions.getNextAction();
+        assertTrue(action.toString().contains("myUrl"));
+        assertTrue(action.toString().contains("Entering"));
+    }
+
+    @Test
+    @SmallTest
+    public void verifyBuild_completeTestSucceeds() throws Throwable {
         JSONObject test = new JSONObject();
         JSONArray jsonActions = new JSONArray();
         JSONObject obj;

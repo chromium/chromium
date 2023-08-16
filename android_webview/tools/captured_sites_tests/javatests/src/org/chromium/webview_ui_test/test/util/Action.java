@@ -7,15 +7,19 @@ package org.chromium.webview_ui_test.test.util;
  * Creates an action which executes on webview.
  */
 public abstract class Action {
-    public boolean execute() throws Exception {
-        throw new UnsupportedOperationException("PerformActions not implemented yet");
-    }
+    /// Executes the action on the WebView.
+    public abstract boolean execute(PerformActions performActions) throws Throwable;
 
     // Creates an action that loads the desired url in the webview upon execution.
     private static class StartingPageAction extends Action {
         private String mUrl;
         public StartingPageAction(String url) {
             mUrl = url;
+        }
+        @Override
+        public boolean execute(PerformActions performActions) throws Throwable {
+            performActions.loadUrl(mUrl);
+            return true;
         }
         @Override
         public String toString() {
@@ -25,12 +29,21 @@ public abstract class Action {
     // Creates an action that loads the desired url in the webview upon execution.
     private static class LoadPageAction extends Action {
         private String mUrl;
-        public LoadPageAction(String url) {
+        private boolean mForce;
+        public LoadPageAction(String url, boolean force) {
             mUrl = url;
+            mForce = force;
+        }
+        @Override
+        public boolean execute(PerformActions performActions) throws Throwable {
+            if (mForce) {
+                performActions.loadUrl(mUrl);
+            }
+            return true;
         }
         @Override
         public String toString() {
-            return "Entering new page with url " + mUrl;
+            return (mForce ? "Forcing load of" : "Entering") + " new page with url " + mUrl;
         }
     }
     // Creates an action that clicks the given xPath upon execution.
@@ -38,6 +51,10 @@ public abstract class Action {
         private String mXPath;
         public ClickAction(String xPath) {
             mXPath = xPath;
+        }
+        @Override
+        public boolean execute(PerformActions performActions) throws Throwable {
+            return performActions.selectElement(mXPath);
         }
         @Override
         public String toString() {
@@ -49,6 +66,10 @@ public abstract class Action {
         private String mXPath;
         public AutofillAction(String xPath) {
             mXPath = xPath;
+        }
+        @Override
+        public boolean execute(PerformActions performActions) throws Throwable {
+            return performActions.autofill(mXPath);
         }
         @Override
         public String toString() {
@@ -64,6 +85,10 @@ public abstract class Action {
             mExpectedValue = expectedValue;
         }
         @Override
+        public boolean execute(PerformActions performActions) throws Throwable {
+            return performActions.verifyAutofill(mXPath, mExpectedValue);
+        }
+        @Override
         public String toString() {
             return "Verifying element at xPath " + mXPath + " has value " + mExpectedValue;
         }
@@ -73,8 +98,8 @@ public abstract class Action {
         return new StartingPageAction(url);
     }
 
-    public static Action createLoadPageAction(String url) {
-        return new LoadPageAction(url);
+    public static Action createLoadPageAction(String url, boolean force) {
+        return new LoadPageAction(url, force);
     }
 
     public static Action createClickAction(String xPath) {

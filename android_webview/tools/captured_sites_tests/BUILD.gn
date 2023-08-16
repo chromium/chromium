@@ -24,10 +24,15 @@ android_apk("webview_captured_sites_app_apk") {
 }
 
 robolectric_binary("captured_sites_junit_tests") {
+  android_manifest = "java/AndroidManifest.xml"
   sources = [
     "javatests/src/org/chromium/webview_ui_test/test/robolectric/CapturedSitesInstructionsTest.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/Action.java",
     "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesInstructions.java",
+    "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesSyncWrapper.java",
+    "javatests/src/org/chromium/webview_ui_test/test/util/CapturedSitesTestRule.java",
+    "javatests/src/org/chromium/webview_ui_test/test/util/JavaScriptExecutionViewAction.java",
+    "javatests/src/org/chromium/webview_ui_test/test/util/PerformActions.java",
   ]
   deps = [
     ":webview_captured_sites_app_java",
@@ -92,6 +97,7 @@ instrumentation_test_apk("webview_captured_sites_test_apk") {
     "//third_party/junit",
     "//ui/android:ui_java_test_support",
   ]
+  data = [ "test/data/" ]
 
   # Tell GN to ignore 'incremental_install' even if the user has it in their GN
   # args because it's incompatible with 'use_webview_provider'.

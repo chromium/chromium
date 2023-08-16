@@ -1,0 +1,36 @@
+
+{
+  "startingURL": "https://rsolomakhin.github.io/autofill/",
+  "actions": [
+    {
+      "url": "https://rsolomakhin.github.io/autofill/",
+      "context": {
+        "isIframe": false
+      },
+      "type": "loadPage",
+      "action_index": 1
+    },
+    {
+      "selector": "//*[@id=\"credit_card_name\"]",
+      "context": {
+        "isIframe": false,
+        "path": []
+      },
+      "type": "autofill",
+      "visibility": 7,
+      "action_index": 13
+    },
+    {
+      "context": {
+        "isIframe": false,
+        "path": []
+      },
+      "expectedValue": "default",
+      "selector": "//*[@id=\"credit_card_name\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 14
+    }
+  ]
+}
