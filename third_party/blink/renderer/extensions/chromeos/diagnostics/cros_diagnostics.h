@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_CHROMEOS_DIAGNOSTICS_CROS_DIAGNOSTICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_CHROMEOS_DIAGNOSTICS_CROS_DIAGNOSTICS_H_
 
+#include "third_party/blink/public/mojom/chromeos/diagnostics/cros_diagnostics.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -24,6 +26,13 @@ class CrosDiagnostics : public ScriptWrappable,
   explicit CrosDiagnostics(ExecutionContext&);
 
   void Trace(Visitor*) const override;
+
+ private:
+  // Diagnostics API implementation. May return null in error cases, e.g. when
+  // the ExecutionContext has been deleted.
+  mojom::blink::CrosDiagnostics* GetCrosDiagnosticsOrNull();
+
+  HeapMojoRemote<mojom::blink::CrosDiagnostics> cros_diagnostics_;
 };
 
 }  // namespace blink

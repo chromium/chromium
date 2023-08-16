@@ -364,7 +364,10 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/apps/digital_goods/digital_goods_factory_stub.h"
 #include "chrome/browser/apps/digital_goods/digital_goods_lacros.h"
+#include "chrome/browser/lacros/cros_apps/api/diagnostics/cros_diagnostics_impl.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "third_party/blink/public/mojom/chromeos/diagnostics/cros_diagnostics.mojom.h"
 #else
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"  // nogncheck
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"  // nogncheck
@@ -918,6 +921,11 @@ void PopulateChromeFrameBinders(
   } else {
     map->Add<payments::mojom::DigitalGoodsFactory>(
         base::BindRepeating(&apps::DigitalGoodsFactoryStub::Bind));
+  }
+
+  if (chromeos::features::IsCrosDiagnosticsApiEnabled()) {
+    map->Add<blink::mojom::CrosDiagnostics>(
+        base::BindRepeating(&CrosDiagnosticsImpl::Create));
   }
 #endif
 

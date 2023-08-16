@@ -5602,6 +5602,7 @@ static_library("browser") {
       "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/chromeos/launcher_search:search_util",
       "//chrome/browser/chromeos/office_web_app",
+      "//chrome/browser/lacros/cros_apps/api/diagnostics",
       "//chrome/common/chromeos/extensions",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/cpp:crosapi_constants",

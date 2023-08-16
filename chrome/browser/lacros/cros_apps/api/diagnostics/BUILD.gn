@@ -1,0 +1,18 @@
+# Copyright 2023 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_lacros)
+
+source_set("diagnostics") {
+  sources = [
+    "cros_diagnostics_impl.cc",
+    "cros_diagnostics_impl.h",
+  ]
+  deps = [
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+}

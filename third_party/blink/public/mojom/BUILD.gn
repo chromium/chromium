@@ -260,6 +260,7 @@ mojom("mojom_platform") {
 
   if (use_blink_extensions_chromeos) {
     sources += [
+      "chromeos/diagnostics/cros_diagnostics.mojom",
       "chromeos/system_extensions/hid/cros_hid.mojom",
       "chromeos/system_extensions/managed_device_health_services/telemetry/cros_telemetry.mojom",
       "chromeos/system_extensions/managed_device_health_services/telemetry/nullable_primitives.mojom",

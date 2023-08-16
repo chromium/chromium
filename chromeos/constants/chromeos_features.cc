@@ -34,6 +34,11 @@ BASE_FEATURE(kCloudGamingDevice,
 // Enables ChromeOS Apps APIs.
 BASE_FEATURE(kCrosAppsApis, "CrosAppsApis", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the ChromeOS Diagnostics API.
+BASE_FEATURE(kCrosDiagnosticsApi,
+             "CrosDiagnosticsApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the use of cros-component UI elements. Contact:
 // cros-jellybean-team@google.com.
 BASE_FEATURE(kCrosComponents,
@@ -126,6 +131,11 @@ bool IsCloudGamingDeviceEnabled() {
 
 bool IsCrosAppsApisEnabled() {
   return base::FeatureList::IsEnabled(kCrosAppsApis);
+}
+
+bool IsCrosDiagnosticsApiEnabled() {
+  return base::FeatureList::IsEnabled(kCrosDiagnosticsApi) &&
+         IsCrosAppsApisEnabled();
 }
 
 bool IsCrosComponentsEnabled() {
