@@ -989,6 +989,9 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
   ASSERT_EQ(home_profile.GetRawInfo(ADDRESS_HOME_STREET_NAME), u"Street Name");
   home_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_LANDMARK, u"Red tree", VerificationStatus::kObserved);
+  home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_OVERFLOW,
+                                                u"Andar 1, Apto. 12",
+                                                VerificationStatus::kObserved);
   home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS,
                                                 u"Marcos y Oliva",
                                                 VerificationStatus::kObserved);
@@ -1453,6 +1456,7 @@ TEST_P(AutofillTableProfileTest, UpdateAutofillProfile) {
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"90025");
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  profile.SetRawInfo(ADDRESS_HOME_OVERFLOW, u"Andar 1, Apto. 12");
   profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
   profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Marcos y Oliva");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");

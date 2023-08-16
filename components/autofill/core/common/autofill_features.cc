@@ -194,6 +194,12 @@ BASE_FEATURE(kAutofillEnableSupportForAdminLevel2,
              "AutofillEnableSupportForAdminLevel2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls if Chrome support filling and importing address overflow fields.
+// TODO(crbug.com/1441904) Remove once launched.
+BASE_FEATURE(kAutofillEnableSupportForAddressOverflow,
+             "AutofillEnableSupportForAddressOverflow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls if Chrome support filling and importing landmarks.
 // TODO(crbug.com/1441904) Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForLandmark,
