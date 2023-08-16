@@ -309,6 +309,13 @@ class DISPLAY_EXPORT Display final {
     const gfx::DisplayColorSpaces color_spaces_;
   };
 
+  void SetDisplayColorSpacesRef(
+      scoped_refptr<const DisplayColorSpacesRef> color_spaces);
+
+  // Returns the default value of the DisplayColorSpaces.
+  static scoped_refptr<const DisplayColorSpacesRef>
+  GetDefaultDisplayColorSpacesRef();
+
   int64_t id_ = kInvalidDisplayId;
   gfx::Rect bounds_;
   // If non-empty, then should be same as |bounds_|. Used to avoid rounding

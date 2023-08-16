@@ -1348,7 +1348,8 @@ const Display DisplayManager::GetMirroringDisplayById(
     int64_t display_id) const {
   auto iter = base::ranges::find(software_mirroring_display_list_, display_id,
                                  &Display::id);
-  return iter == software_mirroring_display_list_.end() ? Display() : *iter;
+  return iter == software_mirroring_display_list_.end() ? GetInvalidDisplay()
+                                                        : *iter;
 }
 
 std::string DisplayManager::GetDisplayNameForId(int64_t id) const {

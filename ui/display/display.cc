@@ -170,17 +170,8 @@ Display::Display(int64_t id, const gfx::Rect& bounds)
     : id_(id),
       bounds_(bounds),
       work_area_(bounds),
-      device_scale_factor_(GetForcedDeviceScaleFactor()),
-      color_spaces_(new DisplayColorSpacesRef()) {
-  // On Android we need to ensure the platform supports a color profile before
-  // using it. Using a not supported profile can result in fatal errors in the
-  // GPU process.
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-#if !BUILDFLAG(IS_ANDROID)
-  if (HasForceDisplayColorProfile())
-    color_space = GetForcedDisplayColorProfile();
-#endif
-  SetColorSpaces(gfx::DisplayColorSpaces(color_space));
+      device_scale_factor_(GetForcedDeviceScaleFactor()) {
+  SetDisplayColorSpacesRef(GetDefaultDisplayColorSpacesRef());
 #if defined(USE_AURA)
   if (!bounds.IsEmpty())
     SetScaleAndBounds(device_scale_factor_, bounds);
@@ -216,14 +207,7 @@ const gfx::DisplayColorSpaces& Display::GetColorSpaces() const {
 }
 
 void Display::SetColorSpaces(const gfx::DisplayColorSpaces& color_spaces) {
-  color_spaces_ = new DisplayColorSpacesRef(color_spaces);
-  if (color_spaces.SupportsHDR()) {
-    color_depth_ = kHDR10BitsPerPixel;
-    depth_per_component_ = kHDR10BitsPerComponent;
-  } else {
-    color_depth_ = kDefaultBitsPerPixel;
-    depth_per_component_ = kDefaultBitsPerComponent;
-  }
+  SetDisplayColorSpacesRef(new DisplayColorSpacesRef(color_spaces));
 }
 
 void Display::SetRotationAsDegree(int rotation) {
@@ -339,6 +323,36 @@ bool Display::operator==(const Display& rhs) const {
          depth_per_component_ == rhs.depth_per_component_ &&
          is_monochrome_ == rhs.is_monochrome_ &&
          display_frequency_ == rhs.display_frequency_ && label_ == rhs.label_;
+}
+
+void Display::SetDisplayColorSpacesRef(
+    scoped_refptr<const DisplayColorSpacesRef> color_spaces) {
+  color_spaces_ = std::move(color_spaces);
+  if (color_spaces_->color_spaces().SupportsHDR()) {
+    color_depth_ = kHDR10BitsPerPixel;
+    depth_per_component_ = kHDR10BitsPerComponent;
+  } else {
+    color_depth_ = kDefaultBitsPerPixel;
+    depth_per_component_ = kDefaultBitsPerComponent;
+  }
+}
+
+scoped_refptr<const Display::DisplayColorSpacesRef>
+Display::GetDefaultDisplayColorSpacesRef() {
+  // On Android we need to ensure the platform supports a color profile before
+  // using it. Using a not supported profile can result in fatal errors in the
+  // GPU process.
+  static scoped_refptr<const DisplayColorSpacesRef> default_color_spaces_ref =
+      []() {
+        auto color_space = gfx::ColorSpace::CreateSRGB();
+#if !BUILDFLAG(IS_ANDROID)
+        if (HasForceDisplayColorProfile()) {
+          color_space = GetForcedDisplayColorProfile();
+        }
+#endif
+        return new DisplayColorSpacesRef(gfx::DisplayColorSpaces(color_space));
+      }();
+  return default_color_spaces_ref;
 }
 
 }  // namespace display
