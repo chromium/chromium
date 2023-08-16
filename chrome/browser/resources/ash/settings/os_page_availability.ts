@@ -50,12 +50,12 @@ export function createPageAvailability(): OsPageAvailability {
     [Section.kPersonalization]: !!routes.PERSONALIZATION,
     [Section.kPrinting]: !!routes.OS_PRINTING,
     [Section.kPrivacyAndSecurity]: !!routes.OS_PRIVACY,
-    [Section.kSearchAndAssistant]: !!routes.OS_SEARCH,
 
     // Only available when OsSettingsRevampWayfinding feature is enabled.
     [Section.kSystemPreferences]: !!routes.SYSTEM_PREFERENCES,
 
     // Only available when OsSettingsRevampWayfinding feature is disabled.
     [Section.kReset]: !!routes.OS_RESET,
+    [Section.kSearchAndAssistant]: !!routes.OS_SEARCH,
   };
 }

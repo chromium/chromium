@@ -17,7 +17,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isAssistantAllowed, shouldShowQuickAnswersSettings} from '../common/load_time_booleans.js';
+import {isAssistantAllowed, isRevampWayfindingEnabled, shouldShowQuickAnswersSettings} from '../common/load_time_booleans.js';
 import {PrefsState} from '../common/types.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -79,7 +79,8 @@ export class SettingsSearchAndAssistantCardElement extends
     super();
 
     /** RouteOriginMixin overrde */
-    this.route = routes.OS_SEARCH;
+    this.route = isRevampWayfindingEnabled() ? routes.SYSTEM_PREFERENCES :
+                                               routes.OS_SEARCH;
   }
 
   override ready(): void {

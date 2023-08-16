@@ -26,11 +26,7 @@ suite('<main-page-container>', () => {
   let fakeNearbyShareSettings = null;
 
   suiteSetup(async () => {
-    // Reinitialize Router and routes based on load time data so Kerberos route
-    // exists.
     loadTimeData.overrideValues({isKerberosEnabled: true});
-    const testRouter = createRouterForTesting();
-    Router.resetInstanceForTesting(testRouter);
 
     fakeContactManager = new FakeContactManager();
     setContactManagerForTesting(fakeContactManager);
@@ -47,6 +43,10 @@ suite('<main-page-container>', () => {
 
   /** @return {MainPageContainerElement} */
   function init() {
+    // Reinitialize Router and routes based on load time data.
+    const testRouter = createRouterForTesting();
+    Router.resetInstanceForTesting(testRouter);
+
     const element = document.createElement('main-page-container');
     element.prefs = prefElement.prefs;
     element.pageAvailability = createPageAvailabilityForTesting();

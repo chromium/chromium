@@ -9,14 +9,16 @@
  */
 
 import '../os_settings_page/os_settings_animated_pages.js';
-import '../settings_shared.css.js';
+import '../os_settings_page/os_settings_subpage.js';
 import '../os_reset_page/reset_card.js';
+import '../os_search_page/search_and_assistant_card.js';
+import '../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isPowerwashAllowed, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {isAssistantAllowed, isPowerwashAllowed, isRevampWayfindingEnabled, shouldShowQuickAnswersSettings} from '../common/load_time_booleans.js';
 import {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 
@@ -44,6 +46,7 @@ export class SettingsSystemPreferencesPageElement extends
 
       prefs: {
         type: Object,
+        notify: true,
       },
 
       shouldShowResetCard_: {
@@ -52,14 +55,34 @@ export class SettingsSystemPreferencesPageElement extends
           return isPowerwashAllowed();
         },
       },
+
+      shouldShowQuickAnswersSettings_: {
+        type: Boolean,
+        value: () => {
+          return shouldShowQuickAnswersSettings();
+        },
+      },
+
+      isAssistantAllowed_: {
+        type: Boolean,
+        value: () => {
+          return isAssistantAllowed();
+        },
+      },
     };
   }
 
   prefs: PrefsState;
   private section_: Section;
+
+  // Reset subsection
   private shouldShowResetCard_: boolean;
 
-  override connectedCallback() {
+  // Search and Assistant subsection
+  private shouldShowQuickAnswersSettings_: boolean;
+  private isAssistantAllowed_: boolean;
+
+  override connectedCallback(): void {
     super.connectedCallback();
 
     assert(
@@ -67,7 +90,6 @@ export class SettingsSystemPreferencesPageElement extends
         'OsSettingsRevampWayfinding feature must be enabled.');
   }
 }
-
 
 declare global {
   interface HTMLElementTagNameMap {

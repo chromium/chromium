@@ -67,7 +67,7 @@ export const SECTION_EXPECTATIONS: SectionData[] = [
   {
     name: 'kSearchAndAssistant',
     availableBeforeRevamp: true,
-    availableAfterRevamp: true,
+    availableAfterRevamp: false,
     availableForGuest: true,
   },
   {

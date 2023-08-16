@@ -60,7 +60,7 @@ export const RouteOriginMixin = dedupingMixin(
           // All elements using this mixin must specify their route.
           assertInstanceof(
               this.route, Route,
-              'Route origin element must specify its route.');
+              `Route origin element "${this.tagName}" must specify its route.`);
         }
 
         override currentRouteChanged(newRoute: Route, prevRoute?: Route) {

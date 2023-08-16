@@ -390,15 +390,6 @@ export function createRoutes(): OsSettingsRoutes {
         Section.kPersonalization);
   }
 
-  // Search and Assistant section.
-  r.OS_SEARCH = createSection(
-      r.BASIC, routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH,
-      Section.kSearchAndAssistant);
-  r.GOOGLE_ASSISTANT = createSubpage(
-      r.OS_SEARCH, routesMojom.ASSISTANT_SUBPAGE_PATH, Subpage.kAssistant);
-  r.SEARCH_SUBPAGE = createSubpage(
-      r.OS_SEARCH, routesMojom.SEARCH_SUBPAGE_PATH, Subpage.kSearch);
-
   // Apps section.
   r.APPS = createSection(r.BASIC, routesMojom.APPS_SECTION_PATH, Section.kApps);
   r.APP_NOTIFICATIONS = createSubpage(
@@ -606,12 +597,28 @@ export function createRoutes(): OsSettingsRoutes {
     r.SYSTEM_PREFERENCES = createSection(
         r.BASIC, routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
         Section.kSystemPreferences);
+
+    // Search and Assistant subpages.
+    r.SEARCH_SUBPAGE = createSubpage(
+        r.SYSTEM_PREFERENCES, routesMojom.SEARCH_SUBPAGE_PATH, Subpage.kSearch);
+    r.GOOGLE_ASSISTANT = createSubpage(
+        r.SYSTEM_PREFERENCES, routesMojom.ASSISTANT_SUBPAGE_PATH,
+        Subpage.kAssistant);
   } else {
     // Reset section.
     if (isPowerwashAllowed()) {
       r.OS_RESET = createSection(
           r.ADVANCED, routesMojom.RESET_SECTION_PATH, Section.kReset);
     }
+
+    // Search and Assistant section.
+    r.OS_SEARCH = createSection(
+        r.BASIC, routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH,
+        Section.kSearchAndAssistant);
+    r.SEARCH_SUBPAGE = createSubpage(
+        r.OS_SEARCH, routesMojom.SEARCH_SUBPAGE_PATH, Subpage.kSearch);
+    r.GOOGLE_ASSISTANT = createSubpage(
+        r.OS_SEARCH, routesMojom.ASSISTANT_SUBPAGE_PATH, Subpage.kAssistant);
   }
 
   return r as OsSettingsRoutes;

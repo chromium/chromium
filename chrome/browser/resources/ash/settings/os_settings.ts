@@ -141,6 +141,7 @@ export {SettingsPerDevicePointingStickElement} from './device_page/per_device_po
 export {SettingsPerDevicePointingStickSubsectionElement} from './device_page/per_device_pointing_stick_subsection.js';
 export {SettingsPerDeviceTouchpadElement} from './device_page/per_device_touchpad.js';
 export {SettingsPerDeviceTouchpadSubsectionElement} from './device_page/per_device_touchpad_subsection.js';
+export {ensureLazyLoaded} from './ensure_lazy_loaded.js';
 export {OsSettingsCellularSetupDialogElement} from './internet_page/cellular_setup_dialog.js';
 export {HotspotConfigDialogElement, WiFiSecurityType} from './internet_page/hotspot_config_dialog.js';
 export {HotspotSummaryItemElement} from './internet_page/hotspot_summary_item.js';
