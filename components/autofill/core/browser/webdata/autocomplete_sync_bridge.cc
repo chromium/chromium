@@ -257,7 +257,7 @@ class SyncDifferenceTracker {
     return true;
   }
 
-  raw_ptr<AutofillTable> table_;
+  const raw_ptr<AutofillTable> table_;
 
   // This class attempts to lazily load data from |table_|. This field tracks
   // if that has happened or not yet. To facilitate this, the first usage of

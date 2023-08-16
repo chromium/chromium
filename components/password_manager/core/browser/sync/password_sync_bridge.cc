@@ -304,7 +304,7 @@ class ScopedStoreTransaction {
   }
 
  private:
-  raw_ptr<PasswordStoreSync> store_;
+  const raw_ptr<PasswordStoreSync> store_;
   bool committed_;
 };
 
