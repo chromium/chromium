@@ -727,6 +727,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'OsSearchPageGoogleAssistantSubpage',
    'os_search_page/google_assistant_subpage_test.js'
  ],
+ [
+   'OsSearchPageSearchAndAssistantCard',
+   'os_search_page/search_and_assistant_card_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
  ['OsSettingsHatsUi', 'os_settings_ui/os_settings_hats_ui_test.js'],
  [
@@ -808,6 +813,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
        'ash::features::kOsSettingsRevampWayfinding',
      ],
    },
+ ],
+ [
+   'SystemPreferencesPageSearchAndAssistantCard',
+   'os_search_page/search_and_assistant_card_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
 ].forEach(test => registerTest(...test));
 
