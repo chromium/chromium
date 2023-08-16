@@ -25,10 +25,10 @@ import java.util.List;
  *    &#64;Rule
  *    public TestRule mProcessor = new Features.JUnitProcessor();
  *
- *    &#64;Features.EnableFeatures(BaseFeatures.Foo)
+ *    &#64;EnableFeatures(BaseFeatures.Foo)
  *    public void testFoo() { ... }
  *
- *    &#64;Features.EnableFeatures(ContentFeatureList.Foo)
+ *    &#64;EnableFeatures(ContentFeatureList.Foo)
  *    public void testFoo() { ... }
  * }
  * </pre>
