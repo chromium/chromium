@@ -21,9 +21,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/dips_utils.h"
 #include "sql/database.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -118,7 +119,7 @@ class DIPSDatabaseErrorHistogramsTest
     DIPSDatabaseTest::SetUp();
     // Use inf ttl to prevent interactions (including web authn assertions) from
     // expiring unintentionally.
-    features_.InitAndEnableFeatureWithParameters(dips::kFeature,
+    features_.InitAndEnableFeatureWithParameters(features::kDIPS,
                                                  {{"interaction_ttl", "inf"}});
   }
 };
@@ -239,7 +240,7 @@ class DIPSDatabaseAllColumnTest
     DIPSDatabaseTest::SetUp();
     // Use inf ttl to prevent interactions (including webauthn assertions) from
     // expiring unintentionally.
-    features_.InitAndEnableFeatureWithParameters(dips::kFeature,
+    features_.InitAndEnableFeatureWithParameters(features::kDIPS,
                                                  {{"interaction_ttl", "inf"}});
   }
 
@@ -547,7 +548,7 @@ class DIPSDatabaseInteractionTest : public DIPSDatabaseTest,
                                     public testing::WithParamInterface<bool> {
  public:
   DIPSDatabaseInteractionTest() : DIPSDatabaseTest(GetParam()) {
-    features_.InitAndEnableFeature(dips::kFeature);
+    features_.InitAndEnableFeature(features::kDIPS);
   }
 
   // This test only focuses on user interaction and WAA times, that's the
@@ -588,21 +589,22 @@ TEST_P(DIPSDatabaseInteractionTest, ClearExpiredRowsFromBouncesTable) {
       testing::UnorderedElementsAre("case1.test", "case2.test", "case3.test",
                                     "case4.test", "case5.test", "case6.test"));
 
-  AdvanceTimeTo(dummy_time + dips::kInteractionTtl.Get());
+  AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get());
   EXPECT_EQ(db_->ClearExpiredRows(), 0u);
   EXPECT_THAT(
       db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
       testing::UnorderedElementsAre("case1.test", "case2.test", "case3.test",
                                     "case4.test", "case5.test", "case6.test"));
 
-  AdvanceTimeTo(dummy_time + dips::kInteractionTtl.Get() + tiny_delta);
+  AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get() + tiny_delta);
   EXPECT_EQ(db_->ClearExpiredRows(), 4u);
   EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
               testing::UnorderedElementsAre("case2.test", "case6.test"));
 
   // Time travel to a point by which all interactions and WAAs should've
   // expired.
-  AdvanceTimeTo(dummy_time + dips::kInteractionTtl.Get() + tiny_delta * 2);
+  AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get() +
+                tiny_delta * 2);
   EXPECT_EQ(db_->ClearExpiredRows(), 1u);
   EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
               testing::ElementsAre("case6.test"));
@@ -618,7 +620,7 @@ TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredRows) {
   EXPECT_TRUE(db_->Read("case5.test").has_value());
   EXPECT_TRUE(db_->Read("case6.test").has_value());
 
-  AdvanceTimeTo(dummy_time + dips::kInteractionTtl.Get());
+  AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get());
   EXPECT_TRUE(db_->Read("case1.test").has_value());
   EXPECT_TRUE(db_->Read("case2.test").has_value());
   EXPECT_TRUE(db_->Read("case3.test").has_value());
@@ -626,7 +628,7 @@ TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredRows) {
   EXPECT_TRUE(db_->Read("case5.test").has_value());
   EXPECT_TRUE(db_->Read("case6.test").has_value());
 
-  AdvanceTimeTo(dummy_time + dips::kInteractionTtl.Get() + tiny_delta);
+  AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get() + tiny_delta);
   EXPECT_EQ(db_->Read("case1.test"), absl::nullopt);
   EXPECT_TRUE(db_->Read("case2.test").has_value());
   EXPECT_EQ(db_->Read("case3.test"), absl::nullopt);
@@ -636,7 +638,8 @@ TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredRows) {
 
   // Time travel to a point by which all interactions and WAAs should've
   // expired.
-  AdvanceTimeTo(dummy_time + dips::kInteractionTtl.Get() + tiny_delta * 2);
+  AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get() +
+                tiny_delta * 2);
   EXPECT_EQ(db_->Read("case1.test"), absl::nullopt);
   EXPECT_EQ(db_->Read("case2.test"), absl::nullopt);
   EXPECT_EQ(db_->Read("case3.test"), absl::nullopt);
@@ -691,41 +694,44 @@ INSTANTIATE_TEST_SUITE_P(All, DIPSDatabaseInteractionTest, ::testing::Bool());
 
 // A test class that verifies the behavior of the methods used to query the
 // DIPSDatabase to find all sites which should have their state cleared by DIPS.
-class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
-                              public testing::WithParamInterface<
-                                  std::tuple<bool, DIPSTriggeringAction>> {
+class DIPSDatabaseQueryTest
+    : public DIPSDatabaseTest,
+      public testing::WithParamInterface<
+          std::tuple<bool, content::DIPSTriggeringAction>> {
  public:
   using QueryMethod = base::RepeatingCallback<std::vector<std::string>(void)>;
   DIPSDatabaseQueryTest() : DIPSDatabaseTest(std::get<0>(GetParam())) {
     // Test with the prod feature's parameter to ensure the tested scenarios are
     // also valid/respected within prod env.
-    features_.InitAndEnableFeature(dips::kFeature);
+    features_.InitAndEnableFeature(features::kDIPS);
   }
 
   void SetUp() override {
     DIPSDatabaseTest::SetUp();
-    grace_period = dips::kGracePeriod.Get();
-    interaction_ttl = dips::kInteractionTtl.Get();
+    grace_period = features::kDIPSGracePeriod.Get();
+    interaction_ttl = features::kDIPSInteractionTtl.Get();
   }
 
   // Returns the DIPS-triggering action we're testing.
-  DIPSTriggeringAction CurrentAction() { return std::get<1>(GetParam()); }
+  content::DIPSTriggeringAction CurrentAction() {
+    return std::get<1>(GetParam());
+  }
 
   // Returns a callback for the respective querying method we want to test,
-  // based on `dips::kTriggeringAction`. This is equivalent to that used by
-  // `DIPSStorage::GetSitesToClear` when the DIPS Timer fires.
+  // based on `features::kDIPSTriggeringAction`. This is equivalent to that
+  // used by `DIPSStorage::GetSitesToClear` when the DIPS Timer fires.
   QueryMethod GetQueryMethodUnderTest() {
     switch (CurrentAction()) {
-      case DIPSTriggeringAction::kNone:
+      case content::DIPSTriggeringAction::kNone:
         return base::BindLambdaForTesting(
             [&]() { return std::vector<std::string>{}; });
-      case DIPSTriggeringAction::kBounce:
+      case content::DIPSTriggeringAction::kBounce:
         return base::BindLambdaForTesting(
             [&]() { return db_->GetSitesThatBounced(grace_period); });
-      case DIPSTriggeringAction::kStorage:
+      case content::DIPSTriggeringAction::kStorage:
         return base::BindLambdaForTesting(
             [&]() { return db_->GetSitesThatUsedStorage(grace_period); });
-      case DIPSTriggeringAction::kStatefulBounce:
+      case content::DIPSTriggeringAction::kStatefulBounce:
         return base::BindLambdaForTesting(
             [&]() { return db_->GetSitesThatBouncedWithState(grace_period); });
     }
@@ -736,19 +742,19 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
                              TimestampRange interaction_times,
                              TimestampRange waa_times) {
     switch (CurrentAction()) {
-      case DIPSTriggeringAction::kNone:
+      case content::DIPSTriggeringAction::kNone:
         break;
-      case DIPSTriggeringAction::kBounce:
+      case content::DIPSTriggeringAction::kBounce:
         db_->Write(site, /*storage_times=*/{}, interaction_times,
                    /*stateful_bounce_times=*/{},
                    /*bounce_times=*/event_times, waa_times);
         break;
-      case DIPSTriggeringAction::kStorage:
+      case content::DIPSTriggeringAction::kStorage:
         db_->Write(site, /*storage_times=*/event_times, interaction_times,
                    /*stateful_bounce_times=*/{}, /*bounce_times=*/{},
                    waa_times);
         break;
-      case DIPSTriggeringAction::kStatefulBounce:
+      case content::DIPSTriggeringAction::kStatefulBounce:
         db_->Write(site, /*storage_times=*/{}, interaction_times,
                    /*stateful_bounce_times=*/event_times,
                    /*bounce_times=*/event_times, waa_times);
@@ -1084,9 +1090,9 @@ INSTANTIATE_TEST_SUITE_P(
     DIPSDatabaseQueryTest,
     ::testing::Combine(
         ::testing::Bool(),
-        ::testing::Values(DIPSTriggeringAction::kBounce,
-                          DIPSTriggeringAction::kStorage,
-                          DIPSTriggeringAction::kStatefulBounce)));
+        ::testing::Values(content::DIPSTriggeringAction::kBounce,
+                          content::DIPSTriggeringAction::kStorage,
+                          content::DIPSTriggeringAction::kStatefulBounce)));
 
 // A test class that verifies DIPSDatabase garbage collection behavior for both
 // tables.
@@ -1106,7 +1112,7 @@ class DIPSDatabaseGarbageCollectionTest
   void SetUp() override {
     DIPSDatabaseTest::SetUp();
     features_.InitAndEnableFeatureWithParameters(
-        dips::kFeature,
+        features::kDIPS,
         {{"interaction_ttl",
           base::StringPrintf("%dh", base::Days(90).InHours())}});
 
@@ -1363,7 +1369,7 @@ class DIPSDatabaseHistogramTest : public DIPSDatabaseTest {
 
   void SetUp() override {
     DIPSDatabaseTest::SetUp();
-    features_.InitAndEnableFeatureWithParameters(dips::kFeature,
+    features_.InitAndEnableFeatureWithParameters(features::kDIPS,
                                                  {{"interaction_ttl", "inf"}});
   }
 
@@ -1448,7 +1454,7 @@ TEST_F(DIPSDatabaseHistogramTest, ErrorMetrics) {
 class DIPSDatabaseMigrationTest : public testing::Test {
  public:
   DIPSDatabaseMigrationTest() {
-    features_.InitAndEnableFeatureWithParameters(dips::kFeature,
+    features_.InitAndEnableFeatureWithParameters(features::kDIPS,
                                                  {{"interaction_ttl", "inf"}});
   }
 

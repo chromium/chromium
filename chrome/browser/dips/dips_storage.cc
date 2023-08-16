@@ -13,8 +13,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/dips_utils.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
@@ -271,21 +272,21 @@ std::vector<std::string> DIPSStorage::GetSitesToClear(
     absl::optional<base::TimeDelta> custom_period) const {
   std::vector<std::string> sites_to_clear;
   base::TimeDelta grace_period =
-      custom_period.value_or(dips::kGracePeriod.Get());
+      custom_period.value_or(features::kDIPSGracePeriod.Get());
 
-  switch (dips::kTriggeringAction.Get()) {
-    case DIPSTriggeringAction::kNone: {
+  switch (features::kDIPSTriggeringAction.Get()) {
+    case content::DIPSTriggeringAction::kNone: {
       return {};
     }
-    case DIPSTriggeringAction::kStorage: {
+    case content::DIPSTriggeringAction::kStorage: {
       sites_to_clear = GetSitesThatUsedStorage(grace_period);
       break;
     }
-    case DIPSTriggeringAction::kBounce: {
+    case content::DIPSTriggeringAction::kBounce: {
       sites_to_clear = GetSitesThatBounced(grace_period);
       break;
     }
-    case DIPSTriggeringAction::kStatefulBounce: {
+    case content::DIPSTriggeringAction::kStatefulBounce: {
       sites_to_clear = GetSitesThatBouncedWithState(grace_period);
       break;
     }

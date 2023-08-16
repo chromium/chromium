@@ -18,7 +18,6 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_state.h"
@@ -32,6 +31,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -70,7 +70,7 @@ TEST_F(DIPSServiceTest, DeleteDbFilesIfPersistenceDisabled) {
   // Ensure the DIPS feature is enabled and the database is set to be persisted.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature, {{"persist_database", "true"}});
+      features::kDIPS, {{"persist_database", "true"}});
 
   profile = TestingProfile::Builder().SetPath(data_path).Build();
   service = DIPSService::Get(profile.get());
@@ -85,7 +85,7 @@ TEST_F(DIPSServiceTest, DeleteDbFilesIfPersistenceDisabled) {
   // Reset the feature list to set database persistence to false.
   feature_list.Reset();
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature, {{"persist_database", "false"}});
+      features::kDIPS, {{"persist_database", "false"}});
 
   // Reset the TestingProfile, then create a new instance with the same user
   // data path.
@@ -109,7 +109,7 @@ TEST_F(DIPSServiceTest, PreserveRegularProfileDbFiles) {
   // Ensure the DIPS feature is enabled and the database is set to be persisted.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature, {{"persist_database", "true"}});
+      features::kDIPS, {{"persist_database", "true"}});
 
   // Build a regular profile.
   std::unique_ptr<TestingProfile> profile =
@@ -141,7 +141,7 @@ TEST_F(DIPSServiceTest, PreserveRegularProfileDbFiles) {
 
 TEST_F(DIPSServiceTest, EmptySiteEventsIgnored) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(dips::kFeature);
+  feature_list.InitAndEnableFeature(features::kDIPS);
   std::unique_ptr<TestingProfile> profile = std::make_unique<TestingProfile>();
   DIPSService* service = DIPSService::Get(profile.get());
 
@@ -195,8 +195,8 @@ class DIPSServiceStateRemovalTest : public testing::Test {
 
   // Test setup.
   void SetUp() override {
-    grace_period = dips::kGracePeriod.Get();
-    interaction_ttl = dips::kInteractionTtl.Get();
+    grace_period = features::kDIPSGracePeriod.Get();
+    interaction_ttl = features::kDIPSInteractionTtl.Get();
     ASSERT_LT(tiny_delta, grace_period);
 
     GetProfile()->GetBrowsingDataRemover()->SetEmbedderDelegate(&delegate_);
@@ -333,7 +333,7 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Enabled) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kDIPS, {{"delete", "true"}, {"triggering_action", "bounce"}});
 
   // Record a bounce.
   GURL url("https://example.com");
@@ -383,7 +383,7 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature, {{"delete", "false"}, {"triggering_action", "bounce"}});
+      features::kDIPS, {{"delete", "false"}, {"triggering_action", "bounce"}});
 
   // Record a bounce.
   GURL url("https://example.com");
@@ -410,8 +410,8 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
   task_environment_.RunUntilIdle();
 
   // Verify that the site's DIPS entry WAS removed, but a removal task was NOT
-  // posted to the BrowsingDataRemover(Delegate) since `dips::kDeletionEnabled`
-  // is false.
+  // posted to the BrowsingDataRemover(Delegate) since
+  // `features::kDIPSDeletionEnabled` is false.
   delegate_.VerifyAndClearExpectations();
   EXPECT_FALSE(GetDIPSState(GetService(), url).has_value());
 
@@ -424,7 +424,7 @@ TEST_F(DIPSServiceStateRemovalTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kDIPS, {{"delete", "true"}, {"triggering_action", "bounce"}});
 
   GURL excepted_3p_url("https://excepted-as-3p.com");
   GURL non_excepted_url("https://not-excepted.com");
@@ -469,7 +469,7 @@ TEST_F(DIPSServiceStateRemovalTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kDIPS, {{"delete", "true"}, {"triggering_action", "bounce"}});
 
   GURL excepted_1p_url("https://excepted-as-1p.com");
   GURL scoped_excepted_1p_url("https://excepted-as-1p-with-3p.com");
@@ -549,7 +549,7 @@ TEST_F(DIPSServiceStateRemovalTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   std::vector<base::test::FeatureRefAndParams> enabled_features;
   enabled_features.push_back(
-      {dips::kFeature, {{"delete", "true"}, {"triggering_action", "bounce"}}});
+      {features::kDIPS, {{"delete", "true"}, {"triggering_action", "bounce"}}});
   enabled_features.push_back({blink::features::kStorageAccessAPI, {}});
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(enabled_features, {});
@@ -644,7 +644,7 @@ TEST_F(
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kDIPS, {{"delete", "true"}, {"triggering_action", "bounce"}});
 
   GURL blocked_1p_url("https://excepted-as-1p.com");
   GURL scoped_blocked_1p_url("https://excepted-as-1p-with-3p.com");
@@ -728,7 +728,7 @@ TEST_F(
 TEST_F(DIPSServiceStateRemovalTest, ImmediateEnforcement) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kDIPS, {{"delete", "true"}, {"triggering_action", "bounce"}});
   SetNow(base::Time::FromDoubleT(2));
 
   // Record a bounce.
@@ -797,7 +797,7 @@ class DIPSServiceHistogramTest : public DIPSServiceStateRemovalTest {
 TEST_F(DIPSServiceHistogramTest, DeletionLatency) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature, {{"delete", "false"}, {"triggering_action", "bounce"}});
+      features::kDIPS, {{"delete", "false"}, {"triggering_action", "bounce"}});
 
   // Verify the histogram starts empty
   histograms().ExpectTotalCount("Privacy.DIPS.DeletionLatency2", 0);
@@ -834,7 +834,7 @@ TEST_F(DIPSServiceHistogramTest, DeletionLatency) {
 TEST_F(DIPSServiceHistogramTest, Deletion_Disallowed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature,
+      features::kDIPS,
       {{"delete", "false"}, {"triggering_action", "stateful_bounce"}});
 
   // Verify the histogram is initially empty.
@@ -868,7 +868,7 @@ TEST_F(DIPSServiceHistogramTest, Deletion_Disallowed) {
 TEST_F(DIPSServiceHistogramTest, Deletion_ExceptedAs1P) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature,
+      features::kDIPS,
       {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
 
   // Verify the histogram is initially empty.
@@ -904,7 +904,7 @@ TEST_F(DIPSServiceHistogramTest, Deletion_ExceptedAs1P) {
 TEST_F(DIPSServiceHistogramTest, Deletion_ExceptedAs3P) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature,
+      features::kDIPS,
       {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
 
   // Verify the histogram is initially empty.
@@ -939,7 +939,7 @@ TEST_F(DIPSServiceHistogramTest, Deletion_ExceptedAs3P) {
 TEST_F(DIPSServiceHistogramTest, Deletion_Enforced) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature,
+      features::kDIPS,
       {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
 
   // Verify the histogram is initially empty.

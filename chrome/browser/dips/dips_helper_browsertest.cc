@@ -19,7 +19,6 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
@@ -34,6 +33,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -77,11 +77,11 @@ class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
   void SetUp() override {
     if (IsPersistentStorageEnabled()) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          dips::kFeature,
+          features::kDIPS,
           {{"persist_database", "true"}, {"triggering_action", "bounce"}});
     } else {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          dips::kFeature, {{"triggering_action", "bounce"}});
+          features::kDIPS, {{"triggering_action", "bounce"}});
     }
     PlatformBrowserTest::SetUp();
   }
@@ -687,10 +687,10 @@ class DIPSPrepopulateTest : public PlatformBrowserTest {
     if (content::IsPreTest() && GetTestPreCount() % 2 != 0) {
       // Alternate between disabling and enabling DIPS in `PRE_` tests.
       // Only disable explicitly since the feature is on by default.
-      feature_list_.InitAndDisableFeature(dips::kFeature);
+      feature_list_.InitAndDisableFeature(features::kDIPS);
     } else {
       feature_list_.InitAndEnableFeatureWithParameters(
-          dips::kFeature, {{"persist_database", "true"}});
+          features::kDIPS, {{"persist_database", "true"}});
     }
 
     PlatformBrowserTest::SetUp();
@@ -932,7 +932,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                    .has_value());
 
   // Trigger the DIPS timer which will delete tracker data.
-  SetDIPSTime(recent_bounce_time + dips::kGracePeriod.Get() +
+  SetDIPSTime(recent_bounce_time + features::kDIPSGracePeriod.Get() +
               base::Milliseconds(1));
   dips_service->OnTimerFiredForTesting();
   dips_service->storage()->FlushPostedTasksForTesting();
@@ -1002,7 +1002,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
       *new_tab, embedded_test_server()->GetURL("c.test", "/title1.html")));
 
   // Trigger the DIPS timer which would delete tracker data.
-  SetDIPSTime(bounce_time + dips::kGracePeriod.Get() + base::Milliseconds(1));
+  SetDIPSTime(bounce_time + features::kDIPSGracePeriod.Get() +
+              base::Milliseconds(1));
   dips_service->OnTimerFiredForTesting();
   dips_service->storage()->FlushPostedTasksForTesting();
   base::RunLoop().RunUntilIdle();
@@ -1055,7 +1056,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   CloseTab(*new_tab);
 
   // Trigger the DIPS timer which would delete tracker data.
-  SetDIPSTime(bounce_time + dips::kGracePeriod.Get() + base::Milliseconds(1));
+  SetDIPSTime(bounce_time + features::kDIPSGracePeriod.Get() +
+              base::Milliseconds(1));
   dips_service->OnTimerFiredForTesting();
   dips_service->storage()->FlushPostedTasksForTesting();
   base::RunLoop().RunUntilIdle();
@@ -1106,7 +1108,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, GURL("http://c.test")));
 
   // Trigger the DIPS timer which would delete tracker data.
-  SetDIPSTime(bounce_time + dips::kGracePeriod.Get() + base::Milliseconds(1));
+  SetDIPSTime(bounce_time + features::kDIPSGracePeriod.Get() +
+              base::Milliseconds(1));
   dips_service->OnTimerFiredForTesting();
   dips_service->storage()->FlushPostedTasksForTesting();
   base::RunLoop().RunUntilIdle();

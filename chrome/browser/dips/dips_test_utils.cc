@@ -6,9 +6,9 @@
 
 #include "base/test/bind.h"
 #include "chrome/browser/dips/dips_cleanup_service_factory.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -218,7 +218,7 @@ ScopedInitDIPSFeature::ScopedInitDIPSFeature(
     const base::FieldTrialParams& params)
     // DIPSServiceFactory and DIPSCleanupServiceFactory are singletons, and we
     // want to create them *before* constructing `init_feature_`, so that they
-    // are initialized using the default value of dips::kFeature. We only want
+    // are initialized using the default value of features::kDIPS. We only want
     // `init_feature_` to affect CreateProfileSelections(). We do this
     // concisely by using the comma operator in the arguments to
     // `init_feature_` to call DIPSServiceFactory::GetInstance() and
@@ -226,7 +226,7 @@ ScopedInitDIPSFeature::ScopedInitDIPSFeature(
     // values.
     : init_feature_((DIPSServiceFactory::GetInstance(),
                      DIPSCleanupServiceFactory::GetInstance(),
-                     dips::kFeature),
+                     features::kDIPS),
                     enable,
                     params),
       override_profile_selections_for_dips_service_(

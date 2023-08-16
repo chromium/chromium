@@ -50,8 +50,8 @@ const base::FilePath::CharType kDIPSFilename[] = FILE_PATH_LITERAL("DIPS");
 base::FilePath GetDIPSFilePath(content::BrowserContext* context);
 
 // The ProfileSelections used to dictate when the DIPSService should be created,
-// if `dips::kFeature` is enabled, and when the DIPSCleanupService should be
-// created, if `dips::kFeature` is NOT enabled.
+// if `features::kDIPS` is enabled, and when the DIPSCleanupService
+// should be created, if `features::kDIPS` is NOT enabled.
 ProfileSelections GetHumanProfileSelections();
 
 // SiteDataAccessType:
@@ -157,8 +157,6 @@ inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
                   rhs.stateful_bounce_times, rhs.bounce_times,
                   rhs.web_authn_assertion_times);
 }
-
-enum class DIPSTriggeringAction { kNone, kStorage, kBounce, kStatefulBounce };
 
 // Return the number of seconds in `td`, clamped to [0, 10].
 // i.e. 11 linearly-sized buckets.

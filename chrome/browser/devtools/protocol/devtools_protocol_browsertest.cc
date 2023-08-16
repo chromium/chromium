@@ -21,7 +21,6 @@
 #include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -397,7 +396,7 @@ class DevToolsProtocolTest_BounceTrackingMitigations
  protected:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        dips::kFeature,
+        features::kDIPS,
         {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
 
     DevToolsProtocolTest::SetUp();
@@ -454,13 +453,13 @@ class DIPSStatusDevToolsProtocolTest
     : public DevToolsProtocolTest,
       public testing::WithParamInterface<std::tuple<bool, bool, std::string>> {
   // The fields of `GetParam()` indicate/control the following:
-  //   `std::get<0>(GetParam())` => `dips::kFeature`
-  //   `std::get<1>(GetParam())` => `dips::kDeletionEnabled`
-  //   `std::get<2>(GetParam())` => `dips::kTriggeringAction`
+  //   `std::get<0>(GetParam())` => `features::kDIPS`
+  //   `std::get<1>(GetParam())` => `features::kDIPSDeletionEnabled`
+  //   `std::get<2>(GetParam())` => `features::kDIPSTriggeringAction`
   //
-  // In order for Bounce Tracking Mitigations to take effect, `kFeature` must
-  // be true/enabled, `kDeletionEnabled` must be true, and `kTriggeringAction`
-  // must NOT be `none`.
+  // In order for Bounce Tracking Mitigations to take effect, `features::kDIPS`
+  // must be true/enabled, `kDeletionEnabled` must be true, and
+  // `kTriggeringAction` must NOT be `none`.
   //
   // Note: Bounce Tracking Mitigations issues only report sites that would
   // be affected when `kTriggeringAction` is set to 'stateful_bounce'.
@@ -469,11 +468,11 @@ class DIPSStatusDevToolsProtocolTest
   void SetUp() override {
     if (std::get<0>(GetParam())) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          dips::kFeature,
+          features::kDIPS,
           {{"delete", (std::get<1>(GetParam()) ? "true" : "false")},
            {"triggering_action", std::get<2>(GetParam())}});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(dips::kFeature);
+      scoped_feature_list_.InitAndDisableFeature(features::kDIPS);
     }
 
     DevToolsProtocolTest::SetUp();

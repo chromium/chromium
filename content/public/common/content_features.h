@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
+#include "content/public/common/dips_utils.h"
 
 namespace features {
 
@@ -64,6 +65,19 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kDesktopCaptureChangeSource);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDesktopPWAsTabStrip);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDevicePosture);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDigitalGoodsApi);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDIPS);
+CONTENT_EXPORT extern const base::FeatureParam<bool>
+    kDIPSPersistedDatabaseEnabled;
+CONTENT_EXPORT extern const base::FeatureParam<bool> kDIPSDeletionEnabled;
+CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kDIPSGracePeriod;
+CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta> kDIPSTimerDelay;
+CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kDIPSInteractionTtl;
+CONTENT_EXPORT extern const base::FeatureParam<content::DIPSTriggeringAction>
+    kDIPSTriggeringAction;
+CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kDIPSClientBounceDetectionTimeout;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDocumentPolicy);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDocumentPolicyNegotiation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEarlyEstablishGpuChannel);

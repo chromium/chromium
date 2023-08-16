@@ -34,7 +34,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/visual_search/features.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -9160,7 +9159,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"bounce-tracking-mitigations", flag_descriptions::kDIPSName,
      flag_descriptions::kDIPSDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(dips::kFeature, kDIPSVariations, "DIPS")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDIPS, kDIPSVariations, "DIPS")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kBorealisBigGlInternalName, flag_descriptions::kBorealisBigGlName,

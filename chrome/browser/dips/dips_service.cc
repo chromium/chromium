@@ -21,7 +21,6 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_browser_signin_detector.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
@@ -37,6 +36,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/dips_utils.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -180,7 +181,7 @@ DIPSService::DIPSService(content::BrowserContext* context)
       cookie_settings_(CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context))),
       repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))) {
-  DCHECK(base::FeatureList::IsEnabled(dips::kFeature));
+  DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
   absl::optional<base::FilePath> path_to_use;
   base::FilePath dips_path = GetDIPSFilePath(browser_context_);
 
@@ -191,7 +192,7 @@ DIPSService::DIPSService(content::BrowserContext* context)
     // profile.
     wait_for_file_deletion_.Quit();
   } else {
-    if (dips::kPersistedDatabaseEnabled.Get()) {
+    if (features::kDIPSPersistedDatabaseEnabled.Get()) {
       path_to_use = dips_path;
       // Existing database files won't be deleted, so quit the
       // `wait_for_file_deletion_` RunLoop.
@@ -224,7 +225,8 @@ std::unique_ptr<signin::PersistentRepeatingTimer> DIPSService::CreateTimer(
   // base::Unretained(this) is safe here since the timer that is created has the
   // same lifetime as this service.
   return std::make_unique<signin::PersistentRepeatingTimer>(
-      profile->GetPrefs(), prefs::kDIPSTimerLastUpdate, dips::kTimerDelay.Get(),
+      profile->GetPrefs(), prefs::kDIPSTimerLastUpdate,
+      features::kDIPSTimerDelay.Get(),
       base::BindRepeating(&DIPSService::OnTimerFired, base::Unretained(this)));
 }
 
@@ -375,7 +377,8 @@ void DIPSService::RecordBounce(
     // These records indicate sites that could've had their state deleted
     // provided their grace period expired. But are at the moment excepted
     // following `Are3PCAllowed()` of either `initial_url` or `final_url`.
-    if ((dips::kTriggeringAction.Get() == DIPSTriggeringAction::kStatefulBounce
+    if ((features::kDIPSTriggeringAction.Get() ==
+                 content::DIPSTriggeringAction::kStatefulBounce
              ? stateful
              : true)) {
       // TODO(crbug.com/1447035): Investigate and fix the presence of empty
@@ -511,11 +514,11 @@ void DIPSService::DeleteDIPSEligibleState(
         // meantime).
         .SetShouldBlockThirdPartyCookies(true)
         .SetHasCookieException(false)
-        .SetIsDeletionEnabled(dips::kDeletionEnabled.Get())
+        .SetIsDeletionEnabled(features::kDIPSDeletionEnabled.Get())
         .Record(ukm::UkmRecorder::Get());
   }
 
-  if (dips::kDeletionEnabled.Get()) {
+  if (features::kDIPSDeletionEnabled.Get()) {
     std::vector<std::string> filtered_sites_to_clear;
 
     for (const auto& site : sites_to_clear) {

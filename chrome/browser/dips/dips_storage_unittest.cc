@@ -14,10 +14,10 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_state.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/common/content_features.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,7 +51,7 @@ class ScopedDIPSFeatureEnabledWithParams {
  public:
   explicit ScopedDIPSFeatureEnabledWithParams(
       const base::FieldTrialParams& params) {
-    features_.InitAndEnableFeatureWithParameters(dips::kFeature, params);
+    features_.InitAndEnableFeatureWithParameters(features::kDIPS, params);
   }
 
  private:
@@ -78,14 +78,14 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
   // Call 'GetSitesToClear' when the trigger is unset.
   {
     base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(dips::kFeature);
+    features.InitAndEnableFeature(features::kDIPS);
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
   }
   // Call 'GetSitesToClear' when DIPS is triggered by bounces.
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        dips::kFeature, {{"triggering_action", "bounce"}});
+        features::kDIPS, {{"triggering_action", "bounce"}});
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt),
                 testing::ElementsAre(GetSiteForDIPS(kBounceUrl),
                                      GetSiteForDIPS(kStatefulBounceUrl)));
@@ -94,7 +94,7 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        dips::kFeature, {{"triggering_action", "storage"}});
+        features::kDIPS, {{"triggering_action", "storage"}});
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt),
                 testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl),
                                      GetSiteForDIPS(kStorageUrl)));
@@ -103,7 +103,7 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        dips::kFeature, {{"triggering_action", "stateful_bounce"}});
+        features::kDIPS, {{"triggering_action", "stateful_bounce"}});
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt),
                 testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl)));
   }
@@ -135,12 +135,12 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod) {
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      dips::kFeature,
+      features::kDIPS,
       {{"grace_period", "30s"}, {"triggering_action", "stateful_bounce"}});
 
-  // Advance time by less than `dips::kGracePeriod` but greater than `start +
-  // custom_grace_period` and verify that no sites are returned without using
-  // the custom grace period.
+  // Advance time by less than `features::kDIPSGracePeriod` but greater than
+  // `start + custom_grace_period` and verify that no sites are returned without
+  // using the custom grace period.
   clock.Advance(base::Seconds(10));
   EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
   // Verify that using a custom grace period less than the amount time was
@@ -174,10 +174,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
   // unset.
   {
     base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(dips::kFeature);
-    // Advance time by less than `dips::kGracePeriod` and verify that no sites
-    // are returned
-    clock.Advance(dips::kGracePeriod.Get() / 2);
+    features.InitAndEnableFeature(features::kDIPS);
+    // Advance time by less than `features::kDIPSGracePeriod` and verify that
+    // no sites are returned
+    clock.Advance(features::kDIPSGracePeriod.Get() / 2);
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced still returns nothing when the trigger is unset.
@@ -192,10 +192,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        dips::kFeature, {{"triggering_action", "bounce"}});
-    // Advance time by less than `dips::kGracePeriod` and verify that no sites
-    // are returned without using a custom grace period.
-    clock.Advance(dips::kGracePeriod.Get() / 2);
+        features::kDIPS, {{"triggering_action", "bounce"}});
+    // Advance time by less than `features::kDIPSGracePeriod` and verify that
+    // no sites are returned without using a custom grace period.
+    clock.Advance(features::kDIPSGracePeriod.Get() / 2);
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on bounces.
@@ -212,10 +212,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        dips::kFeature, {{"triggering_action", "storage"}});
-    // Advance time by less than `dips::kGracePeriod` and verify that no sites
-    // are returned without using a custom grace period.
-    clock.Advance(dips::kGracePeriod.Get() / 2);
+        features::kDIPS, {{"triggering_action", "storage"}});
+    // Advance time by less than `features::kDIPSGracePeriod` and verify that
+    // no sites are returned without using a custom grace period.
+    clock.Advance(features::kDIPSGracePeriod.Get() / 2);
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on storage.
@@ -232,10 +232,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        dips::kFeature, {{"triggering_action", "stateful_bounce"}});
-    // Advance time by less than `dips::kGracePeriod` and verify that no sites
-    // are returned without using a custom grace period.
-    clock.Advance(dips::kGracePeriod.Get() / 2);
+        features::kDIPS, {{"triggering_action", "stateful_bounce"}});
+    // Advance time by less than `features::kDIPSGracePeriod` and verify that
+    // no sites are returned without using a custom grace period.
+    clock.Advance(features::kDIPSGracePeriod.Get() / 2);
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on stateful bounces.

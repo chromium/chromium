@@ -76,8 +76,9 @@ class DIPSStorage {
 
   // Returns the list of sites that should have their state cleared by DIPS. How
   // these sites are determined is controlled by the value of
-  // `dips::kTriggeringAction`. Passing a non-NULL `grace_period` parameter
-  // overrides the use of `dips::kGracePeriod` when evaluating sites to clear.
+  // `features::kDIPSTriggeringAction`. Passing a non-NULL `grace_period`
+  // parameter overrides the use of `features::kDIPSGracePeriod` when
+  // evaluating sites to clear.
   std::vector<std::string> GetSitesToClear(
       absl::optional<base::TimeDelta> grace_period) const;
 

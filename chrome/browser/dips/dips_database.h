@@ -12,8 +12,8 @@
 
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "content/public/common/content_features.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
@@ -74,7 +74,7 @@ class DIPSDatabase {
   // This is implicitly `inline`. Don't move its definition to the .cc file.
   bool HasExpired(absl::optional<base::Time> time) {
     return time.has_value() &&
-           (time.value() + dips::kInteractionTtl.Get()) < clock_->Now();
+           (time.value() + features::kDIPSInteractionTtl.Get()) < clock_->Now();
   }
 
   absl::optional<StateValue> Read(const std::string& site);

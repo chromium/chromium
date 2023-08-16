@@ -25,7 +25,6 @@
 #include "chrome/browser/3pcd/heuristics/opener_heuristic_tab_helper.h"
 #include "chrome/browser/3pcd/heuristics/opener_heuristic_utils.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
@@ -38,6 +37,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -126,7 +126,7 @@ DIPSBounceDetector::DIPSBounceDetector(DIPSBounceDetectorDelegate* delegate,
           /*redirect_prefix_count=*/0u),
       client_bounce_detection_timer_(
           FROM_HERE,
-          dips::kClientBounceDetectionTimeout.Get(),
+          features::kDIPSClientBounceDetectionTimeout.Get(),
           base::BindRepeating(
               &DIPSBounceDetector::OnClientBounceDetectionTimeout,
               base::Unretained(this)),

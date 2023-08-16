@@ -18,6 +18,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "content/public/common/content_features.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/init_status.h"
@@ -100,7 +101,7 @@ DIPSDatabase::DIPSDatabase(const absl::optional<base::FilePath>& db_path)
           sql::DatabaseOptions{.exclusive_locking = true,
                                .page_size = 4096,
                                .cache_size = 32})) {
-  DCHECK(base::FeatureList::IsEnabled(dips::kFeature));
+  DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
   base::AssertLongCPUWorkAllowed();
   if (db_path.has_value()) {
     DCHECK(!db_path->empty())
@@ -887,7 +888,8 @@ size_t DIPSDatabase::ClearExpiredRows() {
   DCHECK(db_->IsSQLValid(kClearAllExpiredBouncesTableSql));
   sql::Statement bounces_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kClearAllExpiredBouncesTableSql));
-  bounces_statement.BindTime(0, clock_->Now() - dips::kInteractionTtl.Get());
+  bounces_statement.BindTime(
+      0, clock_->Now() - features::kDIPSInteractionTtl.Get());
   if (!bounces_statement.Run()) {
     return 0;
   }

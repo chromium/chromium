@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/dips/dips_cleanup_service.h"
-#include "chrome/browser/dips/dips_features.h"
+#include "content/public/common/content_features.h"
 
 // static
 DIPSCleanupService* DIPSCleanupServiceFactory::GetForBrowserContext(
@@ -22,7 +22,7 @@ DIPSCleanupServiceFactory* DIPSCleanupServiceFactory::GetInstance() {
 
 /*static*/
 ProfileSelections DIPSCleanupServiceFactory::CreateProfileSelections() {
-  if (!base::FeatureList::IsEnabled(dips::kFeature)) {
+  if (!base::FeatureList::IsEnabled(features::kDIPS)) {
     return ProfileSelections::Builder()
         .WithRegular(ProfileSelection::kOriginalOnly)
         .WithGuest(ProfileSelection::kNone)

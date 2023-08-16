@@ -17,7 +17,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -31,6 +30,7 @@
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -125,7 +125,7 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
       base::StrCat({"foo@", kIdentityProviderDomain}), kIdentityProviderDomain};
 
  private:
-  ScopedInitFeature feature_{dips::kFeature,
+  ScopedInitFeature feature_{features::kDIPS,
                              /*enable:*/ true,
                              /*params:*/ {{"persist_database", "true"}}};
   network::TestURLLoaderFactory test_url_loader_factory_;

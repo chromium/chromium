@@ -15,7 +15,6 @@
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"

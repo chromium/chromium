@@ -171,6 +171,7 @@ source_set("common_sources") {
     "content_paths.h",
     "content_switch_dependent_feature_overrides.cc",
     "content_switch_dependent_feature_overrides.h",
+    "dips_utils.h",
     "drop_data.cc",
     "drop_data.h",
     "input_event_ack_state.h",
