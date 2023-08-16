@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
       "ntp-module-wrapper",
       "ntp-history-clusters-redesigned",
       "history-clusters-header-v2",
-      "#dismissButton"};
+      "#dismiss"};
 
   RunTestSequence(
       // 1. Wait for new tab page to load.
@@ -348,5 +348,62 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
                                       kSampleNumClusters - 1));
 }
 
-// TODO(crbug.com/1434428): Add a test that asserts the 'Done' button dismisses
-// the card.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ClickingDoneButtonDismissesCluster \
+  DISABLED_ClickingDoneButtonDismissesCluster
+#else
+#define MAYBE_ClickingDoneButtonDismissesCluster \
+  ClickingDoneButtonDismissesCluster
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
+                       MAYBE_ClickingDoneButtonDismissesCluster) {
+  const DeepQuery kModulesContainer = {"ntp-app", "ntp-modules-v2",
+                                       "#container"};
+  const DeepQuery kHistoryClustersMoreButton = {
+      "ntp-app",
+      "ntp-modules-v2",
+      "ntp-module-wrapper",
+      "ntp-history-clusters-redesigned",
+      "history-clusters-header-v2",
+      "ntp-module-header-v2",
+      "#menuButton"};
+  const DeepQuery kHistoryClustersMoreActionMenu = {
+      "ntp-app",
+      "ntp-modules-v2",
+      "ntp-module-wrapper",
+      "ntp-history-clusters-redesigned",
+      "history-clusters-header-v2",
+      "cr-action-menu",
+      "dialog"};
+  const DeepQuery kHistoryClustersDoneButton = {
+      "ntp-app",
+      "ntp-modules-v2",
+      "ntp-module-wrapper",
+      "ntp-history-clusters-redesigned",
+      "history-clusters-header-v2",
+      "#done"};
+
+  RunTestSequence(
+      // 1. Wait for new tab page to load.
+      LoadNewTabPage(),
+      // 2. Wait for modules container to have an expected child count matching
+      // the test setup.
+      WaitForElementChildElementCount(kModulesContainer, kSampleNumClusters),
+      // 3. Ensure the NTP history clusters module "done" button exists, and
+      // thus, that the module loaded successfully.
+      WaitForElementToLoad(kHistoryClustersDoneButton),
+      // 4. Scroll to the "done" element of the NTP history clusters module.
+      // Modules may sometimes load below the fold.
+      ScrollIntoView(kNewTabPageElementId, kHistoryClustersDoneButton),
+      // 5. Click the "more actions" menu button of the NTP history clusters
+      // module.
+      ClickElement(kNewTabPageElementId, kHistoryClustersMoreButton),
+      // 6. Wait for history clusters menu dialog to be anchored.
+      WaitForElementStyleSet(kHistoryClustersMoreActionMenu),
+      // 7. Click the "done" element of the NTP history clusters module.
+      ClickElement(kNewTabPageElementId, kHistoryClustersDoneButton),
+      // 8. Wait for modules container to reflect an updated element count that
+      // resulted from dismissing a module.
+      WaitForElementChildElementCount(kModulesContainer,
+                                      kSampleNumClusters - 1));
+}

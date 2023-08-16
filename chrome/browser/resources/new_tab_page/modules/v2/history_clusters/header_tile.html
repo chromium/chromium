@@ -1,5 +1,6 @@
 <style include="cr-icons cr-shared-style">
   :host {
+    --menu-item-margin: 12px;
     background: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
     display: flex;
@@ -18,15 +19,6 @@
 
   cr-action-menu {
     --cr-menu-shadow: var(--ntp-menu-shadow);
-  }
-
-  cr-icon-button {
-    --cr-icon-button-icon-size: 20px;
-    --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
-    --cr-icon-button-hover-background-color:
-        var(--color-new-tab-page-control-background-hovered);
-    margin-inline-end: -4px;
-    margin-inline-start: 0;
   }
 
   #label-container {
@@ -81,6 +73,22 @@
     margin-inline-start: 12px;
     line-height: 20px;
   }
+
+  .icon {
+    --cr-icon-ripple-size: 20px;
+    -webkit-mask-size: 16px;
+    background-color: transparent;
+    fill: var(--color-new-tab-page-secondary-foreground);
+    margin-inline-start: calc(-1 * var(--menu-item-margin));
+    margin-inline-end: var(--menu-item-margin);
+  }
+
+  hr {
+    background-color: var(--color-new-tab-page-module-context-menu-divider);
+    border: none;
+    height: 1px;
+    margin: 0;
+  }
 </style>
 <ntp-module-header-v2
     header-text="[[i18n('modulesJourneysResumeJourney', '')]]"
@@ -88,30 +96,25 @@
     more-actions-text="[[i18n('modulesMoreActions', clusterLabel)]]">
 </ntp-module-header-v2>
 <div id="label-container">
-    <h2 id="label" hidden="[[suggestionChipHeaderEnabled_]]">
-      [[clusterLabel]]
-    </h2>
-    <div id="suggestion-chip" hidden="[[!suggestionChipHeaderEnabled_]]">
-      <div id="suggestion-chip-icon" class="cr-icon"></div>
-      <h2 id="suggestion-chip-label">[[clusterLabel]]</h2>
-    </div>
+  <div id="label" hidden="[[suggestionChipHeaderEnabled_]]">
+    [[clusterLabel]]
+  </div>
+  <div id="suggestion-chip" hidden="[[!suggestionChipHeaderEnabled_]]">
+    <div id="suggestion-chip-icon" class="cr-icon"></div>
+    <span id="suggestion-chip-label">[[clusterLabel]]</span>
+  </div>
 </div>
 
 <cr-action-menu id="actionMenu">
-  <button id="openInfoDialogButton" class="dropdown-item"
-      on-click="onButtonClick_" data-action="info">
-    [[i18n('moduleInfoButtonTitle')]]
-  </button>
-  <button id="dismissButton" class="dropdown-item"
-      on-click="onButtonClick_" data-action="dismiss">
-    [[dismissText]]
-  </button>
-  <button id="disableButton" class="dropdown-item"
-      on-click="onButtonClick_" data-action="disable">
-    [[disableText]]
-  </button>
-  <button id="customizeButton" class="dropdown-item"
-      on-click="onCustomizeButtonClick_">
-    $i18n{modulesCustomizeButtonText}
-  </button>
+  <template is="dom-repeat"
+      items="[[getMenuItemGroups_()]]" as="group">
+    <template is="dom-repeat" items="[[group]]">
+      <button id="[[item.action]]" class="dropdown-item"
+          on-click="onButtonClick_" data-action$="[[item.action]]">
+        <iron-icon class="icon cr-icon" icon="[[item.icon]]"></iron-icon>
+        [[item.text]]
+      </button>
+    </template>
+    <hr hidden$="[[!showDivider_(index)]]">
+  </template>
 </cr-action-menu>

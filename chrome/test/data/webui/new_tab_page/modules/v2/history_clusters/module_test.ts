@@ -177,7 +177,7 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
           const dismissButton =
               moduleElement.shadowRoot!
                   .querySelector('history-clusters-header-v2')!.shadowRoot!
-                  .querySelector<HTMLElement>('#dismissButton')!;
+                  .querySelector<HTMLElement>('#dismiss')!;
           dismissButton.click();
 
           // Assert.
@@ -188,6 +188,44 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
           assertTrue(!!dismissEvent.detail.restoreCallback);
           assertUpdateClusterVisitsInteractionStateCall(
               InteractionState.kHidden, 3);
+
+          // Act.
+          const restoreCallback = dismissEvent.detail.restoreCallback!;
+          restoreCallback();
+
+          // Assert.
+          assertUpdateClusterVisitsInteractionStateCall(
+              InteractionState.kDefault, 3);
+        });
+
+    test(
+        'Backend is notified when module is marked done and restored',
+        async () => {
+          // Arrange.
+          const sampleClusterLabel = '"Sample Journey"';
+          const sampleCluster =
+              createSampleCluster(2, {label: sampleClusterLabel});
+          const moduleElements = await initializeModule([sampleCluster]);
+          const moduleElement = moduleElements[0];
+          assertTrue(!!moduleElement);
+
+          // Act.
+          const waitForDismissEvent =
+              eventToPromise('dismiss-module-instance', moduleElement);
+          const doneButton =
+              moduleElement.shadowRoot!
+                  .querySelector('history-clusters-header-v2')!.shadowRoot!
+                  .querySelector<HTMLElement>('#done')!;
+          doneButton.click();
+
+          // Assert.
+          const dismissEvent: DismissModuleInstanceEvent =
+              await waitForDismissEvent;
+          assertEquals(
+              `${sampleCluster.label!} hidden`, dismissEvent.detail.message);
+          assertTrue(!!dismissEvent.detail.restoreCallback);
+          assertUpdateClusterVisitsInteractionStateCall(
+              InteractionState.kDone, 3);
 
           // Act.
           const restoreCallback = dismissEvent.detail.restoreCallback!;

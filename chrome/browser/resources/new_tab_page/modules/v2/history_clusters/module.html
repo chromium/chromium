@@ -190,12 +190,9 @@
 </style>
 <div id="layout">
   <history-clusters-header-v2
-      disable-text="[[i18nRecursive('',
-                                  'modulesDisableButtonText',
-                                  'modulesJourneyDisable')]]"
-      dismiss-text="[[i18n('modulesDismissButtonText', cluster.label)]]"
       on-disable-button-click="onDisableButtonClick_"
       on-dismiss-button-click="onDismissButtonClick_"
+      on-done-button-click="onDoneButtonClick_"
       on-info-button-click="onInfoButtonClick_"
       cluster-label="[[computeLabel_()]]"
       format$="[[format]]"

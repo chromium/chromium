@@ -153,11 +153,30 @@ export class HistoryClustersModuleElement extends I18nMixin
     }));
   }
 
+  private onDoneButtonClick_() {
+    HistoryClustersProxyImpl.getInstance()
+        .handler.updateClusterVisitsInteractionState(
+            this.cluster.visits, InteractionState.kDone);
+    this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'dismissModuleToastMessage', this.cluster.label),
+        restoreCallback: () => {
+          HistoryClustersProxyImpl.getInstance()
+              .handler.updateClusterVisitsInteractionState(
+                  this.cluster.visits, InteractionState.kDefault);
+        },
+      },
+    }));
+  }
+
   private onInfoButtonClick_() {
     this.$.infoDialogRender.get().showModal();
   }
 
-  private onShowAllClick_() {
+  private onShowAllButtonClick_() {
     assert(this.cluster.label.length >= 2);
     HistoryClustersProxyImpl.getInstance().handler.showJourneysSidePanel(
         this.cluster.label.substring(1, this.cluster.label.length - 1));

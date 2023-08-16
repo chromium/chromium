@@ -54,7 +54,6 @@ generate_grd("build_grdp") {
       "icon_arrow_back.svg",
       "icon_arrow_dropdown.svg",
       "icon_bookmark.svg",
-      "icon_checkmark.svg",
       "icon_clear.svg",
       "icon_clock.svg",
       "icon_delete_gray.svg",

@@ -61,6 +61,7 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   }
   mixer[kColorNewTabPageHistoryClustersModuleItemBackground] = {
       ui::kColorSysBaseContainerElevated};
+  mixer[kColorNewTabPageModuleContextMenuDivider] = {ui::kColorSysDivider};
 
   mixer[kColorNewTabPagePromoBackground] = {ui::kColorSysBase};
 

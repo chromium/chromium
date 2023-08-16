@@ -215,6 +215,7 @@
   E_CPONLY(kColorNewTabPageMicBorderColor) \
   E_CPONLY(kColorNewTabPageMicIconColor) \
   E_CPONLY(kColorNewTabPageModuleControlBorder) \
+  E_CPONLY(kColorNewTabPageModuleContextMenuDivider) \
   E_CPONLY(kColorNewTabPageModuleBackground) \
   E_CPONLY(kColorNewTabPageModuleIconContainerBackground) \
   E_CPONLY(kColorNewTabPageModuleItemBackground) \
