@@ -15494,7 +15494,9 @@
         {
             "platforms": [
                 "mac",
-                "windows"
+                "windows",
+                "chromeos",
+                "chromeos_lacros"
             ],
             "experiments": [
                 {
