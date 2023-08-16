@@ -723,6 +723,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     case HTMLTag::kNav:
     case HTMLTag::kOl:
     case HTMLTag::kP:
+    case HTMLTag::kSearch:
     case HTMLTag::kSection:
     case HTMLTag::kSummary:
     case HTMLTag::kUl:
@@ -2032,6 +2033,7 @@ void HTMLTreeBuilder::ProcessEndTagForInBody(AtomicHTMLToken* token) {
     case HTMLTag::kNav:
     case HTMLTag::kOl:
     case HTMLTag::kPre:
+    case HTMLTag::kSearch:
     case HTMLTag::kSection:
     case HTMLTag::kSummary:
     case HTMLTag::kUl:

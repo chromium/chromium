@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 PASS Verify document.characterSet is ISO-8859-8
-FAIL <search> - display assert_equals: expected "block" but got "inline"
+PASS <search> - display
 PASS <search> - margin-top
 PASS <search> - margin-right
 PASS <search> - margin-bottom

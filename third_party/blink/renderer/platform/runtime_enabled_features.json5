@@ -1978,6 +1978,10 @@
       status: "experimental",
     },
     {
+      name: "HTMLSearchElement",
+      status: "experimental",
+    },
+    {
       name: "HTMLSelectListElement",
       status: "experimental",
       base_feature: "none",

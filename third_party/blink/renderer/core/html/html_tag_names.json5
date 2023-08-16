@@ -421,6 +421,11 @@
       constructorNeedsCreateElementFlags: true,
     },
     {
+      name: "search",
+      interfaceName: "HTMLElement",
+      runtimeEnabled: "HTMLSearchElement",
+    },
+    {
       name: "section",
       interfaceName: "HTMLElement",
     },
