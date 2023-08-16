@@ -29,8 +29,6 @@ class LocalTabHandler : public TabFetcher, public base::SupportsUserData::Data {
   // TabFetcher impl.
   bool FillAllLocalTabsFromTabModel(std::vector<TabEntry>& tabs) override;
   Tab FindLocalTab(const TabEntry& entry) override;
-  base::TimeDelta GetLocalTabTimeSinceModified(
-      const TabFetcher::Tab& tab) override;
 
  private:
   const raw_ptr<Profile> profile_;

@@ -8,17 +8,13 @@
 #include <vector>
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/embedder/tab_fetcher.h"
-#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
-#include "components/sessions/core/session_types.h"
-#include "components/sync_sessions/synced_session.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
 
 namespace segmentation_platform {
 namespace {
@@ -104,8 +100,8 @@ void TabRankDispatcher::GetTopRankedTabs(const std::string& segmentation_key,
 
   std::queue<RankedTab> candidate_tabs;
   for (const auto& tab : all_tabs) {
-    if (!tab_filter.max_tab_age.is_zero() &&
-        tab_fetcher_->GetTimeSinceModified(tab) > tab_filter.max_tab_age) {
+    TabFetcher::Tab fetched_tab = tab_fetcher_->FindTab(tab);
+    if (!tab_filter.is_null() && !tab_filter.Run(fetched_tab)) {
       continue;
     }
     candidate_tabs.push(RankedTab{.tab = tab});
@@ -124,6 +120,9 @@ void TabRankDispatcher::GetNextResult(const std::string& segmentation_key,
   }
 
   const RankedTab tab = std::move(candidate_tabs.front());
+  // Fetch tab every time from the `tab_fetcher_` for accessing the tab data
+  // since the tab could have been destroyed.
+  TabFetcher::Tab fetched_tab = tab_fetcher_->FindTab(tab.tab);
   candidate_tabs.pop();
 
   PredictionOptions options;
@@ -134,6 +133,9 @@ void TabRankDispatcher::GetNextResult(const std::string& segmentation_key,
       "session_tag", processing::ProcessedValue(tab.tab.session_tag));
   input_context->metadata_args.emplace(
       "tab_id", processing::ProcessedValue(tab.tab.tab_id.id()));
+  input_context->metadata_args.emplace(
+      "origin", processing::ProcessedValue(
+                    fetched_tab.tab_url.DeprecatedGetOriginAsURL()));
   segmentation_service_->GetAnnotatedNumericResult(
       segmentation_key, options, input_context,
       base::BindOnce(&TabRankDispatcher::OnGetResult,
@@ -150,6 +152,7 @@ void TabRankDispatcher::OnGetResult(const std::string& segmentation_key,
                                     const AnnotatedNumericResult& result) {
   if (result.status == PredictionStatus::kSucceeded) {
     current_tab.model_score = *result.GetResultForLabel(segmentation_key);
+    current_tab.request_id = result.request_id;
     results.insert(current_tab);
     if (results.size() > kTabCandidateLimit) {
       results.erase(--results.end());

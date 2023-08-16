@@ -8,6 +8,7 @@
 #include <map>
 #include <queue>
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
@@ -16,6 +17,7 @@
 #include "components/segmentation_platform/embedder/tab_fetcher.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/segmentation_platform/public/trigger.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -43,27 +45,28 @@ class TabRankDispatcher : public base::SupportsUserData::Data {
     // Higher score is better.
     float model_score = -1;
 
+    // The training request associated with this tab. Used to mark whether the
+    // prediction was good or bad, depending on the user action on the tab. See
+    // SegmentationPlatformService::CollectTrainingData() for more details.
+    TrainingRequestId request_id;
+
     bool operator<(const RankedTab& other) const {
       // Rank is lower is score is higher.
       return model_score > other.model_score;
     }
   };
 
-  // Additional filters to apply on the list of tabs.
-  struct TabFilter {
-    // When the last modified time of the tab is higher than the max value, then
-    // tab is excluded from the ranking.
-    base::TimeDelta max_tab_age;
-  };
-
   // Fetches a list of ranked tabs for a given feature or ranking heuristic
   // identified by `segmentation_key`. The result is std::multiset, and can be
   // iterated in order of tab rank, from best to worst.
+  // Accepts a `filter` that returns true if tab is a potential candidate for
+  // ranking. If `filter` is unset then ranks all tabs.
+  using TabFilter = base::RepeatingCallback<bool(const TabFetcher::Tab&)>;
   using RankedTabsCallback =
       base::OnceCallback<void(bool, std::multiset<RankedTab>)>;
-  void GetTopRankedTabs(const std::string& segmentation_key,
-                        const TabFilter& tab_filter,
-                        RankedTabsCallback callback);
+  virtual void GetTopRankedTabs(const std::string& segmentation_key,
+                                const TabFilter& tab_filter,
+                                RankedTabsCallback callback);
 
   TabFetcher* tab_fetcher() { return tab_fetcher_.get(); }
 
