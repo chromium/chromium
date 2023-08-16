@@ -292,6 +292,13 @@ mojom("registration_mojom") {
           mojom = "attribution_reporting.mojom.OsRegistrationItem"
           cpp = "::attribution_reporting::OsRegistrationItem"
         },
+        {
+          mojom = "attribution_reporting.mojom.EventReportWindows"
+          cpp = "::attribution_reporting::EventReportWindows"
+          forward_declaration =
+              "namespace attribution_reporting { class EventReportWindows; }"
+          default_constructible = false
+        },
       ]
       traits_headers = [ "registration_mojom_traits.h" ]
       traits_public_deps = [ ":registration_mojom_traits" ]
