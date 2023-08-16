@@ -136,7 +136,6 @@ constexpr int kNotificationCornerRadius = 2;
 // Animation Durations
 constexpr int kNotificationResizeAnimationDurationMs = 200;
 
-constexpr char kIdSuffixForGroupContainerNotification[] = "_copy";
 }  // namespace message_center
 
 #endif  // UI_MESSAGE_CENTER_PUBLIC_CPP_MESSAGE_CENTER_CONSTANTS_H_

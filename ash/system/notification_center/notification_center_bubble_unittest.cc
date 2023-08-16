@@ -12,6 +12,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_notification_view.h"
+#include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_view.h"
@@ -298,7 +299,10 @@ TEST_F(NotificationCenterBubbleTest, LargeNotificationExpand) {
   test_api()->ToggleBubble();
 
   std::string parent_id =
-      id0 + message_center::kIdSuffixForGroupContainerNotification;
+      id0 + message_center_utils::GenerateGroupParentNotificationIdSuffix(
+                message_center::MessageCenter::Get()
+                    ->FindNotificationById(id0)
+                    ->notifier_id());
 
   auto* parent_notification_view = static_cast<AshNotificationView*>(
       test_api()->GetNotificationViewForId(parent_id));

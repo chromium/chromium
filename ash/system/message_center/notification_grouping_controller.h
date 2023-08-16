@@ -96,6 +96,11 @@ class NotificationGroupingController
   // at least one of its child is pinned.
   void UpdateParentNotificationPinnedState(const std::string& parent_id);
 
+  // Check if `notification` had it's parent change. Subsequently, update the
+  // `grouped_notification_list_` to reflect any change in relationship.
+  void ReparentNotificationIfNecessary(
+      message_center::Notification* notification);
+
   // Whether a grouped parent notification is being added to MessageCenter. Used
   // to prevent an infinite loop.
   bool adding_parent_grouped_notification_ = false;

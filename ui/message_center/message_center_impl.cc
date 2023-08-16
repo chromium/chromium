@@ -374,9 +374,8 @@ void MessageCenterImpl::UpdateNotification(
   }
 
   auto* old_notification = notification_list_->GetNotificationById(old_id);
-  if (old_notification) {
-    DCHECK(old_notification->notifier_id() == new_notification->notifier_id());
-
+  if (old_notification &&
+      old_notification->notifier_id() == new_notification->notifier_id()) {
     // Copy grouping metadata to the new notification.
     if (old_notification->group_parent()) {
       new_notification->SetGroupParent();

@@ -65,11 +65,12 @@ bool NotifierId::operator==(const NotifierId& other) const {
   if (profile_id != other.profile_id)
     return false;
 
-  if (type == NotifierType::WEB_PAGE)
-    return url == other.url;
+  if (type == NotifierType::WEB_PAGE) {
+    return std::tie(url, web_app_id) == std::tie(other.url, other.web_app_id);
+  }
 
   if (type == NotifierType::ARC_APPLICATION) {
-    return (id == other.id && group_key == other.group_key);
+    return std::tie(id, group_key) == std::tie(other.id, other.group_key);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -89,8 +90,13 @@ bool NotifierId::operator<(const NotifierId& other) const {
   if (profile_id != other.profile_id)
     return profile_id < other.profile_id;
 
-  if (type == NotifierType::WEB_PAGE)
-    return url < other.url;
+  if (type == NotifierType::WEB_PAGE) {
+    return std::tie(url, web_app_id) < std::tie(other.url, other.web_app_id);
+  }
+
+  if (type == NotifierType::ARC_APPLICATION) {
+    return std::tie(id, group_key) < std::tie(other.id, other.group_key);
+  }
 
   return id < other.id;
 }

@@ -16,6 +16,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
@@ -354,7 +355,10 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationWithTwoApps) {
   // A group parent notification should also be created for these 2
   // notifications.
   std::string id_parent =
-      notification_id1 + message_center::kIdSuffixForGroupContainerNotification;
+      notification_id1 +
+      message_center_utils::GenerateGroupParentNotificationIdSuffix(
+          message_center->FindNotificationById(notification_id1)
+              ->notifier_id());
   EXPECT_TRUE(message_center->FindNotificationById(id_parent));
 
   // Update the state. All notifications should be removed.
