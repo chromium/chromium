@@ -3112,6 +3112,21 @@
             ]
         }
     ],
+    "ChromeOSARCVMLmkPerceptibleMinState": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcLmkPerceptibleMinStateUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSARCVMReclaimThrottle": [
         {
             "platforms": [
