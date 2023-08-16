@@ -158,12 +158,12 @@
   <!-- Display zoom selection slider -->
   <div class="settings-box indented two-line first">
     <div class="start text-area layout vertical">
-      <div id="displayZoomTitle" aria-hidden="true">
-        $i18n{displayZoomTitle}
+      <div id="displayZoomLabel" aria-hidden="true">
+        $i18n{displayZoomLabel}
       </div>
-      <div id="displayZoomSublabel" class="secondary self-start"
+      <div id="displayZoomDescription" class="secondary self-start"
           aria-hidden="true">
-        $i18n{displayZoomSublabel}
+        $i18n{displayZoomDescription}
       </div>
       <div id="logicalResolutionText" class="secondary self-start"
           hidden$="[[!logicalResolutionText_]]" aria-hidden="true">
@@ -174,12 +174,12 @@
         selectedDisplay, prefs.cros.device_display_resolution)]]">
       <cr-policy-pref-indicator
           pref="[[prefs.cros.device_display_resolution]]"
-          icon-aria-label="$i18n{displayZoomTitle}">
+          icon-aria-label="$i18n{displayZoomLabel}">
       </cr-policy-pref-indicator>
     </template>
     <settings-slider id="displaySizeSlider"
         ticks="[[zoomValues_]]" pref="{{selectedZoomPref_}}"
-        label-aria="$i18n{displayZoomTitle}"
+        label-aria="$i18n{displayZoomLabel}"
         label-min="$i18n{displaySizeSliderMinLabel}"
         label-max="$i18n{displaySizeSliderMaxLabel}"
         disabled="[[isDisplayScaleMandatory_(

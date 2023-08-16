@@ -5140,8 +5140,14 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_REFRESH_RATE_TITLE" desc="In Device Settings > Displays, the label for the section for changing a display's refresh rate.">
     Refresh Rate
   </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_REFRESH_RATE_TITLE" desc="In Device Settings > Displays, the label for the section for changing a display's refresh rate.">
+    Refresh rate
+  </message>
   <message name="IDS_SETTINGS_DISPLAY_REFRESH_RATE_SUBLABEL" desc="In Device Settings > Displays, the text describing the drop down menu to select the desired refresh rate of the selected external display.">
     Determines the frequency that the screen updates
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_REFRESH_RATE_DESCRIPTION" desc="In Device Settings > Displays, the text describing the drop down menu to select the desired refresh rate of the selected external display.">
+    With a higher refresh rate, you'll have a smoother display with more details. Increased refresh rate may impact battery life.
   </message>
   <message name="IDS_SETTINGS_DISPLAY_REFRESH_RATE_MENU_ITEM" desc="In Device Settings > Displays, the text entry for a single item in the external display refresh rate drop down menu, when Resolution and Refresh Rate are displayed separately. Hz is the SI unit Hertz">
     <ph name="REFRESH_RATE">$1<ex>60</ex></ph> Hz
@@ -5152,8 +5158,14 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_ZOOM_TITLE" desc="In Device Settings > Displays, the title for the section for changing the display's zoom.">
     Display size
   </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_ZOOM_LABEL" desc="In Device Settings > Displays, the label for the section for changing the display's zoom.">
+    Display and text size
+  </message>
   <message name="IDS_SETTINGS_DISPLAY_ZOOM_SUBLABEL" desc="In Device Settings > Displays, the text describing the display's zoom.">
     Make items on your screen smaller or larger
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_ZOOM_DESCRIPTION" desc="In Device Settings > Displays, the description for the display's zoom.">
+    Make items on your screen, including text, smaller or larger
   </message>
   <message name="IDS_SETTINGS_DISPLAY_ZOOM_VALUE" desc="The currently selected display zoom percentage.">
     <ph name="DISPLAY_ZOOM">$1<ex>120</ex></ph>%
@@ -5197,8 +5209,14 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_TITLE" desc="Title of the settings subpage which adjusts display overscan.">
     Overscan
   </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_BOUNDARIES_TITLE" desc="Title of the settings subpage which adjusts display boundaries.">
+    Display boundaries
+  </message>
   <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_SUBTITLE" desc="Subtitle for the display overscan settings subpage.">
     Adjust the boundaries of your display
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_BOUNDARIES_DESCRIPTION" desc="Description for the display boundaries settings subpage.">
+    Press the arrow keys to shrink or expand the display area. To move the display area around, press shift and +, then use the arrow keys.
   </message>
   <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_INSTRUCTIONS" desc="Instructions for changing the display overscan calibration.">
     Tap the following keys to adjust or move the cropping area

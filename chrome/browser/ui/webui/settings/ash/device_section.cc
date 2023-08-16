@@ -1926,18 +1926,26 @@ void DeviceSection::AddDeviceDisplayStrings(
       {"displayOverscanInstructions",
        IDS_SETTINGS_DISPLAY_OVERSCAN_INSTRUCTIONS},
       {"displayOverscanPageText", IDS_SETTINGS_DISPLAY_OVERSCAN_TEXT},
-      {"displayOverscanPageTitle", IDS_SETTINGS_DISPLAY_OVERSCAN_TITLE},
+      {"displayOverscanPageTitle",
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_DISPLAY_BOUNDARIES_TITLE
+                        : IDS_SETTINGS_DISPLAY_OVERSCAN_TITLE},
       {"displayOverscanPosition", IDS_SETTINGS_DISPLAY_OVERSCAN_POSITION},
       {"displayOverscanResize", IDS_SETTINGS_DISPLAY_OVERSCAN_RESIZE},
       {"displayOverscanReset", IDS_SETTINGS_DISPLAY_OVERSCAN_RESET},
-      {"displayOverscanSubtitle", IDS_SETTINGS_DISPLAY_OVERSCAN_SUBTITLE},
+      {"displayOverscanSubtitle",
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_DISPLAY_BOUNDARIES_DESCRIPTION
+                        : IDS_SETTINGS_DISPLAY_OVERSCAN_SUBTITLE},
       {"displayRefreshRateInterlacedMenuItem",
        IDS_SETTINGS_DISPLAY_REFRESH_RATE_INTERLACED_MENU_ITEM},
       {"displayRefreshRateMenuItem",
        IDS_SETTINGS_DISPLAY_REFRESH_RATE_MENU_ITEM},
       {"displayRefreshRateSublabel",
-       IDS_SETTINGS_DISPLAY_REFRESH_RATE_SUBLABEL},
-      {"displayRefreshRateTitle", IDS_SETTINGS_DISPLAY_REFRESH_RATE_TITLE},
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_DISPLAY_REFRESH_RATE_DESCRIPTION
+           : IDS_SETTINGS_DISPLAY_REFRESH_RATE_SUBLABEL},
+      {"displayRefreshRateTitle",
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_DISPLAY_REFRESH_RATE_TITLE
+                        : IDS_SETTINGS_DISPLAY_REFRESH_RATE_TITLE},
       {"displayResolutionInterlacedMenuItem",
        IDS_SETTINGS_DISPLAY_RESOLUTION_INTERLACED_MENU_ITEM},
       {"displayResolutionMenuItem", IDS_SETTINGS_DISPLAY_RESOLUTION_MENU_ITEM},
@@ -1969,8 +1977,12 @@ void DeviceSection::AddDeviceDisplayStrings(
        IDS_SETTINGS_DISPLAY_ZOOM_LOGICAL_RESOLUTION_TEXT},
       {"displayZoomNativeLogicalResolutionNativeText",
        IDS_SETTINGS_DISPLAY_ZOOM_LOGICAL_RESOLUTION_NATIVE_TEXT},
-      {"displayZoomSublabel", IDS_SETTINGS_DISPLAY_ZOOM_SUBLABEL},
-      {"displayZoomTitle", IDS_SETTINGS_DISPLAY_ZOOM_TITLE},
+      {"displayZoomLabel", kIsRevampEnabled
+                               ? IDS_OS_SETTINGS_REVAMP_DISPLAY_ZOOM_LABEL
+                               : IDS_SETTINGS_DISPLAY_ZOOM_TITLE},
+      {"displayZoomDescription",
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_DISPLAY_ZOOM_DESCRIPTION
+                        : IDS_SETTINGS_DISPLAY_ZOOM_SUBLABEL},
       {"displayZoomValue", IDS_SETTINGS_DISPLAY_ZOOM_VALUE},
   };
   html_source->AddLocalizedStrings(kDisplayStrings);

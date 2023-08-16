@@ -19,6 +19,8 @@ import '../settings_shared.css.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+
 import {getDisplayApi} from './device_page_browser_proxy.js';
 import {getTemplate} from './display_overscan_dialog.html.js';
 
@@ -52,11 +54,19 @@ export class SettingsDisplayOverscanDialogElement extends PolymerElement {
          Set to true once changes are saved to avoid a reset/cancel on close.
        */
       committed_: Boolean,
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isRevampWayfindingEnabled();
+        },
+      },
     };
   }
 
   displayId: string;
   private committed_: boolean;
+  private isRevampWayfindingEnabled_: boolean;
   private keyHandler_: (event: KeyboardEvent) => void;
 
   constructor() {

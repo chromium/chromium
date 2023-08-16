@@ -59,7 +59,9 @@
   <div slot="title">$i18n{displayOverscanPageTitle}</div>
   <div slot="body">
     <div class="subtitle" >$i18n{displayOverscanSubtitle}</div>
-    <div class="instructions" >$i18n{displayOverscanInstructions}</div>
+    <div class="instructions" hidden="[[isRevampWayfindingEnabled_]]">
+      $i18n{displayOverscanInstructions}
+    </div>
     <div class="details layout horizontal around-justified self-stretch">
       <div class="layout vertical center">
         <div class="layout horizontal">
