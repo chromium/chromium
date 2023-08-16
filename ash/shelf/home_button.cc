@@ -701,8 +701,8 @@ void HomeButton::CreateQuickAppButton() {
   quick_app_button_ = expandable_container_->AddChildView(
       std::make_unique<views::ImageButton>(base::BindRepeating(
           &HomeButton::QuickAppButtonPressed, base::Unretained(this))));
-  // TODO(b/266734005): Replace with localized string once finalized.
-  quick_app_button_->SetAccessibleName(u"QuickApp");
+  quick_app_button_->SetAccessibleName(
+      AppListModelProvider::Get()->quick_app_access_model()->GetAppName());
 
   const int control_size = ShelfControlButton::CalculatePreferredSize().width();
 

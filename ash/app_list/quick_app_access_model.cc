@@ -93,6 +93,14 @@ gfx::ImageSkia QuickAppAccessModel::GetAppIcon(gfx::Size icon_size) {
   return image;
 }
 
+const std::u16string QuickAppAccessModel::GetAppName() const {
+  AppListItem* item = GetQuickAppItem();
+  if (!item) {
+    return std::u16string();
+  }
+  return base::UTF8ToUTF16(item->GetDisplayName());
+}
+
 void QuickAppAccessModel::ItemDefaultIconChanged() {
   if (quick_app_should_show_state_) {
     // If quick app should already be shown, notify observers when the changed
@@ -130,7 +138,7 @@ void QuickAppAccessModel::OnAppListVisibilityChanged(bool shown,
   }
 }
 
-AppListItem* QuickAppAccessModel::GetQuickAppItem() {
+AppListItem* QuickAppAccessModel::GetQuickAppItem() const {
   return AppListModelProvider::Get()->model()->FindItem(quick_app_id_);
 }
 

@@ -64,6 +64,9 @@ class QuickAppAccessModel : public AppListItemObserver,
   // Returns the quick app's icon as an image, sized to 'icon_size'.
   gfx::ImageSkia GetAppIcon(gfx::Size icon_size);
 
+  // Returns the quick app's display name.
+  const std::u16string GetAppName() const;
+
   const std::string& quick_app_id() { return quick_app_id_; }
   bool quick_app_should_show_state() { return quick_app_should_show_state_; }
 
@@ -76,7 +79,7 @@ class QuickAppAccessModel : public AppListItemObserver,
   // AppListControllerObserver:
   void OnAppListVisibilityChanged(bool shown, int64_t display_id) override;
 
-  AppListItem* GetQuickAppItem();
+  AppListItem* GetQuickAppItem() const;
 
   // Checks if the should show state of the quick app has changed, and notifies
   // observers when the state does change.
