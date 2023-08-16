@@ -60,56 +60,8 @@ TEST_F(PlusAddressServiceTest, EnsureEtldPlusOneScopeSubdomainAddedFirst) {
 }
 
 TEST_F(PlusAddressServiceTest, DefaultSupportsPlusAddressesState) {
-  // Without explicit enablement of the feature, the `SupportsPlusAddresses`
-  // function should return `false`.
+  // By default, the `SupportsPlusAddresses` function should return `false`.
   PlusAddressService service;
-  EXPECT_FALSE(service.SupportsPlusAddresses(
-      url::Origin::Create(GURL("https://test.example"))));
-}
-
-TEST_F(PlusAddressServiceTest, NullIdentityManager) {
-  // With explicit enablement of the feature, but without an identity manager,
-  // the `SupportsPlusAddresses` should return `false`.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(plus_addresses::kFeature);
-  PlusAddressService service;
-  EXPECT_FALSE(service.SupportsPlusAddresses(
-      url::Origin::Create(GURL("https://test.example"))));
-}
-
-TEST_F(PlusAddressServiceTest, NoSignedInUser) {
-  // With explicit enablement of the feature, but without a signed in user, the
-  // `SupportsPlusAddresses` function should return `false`.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(plus_addresses::kFeature);
-  signin::IdentityTestEnvironment identity_test_env;
-  PlusAddressService service(identity_test_env.identity_manager());
-  EXPECT_FALSE(service.SupportsPlusAddresses(
-      url::Origin::Create(GURL("https://test.example"))));
-}
-
-TEST_F(PlusAddressServiceTest, FullySupported) {
-  // With explicit enablement of the feature, and a signed in user, the
-  // `SupportsPlusAddresses` function should return `true`.
-  base::test::ScopedFeatureList scoped_feature_list;
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakeAccountAvailable("plus@plus.plus",
-                                         {signin::ConsentLevel::kSignin});
-  scoped_feature_list.InitAndEnableFeature(plus_addresses::kFeature);
-  PlusAddressService service(identity_test_env.identity_manager());
-  EXPECT_TRUE(service.SupportsPlusAddresses(
-      url::Origin::Create(GURL("https://test.example"))));
-}
-
-TEST_F(PlusAddressServiceTest, FeatureExplicitlyDisabled) {
-  // With explicit disabling of the feature, the `SupportsPlusAddresses`
-  // function should return `false`, even if there's a signed-in user.
-  base::test::ScopedFeatureList scoped_feature_list;
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakeAccountAvailable("plus@plus.plus",
-                                         {signin::ConsentLevel::kSignin});
-  scoped_feature_list.InitAndDisableFeature(plus_addresses::kFeature);
-  PlusAddressService service(identity_test_env.identity_manager());
   EXPECT_FALSE(service.SupportsPlusAddresses(
       url::Origin::Create(GURL("https://test.example"))));
 }
@@ -152,23 +104,8 @@ TEST_F(PlusAddressServiceTest, OfferPlusAddressCreation) {
   EXPECT_TRUE(second_called);
 }
 
-// Tests for the label overrides.
-TEST_F(PlusAddressServiceTest, DisabledFeatureLabel) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Disabled feature? Show the default generic text.
-  scoped_feature_list.InitAndDisableFeature(plus_addresses::kFeature);
-  PlusAddressService service;
-  EXPECT_EQ(service.GetCreateSuggestionLabel(), u"Lorem Ipsum");
-}
-
-TEST_F(PlusAddressServiceTest, DefaultLabel) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Override not set? Show the default generic text.
-  scoped_feature_list.InitAndEnableFeature(plus_addresses::kFeature);
-  PlusAddressService service;
-  EXPECT_EQ(service.GetCreateSuggestionLabel(), u"Lorem Ipsum");
-}
-
+// Tests for the label overrides. These tests are not in the enabled/disabled
+// fixtures as they vary parameters.
 TEST_F(PlusAddressServiceTest, LabelOverrides) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Setting the override should result in echoing the override back.
@@ -247,6 +184,72 @@ TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
           [&](const std::string& plus_address) { call_observed = true; }));
   // Ensure that the lambda wasn't called since the email address is invalid.
   EXPECT_FALSE(call_observed);
+}
+
+class PlusAddressServiceDisabledTest : public PlusAddressServiceTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(plus_addresses::kFeature);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PlusAddressServiceDisabledTest, FeatureExplicitlyDisabled) {
+  // `SupportsPlusAddresses` should return `false`, even if there's a signed-in
+  // user.
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+  PlusAddressService service(identity_test_env.identity_manager());
+  EXPECT_FALSE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("https://test.example"))));
+}
+
+TEST_F(PlusAddressServiceDisabledTest, DisabledFeatureLabel) {
+  // Disabled feature? Show the default generic text.
+  PlusAddressService service;
+  EXPECT_EQ(service.GetCreateSuggestionLabel(), u"Lorem Ipsum");
+}
+
+class PlusAddressServiceEnabledTest : public PlusAddressServiceTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{plus_addresses::kFeature};
+};
+
+TEST_F(PlusAddressServiceEnabledTest, NullIdentityManager) {
+  // Without an identity manager, the `SupportsPlusAddresses` should return
+  // `false`.
+  PlusAddressService service;
+  EXPECT_FALSE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("https://test.example"))));
+}
+
+TEST_F(PlusAddressServiceEnabledTest, NoSignedInUser) {
+  // Without a signed in user, the `SupportsPlusAddresses` function should
+  // return `false`.
+  signin::IdentityTestEnvironment identity_test_env;
+  PlusAddressService service(identity_test_env.identity_manager());
+  EXPECT_FALSE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("https://test.example"))));
+}
+
+TEST_F(PlusAddressServiceEnabledTest, FullySupported) {
+  // With a signed in user, the `SupportsPlusAddresses` function should return
+  // `true`.
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+  PlusAddressService service(identity_test_env.identity_manager());
+  EXPECT_TRUE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("https://test.example"))));
+}
+
+TEST_F(PlusAddressServiceEnabledTest, DefaultLabel) {
+  // Override not set? Show the default generic text.
+  PlusAddressService service;
+  EXPECT_EQ(service.GetCreateSuggestionLabel(), u"Lorem Ipsum");
 }
 
 }  // namespace plus_addresses
