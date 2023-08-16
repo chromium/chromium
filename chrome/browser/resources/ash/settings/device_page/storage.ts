@@ -60,10 +60,19 @@ class SettingsStorageElement extends SettingsStorageElementBase {
         value: false,
       },
 
-      showDriveOfflineStorage_: {
+      isDriveEnabled_: {
         type: Boolean,
-        value: loadTimeData.getBoolean('enableDriveFsBulkPinning'),
-        readonly: true,
+        value: true,
+      },
+
+      showGoogleDriveSettingsPage_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showGoogleDriveSettingsPage'),
+      },
+
+      isDriveFsBulkPinningEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableDriveFsBulkPinning'),
       },
 
       isEphemeralUser_: {
@@ -86,13 +95,18 @@ class SettingsStorageElement extends SettingsStorageElementBase {
   }
 
   static get observers() {
-    return ['handleCrostiniEnabledChanged_(prefs.crostini.enabled.value)'];
+    return [
+      'handleCrostiniEnabledChanged_(prefs.crostini.enabled.value)',
+      'handleDriveDisabledChanged_(prefs.gdata.disabled.value)',
+    ];
   }
 
   private browserProxy_: DevicePageBrowserProxy;
   private isEphemeralUser_: boolean;
   private showCrostiniStorage_: boolean;
-  private showDriveOfflineStorage_: boolean;
+  private isDriveEnabled_: boolean;
+  private showGoogleDriveSettingsPage_: boolean;
+  private isDriveFsBulkPinningEnabled_: boolean;
   private showOtherUsers_: boolean;
   private sizeStat_: StorageSizeStat;
   private updateTimerId_: number;
@@ -263,10 +277,11 @@ class SettingsStorageElement extends SettingsStorageElementBase {
    *     Google Drive.
    */
   private handleDriveOfflineSizeChanged_(size: string): void {
-    if (this.showDriveOfflineStorage_) {
-      this.shadowRoot!.querySelector<CrLinkRowElement>(
-                          '#driveOfflineSize')!.subLabel = size;
+    if (!this.shouldShowOfflineFilesRow_()) {
+      return;
     }
+    this.shadowRoot!.querySelector<CrLinkRowElement>(
+                        '#driveOfflineSize')!.subLabel = size;
   }
 
   /**
@@ -307,6 +322,22 @@ class SettingsStorageElement extends SettingsStorageElementBase {
    */
   private handleCrostiniEnabledChanged_(enabled: boolean): void {
     this.showCrostiniStorage_ = enabled && isCrostiniSupported();
+  }
+
+  /**
+   * Handles showing or hiding the Offline files row if Drive is disabled.
+   */
+  private handleDriveDisabledChanged_(disabled: boolean): void {
+    this.isDriveEnabled_ = !disabled;
+  }
+
+  /**
+   * Whether to show the Offline files row or not.
+   */
+  private shouldShowOfflineFilesRow_(): boolean {
+    return this.isDriveEnabled_ &&
+        (this.isDriveFsBulkPinningEnabled_ ||
+         this.showGoogleDriveSettingsPage_);
   }
 
   /**

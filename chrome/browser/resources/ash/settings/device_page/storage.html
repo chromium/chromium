@@ -185,8 +185,9 @@
     sub-label="$i18n{storageSizeComputing}"
     external>
 </cr-link-row>
-<template is="dom-if" if="[[showDriveOfflineStorage_]]">
-  <cr-link-row id="driveOfflineSize" class="hr" on-click="onDriveOfflineClick_"
+<template is="dom-if" if="[[shouldShowOfflineFilesRow_(isDriveEnabled_, isDriveFsBulkPinningEnabled_, showGoogleDriveSettingsPage_)]]">
+  <cr-link-row id="driveOfflineSize" class="hr"
+      on-click="onDriveOfflineClick_"
       label="$i18n{storageItemOffline}"
       sub-label="$i18n{storageSizeComputing}"
       role-description="$i18n{subpageArrowRoleDescription}">

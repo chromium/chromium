@@ -84,6 +84,13 @@ function getFakePrefs() {
         },
       },
     },
+    gdata: {
+      disabled: {
+        key: 'gdata.disabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+    },
     power: {
       cros_battery_saver_active: {
         key: 'power.cros_battery_saver_active',
@@ -3912,14 +3919,17 @@ suite('SettingsDevicePage', function() {
       testing.Test.disableAnimationsAndTransitions();
     });
 
-    setup(async function() {
+    async function setupPage() {
+      PolymerTest.clearBody();
       await init();
       return showAndGetDeviceSubpage('storage', routes.STORAGE)
           .then(function(page) {
             storagePage = page;
             storagePage.stopPeriodicUpdate_();
           });
-    });
+    }
+
+    setup(setupPage);
 
     test('storage stats size', async function() {
       // Low available storage space.
@@ -4049,6 +4059,82 @@ suite('SettingsDevicePage', function() {
       flush();
       assertFalse(
           isVisible(storagePage.shadowRoot.querySelector('#otherUsersSize')));
+    });
+
+    test('drive offline size', async () => {
+      async function assertDriveOfflineSizeVisibility(params) {
+        loadTimeData.overrideValues({
+          enableDriveFsBulkPinning: params.enableDriveFsBulkPinning,
+          showGoogleDriveSettingsPage: params.showGoogleDriveSettingsPage,
+        });
+        await setupPage();
+        devicePage.prefs.gdata.disabled = !params.isDriveEnabled;
+        await flushTasks();
+        const expectedState =
+            (params.isVisible) ? 'be visible' : 'not be visible';
+        assertEquals(
+            params.isVisible,
+            isVisible(
+                storagePage.shadowRoot.getElementById('driveOfflineSize')),
+            `Expected #driveOfflineSize to ${expectedState} with params: ${
+                JSON.stringify(params)}`);
+      }
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: false,
+        showGoogleDriveSettingsPage: false,
+        isDriveEnabled: false,
+        isVisible: false,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: false,
+        showGoogleDriveSettingsPage: false,
+        isDriveEnabled: true,
+        isVisible: false,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: false,
+        showGoogleDriveSettingsPage: true,
+        isDriveEnabled: false,
+        isVisible: false,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: true,
+        showGoogleDriveSettingsPage: false,
+        isDriveEnabled: false,
+        isVisible: false,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: true,
+        showGoogleDriveSettingsPage: true,
+        isDriveEnabled: false,
+        isVisible: false,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: false,
+        showGoogleDriveSettingsPage: true,
+        isDriveEnabled: true,
+        isVisible: true,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: true,
+        showGoogleDriveSettingsPage: false,
+        isDriveEnabled: true,
+        isVisible: true,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: true,
+        showGoogleDriveSettingsPage: true,
+        isDriveEnabled: true,
+        isVisible: true,
+      });
     });
   });
 });
