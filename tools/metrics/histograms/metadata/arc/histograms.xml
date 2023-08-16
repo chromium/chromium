@@ -1202,16 +1202,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.ExternalStorage.MountedMediaVisibility"
-    enum="BooleanEnabled" expires_after="2022-05-01">
-  <owner>fukino@chromium.org</owner>
-  <owner>youkichihosoi@chromium.org</owner>
-  <summary>
-    When a removable media is mounted, whether Android apps have full access to
-    the media. Users can allow full access in Settings.
-  </summary>
-</histogram>
-
 <histogram name="Arc.FileSystemWatcher.Created" enum="BooleanEnabled"
     expires_after="2023-03-19">
   <owner>risan@google.com</owner>
