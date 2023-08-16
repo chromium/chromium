@@ -107,16 +107,6 @@ class SettingsPointersElement extends SettingsPointersElementBase {
       },
 
       /**
-       * TODO(khorimoto): Remove this conditional once the feature is launched.
-       */
-      allowScrollSettings_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('allowScrollSettings');
-        },
-      },
-
-      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -126,7 +116,6 @@ class SettingsPointersElement extends SettingsPointersElementBase {
           Setting.kTouchpadTapDragging,
           Setting.kTouchpadReverseScrolling,
           Setting.kTouchpadAcceleration,
-          Setting.kTouchpadScrollAcceleration,
           Setting.kTouchpadSpeed,
           Setting.kTouchpadHapticFeedback,
           Setting.kTouchpadHapticClickSensitivity,
@@ -136,7 +125,6 @@ class SettingsPointersElement extends SettingsPointersElementBase {
           Setting.kMouseSwapPrimaryButtons,
           Setting.kMouseReverseScrolling,
           Setting.kMouseAcceleration,
-          Setting.kMouseScrollAcceleration,
           Setting.kMouseSpeed,
         ]),
       },

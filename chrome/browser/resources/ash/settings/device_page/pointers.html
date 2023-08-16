@@ -53,25 +53,6 @@
           deep-link-focus-id$="[[Setting.kMouseSpeed]]">
       </settings-slider>
     </div>
-    <template is="dom-if" if="[[allowScrollSettings_]]">
-      <settings-toggle-button id="mouseScrollAcceleration"
-          class="hr"
-          pref="{{prefs.settings.mouse.scroll_acceleration}}"
-          label="$i18n{mouseScrollAccelerationLabel}"
-          deep-link-focus-id$="[[Setting.kMouseScrollAcceleration]]">
-      </settings-toggle-button>
-      <div class="settings-box">
-        <div class="start" id="mouseScrollSpeedLabel" aria-hidden="true">
-          $i18n{mouseScrollSpeed}
-        </div>
-        <settings-slider pref="{{prefs.settings.mouse.scroll_sensitivity}}"
-            ticks="[[sensitivityValues_]]"
-            label-aria="$i18n{mouseScrollSpeed}"
-            label-min="$i18n{pointerSlow}"
-            label-max="$i18n{pointerFast}">
-        </settings-slider>
-      </div>
-    </template>
     <div class="settings-box" id="mouseReverseScrollRow"
          on-click="onMouseReverseScrollRowClicked_">
       <div class="start settings-box-text">
@@ -162,26 +143,6 @@
             deep-link-focus-id$="[[Setting.kTouchpadSpeed]]">
         </settings-slider>
     </div>
-    <template is="dom-if" if="[[allowScrollSettings_]]">
-      <settings-toggle-button id="touchpadScrollAcceleration"
-          class="hr"
-          pref="{{prefs.settings.touchpad.scroll_acceleration}}"
-          label="$i18n{touchpadScrollAccelerationLabel}"
-          deep-link-focus-id$="[[Setting.kTouchpadScrollAcceleration]]">
-      </settings-toggle-button>
-      <div class="settings-box">
-        <div class="start" id="touchpadScrollSpeedLabel" aria-hidden="true">
-          $i18n{touchpadScrollSpeed}
-        </div>
-        <settings-slider
-            pref="{{prefs.settings.touchpad.scroll_sensitivity}}"
-            ticks="[[sensitivityValues_]]"
-            label-aria="$i18n{touchpadScrollSpeed}"
-            label-min="$i18n{pointerSlow}"
-            label-max="$i18n{pointerFast}">
-        </settings-slider>
-      </div>
-    </template>
     <template is="dom-if" if="[[hasHapticTouchpad]]">
       <div class="settings-box">
         <div class="start" id="touchpadHapticClickSensitivityLabel"
