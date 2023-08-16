@@ -127,7 +127,8 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       gfx::GpuMemoryBufferHandle handle,
       uint32_t io_surface_plane,
       gfx::BufferPlane buffer_plane,
-      bool is_plane_format);
+      bool is_plane_format,
+      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
 
   const GrContextType gr_context_type_;
   const int32_t max_texture_size_;

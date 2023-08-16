@@ -474,7 +474,8 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
 
   auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type,
-      SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper), std::move(handle));
+      SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper), std::move(handle),
+      std::move(buffer_usage));
   shm_backing->SetNotRefCounted();
 
   return base::WrapUnique(new CompoundImageBacking(

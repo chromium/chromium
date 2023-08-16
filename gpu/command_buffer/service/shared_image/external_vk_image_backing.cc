@@ -260,7 +260,8 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    absl::optional<gfx::BufferUsage> buffer_usage) {
   if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size,
                                                      ToBufferFormat(format))) {
     DLOG(ERROR) << "Invalid image size for format.";
@@ -293,7 +294,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
       base::PassKey<ExternalVkImageBacking>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, estimated_size,
       std::move(context_state), std::move(textures), command_pool,
-      use_separate_gl_texture, std::move(handle));
+      use_separate_gl_texture, std::move(handle), std::move(buffer_usage));
   backing->SetCleared();
   return backing;
 }
@@ -356,7 +357,8 @@ ExternalVkImageBacking::ExternalVkImageBacking(
     std::vector<TextureHolderVk> vk_textures,
     VulkanCommandPool* command_pool,
     bool use_separate_gl_texture,
-    gfx::GpuMemoryBufferHandle handle)
+    gfx::GpuMemoryBufferHandle handle,
+    absl::optional<gfx::BufferUsage> buffer_usage)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -365,7 +367,8 @@ ExternalVkImageBacking::ExternalVkImageBacking(
                                       alpha_type,
                                       usage,
                                       estimated_size_bytes,
-                                      /*is_thread_safe=*/false),
+                                      /*is_thread_safe=*/false,
+                                      std::move(buffer_usage)),
       context_state_(std::move(context_state)),
       vk_textures_(std::move(vk_textures)),
       command_pool_(command_pool),

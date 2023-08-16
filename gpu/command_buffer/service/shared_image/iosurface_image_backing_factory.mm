@@ -267,9 +267,11 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
   handle.io_surface = std::move(io_surface);
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
 
-  return CreateSharedImage(mailbox, format, size, color_space, surface_origin,
-                           alpha_type, usage, std::move(debug_label),
-                           std::move(handle));
+  CHECK(!format.PrefersExternalSampler());
+  return CreateSharedImageGMBs(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(handle), /*io_surface_plane=*/0, gfx::BufferPlane::DEFAULT,
+      /*is_plane_format=*/false, std::move(buffer_usage));
 }
 
 bool IOSurfaceImageBackingFactory::IsSupported(
@@ -408,7 +410,8 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     gfx::GpuMemoryBufferHandle handle,
     uint32_t io_surface_plane,
     gfx::BufferPlane buffer_plane,
-    bool is_plane_format) {
+    bool is_plane_format,
+    absl::optional<gfx::BufferUsage> buffer_usage) {
   if (handle.type != gfx::IO_SURFACE_BUFFER || !handle.io_surface) {
     LOG(ERROR) << "Invalid IOSurface GpuMemoryBufferHandle.";
     return nullptr;
@@ -472,13 +475,15 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     return std::make_unique<IOSurfaceImageBacking>(
         io_surface, io_surface_plane, io_surface_id, mailbox, plane_format,
         plane_size, color_space, surface_origin, alpha_type, usage, target,
-        framebuffer_attachment_angle, /*is_cleared=*/true, retain_gl_texture);
+        framebuffer_attachment_angle, /*is_cleared=*/true, retain_gl_texture,
+        std::move(buffer_usage));
   }
 
   return std::make_unique<IOSurfaceImageBacking>(
       io_surface, /*io_surface_plane=*/0, io_surface_id, mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, target,
-      framebuffer_attachment_angle, /*is_cleared=*/true, retain_gl_texture);
+      framebuffer_attachment_angle, /*is_cleared=*/true, retain_gl_texture,
+      std::move(buffer_usage));
 }
 
 }  // namespace gpu

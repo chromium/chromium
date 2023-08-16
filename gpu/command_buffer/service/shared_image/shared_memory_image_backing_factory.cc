@@ -115,7 +115,7 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
   }
   auto backing = std::make_unique<SharedMemoryImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(shm_wrapper), std::move(handle));
+      std::move(shm_wrapper), std::move(handle), std::move(buffer_usage));
   return backing;
 }
 

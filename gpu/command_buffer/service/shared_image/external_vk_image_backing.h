@@ -57,7 +57,8 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage);
+      uint32_t usage,
+      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
 
   static std::unique_ptr<ExternalVkImageBacking> CreateWithPixmap(
       scoped_refptr<SharedContextState> context_state,
@@ -86,7 +87,8 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       std::vector<TextureHolderVk> vk_textures,
       VulkanCommandPool* command_pool,
       bool use_separate_gl_texture,
-      gfx::GpuMemoryBufferHandle handle = gfx::GpuMemoryBufferHandle());
+      gfx::GpuMemoryBufferHandle handle = gfx::GpuMemoryBufferHandle(),
+      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
 
   ExternalVkImageBacking(const ExternalVkImageBacking&) = delete;
   ExternalVkImageBacking& operator=(const ExternalVkImageBacking&) = delete;

@@ -229,20 +229,22 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
     : public SharedImageBacking,
       public IOSurfaceBackingEGLState::Client {
  public:
-  IOSurfaceImageBacking(gfx::ScopedIOSurface io_surface,
-                        uint32_t io_surface_plane,
-                        gfx::GenericSharedMemoryId io_surface_id,
-                        const Mailbox& mailbox,
-                        viz::SharedImageFormat format,
-                        const gfx::Size& size,
-                        const gfx::ColorSpace& color_space,
-                        GrSurfaceOrigin surface_origin,
-                        SkAlphaType alpha_type,
-                        uint32_t usage,
-                        GLenum gl_target,
-                        bool framebuffer_attachment_angle,
-                        bool is_cleared,
-                        bool retain_gl_texture);
+  IOSurfaceImageBacking(
+      gfx::ScopedIOSurface io_surface,
+      uint32_t io_surface_plane,
+      gfx::GenericSharedMemoryId io_surface_id,
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      GLenum gl_target,
+      bool framebuffer_attachment_angle,
+      bool is_cleared,
+      bool retain_gl_texture,
+      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
   IOSurfaceImageBacking(const IOSurfaceImageBacking& other) = delete;
   IOSurfaceImageBacking& operator=(const IOSurfaceImageBacking& other) = delete;
   ~IOSurfaceImageBacking() override;

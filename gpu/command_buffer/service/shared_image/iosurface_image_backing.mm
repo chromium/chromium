@@ -704,7 +704,8 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     GLenum gl_target,
     bool framebuffer_attachment_angle,
     bool is_cleared,
-    bool retain_gl_texture)
+    bool retain_gl_texture,
+    absl::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
                          format,
                          size,
@@ -713,7 +714,8 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
                          alpha_type,
                          usage,
                          format.EstimatedSizeInBytes(size),
-                         /*is_thread_safe=*/false),
+                         /*is_thread_safe=*/false,
+                         std::move(buffer_usage)),
       io_surface_(std::move(io_surface)),
       io_surface_plane_(io_surface_plane),
       io_surface_size_(IOSurfaceGetWidth(io_surface_),

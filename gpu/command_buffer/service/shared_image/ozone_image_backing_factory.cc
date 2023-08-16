@@ -122,7 +122,8 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
   return std::make_unique<OzoneImageBacking>(
       mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
       surface_origin, alpha_type, usage, shared_context_state_.get(),
-      std::move(pixmap), workarounds_, use_passthrough_);
+      std::move(pixmap), workarounds_, use_passthrough_,
+      std::move(buffer_usage));
 }
 
 std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(

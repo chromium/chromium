@@ -36,18 +36,20 @@ class VaapiDependencies;
 // aliased by both GL and Vulkan for use in rendering or compositing.
 class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
  public:
-  OzoneImageBacking(const Mailbox& mailbox,
-                    viz::SharedImageFormat format,
-                    gfx::BufferPlane plane,
-                    const gfx::Size& size,
-                    const gfx::ColorSpace& color_space,
-                    GrSurfaceOrigin surface_origin,
-                    SkAlphaType alpha_type,
-                    uint32_t usage,
-                    scoped_refptr<SharedContextState> context_state,
-                    scoped_refptr<gfx::NativePixmap> pixmap,
-                    const GpuDriverBugWorkarounds& workarounds,
-                    bool use_passthrough);
+  OzoneImageBacking(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      gfx::BufferPlane plane,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      scoped_refptr<SharedContextState> context_state,
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      const GpuDriverBugWorkarounds& workarounds,
+      bool use_passthrough,
+      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
 
   OzoneImageBacking(const OzoneImageBacking&) = delete;
   OzoneImageBacking& operator=(const OzoneImageBacking&) = delete;

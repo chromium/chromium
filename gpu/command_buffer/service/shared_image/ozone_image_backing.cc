@@ -254,7 +254,8 @@ OzoneImageBacking::OzoneImageBacking(
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<gfx::NativePixmap> pixmap,
     const GpuDriverBugWorkarounds& workarounds,
-    bool use_passthrough)
+    bool use_passthrough,
+    absl::optional<gfx::BufferUsage> buffer_usage)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -263,7 +264,8 @@ OzoneImageBacking::OzoneImageBacking(
                                       alpha_type,
                                       usage,
                                       GetPixmapSizeInBytes(*pixmap),
-                                      false),
+                                      false,
+                                      std::move(buffer_usage)),
       plane_(plane),
       pixmap_(std::move(pixmap)),
       context_state_(std::move(context_state)),
