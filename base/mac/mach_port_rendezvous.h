@@ -16,8 +16,8 @@
 
 #include "base/apple/dispatch_source_mach.h"
 #include "base/apple/scoped_dispatch_object.h"
+#include "base/apple/scoped_mach_port.h"
 #include "base/base_export.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
@@ -48,9 +48,9 @@ class BASE_EXPORT MachRendezvousPort {
   // Creates a rendezvous port that allows specifying the specific disposition.
   MachRendezvousPort(mach_port_t name, mach_msg_type_name_t disposition);
   // Creates a rendezvous port for MACH_MSG_TYPE_MOVE_SEND.
-  explicit MachRendezvousPort(mac::ScopedMachSendRight send_right);
+  explicit MachRendezvousPort(apple::ScopedMachSendRight send_right);
   // Creates a rendezvous port for MACH_MSG_TYPE_MOVE_RECEIVE.
-  explicit MachRendezvousPort(mac::ScopedMachReceiveRight receive_right);
+  explicit MachRendezvousPort(apple::ScopedMachReceiveRight receive_right);
 
   // Note that the destructor does not call Destroy() explicitly.
   // To avoid leaking ports, either use dispositions that create rights during
@@ -147,7 +147,7 @@ class BASE_EXPORT MachPortRendezvousServer {
 
   // The Mach receive right for the server. A send right to this is port is
   // registered in the bootstrap server.
-  mac::ScopedMachReceiveRight server_port_;
+  apple::ScopedMachReceiveRight server_port_;
 
   // Mach message dispatch source for |server_port_|.
   std::unique_ptr<DispatchSourceMach> dispatch_source_;
@@ -175,13 +175,14 @@ class BASE_EXPORT MachPortRendezvousClient {
   // right exists, or it was already taken, returns an invalid right. Safe to
   // call from any thread. DCHECKs if the right referenced by |key| is not a
   // send or send-once right.
-  mac::ScopedMachSendRight TakeSendRight(MachPortsForRendezvous::key_type key);
+  apple::ScopedMachSendRight TakeSendRight(
+      MachPortsForRendezvous::key_type key);
 
   // Returns the Mach receive right that was registered with |key|. If no such
   // right exists, or it was already taken, returns an invalid right. Safe to
   // call from any thread. DCHECKs if the right referenced by |key| is not a
   // receive right.
-  mac::ScopedMachReceiveRight TakeReceiveRight(
+  apple::ScopedMachReceiveRight TakeReceiveRight(
       MachPortsForRendezvous::key_type key);
 
   // Returns the number of ports in the client. After PerformRendezvous(), this
@@ -201,7 +202,7 @@ class BASE_EXPORT MachPortRendezvousClient {
   bool AcquirePorts();
 
   // Sends the actual IPC message to |server_port| and parses the reply.
-  bool SendRequest(mac::ScopedMachSendRight server_port)
+  bool SendRequest(apple::ScopedMachSendRight server_port)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns a MachRendezvousPort for a given key and removes it from the

@@ -13,7 +13,7 @@ namespace base::subtle {
 
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
-    mac::ScopedMachSendRight handle,
+    apple::ScopedMachSendRight handle,
     Mode mode,
     size_t size,
     const UnguessableToken& guid) {
@@ -59,7 +59,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
     return {};
   }
 
-  return PlatformSharedMemoryRegion(mac::ScopedMachSendRight(handle_.get()),
+  return PlatformSharedMemoryRegion(apple::ScopedMachSendRight(handle_.get()),
                                     mode_, size_, guid_);
 }
 
@@ -75,7 +75,7 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly(void* mapped_addr) {
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to read-only";
 
-  mac::ScopedMachSendRight handle_copy(handle_.release());
+  apple::ScopedMachSendRight handle_copy(handle_.release());
 
   void* temp_addr = mapped_addr;
   mac::ScopedMachVM scoped_memory;
@@ -95,11 +95,11 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly(void* mapped_addr) {
 
   // Make new memory object.
   memory_object_size_t allocation_size = size_;
-  mac::ScopedMachSendRight named_right;
+  apple::ScopedMachSendRight named_right;
   kern_return_t kr = mach_make_memory_entry_64(
       mach_task_self(), &allocation_size,
       reinterpret_cast<memory_object_offset_t>(temp_addr), VM_PROT_READ,
-      mac::ScopedMachSendRight::Receiver(named_right).get(), MACH_PORT_NULL);
+      apple::ScopedMachSendRight::Receiver(named_right).get(), MACH_PORT_NULL);
   if (kr != KERN_SUCCESS) {
     MACH_DLOG(ERROR, kr) << "mach_make_memory_entry_64";
     return false;
@@ -138,12 +138,12 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                      "lead to this region being non-modifiable";
 
   memory_object_size_t vm_size = size;
-  mac::ScopedMachSendRight named_right;
+  apple::ScopedMachSendRight named_right;
   kern_return_t kr = mach_make_memory_entry_64(
       mach_task_self(), &vm_size,
       0,  // Address.
       MAP_MEM_NAMED_CREATE | VM_PROT_READ | VM_PROT_WRITE,
-      mac::ScopedMachSendRight::Receiver(named_right).get(),
+      apple::ScopedMachSendRight::Receiver(named_right).get(),
       MACH_PORT_NULL);  // Parent handle.
   // Crash as soon as shm allocation fails to debug the issue
   // https://crbug.com/872237.
@@ -190,7 +190,7 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(
-    mac::ScopedMachSendRight handle,
+    apple::ScopedMachSendRight handle,
     Mode mode,
     size_t size,
     const UnguessableToken& guid)

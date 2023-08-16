@@ -12,11 +12,11 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
+#include "base/apple/scoped_mach_port.h"
 #include "base/check_op.h"
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -113,7 +113,7 @@ std::string SysInfo::OperatingSystemArchitecture() {
 uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
   struct host_basic_info hostinfo;
   mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
-  base::mac::ScopedMachSendRight host(mach_host_self());
+  base::apple::ScopedMachSendRight host(mach_host_self());
   int result = host_info(host.get(), HOST_BASIC_INFO,
                          reinterpret_cast<host_info_t>(&hostinfo), &count);
   if (result != KERN_SUCCESS) {

@@ -80,7 +80,7 @@ void MachBootstrapAcceptor::HandleRequest() {
   pid_t sender_pid = audit_token_to_pid(request.trailer.msgh_audit);
 
   mojo::PlatformChannelEndpoint remote_endpoint(mojo::PlatformHandle(
-      base::mac::ScopedMachSendRight(request.header.msgh_remote_port)));
+      base::apple::ScopedMachSendRight(request.header.msgh_remote_port)));
   if (!remote_endpoint.is_valid()) {
     return;
   }

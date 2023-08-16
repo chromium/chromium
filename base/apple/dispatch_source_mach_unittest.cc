@@ -8,8 +8,8 @@
 
 #include <memory>
 
+#include "base/apple/scoped_mach_port.h"
 #include "base/logging.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/test/test_timeouts.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,8 +38,8 @@ class DispatchSourceMachTest : public testing::Test {
   }
 
  private:
-  base::mac::ScopedMachReceiveRight receive_right_;
-  base::mac::ScopedMachSendRight send_right_;
+  base::apple::ScopedMachReceiveRight receive_right_;
+  base::apple::ScopedMachSendRight send_right_;
 };
 
 TEST_F(DispatchSourceMachTest, ReceiveAfterResume) {

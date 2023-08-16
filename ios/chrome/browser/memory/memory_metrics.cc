@@ -11,8 +11,8 @@
 
 #include <memory>
 
+#include "base/apple/scoped_mach_port.h"
 #include "base/logging.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
 #include "build/build_config.h"
@@ -37,7 +37,7 @@ namespace memory_util {
 uint64_t GetFreePhysicalBytes() {
   vm_statistics_data_t vmstat;
   mach_msg_type_number_t count = HOST_VM_INFO_COUNT;
-  base::mac::ScopedMachSendRight host(mach_host_self());
+  base::apple::ScopedMachSendRight host(mach_host_self());
   kern_return_t result = host_statistics(
       host.get(), HOST_VM_INFO, reinterpret_cast<host_info_t>(&vmstat), &count);
   if (result != KERN_SUCCESS) {

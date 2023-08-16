@@ -44,7 +44,7 @@ SendablePort ConvertPort(const MachPortType& port_proto) {
   SendablePort port;
   kern_return_t kr = mach_port_allocate(
       mach_task_self(), MACH_PORT_RIGHT_RECEIVE,
-      base::mac::ScopedMachReceiveRight::Receiver(port.receive_right).get());
+      base::apple::ScopedMachReceiveRight::Receiver(port.receive_right).get());
   MACH_CHECK(kr == KERN_SUCCESS, kr) << "mach_port_allocate";
 
   port.name = port.receive_right.get();

@@ -17,7 +17,7 @@ StructTraits<gfx::mojom::CALayerParamsDataView, gfx::CALayerParams>::content(
   if (ca_layer_params.io_surface_mach_port) {
     DCHECK(!ca_layer_params.ca_context_id);
     return gfx::mojom::CALayerContent::NewIoSurfaceMachPort(
-        mojo::PlatformHandle(base::mac::RetainMachSendRight(
+        mojo::PlatformHandle(base::apple::RetainMachSendRight(
             ca_layer_params.io_surface_mach_port.get())));
   }
 #endif

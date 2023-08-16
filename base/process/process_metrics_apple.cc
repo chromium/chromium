@@ -12,9 +12,9 @@
 #include <sys/sysctl.h>
 
 #include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "base/time/time.h"
@@ -162,7 +162,7 @@ int ProcessMetrics::GetIdleWakeupsPerSecond() {
 
 // Bytes committed by the system.
 size_t GetSystemCommitCharge() {
-  base::mac::ScopedMachSendRight host(mach_host_self());
+  base::apple::ScopedMachSendRight host(mach_host_self());
   mach_msg_type_number_t count = HOST_VM_INFO_COUNT;
   vm_statistics_data_t data;
   kern_return_t kr = host_statistics(
@@ -178,7 +178,7 @@ size_t GetSystemCommitCharge() {
 bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
   struct host_basic_info hostinfo;
   mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
-  base::mac::ScopedMachSendRight host(mach_host_self());
+  base::apple::ScopedMachSendRight host(mach_host_self());
   int result = host_info(host.get(), HOST_BASIC_INFO,
                          reinterpret_cast<host_info_t>(&hostinfo), &count);
   if (result != KERN_SUCCESS) {
@@ -245,18 +245,18 @@ MachVMRegionResult GetTopInfo(mach_port_t task,
   // The kernel always returns a null object for VM_REGION_TOP_INFO, but
   // balance it with a deallocate in case this ever changes. See 10.9.2
   // xnu-2422.90.20/osfmk/vm/vm_map.c vm_map_region.
-  mac::ScopedMachSendRight object_name;
+  apple::ScopedMachSendRight object_name;
 
   kern_return_t kr =
 #if BUILDFLAG(IS_MAC)
       mach_vm_region(task, address, size, VM_REGION_TOP_INFO,
                      reinterpret_cast<vm_region_info_t>(info), &info_count,
-                     mac::ScopedMachSendRight::Receiver(object_name).get());
+                     apple::ScopedMachSendRight::Receiver(object_name).get());
 #else
       vm_region_64(task, reinterpret_cast<vm_address_t*>(address),
                    reinterpret_cast<vm_size_t*>(size), VM_REGION_TOP_INFO,
                    reinterpret_cast<vm_region_info_t>(info), &info_count,
-                   mac::ScopedMachSendRight::Receiver(object_name).get());
+                   apple::ScopedMachSendRight::Receiver(object_name).get());
 #endif
   return ParseOutputFromMachVMRegion(kr);
 }
@@ -269,19 +269,19 @@ MachVMRegionResult GetBasicInfo(mach_port_t task,
   // The kernel always returns a null object for VM_REGION_BASIC_INFO_64, but
   // balance it with a deallocate in case this ever changes. See 10.9.2
   // xnu-2422.90.20/osfmk/vm/vm_map.c vm_map_region.
-  mac::ScopedMachSendRight object_name;
+  apple::ScopedMachSendRight object_name;
 
   kern_return_t kr =
 #if BUILDFLAG(IS_MAC)
       mach_vm_region(task, address, size, VM_REGION_BASIC_INFO_64,
                      reinterpret_cast<vm_region_info_t>(info), &info_count,
-                     mac::ScopedMachSendRight::Receiver(object_name).get());
+                     apple::ScopedMachSendRight::Receiver(object_name).get());
 
 #else
       vm_region_64(task, reinterpret_cast<vm_address_t*>(address),
                    reinterpret_cast<vm_size_t*>(size), VM_REGION_BASIC_INFO_64,
                    reinterpret_cast<vm_region_info_t>(info), &info_count,
-                   mac::ScopedMachSendRight::Receiver(object_name).get());
+                   apple::ScopedMachSendRight::Receiver(object_name).get());
 #endif
   return ParseOutputFromMachVMRegion(kr);
 }

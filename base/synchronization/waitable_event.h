@@ -19,8 +19,8 @@
 #include <list>
 #include <memory>
 
+#include "base/apple/scoped_mach_port.h"
 #include "base/functional/callback_forward.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/memory/ref_counted.h"
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <list>
@@ -203,7 +203,7 @@ class BASE_EXPORT WaitableEvent {
     friend class RefCountedThreadSafe<ReceiveRight>;
     ~ReceiveRight();
 
-    mac::ScopedMachReceiveRight right_;
+    apple::ScopedMachReceiveRight right_;
   };
 
   const ResetPolicy policy_;
@@ -214,7 +214,7 @@ class BASE_EXPORT WaitableEvent {
   // The send right used to signal the event. This can be disposed of with
   // the event, unlike the receive right, since a deleted event cannot be
   // signaled.
-  mac::ScopedMachSendRight send_right_;
+  apple::ScopedMachSendRight send_right_;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // On Windows, you must not close a HANDLE which is currently being waited on.
   // The MSDN documentation says that the resulting behaviour is 'undefined'.

@@ -956,7 +956,7 @@ void ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Write(
   zx::vmo vmo = const_cast<param_type&>(p).PassPlatformHandle();
   WriteParam(m, vmo);
 #elif BUILDFLAG(IS_APPLE)
-  base::mac::ScopedMachSendRight h =
+  base::apple::ScopedMachSendRight h =
       const_cast<param_type&>(p).PassPlatformHandle();
   MachPortMac mach_port_mac(h.get());
   WriteParam(m, mach_port_mac);
@@ -1014,8 +1014,8 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Read(
   if (!ReadParam(m, iter, &mach_port_mac))
     return false;
   *r = base::subtle::PlatformSharedMemoryRegion::Take(
-      base::mac::ScopedMachSendRight(mach_port_mac.get_mach_port()), mode, size,
-      guid);
+      base::apple::ScopedMachSendRight(mach_port_mac.get_mach_port()), mode,
+      size, guid);
 #elif BUILDFLAG(IS_POSIX)
   scoped_refptr<base::Pickle::Attachment> attachment;
   if (!m->ReadAttachment(iter, &attachment))

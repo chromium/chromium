@@ -178,7 +178,7 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables, size_t count) {
 
     kern_return_t kr;
 
-    mac::ScopedMachPortSet port_set;
+    apple::ScopedMachPortSet port_set;
     {
       mach_port_t name;
       kr =

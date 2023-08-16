@@ -17,7 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/scoped_mach_port.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

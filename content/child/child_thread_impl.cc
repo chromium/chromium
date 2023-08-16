@@ -302,7 +302,7 @@ class ChildThreadImpl::IOThreadState
 #if BUILDFLAG(IS_APPLE)
   void GetTaskPort(GetTaskPortCallback callback) override {
     mojo::PlatformHandle task_port(
-        (base::mac::ScopedMachSendRight(task_self_trap())));
+        (base::apple::ScopedMachSendRight(task_self_trap())));
     std::move(callback).Run(std::move(task_port));
   }
 #endif

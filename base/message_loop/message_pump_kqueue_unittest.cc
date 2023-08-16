@@ -28,16 +28,16 @@ class MessagePumpKqueueTest : public testing::Test {
 
   MessagePumpKqueue* pump() { return pump_; }
 
-  static void CreatePortPair(mac::ScopedMachReceiveRight* receive,
-                             mac::ScopedMachSendRight* send) {
+  static void CreatePortPair(apple::ScopedMachReceiveRight* receive,
+                             apple::ScopedMachSendRight* send) {
     mach_port_options_t options{};
     options.flags = MPO_INSERT_SEND_RIGHT;
-    mac::ScopedMachReceiveRight port;
+    apple::ScopedMachReceiveRight port;
     kern_return_t kr = mach_port_construct(
         mach_task_self(), &options, 0,
-        mac::ScopedMachReceiveRight::Receiver(*receive).get());
+        apple::ScopedMachReceiveRight::Receiver(*receive).get());
     ASSERT_EQ(kr, KERN_SUCCESS);
-    *send = mac::ScopedMachSendRight(receive->get());
+    *send = apple::ScopedMachSendRight(receive->get());
   }
 
   static mach_msg_return_t SendEmptyMessage(mach_port_t remote_port,
@@ -79,8 +79,8 @@ class PortWatcher : public MessagePumpKqueue::MachPortWatcher {
 };
 
 TEST_F(MessagePumpKqueueTest, MachPortBasicWatch) {
-  mac::ScopedMachReceiveRight port;
-  mac::ScopedMachSendRight send_right;
+  apple::ScopedMachReceiveRight port;
+  apple::ScopedMachSendRight send_right;
   CreatePortPair(&port, &send_right);
 
   mach_msg_id_t msgid = 'helo';
@@ -110,8 +110,8 @@ TEST_F(MessagePumpKqueueTest, MachPortBasicWatch) {
 }
 
 TEST_F(MessagePumpKqueueTest, MachPortStopWatching) {
-  mac::ScopedMachReceiveRight port;
-  mac::ScopedMachSendRight send_right;
+  apple::ScopedMachReceiveRight port;
+  apple::ScopedMachSendRight send_right;
   CreatePortPair(&port, &send_right);
 
   RunLoop run_loop;
@@ -141,8 +141,8 @@ TEST_F(MessagePumpKqueueTest, MachPortStopWatching) {
 }
 
 TEST_F(MessagePumpKqueueTest, MultipleMachWatchers) {
-  mac::ScopedMachReceiveRight port1, port2;
-  mac::ScopedMachSendRight send_right1, send_right2;
+  apple::ScopedMachReceiveRight port1, port2;
+  apple::ScopedMachSendRight send_right1, send_right2;
   CreatePortPair(&port1, &send_right1);
   CreatePortPair(&port2, &send_right2);
 

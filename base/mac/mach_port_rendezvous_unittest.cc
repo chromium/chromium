@@ -44,7 +44,7 @@ MULTIPROCESS_TEST_MAIN(TakeSendRight) {
 
   CHECK_EQ(1u, rendezvous_client->GetPortCount());
 
-  mac::ScopedMachSendRight port =
+  apple::ScopedMachSendRight port =
       rendezvous_client->TakeSendRight(kTestPortKey);
   CHECK(port.is_valid());
 
@@ -66,10 +66,10 @@ TEST_F(MachPortRendezvousServerTest, SendRight) {
   auto* server = MachPortRendezvousServer::GetInstance();
   ASSERT_TRUE(server);
 
-  mac::ScopedMachReceiveRight port;
+  apple::ScopedMachReceiveRight port;
   kern_return_t kr =
       mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_RECEIVE,
-                         mac::ScopedMachReceiveRight::Receiver(port).get());
+                         apple::ScopedMachReceiveRight::Receiver(port).get());
   ASSERT_EQ(kr, KERN_SUCCESS);
 
   MachRendezvousPort rendezvous_port(port.get(), MACH_MSG_TYPE_MAKE_SEND);
@@ -127,10 +127,10 @@ TEST_F(MachPortRendezvousServerTest, CleanupIfNoRendezvous) {
   auto* server = MachPortRendezvousServer::GetInstance();
   ASSERT_TRUE(server);
 
-  mac::ScopedMachReceiveRight port;
+  apple::ScopedMachReceiveRight port;
   kern_return_t kr =
       mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_RECEIVE,
-                         mac::ScopedMachReceiveRight::Receiver(port).get());
+                         apple::ScopedMachReceiveRight::Receiver(port).get());
   ASSERT_EQ(kr, KERN_SUCCESS);
 
   MachRendezvousPort rendezvous_port(port.get(), MACH_MSG_TYPE_MAKE_SEND);

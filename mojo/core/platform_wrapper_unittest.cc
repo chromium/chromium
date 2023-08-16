@@ -25,7 +25,7 @@
 #include <windows.h>
 #include "base/win/scoped_handle.h"
 #elif BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/scoped_mach_port.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -214,8 +214,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
   auto platform_handle = zx::vmo(static_cast<zx_handle_t>(os_buffer.value));
 #elif BUILDFLAG(IS_APPLE)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT, os_buffer.type);
-  auto platform_handle =
-      base::mac::ScopedMachSendRight(static_cast<mach_port_t>(os_buffer.value));
+  auto platform_handle = base::apple::ScopedMachSendRight(
+      static_cast<mach_port_t>(os_buffer.value));
 #elif BUILDFLAG(IS_POSIX)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR, os_buffer.type);
   auto platform_handle = base::ScopedFD(static_cast<int>(os_buffer.value));

@@ -18,8 +18,8 @@
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include <mach/port.h>
 
+#include "base/apple/scoped_mach_port.h"
 #include "base/mac/mach_port_rendezvous.h"
-#include "base/mac/scoped_mach_port.h"
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/handle.h>
 #elif BUILDFLAG(IS_POSIX)
@@ -102,7 +102,7 @@ void PlatformChannelEndpoint::PrepareToPass(HandlePassingInfo& info,
   value = base::NumberToString(mapped_fd);
 #elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
   DCHECK(platform_handle().is_mach_receive());
-  base::mac::ScopedMachReceiveRight receive_right =
+  base::apple::ScopedMachReceiveRight receive_right =
       TakePlatformHandle().TakeMachReceiveRight();
   base::MachPortsForRendezvous::key_type rendezvous_key = 0;
   do {

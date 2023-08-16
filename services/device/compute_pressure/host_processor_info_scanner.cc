@@ -8,8 +8,8 @@
 #include <mach/mach_host.h>
 #include <stdint.h>
 
+#include "base/apple/scoped_mach_port.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/mac/scoped_mach_vm.h"
 #include "base/system/sys_info.h"
 #include "services/device/compute_pressure/core_times.h"
@@ -36,7 +36,7 @@ bool HostProcessorInfoScanner::Update() {
   }
 
   natural_t number_of_processors;
-  base::mac::ScopedMachSendRight host(mach_host_self());
+  base::apple::ScopedMachSendRight host(mach_host_self());
   mach_msg_type_number_t type;
   processor_cpu_load_info_data_t* cpu_infos;
 

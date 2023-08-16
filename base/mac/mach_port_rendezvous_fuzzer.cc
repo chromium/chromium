@@ -30,7 +30,7 @@ struct MachPortRendezvousFuzzer {
     base::MachPortRendezvousServer::GetInstance()->client_data_.clear();
   }
 
-  base::mac::ScopedMachSendRight server_send_right;
+  base::apple::ScopedMachSendRight server_send_right;
 };
 
 }  // namespace base

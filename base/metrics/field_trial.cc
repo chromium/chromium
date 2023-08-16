@@ -1105,7 +1105,7 @@ FieldTrialList::DeserializeSharedMemoryRegionMetadata(
   auto* rendezvous = MachPortRendezvousClient::GetInstance();
   if (!rendezvous)
     return ReadOnlySharedMemoryRegion();
-  mac::ScopedMachSendRight scoped_handle = rendezvous->TakeSendRight(
+  apple::ScopedMachSendRight scoped_handle = rendezvous->TakeSendRight(
       static_cast<MachPortsForRendezvous::key_type>(field_trial_handle));
   if (!scoped_handle.is_valid())
     return ReadOnlySharedMemoryRegion();

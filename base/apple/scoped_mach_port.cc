@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/scoped_mach_port.h"
 
 #include "base/apple/mach_logging.h"
 
-namespace base::mac {
+namespace base::apple {
 namespace internal {
 
 // static
@@ -65,10 +65,11 @@ bool CreateMachPort(ScopedMachReceiveRight* receive,
 ScopedMachSendRight RetainMachSendRight(mach_port_t port) {
   kern_return_t kr =
       mach_port_mod_refs(mach_task_self(), port, MACH_PORT_RIGHT_SEND, 1);
-  if (kr == KERN_SUCCESS)
+  if (kr == KERN_SUCCESS) {
     return ScopedMachSendRight(port);
+  }
   MACH_DLOG(ERROR, kr) << "mach_port_mod_refs +1";
   return {};
 }
 
-}  // namespace base::mac
+}  // namespace base::apple

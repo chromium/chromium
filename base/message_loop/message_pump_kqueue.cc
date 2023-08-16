@@ -130,7 +130,7 @@ MessagePumpKqueue::MessagePumpKqueue()
   // using an EVFILT_USER event, especially when triggered across threads.
   kern_return_t kr = mach_port_allocate(
       mach_task_self(), MACH_PORT_RIGHT_RECEIVE,
-      base::mac::ScopedMachReceiveRight::Receiver(wakeup_).get());
+      base::apple::ScopedMachReceiveRight::Receiver(wakeup_).get());
   MACH_CHECK(kr == KERN_SUCCESS, kr) << "mach_port_allocate";
 
   // Configure the event to directly receive the Mach message as part of the
