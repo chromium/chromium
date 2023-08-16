@@ -6,29 +6,6 @@
 
 /**
  * Launches the PaymentRequest UI that offers free shipping worldwide.
- *
- * Legacy entry function until basic-card is removed.
- */
-function buy() {
-  buyWithMethods([{
-    supportedMethods: 'basic-card',
-    data: {
-      supportedNetworks: [
-        'visa',
-        'unionpay',
-        'mir',
-        'mastercard',
-        'jcb',
-        'discover',
-        'diners',
-        'amex',
-      ],
-    },
-  }]);
-}
-
-/**
- * Launches the PaymentRequest UI that offers free shipping worldwide.
  * @param {sequence<PaymentMethodData>} methodData An array of payment method
  *        objects.
  */
