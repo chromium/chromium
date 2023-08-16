@@ -34,6 +34,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -51,6 +53,8 @@ constexpr base::TimeDelta kOcclusionPauseDurationForStart =
 // overview mode immediately, contents are ready.
 constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
     base::Milliseconds(500);
+
+constexpr base::TimeDelta kEnterExitPresentationMaxLatency = base::Seconds(2);
 
 bool IsSplitViewDividerDraggedOrAnimated() {
   SplitViewController* split_view_controller =
@@ -336,6 +340,12 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::ExitOverview",
                                       this);
 
+    auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
+        Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
+        kExitOverviewPresentationHistogram, "",
+        kEnterExitPresentationMaxLatency);
+    presentation_time_recorder->RequestNext();
+
     // Suspend occlusion tracker until the exit animation is complete.
     PauseOcclusionTracker();
 
@@ -395,6 +405,13 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     DCHECK(CanEnterOverview());
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
                                       this);
+
+    auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
+        Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
+        kEnterOverviewPresentationHistogram, "",
+        kEnterExitPresentationMaxLatency);
+    presentation_time_recorder->RequestNext();
+
     if (auto* active_window = window_util::GetActiveWindow(); active_window) {
       auto* active_widget =
           views::Widget::GetWidgetForNativeView(active_window);

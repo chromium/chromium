@@ -4883,6 +4883,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Overview.Enter.PresentationTime" units="ms"
+    expires_after="2024-08-14">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Records the presentation time, which is the time in milliseconds it takes
+    from when the overview enter event was received and successfully processed
+    to when the next frame is shown to the user.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.Exit.PresentationTime" units="ms"
+    expires_after="2024-08-14">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Records the presentation time, which is the time in milliseconds it takes
+    from when the overview exit event was received and successfully processed to
+    when the next frame is shown to the user.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Overview.Items" units="units" expires_after="2024-06-01">
   <owner>sammiequon@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
@@ -7367,6 +7391,19 @@ chromium-metrics-reviews@google.com.
     had 2 or more desks and a new window was activated, to report the distance
     between the active desks before and after window cycling. A distance of 0
     means no desks switch occurred.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowCycleController.Enter.PresentationTime" units="ms"
+    expires_after="2024-07-27">
+  <owner>andp@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Records the presentation time, which is the time in milliseconds it takes
+    from when the window cycle event (alt+tab) was received to when the next
+    frame is shown to the user. This does not include the 150ms delay for window
+    cycle (for users who switch so fast they do not need the UI).
   </summary>
 </histogram>
 
