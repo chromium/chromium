@@ -42,6 +42,10 @@ export class CupsPrintersEntryManager {
     instance = obj;
   }
 
+  static resetForTesting(): void {
+    instance = null;
+  }
+
   printServerPrinters: PrinterListEntry[];
 
   private enterprisePrinters_: PrinterListEntry[];

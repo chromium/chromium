@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CupsPrinterInfo, CupsPrintersBrowserProxyImpl, PRINTER_STATUS_QUERY_SHORT_DELAY_RANGE_MS, PrinterListEntry, PrinterSettingsUserAction, PrinterStatusReason, PrinterStatusSeverity, PrinterType, SettingsCupsEditPrinterDialogElement, SettingsCupsEnterprisePrintersElement, SettingsCupsNearbyPrintersElement, SettingsCupsPrintersElement, SettingsCupsPrintersEntryElement, SettingsCupsSavedPrintersElement} from 'chrome://os-settings/lazy_load.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PRINTER_STATUS_QUERY_SHORT_DELAY_RANGE_MS, PrinterListEntry, PrinterSettingsUserAction, PrinterStatusReason, PrinterStatusSeverity, PrinterType, SettingsCupsEditPrinterDialogElement, SettingsCupsEnterprisePrintersElement, SettingsCupsNearbyPrintersElement, SettingsCupsPrintersElement, SettingsCupsPrintersEntryElement, SettingsCupsSavedPrintersElement} from 'chrome://os-settings/lazy_load.js';
 import {CrInputElement, CrSearchableDropDownElement, CrToastElement, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -218,6 +218,7 @@ suite('CupsSavedPrintersTests', () => {
     cupsPrintersBrowserProxy.reset();
     page.remove();
     savedPrintersElement.remove();
+    CupsPrintersEntryManager.resetForTesting();
   });
 
 
