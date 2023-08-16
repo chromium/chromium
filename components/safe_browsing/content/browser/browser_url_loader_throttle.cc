@@ -18,7 +18,6 @@
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_experimenter.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
-#include "components/safe_browsing/core/browser/utils/scheme_logger.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -358,11 +357,9 @@ void BrowserURLLoaderThrottle::WillStartRequest(
     return;
   }
 
-  original_url_ = request->url;
   pending_checks_++;
   start_request_time_ = base::TimeTicks::Now();
   is_start_request_called_ = true;
-  request_destination_ = request->destination;
   if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
     sb_checker_->Start(request->headers, request->load_flags,
                        request->destination, request->has_user_gesture,
@@ -387,17 +384,6 @@ void BrowserURLLoaderThrottle::WillRedirectRequest(
     net::HttpRequestHeaders* /* modified_headers */,
     net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // TODO(crbug.com/1410939): Below histograms are for debugging. Remove them
-  // afterwards.
-  safe_browsing::scheme_logger::LogScheme(
-      original_url_,
-      "SafeBrowsing.BrowserThrottle.RedirectedOriginalUrlScheme");
-  if (original_url_.SchemeIs("chrome-extension")) {
-    safe_browsing::scheme_logger::LogScheme(
-        redirect_info->new_url,
-        "SafeBrowsing.BrowserThrottle.RedirectedExtensionUrlScheme");
-  }
 
   if (blocked_) {
     // OnCheckUrlResult() has set |blocked_| to true and called
@@ -470,18 +456,6 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
              is_response_from_cache_ ? kFromCacheUmaSuffix
                                      : kFromNetworkUmaSuffix}),
         interval);
-    // TODO(crbug.com/1410939): Below histograms are for debugging. Remove them
-    // afterwards.
-    if (!is_response_from_cache_ && interval <= base::Milliseconds(2)) {
-      base::UmaHistogramEnumeration(
-          "SafeBrowsing.BrowserThrottle.FastRequestFromNetwork."
-          "RequestDestination",
-          request_destination_);
-      safe_browsing::scheme_logger::LogScheme(
-          original_url_,
-          "SafeBrowsing.BrowserThrottle.FastRequestFromNetwork.UrlScheme");
-    }
-
     if (check_completed) {
       LogTotalDelay2MetricsWithResponseType(is_response_from_cache_,
                                             base::TimeDelta());
@@ -497,9 +471,8 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
   deferred_ = true;
   defer_start_time_ = base::TimeTicks::Now();
   *defer = true;
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("safe_browsing", "Deferred",
-                                    TRACE_ID_LOCAL(this), "original_url",
-                                    original_url_.spec());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("safe_browsing", "Deferred",
+                                    TRACE_ID_LOCAL(this));
 }
 
 const char* BrowserURLLoaderThrottle::NameForLoggingWillProcessResponse() {

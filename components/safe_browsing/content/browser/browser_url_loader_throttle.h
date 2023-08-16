@@ -232,12 +232,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   bool deferred_ = false;
   // Whether the response loaded is from cache.
   bool is_response_from_cache_ = false;
-  network::mojom::RequestDestination request_destination_;
 
   // The total delay caused by SafeBrowsing deferring the resource load.
   base::TimeDelta total_delay_;
-
-  GURL original_url_;
 
   // Whether future safe browsing checks should be skipped.
   bool skip_checks_ = false;

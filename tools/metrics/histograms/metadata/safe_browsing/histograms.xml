@@ -190,34 +190,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.AndroidTelemetry.ApkDownload.IncompleteReason"
-    enum="ApkDownloadTelemetryIncompleteReason" expires_after="2023-06-10">
+    enum="ApkDownloadTelemetryIncompleteReason" expires_after="2024-08-16">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records if the telemetry ping sent for APK download contained a full
     referrer chain, or if there was an error collecting the referrer chain.
     Logged each time a user opted into extended reporting downloads an APK file
-    from a normal window on Android.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.AndroidTelemetry.ApkDownload.IsMimeTypeApk"
-    enum="BooleanIsMimeTypeApk" expires_after="2023-08-27">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether the mime type of the download is apk. Logged each time an
-    apk download report is sent on Android.
+    from a normal window on Android. Warning: this histogram was expired from
+    2023-06-10 to 2023-08-16; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="SafeBrowsing.AndroidTelemetry.ApkDownload.Outcome"
-    enum="ApkDownloadTelemetryOutcome" expires_after="2023-07-09">
+    enum="ApkDownloadTelemetryOutcome" expires_after="2024-08-16">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether a telemetry ping for APK download was sent, or if not, then
-    why not. Logged each time a user downloads an APK file on Android.
+    why not. Logged each time a user downloads an APK file on Android. Warning:
+    this histogram was expired from 2023-07-09 to 2023-08-16; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -245,29 +238,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SafeBrowsing.BrowserThrottle.FastRequestFromNetwork.RequestDestination"
-    enum="RequestDestination" expires_after="2023-12-24">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the request destination of the URL that is checked by browser URL
-    loader throttle. Logged each time the resource is fetched over the network
-    and it is faster than 2ms.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.BrowserThrottle.FastRequestFromNetwork.UrlScheme"
-    enum="SafeBrowsingUrlScheme" expires_after="2023-07-07">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the scheme of the URL that is checked by browser URL loader throttle.
-    Logged each time the resource is fetched over the network and it is faster
-    than 2ms.
-  </summary>
-</histogram>
-
-<histogram
     name="SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse"
     enum="BooleanCompleted" expires_after="2024-02-11">
   <owner>xinghuilu@chromium.org</owner>
@@ -279,30 +249,6 @@ chromium-metrics-reviews@google.com.
     WillProcessResponse() and the Safe Browsing check doesn't block the URL.
 
     This metric is used to populate a dashboard on go/crsb-site.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.BrowserThrottle.RedirectedExtensionUrlScheme"
-    enum="SafeBrowsingUrlScheme" expires_after="2024-01-14">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the scheme of the new URL that is redirected from a chrome-extension://
-    URL. Logged each time browser URL loader throttle receives a redirect
-    request and the scheme of the original URL is chrome-extension://. This
-    histogram can help us determine if it is safe to skip chrome-extension://
-    URLs when the request starts.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.BrowserThrottle.RedirectedOriginalUrlScheme"
-    enum="SafeBrowsingUrlScheme" expires_after="2023-12-24">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the scheme of the original URL that is redirected. Logged each time
-    browser URL loader throttle receives a redirect request. This histogram can
-    help us determine what scheme is safe to skip when the request starts.
   </summary>
 </histogram>
 
@@ -2118,7 +2064,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Request.UserPopulation"
-    enum="SafeBrowsingUserPopulation" expires_after="2023-08-27">
+    enum="SafeBrowsingUserPopulation" expires_after="2024-08-16">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2660,7 +2606,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4ProcessPartialUpdate.AdditionsHashesCount"
-    units="entries" expires_after="2023-09-03">
+    units="entries" expires_after="2024-08-16">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2948,7 +2894,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.{Process}Throttle.RequestDestination"
-    enum="RequestDestination" expires_after="2023-08-28">
+    enum="RequestDestination" expires_after="2024-08-16">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2959,7 +2905,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.{Process}Throttle.TotalDelay2{ResponseType}"
-    units="ms" expires_after="2023-08-09">
+    units="ms" expires_after="2024-08-16">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
