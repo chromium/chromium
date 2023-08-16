@@ -1390,7 +1390,8 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
          (GetPseudoType() == kPseudoBefore || GetPseudoType() == kPseudoAfter ||
           GetPseudoType() == kPseudoMarker ||
           GetPseudoType() == kPseudoPlaceholder ||
-          GetPseudoType() == kPseudoFileSelectorButton);
+          GetPseudoType() == kPseudoFileSelectorButton ||
+          GetPseudoType() == kPseudoBackdrop);
 }
 
 bool CSSSelector::IsAllowedAfterPart() const {
