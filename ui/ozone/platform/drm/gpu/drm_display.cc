@@ -161,13 +161,12 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
       is_hdr_capable_ &&
       base::FeatureList::IsEnabled(display::features::kUseHDRTransferFunction);
 
-  if (base::FeatureList::IsEnabled(
-          display::features::kEnableExternalDisplayHDR10Mode) &&
-      display_snapshot.color_space() == gfx::ColorSpace::CreateHDR10()) {
-    current_color_space_ = gfx::ColorSpace::CreateHDR10();
-    // More likely it should be end users' choice to turn on the hdr mode or
-    // not. For now we always turn it on.
-    SetHDR10Mode();
+  if (is_hdr_capable_ &&
+      base::FeatureList::IsEnabled(
+          display::features::kEnableExternalDisplayHDR10Mode)) {
+    current_color_space_ = display_snapshot.color_space();
+    SetColorspaceProperty(display_snapshot.color_space());
+    SetHdrOutputMetadata(display_snapshot.color_space());
   }
 #endif
 }
@@ -431,7 +430,7 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
   return true;
 }
 
-bool DrmDisplay::SetHDR10Mode() {
+bool DrmDisplay::SetColorspaceProperty(const gfx::ColorSpace color_space) {
   DCHECK(connector_);
   DCHECK(hdr_static_metadata_.has_value());
   ScopedDrmPropertyPtr color_space_property(
@@ -443,13 +442,12 @@ bool DrmDisplay::SetHDR10Mode() {
   if (!drm_->SetProperty(
           connector_->connector_id, color_space_property->prop_id,
           GetEnumValueForName(*drm_, color_space_property->prop_id,
-                              kColorSpaceBT2020RGBEnumName))) {
-    PLOG(INFO) << "Cannot set '" << kColorSpaceBT2020RGBEnumName
+                              GetNameForColorspace(color_space)))) {
+    PLOG(INFO) << "Cannot set '" << GetNameForColorspace(color_space)
                << "' to 'Colorspace' property.";
     return false;
   }
-
-  return SetHdrOutputMetadata(gfx::ColorSpace::CreateHDR10());
+  return true;
 }
 
 void DrmDisplay::SetColorSpace(const gfx::ColorSpace& color_space) {

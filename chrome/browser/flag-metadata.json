@@ -2664,6 +2664,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "enable-external-display-hdr10",
+    "owners": [ "sashamcintosh", "chromeos-gfx@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-external-keyboards-in-diagnostics-app",
     "owners": [ "jimmyxgong", "michaelcheco", "cros-peripherals@google.com" ],
     "expiry_milestone": 130

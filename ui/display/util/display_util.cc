@@ -170,12 +170,12 @@ gfx::ColorSpace GetColorSpaceFromEdid(const display::EdidParser& edid_parser) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (base::FeatureList::IsEnabled(
               display::features::kEnableExternalDisplayHDR10Mode) &&
+          edid_parser.is_external_display() &&
           base::Contains(
               edid_parser.supported_color_primary_matrix_ids(),
               EdidParser::PrimaryMatrixPair(gfx::ColorSpace::PrimaryID::BT2020,
                                             gfx::ColorSpace::MatrixID::RGB))) {
-        // Returns HDR10(PQ) color space if the display can support it.
-        color_space_primaries = gfx::ColorSpace::PrimaryID::BT2020;
+        return gfx::ColorSpace::CreateHDR10();
       }
 #endif
     } else if (base::Contains(edid_parser.supported_color_transfer_ids(),
@@ -349,7 +349,7 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
             display::features::kEnableExternalDisplayHDR10Mode) &&
         snapshot_color_space == gfx::ColorSpace::CreateHDR10()) {
       // This forces the main ui plane to be always HDR10 regardless of
-      // ContentColorUsage.
+      // ContentColorUsage. BT2020 primaries require 10-bit buffer.
       display_color_spaces = gfx::DisplayColorSpaces(
           gfx::ColorSpace::CreateHDR10(), gfx::BufferFormat::RGBA_1010102);
     }

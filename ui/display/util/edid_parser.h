@@ -112,6 +112,8 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   // Extracts the 2 Byte Product ID as hex out of |product_id|.
   static std::string ProductIdToString(uint16_t product_id);
 
+  bool is_external_display() const { return is_external_display_; }
+
  private:
   // Parses |edid_blob|, filling up as many as possible fields below.
   void ParseEdid(const std::vector<uint8_t>& edid);

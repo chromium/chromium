@@ -92,7 +92,7 @@ class DrmDisplay {
       const std::vector<display::GammaRampRGBEntry>& gamma_lut);
   bool SetPrivacyScreen(bool enabled);
   bool SetHdrOutputMetadata(const gfx::ColorSpace color_space);
-  bool SetHDR10Mode();
+  bool SetColorspaceProperty(const gfx::ColorSpace color_space);
   void SetColorSpace(const gfx::ColorSpace& color_space);
 
   void set_is_hdr_capable_for_testing(bool value) { is_hdr_capable_ = value; }
