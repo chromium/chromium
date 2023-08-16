@@ -162,27 +162,32 @@ may sacrifice a little bit of correctness in favor of simplicity.
 * Browser:
   * `ContentAutofillDriver`
     * One instance per `RenderFrameHost` (frame), owned by
-      `ContentAutofillDriverFactory`
+      `ContentAutofillDriverFactory`.
     * Responsibilities:
       * Facilitates communication between the browser and the renderer logic.
     * Implements interfaces `AutofillDriver` and `mojom::AutofillDriver`
     * Has sibling `AutofillDriverIOS` for iOS
   * `ContentAutofillDriverFactory`
-    * One instance per `WebContents` (tab)
+    * One instance per `WebContents` (tab).
     * Responsibilities:
       * Manages life-cycle of `ContentAutofillDriver` and ensures that there is
         one Driver instance per renderer frame.
     * Has sibling `AutofillDriverIOSFactory` for iOS
+  * `ContentAutofillRouter`
+    * One instance per `WebContents` (tab).
+    * Responsibilities:
+      * Flattens frame-transcending forms into a single `FormData`.
+      * Routes events between the unflattened forms' drivers and the flattened
+        form's driver.
   * `AutofillManager` and `BrowserAutofillManager`
-    * One instance per `RenderFrameHost` (frame), owned by
-      `AutofillDriver`.
+    * One instance per `RenderFrameHost` (frame), owned by `AutofillDriver`.
     * Responsibilities:
       * Main orchestrator for Autofill logic.
     * `BrowserAutofillManager` extends the `AutofillManager` base class.
     * `BrowserAutofillManager` has sibling `AndroidAutofillManager` which is
       responsible for Android Autofill for WebViews.
   * `ChromeAutofillClient`
-    * One instance per `WebContents` (tab)
+    * One instance per `WebContents` (tab).
     * Responsibilities:
       * Serves as bridge from platform aganostic `BrowserAutofillManager` to the
         OS specific logic.
@@ -234,6 +239,7 @@ may sacrifice a little bit of correctness in favor of simplicity.
       * Other Autofill metadata
 
 ## How are forms and fields identified?
+
 * Per page load, in particular for distinguishing DOM elements:
   * `FormGlobalId` is a pair of a `LocalFrameToken` and a `FormRendererId`,
      which uniquely identify the frame and the form element in that frame.
@@ -247,6 +253,7 @@ may sacrifice a little bit of correctness in favor of simplicity.
     password, tel, ...)
 
 ## How are field classified?
+
 * Local heuristics
   * See `components/autofill/core/browser/form_parsing/`.
   * `FormField::ParseFormFields` is the global entry point for parsing fields
@@ -294,6 +301,20 @@ may sacrifice a little bit of correctness in favor of simplicity.
 Predicted types are represented as [ServerFieldTypes](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/field_types.h;l=125;drc=bce2963801691db93bc7f05b5d320cef32effa24)
 and types derived from the autocomplete attribute are represented as [HtmlFieldTypes](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/common/mojom/autofill_types.mojom;l=24;drc=f330bdbafa2714f8a6431a9dee412fdb38d5adbe).
 
+## What about forms in iframes?
+
+* A form can contain iframes, which in turn can contain forms themselves.
+  Such a tree of forms (and frames) is called a *frame-transcending form*.
+* Autofill treats every frame-transcending form like a single, ordinary form:
+  [docs/security/autofill-across-iframes.md](https://source.chromium.org/chromium/chromium/src/+/main:docs/security/autofill-across-iframes.md)
+* [`ContentAutofillRouter`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/browser/content_autofill_router.h)
+  flattens each tree of forms by merging the fields of the `FormData` nodes
+  into the root `FormData`, and routes events between the nodes' drivers to the
+  root's driver and vice versa.
+* We refer to the form nodes as *renderer forms* and to the flattened form as
+  *browser form*. `AutofillAgent` only sees renderer forms, `AutofillManager`
+  only sees browser forms.
+
 ## Field type terminology
 
 Several important subsets of ServerFieldTypes exist:
@@ -316,6 +337,7 @@ Several important subsets of ServerFieldTypes exist:
 See [go/autofill-new-fieldtypes-in-data-model-dd](http://go/autofill-new-fieldtypes-in-data-model-dd).
 
 ## How is data represented internally?
+
 * See `components/autofill/core/browser/data_model/`
   * For addresses, see
     `components/autofill/core/browser/data_model/autofill_structured_address.h`
@@ -341,10 +363,12 @@ See [go/autofill-new-fieldtypes-in-data-model-dd](http://go/autofill-new-fieldty
     much data, it is discarded via `AddressComponent::WipeInvalidStructure()`.
 
 ## Where is Autofill data persisted?
+
 * See
   [`../../components/autofill/core/browser/webdata/autofill_table.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/webdata/autofill_table.h)
 
 ## What is a form submission?
+
 The following situations are considered form submissions by Autofill and end up
 at `AutofillManager::OnFormSubmitted()` with a submission source and an
 assessment whether the form submission should be considered successful (meaning
@@ -379,6 +403,7 @@ succeeded):
   * Triggers `SubmissionSource::FRAME_DETACHED` with `known_success=true`.
 
 ## When are votes uploaded?
+
 Autofill votes are theoretically uploaded
 * when a **form is submitted**
   (`BrowserAutofillManager::OnFormSubmittedImpl()`).
