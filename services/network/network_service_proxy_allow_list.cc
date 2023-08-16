@@ -20,15 +20,6 @@ std::string NormalizeHost(std::string s) {
   return s.substr(0, 4) == "www." ? s.substr(4) : s;
 }
 
-// Extracts a suffix from the domain that is useful for comparing domains and
-// subdomains.
-std::string DomainSuffix(std::string domain) {
-  auto host_suffix_start = domain.rfind(".", domain.rfind("."));
-  return host_suffix_start != std::string::npos
-             ? domain.substr(host_suffix_start)
-             : domain;
-}
-
 }  // namespace
 
 NetworkServiceProxyAllowList::NetworkServiceProxyAllowList() {
@@ -91,12 +82,20 @@ NetworkServiceProxyAllowList::GetCustomProxyConfig() {
   return custom_proxy_config_ ? custom_proxy_config_->Clone() : nullptr;
 }
 
+// static
+std::string NetworkServiceProxyAllowList::PartitionMapKey(std::string domain) {
+  auto host_suffix_start = domain.rfind(".", domain.rfind("."));
+  return host_suffix_start != std::string::npos
+             ? domain.substr(host_suffix_start)
+             : domain;
+}
+
 void NetworkServiceProxyAllowList::AddDomainRules(
     const std::string& domain,
     const net::ProxyBypassRules& bypass_rules) {
   auto rule = net::SchemeHostPortMatcherRule::FromUntrimmedRawString(domain);
 
-  std::string domain_suffix = DomainSuffix(domain);
+  std::string domain_suffix = PartitionMapKey(domain);
 
   if (rule) {
     allow_list_with_bypass_map_[domain_suffix][std::move(rule)] = bypass_rules;
@@ -129,7 +128,7 @@ bool NetworkServiceProxyAllowList::Matches(const GURL& request_url,
     return false;
   }
 
-  auto resource_host_suffix = DomainSuffix(resource_host);
+  auto resource_host_suffix = PartitionMapKey(resource_host);
 
   if (allow_list_with_bypass_map_.contains(resource_host_suffix)) {
     for (const auto& [rule, bypass_rules] :
