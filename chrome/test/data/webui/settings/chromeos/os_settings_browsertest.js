@@ -685,6 +685,13 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['OsPrintingPage', 'os_printing_page/os_printing_page_test.js'],
  [
+   'OsPrintingPageCupsPrintServer', 'os_printing_page/cups_print_server_test.js'
+ ],
+ [
+   'OsPrintingPageCupsPrinterDialog',
+   'os_printing_page/cups_printer_dialog_test.js'
+ ],
+ [
    'OsPrintingPageCupsPrinterLandingPage',
    'os_printing_page/cups_printer_landing_page_test.js',
    {enabled: ['ash::features::kPrinterSettingsPrinterStatus']}
