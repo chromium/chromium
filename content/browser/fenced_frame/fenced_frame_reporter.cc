@@ -31,6 +31,7 @@
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
@@ -307,7 +308,8 @@ bool FencedFrameReporter::SendReport(
   // the map is empty, can't send a request. An entry with a null (not empty)
   // map means the map is pending, and is handled below.
   if (it == reporting_metadata_.end() ||
-      (it->second.reporting_url_map && it->second.reporting_url_map->empty())) {
+      (absl::holds_alternative<DestinationEnumEvent>(event_variant) &&
+       it->second.reporting_url_map && it->second.reporting_url_map->empty())) {
     error_message = base::StrCat(
         {"This frame did not register reporting metadata for destination '",
          ReportingDestinationAsString(reporting_destination), "'."});
@@ -389,7 +391,7 @@ bool FencedFrameReporter::SendReportInternal(
       return false;
     }
 
-    // Validate the reporting url.
+    // Validate the reporting URL.
     url = url_iter->second;
     if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
       error_message = base::StrCat(
@@ -401,12 +403,84 @@ bool FencedFrameReporter::SendReportInternal(
       return false;
     }
   } else {
-    CHECK(absl::holds_alternative<DestinationURLEvent>(event_variant));
     // Since the event references a destination URL, use it directly.
-    // The URL should have been validated previously, to be a valid HTTPS url.
-    // TODO(gtanzer): Substitute macros from the reporting metadata as needed.
-    // TODO(gtanzer): Check whether the url is an allowlisted origin.
-    url = absl::get<DestinationURLEvent>(event_variant).url;
+    // The URL should have been validated previously, to be a valid HTTPS URL.
+    CHECK(absl::holds_alternative<DestinationURLEvent>(event_variant));
+
+    // Check that reportEvent to custom destination URLs with macro
+    // substitution is allowed in this context. (i.e., The macro map has a
+    // value.)
+    if (!reporting_destination_info.reporting_ad_macro_map.has_value()) {
+      error_message =
+          "This frame attempted to send a report to a custom destination URL "
+          "with macro substitution, which is not supported by the API that "
+          "created this frame's fenced frame config.";
+      console_message_level = blink::mojom::ConsoleMessageLevel::kError;
+      NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
+      return false;
+    }
+
+    // If there is no allowlist, or the allowlist is empty, provide a more
+    // specific error message.
+    if (!allowed_reporting_origins_.has_value() ||
+        allowed_reporting_origins_->empty()) {
+      error_message =
+          "This frame attempted to send a report to a custom destination URL "
+          "with macro substitution, but no origins are allowed by its "
+          "allowlist.";
+      console_message_level = blink::mojom::ConsoleMessageLevel::kError;
+      NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
+      return false;
+    }
+
+    // If the origin allowlist has previously been violated, this feature is
+    // disabled for the lifetime of the FencedFrameReporter. This prevents
+    // an interest group from encoding cross-site data about a user in binary
+    // with its choices of allowed/disallowed origins.
+    if (attempted_custom_url_report_to_disallowed_origin_) {
+      error_message =
+          "This frame attempted to send a report to a custom destination URL "
+          "with macro substitution, but this functionality is disabled because "
+          "a request was previously attempted to a disallowed origin.";
+      console_message_level = blink::mojom::ConsoleMessageLevel::kError;
+      NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
+      return false;
+    }
+
+    // Substitute macros in the specified URL using the macro map.
+    // TODO(qingxinwu): Lift these changes up out of FencedFrameReporter into
+    // the code that constructs the reporting ad macro map.
+    std::vector<std::pair<std::string, std::string>> macro_map;
+    for (const auto& entry :
+         reporting_destination_info.reporting_ad_macro_map.value()) {
+      macro_map.emplace_back("${" + entry.first + "}", entry.second);
+    }
+    url = GURL(SubstituteMappedStrings(
+        absl::get<DestinationURLEvent>(event_variant).url.spec(), macro_map));
+    url::Origin destination_origin = url::Origin::Create(url);
+
+    // Check whether the destination URL has an allowed origin.
+    bool is_allowed_origin = false;
+    for (auto& origin : allowed_reporting_origins_.value()) {
+      if (origin.IsSameOriginWith(destination_origin)) {
+        is_allowed_origin = true;
+        break;
+      }
+    }
+
+    // If the destination URL has a disallowed origin, disable this feature for
+    // the lifetime of the FencedFrameReporter and return.
+    if (!is_allowed_origin) {
+      attempted_custom_url_report_to_disallowed_origin_ = true;
+      error_message =
+          "This frame attempted to send a report to a custom destination URL "
+          "with macro substitution to a disallowed origin. No further reports "
+          "to custom destination URLs will be allowed for this fenced frame "
+          "config.";
+      console_message_level = blink::mojom::ConsoleMessageLevel::kError;
+      NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
+      return false;
+    }
   }
 
   if (!GetContentClient()

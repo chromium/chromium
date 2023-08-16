@@ -377,6 +377,14 @@ class CONTENT_EXPORT FencedFrameReporter
   // Origins allowed to receive macro expanded reports.
   const absl::optional<std::vector<url::Origin>> allowed_reporting_origins_;
 
+  // Whether there has been an attempt to send a custom destination url with
+  // macro substitution report to a disallowed origin (according to
+  // `allowed_reporting_origins_`). Once this occurs, custom destination url
+  // reports will be disabled for the remainder of the FencedFrameReporter's
+  // lifetime. This prevents an interest group from encoding cross-site data
+  // about a user in binary with its choices of allowed/disallowed origins.
+  bool attempted_custom_url_report_to_disallowed_origin_ = false;
+
   // Private aggregation requests for non-reserved event types registered in
   // bidder worklets, keyed by event type.
   // OnForEventPrivateAggregationRequestsReceived() builds this map up.

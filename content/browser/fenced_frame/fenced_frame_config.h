@@ -93,6 +93,15 @@ class FencedFrameURLMapping;
 extern const char kUrnUuidPrefix[];
 GURL CONTENT_EXPORT GenerateUrnUuid();
 
+// Returns a new string based on input where the matching substrings have been
+// replaced with the corresponding substitutions. This function avoids repeated
+// string operations by building the output based on all substitutions, one
+// substitution at a time. This effectively performs all substitutions
+// simultaneously, with the earliest match in the input taking precedence.
+std::string SubstituteMappedStrings(
+    const std::string& input,
+    const std::vector<std::pair<std::string, std::string>>& substitutions);
+
 using AdAuctionData = blink::FencedFrame::AdAuctionData;
 using DeprecatedFencedFrameMode = blink::FencedFrame::DeprecatedFencedFrameMode;
 using SharedStorageBudgetMetadata =
