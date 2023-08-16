@@ -627,17 +627,17 @@ void NativeWidgetNSWindowBridge::CloseWindow() {
   if (fullscreen_controller_.HasDeferredWindowClose())
     return;
 
-  // Keep |window| on the stack so that the ObjectiveC block below can capture
-  // it and properly increment the reference count bound to the posted task.
+  // Make a local variable of the window on the stack so that the block can
+  // capture a reference to it.
   NSWindow* window = ns_window();
 
-  if (IsWindowModalSheet() && [ns_window() isSheet]) {
+  if (IsWindowModalSheet() && window.sheet) {
     // Sheets can't be closed normally. This starts the sheet closing. Once the
-    // sheet has finished animating, it will call sheetDidEnd: on the parent
-    // window's delegate. Note it still needs to be asynchronous, since code
-    // calling Widget::Close() doesn't expect things to be deleted upon return.
-    // Ensure |window| is retained by a block. Note in some cases during
-    // teardown, [window sheetParent] may be nil.
+    // sheet has finished animating, it will call the end-sheet block defined
+    // when the sheet was displayed. Note it still needs to be asynchronous,
+    // since code calling Widget::Close() doesn't expect things to be deleted
+    // upon return. Ensure |window| is retained by a block. Note in some cases
+    // during teardown, [window sheetParent] may be nil.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(^{
           [NSApp endSheet:window];
@@ -1765,30 +1765,33 @@ bool NativeWidgetNSWindowBridge::IsWindowModalSheet() const {
 }
 
 void NativeWidgetNSWindowBridge::ShowAsModalSheet() {
-  // -[NSApp beginSheet:] will block the UI thread while the animation runs.
-  // So that it doesn't animate a fully transparent window, first wait for a
-  // frame. The first step is to pretend that the window is already visible.
+  // -[NSWindow beginSheet:completionHandler:] will block the UI thread while
+  // the animation runs. So that it doesn't animate a fully transparent window,
+  // first wait for a frame. The first step is to pretend that the window is
+  // already visible.
   window_visible_ = true;
   host_->OnVisibilityChanged(window_visible_);
 
   NSWindow* parent_window = parent_->ns_window();
   DCHECK(parent_window);
+  NSWindow* __weak weak_window = window_;
 
-  // -beginSheet: does not retain |modalDelegate| (and we would not want it to).
-  // Since |this| may destroy [window_ delegate], use |window_| itself as the
-  // delegate, which will forward to ViewsNSWindowDelegate if |this| is still
-  // alive (i.e. it has not set the window delegate to nil).
-  // TODO(https://crbug.com/1422060): Migrate to `[NSWindow
-  // beginSheet:completionHandler:]` instead of this method.
   auto begin_sheet_closure = base::BindOnce(^{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [NSApp beginSheet:window_
-        modalForWindow:parent_window
-         modalDelegate:window_
-        didEndSelector:@selector(sheetDidEnd:returnCode:contextInfo:)
-           contextInfo:nullptr];
-#pragma clang diagnostic pop
+    [parent_window beginSheet:window_
+            completionHandler:^(NSModalResponse return_code) {
+              // This class, NativeWidgetNSWindowBridge, clears the window's
+              // delegate as an indication of its death, in which case this
+              // completion handler will no-op. This is necessary to handle
+              // AppKit invoking this selector via a posted task. See
+              // https://crbug.com/851376.
+              NSWindow* window = weak_window;
+              if (!window.delegate) {
+                return;
+              }
+
+              [window orderOut:nil];
+              OnWindowWillClose();
+            }];
   });
 
   if (host_helper_->MustPostTaskToRunModalSheetAnimation()) {

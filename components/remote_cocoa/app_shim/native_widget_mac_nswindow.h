@@ -42,11 +42,6 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // Set a CommandDispatcherDelegate, i.e. to implement key event handling.
 - (void)setCommandDispatcherDelegate:(id<CommandDispatcherDelegate>)delegate;
 
-// Selector passed to [NSApp beginSheet:]. Forwards to [self delegate], if set.
-- (void)sheetDidEnd:(NSWindow*)sheet
-         returnCode:(NSInteger)returnCode
-        contextInfo:(void*)contextInfo;
-
 // Set a WindowTouchBarDelegate to allow creation of a custom TouchBar when
 // AppKit follows the responder chain and reaches the NSWindow when trying to
 // create one.

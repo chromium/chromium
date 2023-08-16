@@ -1575,8 +1575,8 @@ TEST_F(NativeWidgetMacTest, CloseWithWindowModalSheet) {
   // Similar, but invoke -[NSWindow close] immediately after an asynchronous
   // Close(). This exercises a scenario where two tasks to end the sheet may be
   // posted. Experimentally (on 10.13) both tasks run, but the second will never
-  // attempt to invoke -didEndSheet: on the |modalDelegate| arg of -beginSheet:.
-  // (If it did, it would be fine.)
+  // attempt to invoke the completion handler of the sheet message. (If it did,
+  // it would be fine.)
   {
     Widget* sheet_widget = ShowWindowModalWidget(native_parent);
     NSWindow* sheet_window =
@@ -1590,34 +1590,9 @@ TEST_F(NativeWidgetMacTest, CloseWithWindowModalSheet) {
     EXPECT_TRUE(widget_observer.widget_closed());
     base::RunLoop().RunUntilIdle();
 
-    // Pretend both tasks ran fully. Note that |sheet_window| serves as its own
-    // |modalDelegate|.
-    [base::mac::ObjCCastStrict<NativeWidgetMacNSWindow>(sheet_window)
-        sheetDidEnd:sheet_window
-         returnCode:NSModalResponseStop
-        contextInfo:nullptr];
+    // Pretend both tasks ran fully.
+    [sheet_window.parentWindow endSheet:sheet_window];
   }
-
-  // Test another hypothetical: What if -sheetDidEnd: was invoked somehow
-  // without going through [NSApp endSheet:] or -[NSWindow endSheet:].
-  @autoreleasepool {
-    Widget* sheet_widget = ShowWindowModalWidget(native_parent);
-    NSWindow* sheet_window =
-        sheet_widget->GetNativeWindow().GetNativeNSWindow();
-    EXPECT_TRUE([sheet_window isVisible]);
-
-    WidgetChangeObserver widget_observer(sheet_widget);
-    sheet_widget->Close();
-
-    [base::mac::ObjCCastStrict<NativeWidgetMacNSWindow>(sheet_window)
-        sheetDidEnd:sheet_window
-         returnCode:NSModalResponseStop
-        contextInfo:nullptr];
-
-    EXPECT_TRUE(widget_observer.widget_closed());
-    // Here, the ViewsNSWindowDelegate should be dealloc'd.
-  }
-  base::RunLoop().RunUntilIdle();  // Run the task posted in Close().
 
   // Test -[NSWindow close] on the parent window.
   {

@@ -325,17 +325,6 @@ struct ChildWindowOrderingCommand {
   [_commandDispatcher setDelegate:delegate];
 }
 
-- (void)sheetDidEnd:(NSWindow*)sheet
-         returnCode:(NSInteger)returnCode
-        contextInfo:(void*)contextInfo {
-  // Note NativeWidgetNSWindowBridge may have cleared [self delegate], in which
-  // case this will no-op. This indirection is necessary to handle AppKit
-  // invoking this selector via a posted task. See https://crbug.com/851376.
-  [[self viewsNSWindowDelegate] sheetDidEnd:sheet
-                                 returnCode:returnCode
-                                contextInfo:contextInfo];
-}
-
 - (void)setWindowTouchBarDelegate:(id<WindowTouchBarDelegate>)delegate {
   _touchBarDelegate = delegate;
 }

@@ -100,13 +100,6 @@
   _parent->OnSystemColorsChanged();
 }
 
-- (void)sheetDidEnd:(NSWindow*)sheet
-         returnCode:(NSInteger)returnCode
-        contextInfo:(void*)contextInfo {
-  [sheet orderOut:nil];
-  _parent->OnWindowWillClose();
-}
-
 // NSWindowDelegate implementation.
 
 - (void)windowDidFailToEnterFullScreen:(NSWindow*)window {
@@ -200,9 +193,8 @@
     // -[NSWindow endSheet:] on its parent. If the modal session is not ended
     // then the parent will never be able to show another sheet. But calling
     // -endSheet: here will block the thread with an animation, so post a task.
-    // Use a block: The argument to -endSheet: must be retained, since it's the
-    // window that is closing and -performSelector: won't retain the argument
-    // (putting |window| on the stack above causes this block to retain it).
+    // Use a block to capture a reference to |window| since the argument to
+    // -endSheet: must be retained.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(^{
           [sheetParent endSheet:window];
