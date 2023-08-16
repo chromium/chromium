@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/i18n/time_formatting.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,8 +32,12 @@ constexpr const char kUserActionWifiConnected[] = "wifi_connected";
 // static
 std::string QuickStartScreen::GetResultString(Result result) {
   switch (result) {
-    case Result::CANCEL:
-      return "Cancel";
+    case Result::CANCEL_AND_RETURN_TO_WELCOME:
+      return "CancelAndReturnToWelcome";
+    case Result::CANCEL_AND_RETURN_TO_NETWORK:
+      return "CancelAndReturnToNetwork";
+    case Result::CANCEL_AND_RETURN_TO_SIGNIN:
+      return "CancelAndReturnToSignin";
     case Result::WIFI_CONNECTED:
       return "WifiConnected";
   }
@@ -85,6 +90,10 @@ void QuickStartScreen::SetFlowState(FlowState flow_state) {
   flow_state_ = flow_state;
 }
 
+void QuickStartScreen::SetEntryPoint(EntryPoint entry_point) {
+  entry_point_ = entry_point;
+}
+
 void QuickStartScreen::HideImpl() {
   if (bootstrap_controller_) {
     bootstrap_controller_->RemoveObserver(this);
@@ -99,7 +108,17 @@ void QuickStartScreen::OnUserAction(const base::Value::List& args) {
       bootstrap_controller_->MaybeCloseOpenConnections();
       bootstrap_controller_->StopAdvertising();
     }
-    exit_callback_.Run(Result::CANCEL);
+    switch (entry_point_) {
+      case EntryPoint::WELCOME_SCREEN:
+        exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_WELCOME);
+        return;
+      case EntryPoint::NETWORK_SCREEN:
+        exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_NETWORK);
+        return;
+      case EntryPoint::SIGNIN_SCREEN:
+        exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_SIGNIN);
+        return;
+    }
   } else if (action_id == kUserActionWifiConnected) {
     exit_callback_.Run(Result::WIFI_CONNECTED);
   }

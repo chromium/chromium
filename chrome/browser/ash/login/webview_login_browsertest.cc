@@ -136,8 +136,10 @@ namespace {
 
 namespace em = ::enterprise_management;
 
+constexpr char kCancelButton[] = "cancelButton";
 constexpr char kClientCert1Name[] = "client_1";
 constexpr char kClientCert2Name[] = "client_2";
+constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kSigninWebview[] = "$('gaia-signin').getSigninFrame_()";
 constexpr char kSigninWebviewOnLockScreen[] =
     "$('main-element').getSigninFrame_()";
@@ -149,6 +151,8 @@ constexpr char kTestTokenHandle[] = "test_token_handle";
 
 constexpr test::UIPath kBackButton = {"gaia-signin", "signin-frame-dialog",
                                       "signin-back-button"};
+constexpr test::UIPath kCancelButtonLoadingDialog = {
+    QuickStartView::kScreenId.name, kLoadingDialog, kCancelButton};
 constexpr test::UIPath kPrimaryButton = {"gaia-signin", "signin-frame-dialog",
                                          "primary-action-button"};
 constexpr test::UIPath kSecondaryButton = {"gaia-signin", "signin-frame-dialog",
@@ -2375,41 +2379,48 @@ class WebviewLoginQuickStartTest : public WebviewLoginTest {
     OobeBaseTest::TearDownInProcessBrowserTestFixture();
   }
 
+  void EnterQuickStartFlowFromSigninScreen() {
+    WaitForSigninScreen();
+    test::WaitForOobeJSReady();
+
+    test::OobeJS().ExpectHiddenPath(kQuickStartButton);
+
+    // Enable Quick Start
+    connection_broker_factory_.instances().front()->set_feature_support_status(
+        quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
+            kSupported);
+
+    // Check that QuickStart button is visible since QuickStart feature is
+    // enabled
+    test::OobeJS()
+        .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButton)
+        ->Wait();
+
+    test::OobeJS().ClickOnPath(kQuickStartButton);
+
+    // Wait for Quick Start screen to show
+    OobeScreenWaiter(QuickStartView::kScreenId).Wait();
+  }
+
   quick_start::FakeTargetDeviceConnectionBroker::Factory
       connection_broker_factory_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebviewLoginQuickStartTest,
-                       QuickStartButtonNotShownWhenFeatureSupportUndetermined) {
-  WaitForSigninScreen();
-  test::WaitForOobeJSReady();
-
-  // Check that QuickStart button is hidden since QuickStart feature is not
-  // enabled
-  test::OobeJS().ExpectHiddenPath(kQuickStartButton);
+                       QuickStartButtonFunctionalWhenFeatureEnabled) {
+  EnterQuickStartFlowFromSigninScreen();
 }
 
 IN_PROC_BROWSER_TEST_F(WebviewLoginQuickStartTest,
-                       QuickStartButtonFunctionalWhenFeatureEnabled) {
-  WaitForSigninScreen();
-  test::WaitForOobeJSReady();
+                       ClickingCancelReturnsToSigninScreen) {
+  EnterQuickStartFlowFromSigninScreen();
 
-  test::OobeJS().ExpectHiddenPath(kQuickStartButton);
-
-  // Enable Quick Start
-  connection_broker_factory_.instances().front()->set_feature_support_status(
-      quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
-          kSupported);
-
-  // Check that QuickStart button is visible since QuickStart feature is enabled
+  // Cancel button must be present.
   test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButton)
+      .CreateVisibilityWaiter(/*visibility=*/true, kCancelButtonLoadingDialog)
       ->Wait();
-
-  test::OobeJS().ClickOnPath(kQuickStartButton);
-
-  // Wait for Quick Start screen to show
-  OobeScreenWaiter(QuickStartView::kScreenId).Wait();
+  test::OobeJS().ClickOnPath(kCancelButtonLoadingDialog);
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

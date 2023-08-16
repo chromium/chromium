@@ -29,7 +29,19 @@ class QuickStartScreen
     UNKNOWN,
   };
 
-  enum class Result { CANCEL, WIFI_CONNECTED };
+  enum class EntryPoint {
+    WELCOME_SCREEN,
+    NETWORK_SCREEN,
+    SIGNIN_SCREEN,
+  };
+
+  enum class Result {
+    // leaving this till the new approach works
+    CANCEL_AND_RETURN_TO_WELCOME,
+    CANCEL_AND_RETURN_TO_NETWORK,
+    CANCEL_AND_RETURN_TO_SIGNIN,
+    WIFI_CONNECTED
+  };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
@@ -46,6 +58,10 @@ class QuickStartScreen
   // Sets the flow state that determines the actions that will be performed when
   // the screen is shown.
   void SetFlowState(FlowState flow_state);
+
+  // Sets the entry point of quick start screen, this is to determine which
+  // screen to return to if quick start screen is cancelled.
+  void SetEntryPoint(EntryPoint entry_point);
 
  private:
   // BaseScreen:
@@ -72,6 +88,7 @@ class QuickStartScreen
   void SavePhoneInstanceID();
 
   FlowState flow_state_ = FlowState::UNKNOWN;
+  EntryPoint entry_point_ = EntryPoint::WELCOME_SCREEN;
   std::string discoverable_name_;
   base::WeakPtr<TView> view_;
   ScreenExitCallback exit_callback_;

@@ -900,8 +900,10 @@ void WizardController::ShowWelcomeScreen() {
   SetCurrentScreen(GetScreen(WelcomeView::kScreenId));
 }
 
-void WizardController::ShowQuickStartScreen() {
+void WizardController::ShowQuickStartScreen(
+    QuickStartScreen::EntryPoint quick_start_entry_point) {
   CHECK(wizard_context_->quick_start_enabled);
+  GetScreen<QuickStartScreen>()->SetEntryPoint(quick_start_entry_point);
   GetScreen<QuickStartScreen>()->SetFlowState(
       QuickStartScreen::FlowState::INITIAL);
   SetCurrentScreen(GetScreen(QuickStartView::kScreenId));
@@ -1378,7 +1380,7 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
       LoginDisplayHost::default_host()->AttemptShowEnableConsumerKioskScreen();
       break;
     case GaiaScreen::Result::QUICK_START:
-      ShowQuickStartScreen();
+      ShowQuickStartScreen(QuickStartScreen::EntryPoint::SIGNIN_SCREEN);
       break;
   }
 }
@@ -1795,7 +1797,7 @@ void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
       ShowNetworkScreen();
       return;
     case WelcomeScreen::Result::QUICK_START:
-      ShowQuickStartScreen();
+      ShowQuickStartScreen(QuickStartScreen::EntryPoint::WELCOME_SCREEN);
       return;
   }
 }
@@ -1804,11 +1806,15 @@ void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
   OnScreenExit(QuickStartView::kScreenId,
                QuickStartScreen::GetResultString(result));
   switch (result) {
-    case QuickStartScreen::Result::CANCEL:
+    case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_WELCOME:
       ShowWelcomeScreen();
       return;
     case QuickStartScreen::Result::WIFI_CONNECTED:
+    case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_NETWORK:
       ShowNetworkScreen();
+      return;
+    case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_SIGNIN:
+      AdvanceToSigninScreen();
       return;
   }
 }
@@ -1872,7 +1878,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       ShowWelcomeScreen();
       break;
     case NetworkScreen::Result::QUICK_START:
-      ShowQuickStartScreen();
+      ShowQuickStartScreen(QuickStartScreen::EntryPoint::NETWORK_SCREEN);
       break;
   }
 }
