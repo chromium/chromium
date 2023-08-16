@@ -43,6 +43,10 @@ class MoveTargetOutOfBoundsException(BidiException):
     error_code = "move target out of bounds"
 
 
+class NoSuchAlertException(BidiException):
+    error_code = "no such alert"
+
+
 class NoSuchElementException(BidiException):
     error_code = "no such element"
 

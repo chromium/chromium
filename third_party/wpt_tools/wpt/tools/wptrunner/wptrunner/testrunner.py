@@ -177,6 +177,7 @@ class BrowserManager:
 
         self.started = False
 
+        self.browser_pid = None
         self.init_timer = None
         self.command_queue = command_queue
 
@@ -513,16 +514,10 @@ class TestRunnerManager(threading.Thread):
         self.browser.update_settings(self.state.test)
 
         result = self.browser.init(self.state.group_metadata)
-        if result is Stop:
-            return RunnerManagerState.error()
-        elif not result:
-            return RunnerManagerState.initializing(self.state.test_type,
-                                                   self.state.test,
-                                                   self.state.test_group,
-                                                   self.state.group_metadata,
-                                                   self.state.failure_count + 1)
-        else:
-            self.start_test_runner()
+        if not result:
+            return self.init_failed()
+
+        self.start_test_runner()
 
     def start_test_runner(self):
         # Note that we need to be careful to start the browser before the
