@@ -230,6 +230,11 @@ const char kIosSafetyCheckManagerUpdateCheckResult[] =
 const char kIosSafetyCheckManagerSafeBrowsingCheckResult[] =
     "ios.safety_check_manager.safe_browsing_check_result";
 
+// String preference containing the default account to use for saving images to
+// Google Photos.
+const char kIosSaveToPhotosDefaultGaiaId[] =
+    "ios.save_to_photos.default_gaia_id";
+
 // Preference that hold a boolean indicating if the user has already dismissed
 // the sign-in promo in settings view.
 const char kIosSettingsPromoAlreadySeen[] = "ios.settings.promo_already_seen";

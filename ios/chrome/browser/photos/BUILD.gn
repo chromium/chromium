@@ -30,6 +30,22 @@ source_set("photos_service_factory") {
   ]
 }
 
+source_set("photos_availability") {
+  sources = [
+    "photos_availability.h",
+    "photos_availability.mm",
+  ]
+  deps = [
+    ":photos",
+    ":photos_service_factory",
+    "//components/signin/public/base",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "photos_service_factory_unittest.mm" ]

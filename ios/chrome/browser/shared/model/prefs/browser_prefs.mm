@@ -481,6 +481,10 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Register pref used to detect addresses in web page
   registry->RegisterBooleanPref(prefs::kDetectAddressesEnabled, true);
   registry->RegisterBooleanPref(prefs::kDetectAddressesAccepted, false);
+
+  // Preferences related to Save to Photos settings.
+  registry->RegisterStringPref(prefs::kIosSaveToPhotosDefaultGaiaId,
+                               std::string());
 }
 
 // This method should be periodically pruned of year+ old migrations.

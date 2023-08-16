@@ -1670,6 +1670,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSPasswordAuthOnEntryV2Name,
      flag_descriptions::kIOSPasswordAuthOnEntryV2Description, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordAuthOnEntryV2)},
+    {"enable-save-to-photos", flag_descriptions::kIOSSaveToPhotosName,
+     flag_descriptions::kIOSSaveToPhotosDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSSaveToPhotos)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

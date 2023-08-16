@@ -279,3 +279,7 @@ bool IsSafetyCheckMagicStackEnabled() {
 BASE_FEATURE(kBlockSimultaneousCellSelectionKillSwitch,
              "BlockSimultaneousCellSelectionKillSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSSaveToPhotos,
+             "IOSSaveToPhotos",
+             base::FEATURE_DISABLED_BY_DEFAULT);

@@ -545,6 +545,10 @@ extern const char kIOSPasswordBottomSheetDescription[];
 extern const char kIOSPaymentsBottomSheetName[];
 extern const char kIOSPaymentsBottomSheetDescription[];
 
+// Title and description for the flag to enable the Save to Photos feature.
+extern const char kIOSSaveToPhotosName[];
+extern const char kIOSSaveToPhotosDescription[];
+
 // Title and description of the flag to enable client side new tab page
 // experiments aimed at improving user retention.
 extern const char kNewTabPageFieldTrialName[];
