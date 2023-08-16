@@ -55,6 +55,7 @@
 - (void)stop {
   [super stop];
   self.viewController = nil;
+  [self.mediator disconnect];
   self.mediator = nil;
 }
 

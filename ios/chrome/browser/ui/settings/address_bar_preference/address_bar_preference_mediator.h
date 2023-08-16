@@ -25,6 +25,9 @@ class PrefService;
 // The consumer of the address bar preference mediator.
 @property(nonatomic, weak) id<AddressBarPreferenceConsumer> consumer;
 
+// Disconnects the address bar preference observation.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_ADDRESS_BAR_PREFERENCE_ADDRESS_BAR_PREFERENCE_MEDIATOR_H_
