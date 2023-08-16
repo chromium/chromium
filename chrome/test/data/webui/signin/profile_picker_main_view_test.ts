@@ -457,6 +457,20 @@ suite('ProfilePickerMainViewTest', function() {
     });
   });
 
+  // In this test, we make sure that even in the middle of a drag event cycle
+  // (after performing at least one real shift), we still do no react to
+  // entering the initial dragging tile.
+  test('ProfileReorder_DragEnterItselfAfterShifts', async function() {
+    await testProfileReorderingDragCycle({
+      numberOfProfiles: 3,
+      dragIndex: 1,
+      dragEnterEvents: [
+        {index: 2, expectedResultIndices: [0, 2, 1]},
+        {index: 1, expectedResultIndices: [0, 2, 1]},
+      ],
+    });
+  });
+
   test('ProfileReorder_DragEnterOnFurtherCard', async function() {
     await testProfileReorderingDragCycle({
       numberOfProfiles: 3,
@@ -502,27 +516,8 @@ suite('ProfilePickerMainViewTest', function() {
     assertProfilesPositions(cards, null, initialRects, initiIndices);
   });
 
-  test('ProfilesDragSingleEnterWithReset', async function() {
-    // Note that in this test, both "reset" enter events (the second event in
-    // both cases) works whether it is the moved card or the dragging card. Both
-    // result in the same behavior; having the initial state as if there was no
-    // shift. This is expected, because right before the reset, the cards are on
-    // top of each other, and we expect that if any of those are entered to have
-    // the same behavior.
-
+  test('ProfileReorder_SingleEnterWithReset', async function() {
     // Last enter event enters the shifted card.
-    await testProfileReorderingDragCycle({
-      numberOfProfiles: 3,
-      dragIndex: 1,
-      dragEnterEvents: [
-        {index: 2, expectedResultIndices: [0, 2, 1]},
-        {index: 1, expectedResultIndices: [0, 1, 2]},
-      ],
-    });
-
-    resetTest();
-
-    // Last enter event enters the dragging card.
     await testProfileReorderingDragCycle({
       numberOfProfiles: 3,
       dragIndex: 1,
@@ -533,7 +528,7 @@ suite('ProfilePickerMainViewTest', function() {
     });
   });
 
-  test('ProfilesDragMultipleEntersWithResets', async function() {
+  test('ProfileReorder_MultipleEntersWithResets', async function() {
     await testProfileReorderingDragCycle({
       numberOfProfiles: 4,
       dragIndex: 0,
@@ -549,7 +544,7 @@ suite('ProfilePickerMainViewTest', function() {
   });
 
   test(
-      'ProfilesDragMultipleEntersOnDifferentSidesOfTheDraggingCard',
+      'ProfileReorder_MultipleEntersOnDifferentSidesOfTheDraggingCard',
       async function() {
         await testProfileReorderingDragCycle({
           numberOfProfiles: 4,

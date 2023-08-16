@@ -19,8 +19,14 @@ function isIndexInBetweenStartEnd(
 
 // Class tags to use throughout the drag events.
 //
-// Tag for a tile that is shifted during a drag cycle event.
+// Tag for the tile that is being dragged in the drag cycle event.
+const DRAGGING_TAG: string = 'dragging';
+// Tag for a tile that is done shifting during a drag cycle event.
 const SHIFTED_TAG: string = 'shifted';
+// Tag for a tile while it is shifting (applying the transition effect).
+// This could mean either shifting in (to new position) or shifting back (to
+// initial position).
+const SHIFTING_TAG: string = 'shifting';
 
 // Interface to interact with the real underlying tile list that expects to have
 // the Drag and Drop functionality.
@@ -39,6 +45,8 @@ export interface DraggableTileListInterface {
 // - 'dragstart': triggered once when a tile is initially being dragged.
 // - 'dragenter': triggered whenever hovering over a tile with the dragging
 // tile.
+// - 'dragover': triggered continuously as long as the dragging tile is over
+// another tile.
 // - 'dragend': triggered once when a tile drag stops, after a drop.
 // A full drag event cycle starts with 'dragstart' and ends with 'dragend'.
 //
@@ -54,6 +62,7 @@ export class DragDropReorderTileListDelegate {
   private initialized_ = false;
   private isDragEnabled_ = true;
 
+  private isDragging_: boolean = false;
   private draggingTile_: HTMLElement|null = null;
   private dragStartIndex_: number = -1;
   private dropTargetIndex: number = -1;
@@ -92,6 +101,10 @@ export class DragDropReorderTileListDelegate {
       this.eventTracker_.add(tile, 'dragenter', (event: DragEvent) => {
         this.onDragEnter_(event);
       });
+
+      this.eventTracker_.add(tile, 'dragover', (event: DragEvent) => {
+        this.onDragOver_(event);
+      }, false);
 
       // TODO(http://crbug/1466146): check if this event delay can be removed
       // for MacOS. It is making the drop have an awkward movement.
@@ -146,6 +159,7 @@ export class DragDropReorderTileListDelegate {
       return;
     }
 
+    this.isDragging_ = true;
     // 'event.target' corresponds to the tile being dragged. Implicit cast to
     // an HTMLElement.
     const tile = event.target as HTMLElement;
@@ -166,10 +180,9 @@ export class DragDropReorderTileListDelegate {
   // We shift all tiles between the initial dragging tile and the one that we
   // just entered which will create the reordering functionality.
   private onDragEnter_(event: DragEvent) {
-    // Check that this event was triggered as part of the tile drag event cycle,
-    // having a valid tile that is being dragged, otherwise we discard this
-    // event.
-    if (this.draggingTile_ === null) {
+    // Check that this event was triggered as part of the tile drag event cycle
+    // otherwise we discard this event.
+    if (!this.isDragging_) {
       return;
     }
 
@@ -177,6 +190,12 @@ export class DragDropReorderTileListDelegate {
 
     // Tile that the dragging tile entered.
     const enteredTile = event.target as HTMLElement;
+
+    // Do not react to shifting or dragging tile.
+    if (enteredTile.classList.contains(SHIFTING_TAG) ||
+        enteredTile.classList.contains(DRAGGING_TAG)) {
+      return;
+    }
 
     const newDragTargetIndex = this.computeNewTargetIndex_(enteredTile);
 
@@ -195,9 +214,41 @@ export class DragDropReorderTileListDelegate {
     for (let i = this.dropTargetIndex; i !== this.dragStartIndex_;
          i += indexIncrement) {
       const tileToShift = this.getDraggableTile_(i);
+      // No need to shift tiles that are already shifted.
+      if (tileToShift.classList.contains(SHIFTED_TAG)) {
+        continue;
+      }
+
       const tileAtTargetLocation = this.getDraggableTile_(i + indexIncrement);
       this.shiftTile_(tileToShift, tileAtTargetLocation);
     }
+  }
+
+  // Event 'dragover' is applied on the tile that is being hovered over, it will
+  // be periodically triggered as long as the dragging tile is over a specific
+  // tile. We use this event to make sure we do not miss any drag enter event
+  // that might have happened while tiles are shifting.
+  private onDragOver_(event: DragEvent) {
+    // Check that this event was triggered as part of the tile drag event cycle
+    // otherwise we discard this event.
+    if (!this.isDragging_) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const overTile = event.target as HTMLElement;
+    // Do not react to shifting or dragging tiles.
+    if (overTile.classList.contains(SHIFTING_TAG) ||
+        overTile.classList.contains(DRAGGING_TAG)) {
+      return;
+    }
+
+    // If the dragging tile stays over a shifting tile while it is shifting no
+    // drag enter event will be called, or a drag enter event can be missed
+    // while an element is shifting, so we simulate another drag enter event
+    // after the shifting is done.
+    this.onDragEnter_(event);
   }
 
   // Event 'dragend` is applied on the tile that was dragged and now dropped. We
@@ -211,22 +262,56 @@ export class DragDropReorderTileListDelegate {
     assert(this.draggingTile_ === event.target as HTMLElement);
 
     this.dropTargetIndex = -1;
+    this.isDragging_ = false;
+
     this.resetDraggingTile_();
   }
 
   // Tile 'tileToShift' will shift to the position of 'tileAtTargetLocation'.
   // The shift happens by applying a transform on the tile. The transition
   // effect is set to 'transform' in the 'initialize()'.
+  //
+  // Shifting a tile steps:
+  // - mark the tile as `SHIFTING_TAG`.
+  // - apply the corresponding transform.
+  // - transition effect happening with a duration of
+  // 'this.transitionDuration_'.
+  // - delayed function call to switch the tag from `SHIFTING_TAG` to
+  // `SHIFTED_TAG`. after the transition effect is done.
   private shiftTile_(
       tileToShift: HTMLElement, tileAtTargetLocation: HTMLElement) {
     // Tag tile as shifted.
-    tileToShift.classList.add(SHIFTED_TAG);
+    tileToShift.classList.add(SHIFTING_TAG);
+
+    // Increase the 'zIndex' property of SHIFTING and SHIFTED tiles in order to
+    // give them priority for drag enter/over events over other elements.
+    tileToShift.style.zIndex = '2';
 
     // Compute relative positions to apply to transform with XY Translation.
     const diffx = tileToShift.offsetLeft - tileAtTargetLocation.offsetLeft;
     const diffy = tileToShift.offsetTop - tileAtTargetLocation.offsetTop;
     tileToShift.style.transform =
         `translateX(${- diffx}px) translateY(${- diffy}px)`;
+
+    const onShiftTransitionEnd = () => {
+      tileToShift.ontransitionend = null;
+
+      tileToShift.classList.remove(SHIFTING_TAG);
+      // In case the dragging has stopped before the delayed function, we do
+      // not want to tag this tile.
+      if (this.isDragging_) {
+        tileToShift.classList.add(SHIFTED_TAG);
+      }
+    };
+
+    if (this.transitionDuration_ !== 0) {
+      tileToShift.ontransitionend = onShiftTransitionEnd;
+    } else {
+      // If `this.transitionDuration_` is 0, then we need to perform the ending
+      // function directly, as there is no transition happening. This could
+      // happen in tests or if the usage requires no transition.
+      onShiftTransitionEnd();
+    }
   }
 
   // Reset elements from start index until the end index.
@@ -254,9 +339,34 @@ export class DragDropReorderTileListDelegate {
 
   // Resetting a tile that was shifted to it's initial state by clearing the
   // transform.
-  private resetShiftedTile_(tile: HTMLElement) {
-    tile.style.transform = '';
-    tile.classList.remove(SHIFTED_TAG);
+  // - Transition effect happening while the tile is shifting back.
+  // - delayed function call to remove the `SHIFTING_TAG` tag after the
+  // transition is done.
+  private resetShiftedTile_(tileToShiftBack: HTMLElement) {
+    tileToShiftBack.style.transform = '';
+    tileToShiftBack.classList.remove(SHIFTED_TAG);
+    tileToShiftBack.classList.add(SHIFTING_TAG);
+
+    const onShiftBackTransitionEnd = () => {
+      tileToShiftBack.ontransitionend = null;
+
+      // Reset previously increased 'zIndex'.
+      tileToShiftBack.style.removeProperty('z-index');
+
+      tileToShiftBack.classList.remove(SHIFTING_TAG);
+      // Can potentially be added if the shift back happens before the end
+      // of the initial shift.
+      tileToShiftBack.classList.remove(SHIFTED_TAG);
+    };
+
+    if (this.transitionDuration_ !== 0) {
+      tileToShiftBack.ontransitionend = onShiftBackTransitionEnd;
+    } else {
+      // If `this.transitionDuration_` is 0, then we need to perform the ending
+      // function directly, as there is no transition happening. This could
+      // happen in tests or if the usage requires no transition.
+      onShiftBackTransitionEnd();
+    }
   }
 
   // Compute the new drag target index based on the tile that is being hovered
@@ -283,7 +393,7 @@ export class DragDropReorderTileListDelegate {
   // `resetDraggingTile_()` method which restore the tile to it's initial state.
   private markDraggingTile_(element: HTMLElement) {
     this.draggingTile_ = element;
-    this.draggingTile_.classList.add('dragging');
+    this.draggingTile_.classList.add(DRAGGING_TAG);
     this.dragStartIndex_ = this.getDraggableTileIndex_(this.draggingTile_);
 
     // Apply specific style to hide the tile that is being dragged, making sure
@@ -299,7 +409,7 @@ export class DragDropReorderTileListDelegate {
     this.draggingTile_!.style.removeProperty('opacity');
 
     this.dragStartIndex_ = -1;
-    this.draggingTile_!.classList.remove('dragging');
+    this.draggingTile_!.classList.remove(DRAGGING_TAG);
     this.draggingTile_ = null;
   }
 
