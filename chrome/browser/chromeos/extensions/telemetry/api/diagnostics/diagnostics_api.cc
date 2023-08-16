@@ -368,8 +368,8 @@ void OsDiagnosticsRunSignalStrengthRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunSmartctlCheckRoutineFunction --------------------------------
 
 void OsDiagnosticsRunSmartctlCheckRoutineFunction::RunIfAllowed() {
-  absl::optional<api::os_diagnostics::RunSmartctlCheckRoutine::Params> params(
-      api::os_diagnostics::RunSmartctlCheckRoutine::Params::Create(args()));
+  absl::optional<cx_diag::RunSmartctlCheckRoutine::Params> params(
+      cx_diag::RunSmartctlCheckRoutine::Params::Create(args()));
 
   crosapi::mojom::UInt32ValuePtr percentage_used;
   if (params && params->request && params->request->percentage_used_threshold) {
