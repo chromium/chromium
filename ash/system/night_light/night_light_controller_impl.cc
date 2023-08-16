@@ -585,12 +585,6 @@ bool NightLightControllerImpl::GetAmbientColorEnabled() const {
          active_user_pref_service_->GetBoolean(prefs::kAmbientColorEnabled);
 }
 
-bool NightLightControllerImpl::IsNowWithinSunsetSunrise() const {
-  // The times below are all on the same calendar day.
-  const base::Time now = delegate_->GetNow();
-  return now < delegate_->GetSunriseTime() || now > delegate_->GetSunsetTime();
-}
-
 void NightLightControllerImpl::SetEnabled(bool enabled,
                                           AnimationDuration animation_type) {
   if (active_user_pref_service_) {

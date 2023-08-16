@@ -154,13 +154,6 @@ TimeOfDay ScheduledFeature::GetCustomEndTime() const {
       .SetLocalTimeConverter(local_time_converter_);
 }
 
-bool ScheduledFeature::IsNowWithinSunsetSunrise() const {
-  // The times below are all on the same calendar day.
-  const base::Time now = clock_->Now();
-  return now < geolocation_controller_->GetSunriseTime() ||
-         now > geolocation_controller_->GetSunsetTime();
-}
-
 void ScheduledFeature::SetEnabled(bool enabled) {
   DVLOG(1) << "Setting " << GetFeatureName() << " enabled to " << enabled
            << " at " << clock_->Now();

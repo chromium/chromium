@@ -98,9 +98,6 @@ class ASH_EXPORT ScheduledFeature
   TimeOfDay GetCustomStartTime() const;
   TimeOfDay GetCustomEndTime() const;
 
-  // Get whether the current time is after sunset and before sunrise.
-  bool IsNowWithinSunsetSunrise() const;
-
   // Set the desired ScheduledFeature settings in the current active user
   // prefs.
   void SetEnabled(bool enabled);
