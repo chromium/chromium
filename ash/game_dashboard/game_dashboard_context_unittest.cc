@@ -82,7 +82,11 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
   // If `is_arc_window` is true, this function creates the window as an ARC
   // game window. Otherwise, it creates the window as a GeForceNow window.
-  void CreateGameWindow(bool is_arc_window) {
+  // For ARC game windows, if `set_arc_game_controls_flags_prop` is true, then
+  // the `kArcGameControlsFlagsKey` window property will be set to
+  // `ArcGameControlsFlag::kKnown`, otherwise the property will not be set.
+  void CreateGameWindow(bool is_arc_window,
+                        bool set_arc_game_controls_flags_prop = true) {
     ASSERT_FALSE(game_window_);
     ASSERT_FALSE(test_api_);
     game_window_ = CreateAppWindow(
@@ -97,6 +101,12 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     ASSERT_TRUE(test_api_);
     frame_header_ = chromeos::FrameHeader::Get(
         views::Widget::GetWidgetForNativeWindow(game_window_.get()));
+
+    if (is_arc_window && set_arc_game_controls_flags_prop) {
+      // Initially, Game Controls is not available.
+      game_window_->SetProperty(kArcGameControlsFlagsKey,
+                                ArcGameControlsFlag::kKnown);
+    }
   }
 
   // Opens the main menu and toolbar, and checks Game Controls UI states. At the
@@ -147,7 +157,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
       EXPECT_FALSE(setup_button);
     }
 
-    // Open toolbar and check the toolbar's game controls button state.
+    // Open toolbar and check the toolbar's Game Controls button state.
     test_api_->OpenTheToolbar();
     // The button state has the same state as the feature tile on the main menu.
     auto* game_controls_button = test_api_->GetToolbarGameControlsButton();
@@ -268,8 +278,9 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     EXPECT_FALSE(other_window_record_game_button->toggled());
 
     // Stop the video recording session.
-    CaptureModeTestApi().StopVideoRecording();
+    LeftClickOn(recording_window_test_api->GetMainMenuRecordGameTile());
     EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
+    WaitForCaptureFileToBeSaved();
 
     // TODO(b/286889161): Update the record game button pointers after the bug
     // has been addressed. The main menu will no longer remain open, which makes
@@ -348,9 +359,6 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 TEST_F(GameDashboardContextTest, GameControlsMenuState) {
   CreateGameWindow(/*is_arc_window=*/true);
 
-  // Game controls is not available.
-  game_window_->SetProperty(kArcGameControlsFlagsKey,
-                            ArcGameControlsFlag::kKnown);
   OpenMenuCheckGameControlsUIState(
       /*tile_states=*/
       {/*expect_exists=*/false, /*expect_enabled=*/false,
@@ -361,7 +369,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
       {/*expect_exists=*/false, /*expect_enabled=*/false, /*expect_on=*/false},
       /*setup_exists=*/false);
 
-  // Game controls is available, not empty, but not enabled.
+  // Game Controls is available, not empty, but not enabled.
   game_window_->SetProperty(
       kArcGameControlsFlagsKey,
       static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
@@ -375,7 +383,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
       {/*expect_exists=*/true, /*expect_enabled=*/false, /*expect_on=*/false},
       /*setup_exists=*/false);
 
-  // Game controls is available, but empty. Even Game controls is set enabled,
+  // Game Controls is available, but empty. Even Game Controls is set enabled,
   // the tile is disabled and can't be toggled.
   game_window_->SetProperty(
       kArcGameControlsFlagsKey,
@@ -391,7 +399,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
       {/*expect_exists=*/false, /*expect_enabled=*/false, /*expect_on=*/false},
       /*setup_exists=*/true);
 
-  // Game controls is available, not empty and enabled.
+  // Game Controls is available, not empty and enabled.
   game_window_->SetProperty(
       kArcGameControlsFlagsKey,
       static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
@@ -411,7 +419,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
 TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
   CreateGameWindow(/*is_arc_window=*/true);
 
-  // Game controls is available, not empty, enabled and hint on.
+  // Game Controls is available, not empty, enabled and hint on.
   game_window_->SetProperty(
       kArcGameControlsFlagsKey,
       static_cast<ArcGameControlsFlag>(
@@ -500,8 +508,6 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
 TEST_F(GameDashboardContextTest, TwoGameWindowsRecordingState) {
   // Create an ARC game window.
   CreateGameWindow(/*is_arc_window=*/true);
-  game_window_->SetProperty(kArcGameControlsFlagsKey,
-                            ArcGameControlsFlag::kKnown);
   // Create a GFN game window.
   auto gfn_game_window =
       CreateAppWindow(extension_misc::kGeForceNowAppId, AppType::NON_APP,
@@ -547,7 +553,7 @@ class GameTypeGameDashboardContextTest
   bool IsArcGame() const { return GetParam(); }
 };
 
-// Tests
+// GameTypeGameDashboardContextTest Tests
 // -----------------------------------------------------------------------
 // Verifies the initial location of the main menu button widget relative to the
 // game window.
@@ -578,6 +584,12 @@ TEST_P(GameTypeGameDashboardContextTest,
 
 // Verifies clicking the main menu button will open the main menu widget.
 TEST_P(GameTypeGameDashboardContextTest, OpenMainMenuButtonWidget) {
+  // Close the window and create a new game window without setting the
+  // `kArcGameControlsFlagsKey` property.
+  game_window_.reset();
+  test_api_.reset();
+  CreateGameWindow(IsArcGame(), /*set_arc_game_controls_flags_prop=*/false);
+
   // Verifies the main menu is closed.
   EXPECT_FALSE(test_api_->GetMainMenuWidget());
 
@@ -597,10 +609,6 @@ TEST_P(GameTypeGameDashboardContextTest, OpenMainMenuButtonWidget) {
 // Verifies clicking the main menu button will close the main menu widget if
 // it's already open.
 TEST_P(GameTypeGameDashboardContextTest, CloseMainMenuButtonWidget) {
-  if (IsArcGame()) {
-    game_window_->SetProperty(kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
   // Open the main menu widget and verify the main menu open.
   test_api_->OpenTheMainMenu();
 
@@ -645,10 +653,6 @@ TEST_P(GameTypeGameDashboardContextTest,
   scoped_feature_list.InitAndDisableFeature(
       {features::kFeatureManagementGameDashboardRecordGame});
 
-  if (IsArcGame()) {
-    game_window_->SetProperty(kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
 
@@ -661,10 +665,6 @@ TEST_P(GameTypeGameDashboardContextTest,
 // Verifies the main menu screenshot tile will take a screenshot of the game
 // window.
 TEST_P(GameTypeGameDashboardContextTest, TakeScreenshotFromMainMenu) {
-  if (IsArcGame()) {
-    game_window_->SetProperty(kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
   test_api_->OpenTheMainMenu();
 
   // Retrieve the screenshot button and verify the initial state.
@@ -679,38 +679,10 @@ TEST_P(GameTypeGameDashboardContextTest, TakeScreenshotFromMainMenu) {
   EXPECT_EQ(image.Size(), game_window_->bounds().size());
 }
 
-// Verifies the main menu record game tile can video record the game window.
-TEST_P(GameTypeGameDashboardContextTest, RecordGameFromMainMenu) {
-  if (IsArcGame()) {
-    game_window_->SetProperty(kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
-  test_api_->OpenTheMainMenu();
-
-  // Retrieve the video record tile and verify the initial state.
-  auto* record_game_tile = test_api_->GetMainMenuRecordGameTile();
-  ASSERT_TRUE(record_game_tile);
-
-  LeftClickOn(record_game_tile);
-
-  // Start the video recording using the record game tile.
-  LeftClickOn(record_game_tile);
-  ClickOnStartRecordingButtonInCaptureModeBarView();
-
-  // Stop video recording.
-  // TODO(b/286889385): Stop video recording using `GameDashboardMainMenuView`.
-  CaptureModeTestApi().StopVideoRecording();
-  EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
-}
-
 // Verifies the record game buttons in the main menu and toolbar are disabled,
 // if a recording session was started outside of the Game Dashboard.
 TEST_P(GameTypeGameDashboardContextTest,
        CaptureSessionStartedOutsideOfTheGameDashboard) {
-  if (IsArcGame()) {
-    game_window_->SetProperty(kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
   auto* capture_mode_controller = CaptureModeController::Get();
 
   test_api_->OpenTheMainMenu();
@@ -791,10 +763,6 @@ TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
 // Verifies the toolbar screenshot button will take a screenshot of the game
 // window.
 TEST_P(GameTypeGameDashboardContextTest, TakeScreenshotFromToolbar) {
-  if (IsArcGame()) {
-    game_window_->SetProperty(kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
   // Open the toolbar via the main menu.
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
@@ -813,10 +781,6 @@ TEST_P(GameTypeGameDashboardContextTest, TakeScreenshotFromToolbar) {
 // Verifies clicking the toolbar's gamepad button will expand and collapse the
 // toolbar.
 TEST_P(GameTypeGameDashboardContextTest, CollapseAndExpandToolbarWidget) {
-  if (IsArcGame()) {
-    game_window_->SetProperty(kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
   const int initial_height = GetToolbarHeight();
@@ -845,10 +809,6 @@ TEST_P(GameTypeGameDashboardContextTest, ColorProviderKey) {
   // The user color to always use for GameDashboard widgets.
   constexpr SkColor kExpectedUserColor = SkColorSetRGB(0x3F, 0x5A, 0xA9);
 
-  if (IsArcGame()) {
-    game_window_->SetProperty(kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
 
@@ -892,11 +852,6 @@ TEST_P(GameTypeGameDashboardContextTest, ColorProviderKey) {
 // Verifies the toolbar won't follow the mouse cursor outside of the game window
 // bounds.
 TEST_P(GameTypeGameDashboardContextTest, MoveToolbarOutOfBounds) {
-  if (IsArcGame()) {
-    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
-
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
   ASSERT_TRUE(test_api_->GetToolbarWidget());
@@ -953,29 +908,16 @@ TEST_P(GameTypeGameDashboardContextTest, MoveToolbarOutOfBounds) {
 
 // Verifies the toolbar can be moved around via the mouse.
 TEST_P(GameTypeGameDashboardContextTest, MoveToolbarWidgetViaMouse) {
-  if (IsArcGame()) {
-    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
   VerifyToolbarDrag(Movement::kMouse);
 }
 
 // Verifies the toolbar can be moved around via touch.
 TEST_P(GameTypeGameDashboardContextTest, MoveToolbarWidgetViaTouch) {
-  if (IsArcGame()) {
-    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
   VerifyToolbarDrag(Movement::kTouch);
 }
 
 // Verifies the toolbar can be moved around via keyboard arrows.
 TEST_P(GameTypeGameDashboardContextTest, MoveToolbarWidgetViaArrowKeys) {
-  if (IsArcGame()) {
-    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
-
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
 
@@ -1025,11 +967,6 @@ TEST_P(GameTypeGameDashboardContextTest, MoveToolbarWidgetViaArrowKeys) {
 
 // Verifies the toolbar's physical placement on screen in each quadrant.
 TEST_P(GameTypeGameDashboardContextTest, VerifyToolbarPlacementInQuadrants) {
-  if (IsArcGame()) {
-    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
-
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
   gfx::Rect window_bounds = game_window_->GetBoundsInScreen();
@@ -1080,11 +1017,6 @@ TEST_P(GameTypeGameDashboardContextTest, VerifyToolbarPlacementInQuadrants) {
 // Verifies the toolbar's snap location is preserved even after the visibility
 // is hidden via the main menu view.
 TEST_P(GameTypeGameDashboardContextTest, MoveAndHideToolbarWidget) {
-  if (IsArcGame()) {
-    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
-  }
-
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
 
@@ -1107,6 +1039,90 @@ TEST_P(GameTypeGameDashboardContextTest, MoveAndHideToolbarWidget) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          GameTypeGameDashboardContextTest,
-                         ::testing::Bool());
+                         testing::Bool());
+
+// -----------------------------------------------------------------------------
+// GameDashboardStartAndStopCaptureSessionTest:
+// Test fixture to verify the game window can be started and stopped from the
+// main menu and toolbar, for both ARC and GeForceNow game windows.
+class GameDashboardStartAndStopCaptureSessionTest
+    : public GameDashboardContextTest,
+      public testing::WithParamInterface<
+          std::tuple</*is_arc_game_=*/bool,
+                     /*should_start_from_main_menu_=*/bool,
+                     /*should_stop_from_main_menu_=*/bool>> {
+ public:
+  GameDashboardStartAndStopCaptureSessionTest()
+      : is_arc_game_(std::get<0>(GetParam())),
+        should_start_from_main_menu_(std::get<1>(GetParam())),
+        should_stop_from_main_menu_(std::get<2>(GetParam())) {}
+  ~GameDashboardStartAndStopCaptureSessionTest() override = default;
+
+  void SetUp() override {
+    GameDashboardContextTest::SetUp();
+    CreateGameWindow(is_arc_game_);
+  }
+
+ protected:
+  const bool is_arc_game_;
+  const bool should_start_from_main_menu_;
+  const bool should_stop_from_main_menu_;
+};
+
+// GameDashboardStartAndStopCaptureSessionTest Tests
+// -----------------------------------------------------------------------
+// Verifies the game window recording starts and stops for the given set of test
+// parameters.
+TEST_P(GameDashboardStartAndStopCaptureSessionTest, RecordGameFromMainMenu) {
+  test_api_->OpenTheMainMenu();
+  if (should_start_from_main_menu_) {
+    // Retrieve the record game tile from the main menu.
+    auto* record_game_tile = test_api_->GetMainMenuRecordGameTile();
+    ASSERT_TRUE(record_game_tile);
+
+    // Start the video recording from the main menu.
+    LeftClickOn(record_game_tile);
+    ClickOnStartRecordingButtonInCaptureModeBarView();
+  } else {
+    // Retrieve the record game button from the toolbar.
+    CHECK(!test_api_->GetToolbarView());
+    test_api_->OpenTheToolbar();
+    test_api_->CloseTheMainMenu();
+    auto* record_game_button = test_api_->GetToolbarRecordGameButton();
+    ASSERT_TRUE(record_game_button);
+
+    // Start the video recording from the toolbar.
+    LeftClickOn(record_game_button);
+    // TODO(b/293982122): Remove the the following line after the toolbar can
+    // start a capture session skipping showing the countdown timer UI.
+    ClickOnStartRecordingButtonInCaptureModeBarView();
+  }
+
+  if (should_stop_from_main_menu_) {
+    // Stop the video recording from the main menu.
+    test_api_->OpenTheMainMenu();
+    LeftClickOn(test_api_->GetMainMenuRecordGameTile());
+  } else {
+    // Open the toolbar, if the video recording started from the main menu.
+    if (should_start_from_main_menu_) {
+      test_api_->OpenTheMainMenu();
+      test_api_->OpenTheToolbar();
+      test_api_->CloseTheMainMenu();
+    }
+    // Verify the toolbar is open.
+    CHECK(test_api_->GetToolbarView());
+    // Stop the video recording from the toolbar.
+    LeftClickOn(test_api_->GetToolbarRecordGameButton());
+  }
+  EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
+  WaitForCaptureFileToBeSaved();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GameDashboardStartAndStopCaptureSessionTest,
+    testing::Combine(/*is_arc_game_=*/testing::Bool(),
+                     /*should_start_from_main_menu_=*/testing::Bool(),
+                     /*should_stop_from_main_menu_=*/testing::Bool()));
 
 }  // namespace ash

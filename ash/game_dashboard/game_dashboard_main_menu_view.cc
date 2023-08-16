@@ -251,8 +251,13 @@ void GameDashboardMainMenuView::OnToolbarTilePressed() {
 }
 
 void GameDashboardMainMenuView::OnRecordGameTilePressed() {
-  context_->CloseMainMenu();
-  GameDashboardController::Get()->StartCaptureSession(context_);
+  if (record_game_tile_->IsToggled()) {
+    CaptureModeController::Get()->EndVideoRecording(
+        EndRecordingReason::kGameDashboardStopRecordingButton);
+  } else {
+    context_->CloseMainMenu();
+    GameDashboardController::Get()->StartCaptureSession(context_);
+  }
 }
 
 void GameDashboardMainMenuView::OnScreenshotTilePressed() {

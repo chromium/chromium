@@ -220,8 +220,12 @@ void GameDashboardToolbarView::OnGameControlsButtonPressed() {
 }
 
 void GameDashboardToolbarView::OnRecordButtonPressed() {
-  // TODO(b/273641250): Add support to instantly record the game window without
-  // showing the Screen Capture UI.
+  if (record_game_button_->toggled()) {
+    CaptureModeController::Get()->EndVideoRecording(
+        EndRecordingReason::kGameToolbarStopRecordingButton);
+  } else {
+    GameDashboardController::Get()->StartCaptureSession(context_);
+  }
 }
 
 void GameDashboardToolbarView::OnScreenshotButtonPressed() {
