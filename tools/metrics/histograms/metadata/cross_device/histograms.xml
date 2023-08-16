@@ -1988,7 +1988,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MultiDevice.VerifyButtonClicked"
     enum="MultiDevice_VerifyAndForgetHostConfirmationState"
-    expires_after="2023-08-08">
+    expires_after="2024-05-10">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

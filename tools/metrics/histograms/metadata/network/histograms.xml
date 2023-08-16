@@ -3137,7 +3137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Hidden.EverConnected"
-    enum="BooleanConnected" expires_after="2023-08-08">
+    enum="BooleanConnected" expires_after="2023-12-01">
   <owner>jonmann@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -3152,7 +3152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Hidden.LastConnected" units="days"
-    expires_after="2023-08-08">
+    expires_after="2023-12-01">
   <owner>jonmann@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
