@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
+#include "content/public/common/content_switches.h"
 #include "ppapi/c/dev/ppb_audio_input_dev.h"
 #include "ppapi/c/dev/ppb_audio_output_dev.h"
 #include "ppapi/c/dev/ppb_buffer_dev.h"
@@ -115,7 +116,36 @@ bool IsSupportedPepperInterface(const char* name) {
   return false;
 }
 
-bool IsNaclAllowed() {
+namespace {
+bool g_allow_nacl = true;
+
+bool IsBrowserProcess() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableNaCl);
+      switches::kProcessType);
+}  // namespace
+}  // namespace
+
+void DisallowNacl() {
+  CHECK(IsBrowserProcess());
+  g_allow_nacl = false;
+}
+
+bool IsNaclAllowed() {
+  // In the browser process we directly check g_allow_nacl and in other
+  // processes we check for the command line switch. This is because:
+  //   (1) It's discouraged to add switches to browser process.
+  //   (2) We must use a command line switch for child processes to get the
+  //       information early in startup.
+  if (IsBrowserProcess()) {
+    return g_allow_nacl;
+  } else {
+    return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+        switches::kDisableNaCl);
+  }
+}
+
+void AppendDisableNaclSwitchIfNecessary(base::CommandLine* command_line) {
+  if (!IsNaclAllowed()) {
+    command_line->AppendSwitch(switches::kDisableNaCl);
+  }
 }
