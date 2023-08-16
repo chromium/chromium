@@ -301,8 +301,9 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
             absl::nullopt);
   ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstPin(prefs), absl::nullopt);
 
-  if (timeOfFirstAdd)
+  if (timeOfFirstAdd) {
     ASSERT_GT(timeOfFirstAdd, timeOfFirstAvailability);
+  }
 }
 
 class AutotestPrivateApiOverviewTest : public AutotestPrivateApiTest {
@@ -321,8 +322,9 @@ class AutotestPrivateApiOverviewTest : public AutotestPrivateApiTest {
     base::RunLoop run_loop;
     ash::OverviewTestApi().SetOverviewMode(
         /*start=*/true, base::BindLambdaForTesting([&run_loop](bool finished) {
-          if (!finished)
+          if (!finished) {
             ADD_FAILURE() << "Failed to enter overview.";
+          }
           run_loop.Quit();
         }));
     run_loop.Run();
@@ -494,9 +496,7 @@ class AutotestPrivateSystemWebAppsTest : public AutotestPrivateApiTest {
   std::unique_ptr<ash::TestSystemWebAppInstallation> installation_;
 };
 
-// TODO(crbug.com/1201545): Fix flakiness.
-IN_PROC_BROWSER_TEST_F(AutotestPrivateSystemWebAppsTest,
-                       DISABLED_SystemWebApps) {
+IN_PROC_BROWSER_TEST_F(AutotestPrivateSystemWebAppsTest, SystemWebApps) {
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("systemWebApps")) << message_;
 }
 
@@ -626,8 +626,9 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
   for (auto* result : PublishedResults()) {
     // There may be zero state results that are also published, but not visible
     // in the UI. This test should only check search list results.
-    if (result->display_type() != ash::SearchResultDisplayType::kList)
+    if (result->display_type() != ash::SearchResultDisplayType::kList) {
       continue;
+    }
 
     results.push_back(result);
   }
