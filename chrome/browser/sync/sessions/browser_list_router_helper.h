@@ -40,9 +40,9 @@ class BrowserListRouterHelper : public BrowserListObserver,
       const TabStripSelectionChange& selection) override;
 
   // |router_| owns |this|.
-  raw_ptr<SyncSessionsWebContentsRouter> router_;
+  const raw_ptr<SyncSessionsWebContentsRouter> router_;
 
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
 
   std::set<Browser*> attached_browsers_;
 };

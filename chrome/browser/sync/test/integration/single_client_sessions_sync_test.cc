@@ -115,7 +115,7 @@ class IsHistoryURLSyncedChecker : public SingleClientStatusChangeChecker {
 
  private:
   const std::string url_;
-  raw_ptr<fake_server::FakeServer> fake_server_;
+  const raw_ptr<fake_server::FakeServer> fake_server_;
 };
 
 class IsIconURLSyncedChecker : public SingleClientStatusChangeChecker {
@@ -155,7 +155,7 @@ class IsIconURLSyncedChecker : public SingleClientStatusChangeChecker {
  private:
   const std::string page_url_;
   const std::string icon_url_;
-  raw_ptr<fake_server::FakeServer> fake_server_;
+  const raw_ptr<fake_server::FakeServer> fake_server_;
 };
 
 // Checker to block until the history DB for |profile| does / does not have a

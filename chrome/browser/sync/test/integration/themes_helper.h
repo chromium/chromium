@@ -72,7 +72,7 @@ class ThemeConditionChecker : public StatusChangeChecker,
   void OnThemeChanged() override;
 
  private:
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
   const std::string debug_message_;
   base::RepeatingCallback<bool(ThemeService*)> exit_condition_;
 };
@@ -95,7 +95,7 @@ class ThemePendingInstallChecker : public StatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
   const raw_ref<const std::string> theme_;
 
   base::WeakPtrFactory<ThemePendingInstallChecker> weak_ptr_factory_{this};

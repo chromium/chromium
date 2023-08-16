@@ -50,7 +50,7 @@ class FlushHistoryDBQueueTask : public history::HistoryDBTask {
  private:
   ~FlushHistoryDBQueueTask() override = default;
 
-  raw_ptr<base::WaitableEvent> wait_event_;
+  const raw_ptr<base::WaitableEvent> wait_event_;
 };
 
 class GetTypedUrlsTask : public history::HistoryDBTask {
@@ -71,8 +71,8 @@ class GetTypedUrlsTask : public history::HistoryDBTask {
  private:
   ~GetTypedUrlsTask() override = default;
 
-  raw_ptr<history::URLRows> rows_;
-  raw_ptr<base::WaitableEvent> wait_event_;
+  const raw_ptr<history::URLRows> rows_;
+  const raw_ptr<base::WaitableEvent> wait_event_;
 };
 
 class GetUrlTask : public history::HistoryDBTask {
@@ -96,10 +96,10 @@ class GetUrlTask : public history::HistoryDBTask {
  private:
   ~GetUrlTask() override = default;
 
-  GURL url_;
-  raw_ptr<history::URLRow> row_;
-  raw_ptr<base::WaitableEvent> wait_event_;
-  raw_ptr<bool> found_;
+  const GURL url_;
+  const raw_ptr<history::URLRow> row_;
+  const raw_ptr<base::WaitableEvent> wait_event_;
+  const raw_ptr<bool> found_;
 };
 
 class GetUrlByIdTask : public history::HistoryDBTask {
@@ -123,10 +123,10 @@ class GetUrlByIdTask : public history::HistoryDBTask {
  private:
   ~GetUrlByIdTask() override = default;
 
-  history::URLID url_id_;
-  raw_ptr<history::URLRow> row_;
-  raw_ptr<base::WaitableEvent> wait_event_;
-  raw_ptr<bool> found_;
+  const history::URLID url_id_;
+  const raw_ptr<history::URLRow> row_;
+  const raw_ptr<base::WaitableEvent> wait_event_;
+  const raw_ptr<bool> found_;
 };
 
 class GetVisitsTask : public history::HistoryDBTask {
@@ -202,9 +202,9 @@ class GetRedirectChainTask : public history::HistoryDBTask {
  private:
   ~GetRedirectChainTask() override = default;
 
-  history::VisitRow final_visit_;
-  raw_ptr<history::VisitVector> visits_;
-  raw_ptr<base::WaitableEvent> wait_event_;
+  const history::VisitRow final_visit_;
+  const raw_ptr<history::VisitVector> visits_;
+  const raw_ptr<base::WaitableEvent> wait_event_;
 };
 
 class RemoveVisitsTask : public history::HistoryDBTask {
@@ -227,7 +227,7 @@ class RemoveVisitsTask : public history::HistoryDBTask {
   ~RemoveVisitsTask() override = default;
 
   const raw_ref<const history::VisitVector> visits_;
-  raw_ptr<base::WaitableEvent> wait_event_;
+  const raw_ptr<base::WaitableEvent> wait_event_;
 };
 
 // Waits for the history DB thread to finish executing its current set of
@@ -265,8 +265,8 @@ class GetTypedUrlsMetadataTask : public history::HistoryDBTask {
   void DoneRunOnMainThread() override {}
 
  private:
-  raw_ptr<syncer::MetadataBatch> metadata_batch_;
-  raw_ptr<base::WaitableEvent> wait_event_;
+  const raw_ptr<syncer::MetadataBatch> metadata_batch_;
+  const raw_ptr<base::WaitableEvent> wait_event_;
 };
 
 class WriteTypedUrlsMetadataTask : public history::HistoryDBTask {
@@ -291,7 +291,7 @@ class WriteTypedUrlsMetadataTask : public history::HistoryDBTask {
  private:
   const std::string storage_key_;
   const sync_pb::EntityMetadata metadata_;
-  raw_ptr<base::WaitableEvent> wait_event_;
+  const raw_ptr<base::WaitableEvent> wait_event_;
 };
 
 // Creates a URLRow in the specified HistoryService with the passed transition

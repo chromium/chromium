@@ -45,7 +45,7 @@ class PowerBookmarkChecker : public StatusChangeChecker,
   }
 
  private:
-  raw_ptr<power_bookmarks::PowerBookmarkService> service_;
+  const raw_ptr<power_bookmarks::PowerBookmarkService> service_;
   bool changed_ = false;
 };
 

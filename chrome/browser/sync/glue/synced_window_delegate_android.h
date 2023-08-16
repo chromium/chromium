@@ -40,7 +40,7 @@ class SyncedWindowDelegateAndroid : public sync_sessions::SyncedWindowDelegate {
   bool ShouldSync() const override;
 
  private:
-  raw_ptr<TabModel> tab_model_;
+  const raw_ptr<TabModel> tab_model_;
   const bool is_tabbed_activity_ = false;
 };
 

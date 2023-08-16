@@ -385,7 +385,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // The default profile, created before our actual testing |profiles_|. This is
   // needed in a workaround for https://crbug.com/801569, see comments in the
   // .cc file.
-  raw_ptr<Profile, AcrossTasksDanglingUntriaged> previous_profile_;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> previous_profile_ = nullptr;
 
   // Number of sync clients that will be created by a test.
   int num_clients_;
@@ -429,7 +429,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // We don't need a corresponding verifier sync client because the contents
   // of the verifier profile are strictly local, and are not meant to be
   // synced.
-  raw_ptr<Profile, AcrossTasksDanglingUntriaged> verifier_;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> verifier_ = nullptr;
 
   // Indicates whether to use a new user data dir.
   // Only used for external server tests with two clients.

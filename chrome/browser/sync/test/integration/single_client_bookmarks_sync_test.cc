@@ -144,7 +144,7 @@ class FakeDeviceInfoSyncServiceWithInvalidations
       override {}
 
  private:
-  raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
+  const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
 };
 
 std::unique_ptr<KeyedService> BuildFakeDeviceInfoSyncService(

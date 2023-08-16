@@ -76,7 +76,7 @@ class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  raw_ptr<FakeServer> fake_server_;
+  const raw_ptr<FakeServer> fake_server_;
   // TODO(markusheintz): User a string with the serialized proto instead of an
   // int. The requires creating better expectations with a proper creation
   // time.
