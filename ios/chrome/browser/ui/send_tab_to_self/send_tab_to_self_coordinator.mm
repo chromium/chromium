@@ -338,7 +338,8 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
       __weak __typeof(self) weakSelf = self;
       ShowSigninCommandCompletionCallback callback =
-          ^(SigninCoordinatorResult result) {
+          ^(SigninCoordinatorResult result,
+            SigninCompletionInfo* completionInfo) {
             BOOL succeeded = result == SigninCoordinatorResultSuccess;
             [weakSelf onSigninComplete:succeeded];
           };

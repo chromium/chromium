@@ -647,7 +647,8 @@ constexpr CGFloat kErrorSymbolSize = 22.;
                identity:nil
             accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:^(SigninCoordinatorResult result) {
+               callback:^(SigninCoordinatorResult result,
+                          SigninCompletionInfo* completionInfo) {
                  BOOL success = result == SigninCoordinatorResultSuccess;
                  [weakSelf handleDidAddAccount:success];
                }];

@@ -493,7 +493,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
   OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(NO /* identity changed */);
-  completion(SigninCoordinatorResultSuccess);
+  completion(SigninCoordinatorResultSuccess, nil);
   EXPECT_FALSE(mediator_.showSpinner);
   EXPECT_EQ(SigninPromoViewState::kUsedAtLeastOnce,
             mediator_.signinPromoViewState);
@@ -530,7 +530,7 @@ TEST_F(SigninPromoViewMediatorTest,
   OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(NO /* identity changed */);
-  completion(SigninCoordinatorResultSuccess);
+  completion(SigninCoordinatorResultSuccess, nil);
 }
 
 // Tests that no update notification is sent by the mediator to its consumer,
@@ -567,7 +567,7 @@ TEST_F(SigninPromoViewMediatorTest,
   OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(NO /* identity changed */);
-  completion(SigninCoordinatorResultSuccess);
+  completion(SigninCoordinatorResultSuccess, nil);
 }
 
 // Tests that promos aren't shown if browser sign-in is disabled by policy
@@ -639,7 +639,7 @@ TEST_F(SigninPromoViewMediatorTest,
   EXPECT_EQ(weak_mediator, nil);
   // Finish the sign-in.
   OCMExpect([consumer_ signinDidFinish]);
-  completion(SigninCoordinatorResultSuccess);
+  completion(SigninCoordinatorResultSuccess, nil);
 }
 
 // Tests that the sign-in promo view being removed, and tests the consumer is
@@ -669,7 +669,7 @@ TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
   EXPECT_EQ(SigninPromoViewState::kInvalid, mediator_.signinPromoViewState);
   // Finish the sign-in.
   OCMExpect([consumer_ signinDidFinish]);
-  completion(SigninCoordinatorResultSuccess);
+  completion(SigninCoordinatorResultSuccess, nil);
   // Set mediator_ to nil to avoid the TearDown doesn't call
   // -[mediator_ disconnect] again.
   mediator_ = nil;

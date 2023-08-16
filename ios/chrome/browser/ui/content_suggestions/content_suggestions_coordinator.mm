@@ -506,7 +506,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 // Shows the SigninSync UI with the SetUpList access point.
 - (void)showSignIn {
   ShowSigninCommandCompletionCallback callback =
-      ^(SigninCoordinatorResult result) {
+      ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
         if (result == SigninCoordinatorResultSuccess ||
             result == SigninCoordinatorResultCanceledByUser) {
           PrefService* localState = GetApplicationContext()->GetLocalState();

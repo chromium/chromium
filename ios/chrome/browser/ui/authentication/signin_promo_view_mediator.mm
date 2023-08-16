@@ -917,7 +917,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // in a variable and not get it from weakSelf (that might not exist anymore).
   __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
   ShowSigninCommandCompletionCallback completion =
-      ^(SigninCoordinatorResult result) {
+      ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
         [weakSelf signinCallbackWithResult:result];
         if ([weakConsumer respondsToSelector:@selector(signinDidFinish)]) {
           [weakConsumer signinDidFinish];
