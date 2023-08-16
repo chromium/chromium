@@ -1024,7 +1024,7 @@ void AuthenticatorRequestDialogModel::RecordMacOsStartedHistogram() {
       transport_availability_.make_credential_attachment.has_value() &&
       *transport_availability_.make_credential_attachment ==
           device::AuthenticatorAttachment::kPlatform) {
-    v = transport_availability_.has_icloud_drive_enabled
+    v = has_icloud_drive_enabled_
             ? MacOsHistogramValues::
                   kStartedCreateForProfileAuthenticatorICloudDriveEnabled
             : MacOsHistogramValues::
@@ -1056,7 +1056,7 @@ void AuthenticatorRequestDialogModel::RecordMacOsSuccessHistogram(
 
   if (transport_availability_.request_type ==
       device::FidoRequestType::kMakeCredential) {
-    v = transport_availability_.has_icloud_drive_enabled
+    v = has_icloud_drive_enabled_
             ? MacOsHistogramValues::
                   kSuccessfulCreateForProfileAuthenticatorICloudDriveEnabled
             : MacOsHistogramValues::
@@ -1079,6 +1079,11 @@ void AuthenticatorRequestDialogModel::RecordMacOsSuccessHistogram(
 void AuthenticatorRequestDialogModel::set_is_active_profile_authenticator_user(
     bool is_active) {
   is_active_profile_authenticator_user_ = is_active;
+}
+
+void AuthenticatorRequestDialogModel::set_has_icloud_drive_enabled(
+    bool is_enabled) {
+  has_icloud_drive_enabled_ = is_enabled;
 }
 
 #endif

@@ -632,6 +632,7 @@ class AuthenticatorRequestDialogModel {
   void RecordMacOsSuccessHistogram(device::FidoRequestType,
                                    device::AuthenticatorType);
   void set_is_active_profile_authenticator_user(bool);
+  void set_has_icloud_drive_enabled(bool);
 #endif
 
   base::WeakPtr<AuthenticatorRequestDialogModel> GetWeakPtr();
@@ -853,6 +854,11 @@ class AuthenticatorRequestDialogModel {
   // recently used the platform authenticator on macOS that saves credentials
   // into the profile.
   bool is_active_profile_authenticator_user_ = false;
+
+  // has_icloud_drive_enabled_ is true if the current system has iCloud Drive
+  // enabled. This is used as an approximation for whether iCloud Keychain
+  // syncing is enabled.
+  bool has_icloud_drive_enabled_ = false;
 #endif
 
   base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};

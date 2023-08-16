@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
+#include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
@@ -750,6 +751,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
                                              RequestSource::kWebAuthentication);
 
 #if BUILDFLAG(IS_MAC)
+  dialog_model_->set_has_icloud_drive_enabled(IsICloudDriveEnabled());
+
   if (base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain)) {
     const std::string& last_used =
         Profile::FromBrowserContext(GetBrowserContext())

@@ -5761,6 +5761,7 @@ static_library("browser") {
   }
   if (is_mac) {
     sources += [
+      "webauthn/chrome_authenticator_request_delegate_mac.mm",
       "webauthn/local_credential_management_mac.cc",
       "webauthn/local_credential_management_mac.h",
     ]

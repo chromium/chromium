@@ -369,10 +369,6 @@ bool IsSupported() {
   return false;
 }
 
-bool IsICloudDriveEnabled() {
-  return [NSFileManager defaultManager].ubiquityIdentityToken != nil;
-}
-
 std::unique_ptr<FidoDiscoveryBase> NewDiscovery(uintptr_t ns_window) {
   if (@available(macOS 13.3, *)) {
     NSWindow* window = (__bridge NSWindow*)(void*)ns_window;
