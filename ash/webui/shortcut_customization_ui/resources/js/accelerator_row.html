@@ -80,7 +80,8 @@
   }
 </style>
 
-<tr id="container" tabindex$="[[getTabIndex()]]">
+<tr id="container" tabindex$="[[getTabIndex()]]" on-focus="onRowFocused"
+    on-blur="onRowBlur">
   <th id="descriptionText" scope="row">[[description]]</th>
   <td>
     <template is="dom-if" if="[[isDefaultLayout(layoutStyle)]]">
@@ -88,7 +89,8 @@
           index-as="index">
         <accelerator-view class="accelerator-item" accelerator-info="[[item]]"
             action="[[action]]" source="[[source]]" source-is-locked="[[isLocked]]"
-            show-edit-icon="true" is-first-accelerator="[[isFirstAccelerator(index)]]">
+            show-edit-icon="true" is-first-accelerator="[[isFirstAccelerator(index)]]"
+            highlighted="[[selected]]">
         </accelerator-view>
       </template>
       <div id="noShortcutAssignedContainer" hidden="[[!isEmptyList(acceleratorInfos)]]">
@@ -105,7 +107,7 @@
     </template>
     <template is="dom-if" if="[[isTextLayout(layoutStyle)]]">
       <text-accelerator parts="[[getTextAcceleratorParts(acceleratorInfos)]]"
-          action="[[action]]" source="[[source]]">
+          action="[[action]]" source="[[source]]" highlighted="[[selected]]">
       </text-accelerator>
     </template>
   </td>

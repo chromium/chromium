@@ -37,11 +37,14 @@
   <template is="dom-if" if="[[!showEditView(viewState)]]">
     <div id="accelerator-keys">
       <template is="dom-repeat" items="[[modifiers]]">
-        <input-key key="[[item]]" key-state="modifier-selected"></input-key>
+        <input-key key="[[item]]" key-state="modifier-selected"
+          highlighted="[[highlighted]]">
+        </input-key>
       </template>
       <input-key
           key="[[acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay]]"
-          key-state="alpha-numeric-selected">
+          key-state="alpha-numeric-selected"
+          highlighted="[[highlighted]]">
       </input-key>
     </div>
     <div class="lock-icon-container"
