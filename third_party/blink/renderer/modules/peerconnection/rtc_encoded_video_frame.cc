@@ -189,40 +189,74 @@ void SetCodecSpecificsVP8(webrtc::VideoFrameMetadata& webrtc_metadata,
 bool IsAllowedSetMetadataChange(
     const RTCEncodedVideoFrameMetadata* original_metadata,
     const RTCEncodedVideoFrameMetadata* metadata) {
-  return (metadata->contributingSources() ==
-              original_metadata->contributingSources() &&
-          (metadata->hasFrameId() == original_metadata->hasFrameId() &&
-           (metadata->hasFrameId()
-                ? metadata->frameId() == original_metadata->frameId()
-                : true)) &&
-          metadata->height() == original_metadata->height() &&
-          metadata->isLastFrameInPicture() ==
-              original_metadata->isLastFrameInPicture() &&
-          metadata->payloadType() == original_metadata->payloadType() &&
-          metadata->simulcastIdx() == original_metadata->simulcastIdx() &&
-          metadata->spatialIndex() == original_metadata->spatialIndex() &&
-          metadata->synchronizationSource() ==
-              original_metadata->synchronizationSource() &&
-          metadata->temporalIndex() == original_metadata->temporalIndex() &&
-          metadata->frameType() == original_metadata->frameType() &&
-          metadata->width() == original_metadata->width() &&
-          metadata->dependencies() == original_metadata->dependencies() &&
-          metadata->decodeTargetIndications() ==
-              original_metadata->decodeTargetIndications());
+  if (metadata->width() != original_metadata->width() ||
+      metadata->height() != original_metadata->height() ||
+      metadata->spatialIndex() != original_metadata->spatialIndex() ||
+      metadata->temporalIndex() != original_metadata->temporalIndex()) {
+    return false;
+  }
+
+  // It is possible to not have the RTP metadata values set. This condition
+  // checks if the value exists and if it does, it should be the same.
+  if ((metadata->hasSynchronizationSource() !=
+           original_metadata->hasSynchronizationSource() ||
+       (metadata->hasSynchronizationSource()
+            ? metadata->synchronizationSource() !=
+                  original_metadata->synchronizationSource()
+            : false)) ||
+      (metadata->hasContributingSources() !=
+           original_metadata->hasContributingSources() ||
+       (metadata->hasContributingSources()
+            ? metadata->contributingSources() !=
+                  original_metadata->contributingSources()
+            : false))) {
+    return false;
+  }
+
+  // These fields should be same for both the new and old metadata if the
+  // RTCEncodedVideoFrameAdditionalMetadata flag is enabled.
+  // TODO(crbug.com/1464855) : Add comparison for decodeTargetIndications and
+  // codecSpecifics.
+  if (RuntimeEnabledFeatures::RTCEncodedVideoFrameAdditionalMetadataEnabled() &&
+      (metadata->isLastFrameInPicture() !=
+           original_metadata->isLastFrameInPicture() ||
+       metadata->simulcastIdx() != original_metadata->simulcastIdx() ||
+       metadata->codec() != original_metadata->codec() ||
+       metadata->frameType() != original_metadata->frameType())) {
+    return false;
+  }
+
+  return true;
 }
 
 bool ValidateMetadata(const RTCEncodedVideoFrameMetadata* metadata,
                       String& error_message) {
-  if (!metadata->hasDependencies() || !metadata->hasWidth() ||
-      !metadata->hasHeight() || !metadata->hasSpatialIndex() ||
-      !metadata->hasTemporalIndex() ||
-      !metadata->hasDecodeTargetIndications() ||
-      !metadata->hasIsLastFrameInPicture() || !metadata->hasSimulcastIdx() ||
-      !metadata->hasCodec() ||
-      (!metadata->hasCodecSpecifics() && (metadata->codec() == "vp8")) ||
-      !metadata->hasSynchronizationSource() || !metadata->hasFrameType()) {
+  if (!metadata->hasWidth() || !metadata->hasHeight() ||
+      !metadata->hasSpatialIndex() || !metadata->hasTemporalIndex()) {
     error_message = "Member(s) missing in RTCEncodedVideoFrameMetadata.";
     return false;
+  }
+
+  // These fields should have value only if the
+  // RTCEncodedVideoFrameAdditionalMetadata flag is enabled.
+  if (RuntimeEnabledFeatures::RTCEncodedVideoFrameAdditionalMetadataEnabled() &&
+      (!metadata->hasDecodeTargetIndications() ||
+       !metadata->hasIsLastFrameInPicture() || !metadata->hasSimulcastIdx() ||
+       !metadata->hasCodec() || !metadata->hasCodecSpecifics() ||
+       !metadata->hasFrameType())) {
+    error_message = "Member(s) missing in RTCEncodedVideoFrameMetadata.";
+    return false;
+  }
+
+  // This might happen if the dependency descriptor is not set.
+  if (!metadata->hasFrameId() && metadata->hasDependencies()) {
+    error_message =
+        "frameID missing, but has dependencies in "
+        "RTCEncodedVideoFrameMetadata.";
+    return false;
+  }
+  if (!metadata->hasDependencies()) {
+    return true;
   }
 
   // Ensure there are at most 8 deps. Enforced in WebRTC's
@@ -269,8 +303,9 @@ void RTCEncodedVideoFrame::setTimestamp(uint32_t timestamp,
 }
 
 DOMArrayBuffer* RTCEncodedVideoFrame::data() const {
-  if (!frame_data_)
+  if (!frame_data_) {
     frame_data_ = delegate_->CreateDataBuffer();
+  }
   return frame_data_;
 }
 
@@ -289,17 +324,20 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
 
   const absl::optional<webrtc::VideoFrameMetadata> webrtc_metadata =
       delegate_->GetMetadata();
-  if (!webrtc_metadata)
+  if (!webrtc_metadata) {
     return metadata;
+  }
 
   metadata->setSynchronizationSource(webrtc_metadata->GetSsrc());
 
-  if (webrtc_metadata->GetFrameId())
+  if (webrtc_metadata->GetFrameId()) {
     metadata->setFrameId(*webrtc_metadata->GetFrameId());
+  }
 
   Vector<int64_t> dependencies;
-  for (const auto& dependency : webrtc_metadata->GetFrameDependencies())
+  for (const auto& dependency : webrtc_metadata->GetFrameDependencies()) {
     dependencies.push_back(dependency);
+  }
   metadata->setDependencies(dependencies);
   metadata->setWidth(webrtc_metadata->GetWidth());
   metadata->setHeight(webrtc_metadata->GetHeight());
@@ -398,55 +436,70 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
     return;
   }
 
+  if ((metadata->hasPayloadType() != original_metadata->hasPayloadType()) ||
+      (metadata->hasPayloadType() &&
+       metadata->payloadType() != original_metadata->payloadType())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidModificationError,
+        "Invalid modification of payloadType in RTCEncodedVideoFrameMetadata.");
+    return;
+  }
+
   // Initialize the new metadata from original_metadata to account for fields
   // not part of RTCEncodedVideoFrameMetadata.
   webrtc::VideoFrameMetadata webrtc_metadata = *original_webrtc_metadata;
   if (metadata->hasFrameId()) {
     webrtc_metadata.SetFrameId(metadata->frameId());
   }
-  webrtc_metadata.SetFrameDependencies(metadata->dependencies());
+  if (metadata->hasDependencies()) {
+    webrtc_metadata.SetFrameDependencies(metadata->dependencies());
+  }
   webrtc_metadata.SetWidth(metadata->width());
   webrtc_metadata.SetHeight(metadata->height());
   webrtc_metadata.SetSpatialIndex(metadata->spatialIndex());
   webrtc_metadata.SetTemporalIndex(metadata->temporalIndex());
-  std::vector<webrtc::DecodeTargetIndication> decode_target_indications;
-  for (const auto& decode_target_indication :
-       metadata->decodeTargetIndications()) {
-    decode_target_indications.push_back(
-        DecodeTargetIndicationFromV8RTCDecodeTargetIndication(
-            decode_target_indication));
+
+  if (RuntimeEnabledFeatures::RTCEncodedVideoFrameAdditionalMetadataEnabled()) {
+    std::vector<webrtc::DecodeTargetIndication> decode_target_indications;
+    for (const auto& decode_target_indication :
+         metadata->decodeTargetIndications()) {
+      decode_target_indications.push_back(
+          DecodeTargetIndicationFromV8RTCDecodeTargetIndication(
+              decode_target_indication));
+    }
+    webrtc_metadata.SetDecodeTargetIndications(decode_target_indications);
+    webrtc_metadata.SetIsLastFrameInPicture(metadata->isLastFrameInPicture());
+    webrtc_metadata.SetSimulcastIdx(metadata->simulcastIdx());
+    webrtc::VideoCodecType codec =
+        VideoCodecTypeFromRTCVideoCodecType(metadata->codec());
+    webrtc_metadata.SetFrameType(
+        VideoFrameTypeFromRTCEncodedVideoFrameType(metadata->frameType()));
+    webrtc_metadata.SetCodec(codec);
+    switch (codec) {
+      case webrtc::VideoCodecType::kVideoCodecVP8: {
+        SetCodecSpecificsVP8(webrtc_metadata, original_metadata, metadata,
+                             exception_state);
+        if (exception_state.HadException()) {
+          return;
+        }
+        break;
+      }
+      default:
+        // Using a codec which doesn't support exposing & modifying
+        // codec-specific info, so just leave the original intact and continue.
+        break;
+    }
   }
-  webrtc_metadata.SetDecodeTargetIndications(decode_target_indications);
-  webrtc_metadata.SetIsLastFrameInPicture(metadata->isLastFrameInPicture());
-  webrtc_metadata.SetSimulcastIdx(metadata->simulcastIdx());
-  webrtc::VideoCodecType codec =
-      VideoCodecTypeFromRTCVideoCodecType(metadata->codec());
-  webrtc_metadata.SetFrameType(
-      VideoFrameTypeFromRTCEncodedVideoFrameType(metadata->frameType()));
+
   webrtc_metadata.SetSsrc(metadata->synchronizationSource());
 
-  webrtc_metadata.SetCodec(codec);
-  switch (codec) {
-    case webrtc::VideoCodecType::kVideoCodecVP8: {
-      SetCodecSpecificsVP8(webrtc_metadata, original_metadata, metadata,
-                           exception_state);
-      if (exception_state.HadException()) {
-        return;
-      }
-      break;
+  if (metadata->hasContributingSources()) {
+    std::vector<uint32_t> csrcs;
+    for (uint32_t csrc : metadata->contributingSources()) {
+      csrcs.push_back(csrc);
     }
-    default:
-      // Using a codec which doesn't support exposing & modifying codec-specific
-      // info, so just leave the original intact and continue.
-      break;
+    webrtc_metadata.SetCsrcs(csrcs);
   }
-
-  std::vector<uint32_t> csrcs;
-  for (uint32_t csrc : metadata->contributingSources()) {
-    csrcs.push_back(csrc);
-  }
-  webrtc_metadata.SetCsrcs(csrcs);
-
   delegate_->SetMetadata(webrtc_metadata);
 }
 
@@ -455,8 +508,9 @@ void RTCEncodedVideoFrame::setData(DOMArrayBuffer* data) {
 }
 
 String RTCEncodedVideoFrame::toString() const {
-  if (!delegate_)
+  if (!delegate_) {
     return "empty";
+  }
 
   StringBuilder sb;
   sb.Append("RTCEncodedVideoFrame{rtpTimestamp: ");

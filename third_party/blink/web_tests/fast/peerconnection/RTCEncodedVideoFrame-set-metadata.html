@@ -47,10 +47,19 @@ async function setupLoopbackWithCodecAndGetReader(t, codec) {
 promise_test(async t => {
   const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
   const result = await senderReader.read();
+  const metadata = result.value.getMetadata();
+  const clone = result.value.clone();
+  metadata.frameId = 2;
+  metadata.dependencies = [1];
+  clone.setMetadata(metadata);
+ }, "setMetadata() does allow changes to frameId and dependencies without a flag");
+
+
+// TODO(crbug.com/1464855) : Add test for decodeTargetIndications and codecSpecifics.
+promise_test(async t => {
+  const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
+  const result = await senderReader.read();
   const field_values = {
-    'decodeTargetIndications':['required'],
-    'dependencies':[1],
-    'frameId':2,
     'frameType':'delta',
     'height':600,
     'isLastFrameInPicture':false,
@@ -145,7 +154,21 @@ promise_test(async t => {
   const cloneFrame = originalFrame.clone();
 
   metadata.frameId = undefined;
+  metadata.dependencies = [1];
+  assert_throws_dom('InvalidModificationError', () => cloneFrame.setMetadata(metadata), "frameID missing, but has dependencies in RTCEncodedVideoFrameMetadata.");
+}, "setMetadata() does not allow metadata with dependencies but no frameId");
+
+promise_test(async t => {
+  const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
+  const result = await senderReader.read();
+  const originalFrame = result.value;
+
+  const metadata = originalFrame.getMetadata();
+  const cloneFrame = originalFrame.clone();
+
+  metadata.frameId = 2;
+  metadata.dependencies = undefined;
 
   cloneFrame.setMetadata(metadata);
-}, "setMetadata() allows metadata when AllowRTCEncodedVideoFrameSetMetadataAllFields is enabled with no generic dependency descriptor - ie no frameId");
+}, "setMetadata() does allow metadata with no dependencies but a frameId");
 </script>
