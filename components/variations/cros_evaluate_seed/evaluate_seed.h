@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_H_
-#define COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_H_
+#ifndef COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_EVALUATE_SEED_H_
+#define COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_EVALUATE_SEED_H_
 
 #include <memory>
 #include <string>
@@ -16,7 +16,7 @@
 #include "components/variations/service/variations_service_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace variations::evaluate_seed {
+namespace variations::cros_early_boot::evaluate_seed {
 
 class CrosVariationsServiceClient : public VariationsServiceClient {
  public:
@@ -61,6 +61,6 @@ absl::optional<SafeSeed> GetSafeSeedData(FILE* stream);
 // Return values are standard for main methods (EXIT_SUCCESS / EXIT_FAILURE).
 int EvaluateSeedMain(FILE* stream);
 
-}  // namespace variations::evaluate_seed
+}  // namespace variations::cros_early_boot::evaluate_seed
 
-#endif  // COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_H_
+#endif  // COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_EVALUATE_SEED_H_

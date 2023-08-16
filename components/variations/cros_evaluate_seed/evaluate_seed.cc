@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/variations/cros/evaluate_seed.h"
+#include "components/variations/cros_evaluate_seed/evaluate_seed.h"
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
@@ -16,7 +16,7 @@
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/service/variations_field_trial_creator.h"
 
-namespace variations::evaluate_seed {
+namespace variations::cros_early_boot::evaluate_seed {
 
 namespace {
 constexpr char kSafeSeedSwitch[] = "use-safe-seed";
@@ -119,4 +119,4 @@ int EvaluateSeedMain(FILE* stream) {
   return EXIT_SUCCESS;
 }
 
-}  // namespace variations::evaluate_seed
+}  // namespace variations::cros_early_boot::evaluate_seed

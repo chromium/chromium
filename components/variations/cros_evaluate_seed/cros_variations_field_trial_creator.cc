@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/variations/cros/cros_variations_field_trial_creator.h"
+#include "components/variations/cros_evaluate_seed/cros_variations_field_trial_creator.h"
 
 // Determining locale correctly is expensive in terms of code size due to the
 // libicu dependency (~400 KiB). Since it is not critical for early-boot
@@ -11,7 +11,7 @@ constexpr char kFakeLocale[] = "invalid-locale";
 
 class PrefService;
 
-namespace variations {
+namespace variations::cros_early_boot::evaluate_seed {
 
 CrOSVariationsFieldTrialCreator::CrOSVariationsFieldTrialCreator(
     VariationsServiceClient* client,
@@ -28,4 +28,4 @@ bool CrOSVariationsFieldTrialCreator::IsOverrideResourceMapEmpty() {
   return true;
 }
 
-}  // namespace variations
+}  // namespace variations::cros_early_boot::evaluate_seed

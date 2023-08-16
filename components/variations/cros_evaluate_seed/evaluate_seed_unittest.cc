@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/variations/cros/evaluate_seed.h"
+#include "components/variations/cros_evaluate_seed/evaluate_seed.h"
 
 #include "base/strings/strcat.h"
 #include "base/test/scoped_chromeos_version_info.h"
@@ -13,7 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace variations::evaluate_seed {
+namespace variations::cros_early_boot::evaluate_seed {
 
 MATCHER_P(EqualsProto,
           message,
@@ -205,4 +205,4 @@ TEST(VariationsCrosEvaluateSeed, Main_NoStdin) {
   EXPECT_EQ(1, EvaluateSeedMain(nullptr));
 }
 
-}  // namespace variations::evaluate_seed
+}  // namespace variations::cros_early_boot::evaluate_seed

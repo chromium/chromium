@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/variations/cros/cros_safe_seed_manager.h"
+#include "components/variations/cros_evaluate_seed/cros_safe_seed_manager.h"
 
 #include "components/variations/service/safe_seed_manager_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace variations {
-namespace cros_early_boot {
+namespace variations::cros_early_boot::evaluate_seed {
 
 TEST(CrosSafeSeedManagerTest, GetSeedType_RegularSeed) {
   CrOSSafeSeedManager safe_seed_manager(SeedType::kRegularSeed);
@@ -22,5 +21,4 @@ TEST(CrosSafeSeedManagerTest, GetSeedType_SafeSeed) {
   EXPECT_EQ(SeedType::kSafeSeed, safe_seed_manager.GetSeedType());
 }
 
-}  // namespace cros_early_boot
-}  // namespace variations
+}  // namespace variations::cros_early_boot::evaluate_seed

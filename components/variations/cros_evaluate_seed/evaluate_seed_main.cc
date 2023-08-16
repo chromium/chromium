@@ -4,7 +4,7 @@
 
 #include "base/at_exit.h"
 #include "base/threading/platform_thread.h"
-#include "components/variations/cros/evaluate_seed.h"
+#include "components/variations/cros_evaluate_seed/evaluate_seed.h"
 
 // evaluate_seed reads the seed data from Local State and prints computed state,
 // in a serialized format, to stdout.
@@ -15,5 +15,5 @@ int main(int argc, const char* argv[]) {
   base::AtExitManager exit_manager;
 
   base::CommandLine::Init(argc, argv);
-  return variations::evaluate_seed::EvaluateSeedMain(stdin);
+  return variations::cros_early_boot::evaluate_seed::EvaluateSeedMain(stdin);
 }

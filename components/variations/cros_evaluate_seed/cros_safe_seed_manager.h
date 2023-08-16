@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VARIATIONS_CROS_CROS_SAFE_SEED_MANAGER_H_
-#define COMPONENTS_VARIATIONS_CROS_CROS_SAFE_SEED_MANAGER_H_
+#ifndef COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_CROS_SAFE_SEED_MANAGER_H_
+#define COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_CROS_SAFE_SEED_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -13,8 +13,7 @@
 
 class PrefRegistrySimple;
 
-namespace variations {
-namespace cros_early_boot {
+namespace variations::cros_early_boot::evaluate_seed {
 
 class CrOSSafeSeedManager : public SafeSeedManagerInterface {
  public:
@@ -52,7 +51,6 @@ class CrOSSafeSeedManager : public SafeSeedManagerInterface {
   SeedType seed_;
 };
 
-}  // namespace cros_early_boot
-}  // namespace variations
+}  // namespace variations::cros_early_boot::evaluate_seed
 
-#endif  // COMPONENTS_VARIATIONS_CROS_CROS_SAFE_SEED_MANAGER_H_
+#endif  // COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_CROS_SAFE_SEED_MANAGER_H_
