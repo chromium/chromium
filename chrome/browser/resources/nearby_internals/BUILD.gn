@@ -134,6 +134,7 @@ js_type_check("closure_compile") {
 
 js_library("cross_device_internals") {
   deps = [
+    ":logging_tab",
     ":nearby_presence_browser_proxy",
     ":np_list_object",
     ":types",

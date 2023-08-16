@@ -20,3 +20,52 @@
   font-family: Roboto;
   margin: 5px;
 }
+
+.flex {
+  flex: 1;
+}
+
+header {
+  min-height: 50px;
+  font-size: 24px;
+  background-color: #069BDE;
+  display: flex;
+  padding: 0 20px;
+  color: #f4f4f4;
+  text-align: center;
+  align-items: center;
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+
+.hidden {
+  display: none;
+}
+
+/** CSS for controls panel */
+#controls, #logs {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.logo {
+  font-size: 30px;
+  margin-right: 12px;
+}
+
+.control-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/** CSS for logs panel */
+#logs-panel {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid rgba(0,0,0,0.12);
+}
