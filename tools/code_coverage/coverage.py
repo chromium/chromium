@@ -363,7 +363,7 @@ def _BuildTargets(targets, jobs_count):
     subprocess_cmd.append('-j' + str(jobs_count))
 
   subprocess_cmd.extend(targets)
-  subprocess.check_call(subprocess_cmd)
+  subprocess.check_call(subprocess_cmd, shell=os.name == 'nt')
   logging.debug('Finished building %s.', str(targets))
 
 
