@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/send_tab_to_self/features.h"
@@ -416,6 +417,7 @@ void SendTabToSelfBridge::OnURLsDeleted(
 }
 
 void SendTabToSelfBridge::OnDeviceInfoChange() {
+  TRACE_EVENT0("ui", "SendTabToSelfBridge::OnDeviceInfoChange");
   ComputeTargetDeviceInfoSortedList();
 }
 
@@ -556,6 +558,7 @@ void SendTabToSelfBridge::OnReadAllData(
 void SendTabToSelfBridge::OnReadAllMetadata(
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  TRACE_EVENT0("ui", "SendTabToSelfBridge::OnReadAllMetadata");
   if (error) {
     change_processor()->ReportError(*error);
     return;
@@ -608,6 +611,7 @@ void SendTabToSelfBridge::DoGarbageCollection() {
 }
 
 void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
+  TRACE_EVENT0("ui", "SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList");
   if (!device_info_tracker_->IsSyncing()) {
     return;
   }
