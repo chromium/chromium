@@ -63552,6 +63552,7 @@ from previous Chrome versions.
   <int value="-215534141" label="NativeWindowNavButtons:enabled"/>
   <int value="-215103767" label="ShoppingList:disabled"/>
   <int value="-215048684" label="NtpComprehensiveThemeRealbox:disabled"/>
+  <int value="-214859547" label="OmniboxActionsUISimplification:enabled"/>
   <int value="-214618160" label="ESimPolicy:enabled"/>
   <int value="-213893901"
       label="AutofillUpstreamAuthenticatePreflightCall:disabled"/>
@@ -67329,6 +67330,7 @@ from previous Chrome versions.
   <int value="1705724232" label="use-android-midi-api"/>
   <int value="1705822740"
       label="ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes:enabled"/>
+  <int value="1706122209" label="OmniboxActionsUISimplification:disabled"/>
   <int value="1706682238" label="ContextualSearchTranslations:disabled"/>
   <int value="1707283026" label="SyncPseudoUSSExtensions:disabled"/>
   <int value="1708118086" label="TextFragmentAnchor:disabled"/>

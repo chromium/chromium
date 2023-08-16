@@ -332,6 +332,11 @@ BASE_FEATURE(kNtpRealboxPedals,
              "NtpRealboxPedals",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Feature used to enable the simplified actions UI design.
+BASE_FEATURE(kOmniboxActionsUISimplification,
+             "OmniboxActionsUISimplification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature used to enable URL suggestions for inputs that may contain typos.
 BASE_FEATURE(kOmniboxFuzzyUrlSuggestions,
              "OmniboxFuzzyUrlSuggestions",

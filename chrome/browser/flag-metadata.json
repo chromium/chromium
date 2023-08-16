@@ -5841,6 +5841,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "omnibox-actions-ui-simplification",
+    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "omnibox-adapt-narrow-tablet-windows",
     "owners": [ "pnoland", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

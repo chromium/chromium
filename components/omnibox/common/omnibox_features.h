@@ -85,6 +85,7 @@ BASE_DECLARE_FEATURE(kSuggestionAnswersColorReverse);
 BASE_DECLARE_FEATURE(kMostVisitedTiles);
 BASE_DECLARE_FEATURE(kRichAutocompletion);
 BASE_DECLARE_FEATURE(kNtpRealboxPedals);
+BASE_DECLARE_FEATURE(kOmniboxActionsUISimplification);
 BASE_DECLARE_FEATURE(kOmniboxFuzzyUrlSuggestions);
 BASE_DECLARE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor);
 BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesOnSrp);
