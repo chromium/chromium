@@ -22,8 +22,8 @@ class Image {
   // Creates an image from raw ARGB pixel data, 32 bits per pixel.
   Image(gfx::Size size, int line_stride, std::vector<unsigned char> buffer);
 
-  // Copy constructor.
-  explicit Image(const Image& image);
+  Image(const Image& image);
+  Image& operator=(const Image& image) = delete;
 
   ~Image();
 
@@ -54,9 +54,6 @@ class Image {
   // Actual bitmap data in arrays of RGBAs (so when loaded as uint32_t, it's
   // 0xABGR).
   const std::vector<unsigned char> data_;
-
-  // Prevent operator= (this function has no implementation)
-  Image& operator=(const Image& image);
 };
 
 }  // namespace printing

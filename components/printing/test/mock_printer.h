@@ -16,6 +16,7 @@
 #include "pdf/buildflags.h"
 #include "printing/image.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/units.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -24,25 +25,27 @@
 #define MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 #endif
 
+namespace printing {
+
 // A class which represents an output page used in the MockPrinter class.
 // The MockPrinter class stores output pages in a vector, so, this class
 // inherits the base::RefCounted<> class so that the MockPrinter class can use
 // a smart pointer of this object (i.e. scoped_refptr<>).
 class MockPrinterPage : public base::RefCounted<MockPrinterPage> {
  public:
-  explicit MockPrinterPage(const printing::Image& image);
+  explicit MockPrinterPage(const Image& image);
   MockPrinterPage(const MockPrinterPage&) = delete;
   MockPrinterPage& operator=(const MockPrinterPage&) = delete;
 
   int width() const { return image_.size().width(); }
   int height() const { return image_.size().height(); }
-  const printing::Image& image() const { return image_; }
+  const Image& image() const { return image_; }
 
  private:
   friend class base::RefCounted<MockPrinterPage>;
   virtual ~MockPrinterPage();
 
-  printing::Image image_;
+  Image image_;
 };
 
 // A class which implements a pseudo-printer object used by the RenderViewTest
@@ -82,18 +85,18 @@ class MockPrinter {
   // Reset the printer, to prepare for another print job.
   void Reset();
 
-  void SetDefaultPrintSettings(const printing::mojom::PrintParams& params);
+  void SetDefaultPrintSettings(const mojom::PrintParams& params);
 
   // Functions that handle mojo messages.
-  printing::mojom::PrintParamsPtr GetDefaultPrintSettings();
+  mojom::PrintParamsPtr GetDefaultPrintSettings();
   void SetPrintedPagesCount(int cookie, uint32_t number_pages);
 
   // Functions that handles IPC events.
   void ScriptedPrint(int cookie,
                      uint32_t expected_pages_count,
                      bool has_selection,
-                     printing::mojom::PrintPagesParams* settings);
-  void OnDocumentPrinted(printing::mojom::DidPrintDocumentParamsPtr params);
+                     mojom::PrintPagesParams* settings);
+  void OnDocumentPrinted(mojom::DidPrintDocumentParamsPtr params);
 
   // Functions that retrieve the output pages.
   Status GetPrinterStatus() const { return printer_status_; }
@@ -113,7 +116,7 @@ class MockPrinter {
   void CreateDocumentCookie();
 
   // Helper function to fill the fields in |params|.
-  void GetPrintParams(printing::mojom::PrintParams* params) const;
+  void GetPrintParams(mojom::PrintParams* params) const;
 
   // Set the printer in a finished state after printing.
   void Finish();
@@ -126,39 +129,40 @@ class MockPrinter {
   gfx::RectF printable_area_;
 
   // Specifies dots per inch.
-  double dpi_;
+  double dpi_ = kPointsPerInch;
 
   // Print selection.
-  bool selection_only_;
+  bool selection_only_ = false;
 
   // Print css backgrounds.
-  bool should_print_backgrounds_;
+  bool should_print_backgrounds_ = false;
 
   // Cookie for the document to ensure correctness.
   absl::optional<int> document_cookie_;
 
   // The current status of this printer.
-  Status printer_status_;
+  Status printer_status_ = PRINTER_READY;
 
   // The number of pages printed.
-  int page_count_;
+  int page_count_ = 0;
 
   // Used only in the preview sequence.
-  bool is_first_request_;
-  bool print_to_pdf_;
-  int preview_request_id_;
+  bool is_first_request_ = true;
+  bool print_to_pdf_ = false;
+  int preview_request_id_ = 0;
 
   // Specifies whether to retain/crop/scale source page size to fit the
   // given printable area.
-  printing::mojom::PrintScalingOption print_scaling_option_;
+  mojom::PrintScalingOption print_scaling_option_ =
+      mojom::PrintScalingOption::kSourceSize;
 
   // Used for displaying headers and footers.
-  bool display_header_footer_;
-  std::u16string title_;
-  std::u16string url_;
+  bool display_header_footer_ = false;
+  std::u16string title_ = u"title";
+  std::u16string url_ = u"url";
 
   // Used for generating invalid settings.
-  bool use_invalid_settings_;
+  bool use_invalid_settings_ = false;
 
 #if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
   // If true, one MockPrinterPage object (including an Image) will be generated
@@ -169,5 +173,7 @@ class MockPrinter {
 
   std::vector<scoped_refptr<MockPrinterPage>> pages_;
 };
+
+}  // namespace printing
 
 #endif  // COMPONENTS_PRINTING_TEST_MOCK_PRINTER_H_

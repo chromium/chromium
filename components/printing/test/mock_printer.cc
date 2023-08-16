@@ -4,7 +4,9 @@
 
 #include "components/printing/test/mock_printer.h"
 
+#include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/files/file_util.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -23,26 +25,13 @@
 #include "pdf/pdf.h"
 #endif
 
-MockPrinterPage::MockPrinterPage(const printing::Image& image)
-    : image_(image) {}
+namespace printing {
 
-MockPrinterPage::~MockPrinterPage() {
-}
+MockPrinterPage::MockPrinterPage(const Image& image) : image_(image) {}
 
-MockPrinter::MockPrinter()
-    : dpi_(printing::kPointsPerInch),
-      selection_only_(false),
-      should_print_backgrounds_(false),
-      printer_status_(PRINTER_READY),
-      page_count_(0),
-      is_first_request_(true),
-      print_to_pdf_(false),
-      preview_request_id_(0),
-      print_scaling_option_(printing::mojom::PrintScalingOption::kSourceSize),
-      display_header_footer_(false),
-      title_(u"title"),
-      url_(u"url"),
-      use_invalid_settings_(false) {
+MockPrinterPage::~MockPrinterPage() = default;
+
+MockPrinter::MockPrinter() {
   page_size_.SetSize(static_cast<int>(8.5 * dpi_),
                      static_cast<int>(11.0 * dpi_));
   content_size_.SetSize(static_cast<int>((7.5 * dpi_)),
@@ -53,8 +42,7 @@ MockPrinter::MockPrinter()
       static_cast<int>(8 * dpi_), static_cast<int>(10.5 * dpi_));
 }
 
-MockPrinter::~MockPrinter() {
-}
+MockPrinter::~MockPrinter() = default;
 
 void MockPrinter::Reset() {
   Finish();
@@ -62,20 +50,19 @@ void MockPrinter::Reset() {
   page_count_ = 0;
 }
 
-printing::mojom::PrintParamsPtr MockPrinter::GetDefaultPrintSettings() {
+mojom::PrintParamsPtr MockPrinter::GetDefaultPrintSettings() {
   // Verify this printer is not processing a job.
   // Sorry, this mock printer is very fragile.
   EXPECT_FALSE(document_cookie_.has_value());
 
   // Assign a unit document cookie and set the print settings.
   CreateDocumentCookie();
-  auto params = printing::mojom::PrintParams::New();
+  auto params = mojom::PrintParams::New();
   GetPrintParams(params.get());
   return params;
 }
 
-void MockPrinter::SetDefaultPrintSettings(
-    const printing::mojom::PrintParams& params) {
+void MockPrinter::SetDefaultPrintSettings(const mojom::PrintParams& params) {
   // Use the same logic as in printing/print_settings.h
   dpi_ = std::max(params.dpi.width(), params.dpi.height());
   selection_only_ = params.selection_only;
@@ -93,11 +80,11 @@ void MockPrinter::SetDefaultPrintSettings(
 void MockPrinter::ScriptedPrint(int cookie,
                                 uint32_t expected_pages_count,
                                 bool has_selection,
-                                printing::mojom::PrintPagesParams* settings) {
+                                mojom::PrintPagesParams* settings) {
   // Verify the input parameters.
   EXPECT_EQ(document_cookie_, cookie);
 
-  *settings->params = printing::mojom::PrintParams();
+  *settings->params = mojom::PrintParams();
   settings->pages.clear();
   GetPrintParams(settings->params.get());
   printer_status_ = PRINTER_PRINTING;
@@ -113,8 +100,7 @@ void MockPrinter::SetPrintedPagesCount(int cookie, uint32_t number_pages) {
   page_count_ = number_pages;
 }
 
-void MockPrinter::OnDocumentPrinted(
-    printing::mojom::DidPrintDocumentParamsPtr params) {
+void MockPrinter::OnDocumentPrinted(mojom::DidPrintDocumentParamsPtr params) {
   // Verify the input parameter and update the printer status so that the
   // RenderViewTest class can verify the this function finishes without errors.
   EXPECT_EQ(PRINTER_PRINTING, printer_status_);
@@ -157,7 +143,7 @@ void MockPrinter::OnDocumentPrinted(
           pdf_buffer, page_index, pixel_buffer.data(), size, dpi, options);
       ASSERT_TRUE(success);
 
-      printing::Image image(size, line_stride, std::move(pixel_buffer));
+      Image image(size, line_stride, std::move(pixel_buffer));
       ASSERT_FALSE(image.size().IsEmpty());
       pages_.push_back(base::MakeRefCounted<MockPrinterPage>(image));
     }
@@ -200,12 +186,11 @@ int MockPrinter::GetHeight(unsigned int page) const {
 
 void MockPrinter::CreateDocumentCookie() {
   EXPECT_FALSE(document_cookie_.has_value());
-  document_cookie_ = use_invalid_settings_
-                         ? printing::PrintSettings::NewInvalidCookie()
-                         : printing::PrintSettings::NewCookie();
+  document_cookie_ = use_invalid_settings_ ? PrintSettings::NewInvalidCookie()
+                                           : PrintSettings::NewCookie();
 }
 
-void MockPrinter::GetPrintParams(printing::mojom::PrintParams* params) const {
+void MockPrinter::GetPrintParams(mojom::PrintParams* params) const {
   params->dpi = gfx::Size(dpi_, dpi_);
   params->selection_only = selection_only_;
   params->should_print_backgrounds = should_print_backgrounds_;
@@ -229,3 +214,5 @@ void MockPrinter::Finish() {
   printer_status_ = PRINTER_READY;
   document_cookie_.reset();
 }
+
+}  // namespace printing
