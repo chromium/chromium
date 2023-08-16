@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`This test checks HeapSnapshots loader.\n`);
   await TestRunner.showPanel('heap_profiler');
@@ -47,7 +49,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
     profileType.takeHeapSnapshot();
   }
 
-  Common.console.log = function(message) {
+  Common.Console.Console.instance().log = function(message) {
     TestRunner.addResult('SDK.consoleModel.log: ' + message);
   };
 

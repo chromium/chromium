@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult('Tests that command line api works.\n');
 
@@ -47,7 +49,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
       step2();
       return;
     }
-    Common.console.log('');
+    Common.Console.Console.instance().log('');
     ConsoleTestRunner.evaluateInConsole(expression, step1);
   }
 
