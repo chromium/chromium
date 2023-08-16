@@ -14,8 +14,8 @@
 #include <iterator>
 #include <memory>
 
+#include "base/apple/mach_logging.h"
 #include "base/feature_list.h"
-#include "base/mac/mach_logging.h"
 #include "base/memory/free_deleter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

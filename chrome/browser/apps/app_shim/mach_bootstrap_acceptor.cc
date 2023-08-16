@@ -10,8 +10,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/apple/mach_logging.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/mac/app_mode_common.h"

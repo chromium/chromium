@@ -7,7 +7,7 @@
 #include "base/logging.h"
 
 #include <mach/vm_map.h>
-#include "base/mac/mach_logging.h"
+#include "base/apple/mach_logging.h"
 
 namespace base {
 

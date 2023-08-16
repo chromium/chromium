@@ -8,7 +8,7 @@
 #include <mach/mach_time.h>
 #include <mach/mach_vm.h>
 
-#include "base/mac/mach_logging.h"
+#include "base/apple/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/time/time.h"
 #include "tools/memory/simulator/utils.h"

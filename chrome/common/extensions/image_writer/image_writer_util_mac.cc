@@ -8,8 +8,8 @@
 #include <IOKit/IOBSD.h>
 #include <IOKit/storage/IOMedia.h>
 
+#include "base/apple/mach_logging.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mach_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/strings/sys_string_conversions.h"

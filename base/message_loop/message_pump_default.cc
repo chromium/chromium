@@ -12,7 +12,7 @@
 #if BUILDFLAG(IS_APPLE)
 #include <mach/thread_policy.h>
 
-#include "base/mac/mach_logging.h"
+#include "base/apple/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/threading/threading_features.h"

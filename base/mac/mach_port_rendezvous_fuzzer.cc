@@ -4,8 +4,8 @@
 
 #include "base/mac/mach_port_rendezvous.h"
 
+#include "base/apple/mach_logging.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
 #include "base/synchronization/lock.h"
 #include "testing/libfuzzer/fuzzers/mach/mach_message_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"

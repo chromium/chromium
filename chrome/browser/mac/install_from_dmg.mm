@@ -21,6 +21,7 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/mach_logging.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
@@ -29,7 +30,6 @@
 #include "base/mac/authorization_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/mach_logging.h"
 #include "base/mac/scoped_authorizationref.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"

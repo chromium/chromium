@@ -29,7 +29,7 @@
 #include "mojo/core/embedder/features.h"
 
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
-#include "base/mac/mach_logging.h"
+#include "base/apple/mach_logging.h"
 #elif BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif

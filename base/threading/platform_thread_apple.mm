@@ -15,12 +15,12 @@
 #include <algorithm>
 #include <atomic>
 
+#include "base/apple/mach_logging.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/mach_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/threading_features.h"

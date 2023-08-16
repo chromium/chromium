@@ -14,8 +14,8 @@
 #include <sys/types.h>
 #include <time.h>
 
+#include "base/apple/mach_logging.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/numerics/safe_conversions.h"

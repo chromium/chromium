@@ -14,8 +14,8 @@
 #include <string>
 #include <utility>
 
+#include "base/apple/mach_logging.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/strings/strcat.h"
 #include "base/threading/platform_thread.h"

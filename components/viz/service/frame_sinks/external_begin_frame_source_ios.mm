@@ -8,8 +8,8 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
+#include "base/apple/mach_logging.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
 #include "base/numerics/checked_math.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 

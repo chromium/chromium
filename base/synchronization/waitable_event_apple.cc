@@ -10,8 +10,8 @@
 #include <limits>
 #include <memory>
 
+#include "base/apple/mach_logging.h"
 #include "base/files/scoped_file.h"
-#include "base/mac/mach_logging.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/scoped_blocking_call.h"

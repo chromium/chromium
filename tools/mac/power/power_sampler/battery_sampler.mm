@@ -9,9 +9,9 @@
 #include <IOKit/ps/IOPSKeys.h>
 #include <cstdint>
 
+#include "base/apple/mach_logging.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mach_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/memory/ptr_util.h"

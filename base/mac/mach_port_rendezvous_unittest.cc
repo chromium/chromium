@@ -8,9 +8,9 @@
 
 #include <utility>
 
+#include "base/apple/mach_logging.h"
 #include "base/at_exit.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mach_logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"

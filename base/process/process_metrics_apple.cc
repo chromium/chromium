@@ -11,9 +11,9 @@
 #include <stdint.h>
 #include <sys/sysctl.h>
 
+#include "base/apple/mach_logging.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"

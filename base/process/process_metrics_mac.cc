@@ -15,9 +15,9 @@
 #include <sys/sysctl.h>
 #include <memory>
 
+#include "base/apple/mach_logging.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/mach_logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_metrics_iocounters.h"
 #include "base/time/time.h"
