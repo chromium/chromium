@@ -238,7 +238,6 @@ public class TabsTest {
     @LargeTest
     @Feature({"Android-TabSwitcher"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisabledTest(message = "https://crbug.com/1347598")
     public void testOpenAndCloseNewTabButton() {
         sActivityTestRule.loadUrl(getUrl(TEST_FILE_PATH));
         Tab tab0 = TestThreadUtils.runOnUiThreadBlockingNoException(
