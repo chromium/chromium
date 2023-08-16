@@ -2331,6 +2331,11 @@
       base_feature: "none",
     },
     {
+      name: "MediaStreamTrackGetFrameStats",
+      status: "test",
+      base_feature: "none",
+    },
+    {
       name: "MediaStreamTrackTransfer",
       status: "test",
       base_feature: "none",

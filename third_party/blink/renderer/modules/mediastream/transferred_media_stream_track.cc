@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_frame_stats.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -168,6 +169,18 @@ MediaTrackSettings* TransferredMediaStreamTrack::getSettings() const {
   }
   // TODO(https://crbug.com/1288839): return the transferred value.
   return MediaTrackSettings::Create();
+}
+
+ScriptPromise TransferredMediaStreamTrack::getFrameStats(
+    ScriptState* script_state) const {
+  if (track_) {
+    return track_->getFrameStats(script_state);
+  }
+  // TODO(https://crbug.com/1288839): return the transferred value.
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  resolver->Resolve(MediaTrackFrameStats::Create());
+  return promise;
 }
 
 CaptureHandle* TransferredMediaStreamTrack::getCaptureHandle() const {

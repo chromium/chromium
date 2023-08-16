@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_frame_stats.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -663,6 +664,43 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
   }
 
   return settings;
+}
+
+ScriptPromise MediaStreamTrackImpl::getFrameStats(
+    ScriptState* script_state) const {
+  if (!script_state->ContextIsValid()) {
+    return ScriptPromise();
+  }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  switch (component_->GetSourceType()) {
+    case MediaStreamSource::kTypeAudio:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "MediaStreamTrack.getFrameStats() is not supported for audio "
+          "tracks."));
+      break;
+    case MediaStreamSource::kTypeVideo:
+      component_->GetPlatformTrack()->AsyncGetDeliverableVideoFramesCount(
+          WTF::BindOnce(&MediaStreamTrackImpl::OnDeliverableVideoFramesCount,
+                        WrapPersistent(this), WrapPersistent(resolver)));
+      break;
+  }
+  return promise;
+}
+
+void MediaStreamTrackImpl::OnDeliverableVideoFramesCount(
+    Persistent<ScriptPromiseResolver> resolver,
+    size_t deliverable_frames) const {
+  MediaTrackFrameStats* track_stats = MediaTrackFrameStats::Create();
+  MediaStreamVideoSource* video_source =
+      MediaStreamVideoSource::GetVideoSource(component_->Source());
+  track_stats->setDeliveredFrames(deliverable_frames);
+  track_stats->setDiscardedFrames(video_source->discarded_frames());
+  track_stats->setTotalFrames(deliverable_frames +
+                              video_source->discarded_frames() +
+                              video_source->dropped_frames());
+  resolver->Resolve(track_stats);
 }
 
 CaptureHandle* MediaStreamTrackImpl::getCaptureHandle() const {

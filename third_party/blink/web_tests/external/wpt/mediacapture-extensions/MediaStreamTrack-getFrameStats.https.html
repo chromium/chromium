@@ -1,0 +1,131 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+async function getFrameStatsUntil(track, condition) {
+  while (true) {
+    const stats = await track.getFrameStats();
+    if (condition(stats)) {
+      return stats;
+    }
+  }
+}
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({video:true});
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  const firstStats =
+      await getFrameStatsUntil(track, stats => stats.totalFrames > 0);
+  await getFrameStatsUntil(track,
+                      stats => stats.totalFrames > firstStats.totalFrames);
+}, `totalFrames increases over time`);
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({video:true});
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  // `deliveredFrames` increments for each deliverable frame, even if the
+  // `track` does not have any sink.
+  const firstStats = await getFrameStatsUntil(
+      track, stats => stats.deliveredFrames > 0);
+  await getFrameStatsUntil(
+      track, stats => stats.deliveredFrames > firstStats.deliveredFrames);
+}, `deliveredFrames increases, even without sinks`);
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({
+          video:{frameRate:{ideal:20}}
+      });
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  // No frames should be discarded initially.
+  const firstStats = await getFrameStatsUntil(
+      track, stats => stats.deliveredFrames > 0);
+  assert_equals(firstStats.discardedFrames, 0);
+
+  // Assert test prerequisite is met: frames will be discarded if the track is
+  // opened with a higher frame rate than we apply after it is opened.
+  assert_greater_than(track.getSettings().frameRate, 10);
+  await track.applyConstraints({frameRate:{ideal:10}});
+
+  await getFrameStatsUntil(track, stats => stats.discardedFrames > 0);
+}, `discardedFrames increases when frameRate decimation is happening`);
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({
+          video:{frameRate:{ideal:20}}
+      });
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  // Assert test prerequisite is met: frames will be discarded if the track is
+  // opened with a higher frame rate than we apply after it is opened.
+  assert_greater_than(track.getSettings().frameRate, 10);
+  await track.applyConstraints({frameRate:{ideal:10}});
+
+  // Wait until we have both delivered and discarded frames.
+  const stats = await getFrameStatsUntil(track, stats =>
+      stats.deliveredFrames > 0 && stats.discardedFrames > 0);
+
+  // This test assumes that no frames are dropped, otherwise `totalFrames` can
+  // be greater than the sum of `deliveredFrames` and `discardedFrames`.
+  assert_equals(stats.totalFrames,
+                stats.deliveredFrames + stats.discardedFrames);
+}, `totalFrames is the sum of deliveredFrames and discardedFrames`);
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({
+          video:{frameRate:{ideal:20}}
+      });
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  // Assert test prerequisite is met: frames will be discarded if the track is
+  // opened with a higher frame rate than we apply after it is opened.
+  assert_greater_than(track.getSettings().frameRate, 10);
+  await track.applyConstraints({frameRate:{ideal:10}});
+
+  // Wait for media to flow before disabling the `track`.
+  const startTimeMs = performance.now();
+  await getFrameStatsUntil(track, stats => stats.totalFrames > 10);
+  const elapsedTimeMs = performance.now() - startTimeMs;
+  track.enabled = false;
+  const disabledSnapshot = await track.getFrameStats();
+
+  // Wait enough time that frames should have been produced.
+  // `elapsedTimeMs` should be enough to produce ~10 frames.
+  await new Promise(r => t.step_timeout(r, elapsedTimeMs));
+
+  // Frame metrics should be frozen.
+  // Prefer `assert_true` over `assert_equals` because if the test fails exact
+  // number of frames could be different on different runs due to timing,
+  // resulting in flaky test expectations.
+  const stats = await track.getFrameStats();
+  assert_true(stats.deliveredFrames == disabledSnapshot.deliveredFrames,
+              'The deliveredFrames counter is not frozen');
+  assert_true(stats.discardedFrames == disabledSnapshot.discardedFrames,
+              'The discardedFrames counter is not frozen');
+  assert_true(stats.totalFrames == disabledSnapshot.totalFrames,
+              'The totalFrames counter is not frozen');
+}, `Stats are frozen while disabled`);
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  try {
+    await track.getFrameStats();
+    assert_not_reached();
+  } catch (e) {
+    assert_equals(e.name, 'NotSupportedError');
+  }
+}, `getFrameStats throws on audio tracks`);
+</script>

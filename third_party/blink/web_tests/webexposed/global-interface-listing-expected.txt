@@ -6093,6 +6093,7 @@ interface MediaStreamTrack : EventTarget
     method getCapabilities
     method getCaptureHandle
     method getConstraints
+    method getFrameStats
     method getSettings
     method stop
     setter contentHint

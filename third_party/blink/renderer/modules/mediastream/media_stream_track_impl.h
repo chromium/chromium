@@ -89,6 +89,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   MediaTrackCapabilities* getCapabilities() const override;
   MediaTrackConstraints* getConstraints() const override;
   MediaTrackSettings* getSettings() const override;
+  ScriptPromise getFrameStats(ScriptState*) const override;
   CaptureHandle* getCaptureHandle() const override;
   ScriptPromise applyConstraints(ScriptState*,
                                  const MediaTrackConstraints*) override;
@@ -155,6 +156,9 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   // MediaStreamTrack
   void applyConstraints(ScriptPromiseResolver*,
                         const MediaTrackConstraints*) override;
+
+  void OnDeliverableVideoFramesCount(Persistent<ScriptPromiseResolver> resolver,
+                                     size_t deliverable_frames) const;
 
   // MediaStreamSource::Observer
   void SourceChangedState() override;

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS totalFrames increases over time
+PASS deliveredFrames increases, even without sinks
+PASS discardedFrames increases when frameRate decimation is happening
+PASS totalFrames is the sum of deliveredFrames and discardedFrames
+FAIL Stats are frozen while disabled assert_true: The discardedFrames counter is not frozen expected true got false
+PASS getFrameStats throws on audio tracks
+Harness: the test ran to completion.
+
