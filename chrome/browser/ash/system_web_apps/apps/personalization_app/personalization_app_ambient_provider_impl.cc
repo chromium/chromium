@@ -345,8 +345,6 @@ void PersonalizationAppAmbientProviderImpl::FetchSettingsAndAlbums() {
     return;
   }
 
-  // TODO(b/161044021): Add a helper function to get all the albums. Currently
-  // only load 100 latest modified albums.
   ash::AmbientBackendController::Get()->FetchSettingsAndAlbums(
       kBannerWidthPx, kBannerHeightPx, /*num_albums=*/100,
       base::BindOnce(
@@ -642,7 +640,7 @@ void PersonalizationAppAmbientProviderImpl::OnSettingsAndAlbumsFetched(
 
 void PersonalizationAppAmbientProviderImpl::SyncSettingsAndAlbums() {
   // Clear the `selected` field, which will be populated with new value below.
-  // It is neceessary if `UpdateSettings()` failed and we need to reset the
+  // It is necessary if `UpdateSettings()` failed and we need to reset the
   // cached settings.
   for (auto& album : personal_albums_.albums) {
     album.selected = false;
@@ -748,6 +746,8 @@ void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
   settings_.reset();
   cached_settings_.reset();
   settings_sent_for_update_.reset();
+  update_settings_retry_backoff_.Reset();
+  fetch_settings_retry_backoff_.Reset();
   has_pending_fetch_request_ = false;
   is_updating_backend_ = false;
   has_pending_updates_for_backend_ = false;
