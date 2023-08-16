@@ -6,6 +6,7 @@ package org.chromium.content.browser.accessibility;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -57,6 +58,31 @@ public class AccessibilityHistogramRecorder {
     public static final String USAGE_ACCESSIBILITY_ALWAYS_ON_TIME =
             "Accessibility.Android.Usage.A11yAlwaysOn";
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String AUTO_DISABLE_ACCESSIBILITY_DISABLE_METHOD_CALLED_INITIAL =
+            "Accessibility.Android.AutoDisableV2.DisableCalled.Initial";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String AUTO_DISABLE_ACCESSIBILITY_DISABLE_METHOD_CALLED_SUCCESSIVE =
+            "Accessibility.Android.AutoDisableV2.DisableCalled.Successive";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_INITIAL =
+            "Accessibility.Android.AutoDisableV2.ReEnableCalled.Initial";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_SUCCESSIVE =
+            "Accessibility.Android.AutoDisableV2.ReEnabledCalled.Successive";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_INITIAL =
+            "Accessibility.Android.AutoDisableV2.DisabledTime.Initial";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_SUCCESSIVE =
+            "Accessibility.Android.AutoDisableV2.DisabledTime.Successive";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String AUTO_DISABLE_ACCESSIBILITY_ENABLED_TIME_INITIAL =
+            "Accessibility.Android.AutoDisableV2.EnabledTime.Initial";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String AUTO_DISABLE_ACCESSIBILITY_ENABLED_TIME_SUCCESSIVE =
+            "Accessibility.Android.AutoDisableV2.EnabledTime.Successive";
+
     private static final int EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET = 1;
     private static final int EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET = 10000;
     private static final int EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT = 100;
@@ -87,6 +113,78 @@ public class AccessibilityHistogramRecorder {
     // These track the usage in time when a web contents is in the foreground.
     private long mTimeOfFirstShown = -1;
     private long mTimeOfNativeInitialization = -1;
+    private long mTimeOfLastDisabledCall = -1;
+
+    /**
+     * Record that the Auto-disable Accessibility feature has disabled accessibility.
+     */
+    public void onDisableCalled(boolean initialCall) {
+        TraceEvent.begin("AccessibilityHistogramRecorder.onDisabledCalled");
+        // To disable accessibility, it needs to have been previously initialized.
+        assert mTimeOfNativeInitialization > 0
+            : "Accessibility onDisabled was called, but accessibility has not been initialized.";
+        long now = Calendar.getInstance().getTimeInMillis();
+
+        // As we disable accessibility, we want to record how long it had been enabled.
+        if (initialCall) {
+            RecordHistogram.recordLongTimesHistogram(
+                    AUTO_DISABLE_ACCESSIBILITY_ENABLED_TIME_INITIAL,
+                    now - mTimeOfNativeInitialization);
+            RecordHistogram.recordBooleanHistogram(
+                    AUTO_DISABLE_ACCESSIBILITY_DISABLE_METHOD_CALLED_INITIAL, true);
+        } else {
+            RecordHistogram.recordLongTimesHistogram(
+                    AUTO_DISABLE_ACCESSIBILITY_ENABLED_TIME_SUCCESSIVE,
+                    now - mTimeOfNativeInitialization);
+            RecordHistogram.recordBooleanHistogram(
+                    AUTO_DISABLE_ACCESSIBILITY_DISABLE_METHOD_CALLED_SUCCESSIVE, true);
+        }
+
+        // To track how long we kept accessibility disabled if it is eventually re-enabled, track
+        // when this call occurred.
+        mTimeOfLastDisabledCall = now;
+
+        // Record native initialized time in the usual method so this timeframe is not missed.
+        RecordHistogram.recordLongTimesHistogram(
+                USAGE_NATIVE_INITIALIZED_TIME, now - mTimeOfNativeInitialization);
+
+        // Reset values.
+        mTimeOfNativeInitialization = -1;
+
+        TraceEvent.end("AccessibilityHistogramRecorder.onDisabledCalled");
+    }
+
+    /**
+     * Record that the Auto-disable Accessibility feature has re-enabled accessibility.
+     */
+    public void onReEnableCalled(boolean initialCall) {
+        TraceEvent.begin("AccessibilityHistogramRecorder.onReEnabledCalled");
+        long now = Calendar.getInstance().getTimeInMillis();
+
+        // As we re-enable accessibility, we want to record how long it had been disabled.
+        if (initialCall) {
+            RecordHistogram.recordLongTimesHistogram(
+                    AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_INITIAL,
+                    now - mTimeOfLastDisabledCall);
+            RecordHistogram.recordBooleanHistogram(
+                    AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_INITIAL, true);
+        } else {
+            RecordHistogram.recordLongTimesHistogram(
+                    AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_SUCCESSIVE,
+                    now - mTimeOfLastDisabledCall);
+            RecordHistogram.recordBooleanHistogram(
+                    AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_SUCCESSIVE, true);
+        }
+
+        // To track how long we kept accessibility re-enabled if it is eventually disabled again,
+        // track when this call occurred.
+        mTimeOfNativeInitialization = now;
+
+        // Reset value.
+        mTimeOfLastDisabledCall = -1;
+
+        TraceEvent.end("AccessibilityHistogramRecorder.onReEnabledCalled");
+    }
 
     /**
      * Increment the count of enqueued events
