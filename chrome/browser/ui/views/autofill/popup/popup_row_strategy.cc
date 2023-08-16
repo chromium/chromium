@@ -101,40 +101,6 @@ void ContentItemAccessibilityDelegate::GetAccessibleNodeData(
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize, set_size_);
 }
 
-// ******************** DeleteButtonAccessibilityDelegate  *********************
-class DeleteButtonAccessibilityDelegate
-    : public PopupCellView::AccessibilityDelegate {
- public:
-  DeleteButtonAccessibilityDelegate(
-      base::WeakPtr<AutofillPopupController> controller,
-      int line_number);
-  ~DeleteButtonAccessibilityDelegate() override = default;
-
-  void GetAccessibleNodeData(bool is_selected,
-                             ui::AXNodeData* node_data) const override;
-
- private:
-  std::u16string voice_over_string_;
-};
-
-DeleteButtonAccessibilityDelegate::DeleteButtonAccessibilityDelegate(
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number) {
-  DCHECK(controller);
-  voice_over_string_ = l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT,
-      popup_cell_utils::GetVoiceOverStringFromSuggestion(
-          controller->GetSuggestionAt(line_number)));
-}
-
-void DeleteButtonAccessibilityDelegate::GetAccessibleNodeData(
-    bool is_selected,
-    ui::AXNodeData* node_data) const {
-  node_data->role = ax::mojom::Role::kMenuItem;
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, is_selected);
-  node_data->SetNameChecked(voice_over_string_);
-}
-
 }  // namespace
 
 /**************************** PopupRowBaseStrategy ****************************/
@@ -172,14 +138,15 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
   if (base::FeatureList::IsEnabled(
           features::kAutofillShowAutocompleteDeleteButton) &&
       popup_up_item_id == PopupItemId::kAutocompleteEntry) {
-    return CreateDeleteAutocompleteRow();
+    return CreateAutocompleteRow();
   }
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
   std::unique_ptr<PopupCellView> view =
       views::Builder<PopupCellView>(
           std::make_unique<PopupCellView>(
-              GetController()->GetAutofillSuggestionTriggerSource()))
+              GetController()
+                  ->ShouldIgnoreMouseObservedOutsideItemBoundsCheck()))
           .SetAccessibilityDelegate(
               std::make_unique<ContentItemAccessibilityDelegate>(
                   GetController(), GetLineNumber()))
@@ -209,7 +176,7 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
 }
 
 std::unique_ptr<PopupCellView>
-PopupSuggestionStrategy::CreateDeleteAutocompleteRow() {
+PopupSuggestionStrategy::CreateAutocompleteRow() {
   if (!GetController()) {
     return nullptr;
   }
@@ -246,9 +213,7 @@ PopupPasswordSuggestionStrategy::CreateContent() {
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
   std::unique_ptr<PopupCellView> view =
-      views::Builder<PopupCellView>(
-          std::make_unique<PopupCellView>(
-              GetController()->GetAutofillSuggestionTriggerSource()))
+      views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
           .SetAccessibilityDelegate(
               std::make_unique<ContentItemAccessibilityDelegate>(
                   GetController(), GetLineNumber()))
@@ -327,9 +292,7 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
   std::unique_ptr<PopupCellView> view =
-      views::Builder<PopupCellView>(
-          std::make_unique<PopupCellView>(
-              GetController()->GetAutofillSuggestionTriggerSource()))
+      views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
           .SetAccessibilityDelegate(
               std::make_unique<ContentItemAccessibilityDelegate>(
                   GetController(), GetLineNumber()))

@@ -138,7 +138,11 @@ void AutofillPopupControllerImpl::Show(
   }
 
   SetSuggestions(std::move(suggestions));
+
   trigger_source_ = trigger_source;
+  should_ignore_mouse_observed_outside_item_bounds_check_ =
+      trigger_source_ == AutofillSuggestionTriggerSource::
+                             kManualFallbackForAutocompleteUnrecognized;
 
   if (view_) {
     OnSuggestionsChanged();
@@ -190,6 +194,11 @@ void AutofillPopupControllerImpl::Show(
 AutofillSuggestionTriggerSource
 AutofillPopupControllerImpl::GetAutofillSuggestionTriggerSource() const {
   return trigger_source_;
+}
+
+bool AutofillPopupControllerImpl::
+    ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const {
+  return should_ignore_mouse_observed_outside_item_bounds_check_;
 }
 
 void AutofillPopupControllerImpl::UpdateDataListValues(
@@ -462,6 +471,8 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
   // TODO(crbug.com/1209792): Replace these checks with a stronger identifier.
   if (list_index < 0 || static_cast<size_t>(list_index) >= suggestions_.size())
     return false;
+
+  PopupItemId suggestion_type = suggestions_[list_index].popup_item_id;
   if (!delegate_->RemoveSuggestion(
           suggestions_[list_index].main_text.value,
           suggestions_[list_index].popup_item_id,
@@ -474,6 +485,8 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
 
   if (HasSuggestions()) {
     delegate_->ClearPreviewedForm();
+    should_ignore_mouse_observed_outside_item_bounds_check_ =
+        suggestion_type == PopupItemId::kAutocompleteEntry;
     OnSuggestionsChanged();
   } else {
     Hide(PopupHidingReason::kNoSuggestions);
