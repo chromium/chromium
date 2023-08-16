@@ -154,8 +154,7 @@ absl::optional<std::u16string> PermissionRequest::GetRequestChipText(
          IDS_PERMISSIONS_MICROPHONE_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
          IDS_PERMISSIONS_MICROPHONE_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT}},
        {RequestType::kMidi,
-        // TODO(crbug.com/1420307): Add text specific to MIDI.
-        {IDS_MIDI_SYSEX_PERMISSION_CHIP, -1, -1, -1, -1, -1, -1, -1}},
+        {IDS_MIDI_PERMISSION_CHIP, -1, -1, -1, -1, -1, -1, -1}},
        {RequestType::kMidiSysex,
         {IDS_MIDI_SYSEX_PERMISSION_CHIP, -1, -1, -1, -1, -1, -1, -1}},
        {RequestType::kNotifications,
@@ -216,7 +215,8 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT;
       break;
     case RequestType::kMidi:
-      // TODO(crbug.com/1420307): Add message text fragment specific to MIDI.
+      message_id = IDS_MIDI_PERMISSION_FRAGMENT;
+      break;
     case RequestType::kMidiSysex:
       message_id = IDS_MIDI_SYSEX_PERMISSION_FRAGMENT;
       break;
