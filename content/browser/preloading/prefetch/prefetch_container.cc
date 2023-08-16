@@ -695,6 +695,19 @@ PrefetchStreamingURLLoader* PrefetchContainer::GetLastStreamingURLLoader()
   return streaming_loaders_.back().get();
 }
 
+const PrefetchResponseReader* PrefetchContainer::GetNonRedirectResponseReader()
+    const {
+  if (redirect_chain_.empty()) {
+    return nullptr;
+  }
+  if (!redirect_chain_.back()->response_reader_->GetHead()) {
+    // Either the last PrefetchResponseReader is for a redirect response, or for
+    // a final response not yet receiving its header.
+    return nullptr;
+  }
+  return redirect_chain_.back()->response_reader_.get();
+}
+
 PrefetchResponseReader::RequestHandler
 PrefetchContainer::Reader::CreateRequestHandler() {
   return GetPrefetchContainer()->CreateRequestHandlerInternal(*this);
@@ -744,7 +757,6 @@ bool PrefetchContainer::HasStreamingURLLoadersForTest() const {
 }
 
 void PrefetchContainer::ResetAllStreamingURLLoaders() {
-  CHECK(!streaming_loaders_.empty());
   for (auto& streaming_loader : streaming_loaders_) {
     // The PrefetchStreamingURLLoader and PrefetchResponseReader can be deleted
     // in one of its callbacks, so instead of deleting it immediately, it is
@@ -807,13 +819,13 @@ void PrefetchContainer::OnPrefetchComplete() {
   UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.RedirectChainSize",
                            redirect_chain_.size());
 
-  if (streaming_loaders_.empty()) {
+  if (!GetNonRedirectResponseReader()) {
     return;
   }
 
   UpdatePrefetchRequestMetrics(
-      GetLastStreamingURLLoader()->GetCompletionStatus(),
-      GetLastStreamingURLLoader()->GetHead());
+      GetNonRedirectResponseReader()->GetCompletionStatus(),
+      GetNonRedirectResponseReader()->GetHead());
   UpdateServingPageMetrics();
 }
 
@@ -839,9 +851,12 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
 
 bool PrefetchContainer::ShouldBlockUntilHeadReceived() const {
   // Can only block until head if the request has been started using a streaming
-  // URL loader and head hasn't been received yet.
-  if (streaming_loaders_.empty() || GetLastStreamingURLLoader()->GetHead() ||
-      GetLastStreamingURLLoader()->Failed()) {
+  // URL loader...
+  if (streaming_loaders_.empty() || GetLastStreamingURLLoader()->Failed()) {
+    return false;
+  }
+  // ... and head hasn't been received yet.
+  if (GetNonRedirectResponseReader()) {
     return false;
   }
   return PrefetchShouldBlockUntilHead(prefetch_type_.GetEagerness());
@@ -861,10 +876,17 @@ void PrefetchContainer::ResetBlockUntilHeadTimer() {
 
 bool PrefetchContainer::IsPrefetchServable(
     base::TimeDelta cacheable_duration) const {
-  // Whether or not the response (either full or partial) from the streaming URL
-  // loader is servable.
-  return !streaming_loaders_.empty() &&
-         GetLastStreamingURLLoader()->Servable(cacheable_duration);
+  // Currently `CreateRequestHandler()` requires the corresponding streaming
+  // loader.
+  // TODO(crbug.com/1449360): Remove this requirement.
+  if (streaming_loaders_.empty()) {
+    return false;
+  }
+
+  // Whether or not the non-redirect response (either fully or partially
+  // received body) is servable.
+  return GetNonRedirectResponseReader() &&
+         GetNonRedirectResponseReader()->Servable(cacheable_duration);
 }
 
 bool PrefetchContainer::Reader::DoesCurrentURLToServeMatch(
@@ -905,8 +927,9 @@ const GURL& PrefetchContainer::Reader::GetCurrentURLToServe() const {
 }
 
 const network::mojom::URLResponseHead* PrefetchContainer::GetHead() {
-  PrefetchStreamingURLLoader* streaming_loader = GetLastStreamingURLLoader();
-  return streaming_loader ? streaming_loader->GetHead() : nullptr;
+  return GetNonRedirectResponseReader()
+             ? GetNonRedirectResponseReader()->GetHead()
+             : nullptr;
 }
 
 void PrefetchContainer::SetServingPageMetrics(

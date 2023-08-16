@@ -55,7 +55,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // via `AddEventToQueue()`) from the methods with the same names in
   // `PrefetchStreamingURLLoader`.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints);
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+  void OnReceiveResponse(bool servable,
+                         network::mojom::URLResponseHeadPtr head,
                          mojo::ScopedDataPipeConsumerHandle body);
   void HandleRedirect(const net::RedirectInfo& redirect_info,
                       network::mojom::URLResponseHeadPtr redirect_head);
@@ -69,6 +70,13 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   // Creates a request handler to serve the response of the prefetch.
   RequestHandler CreateRequestHandler();
+
+  bool Servable(base::TimeDelta cacheable_duration) const;
+  absl::optional<network::URLLoaderCompletionStatus> GetCompletionStatus()
+      const {
+    return completion_status_;
+  }
+  const network::mojom::URLResponseHead* GetHead() const { return head_.get(); }
 
   base::WeakPtr<PrefetchResponseReader> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -92,14 +100,12 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   // Helper functions to send the appropriate events to
   // |serving_url_loader_client_|.
-  void ForwardCompletionStatus(
-      network::URLLoaderCompletionStatus completion_status);
+  void ForwardCompletionStatus();
   void ForwardEarlyHints(network::mojom::EarlyHintsPtr early_hints);
   void ForwardTransferSizeUpdate(int32_t transfer_size_diff);
   void ForwardRedirect(const net::RedirectInfo& redirect_info,
                        network::mojom::URLResponseHeadPtr);
-  void ForwardResponse(network::mojom::URLResponseHeadPtr head,
-                       mojo::ScopedDataPipeConsumerHandle body);
+  void ForwardResponse(mojo::ScopedDataPipeConsumerHandle body);
 
   // network::mojom::URLLoader
   void FollowRedirect(
@@ -129,6 +135,12 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // Indicates whether the last event is added to `event_queue_` and thus no
   // more events can be added. See the class comment for valid event sequences.
   bool last_event_added_ = false;
+
+  // The prefetched data and metadata. Not set for a redirect response.
+  network::mojom::URLResponseHeadPtr head_;
+  bool servable_{false};
+  absl::optional<network::URLLoaderCompletionStatus> completion_status_;
+  absl::optional<base::TimeTicks> response_complete_time_;
 
   // The URL loader client that will serve the prefetched data.
   mojo::Receiver<network::mojom::URLLoader> serving_url_loader_receiver_{this};
@@ -203,14 +215,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
                       const net::RedirectInfo& redirect_info,
                       network::mojom::URLResponseHeadPtr redirect_head);
 
-  bool Servable(base::TimeDelta cacheable_duration) const;
   bool Failed() const;
-
-  absl::optional<network::URLLoaderCompletionStatus> GetCompletionStatus()
-      const {
-    return completion_status_;
-  }
-  const network::mojom::URLResponseHead* GetHead() const { return head_.get(); }
 
   void MakeSelfOwned(std::unique_ptr<PrefetchStreamingURLLoader> self);
   void PostTaskToDeleteSelf();
@@ -274,12 +279,6 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   // either when non-redirect response head is received, or when determined not
   // servable.
   base::OnceClosure on_received_head_callback_;
-
-  // The prefetched data and metadata.
-  network::mojom::URLResponseHeadPtr head_;
-  bool servable_{false};
-  absl::optional<network::URLLoaderCompletionStatus> completion_status_;
-  absl::optional<base::TimeTicks> response_complete_time_;
 
   base::WeakPtr<PrefetchResponseReader> response_reader_;
 

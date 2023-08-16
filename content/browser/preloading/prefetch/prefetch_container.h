@@ -201,9 +201,18 @@ class CONTENT_EXPORT PrefetchContainer {
 
   bool HasStreamingURLLoadersForTest() const;
 
-  // Returns the last |PrefetchStreamingURLLoader| from |streaming_loaders_|.
-  // This URL loader should be used when fetching the prefetch.
+  // Returns the last |PrefetchStreamingURLLoader| from |streaming_loaders_|,
+  // i.e. the URL loader being used for prefetching the current redirect hop.
+  // This method should be used during prefetching and shouldn't be called for
+  // serving purpose.
+  //
+  // TODO(https://crbug.com/1449360): Migrate callers (e.g. to
+  // GetNonRedirectResponseReader()) that don't meet this criteria.
   PrefetchStreamingURLLoader* GetLastStreamingURLLoader() const;
+
+  // Returns the PrefetchResponseReader corresponding to the last non-redirect
+  // response, if already received its head, or otherwise nullptr.
+  const PrefetchResponseReader* GetNonRedirectResponseReader() const;
 
   // Clears all |PrefetchStreamingURLLoader|s and |PrefetchResponseReader|s from
   // |streaming_loaders_|.

@@ -898,7 +898,7 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
   EXPECT_EQ(prefetch_container->GetLastStreamingURLLoader(), nullptr);
 
   EXPECT_FALSE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
-  EXPECT_FALSE(prefetch_container->GetHead());
+  EXPECT_TRUE(prefetch_container->GetHead());
 
   EXPECT_TRUE(streaming_loaders[1]);
   base::RunLoop().RunUntilIdle();

@@ -239,13 +239,13 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
     on_head_received_loop.Run();
   }
 
-  EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_TRUE(response_reader->Servable(base::TimeDelta::Max()));
 
   test_url_loader_factory()->SimulateReceiveData(kBodyContent);
   test_url_loader_factory()->SimulateResponseComplete(net::OK);
   on_response_complete_loop.Run();
 
-  EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_TRUE(response_reader->Servable(base::TimeDelta::Max()));
 
   test_url_loader_factory()->DisconnectMojoPipes();
 
@@ -355,7 +355,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
     on_head_received_loop.Run();
   }
 
-  EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_TRUE(response_reader->Servable(base::TimeDelta::Max()));
 
   test_url_loader_factory()->SimulateReceiveData(kBodyContent1);
 
@@ -479,7 +479,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
     on_head_received_loop.Run();
   }
 
-  EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_TRUE(response_reader->Servable(base::TimeDelta::Max()));
 
   test_url_loader_factory()->SimulateReceiveData(kBodyContent);
   test_url_loader_factory()->SimulateResponseComplete(net::OK);
@@ -539,7 +539,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
     on_head_received_loop.Run();
   }
 
-  EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
 
   streaming_loader.reset();
 
@@ -599,13 +599,13 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadReceived) {
     on_head_received_loop.Run();
   }
 
-  EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_TRUE(response_reader->Servable(base::TimeDelta::Max()));
 
   test_url_loader_factory()->SimulateReceiveData(kBodyContent);
   test_url_loader_factory()->SimulateResponseComplete(net::ERR_FAILED);
   on_response_complete_loop.Run();
 
-  EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
 
   streaming_loader.reset();
 
@@ -659,7 +659,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadNotReveived) {
     on_head_received_loop.Run();
   }
 
-  EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
 
   streaming_loader.reset();
 
@@ -721,7 +721,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
     on_head_received_loop.Run();
   }
 
-  EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_TRUE(response_reader->Servable(base::TimeDelta::Max()));
 
   test_url_loader_factory()->SimulateReceiveData(kBodyContent);
 
@@ -862,13 +862,13 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
     on_head_received_loop.Run();
   }
 
-  EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_TRUE(final_response_reader->Servable(base::TimeDelta::Max()));
 
   test_url_loader_factory()->SimulateReceiveData(kBodyContent);
   test_url_loader_factory()->SimulateResponseComplete(net::OK);
   on_response_complete_loop.Run();
 
-  EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_TRUE(final_response_reader->Servable(base::TimeDelta::Max()));
 
   // Simulates serving the redirect.
   base::WeakPtr<PrefetchResponseReader> weak_redirect_response_reader =
@@ -1004,7 +1004,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
     on_head_received_loop.Run();
   }
 
-  EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
 
   streaming_loader.reset();
 
@@ -1070,7 +1070,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   // The streaming_loader is marked as not servable, but it can serve the
   // redirect. The follow up streaming URL loader would then continue serving
   // the prefetch.
-  EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler redirect_handler =
@@ -1171,7 +1171,7 @@ TEST_P(PrefetchStreamingURLLoaderTest,
 
   // Since the network URL loader was disconnected, then redirect cannot be
   // followed and the prefetch should not be servable.
-  EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
 
   streaming_loader.reset();
 
@@ -1228,7 +1228,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, Decoy) {
                                                  kBodyContent.size());
   on_response_received_loop.Run();
 
-  EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
 
   // On a decoy, the body pipe is closed since the data should not be stored.
   test_url_loader_factory()->SimulateReceiveData(kBodyContent,
@@ -1288,7 +1288,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, Timeout) {
     on_head_received_loop.Run();
   }
 
-  EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
 
   streaming_loader.reset();
 
@@ -1343,7 +1343,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, StopTimeoutTimerAfterBeingServed) {
                                                  kBodyContent.size());
   on_response_received_loop.Run();
 
-  EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_TRUE(response_reader->Servable(base::TimeDelta::Max()));
 
   // Simulate serving the prefetch. This should stop the timeout timer.
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
@@ -1374,7 +1374,8 @@ TEST_F(PrefetchStreamingURLLoaderTest, StopTimeoutTimerAfterBeingServed) {
   test_url_loader_factory()->SimulateResponseComplete(net::OK);
   on_response_complete_loop.Run();
 
-  EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
+  ASSERT_TRUE(weak_response_reader);
+  EXPECT_TRUE(weak_response_reader->Servable(base::TimeDelta::Max()));
 
   test_url_loader_factory()->DisconnectMojoPipes();
 
@@ -1454,7 +1455,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, StaleResponse) {
 
   // The staleness of the streaming URL loader response is measured from when
   // the response is complete, not when the head is received.
-  EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta()));
+  EXPECT_TRUE(response_reader->Servable(base::TimeDelta()));
 
   test_url_loader_factory()->SimulateReceiveData(kBodyContent);
   test_url_loader_factory()->SimulateResponseComplete(net::OK);
@@ -1464,9 +1465,9 @@ TEST_F(PrefetchStreamingURLLoaderTest, StaleResponse) {
 
   // The response should not be servable if its been too long since it has
   // completed.
-  EXPECT_FALSE(streaming_loader->Servable(base::Seconds(3)));
-  EXPECT_FALSE(streaming_loader->Servable(base::Seconds(4)));
-  EXPECT_TRUE(streaming_loader->Servable(base::Seconds(5)));
+  EXPECT_FALSE(response_reader->Servable(base::Seconds(3)));
+  EXPECT_FALSE(response_reader->Servable(base::Seconds(4)));
+  EXPECT_TRUE(response_reader->Servable(base::Seconds(5)));
 
   streaming_loader.reset();
 
@@ -1523,7 +1524,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, TransferSizeUpdated) {
                                                  kBodyContent.size());
   on_response_received_loop.Run();
 
-  EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
+  EXPECT_TRUE(response_reader->Servable(base::TimeDelta::Max()));
 
   // Simulates updating the transfer size. This event will be queued in the
   // streaming URL loader and sent to the serving URL loader once bound.
