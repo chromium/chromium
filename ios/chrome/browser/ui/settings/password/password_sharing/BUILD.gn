@@ -74,3 +74,18 @@ source_set("eg2_tests") {
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "family_picker_view_controller_unittest.mm" ]
+  deps = [
+    ":password_sharing_ui",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ui/base",
+  ]
+}
