@@ -11,9 +11,6 @@
 
 namespace content {
 
-FrameNavigationEntry::FrameNavigationEntry()
-    : item_sequence_number_(-1), document_sequence_number_(-1), post_id_(-1) {}
-
 FrameNavigationEntry::FrameNavigationEntry(
     const std::string& frame_unique_name,
     int64_t item_sequence_number,
@@ -53,23 +50,22 @@ FrameNavigationEntry::FrameNavigationEntry(
       policy_container_policies_(std::move(policy_container_policies)),
       protect_url_in_navigation_api_(protect_url_in_navigation_api) {}
 
-FrameNavigationEntry::~FrameNavigationEntry() {}
+FrameNavigationEntry::~FrameNavigationEntry() = default;
 
 scoped_refptr<FrameNavigationEntry> FrameNavigationEntry::Clone() const {
-  auto copy = base::MakeRefCounted<FrameNavigationEntry>();
-
   // Omit any fields cleared at commit time.
-  copy->UpdateEntry(
+  auto copy = base::MakeRefCounted<FrameNavigationEntry>(
       frame_unique_name_, item_sequence_number_, document_sequence_number_,
-      navigation_api_key_, site_instance_.get(), nullptr, url_,
-      committed_origin_, referrer_, initiator_origin_, initiator_base_url_,
-      redirect_chain_, page_state_, method_, post_id_,
-      nullptr /* blob_url_loader_factory */,
+      navigation_api_key_, site_instance_, /*source_site_instance=*/nullptr,
+      url_, committed_origin_, referrer_, initiator_origin_,
+      initiator_base_url_, redirect_chain_, page_state_, method_, post_id_,
+      /*blob_url_loader_factory=*/nullptr,
       policy_container_policies_ ? policy_container_policies_->ClonePtr()
                                  : nullptr,
       protect_url_in_navigation_api_);
-  // |bindings_| gets only updated through the SetBindings API, not through
-  // UpdateEntry, so make a copy of it explicitly here as part of cloning.
+
+  // |bindings_| gets only updated through the SetBindings API, so make a copy
+  // of it explicitly here as part of cloning.
   copy->bindings_ = bindings_;
   return copy;
 }
