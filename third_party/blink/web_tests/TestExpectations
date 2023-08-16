@@ -6775,6 +6775,7 @@ crbug.com/1472721 [ Linux ] virtual/scalefactor150/fast/hidpi/static/pointereven
 crbug.com/1472721 [ Linux ] virtual/scalefactor200/fast/hidpi/static/pointerevents/pointerevent_touch-adjustment_click_target.html [ Failure Pass ]
 
 # Gardener 2023-08-16
-crbug.com/1473373 [ Mac11 ] wpt_internal/scheduler/task-signal-any-memory-abort.any.worker.html [ Timeout ]
-crbug.com/1473373 [ Mac12 ] wpt_internal/scheduler/task-signal-any-memory-abort.any.worker.html [ Timeout ]
-crbug.com/1473373 [ Mac13 ] wpt_internal/scheduler/task-signal-any-memory-abort.any.worker.html [ Timeout ]
+crbug.com/1473373 [ Mac11 ] wpt_internal/scheduler/task-signal-any-memory-abort.any.worker.html [ Pass Timeout ]
+crbug.com/1473373 [ Mac12 ] wpt_internal/scheduler/task-signal-any-memory-abort.any.worker.html [ Pass Timeout ]
+crbug.com/1473373 [ Mac13 ] wpt_internal/scheduler/task-signal-any-memory-abort.any.worker.html [ Pass Timeout ]
+crbug.com/1473474 [ Mac13 ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Failure Pass ]
