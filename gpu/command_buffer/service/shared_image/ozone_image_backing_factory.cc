@@ -25,6 +25,8 @@
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_fence.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
@@ -298,6 +300,39 @@ bool OzoneImageBackingFactory::IsSupported(
     return false;
   }
 
+  bool platform_supports_overlays = ui::OzonePlatform::GetInstance()
+                                        ->GetPlatformRuntimeProperties()
+                                        .supports_overlays;
+  // If overlays are not supported by the Ozone platform, then only display
+  // compositor output images allocated through OzoneImageBacking may use
+  // OverlayRepresentation.
+  bool used_by_overlay = (usage & SHARED_IMAGE_USAGE_SCANOUT) &&
+                         (platform_supports_overlays ||
+                          (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE));
+  // We may rely on implicit synchronization for GL/Overlay synchronization in
+  // case GpuFence support is not available.
+  bool gl_overlay_requires_fence_sync =
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kVulkan;
+  bool used_by_multiple =
+      used_by_vulkan + used_by_webgpu + used_by_gl + used_by_overlay > 1;
+  bool require_gpu_fence_sync =
+      used_by_multiple &&
+      (gl_overlay_requires_fence_sync || used_by_vulkan || used_by_webgpu);
+
+  if (require_gpu_fence_sync) {
+    if (used_by_vulkan && !CanVulkanSynchronizeGpuFence()) {
+      return false;
+    }
+
+    if (used_by_gl && !gl::GLFence::IsGpuFenceSupported()) {
+      return false;
+    }
+
+    if (used_by_webgpu && !CanWebGPUSynchronizeGpuFence()) {
+      return false;
+    }
+  }
+
 #if BUILDFLAG(IS_FUCHSIA)
   if (gr_context_type != GrContextType::kVulkan) {
     return false;
@@ -332,6 +367,30 @@ bool OzoneImageBackingFactory::CanImportNativePixmapToVulkan() {
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 }
 
+bool OzoneImageBackingFactory::CanVulkanSynchronizeGpuFence() {
+#if BUILDFLAG(ENABLE_VULKAN)
+#if BUILDFLAG(IS_FUCHSIA)
+  constexpr auto kGpuFenceExternalSemaphoreHandleType =
+      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
+#else
+  constexpr auto kGpuFenceExternalSemaphoreHandleType =
+      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
+#endif
+  if (!shared_context_state_->vk_context_provider()) {
+    return false;
+  }
+  auto* vk_device =
+      shared_context_state_->vk_context_provider()->GetDeviceQueue();
+  auto* vk_implementation =
+      shared_context_state_->vk_context_provider()->GetVulkanImplementation();
+  return vk_implementation->GetExternalSemaphoreHandleType() ==
+             kGpuFenceExternalSemaphoreHandleType &&
+         vk_implementation->IsExternalSemaphoreSupported(vk_device);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+}
+
 bool OzoneImageBackingFactory::CanImportNativePixmapToWebGPU() {
 #if BUILDFLAG(IS_CHROMEOS)
   // Safe to always return true here, as it's not possible to create a WebGPU
@@ -345,6 +404,17 @@ bool OzoneImageBackingFactory::CanImportNativePixmapToWebGPU() {
   // support the extensions until there is capability to check the extensions
   // from Dawn vkDevice when they are exposed.
   return CanImportNativePixmapToVulkan();
+#endif
+}
+
+bool OzoneImageBackingFactory::CanWebGPUSynchronizeGpuFence() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Dawn always use sync files on ChromeOS so it's safe to unconditionally
+  // return true here.
+  return true;
+#else
+  // TODO: somehow check if Dawn is using sync files.
+  return false;
 #endif
 }
 

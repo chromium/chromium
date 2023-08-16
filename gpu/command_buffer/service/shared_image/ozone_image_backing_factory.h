@@ -99,7 +99,9 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
 
  private:
   bool CanImportNativePixmapToVulkan();
+  bool CanVulkanSynchronizeGpuFence();
   bool CanImportNativePixmapToWebGPU();
+  bool CanWebGPUSynchronizeGpuFence();
 
   const raw_ptr<SharedContextState> shared_context_state_;
   const GpuDriverBugWorkarounds workarounds_;
