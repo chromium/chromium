@@ -269,8 +269,7 @@ void FloatingWorkspaceService::Click(
               static_cast<int>(
                   RestoreFromErrorNotificationButtonIndex::kRestore)) {
         VLOG(1) << "Restore button clicked for floating workspace after error";
-        LaunchFloatingWorkspaceTemplate(GetLatestFloatingWorkspaceTemplate(),
-                                        /*launch_on_active_desk=*/true);
+        LaunchFloatingWorkspaceTemplate(GetLatestFloatingWorkspaceTemplate());
       }
       break;
   }
@@ -490,13 +489,11 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
     should_run_restore_ = false;
     return;
   }
-  LaunchFloatingWorkspaceTemplate(desk_template,
-                                  /*launch_on_active_desk=*/false);
+  LaunchFloatingWorkspaceTemplate(desk_template);
 }
 
 void FloatingWorkspaceService::LaunchFloatingWorkspaceTemplate(
-    const DeskTemplate* desk_template,
-    bool launch_on_active_desk) {
+    const DeskTemplate* desk_template) {
   should_run_restore_ = false;
   if (desk_template == nullptr) {
     return;
@@ -507,23 +504,12 @@ void FloatingWorkspaceService::LaunchFloatingWorkspaceTemplate(
   RemoveAllPreviousDesksExceptActiveDesk(
       /*exclude_desk_uuid=*/active_desk_uuid);
 
-  // If the user clicks on the restore button for launch, launch the apps to the
-  // current active desk. If it is an auto launch, launch into a new desk and
-  // remove all other desks after launch.
-  if (launch_on_active_desk) {
-    VLOG(1) << "Combining Floating Workspace apps to current desk.";
-    std::unique_ptr<DeskTemplate> template_copy = desk_template->Clone();
-    // Open the apps from the floating workspace on top of existing windows.
-    saved_desk_util::UpdateTemplateActivationIndices(*template_copy);
-    GetDesksClient()->LaunchAppsFromTemplate(std::move(template_copy));
-    RecordLaunchSavedDeskHistogram(DeskTemplateType::kFloatingWorkspace);
-  } else {
-    GetDesksClient()->LaunchDeskTemplate(
-        desk_template->uuid(),
-        base::BindOnce(&FloatingWorkspaceService::OnTemplateLaunched,
-                       weak_pointer_factory_.GetWeakPtr()),
-        desk_template->template_name());
-  }
+  VLOG(1) << "Combining Floating Workspace apps to current desk.";
+  std::unique_ptr<DeskTemplate> template_copy = desk_template->Clone();
+  // Open the apps from the floating workspace on top of existing windows.
+  saved_desk_util::UpdateTemplateActivationIndices(*template_copy);
+  GetDesksClient()->LaunchAppsFromTemplate(std::move(template_copy));
+  RecordLaunchSavedDeskHistogram(DeskTemplateType::kFloatingWorkspace);
 }
 
 DesksClient* FloatingWorkspaceService::GetDesksClient() {
@@ -574,52 +560,6 @@ bool FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(
   return true;
 }
 
-void FloatingWorkspaceService::HandleTemplateLaunchErrors(
-    DesksClient::DeskActionError error) {
-  SendNotification(kNotificationForSyncErrorOrTimeOut);
-  switch (error) {
-    case DesksClient::DeskActionError::kUnknownError:
-      floating_workspace_metrics_util::
-          RecordFloatingWorkspaceV2TemplateLaunchFailureType(
-              floating_workspace_metrics_util::LaunchTemplateFailureType::
-                  kUnknownError);
-      LOG(WARNING) << "Failed to launch template: unknown error.";
-      return;
-    case DesksClient::DeskActionError::kStorageError:
-      floating_workspace_metrics_util::
-          RecordFloatingWorkspaceV2TemplateLaunchFailureType(
-              floating_workspace_metrics_util::LaunchTemplateFailureType::
-                  kStorageError);
-      LOG(WARNING) << "Failed to launch template: storage error.";
-      return;
-    case DesksClient::DeskActionError::kDesksCountCheckFailedError:
-      floating_workspace_metrics_util::
-          RecordFloatingWorkspaceV2TemplateLaunchFailureType(
-              floating_workspace_metrics_util::LaunchTemplateFailureType::
-                  kDesksCountCheckFailedError);
-      LOG(WARNING) << "Failed to launch template: max number of desks open.";
-      return;
-    // No need to record metrics for the below desk action errors since they
-    // do not relate to template launch.
-    case DesksClient::DeskActionError::kNoCurrentUserError:
-      LOG(WARNING) << "Failed to launch template: no active user.";
-      return;
-    case DesksClient::DeskActionError::kBadProfileError:
-      LOG(WARNING) << "Failed to launch template: bad profile.";
-      return;
-    case DesksClient::DeskActionError::kResourceNotFoundError:
-      LOG(WARNING) << "Failed to launch template: resource not found.";
-      return;
-    case DesksClient::DeskActionError::kInvalidIdError:
-      LOG(WARNING) << "Failed to launch template: desk id is invalid.";
-      return;
-    case DesksClient::DeskActionError::kDesksBeingModifiedError:
-      LOG(WARNING)
-          << "Failed to launch template: desk is currently being modified.";
-      return;
-  }
-}
-
 void FloatingWorkspaceService::HandleTemplateCaptureErrors(
     DesksClient::DeskActionError error) {
   switch (error) {
@@ -649,17 +589,6 @@ void FloatingWorkspaceService::HandleTemplateCaptureErrors(
           << "Failed to capture template: desk is currently being modified.";
       return;
   }
-}
-
-void FloatingWorkspaceService::OnTemplateLaunched(
-    absl::optional<DesksClient::DeskActionError> error,
-    const base::Uuid& desk_uuid) {
-  if (error) {
-    HandleTemplateLaunchErrors(error.value());
-    return;
-  }
-  RecordLaunchSavedDeskHistogram(DeskTemplateType::kFloatingWorkspace);
-  RemoveAllPreviousDesksExceptActiveDesk(/*exclude_desk_uuid=*/desk_uuid);
 }
 
 void FloatingWorkspaceService::OnTemplateCaptured(

@@ -148,8 +148,7 @@ class FloatingWorkspaceService : public KeyedService,
   // Launch downloaded floating workspace desk when all conditions are met.
   // Virtual for testing.
   virtual void LaunchFloatingWorkspaceTemplate(
-      const DeskTemplate* desk_template,
-      bool launch_on_active_desk);
+      const DeskTemplate* desk_template);
 
   // Return the desk client to be used, in test it will return a mocked one.
   virtual DesksClient* GetDesksClient();
@@ -159,16 +158,8 @@ class FloatingWorkspaceService : public KeyedService,
   // If no difference is recorded no upload job will be triggered.
   bool IsCurrentDeskSameAsPrevious(DeskTemplate* current_desk_template) const;
 
-  // Handles the recording of the error for template launch.
-  void HandleTemplateLaunchErrors(DesksClient::DeskActionError error);
-
   // Handles the recording of the error for template capture.
   void HandleTemplateCaptureErrors(DesksClient::DeskActionError error);
-
-  // Callback function that is run after a floating workspace template
-  // is downloaded and launched.
-  void OnTemplateLaunched(absl::optional<DesksClient::DeskActionError> error,
-                          const base::Uuid& desk_uuid);
 
   // Callback function that is run after a floating workspace template is
   // captured by `desks_storage::DeskSyncBridge`.
