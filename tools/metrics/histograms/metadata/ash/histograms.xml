@@ -619,6 +619,60 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.BatterySaver.BatteryPercent{BatteryPercentWhen}" units="%"
+    expires_after="M123">
+  <owner>cwd@google.com</owner>
+  <owner>ckwyee@google.com</owner>
+  <summary>The battery charge percent when {BatteryPercentWhen}</summary>
+  <token key="BatteryPercentWhen">
+    <variant name=".Disabled" summary="disabled."/>
+    <variant name=".DisabledSettings"
+        summary="disabled via the device settings page."/>
+    <variant name=".Enabled" summary="enabled."/>
+    <variant name=".EnabledSettings"
+        summary="enabled via the device settings page."/>
+  </token>
+</histogram>
+
+<histogram name="Ash.BatterySaver.Duration{DurationWhen}" units="ms"
+    expires_after="M123">
+  <owner>cwd@google.com</owner>
+  <owner>ckwyee@google.com</owner>
+  <summary>
+    How long battery saver was enabled. Logged when {DurationWhen}
+  </summary>
+  <token key="DurationWhen">
+    <variant name="" summary="disabled."/>
+    <variant name=".DisabledCharging"
+        summary="disabled by attaching a charger."/>
+    <variant name=".DisabledNotification" summary="disabled via notification."/>
+    <variant name=".DisabledSettings"
+        summary="disabled via the device settings page."/>
+    <variant name=".EnabledNotification"
+        summary="disabled after being enabled via notification."/>
+    <variant name=".EnabledSettings"
+        summary="disabled after being enabled via the device settings page."/>
+  </token>
+</histogram>
+
+<histogram name="Ash.BatterySaver.TimeToEmpty{TimeToEmptyWhen}" units="ms"
+    expires_after="M123">
+  <owner>cwd@google.com</owner>
+  <owner>ckwyee@google.com</owner>
+  <summary>
+    The battery time to empty when battery saver is {TimeToEmptyWhen}. Only
+    logged when an estimate is available.
+  </summary>
+  <token key="TimeToEmptyWhen">
+    <variant name=".Disabled" summary="disabled"/>
+    <variant name=".DisabledSettings"
+        summary="disabled via the device settings page"/>
+    <variant name=".Enabled" summary="enabled"/>
+    <variant name=".EnabledSettings"
+        summary="enabled via the device settings page"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.BrowserContext.UnexpectedGetPrimaryUserProfile"
     enum="Boolean" expires_after="M122">
   <owner>hidehiko@chromium.org</owner>

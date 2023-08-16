@@ -15,6 +15,8 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
@@ -170,7 +172,8 @@ TEST_F(BatterySaverControllerTest, EnsureThresholdsCrossed) {
   EXPECT_FALSE(IsBatterySaverActive());
 
   // Enable battery saver mode manually.
-  battery_saver_controller()->SetStateForTesting(true);
+  battery_saver_controller()->SetState(
+      true, BatterySaverController::UpdateReason::kSettings);
 
   // Discharge to the percent threshold
   UpdatePowerStatus(BatterySaverController::kActivationChargePercent,
@@ -178,7 +181,8 @@ TEST_F(BatterySaverControllerTest, EnsureThresholdsCrossed) {
   EXPECT_TRUE(IsBatterySaverActive());
 
   // Disable battery saver mode manually.
-  battery_saver_controller()->SetStateForTesting(false);
+  battery_saver_controller()->SetState(
+      false, BatterySaverController::UpdateReason::kSettings);
 
   // When we get to percent_threshold-1, it should still be disabled.
   UpdatePowerStatus(BatterySaverController::kActivationChargePercent - 1,
@@ -192,7 +196,8 @@ TEST_F(BatterySaverControllerTest, EnsureThresholdsCrossed) {
   EXPECT_TRUE(IsBatterySaverActive());
 
   // Disable battery saver mode.
-  battery_saver_controller()->SetStateForTesting(false);
+  battery_saver_controller()->SetState(
+      false, BatterySaverController::UpdateReason::kSettings);
 
   // Expect it to still be disabled since we already crossed the low power
   // threshold when it was active.
@@ -202,20 +207,165 @@ TEST_F(BatterySaverControllerTest, EnsureThresholdsCrossed) {
   EXPECT_FALSE(IsBatterySaverActive());
 }
 
+// Metrics always logged on enable.
+void ExpectEnabledMetrics(base::HistogramTester& histogram_tester,
+                          base::HistogramBase::Count enabled_count) {
+  histogram_tester.ExpectTotalCount("Ash.BatterySaver.BatteryPercent.Enabled",
+                                    enabled_count);
+  histogram_tester.ExpectTotalCount("Ash.BatterySaver.TimeToEmpty.Enabled",
+                                    enabled_count);
+}
+
+// Metrics logged on enable when enabled via settings.
+void ExpectSettingsEnabledMetrics(
+    base::HistogramTester& histogram_tester,
+    base::HistogramBase::Count settings_enabled_count) {
+  histogram_tester.ExpectTotalCount(
+      "Ash.BatterySaver.BatteryPercent.EnabledSettings",
+      settings_enabled_count);
+  histogram_tester.ExpectTotalCount(
+      "Ash.BatterySaver.TimeToEmpty.EnabledSettings", settings_enabled_count);
+}
+
+// Metrics always logged on disable.
+void ExpectDisabledMetrics(base::HistogramTester& histogram_tester,
+                           base::HistogramBase::Count disabled_count) {
+  histogram_tester.ExpectTotalCount("Ash.BatterySaver.BatteryPercent.Disabled",
+                                    disabled_count);
+  histogram_tester.ExpectTotalCount("Ash.BatterySaver.TimeToEmpty.Disabled",
+                                    disabled_count);
+  histogram_tester.ExpectTotalCount("Ash.BatterySaver.Duration",
+                                    disabled_count);
+}
+
+// Metrics logged on disable when enabled via notification.
+void ExpectNotificationEnabledMetricsOnDisable(
+    base::HistogramTester& histogram_tester,
+    base::HistogramBase::Count notification_enabled_count) {
+  histogram_tester.ExpectTotalCount(
+      "Ash.BatterySaver.Duration.EnabledNotification",
+      notification_enabled_count);
+}
+
+// Metrics logged on disable when enabled via settings.
+void ExpectSettingsEnabledMetricsOnDisable(
+    base::HistogramTester& histogram_tester,
+    base::HistogramBase::Count settings_enabled_count) {
+  histogram_tester.ExpectTotalCount("Ash.BatterySaver.Duration.EnabledSettings",
+                                    settings_enabled_count);
+}
+
+// Metrics logged on disable when disabled via charging.
+void ExpectChargingDisabledMetrics(
+    base::HistogramTester& histogram_tester,
+    base::HistogramBase::Count charging_disabled_count) {
+  histogram_tester.ExpectTotalCount(
+      "Ash.BatterySaver.Duration.DisabledCharging", charging_disabled_count);
+}
+
+// Metrics logged on disable when disabled via notification.
+void ExpectNotificationDisabledMetrics(
+    base::HistogramTester& histogram_tester,
+    base::HistogramBase::Count notification_disabled_count) {
+  histogram_tester.ExpectTotalCount(
+      "Ash.BatterySaver.Duration.DisabledNotification",
+      notification_disabled_count);
+}
+
+// Metrics logged on disable when disabled via settings.
+void ExpectSettingsDisabledMetrics(
+    base::HistogramTester& histogram_tester,
+    base::HistogramBase::Count settings_disabled_count) {
+  histogram_tester.ExpectTotalCount(
+      "Ash.BatterySaver.BatteryPercent.DisabledSettings",
+      settings_disabled_count);
+  histogram_tester.ExpectTotalCount(
+      "Ash.BatterySaver.TimeToEmpty.DisabledSettings", settings_disabled_count);
+  histogram_tester.ExpectTotalCount(
+      "Ash.BatterySaver.Duration.DisabledSettings", settings_disabled_count);
+}
+
+TEST_F(BatterySaverControllerTest, Metrics) {
+  base::HistogramTester ht;
+
+  // TimeToEmpty should have a value.
+  UpdatePowerStatus(80.0, eight_hours_, false);
+
+  // Enable with settings.
+  ExpectEnabledMetrics(ht, 0);
+  ExpectSettingsEnabledMetrics(ht, 0);
+  battery_saver_controller()->SetState(
+      true, BatterySaverController::UpdateReason::kSettings);
+  ExpectEnabledMetrics(ht, 1);
+  ExpectSettingsEnabledMetrics(ht, 1);
+
+  // Disable with settings.
+  ExpectDisabledMetrics(ht, 0);
+  ExpectSettingsEnabledMetricsOnDisable(ht, 0);
+  ExpectSettingsDisabledMetrics(ht, 0);
+  battery_saver_controller()->SetState(
+      false, BatterySaverController::UpdateReason::kSettings);
+  ExpectDisabledMetrics(ht, 1);
+  ExpectSettingsEnabledMetricsOnDisable(ht, 1);
+  ExpectSettingsDisabledMetrics(ht, 1);
+
+  // Enable with notification.
+  ExpectEnabledMetrics(ht, 1);
+  battery_saver_controller()->SetState(
+      true, BatterySaverController::UpdateReason::kThreshold);
+  ExpectEnabledMetrics(ht, 2);
+
+  // Disable with notification.
+  ExpectDisabledMetrics(ht, 1);
+  ExpectNotificationEnabledMetricsOnDisable(ht, 0);
+  ExpectNotificationDisabledMetrics(ht, 0);
+  battery_saver_controller()->SetState(
+      false, BatterySaverController::UpdateReason::kThreshold);
+  ExpectDisabledMetrics(ht, 2);
+  ExpectNotificationEnabledMetricsOnDisable(ht, 1);
+  ExpectNotificationDisabledMetrics(ht, 1);
+
+  // Enable again with notifications, just because we need it enabled to test
+  // disabling with charging.
+  ExpectEnabledMetrics(ht, 2);
+  battery_saver_controller()->SetState(
+      true, BatterySaverController::UpdateReason::kThreshold);
+  ExpectEnabledMetrics(ht, 3);
+
+  // Disable with charging.
+  ExpectDisabledMetrics(ht, 2);
+  ExpectNotificationEnabledMetricsOnDisable(ht, 1);
+  ExpectChargingDisabledMetrics(ht, 0);
+  battery_saver_controller()->SetState(
+      false, BatterySaverController::UpdateReason::kCharging);
+  ExpectDisabledMetrics(ht, 3);
+  ExpectNotificationEnabledMetricsOnDisable(ht, 2);
+  ExpectChargingDisabledMetrics(ht, 1);
+
+  // Check that we didn't have any spurious metrics logged.
+  ExpectEnabledMetrics(ht, 3);
+  ExpectSettingsEnabledMetrics(ht, 1);
+  ExpectSettingsEnabledMetricsOnDisable(ht, 1);
+  ExpectNotificationDisabledMetrics(ht, 1);
+  ExpectSettingsDisabledMetrics(ht, 1);
+}
+
 TEST_F(BatterySaverControllerTest, ShowDisableToast) {
   // Ensure there is no `ToastOverlay` being displayed at the start of the test.
   ToastOverlay* current_toast = GetCurrentToast();
   EXPECT_EQ(current_toast, nullptr);
 
   // Enable battery saver mode.
-  battery_saver_controller()->SetStateForTesting(true);
+  battery_saver_controller()->SetState(
+      true, BatterySaverController::UpdateReason::kSettings);
 
   // There should be no `ToastOverlay` displayed when battery saver is enabled.
   current_toast = GetCurrentToast();
   EXPECT_EQ(current_toast, nullptr);
 
   // Disable battery saver mode.
-  battery_saver_controller()->SetStateForTesting(false);
+  battery_saver_controller()->SetState(
+      false, BatterySaverController::UpdateReason::kSettings);
 
   // Check to see if a `ToastOverlay` was displayed, and that it's accurate.
   current_toast = GetCurrentToast();
