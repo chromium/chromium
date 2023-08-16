@@ -2836,7 +2836,7 @@
     },
     {
       name: "PrefersReducedTransparency",
-      status: "experimental",
+      status: "stable",
     },
     // This feature is deprecated and we are evangelizing affected sites.
     // See https://crbug.com/346236 for current status.
