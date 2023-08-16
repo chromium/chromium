@@ -9,7 +9,7 @@ enum RunningStatusEnum { "running", "not-running" };
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
 dictionary RouterCondition {
   // For the URLPattern condition.
-  // a relative path pattern string usable for URLPattern.
+  // https://wicg.github.io/urlpattern/#typedefdef-urlpatterninput
   URLPatternInput urlPattern;
 
   // For the Request condition.
