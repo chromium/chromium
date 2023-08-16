@@ -27,7 +27,6 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedSslErrorHelper;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -73,7 +72,6 @@ public class AwNetworkConfigurationTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
-    @DisabledTest(message = "crbug.com/1148388")
     // clang-format off+
     public void testSHA1LocalAnchorsAllowed() throws Throwable {
         // clang-format on
