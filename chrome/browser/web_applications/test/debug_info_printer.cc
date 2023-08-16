@@ -4,7 +4,9 @@
 
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
 
+#include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,9 +23,17 @@
 #endif
 
 namespace web_app::test {
+namespace {
+constexpr base::StringPiece kDisableLogDebugInfoToConsole =
+    "disable-web-app-internals-log";
+}  // namespace
 
 void LogDebugInfoToConsole(const std::vector<Profile*>& profiles,
                            base::TimeDelta time_ago_for_system_log_capture) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kDisableLogDebugInfoToConsole)) {
+    return;
+  }
   for (Profile* profile : profiles) {
     if (!AreWebAppsEnabled(profile) ||
         !WebAppProviderFactory::IsServiceCreatedForProfile(profile)) {

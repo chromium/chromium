@@ -32,6 +32,7 @@ Notes
 - UI elements do not work in unit tests, and the appropriate fakes must be used (see [External Dependencies][3]).
 - If one of the external dependencies of the system cannot be faked out yet or the feature is tightly coupled to this, then it might make sense to use a browser test instead (or make that dependency fake-able).
 - Please use the [`WebAppTest`][4] base class if possible.
+- Unit tests based on `WebAppTest` print a snapshot of chrome://web-app-internals to console on test failures. This can be a powerful debugging tool. The command line flag `--disable-web-app-internals-log` can be used to disable this feature.
 
 ## Browser tests
 
@@ -46,11 +47,19 @@ Browser tests are much more expensive to run, as they run a fully functional bro
 
 An example set of browser tests are in [`web_app_browsertest.cc`][6]. Please use the [`WebAppControllerBrowserTest`][5] base class.
 
+Notes
+
+- Browser tests based on `WebAppControllerBrowserTest` print a snapshot of chrome://web-app-internals to console on test failures. This can be a powerful debugging tool. The command line flag `--disable-web-app-internals-log` can be used to disable this feature.
+
 ## Integration tests
 
 We have a custom integration testing framework that we use due to the complexity of our use-cases. See [integration-testing-framework.md][7] for more information.
 
 **It is a good idea to think about your integration tests early & figure out your CUJs with the team. Having your CUJs and integration tests working early greatly speeds up development & launch time.**
+
+Notes
+
+- Integration tests using `WebAppIntegrationTestDriver` print a snapshot of chrome://web-app-internals to console on test failures. This can be a powerful debugging tool. The command line flag `--disable-web-app-internals-log` can be used to disable this feature.
 
 ## Testing OS integration
 
