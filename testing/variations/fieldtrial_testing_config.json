@@ -15694,24 +15694,6 @@
             ]
         }
     ],
-    "UserCloudSigninRestrictionPolicyFetcher": [
-        {
-            "platforms": [
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UserCloudSigninRestrictionPolicyFetcher"
-                    ]
-                }
-            ]
-        }
-    ],
     "UserInteractiveCompositingMac": [
         {
             "platforms": [

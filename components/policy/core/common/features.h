@@ -18,11 +18,6 @@ namespace features {
 // events.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kCrowdstrikeSignalReporting);
 
-// Enable the UserCloudSigninRestrictionPolicyFetcher to get the
-// ManagedAccountsSigninRestriction policy for a dasher account.
-POLICY_EXPORT
-BASE_DECLARE_FEATURE(kEnableUserCloudSigninRestrictionPolicyFetcher);
-
 // Enable the policy test page at chrome://policy/test.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kEnablePolicyTestPage);
 

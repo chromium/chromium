@@ -40,7 +40,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/policy/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -611,20 +610,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
       SigninInterceptionHeuristicOutcome::kAbortNoSupportedBrowser, 1);
 }
 
-class DiceWebSigninInterceptorEnterpriseBrowserTest
-    : public DiceWebSigninInterceptorBrowserTest {
- public:
-  DiceWebSigninInterceptorEnterpriseBrowserTest() {
-    enterprise_feature_list_.InitAndEnableFeature(
-        policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher);
-  }
-
- private:
-  base::test::ScopedFeatureList enterprise_feature_list_;
-};
-
 // Tests the complete interception flow including profile and browser creation.
-IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                        ForcedEnterpriseInterceptionTestNoForcedInterception) {
   base::HistogramTester histogram_tester;
 
@@ -730,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
 }
 
 // Tests the complete interception flow including profile and browser creation.
-IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                        EnterpriseInterceptionDeclined) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
@@ -808,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
 }
 
 // Tests the complete interception flow including profile and browser creation.
-IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                        ForcedEnterpriseInterceptionTestAccountLevelPolicy) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
@@ -901,7 +888,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
 
 // Tests the complete interception flow including profile and browser creation.
 IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptorEnterpriseBrowserTest,
+    DiceWebSigninInterceptorBrowserTest,
     ForcedEnterpriseInterceptionTestAccountLevelPolicyDeclined) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
@@ -968,7 +955,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the complete interception flow including profile and browser creation.
 IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptorEnterpriseBrowserTest,
+    DiceWebSigninInterceptorBrowserTest,
     ForcedEnterpriseInterceptionTestAccountLevelPolicyStrictDeclined) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
@@ -1034,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Tests the complete interception flow including profile and browser creation.
-IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                        ForcedEnterpriseInterceptionTest) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
@@ -1125,7 +1112,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
 // Tests the complete interception flow for a reauth of the primary account of a
 // non-syncing profile.
 IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptorEnterpriseBrowserTest,
+    DiceWebSigninInterceptorBrowserTest,
     ForcedEnterpriseInterceptionPrimaryACcountReauthSyncDisabledTest) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
@@ -1192,7 +1179,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the complete interception flow for a reauth of the primary account of a
 // syncing profile.
 IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptorEnterpriseBrowserTest,
+    DiceWebSigninInterceptorBrowserTest,
     ForcedEnterpriseInterceptionPrimaryACcountReauthSyncEnabledTest) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
@@ -1256,7 +1243,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Tests the complete profile switch flow when the profile is not loaded.
-IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                        EnterpriseSwitchAndLoad) {
   base::HistogramTester histogram_tester;
   // Enforce enterprise profile separation.
@@ -1340,7 +1327,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
 }
 
 // Tests the complete profile switch flow when the profile is already loaded.
-IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                        EnterpriseSwitchAlreadyOpen) {
   base::HistogramTester histogram_tester;
   // Enforce enterprise profile separation.

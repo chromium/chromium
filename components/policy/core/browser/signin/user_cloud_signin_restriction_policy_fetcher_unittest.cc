@@ -10,10 +10,8 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -33,9 +31,7 @@ namespace policy {
 class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
  public:
   UserCloudSigninRestrictionPolicyFetcherTest()
-      : feature_list_(std::make_unique<base::test::ScopedFeatureList>(
-            policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher)),
-        policy_fetcher_(
+      : policy_fetcher_(
             std::make_unique<UserCloudSigninRestrictionPolicyFetcher>(
                 nullptr,
                 nullptr)) {}
@@ -54,40 +50,12 @@ class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
 
   void ResetPolicyFetcher() { policy_fetcher_.reset(); }
 
-  std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
-
  private:
   base::test::TaskEnvironment task_env_;
   network::TestURLLoaderFactory url_loader_factory_;
   std::unique_ptr<UserCloudSigninRestrictionPolicyFetcher> policy_fetcher_;
   signin::IdentityTestEnvironment identity_test_env_;
 };
-
-// Regression test for https://crbug.com/1337676
-TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, NoUseAfterFreeCrash) {
-  feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  feature_list_->InitAndDisableFeature(
-      policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher);
-  base::Value::Dict expected_response;
-  expected_response.Set("policyValue", "primary_account");
-  std::string response;
-  JSONStringValueSerializer serializer(&response);
-  ASSERT_TRUE(serializer.Serialize(expected_response));
-  url_loader_factory()->AddResponse(
-      kSecureConnectApiGetManagedAccountsSigninRestrictionsUrl,
-      std::move(response));
-
-  identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
-  AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-
-  policy_fetcher()->SetURLLoaderFactoryForTesting(url_loader_factory());
-  policy_fetcher()->GetManagedAccountsSigninRestriction(
-      identity_test_env()->identity_manager(), account_info.account_id,
-      base::BindLambdaForTesting([](const std::string&) { NOTREACHED(); }));
-  ResetPolicyFetcher();
-  base::RunLoop().RunUntilIdle();
-}
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsValueFromBody) {
   base::Value::Dict expected_response;
