@@ -215,7 +215,11 @@ WebPreferences::WebPreferences()
       always_show_focus(false),
       touch_drag_drop_enabled(IsTouchDragDropEnabled()) {
   standard_font_family_map[web_pref::kCommonScript] = u"Times New Roman";
+#if BUILDFLAG(IS_MAC)
+  fixed_font_family_map[web_pref::kCommonScript] = u"Menlo";
+#else
   fixed_font_family_map[web_pref::kCommonScript] = u"Courier New";
+#endif
   serif_font_family_map[web_pref::kCommonScript] = u"Times New Roman";
   sans_serif_font_family_map[web_pref::kCommonScript] = u"Arial";
   cursive_font_family_map[web_pref::kCommonScript] = u"Script";

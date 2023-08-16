@@ -287,6 +287,7 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
   prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] = u"Papyrus";
   prefs->serif_font_family_map[blink::web_pref::kCommonScript] = u"Times";
   prefs->standard_font_family_map[blink::web_pref::kCommonScript] = u"Times";
+  prefs->fixed_font_family_map[blink::web_pref::kCommonScript] = u"Menlo";
 #else
   prefs->cursive_font_family_map[blink::web_pref::kCommonScript] =
       u"Comic Sans MS";
@@ -295,8 +296,8 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
       u"times new roman";
   prefs->standard_font_family_map[blink::web_pref::kCommonScript] =
       u"times new roman";
-#endif
   prefs->fixed_font_family_map[blink::web_pref::kCommonScript] = u"Courier";
+#endif
   prefs->sans_serif_font_family_map[blink::web_pref::kCommonScript] =
       u"Helvetica";
 }

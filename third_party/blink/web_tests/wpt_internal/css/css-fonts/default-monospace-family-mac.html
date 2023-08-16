@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8" />
+<title>CSS Test: Default monospace font-family in Mac</title>
+<link rel="match" href="default-monospace-family-mac-ref.html">
+<link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-family-prop" />
+<meta name="assert" content="Use Menlo as default monospace font family in Mac">
+<style>
+  .test {
+    font-family: monospace;
+    font-size: 30px;
+  }
+</style>
+
+<p lang="en" class="test">text</p>
+<p lang="ru" class="test">текст</p>

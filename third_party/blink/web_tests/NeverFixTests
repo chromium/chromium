@@ -2094,3 +2094,8 @@ virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs
 [ Mac10.15 ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h265_hevc [ Skip ]
 [ Mac10.15 ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Skip ]
 
+# This test is Mac specific, it checks default monospace font-family on Mac.
+crbug.com/1449469 [ Linux ] wpt_internal/css/css-fonts/default-monospace-family-mac.html [ Skip ]
+crbug.com/1449469 [ Win ] wpt_internal/css/css-fonts/default-monospace-family-mac.html [ Skip ]
+crbug.com/1449469 [ Fuchsia ] wpt_internal/css/css-fonts/default-monospace-family-mac.html [ Skip ]
+crbug.com/1449469 [ Android ] wpt_internal/css/css-fonts/default-monospace-family-mac.html [ Skip ]
