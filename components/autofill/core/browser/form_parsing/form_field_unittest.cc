@@ -214,9 +214,6 @@ TEST_P(FormFieldTest, ParseFormFieldsForSingleFieldPromoCode) {
 
 // Test that `ParseSingleFieldForms` parses single field IBAN.
 TEST_P(FormFieldTest, ParseSingleFieldFormsIban) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(features::kAutofillParseIBANFields);
-
   // Parse single field IBAN.
   AddTextFormFieldData("", "IBAN", IBAN_VALUE);
   EXPECT_EQ(1, ParseSingleFieldForms());

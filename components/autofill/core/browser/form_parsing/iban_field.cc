@@ -16,10 +16,6 @@ std::unique_ptr<FormField> IbanField::Parse(AutofillScanner* scanner,
                                             const LanguageCode& page_language,
                                             PatternSource pattern_source,
                                             LogManager* log_manager) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillParseIBANFields)) {
-    return nullptr;
-  }
-
   raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> iban_patterns =
       GetMatchPatterns(IBAN_VALUE, page_language, pattern_source);

@@ -221,8 +221,6 @@ ChromeAutofillClient::GetAutocompleteHistoryManager() {
 }
 
 IbanManager* ChromeAutofillClient::GetIbanManager() {
-  if (!base::FeatureList::IsEnabled(features::kAutofillFillIbanFields))
-    return nullptr;
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return IbanManagerFactory::GetForProfile(profile);

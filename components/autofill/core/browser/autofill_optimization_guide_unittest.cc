@@ -100,9 +100,6 @@ TEST_F(AutofillOptimizationGuideTest, EnsureIntegratorInitializedCorrectly) {
 // Test that the `IBAN_AUTOFILL_BLOCKED` optimization type is registered when we
 // have seen an IBAN form.
 TEST_F(AutofillOptimizationGuideTest, IbanFieldFound_IbanAutofillBlocked) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableIbanClientSideUrlFiltering);
   FormData form_data;
   test::CreateTestIbanFormData(&form_data);
   FormStructure form_structure{form_data};
@@ -111,24 +108,6 @@ TEST_F(AutofillOptimizationGuideTest, IbanFieldFound_IbanAutofillBlocked) {
   EXPECT_CALL(*decider_, RegisterOptimizationTypes(testing::ElementsAre(
                              optimization_guide::proto::IBAN_AUTOFILL_BLOCKED)))
       .Times(1);
-
-  autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
-}
-
-// Test that the `IBAN_AUTOFILL_BLOCKED` optimization type is not registered
-// when we have seen an IBAN form, but the feature flag is turned off.
-TEST_F(AutofillOptimizationGuideTest,
-       IbanFieldFound_IbanAutofillBlocked_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableIbanClientSideUrlFiltering);
-  FormData form_data;
-  test::CreateTestIbanFormData(&form_data);
-  FormStructure form_structure{form_data};
-  test_api(form_structure).SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
-
-  EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());
@@ -274,9 +253,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest, OptimizationTypeToRegisterNotFound) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableIbanClientSideUrlFiltering,
-       features::kAutofillEnableMerchantOptOutClientSideUrlFiltering},
-      {});
+      {features::kAutofillEnableMerchantOptOutClientSideUrlFiltering}, {});
   AutofillField field;
   FormData form_data;
   form_data.fields = {field};
@@ -297,9 +274,7 @@ TEST_F(AutofillOptimizationGuideTest,
        FormWithMultipleOptimizationTypesToRegisterFound) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableIbanClientSideUrlFiltering,
-       features::kAutofillEnableMerchantOptOutClientSideUrlFiltering},
-      {});
+      {features::kAutofillEnableMerchantOptOutClientSideUrlFiltering}, {});
   FormData form_data;
   test::CreateTestIbanFormData(&form_data);
   test::CreateTestCreditCardFormData(&form_data, /*is_https=*/true,
@@ -326,9 +301,6 @@ TEST_F(AutofillOptimizationGuideTest,
 // optimization type.
 TEST_F(AutofillOptimizationGuideTest,
        ShouldBlockSingleFieldSuggestions_IbanAutofillBlocked) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableIbanClientSideUrlFiltering);
   FormData form_data;
   test::CreateTestIbanFormData(&form_data);
   FormStructure form_structure{form_data};
@@ -348,38 +320,11 @@ TEST_F(AutofillOptimizationGuideTest,
 }
 
 // Test that single field suggestions are not blocked when we are about to
-// display suggestions for an IBAN field, but the flag is turned off.
-TEST_F(AutofillOptimizationGuideTest,
-       ShouldNotBlockSingleFieldSuggestions_IbanAutofillBlocked__FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableIbanClientSideUrlFiltering);
-  FormData form_data;
-  test::CreateTestIbanFormData(&form_data);
-  FormStructure form_structure{form_data};
-  test_api(form_structure).SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
-  GURL url("https://example.com/");
-  EXPECT_CALL(*decider_,
-              CanApplyOptimization(
-                  testing::Eq(url),
-                  testing::Eq(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED),
-                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
-                      testing::Eq(nullptr))))
-      .Times(0);
-
-  EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockSingleFieldSuggestions(
-      url, form_structure.field(0)));
-}
-
-// Test that single field suggestions are not blocked when we are about to
 // display suggestions for an IBAN field and OptimizationGuideDecider denotes
 // that displaying the suggestion is allowed for the `IBAN_AUTOFILL_BLOCKED`
 // use-case.
 TEST_F(AutofillOptimizationGuideTest,
        ShouldNotBlockSingleFieldSuggestions_IbanAutofillBlocked) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableIbanClientSideUrlFiltering);
   FormData form_data;
   test::CreateTestIbanFormData(&form_data);
   FormStructure form_structure{form_data};
@@ -403,9 +348,6 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(
     AutofillOptimizationGuideTest,
     ShouldNotBlockSingleFieldSuggestions_IbanAutofillBlocked_FieldTypeForBlockingNotFound) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableIbanClientSideUrlFiltering);
   FormData form_data;
   test::CreateTestIbanFormData(&form_data);
   FormStructure form_structure{form_data};

@@ -4,9 +4,7 @@
 
 #include "components/autofill/core/browser/form_parsing/iban_field.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
 
@@ -18,11 +16,6 @@ class IbanFieldTest
   IbanFieldTest(const IbanFieldTest&) = delete;
   IbanFieldTest& operator=(const IbanFieldTest&) = delete;
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillParseIBANFields);
-  }
-
  protected:
   std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
@@ -30,8 +23,6 @@ class IbanFieldTest
     return IbanField::Parse(scanner, page_language, GetActivePatternSource(),
                             /*log_manager=*/nullptr);
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -58,11 +49,4 @@ TEST_P(IbanFieldTest, ParseNonIban) {
   ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
-TEST_P(IbanFieldTest, ParseIbanFlagOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kAutofillParseIBANFields);
-  AddTextFormFieldData("iban-field", "Enter IBAN here", IBAN_VALUE);
-
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
-}
 }  // namespace autofill

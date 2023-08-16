@@ -367,7 +367,6 @@ TEST_F(AutofillExperimentsTest,
 }
 
 TEST_F(AutofillExperimentsTest, ShouldShowIbanOnSettingsPage_FeatureEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(features::kAutofillFillIbanFields);
   // Use a supported country to verify the feature is enabled.
   EXPECT_TRUE(ShouldShowIbanOnSettingsPage("AE", &pref_service_));
 

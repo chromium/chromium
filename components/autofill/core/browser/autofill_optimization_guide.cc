@@ -62,16 +62,12 @@ void AutofillOptimizationGuide::OnDidParseForm(
   base::flat_set<optimization_guide::proto::OptimizationType>
       optimization_types;
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableIbanClientSideUrlFiltering)) {
-    bool has_iban_field =
-        base::ranges::any_of(form_structure, [](const auto& field) {
-          return field->Type().GetStorableType() == IBAN_VALUE;
-        });
-    if (has_iban_field) {
-      optimization_types.insert(
-          optimization_guide::proto::IBAN_AUTOFILL_BLOCKED);
-    }
+  bool has_iban_field =
+      base::ranges::any_of(form_structure, [](const auto& field) {
+        return field->Type().GetStorableType() == IBAN_VALUE;
+      });
+  if (has_iban_field) {
+    optimization_types.insert(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED);
   }
 
   if (base::FeatureList::IsEnabled(
@@ -109,9 +105,7 @@ bool AutofillOptimizationGuide::ShouldBlockSingleFieldSuggestions(
     AutofillField* field) const {
   // If the field's storable type is `IBAN_VALUE`, check whether IBAN
   // suggestions should be blocked based on `url`.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableIbanClientSideUrlFiltering) &&
-      field->Type().GetStorableType() == IBAN_VALUE) {
+  if (field->Type().GetStorableType() == IBAN_VALUE) {
     optimization_guide::OptimizationGuideDecision decision =
         decider_->CanApplyOptimization(
             url, optimization_guide::proto::IBAN_AUTOFILL_BLOCKED,

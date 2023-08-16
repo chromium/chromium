@@ -231,7 +231,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
       return base::FeatureList::IsEnabled(features::kAutofillSaveAndFillVPA);
 
     case IBAN_VALUE:
-      return base::FeatureList::IsEnabled(features::kAutofillParseIBANFields);
+      return true;
 
     case COMPANY_NAME:
       return true;

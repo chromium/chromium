@@ -153,10 +153,7 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
           std::make_unique<AddressProfileSaveManager>(client,
                                                       personal_data_manager)),
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      iban_save_manager_(
-          base::FeatureList::IsEnabled(features::kAutofillFillIbanFields)
-              ? std::make_unique<IbanSaveManager>(client)
-              : nullptr),
+      iban_save_manager_(std::make_unique<IbanSaveManager>(client)),
       local_card_migration_manager_(
           std::make_unique<LocalCardMigrationManager>(client,
                                                       payments_client,
@@ -302,8 +299,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(features::kAutofillFillIbanFields) &&
-      payment_methods_autofill_enabled) {
+  if (payment_methods_autofill_enabled) {
     extracted_form_data.iban_import_candidate = ExtractIban(submitted_form);
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -810,9 +806,6 @@ bool FormDataImporter::ProcessExtractedCreditCard(
 
 bool FormDataImporter::ProcessIbanImportCandidate(
     const Iban& iban_import_candidate) {
-  if (!iban_save_manager_)
-    return false;
-
   return iban_save_manager_->AttemptToOfferIbanLocalSave(iban_import_candidate);
 }
 

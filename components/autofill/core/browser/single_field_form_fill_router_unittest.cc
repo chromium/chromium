@@ -370,8 +370,6 @@ TEST_F(
 // Ensure that the router routes to AutocompleteHistoryManager for this
 // OnGetSingleFieldSuggestions call if IbanManager is not present.
 TEST_F(SingleFieldFormFillRouterTest, IbanManagerNotPresent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillParseIBANFields}, {});
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
 
   // This also invalidates the WeakPtr that the |single_field_form_fill_router_|
@@ -397,8 +395,6 @@ TEST_F(SingleFieldFormFillRouterTest, IbanManagerNotPresent) {
 // OnGetSingleFieldSuggestions call if
 // IbanManager::OnGetSingleFieldSuggestions() returns false.
 TEST_F(SingleFieldFormFillRouterTest, IbanManagerReturnedFalse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillParseIBANFields}, {});
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
 
   // Mock IbanManager::OnGetSingleFieldSuggestions() returning

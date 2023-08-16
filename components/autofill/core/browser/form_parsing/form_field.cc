@@ -220,10 +220,8 @@ void FormField::ParseSingleFieldForms(
                       log_manager);
 
   // IBAN pass.
-  if (base::FeatureList::IsEnabled(features::kAutofillParseIBANFields)) {
-    ParseFormFieldsPass(IbanField::Parse, processed_fields, field_candidates,
-                        page_language, pattern_source, log_manager);
-  }
+  ParseFormFieldsPass(IbanField::Parse, processed_fields, field_candidates,
+                      page_language, pattern_source, log_manager);
 }
 
 void FormField::ParseStandaloneCVCFields(

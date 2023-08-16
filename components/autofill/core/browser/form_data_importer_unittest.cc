@@ -774,14 +774,11 @@ class FormDataImporterTestBase {
 
 // Parameters of the FormDataImporterTest fixture.
 using AutofillEnableSupportForApartmentNumbers = bool;
-using AutofillFillIbanFields = bool;
 
-class FormDataImporterTest
-    : public FormDataImporterTestBase,
-      public testing::Test,
-      public testing::WithParamInterface<
-          std::tuple<AutofillEnableSupportForApartmentNumbers,
-                     AutofillFillIbanFields>> {
+class FormDataImporterTest : public FormDataImporterTestBase,
+                             public testing::Test,
+                             public testing::WithParamInterface<
+                                 AutofillEnableSupportForApartmentNumbers> {
  public:
   using ExtractedFormData = FormDataImporter::ExtractedFormData;
 
@@ -796,13 +793,9 @@ class FormDataImporterTest
   void InitializeFeatures() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    // Always enable parsing IBAN fields from the form.
-    enabled_features.push_back(features::kAutofillParseIBANFields);
 
-    (std::get<0>(GetParam()) ? enabled_features : disabled_features)
+    (GetParam() ? enabled_features : disabled_features)
         .push_back(features::kAutofillEnableSupportForApartmentNumbers);
-    (std::get<1>(GetParam()) ? enabled_features : disabled_features)
-        .push_back(features::kAutofillFillIbanFields);
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -2803,14 +2796,9 @@ TEST_P(FormDataImporterTest, ExtractFormData_SubmittingIbanFormUpdatesPref) {
   ExtractFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true);
-  if (base::FeatureList::IsEnabled(features::kAutofillFillIbanFields)) {
-    // Submitting the IBAN form permanently enables the pref.
-    EXPECT_TRUE(personal_data_manager_->IsAutofillHasSeenIbanPrefEnabled());
-  } else {
-    // With the IBAN feature disabled, its form submission is not detected, and
-    // the pref remains unchanged.
-    EXPECT_FALSE(personal_data_manager_->IsAutofillHasSeenIbanPrefEnabled());
-  }
+
+  // Submitting the IBAN form permanently enables the pref.
+  EXPECT_TRUE(personal_data_manager_->IsAutofillHasSeenIbanPrefEnabled());
 }
 
 TEST_P(FormDataImporterTest,
@@ -2860,11 +2848,7 @@ TEST_P(FormDataImporterTest,
   auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true);
-  if (base::FeatureList::IsEnabled(features::kAutofillFillIbanFields)) {
-    ASSERT_TRUE(extracted_data.iban_import_candidate);
-  } else {
-    ASSERT_FALSE(extracted_data.iban_import_candidate);
-  }
+  EXPECT_TRUE(extracted_data.iban_import_candidate);
 }
 
 TEST_P(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
@@ -3789,8 +3773,7 @@ TEST_P(FormDataImporterTest,
        ProcessIbanImportCandidate_ShouldOfferLocalSave_NewIban) {
   Iban iban_import_candidate = test::GetIban();
 
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(features::kAutofillFillIbanFields),
+  EXPECT_TRUE(
       form_data_importer().ProcessIbanImportCandidate(iban_import_candidate));
 }
 
@@ -3838,10 +3821,9 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
-  ASSERT_EQ(base::FeatureList::IsEnabled(features::kAutofillFillIbanFields),
-            ExtractFormDataAndProcessIbanCandidates(
-                form_structure, /*profile_autofill_enabled=*/true,
-                /*payment_methods_autofill_enabled=*/true));
+  EXPECT_TRUE(ExtractFormDataAndProcessIbanCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true));
 }
 
 TEST_P(FormDataImporterTest,
@@ -3891,10 +3873,8 @@ TEST_P(FormDataImporterTest,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Runs the suite with the features `kAutofillEnableSupportForApartmentNumbers`
-// and `kAutofillFillIbanFields` enabled and disabled.
-INSTANTIATE_TEST_SUITE_P(,
-                         FormDataImporterTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+// enabled and disabled.
+INSTANTIATE_TEST_SUITE_P(, FormDataImporterTest, testing::Bool());
 
 class FormDataImporterNonParameterizedTest : public FormDataImporterTestBase,
                                              public testing::Test {

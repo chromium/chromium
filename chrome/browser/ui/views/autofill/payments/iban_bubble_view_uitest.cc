@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -52,12 +51,7 @@ class IbanBubbleViewFullFormBrowserTest
       public IbanSaveManager::ObserverForTest,
       public IbanBubbleControllerImpl::ObserverForTest {
  protected:
-  IbanBubbleViewFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{autofill::features::kAutofillFillIbanFields,
-                              autofill::features::kAutofillParseIBANFields},
-        /*disabled_features=*/{});
-  }
+  IbanBubbleViewFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {}
 
  public:
   IbanBubbleViewFullFormBrowserTest(const IbanBubbleViewFullFormBrowserTest&) =
@@ -390,7 +384,6 @@ class IbanBubbleViewFullFormBrowserTest
     return iban_bubble_controller->GetPaymentBubbleView();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };

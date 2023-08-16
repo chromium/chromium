@@ -110,10 +110,6 @@ extern const char kAutofillIOSDelayBetweenFieldsDescription[];
 extern const char kAutofillOfferToSaveCardWithSameLastFourName[];
 extern const char kAutofillOfferToSaveCardWithSameLastFourDescription[];
 
-// Title and description for the flag to parse IBAN fields in Autofill.
-extern const char kAutofillParseIBANFieldsName[];
-extern const char kAutofillParseIBANFieldsDescription[];
-
 // Title and description for the flag to parse standalone CVC fields for VCN
 // card on file in Autofill.
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];

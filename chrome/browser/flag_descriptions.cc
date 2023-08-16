@@ -431,13 +431,6 @@ const char kAutofillEnableFpanRiskBasedAuthenticationDescription[] =
     "When enabled, server card retrieval will begin with a risk-based check "
     "instead of jumping straight to CVC or biometric auth.";
 
-const char kAutofillEnableIbanClientSideUrlFilteringName[] =
-    "Enable Autofill IBAN client side URL filtering";
-const char kAutofillEnableIbanClientSideUrlFilteringDescription[] =
-    "When enabled, client side URL filtering will be triggered for the IBAN "
-    "use-case, so that IBAN autofill is not offered on websites that are "
-    "blocked.";
-
 const char kAutofillEnableManualFallbackForVirtualCardsName[] =
     "Show manual fallback for virtual cards";
 const char kAutofillEnableManualFallbackForVirtualCardsDescription[] =
@@ -576,12 +569,6 @@ const char kAutofillEnableVirtualCardMetadataDescription[] =
     "When enabled, Chrome will show metadata together with other card "
     "information when the virtual card is presented to users.";
 
-const char kAutofillFillIbanFieldsName[] =
-    "Enable Autofill of IBAN fields in forms";
-const char kAutofillFillIbanFieldsDescription[] =
-    "When enabled, Autofill will attempt to fill IBAN (International Bank "
-    "Account Number) fields when data is available.";
-
 const char kAutofillHighlightOnlyChangedValuesInPreviewModeName[] =
     "Highlight only changed values in preview mode.";
 const char kAutofillHighlightOnlyChangedValuesInPreviewModeDescription[] =
@@ -602,11 +589,6 @@ const char kAutofillOfferToSaveCardWithSameLastFourDescription[] =
     "Offer credit card save when Chrome detects a card number with the same "
     "last 4 digits as an existing server card, but a different expiration "
     "date.";
-
-const char kAutofillParseIBANFieldsName[] = "Parse IBAN fields in forms";
-const char kAutofillParseIBANFieldsDescription[] =
-    "When enabled, Autofill will attempt to find International Bank Account "
-    "Number (IBAN) fields when parsing forms.";
 
 const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[] =
     "Parse standalone CVC fields for VCN card on file in forms";

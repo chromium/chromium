@@ -376,7 +376,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // Responsible for managing address profiles save flows.
   std::unique_ptr<AddressProfileSaveManager> address_profile_save_manager_;
 
-  // Responsible for managing IBAN save flows.
+  // Responsible for managing IBAN save flows. It is guaranteed to be non-null.
   std::unique_ptr<IbanSaveManager> iban_save_manager_;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
