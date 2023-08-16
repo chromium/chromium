@@ -17623,21 +17623,6 @@
             ]
         }
     ],
-    "WebViewUmaUploadQualityOfServiceSetToDefault": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "WebViewUmaUploadQualityOfServiceSetToDefault",
-                    "enable_features": [
-                        "WebViewUmaUploadQualityOfServiceSetToDefault"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewUseMetricsUploadService": [
         {
             "platforms": [

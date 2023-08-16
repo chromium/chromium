@@ -179,7 +179,7 @@ BASE_FEATURE(kWebViewImageDrag,
 // This Feature is checked and used in downstream internal code.
 BASE_FEATURE(kWebViewUmaUploadQualityOfServiceSetToDefault,
              "WebViewUmaUploadQualityOfServiceSetToDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This enables zoom keyboard shortcuts for zoom-in, zoom-out and zoom reset.
 BASE_FEATURE(kWebViewZoomKeyboardShortcuts,
