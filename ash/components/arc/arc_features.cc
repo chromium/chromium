@@ -12,7 +12,7 @@ namespace arc {
 // action to start it later in an on-demand manner.
 BASE_FEATURE(kArcOnDemandFeature,
              "ArcOnDemand",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls ACTION_BOOT_COMPLETED broadcast for third party applications on ARC.
 // When disabled, third party apps will not receive this broadcast.
