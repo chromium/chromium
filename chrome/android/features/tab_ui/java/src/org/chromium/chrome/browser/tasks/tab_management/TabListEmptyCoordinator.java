@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -30,13 +32,16 @@ class TabListEmptyCoordinator {
     private ListObserver<Void> mListObserver;
     private boolean mIsTabSwitcherShowing;
     private boolean mIsListObserverAttached;
+    private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
-    public TabListEmptyCoordinator(ViewGroup rootView, TabListModel model) {
+    public TabListEmptyCoordinator(ViewGroup rootView, TabListModel model,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mRootView = rootView;
         mContext = rootView.getContext();
 
         // Observe TabListModel to determine when to add / remove empty state view.
         mModel = model;
+        mBrowserControlsStateProvider = browserControlsStateProvider;
         mListObserver = new ListObserver<Void>() {
             @Override
             public void onItemRangeInserted(ListObservable source, int index, int count) {
@@ -118,6 +123,11 @@ class TabListEmptyCoordinator {
     public void attachEmptyView() {
         if (mEmptyView != null && mEmptyView.getParent() == null) {
             mRootView.addView(mEmptyView);
+            int toolbarHeightPx = mBrowserControlsStateProvider.getTopControlsHeight();
+            FrameLayout.LayoutParams emptyViewParams =
+                    (FrameLayout.LayoutParams) mEmptyView.getLayoutParams();
+            emptyViewParams.topMargin = toolbarHeightPx;
+            mEmptyView.setLayoutParams(emptyViewParams);
         }
         setEmptyViewVisibility(View.GONE);
     }

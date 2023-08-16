@@ -5,43 +5,50 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/empty_state_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/selectable_list_toolbar_height"
+    android:clipToPadding="false"
     android:layout_marginEnd="@dimen/default_list_row_padding"
     android:layout_marginStart="@dimen/default_list_row_padding"
-    android:gravity="center"
-    android:padding="@dimen/card_padding"
-    android:scaleType="fitCenter"
-    android:autoSizeTextType="uniform"
-    android:orientation="vertical">
+    android:fillViewport="true">
 
-  <ImageView
-      android:id="@+id/empty_state_icon"
-      android:contentDescription="@null"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content" />
-
-  <org.chromium.ui.widget.TextViewWithLeading
-      android:id="@+id/empty_state_text_title"
-      android:maxWidth="@dimen/empty_state_text_width"
-      android:paddingTop="@dimen/empty_state_heading_padding_top"
-      android:layout_width="wrap_content"
+  <LinearLayout
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:textAlignment="center"
-      android:textAppearance="@style/TextAppearance.Headline2Thick.Secondary"
-      app:leading="@dimen/headline2_size_leading"/>
+      android:gravity="center"
+      android:scaleType="fitCenter"
+      android:autoSizeTextType="uniform"
+      android:orientation="vertical">
 
-  <org.chromium.ui.widget.TextViewWithLeading
-      android:id="@+id/empty_state_text_description"
-      android:maxWidth="@dimen/empty_state_text_width"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:paddingTop="@dimen/empty_state_subheading_padding_top"
-      android:textAlignment="center"
-      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-      app:leading="@dimen/text_size_medium_leading"/>
-</LinearLayout>
+    <ImageView
+        android:id="@+id/empty_state_icon"
+        android:contentDescription="@null"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/empty_state_text_title"
+        android:maxWidth="@dimen/empty_state_text_width"
+        android:paddingTop="@dimen/empty_state_heading_padding_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.Headline2Thick.Secondary"
+        app:leading="@dimen/headline2_size_leading"/>
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/empty_state_text_description"
+        android:maxWidth="@dimen/empty_state_text_width"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/empty_state_subheading_padding_top"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        app:leading="@dimen/text_size_medium_leading"/>
+  </LinearLayout>
+</ScrollView>
 

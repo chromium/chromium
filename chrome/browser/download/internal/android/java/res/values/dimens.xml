@@ -22,4 +22,7 @@ found in the LICENSE file.
 
     <!-- Download interstitial dimensions -->
     <dimen name="download_interstitial_horizontal_padding">24dp</dimen>
+
+    <!-- Download_storage_summary height(32dp) = text height(16) + top padding(8) + bottom padding(8) -->
+    <dimen name="download_storage_summary_height">32dp</dimen>
 </resources>

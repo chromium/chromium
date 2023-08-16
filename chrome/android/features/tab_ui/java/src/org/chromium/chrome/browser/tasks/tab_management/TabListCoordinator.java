@@ -315,7 +315,8 @@ public class TabListCoordinator
 
         mHasEmptyView = hasEmptyView;
         if (mHasEmptyView) {
-            mTabListEmptyCoordinator = new TabListEmptyCoordinator(parentView, mModel);
+            mTabListEmptyCoordinator =
+                    new TabListEmptyCoordinator(parentView, mModel, browserControlsStateProvider);
             mEmptyStateHeadingResId = emptyHeadingStringResId;
             mEmptyStateSubheadingResId = emptySubheadingStringResId;
             mEmptyStateImageResId = emptyImageResId;
