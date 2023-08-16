@@ -75,7 +75,7 @@ namespace cc {
 // A feature that will start a task on a timer to purge old cache entries.
 BASE_FEATURE(kPurgeOldCacheEntriesOnTimer,
              "PurgeOldCacheEntriesOnTimer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
