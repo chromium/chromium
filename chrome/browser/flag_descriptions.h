@@ -3314,6 +3314,9 @@ extern const char kDisableExplicitDmaFencesDescription[];
 extern const char kDisplayAlignmentAssistanceName[];
 extern const char kDisplayAlignmentAssistanceDescription[];
 
+extern const char kDropdownPanel[];
+extern const char kDropdownPanelDescription[];
+
 extern const char kFastPairName[];
 extern const char kFastPairDescription[];
 

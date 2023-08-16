@@ -61990,6 +61990,7 @@ from previous Chrome versions.
   <int value="-1007985511" label="SidePanelJourneys:enabled"/>
   <int value="-1007961880" label="PrivacySandboxSettings:enabled"/>
   <int value="-1007856269" label="CssSelectorFragmentAnchor:disabled"/>
+  <int value="-1007555180" label="DropdownPanel:disabled"/>
   <int value="-1007267652"
       label="NtpPhotosModuleCustomizedOptInArtWork:disabled"/>
   <int value="-1007219628" label="IncreasedCmdBufferParseSlice:enabled"/>
@@ -68084,6 +68085,7 @@ from previous Chrome versions.
   <int value="2085186092" label="BulkPrinters:disabled"/>
   <int value="2085438501" label="ChromeHome:enabled"/>
   <int value="2087069781" label="ui-debug-tools:enabled"/>
+  <int value="2087604931" label="DropdownPanel:enabled"/>
   <int value="2087994185" label="PasspointSettings:disabled"/>
   <int value="2088061188" label="LibinputHandleTouchpad:enabled"/>
   <int value="2088446947" label="enable-ephemeral-guest-profiles-on-desktop"/>

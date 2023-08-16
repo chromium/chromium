@@ -7582,6 +7582,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisplayAlignmentAssistanceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDisplayAlignAssist)},
 
+    {"dropdown-panel", flag_descriptions::kDropdownPanel,
+     flag_descriptions::kDropdownPanelDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kDropdownPanel)},
+
     {"enable-experimental-rgb-keyboard-patterns",
      flag_descriptions::kExperimentalRgbKeyboardPatternsName,
      flag_descriptions::kExperimentalRgbKeyboardPatternsDescription, kOsCrOS,

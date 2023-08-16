@@ -708,6 +708,11 @@ BASE_FEATURE(kDriveFsShowCSEFiles,
              "DriveFsShowCSEFiles",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables support for the dropdown panel.
+BASE_FEATURE(kDropdownPanel,
+             "DropdownPanel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables authenticating to Wi-Fi networks using EAP-GTC.
 BASE_FEATURE(kEapGtcWifiAuthentication,
              "EapGtcWifiAuthentication",

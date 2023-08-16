@@ -5731,6 +5731,10 @@ const char kDisplayAlignmentAssistanceDescription[] =
     "attempting to move their mouse over to another display. Show preview "
     "indicators when the user is moving a display in display layouts.";
 
+const char kDropdownPanel[] = "Enable this flag to see the dropdown panel";
+const char kDropdownPanelDescription[] =
+    "Show the dropdown panel to view more options";
+
 const char kEnableLibinputToHandleTouchpadName[] =
     "Enable libinput to handle touchpad.";
 const char kEnableLibinputToHandleTouchpadDescription[] =

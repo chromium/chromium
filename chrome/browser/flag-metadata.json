@@ -1894,6 +1894,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "dropdown-panel",
+    "owners": [ "phshah" ],
+    "expiry_milestone": 126
+  },
+  {
     "name": "dynamic-color-gamut",
     "owners": [ "cblume", "ccameron" ],
     "expiry_milestone": 90
