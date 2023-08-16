@@ -63,6 +63,18 @@ TestSignedWebBundleBuilder::TestSignedWebBundleBuilder(
     web_package::WebBundleSigner::ErrorsForTesting errors_for_testing)
     : key_pair_(key_pair), errors_for_testing_(errors_for_testing) {}
 
+TestSignedWebBundleBuilder::BuildOptions::BuildOptions()
+    : version_(base::Version("1.0.0")),
+      primary_url_(""),
+      index_html_content_(""),
+      errors_for_testing_({}) {}
+
+TestSignedWebBundleBuilder::BuildOptions::BuildOptions(const BuildOptions&) =
+    default;
+TestSignedWebBundleBuilder::BuildOptions::BuildOptions(BuildOptions&&) =
+    default;
+TestSignedWebBundleBuilder::BuildOptions::~BuildOptions() = default;
+
 void TestSignedWebBundleBuilder::AddManifest(
     base::StringPiece manifest_string) {
   builder_.AddExchange(
@@ -96,31 +108,32 @@ TestSignedWebBundle TestSignedWebBundleBuilder::Build() {
 }
 
 TestSignedWebBundle TestSignedWebBundleBuilder::BuildDefault(
-    TestSignedWebBundleBuilderOptions build_options) {
+    BuildOptions build_options) {
   TestSignedWebBundleBuilder builder = TestSignedWebBundleBuilder(
       web_package::WebBundleSigner::KeyPair(kTestPublicKey, kTestPrivateKey),
-      build_options.errors_for_testing);
+      build_options.errors_for_testing_);
 
-  if (build_options.primary_url != "") {
-    builder.AddPrimaryUrl(build_options.primary_url);
+  if (build_options.primary_url_ != "") {
+    builder.AddPrimaryUrl(build_options.primary_url_);
   }
 
-  const bool has_valid_base_url = build_options.base_url.is_valid();
-
   builder.AddManifest(base::ReplaceStringPlaceholders(
-      kTestManifest, {build_options.version.GetString()},
+      kTestManifest, {build_options.version_.GetString()},
       /*offsets=*/nullptr));
 
-  builder.AddPngImage(has_valid_base_url
-                          ? build_options.base_url.Resolve(kTestIconUrl).spec()
-                          : kTestIconUrl,
-                      GetTestIconInString());
+  builder.AddPngImage(
+      build_options.base_url_.has_value()
+          ? build_options.base_url_.value().Resolve(kTestIconUrl).spec()
+          : kTestIconUrl,
 
-  if (!build_options.html_content.empty()) {
-    builder.AddHtml(has_valid_base_url
-                        ? build_options.base_url.Resolve(kTestHtmlUrl).spec()
-                        : kTestHtmlUrl,
-                    build_options.html_content);
+      GetTestIconInString());
+
+  if (!build_options.index_html_content_.empty()) {
+    builder.AddHtml(
+        build_options.base_url_.has_value()
+            ? build_options.base_url_.value().Resolve(kTestHtmlUrl).spec()
+            : kTestHtmlUrl,
+        build_options.index_html_content_);
   }
 
   return builder.Build();

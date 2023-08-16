@@ -133,8 +133,8 @@ class IsolatedWebAppUpdateManagerUpdateDiscoveryTest
     test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     base::Version update_version("2.0.0");
-    TestSignedWebBundle bundle =
-        TestSignedWebBundleBuilder::BuildDefault({.version = update_version});
+    TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault(
+        TestSignedWebBundleBuilder::BuildOptions().SetVersion(update_version));
 
     profile_url_loader_factory().AddResponse(
         "https://example.com/update_manifest.json",

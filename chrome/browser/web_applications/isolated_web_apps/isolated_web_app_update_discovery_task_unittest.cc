@@ -334,7 +334,8 @@ class IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest
                                         nullptr));
 
     TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault(
-        {.version = available_version});
+        TestSignedWebBundleBuilder::BuildOptions().SetVersion(
+            available_version));
     profile_url_loader_factory().AddResponse(
         "https://example.com/bundle.swbn",
         std::string(bundle.data.begin(), bundle.data.end()));

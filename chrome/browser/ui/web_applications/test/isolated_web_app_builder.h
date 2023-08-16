@@ -47,14 +47,6 @@ struct TestSignedWebBundle {
   web_package::SignedWebBundleId id;
 };
 
-struct TestSignedWebBundleBuilderOptions {
-  base::Version version = base::Version("1.0.0");
-  base::StringPiece primary_url = "";
-  GURL base_url;
-  base::StringPiece html_content = "";
-  web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {};
-};
-
 class TestSignedWebBundleBuilder {
  public:
   explicit TestSignedWebBundleBuilder(
@@ -65,6 +57,48 @@ class TestSignedWebBundleBuilder {
   static constexpr base::StringPiece kTestManifestUrl = "/manifest.webmanifest";
   static constexpr base::StringPiece kTestIconUrl = "/256x256-green.png";
   static constexpr base::StringPiece kTestHtmlUrl = "/index.html";
+
+  // TODO(crbug.com/1434557): Use a struct instead when designated initializers
+  // are supported.
+  class BuildOptions {
+   public:
+    BuildOptions();
+    BuildOptions(const BuildOptions&);
+    BuildOptions(BuildOptions&&);
+    ~BuildOptions();
+
+    BuildOptions& SetVersion(base::Version version) {
+      version_ = std::move(version);
+      return *this;
+    }
+
+    BuildOptions& SetPrimaryUrl(base::StringPiece primary_url) {
+      primary_url_ = primary_url;
+      return *this;
+    }
+
+    BuildOptions& SetBaseUrl(GURL base_url) {
+      base_url_ = std::move(base_url);
+      return *this;
+    }
+
+    BuildOptions& SetIndexHTMLContent(base::StringPiece index_html_content) {
+      index_html_content_ = index_html_content;
+      return *this;
+    }
+
+    BuildOptions& SetErrorsForTesting(
+        web_package::WebBundleSigner::ErrorsForTesting errors_for_testing) {
+      errors_for_testing_ = errors_for_testing;
+      return *this;
+    }
+
+    base::Version version_;
+    base::StringPiece primary_url_;
+    absl::optional<GURL> base_url_;
+    base::StringPiece index_html_content_;
+    web_package::WebBundleSigner::ErrorsForTesting errors_for_testing_;
+  };
 
   // Adds a manifest type payload to the bundle.
   void AddManifest(base::StringPiece manifest_string);
@@ -81,7 +115,7 @@ class TestSignedWebBundleBuilder {
 
   TestSignedWebBundle Build();
   static TestSignedWebBundle BuildDefault(
-      TestSignedWebBundleBuilderOptions build_options = {});
+      BuildOptions build_options = BuildOptions());
 
  private:
   web_package::WebBundleSigner::KeyPair key_pair_;

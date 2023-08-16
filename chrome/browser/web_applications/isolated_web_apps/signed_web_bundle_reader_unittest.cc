@@ -100,7 +100,7 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
   using VerificationAction = SignedWebBundleReader::SignatureVerificationAction;
 
   std::unique_ptr<SignedWebBundleReader> CreateReaderAndInitialize(
-      const TestSignedWebBundleBuilderOptions& build_options,
+      const TestSignedWebBundleBuilder::BuildOptions& build_options,
       SignedWebBundleReader::ReadErrorCallback callback,
       VerificationAction verification_action =
           VerificationAction::ContinueAndVerifySignatures(),
@@ -113,8 +113,9 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
         TestSignedWebBundleBuilder::BuildDefault(build_options);
     EXPECT_THAT(base::WriteFile(swbn_file_path, bundle.data), IsTrue());
 
-    const GURL base_url =
-        build_options.base_url.is_valid() ? build_options.base_url : kUrl;
+    const GURL base_url = build_options.base_url_.has_value()
+                              ? build_options.base_url_.value()
+                              : kUrl;
     std::unique_ptr<SignedWebBundleReader> reader =
         SignedWebBundleReader::Create(
             swbn_file_path, base_url,
@@ -155,8 +156,9 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest,
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
 
-  auto reader = CreateReaderAndInitialize({.primary_url = kUrl.spec()},
-                                          parse_status_future.GetCallback());
+  auto reader = CreateReaderAndInitialize(
+      TestSignedWebBundleBuilder::BuildOptions().SetPrimaryUrl(kUrl.spec()),
+      parse_status_future.GetCallback());
 
   auto parse_status = parse_status_future.Take();
   EXPECT_THAT(parse_status, HasValue());
@@ -174,7 +176,9 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest, ReadValidResponse) {
       parse_status_future;
 
   auto reader =
-      CreateReaderAndInitialize({.base_url = kUrl, .html_content = kHtmlString},
+      CreateReaderAndInitialize(TestSignedWebBundleBuilder::BuildOptions()
+                                    .SetBaseUrl(kUrl)
+                                    .SetIndexHTMLContent(kHtmlString),
                                 parse_status_future.GetCallback());
 
   auto parse_status = parse_status_future.Take();
@@ -208,9 +212,10 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest,
       parse_status_future;
 
   auto reader = CreateReaderAndInitialize(
-      {.base_url = kUrl,
-       .html_content = kHtmlString,
-       .errors_for_testing = {ErrorForTesting::kInvalidVersion}},
+      TestSignedWebBundleBuilder::BuildOptions()
+          .SetBaseUrl(kUrl)
+          .SetIndexHTMLContent(kHtmlString)
+          .SetErrorsForTesting({ErrorForTesting::kInvalidVersion}),
       parse_status_future.GetCallback());
 
   auto parse_status = parse_status_future.Take();
@@ -228,9 +233,10 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest,
       parse_status_future;
 
   auto reader = CreateReaderAndInitialize(
-      {.base_url = kUrl,
-       .errors_for_testing =
-           {ErrorForTesting::kInvalidIntegrityBlockStructure}},
+      TestSignedWebBundleBuilder::BuildOptions()
+          .SetBaseUrl(kUrl)
+          .SetErrorsForTesting(
+              {ErrorForTesting::kInvalidIntegrityBlockStructure}),
       parse_status_future.GetCallback());
 
   auto parse_status = parse_status_future.Take();
@@ -247,7 +253,8 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest, ReadIntegrityBlockAndAbort) {
       parse_status_future;
 
   auto reader = CreateReaderAndInitialize(
-      {.base_url = kUrl}, parse_status_future.GetCallback(),
+      TestSignedWebBundleBuilder::BuildOptions().SetBaseUrl(kUrl),
+      parse_status_future.GetCallback(),
       VerificationAction::Abort("test error"));
 
   auto parse_status = parse_status_future.Take();
@@ -937,7 +944,8 @@ TEST_F(UnsecureSignedWebBundleReaderTest, ErrorId) {
                            << " " << swbn_file_name);
 
     TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault(
-        {.errors_for_testing = {error}});
+        TestSignedWebBundleBuilder::BuildOptions().SetErrorsForTesting(
+            {error}));
     base::FilePath path =
         temp_dir_.GetPath().Append(base::FilePath::FromASCII(swbn_file_name));
     ASSERT_THAT(base::WriteFile(path, bundle.data), IsTrue());
