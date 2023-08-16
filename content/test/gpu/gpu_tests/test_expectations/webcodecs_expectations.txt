@@ -129,9 +129,6 @@ crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_copyTo_camera [ F
 
 crbug.com/1424154 [ win amd-0x7340 ] WebCodecs_PerFrameQpEncoding_offscreen_avc1.42001E_prefer-hardware [ Failure ]
 
-crbug.com/1469466 [ android android-nexus-5x ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/1469466 [ android android-nexus-5x ] WebCodecs_EncodeColorSpace_vp8_prefer-hardware [ Failure ]
-
 crbug.com/1470336 [ android-oreo android-nexus-5x ] WebCodecs_EncodingRateControl_vp8_prefer-hardware_constant_3000000 [ Failure ]
 
 #######################################################################

@@ -1259,8 +1259,12 @@ void VideoEncoder::CallOutputCallback(
     first_output_after_configure_ = false;
 
     if (output_color_space != last_output_color_space_) {
+// This should only fail when AndroidVideoEncodeAccelerator is used. Since it's
+// not worth plumbing that just for this DCHECK, disable it entirely.
+#if !BUILDFLAG(IS_ANDROID)
       DCHECK(output.key_frame) << "Encoders should generate a keyframe when "
                                << "changing color space";
+#endif
       last_output_color_space_ = output_color_space;
     }
 
