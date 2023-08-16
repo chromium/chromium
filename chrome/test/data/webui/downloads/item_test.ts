@@ -116,8 +116,12 @@ suite('item tests', function() {
     assertTrue(item.$['file-icon'].hidden);
   });
 
-  test('open now button controlled by load time data', async () => {
-    loadTimeData.overrideValues({'allowOpenNow': true});
+  test('open now button allowed by load time data', async () => {
+    loadTimeData.overrideValues(
+        {'allowOpenNow': true, 'updateDeepScanningUX': false});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
@@ -125,8 +129,14 @@ suite('item tests', function() {
              }));
     flush();
     assertNotEquals(item.shadowRoot!.querySelector('#openNow'), null);
+  });
 
-    loadTimeData.overrideValues({'allowOpenNow': false});
+  test('open now button forbidden by load time data', async () => {
+    loadTimeData.overrideValues(
+        {'allowOpenNow': false, 'updateDeepScanningUX': false});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
