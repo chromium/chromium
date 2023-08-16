@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signed_in_accounts/signed_in_accounts_view_controller.h"
 
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -48,7 +49,7 @@ constexpr CGFloat kDefaultCellHeight = 54;
 @implementation SignedInAccountsViewController {
   ChromeBrowserState* _browserState;  // Weak.
   id<ApplicationSettingsCommands> _dispatcher;
-  signin::IdentityManager* _identityManager;
+  raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
 
@@ -138,9 +139,14 @@ constexpr CGFloat kDefaultCellHeight = 54;
   CGFloat width = std::min(
       kDialogMaxWidth, self.presentingViewController.view.bounds.size.width -
                            2 * kViewControllerHorizontalPadding);
+  // Note (crbug.com/1472236#c2): |preferredContentSize| may be called by UIKit when
+  // |_identityManger| is null (which from the code corresponds to a call after |teardownUI|).
+  // Check if it is non-null before using it to avoid the crash.
   int shownAccounts =
-      std::min(kMaxShownAccounts,
-               _identityManager->GetAccountsWithRefreshTokens().size());
+      _identityManager
+          ? std::min(kMaxShownAccounts,
+                     _identityManager->GetAccountsWithRefreshTokens().size())
+          : kMaxShownAccounts;
   CGSize maxSize = CGSizeMake(width - 2 * kHorizontalPadding, CGFLOAT_MAX);
   CGSize buttonSize = [_primaryButton sizeThatFits:maxSize];
   CGSize infoSize = [_infoLabel sizeThatFits:maxSize];
