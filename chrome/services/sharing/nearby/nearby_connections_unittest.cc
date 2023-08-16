@@ -96,8 +96,9 @@ const EndpointData CreateEndpointData(int id) {
   // |id| followed by spaces until the correct length is reached.
   std::stringstream ss;
   ss << id;
-  while (ss.str().size() < kEndpointIdLength)
+  while (ss.str().size() < kEndpointIdLength) {
     ss << " ";
+  }
   endpoint_data.remote_endpoint_id = ss.str();
 
   endpoint_data.remote_endpoint_info = std::vector<uint8_t>(
@@ -1308,16 +1309,14 @@ TEST_F(NearbyConnectionsTest, ReceiveStreamPayload) {
 
   std::string expected_payload_str(expected_payload.begin(),
                                    expected_payload.end());
-  testing::NiceMock<MockInputStream> input_stream;
-  EXPECT_CALL(input_stream, Read(_))
+  auto input_stream = std::make_unique<testing::NiceMock<MockInputStream>>();
+  EXPECT_CALL(*input_stream, Read(_))
       .WillOnce(
           Return(ExceptionOr<ByteArray>(ByteArray(expected_payload_str))));
-  EXPECT_CALL(input_stream, Close());
+  EXPECT_CALL(*input_stream, Close());
 
-  client_proxy->OnPayload(
-      endpoint_data.remote_endpoint_id,
-      Payload(kPayloadId,
-              [&input_stream]() -> InputStream& { return input_stream; }));
+  client_proxy->OnPayload(endpoint_data.remote_endpoint_id,
+                          Payload(kPayloadId, std::move(input_stream)));
   int64_t expected_payload_size = expected_payload.size();
   client_proxy->OnPayloadProgress(
       endpoint_data.remote_endpoint_id,

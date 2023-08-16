@@ -668,13 +668,11 @@ source_set("platform_base_util") {
   ]
   sources = [
     "src/internal/platform/base_input_stream.cc",
-    "src/internal/platform/base_pipe.cc",
     "src/internal/platform/byte_utils.cc",
   ]
   public = [
     "src/internal/platform/base_input_stream.h",
     "src/internal/platform/base_mutex_lock.h",
-    "src/internal/platform/base_pipe.h",
     "src/internal/platform/byte_utils.h",
   ]
   public_deps = [
