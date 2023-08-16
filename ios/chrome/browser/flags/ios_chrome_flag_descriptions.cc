@@ -106,13 +106,6 @@ const char kAutofillEnableCardProductNameDescription[] =
     "When enabled, card product name (instead of issuer network) will be shown "
     "in Payments UI.";
 
-const char kAutofillEnforceDelaysInStrikeDatabaseName[] =
-    "Enforce delay between offering Autofill opportunities in the strike "
-    "database";
-const char kAutofillEnforceDelaysInStrikeDatabaseDescription[] =
-    "When enabled, if previous Autofill feature offer was declined, "
-    "Chrome will wait for sometime before showing the offer again.";
-
 const char kAutofillIOSDelayBetweenFieldsName[] = "Autofill delay";
 const char kAutofillIOSDelayBetweenFieldsDescription[] =
     "Delay between the different fields of a form being autofilled. In "

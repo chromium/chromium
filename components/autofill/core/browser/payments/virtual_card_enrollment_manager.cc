@@ -357,6 +357,15 @@ void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
+void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled() {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableUpdateVirtualCardEnrollment)) {
+    AddStrikeToBlockOfferingVirtualCardEnrollment(base::NumberToString(
+        state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
+  }
+  Reset();
+}
+
 void VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard(
     const std::string& risk_data) {
   state_.risk_data = risk_data;
@@ -549,15 +558,6 @@ bool VirtualCardEnrollmentManager::
     return false;
 
   return true;
-}
-
-void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled() {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableUpdateVirtualCardEnrollment)) {
-    AddStrikeToBlockOfferingVirtualCardEnrollment(base::NumberToString(
-        state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
-  }
-  Reset();
 }
 
 }  // namespace autofill

@@ -10,6 +10,8 @@
 
 namespace autofill {
 
+namespace {
+
 // Limit the number of cards for which strikes are collected
 constexpr size_t kMaxStrikeEntities = 50;
 
@@ -18,10 +20,12 @@ constexpr size_t kMaxStrikeEntitiesAfterCleanup = 30;
 
 // The maximum number of strikes before we stop showing virtual card enrollment
 // dialogs.
-int kCardMaximumStrikes = 3;
+constexpr int kCardMaximumStrikes = 3;
 
 // The number of days until strikes expire for virtual card enrollment.
-int kDaysUntilCardStrikeExpiry = 180;
+constexpr int kDaysUntilCardStrikeExpiry = 180;
+
+}  // namespace
 
 VirtualCardEnrollmentStrikeDatabase::VirtualCardEnrollmentStrikeDatabase(
     StrikeDatabaseBase* strike_database)
@@ -71,13 +75,8 @@ bool VirtualCardEnrollmentStrikeDatabase::UniqueIdsRequired() const {
 
 absl::optional<base::TimeDelta>
 VirtualCardEnrollmentStrikeDatabase::GetRequiredDelaySinceLastStrike() const {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnforceDelaysInStrikeDatabase)) {
-    return absl::optional<base::TimeDelta>(base::Days(
-        features::kAutofillVirtualCardEnrollDelayInStrikeDatabaseInDays.Get()));
-  }
-
-  return absl::nullopt;
+  return absl::optional<base::TimeDelta>(
+      base::Days(kEnrollmentEnforcedDelayInDays));
 }
 
 }  // namespace autofill

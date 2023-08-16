@@ -835,13 +835,9 @@ TEST_F(VirtualCardEnrollmentManagerTest, VirtualCardEnrollmentFields_LastShow) {
 }
 
 // Test to ensure that the required delay since the last strike is respected
-// before Chrome offers another virtual card enrollment for the card, when the
-// |kAutofillEnforceDelaysInStrikeDatabase| is enabled.
-TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike_ExpOn) {
-  base::test::ScopedFeatureList scoped_feature_list;
+// before Chrome offers another virtual card enrollment for the card.
+TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike) {
   base::HistogramTester histogram_tester;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnforceDelaysInStrikeDatabase);
   SetUpStrikeDatabaseTest();
   TestAutofillClock test_autofill_clock(AutofillClock::Now());
   VirtualCardEnrollmentProcessState* state =
@@ -868,12 +864,9 @@ TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike_ExpOn) {
           base::NumberToString(card_->instrument_id()),
           VirtualCardEnrollmentSource::kDownstream));
 
-  // Advances the clock for
-  // |kAutofillVirtualCardEnrollDelayInStrikeDatabaseInDays - 1| days. Verifies
+  // Advances the clock for `kEnrollmentEnforcedDelayInDays` - 1 days. Verifies
   // that enrollment should still be blocked.
-  test_autofill_clock.Advance(base::Days(
-      features::kAutofillVirtualCardEnrollDelayInStrikeDatabaseInDays.Get() -
-      1));
+  test_autofill_clock.Advance(base::Days(kEnrollmentEnforcedDelayInDays - 1));
   EXPECT_TRUE(
       virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
           base::NumberToString(card_->instrument_id()),
@@ -896,42 +889,6 @@ TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike_ExpOn) {
       "Autofill.StrikeDatabase."
       "VirtualCardEnrollmentNotOfferedDueToRequiredDelay",
       VirtualCardEnrollmentSource::kDownstream, 2);
-}
-
-// Test to ensure that the required delay since last strike is respected before
-// Chrome offers another virtual card enrollment for the card, when the
-// |kAutofillEnforceDelaysInStrikeDatabase| is disabled.
-TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike_ExpOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::HistogramTester histogram_tester;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnforceDelaysInStrikeDatabase);
-  SetUpStrikeDatabaseTest();
-  TestAutofillClock test_autofill_clock;
-  test_autofill_clock.SetNow(AutofillClock::Now());
-  VirtualCardEnrollmentProcessState* state =
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  SetUpCard();
-  card_->set_instrument_id(11223344);
-  state->virtual_card_enrollment_fields.credit_card = *card_;
-
-  virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-      *card_, VirtualCardEnrollmentSource::kDownstream, absl::nullopt,
-      virtual_card_enrollment_manager_->AutofillClientIsPresent() ? user_prefs()
-                                                                  : nullptr,
-      base::DoNothing());
-
-  // Logs one strike for the card and makes sure that the enrollment offer is
-  // not blocked.
-  virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.StrikeDatabase.NthStrikeAdded.VirtualCardEnrollment",
-      /*sample=*/1, /*count=*/1);
-  EXPECT_FALSE(
-      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
-          base::NumberToString(card_->instrument_id()),
-          VirtualCardEnrollmentSource::kDownstream));
 }
 
 #endif  // !BUILDFLAG(IS_IOS)

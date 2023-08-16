@@ -91,11 +91,6 @@ extern const char kAutofillEnableSupportForLandmarkDescription[];
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
 
-// Title and description for flag to enforce delays between offering Autofill
-// opportunities.
-extern const char kAutofillEnforceDelaysInStrikeDatabaseName[];
-extern const char kAutofillEnforceDelaysInStrikeDatabaseDescription[];
-
 // Title and description for the flag to control the autofill delay.
 extern const char kAutofillIOSDelayBetweenFieldsName[];
 extern const char kAutofillIOSDelayBetweenFieldsDescription[];

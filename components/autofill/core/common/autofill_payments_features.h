@@ -42,7 +42,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableVirtualCard);
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardFidoEnrollment);
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardManagementInDesktopSettingsPage);
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardMetadata);
-BASE_DECLARE_FEATURE(kAutofillEnforceDelaysInStrikeDatabase);
 BASE_DECLARE_FEATURE(kAutofillMoveLegalTermsAndIconForNewCardEnrollment);
 BASE_DECLARE_FEATURE(kAutofillOfferToSaveCardWithSameLastFour);
 BASE_DECLARE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields);
@@ -53,8 +52,6 @@ BASE_DECLARE_FEATURE(kAutofillUpstreamAllowAllEmailDomains);
 BASE_DECLARE_FEATURE(kAutofillUpstreamAuthenticatePreflightCall);
 BASE_DECLARE_FEATURE(kAutofillUpstreamUseAlternateSecureDataType);
 BASE_DECLARE_FEATURE(kAutofillUseEloRegexForBinMatching);
-extern const base::FeatureParam<int>
-    kAutofillVirtualCardEnrollDelayInStrikeDatabaseInDays;
 
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kAutofillUseTwoDotsForLastFourDigits);

@@ -251,6 +251,9 @@ class VirtualCardEnrollmentManager {
   absl::optional<VirtualCardEnrollmentUpdateResponseCallback>
       virtual_card_enrollment_update_response_callback_;
 
+  // Cancels the entire Virtual Card enrollment process.
+  void OnVirtualCardEnrollmentBubbleCancelled();
+
  private:
   friend class VirtualCardEnrollmentManagerTest;
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
@@ -273,10 +276,6 @@ class VirtualCardEnrollmentManager {
                            StrikeDatabase_SettingsPageNotBlocked);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            VirtualCardEnrollmentFields_LastShow);
-  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
-                           RequiredDelaySinceLastStrike_ExpOn);
-  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
-                           RequiredDelaySinceLastStrike_ExpOff);
 
   // Called once the risk data is loaded. The |risk_data| will be used with
   // |state_|'s |virtual_card_enrollment_fields|'s |credit_card|'s
@@ -329,9 +328,6 @@ class VirtualCardEnrollmentManager {
   bool IsValidGetDetailsForEnrollmentResponseDetails(
       const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
           get_details_for_enrollment_response_details);
-
-  // Cancels the entire Virtual Card Enrollment process.
-  void OnVirtualCardEnrollmentBubbleCancelled();
 
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest, Enroll);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,

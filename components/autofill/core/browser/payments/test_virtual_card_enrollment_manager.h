@@ -83,6 +83,8 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
   void Reset() override;
   void ShowVirtualCardEnrollBubble() override;
 
+  void OnVirtualCardEnrollmentBubbleCancelled();
+
  private:
   AutofillClient::PaymentsRpcResult result_;
 

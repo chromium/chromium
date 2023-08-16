@@ -1012,12 +1012,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSendTabToSelfSigninPromoName,
      flag_descriptions::kSendTabToSelfSigninPromoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfSigninPromo)},
-    {"autofill-enforce-delays-in-strike-database",
-     flag_descriptions::kAutofillEnforceDelaysInStrikeDatabaseName,
-     flag_descriptions::kAutofillEnforceDelaysInStrikeDatabaseDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnforceDelaysInStrikeDatabase)},
     {"autofill-upstream-allow-additional-email-domains",
      flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsName,
      flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsDescription,

@@ -188,12 +188,6 @@ BASE_FEATURE(kAutofillEnableVirtualCardMetadata,
              "AutofillEnableVirtualCardMetadata",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, if the previous feature offer was declined, a delay will be
-// added before Chrome attempts to show offer again.
-BASE_FEATURE(kAutofillEnforceDelaysInStrikeDatabase,
-             "AutofillEnforceDelaysInStrikeDatabase_LAUNCHED",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, legal term of save card view and virtual card enroll view will
 // be moved before action buttons and icon will be moved after titles in those
 // views.
@@ -260,13 +254,6 @@ BASE_FEATURE(kAutofillUpstreamUseAlternateSecureDataType,
 BASE_FEATURE(kAutofillUseEloRegexForBinMatching,
              "AutofillUseEloRegexForBinMatching_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The delay required since the last strike before offering another virtual card
-// enrollment attempt.
-const base::FeatureParam<int>
-    kAutofillVirtualCardEnrollDelayInStrikeDatabaseInDays{
-        &kAutofillEnforceDelaysInStrikeDatabase,
-        "autofill_virtual_card_enroll_delay_in_strike_database_in_days", 7};
 
 #if BUILDFLAG(IS_IOS)
 // When enabled, use two '•' when displaying the last four digits of a credit
