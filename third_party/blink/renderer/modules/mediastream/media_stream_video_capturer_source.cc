@@ -77,7 +77,7 @@ void MediaStreamVideoCapturerSource::RequestRefreshFrame() {
   source_->RequestRefreshFrame();
 }
 
-void MediaStreamVideoCapturerSource::OnFrameDropped(
+void MediaStreamVideoCapturerSource::OnFrameDroppedInternal(
     media::VideoCaptureFrameDropReason reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   source_->OnFrameDropped(reason);

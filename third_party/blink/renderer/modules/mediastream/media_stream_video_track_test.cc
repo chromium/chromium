@@ -437,7 +437,7 @@ TEST_F(MediaStreamVideoTrackTest, DeliversFramesWithCurrentCropVersion) {
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
   // Frame with current crop version should be delivered.
   frame->metadata().crop_version = 5;
-  EXPECT_CALL(*mock_source(), OnFrameDropped).Times(0);
+  EXPECT_CALL(*mock_source(), OnFrameDroppedInternal).Times(0);
   DeliverVideoFrameAndWaitForRenderer(std::move(frame), &sink);
 
   sink.DisconnectFromTrack();
@@ -459,7 +459,7 @@ TEST_F(MediaStreamVideoTrackTest,
   frame->metadata().crop_version = 4;
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_source(),
-              OnFrameDropped(
+              OnFrameDroppedInternal(
                   media::VideoCaptureFrameDropReason::kCropVersionNotCurrent))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
   mock_source()->DeliverVideoFrame(std::move(frame));
@@ -485,7 +485,7 @@ TEST_F(MediaStreamVideoTrackTest, DropsOldFramesAfterCropVersionChanges) {
   frame->metadata().crop_version = 5;  // No longer current version.
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_source(),
-              OnFrameDropped(
+              OnFrameDroppedInternal(
                   media::VideoCaptureFrameDropReason::kCropVersionNotCurrent))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
   mock_source()->DeliverVideoFrame(std::move(frame));
@@ -510,7 +510,7 @@ TEST_F(MediaStreamVideoTrackTest, DeliversNewFramesAfterCropVersionChanges) {
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
   // Frame with current crop version should be delivered.
   frame->metadata().crop_version = 6;
-  EXPECT_CALL(*mock_source(), OnFrameDropped).Times(0);
+  EXPECT_CALL(*mock_source(), OnFrameDroppedInternal).Times(0);
   DeliverVideoFrameAndWaitForRenderer(std::move(frame), &sink);
 
   sink.DisconnectFromTrack();
