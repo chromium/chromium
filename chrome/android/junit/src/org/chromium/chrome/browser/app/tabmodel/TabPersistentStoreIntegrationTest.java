@@ -51,6 +51,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.WebContentsState;
+import org.chromium.chrome.browser.tab.state.PersistedTabData;
+import org.chromium.chrome.browser.tab.state.PersistedTabDataJni;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -112,6 +114,8 @@ public class TabPersistentStoreIntegrationTest {
     private Resources mResources;
     @Mock
     private TabImpl.Natives mTabImplJni;
+    @Mock
+    private PersistedTabData.Natives mPersistedTabDataJni;
 
     private PausedExecutorService mExecutor = new PausedExecutorService();
 
@@ -138,6 +142,7 @@ public class TabPersistentStoreIntegrationTest {
         jniMocker.mock(TabModelJniBridgeJni.TEST_HOOKS, mTabModelJniBridgeJni);
         jniMocker.mock(RecentlyClosedBridgeJni.TEST_HOOKS, mRecentlyClosedBridgeJni);
         jniMocker.mock(TabImplJni.TEST_HOOKS, mTabImplJni);
+        jniMocker.mock(PersistedTabDataJni.TEST_HOOKS, mPersistedTabDataJni);
         mOrchestrator.onNativeLibraryReady(mTabContentManager);
     }
 

@@ -11,6 +11,7 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -22,6 +23,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -42,6 +44,12 @@ public class PersistedTabDataTest {
     @Mock
     ShoppingPersistedTabData mShoppingPersistedTabDataMock;
 
+    @Mock
+    private PersistedTabData.Natives mPersistedTabDataJni;
+
+    @Rule
+    public JniMocker jniMocker = new JniMocker();
+
     @Before
     public void setUp() throws Exception {
         // TODO(crbug.com/1337102): Remove runOnUiThreadBlocking call after code refactoring/cleanup
@@ -49,6 +57,7 @@ public class PersistedTabDataTest {
         // fail. An ObserverList is created when creating the mock. The same ObserverList is used
         // later in the test.
         ThreadUtils.runOnUiThreadBlocking(() -> { MockitoAnnotations.initMocks(this); });
+        jniMocker.mock(PersistedTabDataJni.TEST_HOOKS, mPersistedTabDataJni);
     }
 
     @SmallTest

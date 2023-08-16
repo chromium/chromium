@@ -47,12 +47,17 @@ class SensitivityPersistedTabDataAndroid
   friend class TabAndroidUserData<SensitivityPersistedTabDataAndroid>;
   friend class SensitivityPersistedTabDataAndroidBrowserTest;
   // TODO(crbug.com/1457995) Consider making is_sensitive_ absl::option<bool>
-  bool is_sensitive_;
+  bool is_sensitive_ = false;
   raw_ptr<TabAndroid> tab_;
 
   // Not owned. Register manually through RegisterPCAService
   raw_ptr<optimization_guide::PageContentAnnotationsService>
       page_content_annotations_service_ = nullptr;
+
+  // Determine if SensitivityPersistedTabDataAndroid exists for |tab_android|.
+  // true/false result returned in |exists_callback|.
+  static void ExistsForTesting(TabAndroid* tab_android,
+                               base::OnceCallback<void(bool)> exists_callback);
 
   TAB_ANDROID_USER_DATA_KEY_DECL();
 };
