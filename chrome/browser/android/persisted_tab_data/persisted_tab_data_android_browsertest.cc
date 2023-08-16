@@ -16,6 +16,11 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+namespace {
+const int32_t INITIAL_VALUE = 42;
+const int32_t CHANGED_VALUE = 52;
+}  // namespace
+
 class PersistedTabDataAndroidBrowserTest : public AndroidBrowserTest {
  public:
   PersistedTabDataAndroidBrowserTest() = default;
@@ -153,4 +158,32 @@ IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
   run_loop[6].Run();
   BarExistsForTesting(another_tab(), true, run_loop[7]);
   run_loop[7].Run();
+}
+
+IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
+                       TestCachedCallbacks) {
+  FooPersistedTabDataAndroid foo_persisted_tab_data_android(tab_android());
+  foo_persisted_tab_data_android.SetValue(INITIAL_VALUE);
+
+  base::RunLoop run_loop;
+  FooPersistedTabDataAndroid::From(
+      tab_android(),
+      base::BindOnce([](PersistedTabDataAndroid* persisted_tab_data) {
+        FooPersistedTabDataAndroid* foo_ptd =
+            static_cast<FooPersistedTabDataAndroid*>(persisted_tab_data);
+        EXPECT_EQ(INITIAL_VALUE, foo_ptd->value());
+        foo_ptd->SetValue(CHANGED_VALUE);
+      }));
+  FooPersistedTabDataAndroid::From(
+      tab_android(),
+      base::BindOnce(
+          [](base::OnceClosure done,
+             PersistedTabDataAndroid* persisted_tab_data) {
+            FooPersistedTabDataAndroid* foo_ptd =
+                static_cast<FooPersistedTabDataAndroid*>(persisted_tab_data);
+            EXPECT_EQ(CHANGED_VALUE, foo_ptd->value());
+            std::move(done).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
 }
