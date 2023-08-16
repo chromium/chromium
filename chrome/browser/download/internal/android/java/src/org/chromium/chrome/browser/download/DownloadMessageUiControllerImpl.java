@@ -970,7 +970,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private void onMessageDismissed(Integer dismissReason) {
         mPropertyModel = null;
         if (dismissReason == DismissReason.GESTURE) {
-            recordCloseButtonClicked();
             computeNextStepForUpdate(null, false, true, false);
         }
     }
@@ -1012,11 +1011,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             RecordHistogram.recordEnumeratedHistogram("Download.Progress.InfoBar.Shown",
                     multipleDownloadState, UmaInfobarShown.NUM_ENTRIES);
         }
-    }
-
-    private void recordCloseButtonClicked() {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Download.Progress.InfoBar.CloseButtonClicked", mState, UiState.NUM_ENTRIES);
     }
 
     private static void recordLinkClicked(boolean openItem) {
