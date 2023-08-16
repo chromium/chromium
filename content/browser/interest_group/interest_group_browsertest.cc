@@ -10317,60 +10317,84 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     ASSERT_TRUE(NavigateToURL(shell(),
                               https_server_->GetURL(kTopFrameHost, kPagePath)));
 
+    // TODO(caraitto): Instead of StringPrintf(), we can pass a single large
+    // base::Value to JsReplace().
     TestFencedFrameURLMappingResultObserver observer;
     ConvertFencedFrameURNToURL(
-        GURL(EvalJs(
-                 shell(),
-                 JsReplace(
-                     std::string(use_promise ? kFeedPromise : kFeedDirect) + R"(
+        GURL(
+            EvalJs(
+                shell(),
+                std::string(use_promise ? kFeedPromise : kFeedDirect) +
+                    base::StringPrintf(
+                        R"(
 (async function() {
+  const componentSeller = "%s";
+  const componentBuyer = "%s";
   return await navigator.runAdAuction({
-    seller: $1,
-    decisionLogicURL: $2,
-    trustedScoringSignalsURL: $3,
+    seller: "%s",
+    decisionLogicURL: "%s",
+    trustedScoringSignalsURL: "%s",
     auctionSignals: maybePromise(["top-level auction signals"]),
     sellerSignals: maybePromise(["top-level seller signals"]),
-    directFromSellerSignals: maybePromise($4),
+    directFromSellerSignals: maybePromise("%s"),
     sellerTimeout: 300,
-    perBuyerSignals: maybePromise({$8: ["top-level buyer signals"]}),
-    perBuyerTimeouts: maybePromise({$8: 110, '*': 150}),
-    perBuyerCumulativeTimeouts: maybePromise({$8: 11100, '*': 15100}),
+    perBuyerSignals: maybePromise(
+        {[componentBuyer]: ["top-level buyer signals"]}),
+    perBuyerTimeouts: maybePromise({[componentBuyer]: 110, '*': 150}),
+    perBuyerCumulativeTimeouts: maybePromise(
+        {[componentBuyer]: 11100, '*': 15100}),
     perBuyerPrioritySignals: {'*': {foo: 3}},
-    perBuyerCurrencies: {'*': 'MXN', $5: 'CAD'},
+    perBuyerCurrencies: {'*': 'MXN', [componentSeller]: 'CAD'},
     componentAuctions: [{
-      seller: $5,
-      decisionLogicURL: $6,
-      trustedScoringSignalsURL: $7,
-      interestGroupBuyers: [$8],
+      seller: componentSeller,
+      decisionLogicURL: "%s",
+      trustedScoringSignalsURL: "%s",
+      interestGroupBuyers: [componentBuyer],
       auctionSignals: maybePromise(["component auction signals"]),
       sellerSignals: maybePromise(["component seller signals"]),
-      directFromSellerSignals: maybePromise($9),
+      directFromSellerSignals: maybePromise("%s"),
       sellerTimeout: 200,
-      perBuyerSignals: maybePromise({$8: ["component buyer signals"]}),
-      perBuyerTimeouts: maybePromise({$8: 200}),
-      perBuyerCumulativeTimeouts: maybePromise({$8: 20100}),
-      perBuyerPrioritySignals: {$8: {bar: 1}, '*': {BaZ: -2}},
-      perBuyerCurrencies: maybePromise({$8: 'USD'}),
+      perBuyerSignals: maybePromise(
+          {[componentBuyer]: ["component buyer signals"]}),
+      perBuyerTimeouts: maybePromise({[componentBuyer]: 200}),
+      perBuyerCumulativeTimeouts: maybePromise({[componentBuyer]: 20100}),
+      perBuyerPrioritySignals: {[componentBuyer]: {bar: 1}, '*': {BaZ: -2}},
+      perBuyerCurrencies: maybePromise({[componentBuyer]: 'USD'}),
       sellerCurrency: 'CAD',
       additionalBids: [],
     }],
   });
 })())",
-                     top_level_seller_origin, top_level_seller_script_url,
-                     https_server_->GetURL(
-                         kTopLevelSellerHost,
-                         "/interest_group/trusted_scoring_signals.json"),
-                     https_server_->GetURL(kTopLevelSellerHost,
-                                           "/direct_from_seller_signals"),
-                     url::Origin::Create(component_seller_script_url),
-                     component_seller_script_url,
-                     https_server_->GetURL(
-                         kComponentSellerHost,
-                         "/interest_group/trusted_scoring_signals2.json"),
-                     bidder_origin,
-                     https_server_->GetURL(kComponentSellerHost,
-                                           "/direct_from_seller_signals")))
-                 .ExtractString()),
+                        url::Origin::Create(component_seller_script_url)
+                            .Serialize()
+                            .c_str(),
+                        bidder_origin.Serialize().c_str(),
+                        top_level_seller_origin.Serialize().c_str(),
+                        top_level_seller_script_url.spec().c_str(),
+                        https_server_
+                            ->GetURL(
+                                kTopLevelSellerHost,
+                                "/interest_group/trusted_scoring_signals.json")
+                            .spec()
+                            .c_str(),
+                        https_server_
+                            ->GetURL(kTopLevelSellerHost,
+                                     "/direct_from_seller_signals")
+                            .spec()
+                            .c_str(),
+                        component_seller_script_url.spec().c_str(),
+                        https_server_
+                            ->GetURL(
+                                kComponentSellerHost,
+                                "/interest_group/trusted_scoring_signals2.json")
+                            .spec()
+                            .c_str(),
+                        https_server_
+                            ->GetURL(kComponentSellerHost,
+                                     "/direct_from_seller_signals")
+                            .spec()
+                            .c_str()))
+                .ExtractString()),
         &observer);
     EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
 
