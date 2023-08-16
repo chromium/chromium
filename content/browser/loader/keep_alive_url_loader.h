@@ -73,11 +73,15 @@ class CONTENT_EXPORT KeepAliveURLLoader
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>(void)>;
 
   // Must only be constructed by a `KeepAliveURLLoaderService`.
+  //
   // `resource_request` must be a keepalive request from a renderer.
   // `forwarding_client` should handle request loading results from the network
-  // service if it is still connected.
+  //     service if it is still connected.
   // `delete_callback` is a callback to delete this object.
   // `policy_container_host` must not be null.
+  // `is_deferred` tells if the request loading should be started immediately
+  //     within this ctor. If false, the caller is responsible for calling
+  //     `StartDeferredLoad()` later.
   KeepAliveURLLoader(
       int32_t request_id,
       uint32_t options,
@@ -88,6 +92,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
       scoped_refptr<PolicyContainerHost> policy_container_host,
       BrowserContext* browser_context,
       base::PassKey<KeepAliveURLLoaderService>,
+      bool is_deferred = false,
       URLLoaderThrottlesGetter url_loader_throttles_getter_for_testing =
           base::NullCallback());
   ~KeepAliveURLLoader() override;
@@ -105,6 +110,13 @@ class CONTENT_EXPORT KeepAliveURLLoader
   void set_on_delete_callback(OnDeleteCallback on_delete_callback);
 
   base::WeakPtr<KeepAliveURLLoader> GetWeakPtr();
+
+  // Returns true if this loader is deferred, i.e. not yet started to load.
+  bool IsDeferred() const;
+
+  // Tells the loader to start loading the deferred request.
+  // Must be called only when `IsDeferred()` is true.
+  void StartDeferredLoad();
 
   // For testing only:
   // TODO(crbug.com/1427366): Figure out alt to not rely on this in test.
@@ -132,6 +144,12 @@ class CONTENT_EXPORT KeepAliveURLLoader
   void SetObserverForTesting(scoped_refptr<TestObserver> observer);
 
  private:
+  // Handles the details to kick off loading the request.
+  // This method might be triggered from the ctor directly, or from the public
+  // method `StartDeferredLoad()`.
+  void StartLoad(
+      URLLoaderThrottlesGetter url_loader_throttles_getter_for_testing);
+
   // Receives actions from renderer.
   // `network::mojom::URLLoader` overrides:
   void FollowRedirect(
@@ -173,6 +191,10 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // The ID to identify the request being loaded by this loader.
   const int32_t request_id_;
 
+  // A bitfield of the options of the request being loaded.
+  // See services/network/public/mojom/url_loader_factory.mojom.
+  const uint32_t options_;
+
   // The request to be loaded by this loader.
   // Set in the constructor and updated when redirected.
   network::ResourceRequest resource_request_;
@@ -194,16 +216,31 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // URLLoader response may be handled in browser.
   mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
 
-  // A callback to delete this loader object and clean up resource.
-  OnDeleteCallback on_delete_callback_;
+  // The NetworkTrafficAnnotationTag for the request being loaded.
+  net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
 
-  // Whether `OnReceiveResponse()` has been called.
-  bool has_received_response_ = false;
+  // A refptr to the URLLoaderFactory implementation that can actually create a
+  // URLLoader. An extra refptr is required here to support deferred loading.
+  scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;
 
   // A refptr to keep the `PolicyContainerHost` from the RenderFrameHost that
   // initiates this loader alive until `this` is destroyed.
   // It is never null.
   scoped_refptr<PolicyContainerHost> policy_container_host_;
+
+  // The BrowserContext that initiates this loader.
+  // It is ensured to outlive this because it owns KeepAliveURLLoaderService
+  // which owns this loader.
+  const raw_ptr<BrowserContext> browser_context_;
+
+  // Tells if this loader is deferred to start.
+  bool is_deferred_;
+
+  // A callback to delete this loader object and clean up resource.
+  OnDeleteCallback on_delete_callback_;
+
+  // Whether `OnReceiveResponse()` has been called.
+  bool has_received_response_ = false;
 
   // Records the initial request URL to help veryfing redirect request.
   const GURL initial_url_;

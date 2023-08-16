@@ -192,6 +192,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   absl::optional<std::string> devtools_request_id;
   absl::optional<std::string> devtools_stack_id;
   bool is_fetch_like_api = false;
+  bool is_fetch_later_api = false;
   bool is_favicon = false;
   absl::optional<base::UnguessableToken> recursive_prefetch_token;
   absl::optional<TrustedParams> trusted_params;

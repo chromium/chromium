@@ -214,6 +214,7 @@ bool StructTraits<
   out->upgrade_if_insecure = data.upgrade_if_insecure();
   out->is_revalidating = data.is_revalidating();
   out->is_fetch_like_api = data.is_fetch_like_api();
+  out->is_fetch_later_api = data.is_fetch_later_api();
   out->is_favicon = data.is_favicon();
   out->original_destination = data.original_destination();
   out->target_ip_address_space = data.target_ip_address_space();

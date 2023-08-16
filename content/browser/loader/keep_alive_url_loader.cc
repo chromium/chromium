@@ -228,28 +228,45 @@ KeepAliveURLLoader::KeepAliveURLLoader(
     scoped_refptr<PolicyContainerHost> policy_container_host,
     BrowserContext* browser_context,
     base::PassKey<KeepAliveURLLoaderService>,
+    bool is_deferred,
     URLLoaderThrottlesGetter url_loader_throttles_getter_for_testing)
     : request_id_(request_id),
+      options_(options),
       resource_request_(resource_request),
       forwarding_client_(std::move(forwarding_client)),
+      traffic_annotation_(traffic_annotation),
+      network_loader_factory_(std::move(network_loader_factory)),
       policy_container_host_(std::move(policy_container_host)),
+      browser_context_(browser_context),
+      is_deferred_(is_deferred),
       initial_url_(resource_request.url),
       last_url_(resource_request.url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(network_loader_factory);
+  CHECK(network_loader_factory_);
   CHECK(policy_container_host_);
   CHECK(!resource_request.trusted_params);
-  CHECK(browser_context);
+  CHECK(browser_context_);
   TRACE_EVENT("loading", "KeepAliveURLLoader::KeepAliveURLLoader", "request_id",
               request_id_, "url", last_url_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("loading", "KeepAliveURLLoader",
                                     request_id_, "url", last_url_);
+  if (is_deferred_) {
+    CHECK(!url_loader_throttles_getter_for_testing);
+    return;
+  }
+
+  StartLoad(url_loader_throttles_getter_for_testing);
+}
+
+void KeepAliveURLLoader::StartLoad(
+    URLLoaderThrottlesGetter url_loader_throttles_getter_for_testing) {
+  CHECK(!is_deferred_);
 
   // Asks the network service to create a URL loader with passed in params.
-  network_loader_factory->CreateLoaderAndStart(
-      loader_.BindNewPipeAndPassReceiver(), request_id, options,
-      resource_request, loader_receiver_.BindNewPipeAndPassRemote(),
-      traffic_annotation);
+  network_loader_factory_->CreateLoaderAndStart(
+      loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
+      resource_request_, loader_receiver_.BindNewPipeAndPassRemote(),
+      traffic_annotation_);
   loader_receiver_.set_disconnect_handler(base::BindOnce(
       &KeepAliveURLLoader::OnNetworkConnectionError, base::Unretained(this)));
   forwarding_client_.set_disconnect_handler(base::BindOnce(
@@ -260,7 +277,7 @@ KeepAliveURLLoader::KeepAliveURLLoader(
         url_loader_throttles_getter_for_testing
             ? url_loader_throttles_getter_for_testing.Run()
             : CreateContentBrowserURLLoaderThrottlesForKeepAlive(
-                  resource_request_, browser_context,
+                  resource_request_, browser_context_,
                   // When `throttles_` need to be run by this loader, the
                   // renderer should have be gone.
                   /*wc_getter=*/base::BindRepeating([]() -> WebContents* {
@@ -314,6 +331,16 @@ void KeepAliveURLLoader::set_on_delete_callback(
 
 base::WeakPtr<KeepAliveURLLoader> KeepAliveURLLoader::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+bool KeepAliveURLLoader::IsDeferred() const {
+  return is_deferred_;
+}
+
+void KeepAliveURLLoader::StartDeferredLoad() {
+  CHECK(is_deferred_);
+  is_deferred_ = false;
+  StartLoad(base::NullCallback());
 }
 
 void KeepAliveURLLoader::FollowRedirect(

@@ -198,6 +198,7 @@ void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::CreateLoaderAndStart(
       // hold another refptr to ensure `PolicyContainerHost` alive.
       context->policy_container_host, service_->browser_context_,
       base::PassKey<KeepAliveURLLoaderService>(),
+      /*is_deferred=*/resource_request.is_fetch_later_api,
       service_->url_loader_throttles_getter_for_testing_  // IN-TEST
   );
   // Adds a new loader receiver to the set, binding the pending `receiver` from
@@ -264,6 +265,15 @@ void KeepAliveURLLoaderService::OnLoaderDisconnected() {
   // The context of `disconnected_loader_receiver_id`, an KeepAliveURLLoader
   // object, has been removed from `loader_receivers_`, but it has to stay alive
   // to handle subsequent updates from network service.
+
+  // First, check if the KeepAliveURLLoader object is pending to start.
+  if (loader_receivers_.current_context()->IsDeferred()) {
+    // Last chance to start a deferred loader here.
+    loader_receivers_.current_context()->StartDeferredLoad();
+  }
+
+  // Last, move the KeepAliveURLLoader object into a different loader set to
+  // keep it alive until finish.
   disconnected_loaders_.emplace(disconnected_loader_receiver_id,
                                 std::move(loader_receivers_.current_context()));
 }

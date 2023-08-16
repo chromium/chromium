@@ -257,6 +257,14 @@ class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
             ->Clone());
   }
 
+  network::ResourceRequest CreateFetchLaterResourceRequest(const GURL& url) {
+    network::ResourceRequest request;
+    request.url = url;
+    request.keepalive = true;
+    request.is_fetch_later_api = true;
+    return request;
+  }
+
   network::ResourceRequest CreateResourceRequest(
       const GURL& url,
       bool keepalive = true,
@@ -375,6 +383,22 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadTrustedRequestAndTerminate) {
       "Unexpected `resource_request` in "
       "KeepAliveURLLoaderService::CreateLoaderAndStart(): "
       "resource_request.trusted_params must not be set");
+}
+
+TEST_F(KeepAliveURLLoaderServiceTest, LoadFetchLaterRequestAndDeferred) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  // Loads FetchLater request (which is also keepalive request):
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateFetchLaterResourceRequest(GURL(kTestRequestUrl)),
+      renderer_loader_client.BindNewPipeAndPassRemote());
+
+  // The KeepAliveURLLoaderService holds a deferred KeepAliveURLLoader.
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+  // As the request is deferred, the pending URLoader in network is 0.
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
 }
 
 TEST_F(KeepAliveURLLoaderServiceTest, LoadRequestAfterPageIsUnloaded) {

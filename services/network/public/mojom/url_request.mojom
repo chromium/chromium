@@ -406,6 +406,10 @@ struct URLRequest {
   // True for XHR, Fetch, and EventSource.
   bool is_fetch_like_api;
 
+  // True for FetchLater.
+  // https://whatpr.org/fetch/1647/094ea69...152d725.html#fetch-later-method
+  bool is_fetch_later_api;
+
   // True for favicon.
   bool is_favicon;
 

@@ -291,6 +291,7 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          fetch_window_id == request.fetch_window_id &&
          devtools_request_id == request.devtools_request_id &&
          is_fetch_like_api == request.is_fetch_like_api &&
+         is_fetch_later_api == request.is_fetch_later_api &&
          is_favicon == request.is_favicon &&
          recursive_prefetch_token == request.recursive_prefetch_token &&
          OptionalTrustedParamsEqualsForTesting(trusted_params,

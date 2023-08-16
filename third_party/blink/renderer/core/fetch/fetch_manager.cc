@@ -141,15 +141,14 @@ void SendHistogram(FetchManagerLoaderCheckPoint cp) {
 
 }  // namespace
 
-class FetchManager::Loader final
-    : public GarbageCollected<FetchManager::Loader>,
-      public ThreadableLoaderClient {
+class FetchManager::Loader : public GarbageCollected<FetchManager::Loader>,
+                             public ThreadableLoaderClient {
  public:
   Loader(ExecutionContext*,
          FetchManager*,
          ScriptPromiseResolver*,
          FetchRequestData*,
-         scoped_refptr<const DOMWrapperWorld>,
+         ScriptState*,
          AbortSignal*);
   ~Loader() override;
   void Trace(Visitor*) const override;
@@ -278,6 +277,12 @@ class FetchManager::Loader final
     bool finished_;
   };
 
+ protected:
+  virtual void NotifyFinished();
+  virtual bool IsDeferred() const;
+  FetchManager* fetch_manager();
+  ExecutionContext* GetExecutionContext();
+
  private:
   void PerformSchemeFetch();
   void PerformNetworkError(
@@ -293,11 +298,10 @@ class FetchManager::Loader final
               DOMException* dom_exception,
               absl::optional<String> devtools_request_id = absl::nullopt,
               absl::optional<base::UnguessableToken> issue_id = absl::nullopt);
-  void NotifyFinished();
-  ExecutionContext* GetExecutionContext() { return execution_context_; }
 
   Member<FetchManager> fetch_manager_;
   Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptState> script_state_;
   Member<FetchRequestData> fetch_request_data_;
   Member<ThreadableLoader> threadable_loader_;
   Member<PlaceHolderBytesConsumer> place_holder_body_;
@@ -319,24 +323,24 @@ FetchManager::Loader::Loader(ExecutionContext* execution_context,
                              FetchManager* fetch_manager,
                              ScriptPromiseResolver* resolver,
                              FetchRequestData* fetch_request_data,
-                             scoped_refptr<const DOMWrapperWorld> world,
+                             ScriptState* script_state,
                              AbortSignal* signal)
     : fetch_manager_(fetch_manager),
       resolver_(resolver),
+      script_state_(script_state),
       fetch_request_data_(fetch_request_data),
       failed_(false),
       finished_(false),
       response_http_status_code_(0),
       integrity_verifier_(nullptr),
-      world_(std::move(world)),
+      world_(std::move(&script_state->World())),
       signal_(signal),
       abort_handle_(signal->AddAlgorithm(
           WTF::BindOnce(&Loader::Abort, WrapWeakPersistent(this)))),
       execution_context_(execution_context) {
   DCHECK(world_);
   url_list_.push_back(fetch_request_data->Url());
-  ScriptState* state = resolver_->GetScriptState();
-  v8::Isolate* isolate = state->GetIsolate();
+  v8::Isolate* isolate = script_state_->GetIsolate();
   // Only use a handle scope as we should be in the right context already.
   v8::HandleScope scope(isolate);
   // Create the exception at this point so we get the stack-trace that belongs
@@ -354,6 +358,7 @@ FetchManager::Loader::~Loader() {
 void FetchManager::Loader::Trace(Visitor* visitor) const {
   visitor->Trace(fetch_manager_);
   visitor->Trace(resolver_);
+  visitor->Trace(script_state_);
   visitor->Trace(fetch_request_data_);
   visitor->Trace(threadable_loader_);
   visitor->Trace(place_holder_body_);
@@ -416,8 +421,7 @@ void FetchManager::Loader::DidReceiveResponse(
   auto response_type = response.GetType();
   DCHECK_NE(response_type, FetchResponseType::kError);
 
-  ScriptState* script_state = resolver_->GetScriptState();
-  ScriptState::Scope scope(script_state);
+  ScriptState::Scope scope(script_state_);
 
   response_http_status_code_ = response.HttpStatusCode();
 
@@ -433,9 +437,9 @@ void FetchManager::Loader::DidReceiveResponse(
   }
 
   place_holder_body_ = MakeGarbageCollected<PlaceHolderBytesConsumer>();
-  FetchResponseData* response_data =
-      FetchResponseData::CreateWithBuffer(BodyStreamBuffer::Create(
-          script_state, place_holder_body_, signal_, cached_metadata_handler_));
+  FetchResponseData* response_data = FetchResponseData::CreateWithBuffer(
+      BodyStreamBuffer::Create(script_state_, place_holder_body_, signal_,
+                               cached_metadata_handler_));
   if (!execution_context_ || execution_context_->IsContextDestroyed() ||
       response.GetType() == FetchResponseType::kError) {
     // BodyStreamBuffer::Create() may run scripts and cancel this request.
@@ -820,8 +824,7 @@ void FetchManager::Loader::PerformHTTPFetch() {
         mojo::PendingRemote<network::mojom::blink::ChunkedDataPipeGetter>
             pending_remote;
         fetch_request_data_->Buffer()->DrainAsChunkedDataPipeGetter(
-            resolver_->GetScriptState(),
-            pending_remote.InitWithNewPipeAndPassReceiver(),
+            script_state_, pending_remote.InitWithNewPipeAndPassReceiver(),
             /*client=*/nullptr);
         request.MutableBody().SetStreamBody(std::move(pending_remote));
       }
@@ -853,6 +856,8 @@ void FetchManager::Loader::PerformHTTPFetch() {
 
   request.SetServiceWorkerRaceNetworkRequestToken(
       fetch_request_data_->ServiceWorkerRaceNetworkRequestToken());
+
+  request.SetFetchLaterAPI(IsDeferred());
 
   // "3. Append `Host`, ..."
   // FIXME: Implement this when the spec is fixed.
@@ -940,25 +945,25 @@ void FetchManager::Loader::Failed(
     execution_context_->AddConsoleMessage(console_message);
   }
   if (resolver_) {
-    ScriptState* state = resolver_->GetScriptState();
-    ScriptState::Scope scope(state);
+    ScriptState::Scope scope(script_state_);
     if (dom_exception) {
       resolver_->Reject(dom_exception);
     } else {
-      v8::Local<v8::Value> value = exception_.Get(state->GetIsolate());
+      v8::Local<v8::Value> value = exception_.Get(script_state_->GetIsolate());
       exception_.Reset();
-      ThreadDebugger* debugger = ThreadDebugger::From(state->GetIsolate());
+      ThreadDebugger* debugger =
+          ThreadDebugger::From(script_state_->GetIsolate());
       if (devtools_request_id) {
         debugger->GetV8Inspector()->associateExceptionData(
-            state->GetContext(), value,
-            V8AtomicString(state->GetIsolate(), "requestId"),
-            V8String(state->GetIsolate(), *devtools_request_id));
+            script_state_->GetContext(), value,
+            V8AtomicString(script_state_->GetIsolate(), "requestId"),
+            V8String(script_state_->GetIsolate(), *devtools_request_id));
       }
       if (issue_id) {
         debugger->GetV8Inspector()->associateExceptionData(
-            state->GetContext(), value,
-            V8AtomicString(state->GetIsolate(), "issueId"),
-            V8String(state->GetIsolate(),
+            script_state_->GetContext(), value,
+            V8AtomicString(script_state_->GetIsolate(), "issueId"),
+            V8String(script_state_->GetIsolate(),
                      IdentifiersFactory::IdFromToken(*issue_id)));
       }
       resolver_->Reject(value);
@@ -972,6 +977,76 @@ void FetchManager::Loader::NotifyFinished() {
   if (fetch_manager_)
     fetch_manager_->OnLoaderFinished(this);
 }
+
+bool FetchManager::Loader::IsDeferred() const {
+  return false;
+}
+
+FetchManager* FetchManager::Loader::fetch_manager() {
+  return fetch_manager_;
+}
+
+ExecutionContext* FetchManager::Loader::GetExecutionContext() {
+  return execution_context_;
+}
+
+// A subtype of Loader to handle the deferred fetching algorithm[1].
+//
+// This loader, on construction, creates an instance behaving similar to the
+// base `FetchManager::Loader`, with only the following differences:
+//   - `IsDeferred()` is true, which helps the base generate different requests.
+//   - The response-related methods do nothing. See ThreadableLoaderClient
+//     overrides below.
+//   - TODO(crbug.com/1465781): Support backgroundTimeout from [2] to allow
+//     sending earlier after the context being in BFCache+backgroundTimeout
+//     time. This requires a mechanism to ask the browser companion
+//     (content::KeepAliveURLLoader) to send, after URLLoader creation.
+//   - TODO(crbug.com/1465781): Support FetchLaterResult from [2].
+//
+// Underlying, this loader intends to create a "deferred" fetch request,
+// i.e. `ResourceRequest.is_fetch_later_api` is true, when `Start()` is called.
+// The request will not be sent by network service (handled via browser)
+// immediately until ExecutionContext of the FetchManager is destroyed.
+// Calling `Start()` when FetchManager is detached will not work.
+//
+// Note that this loader does not use the "defer" mechanism as described in
+// `ResourcFetcher::RequestResource()` or `ResourceFetcher::StartLoad()`, as
+// the latter method can only be called when ResourcFetcher is not detached.
+// Plus, the browser companion must be notified when the context is still alive.
+//
+// [1]: https://whatpr.org/fetch/1647/094ea69...152d725.html#deferred-fetching
+// [2]: https://whatpr.org/fetch/1647/094ea69...152d725.html#fetch-later-method
+class FetchManager::DeferredLoader : public FetchManager::Loader {
+ public:
+  DeferredLoader(ExecutionContext* ec,
+                 FetchManager* fetch_manager,
+                 FetchRequestData* fetch_request_data,
+                 ScriptState* script_state,
+                 AbortSignal* signal)
+      : FetchManager::Loader(ec,
+                             fetch_manager,
+                             /*resolver=*/nullptr,
+                             fetch_request_data,
+                             script_state,
+                             signal) {}
+  ~DeferredLoader() override = default;
+
+  // ThreadableLoaderClient overrides:
+  // Responses must be dropped, as fetchLater API does not support response
+  // handling.
+  void DidReceiveResponse(uint64_t id,
+                          const ResourceResponse& response) override {}
+  void DidStartLoadingResponseBody(BytesConsumer&) override {}
+  void DidReceiveCachedMetadata(mojo_base::BigBuffer) override {}
+
+ protected:
+  bool IsDeferred() const override { return true; }
+  void NotifyFinished() override {
+    if (fetch_manager()) {
+      fetch_manager()->OnDeferredLoaderFinished(this);
+    }
+  }
+};
 
 FetchManager::FetchManager(ExecutionContext* execution_context)
     : ExecutionContextLifecycleObserver(execution_context) {}
@@ -992,9 +1067,8 @@ ScriptPromise FetchManager::Fetch(ScriptState* script_state,
       script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
-  auto* loader =
-      MakeGarbageCollected<Loader>(GetExecutionContext(), this, resolver,
-                                   request, &script_state->World(), signal);
+  auto* loader = MakeGarbageCollected<Loader>(
+      GetExecutionContext(), this, resolver, request, script_state, signal);
   loaders_.insert(loader);
   // TODO(ricea): Reject the Response body with AbortError, not TypeError.
   loader->Start();
@@ -1011,13 +1085,19 @@ FetchLaterResult* FetchManager::FetchLater(ScriptState* script_state,
   if (signal->aborted()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
                                       "The user aborted a deferred request.");
-    return MakeGarbageCollected<FetchLaterResult>();
+    return nullptr;
   }
 
   request->SetDestination(network::mojom::RequestDestination::kEmpty);
+  // A fetchLater request must be a keepalive request.
+  // TODO(crbug.com/1465781): Throws instead once draft spec is updated.
+  request->SetKeepalive(true);
 
-  // TODO(crbug.com/1465781): Update `FetchManager::Loader` to not take resolver
-  // and store it into deferred_loaders_ to use when `ContextDestroyed()`.
+  auto* deferred_loader = MakeGarbageCollected<DeferredLoader>(
+      GetExecutionContext(), this, request, script_state, signal);
+  deferred_loaders_.insert(deferred_loader);
+
+  deferred_loader->Start();
 
   // TODO(crbug.com/1465781): Associate the returned FetchLaterResult with the
   // deferred_loader created here, such that the sent state can be accessed.
@@ -1027,6 +1107,14 @@ FetchLaterResult* FetchManager::FetchLater(ScriptState* script_state,
 void FetchManager::ContextDestroyed() {
   for (auto& loader : loaders_)
     loader->Dispose();
+  for (auto& deferred_loader : deferred_loaders_) {
+    // TODO(crbug.com/1465781): Update FetchLaterResult for `deferred_loader`.
+
+    // When the context is gone, `deferred_loader` should also be destroyed. Its
+    // browser companion will take care of the actual request sending when
+    // discoverying the connection to here is gone.
+    deferred_loader->Dispose();
+  }
 }
 
 void FetchManager::OnLoaderFinished(Loader* loader) {
@@ -1034,8 +1122,14 @@ void FetchManager::OnLoaderFinished(Loader* loader) {
   loader->Dispose();
 }
 
+void FetchManager::OnDeferredLoaderFinished(DeferredLoader* deferred_loader) {
+  deferred_loaders_.erase(deferred_loader);
+  deferred_loader->Dispose();
+}
+
 void FetchManager::Trace(Visitor* visitor) const {
   visitor->Trace(loaders_);
+  visitor->Trace(deferred_loaders_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

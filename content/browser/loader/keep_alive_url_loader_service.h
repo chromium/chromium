@@ -96,13 +96,13 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // Once a receiver is disconnected, its context should be moved to
   // `disconnected_loaders_`.
   mojo::ReceiverSet<network::mojom::URLLoader,
-                    std::unique_ptr<network::mojom::URLLoader>>
+                    std::unique_ptr<KeepAliveURLLoader>>
       loader_receivers_;
 
   // Holds all the KeepAliveURLLoader that has been disconnected from renderers.
   // They should be kept alive until the request completes or fails.
   // The key is the mojo::ReceiverId assigned by `loader_receivers_`.
-  std::map<mojo::ReceiverId, std::unique_ptr<network::mojom::URLLoader>>
+  std::map<mojo::ReceiverId, std::unique_ptr<KeepAliveURLLoader>>
       disconnected_loaders_;
 
   // For testing only:

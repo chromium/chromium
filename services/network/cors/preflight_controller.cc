@@ -193,6 +193,7 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
     preflight_request->devtools_request_id = devtools_request_id->ToString();
   }
   preflight_request->is_fetch_like_api = request.is_fetch_like_api;
+  preflight_request->is_fetch_later_api = request.is_fetch_later_api;
   preflight_request->is_favicon = request.is_favicon;
 
   // Set `net_log_reference_info` to reference actual request from preflight

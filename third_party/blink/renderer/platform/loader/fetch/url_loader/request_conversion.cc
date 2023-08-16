@@ -367,6 +367,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   dest->is_fetch_like_api = src.IsFetchLikeAPI();
 
+  dest->is_fetch_later_api = src.IsFetchLaterAPI();
+
   dest->is_favicon = src.IsFavicon();
 
   dest->request_body = NetworkResourceRequestBodyFor(std::move(src_body));

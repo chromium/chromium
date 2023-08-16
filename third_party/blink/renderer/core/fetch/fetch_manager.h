@@ -40,11 +40,15 @@ class CORE_EXPORT FetchManager final
 
  private:
   class Loader;
+  class DeferredLoader;
 
-  // Removes loader from |m_loaders|.
+  // Removes loader from `loaders_`.
   void OnLoaderFinished(Loader*);
+  // Removes loader from `deferred_loaders_`.
+  void OnDeferredLoaderFinished(DeferredLoader*);
 
   HeapHashSet<Member<Loader>> loaders_;
+  HeapHashSet<Member<DeferredLoader>> deferred_loaders_;
 };
 
 }  // namespace blink
