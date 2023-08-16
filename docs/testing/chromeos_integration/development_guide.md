@@ -15,7 +15,7 @@ is a test that toggle to turn on and off bluetooth which can only
 run on DUT.
 
 ## How to run Ash test
-Please see: [go/crosier-run](go/crosier-run)
+Please see: [go/crosier-run](http://go/crosier-run)
 
 ## How to run Lacros test
 See the [demo test](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/base/chromeos/crosier/demo_integration_test.cc;l=19)
