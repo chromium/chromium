@@ -105,12 +105,12 @@ TEST_F(NetworkServiceProxyAllowListTest, Matches_TopFrameUrlIsEmpty) {
 
 TEST_F(NetworkServiceProxyAllowListTest, PartitionMapKey) {
   auto PartitionMapKey = &NetworkServiceProxyAllowList::PartitionMapKey;
-  // TODO: This probably isn't what we want.
   EXPECT_EQ(PartitionMapKey("com"), "com");
-  EXPECT_EQ(PartitionMapKey("foo.com"), ".com");
-  EXPECT_EQ(PartitionMapKey("sub.foo.com"), ".com");
-  EXPECT_EQ(PartitionMapKey("tiny.sub.foo.com"), ".com");
-  EXPECT_EQ(PartitionMapKey("www.tiny.sub.foo.com"), ".com");
+  EXPECT_EQ(PartitionMapKey("foo.com"), "foo.com");
+  EXPECT_EQ(PartitionMapKey("sub.foo.com"), "foo.com");
+  EXPECT_EQ(PartitionMapKey("tiny.sub.foo.com"), "foo.com");
+  EXPECT_EQ(PartitionMapKey("www.tiny.sub.foo.com"), "foo.com");
+  EXPECT_EQ(PartitionMapKey("foo.co.uk"), "co.uk");
 }
 
 class NetworkServiceProxyAllowListMatchTest

@@ -84,10 +84,14 @@ NetworkServiceProxyAllowList::GetCustomProxyConfig() {
 
 // static
 std::string NetworkServiceProxyAllowList::PartitionMapKey(std::string domain) {
-  auto host_suffix_start = domain.rfind(".", domain.rfind("."));
-  return host_suffix_start != std::string::npos
-             ? domain.substr(host_suffix_start)
-             : domain;
+  auto last_dot = domain.rfind(".");
+  if (last_dot != std::string::npos) {
+    auto penultimate_dot = domain.rfind(".", last_dot - 1);
+    if (penultimate_dot != std::string::npos) {
+      return domain.substr(penultimate_dot + 1);
+    }
+  }
+  return domain;
 }
 
 void NetworkServiceProxyAllowList::AddDomainRules(
