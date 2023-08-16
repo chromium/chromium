@@ -1475,14 +1475,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
     // beyond the last committed one. Therefore, `should_replace_current_entry`
     // should be set, which replaces the current entry, or this should be a
     // reload, which does not create a new entry.
-    // In shadowDOM fenced frames, on a history/tab-restore navigation, any
-    // navigation that is restored will not be creating a new entry anyways, so
-    // exclude that case by checking NAVIGATION_TYPE_AUTO_SUBFRAME.
-    // TODO(crbug.com/1319919): Consider adjusting the dcheck for more cases as
-    // pointed out in the issue.
     DCHECK(navigation_request->common_params().should_replace_current_entry ||
-           navigation_request->GetReloadType() != ReloadType::NONE ||
-           navigation_type == NAVIGATION_TYPE_AUTO_SUBFRAME);
+           navigation_request->GetReloadType() != ReloadType::NONE);
   }
 
   if (GetLastCommittedEntry()->IsInitialEntry()) {
