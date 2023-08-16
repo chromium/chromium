@@ -659,7 +659,7 @@ void FakeGaia::HandleEmbeddedLookupAccountLookup(
   std::string email;
   const bool is_saml =
       GetQueryParameter(request.content, "identifier", &email) &&
-      saml_account_idp_map_.find(email) != saml_account_idp_map_.end();
+      base::Contains(saml_account_idp_map_, email);
 
   if (!is_saml)
     return;

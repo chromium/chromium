@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -297,11 +298,9 @@ TEST_F(GCMStoreImplTest, Registrations) {
   LoadGCMStore(gcm_store.get(), &load_result);
 
   ASSERT_EQ(2u, load_result->registrations.size());
-  ASSERT_TRUE(load_result->registrations.find(kAppName) !=
-              load_result->registrations.end());
+  EXPECT_TRUE(base::Contains(load_result->registrations, kAppName));
   EXPECT_EQ(registration, load_result->registrations[kAppName]);
-  ASSERT_TRUE(load_result->registrations.find(kAppName2) !=
-              load_result->registrations.end());
+  EXPECT_TRUE(base::Contains(load_result->registrations, kAppName2));
   EXPECT_EQ(registration2, load_result->registrations[kAppName2]);
 
   gcm_store->RemoveRegistration(
@@ -313,8 +312,7 @@ TEST_F(GCMStoreImplTest, Registrations) {
   LoadGCMStore(gcm_store.get(), &load_result);
 
   ASSERT_EQ(1u, load_result->registrations.size());
-  ASSERT_TRUE(load_result->registrations.find(kAppName) !=
-              load_result->registrations.end());
+  EXPECT_TRUE(base::Contains(load_result->registrations, kAppName));
   EXPECT_EQ(registration, load_result->registrations[kAppName]);
 }
 
@@ -660,11 +658,9 @@ TEST_F(GCMStoreImplTest, HeartbeatInterval) {
   LoadGCMStore(gcm_store.get(), &load_result);
 
   EXPECT_EQ(2UL, load_result->heartbeat_intervals.size());
-  ASSERT_TRUE(load_result->heartbeat_intervals.find(scope1) !=
-              load_result->heartbeat_intervals.end());
+  EXPECT_TRUE(base::Contains(load_result->heartbeat_intervals, scope1));
   EXPECT_EQ(heartbeat1, load_result->heartbeat_intervals[scope1]);
-  ASSERT_TRUE(load_result->heartbeat_intervals.find(scope2) !=
-              load_result->heartbeat_intervals.end());
+  EXPECT_TRUE(base::Contains(load_result->heartbeat_intervals, scope2));
   EXPECT_EQ(heartbeat2, load_result->heartbeat_intervals[scope2]);
 
   gcm_store->RemoveHeartbeatInterval(
@@ -676,8 +672,7 @@ TEST_F(GCMStoreImplTest, HeartbeatInterval) {
   LoadGCMStore(gcm_store.get(), &load_result);
 
   EXPECT_EQ(1UL, load_result->heartbeat_intervals.size());
-  ASSERT_TRUE(load_result->heartbeat_intervals.find(scope1) !=
-              load_result->heartbeat_intervals.end());
+  EXPECT_TRUE(base::Contains(load_result->heartbeat_intervals, scope1));
   EXPECT_EQ(heartbeat1, load_result->heartbeat_intervals[scope1]);
 }
 
@@ -766,10 +761,8 @@ TEST_F(GCMStoreImplTest, InstanceIDData) {
   LoadGCMStore(gcm_store.get(), &load_result);
 
   ASSERT_EQ(2u, load_result->instance_id_data.size());
-  ASSERT_TRUE(load_result->instance_id_data.find(kAppName) !=
-              load_result->instance_id_data.end());
-  ASSERT_TRUE(load_result->instance_id_data.find(kAppName2) !=
-              load_result->instance_id_data.end());
+  EXPECT_TRUE(base::Contains(load_result->instance_id_data, kAppName));
+  EXPECT_TRUE(base::Contains(load_result->instance_id_data, kAppName2));
   EXPECT_EQ(instance_id_data, load_result->instance_id_data[kAppName]);
   EXPECT_EQ(instance_id_data2, load_result->instance_id_data[kAppName2]);
 
@@ -782,8 +775,7 @@ TEST_F(GCMStoreImplTest, InstanceIDData) {
   LoadGCMStore(gcm_store.get(), &load_result);
 
   ASSERT_EQ(1u, load_result->instance_id_data.size());
-  ASSERT_TRUE(load_result->instance_id_data.find(kAppName2) !=
-              load_result->instance_id_data.end());
+  EXPECT_TRUE(base::Contains(load_result->instance_id_data, kAppName2));
   EXPECT_EQ(instance_id_data2, load_result->instance_id_data[kAppName2]);
 }
 

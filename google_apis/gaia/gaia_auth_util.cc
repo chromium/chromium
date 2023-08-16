@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/base64url.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -76,7 +77,7 @@ std::string SanitizeEmail(base::StringPiece email_address) {
   std::string sanitized(email_address);
 
   // Apply a default domain if necessary.
-  if (sanitized.find('@') == std::string::npos) {
+  if (!base::Contains(sanitized, '@')) {
     sanitized += '@';
     sanitized += kGmailDomain;
   }
