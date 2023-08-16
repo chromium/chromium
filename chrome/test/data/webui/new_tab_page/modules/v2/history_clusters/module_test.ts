@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import {Cluster, InteractionState, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
+import {LayoutType} from 'chrome://new-tab-page/history_clusters_layout_type.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters_v2.mojom-webui.js';
 import {DismissModuleInstanceEvent, HistoryClustersProxyImplV2, historyClustersV2Descriptor, HistoryClustersV2ModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -92,6 +93,12 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
       const moduleElements =
           await initializeModule(createSampleClusters(instanceCount));
       assertEquals(instanceCount, moduleElements.length);
+
+      for (let i = 0; i < instanceCount; i++) {
+        assertDeepEquals(
+            [LayoutType.kImages, BigInt(i)],
+            handler.getArgs('recordLayoutTypeShown')[i]);
+      }
     });
 
     test('Header element populated with correct data', async () => {

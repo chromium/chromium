@@ -14,6 +14,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {Cart} from '../../../cart.mojom-webui.js';
 import {Cluster, InteractionState} from '../../../history_cluster_types.mojom-webui.js';
+import {LayoutType} from '../../../history_clusters_layout_type.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import {NewTabPageProxy} from '../../../new_tab_page_proxy.js';
 import {InfoDialogElement} from '../../info_dialog';
@@ -64,7 +65,6 @@ export class HistoryClustersModuleElement extends I18nMixin
 
       imagesEnabled_: {
         type: Boolean,
-        value: true,
         computed: `computeImagesEnabled_(cart)`,
         reflectToAttribute: true,
       },
@@ -112,6 +112,14 @@ export class HistoryClustersModuleElement extends I18nMixin
       NewTabPageProxy.getInstance().callbackRouter.removeListener(
           this.setDisabledModulesListenerId_);
     }
+  }
+
+  override ready() {
+    super.ready();
+
+    HistoryClustersProxyImpl.getInstance().handler.recordLayoutTypeShown(
+        this.imagesEnabled_ ? LayoutType.kImages : LayoutType.kTextOnly,
+        this.cluster.id);
   }
 
   private onDisableButtonClick_() {
