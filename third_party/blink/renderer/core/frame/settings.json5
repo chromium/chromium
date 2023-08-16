@@ -241,9 +241,9 @@
       initial: true,
     },
 
-    // Used to disable threaded, compositor scrolling for testing purposes.
-    // crbug.com/410974 tracks removal once alternative solutions for selective
-    // main thread scrolling are supported.
+    // Used before scroll unification to disable threaded, compositor scrolling
+    // for testing purposes.
+    // TODO(crbug.com/1087725): remove.
     {
       name: "threadedScrollingEnabled",
       initial: true,

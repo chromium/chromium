@@ -87,7 +87,6 @@ WebPreferences::WebPreferences()
       should_print_backgrounds(false),
       should_clear_document_background(true),
       enable_scroll_animator(false),
-      threaded_scrolling_enabled(true),
       prefers_reduced_motion(false),
       prefers_reduced_transparency(false),
       inverted_colors(false),

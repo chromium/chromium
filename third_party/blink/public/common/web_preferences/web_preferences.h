@@ -116,8 +116,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool should_print_backgrounds;
   bool should_clear_document_background;
   bool enable_scroll_animator;
-  // TODO(crbug.com/1087725): Remove.
-  bool threaded_scrolling_enabled;
   bool prefers_reduced_motion;
   bool prefers_reduced_transparency;
   bool inverted_colors;
