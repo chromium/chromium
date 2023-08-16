@@ -4,10 +4,17 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 
+#include <atomic>
+
+#include <dawn/native/DawnNative.h>
+
+#include "base/bits.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/atomic_flag.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -73,8 +80,9 @@ GLTextureImageRepresentationBase::BeginScopedAccess(
     return nullptr;
   }
 
-  if (!BeginAccess(mode))
+  if (!BeginAccess(mode)) {
     return nullptr;
+  }
 
   UpdateClearedStateOnBeginAccess();
 
@@ -118,8 +126,9 @@ void GLTextureImageRepresentation::UpdateClearedStateOnEndAccess() {
   // Operations on the gles2::Texture may have cleared or uncleared it. Make
   // sure this state is reflected back in the SharedImage.
   gfx::Rect cleared_rect = texture->GetLevelClearedRect(texture->target(), 0);
-  if (cleared_rect != ClearedRect())
+  if (cleared_rect != ClearedRect()) {
     SetClearedRect(cleared_rect);
+  }
 }
 
 void GLTextureImageRepresentation::UpdateClearedStateOnBeginAccess() {
@@ -127,8 +136,9 @@ void GLTextureImageRepresentation::UpdateClearedStateOnBeginAccess() {
   // Operations outside of the gles2::Texture may have cleared or uncleared it.
   // Make sure this state is reflected back in gles2::Texture.
   gfx::Rect cleared_rect = ClearedRect();
-  if (cleared_rect != texture->GetLevelClearedRect(texture->target(), 0))
+  if (cleared_rect != texture->GetLevelClearedRect(texture->target(), 0)) {
     texture->SetLevelClearedRect(texture->target(), 0, cleared_rect);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -740,8 +750,9 @@ OverlayImageRepresentation::BeginScopedReadAccess() {
   }
 
   gfx::GpuFenceHandle acquire_fence;
-  if (!BeginReadAccess(acquire_fence))
+  if (!BeginReadAccess(acquire_fence)) {
     return nullptr;
+  }
 
   backing()->OnReadSucceeded();
 
@@ -808,6 +819,341 @@ wgpu::Texture DawnImageRepresentation::BeginAccess(
   // the whole image.
   DCHECK_EQ(update_rect, gfx::Rect(size()));
   return this->BeginAccess(usage);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// DawnImageRepresentationFallback
+
+DawnImageRepresentationFallback::DawnImageRepresentationFallback(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    wgpu::Device device,
+    wgpu::TextureFormat wgpu_format,
+    std::vector<wgpu::TextureFormat> view_formats)
+    : DawnImageRepresentation(manager, backing, tracker),
+      device_(device),
+      wgpu_format_(wgpu_format),
+      view_formats_(std::move(view_formats)) {}
+
+DawnImageRepresentationFallback::~DawnImageRepresentationFallback() = default;
+
+bool DawnImageRepresentationFallback::ComputeStagingBufferParams(
+    int plane_index,
+    uint32_t* bytes_per_row,
+    size_t* bytes_per_plane) const {
+  DCHECK(bytes_per_row);
+  DCHECK(bytes_per_plane);
+
+  const viz::SharedImageFormat format = this->format();
+
+  absl::optional<size_t> min_bytes_per_row(
+      format.MaybeEstimatedPlaneSizeInBytes(plane_index,
+                                            gfx::Size(size().width(), 1)));
+
+  if (!min_bytes_per_row.has_value()) {
+    return false;
+  }
+
+  // Align up to 256, required by WebGPU buffer->texture and texture->buffer
+  // copies.
+  base::CheckedNumeric<uint32_t> aligned_bytes_per_row =
+      base::bits::AlignUp(*min_bytes_per_row, size_t{256});
+  if (!aligned_bytes_per_row.AssignIfValid(bytes_per_row)) {
+    return false;
+  }
+  if (*bytes_per_row < *min_bytes_per_row) {
+    // Overflow in AlignUp.
+    return false;
+  }
+
+  const gfx::Size plane_size = format.GetPlaneSize(plane_index, size());
+
+  base::CheckedNumeric<size_t> aligned_bytes_per_plane = aligned_bytes_per_row;
+  aligned_bytes_per_plane *= plane_size.height();
+
+  return aligned_bytes_per_plane.AssignIfValid(bytes_per_plane);
+}
+
+// Allocate staging buffers. One staging buffer per plane.
+bool DawnImageRepresentationFallback::AllocateStagingBuffers(
+    wgpu::BufferUsage usage,
+    bool map_at_creation,
+    std::vector<StagingBuffer>* buffers) {
+  std::vector<StagingBuffer> staging_buffers;
+  for (int plane_index = 0; plane_index < format().NumberOfPlanes();
+       ++plane_index) {
+    uint32_t bytes_per_row;
+    size_t bytes_per_plane;
+    if (!ComputeStagingBufferParams(plane_index, &bytes_per_row,
+                                    &bytes_per_plane)) {
+      return false;
+    }
+
+    // Create a staging buffer to hold pixel data which will be uploaded into
+    // a texture.
+    wgpu::BufferDescriptor buffer_desc = {
+        .usage = usage,
+        .size = bytes_per_plane,
+        .mappedAtCreation = map_at_creation,
+    };
+
+    wgpu::Buffer buffer = device_.CreateBuffer(&buffer_desc);
+
+    const gfx::Size plane_size = format().GetPlaneSize(plane_index, size());
+
+    staging_buffers.push_back({buffer, plane_size, bytes_per_row});
+  }
+
+  *buffers = std::move(staging_buffers);
+
+  return true;
+}
+
+SkPixmap DawnImageRepresentationFallback::MappedStagingBufferToPixmap(
+    const StagingBuffer& staging_buffer,
+    int plane_index,
+    bool writable) {
+  const void* pixels_pointer =
+      writable
+          ? staging_buffer.buffer.GetMappedRange(0, wgpu::kWholeMapSize)
+          : staging_buffer.buffer.GetConstMappedRange(0, wgpu::kWholeMapSize);
+
+  DCHECK(pixels_pointer);
+
+  auto info =
+      SkImageInfo::Make(gfx::SizeToSkISize(staging_buffer.plane_size),
+                        viz::ToClosestSkColorType(
+                            /*gpu_compositing=*/true, format(), plane_index),
+                        alpha_type(), color_space().ToSkColorSpace());
+  return SkPixmap(info, pixels_pointer, staging_buffer.bytes_per_row);
+}
+
+bool DawnImageRepresentationFallback::ReadbackFromBacking() {
+  // Copy from the staging WGPUBuffer into the wgpu::Texture.
+  wgpu::DawnEncoderInternalUsageDescriptor internal_usage_desc;
+  internal_usage_desc.useInternalUsages = true;
+  wgpu::CommandEncoderDescriptor command_encoder_desc = {
+      .nextInChain = &internal_usage_desc,
+  };
+
+  wgpu::CommandEncoder encoder =
+      device_.CreateCommandEncoder(&command_encoder_desc);
+
+  const viz::SharedImageFormat format = this->format();
+
+  // Allocate staging buffers. One staging buffer per plane.
+  std::vector<StagingBuffer> staging_buffers;
+  if (!AllocateStagingBuffers(wgpu::BufferUsage::CopySrc,
+                              /*map_at_creation=*/true, &staging_buffers)) {
+    return false;
+  }
+
+  CHECK_EQ(static_cast<size_t>(format.NumberOfPlanes()),
+           staging_buffers.size());
+
+  std::vector<SkPixmap> staging_pixmaps;
+  for (int plane_index = 0; plane_index < format.NumberOfPlanes();
+       ++plane_index) {
+    staging_pixmaps.push_back(MappedStagingBufferToPixmap(
+        staging_buffers[plane_index], plane_index, /*writable=*/true));
+  }
+
+  // Read data from backing to the staging buffers
+  if (!backing()->ReadbackToMemory(staging_pixmaps)) {
+    return false;
+  }
+
+  // Copy the staging buffers to texture.
+  for (int plane_index = 0; plane_index < format.NumberOfPlanes();
+       ++plane_index) {
+    const auto& staging_buffer_entry = staging_buffers[plane_index];
+    wgpu::Buffer buffer = staging_buffer_entry.buffer;
+    uint32_t bytes_per_row = staging_buffer_entry.bytes_per_row;
+    const auto& plane_size = staging_buffer_entry.plane_size;
+
+    // Unmap the buffer.
+    buffer.Unmap();
+
+    wgpu::ImageCopyBuffer buffer_copy = {
+        .layout =
+            {
+                .bytesPerRow = bytes_per_row,
+                .rowsPerImage = wgpu::kCopyStrideUndefined,
+            },
+        .buffer = buffer.Get(),
+    };
+    wgpu::ImageCopyTexture texture_copy = {
+        .texture = texture_,
+        .aspect = GetDawnTextureAspect(format, plane_index),
+    };
+    wgpu::Extent3D extent = {static_cast<uint32_t>(plane_size.width()),
+                             static_cast<uint32_t>(plane_size.height()), 1};
+    encoder.CopyBufferToTexture(&buffer_copy, &texture_copy, &extent);
+  }
+
+  wgpu::CommandBuffer commandBuffer = encoder.Finish();
+
+  wgpu::Queue queue = device_.GetQueue();
+  queue.Submit(1, &commandBuffer);
+
+  return true;
+}
+
+bool DawnImageRepresentationFallback::UploadToBacking() {
+  wgpu::DawnEncoderInternalUsageDescriptor internal_usage_desc;
+  internal_usage_desc.useInternalUsages = true;
+  wgpu::CommandEncoderDescriptor command_encoder_desc = {
+      .nextInChain = &internal_usage_desc,
+  };
+
+  wgpu::CommandEncoder encoder =
+      device_.CreateCommandEncoder(&command_encoder_desc);
+
+  const viz::SharedImageFormat format = this->format();
+
+  // Allocate staging buffers. One staging buffer per plane.
+  std::vector<StagingBuffer> staging_buffers;
+  if (!AllocateStagingBuffers(
+          wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::MapRead,
+          /*map_at_creation=*/false, &staging_buffers)) {
+    return false;
+  }
+
+  CHECK_EQ(static_cast<size_t>(format.NumberOfPlanes()),
+           staging_buffers.size());
+
+  // Copy from texture to staging buffers.
+  for (int plane_index = 0; plane_index < format.NumberOfPlanes();
+       ++plane_index) {
+    const auto& staging_buffer_entry = staging_buffers[plane_index];
+    wgpu::Buffer buffer = staging_buffer_entry.buffer;
+    uint32_t bytes_per_row = staging_buffer_entry.bytes_per_row;
+    const auto& plane_size = staging_buffer_entry.plane_size;
+
+    wgpu::ImageCopyTexture texture_copy = {
+        .texture = texture_,
+        .aspect = GetDawnTextureAspect(format, plane_index),
+    };
+    wgpu::ImageCopyBuffer buffer_copy = {
+        .layout =
+            {
+                .bytesPerRow = bytes_per_row,
+                .rowsPerImage = wgpu::kCopyStrideUndefined,
+            },
+        .buffer = buffer,
+    };
+    wgpu::Extent3D extent = {static_cast<uint32_t>(plane_size.width()),
+                             static_cast<uint32_t>(plane_size.height()), 1};
+
+    encoder.CopyTextureToBuffer(&texture_copy, &buffer_copy, &extent);
+  }
+
+  wgpu::CommandBuffer commandBuffer = encoder.Finish();
+
+  wgpu::Queue queue = device_.GetQueue();
+  queue.Submit(1, &commandBuffer);
+
+  struct MapCallbackData {
+    base::AtomicFlag map_complete;
+    WGPUBufferMapAsyncStatus status;
+  } map_callback_data;
+
+  // Map the staging buffer for read.
+  std::vector<SkPixmap> staging_pixmaps;
+  for (int plane_index = 0;
+       plane_index < static_cast<int>(staging_buffers.size()); ++plane_index) {
+    const auto& staging_buffer_entry = staging_buffers[plane_index];
+    staging_buffer_entry.buffer.MapAsync(
+        wgpu::MapMode::Read, 0, wgpu::kWholeMapSize,
+        [](WGPUBufferMapAsyncStatus status, void* void_userdata) {
+          MapCallbackData* userdata =
+              static_cast<MapCallbackData*>(void_userdata);
+          userdata->status = status;
+          userdata->map_complete.Set();
+        },
+        &map_callback_data);
+
+    // Poll for the map to complete.
+    while (!map_callback_data.map_complete.IsSet()) {
+      base::PlatformThread::Sleep(base::Milliseconds(1));
+      device_.Tick();
+    }
+
+    if (map_callback_data.status != WGPUBufferMapAsyncStatus_Success) {
+      return false;
+    }
+
+    staging_pixmaps.push_back(MappedStagingBufferToPixmap(
+        staging_buffers[plane_index], plane_index, /*writable=*/false));
+  }
+
+  return backing()->UploadFromMemory(staging_pixmaps);
+}
+
+wgpu::Texture DawnImageRepresentationFallback::BeginAccess(
+    wgpu::TextureUsage wgpu_texture_usage) {
+  const std::string debug_label = "IOSurface(" +
+                                  CreateLabelForSharedImageUsage(usage()) +
+                                  ")'s Shadow Texture";
+
+  wgpu::TextureDescriptor texture_descriptor;
+  texture_descriptor.label = debug_label.c_str();
+  texture_descriptor.format = wgpu_format_;
+  texture_descriptor.usage = wgpu_texture_usage;
+
+  texture_descriptor.dimension = wgpu::TextureDimension::e2D;
+  texture_descriptor.size = {static_cast<uint32_t>(size().width()),
+                             static_cast<uint32_t>(size().height()), 1};
+  texture_descriptor.mipLevelCount = 1;
+  texture_descriptor.sampleCount = 1;
+  texture_descriptor.viewFormatCount = view_formats_.size();
+  texture_descriptor.viewFormats = view_formats_.data();
+
+  // We need to have internal usages of CopySrc & CopyDst for copies. If texture
+  // is not for video frame import, we also need RenderAttachment usage for
+  // clears, and TextureBinding for copyTextureForBrowser.
+  wgpu::DawnTextureInternalUsageDescriptor internalDesc;
+  internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
+                               wgpu::TextureUsage::CopyDst |
+                               wgpu::TextureUsage::TextureBinding;
+  if (wgpu_format_ != wgpu::TextureFormat::R8BG8Biplanar420Unorm) {
+    internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+  }
+
+  texture_descriptor.nextInChain = &internalDesc;
+
+  texture_ = device_.CreateTexture(&texture_descriptor);
+
+  // Copy data from the image's backing to the texture. We only do it if the
+  // image is marked as cleared/initialized.
+  if (IsCleared() && !ReadbackFromBacking()) {
+    texture_ = nullptr;
+  }
+
+  return texture_;
+}
+
+void DawnImageRepresentationFallback::EndAccess() {
+  if (!texture_) {
+    return;
+  }
+
+  // Upload the texture's content to the backing. Only do it if the texture is
+  // initialized.
+  if (dawn::native::IsTextureSubresourceInitialized(
+          texture_.Get(), /*baseMipLevel=*/0, /*levelCount=*/1,
+          /*baseArrayLayer=*/0,
+          /*layerCount=*/1) &&
+      UploadToBacking()) {
+    SetCleared();
+  }
+
+  // All further operations on the textures are errors (they would be racy
+  // with other backings).
+  texture_.Destroy();
+
+  texture_ = nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -917,8 +1263,9 @@ std::unique_ptr<RasterImageRepresentation::ScopedReadAccess>
 RasterImageRepresentation::BeginScopedReadAccess() {
   absl::optional<SkColor4f> clear_color;
   auto* paint_op_buffer = BeginReadAccess(clear_color);
-  if (!paint_op_buffer)
+  if (!paint_op_buffer) {
     return nullptr;
+  }
   return std::make_unique<ScopedReadAccess>(
       base::PassKey<RasterImageRepresentation>(), this, paint_op_buffer,
       clear_color);
@@ -959,8 +1306,9 @@ VideoDecodeImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
 
 std::unique_ptr<VideoDecodeImageRepresentation::ScopedWriteAccess>
 VideoDecodeImageRepresentation::BeginScopedWriteAccess() {
-  if (!BeginWriteAccess())
+  if (!BeginWriteAccess()) {
     return nullptr;
+  }
 
   return std::make_unique<ScopedWriteAccess>(
       base::PassKey<VideoDecodeImageRepresentation>(), this);
