@@ -456,23 +456,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["responses"][0]["response"]["Attribution-Reporting-Register-Source"]: kDestinationMissing)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "registration_request": {
-            "source_type": "navigation",
-            "attribution_src_url": "https://a.r.test",
-            "source_origin": "https://a.s.test",
-          },
-          "responses": [{
-            "url": "https://a.r.test",
-            "response": {
-              "Attribution-Reporting-Register-Source": {}
-            }
-          }]
-        }]})json",
-    },
-    {
         R"(["sources"][0]["registration_request"]["source_type"]: must be either)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
@@ -527,24 +510,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
             "url": "https://a.r.test",
             "response": {
               "Attribution-Reporting-Register-Trigger": ""
-            }
-          }]
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["responses"][0]["response"]["Attribution-Reporting-Register-Trigger"]: kFiltersWrongType)",
-        R"json({"triggers": [{
-          "timestamp": "1643235576000",
-          "registration_request": {
-            "destination_origin": "https://a.d1.test",
-            "attribution_src_url": "https://a.r.test"
-          },
-          "responses": [{
-            "url": "https://a.r.test",
-            "response": {
-              "Attribution-Reporting-Register-Trigger": {
-                "filters": ""
-              }
             }
           }]
         }]})json",

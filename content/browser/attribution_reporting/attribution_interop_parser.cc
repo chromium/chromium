@@ -13,6 +13,8 @@
 #include <vector>
 
 #include "base/functional/function_ref.h"
+#include "base/functional/overloaded.h"
+#include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -68,6 +70,22 @@ class ScopedContext {
   const raw_ref<ContextPath> path_;
 };
 
+std::ostream& operator<<(std::ostream& out, const ContextPath& path) {
+  if (path.empty()) {
+    return out << "input root";
+  }
+
+  for (Context context : path) {
+    absl::visit(
+        base::Overloaded{
+            [&](base::StringPiece key) { out << "[\"" << key << "\"]"; },
+            [&](size_t index) { out << '[' << index << ']'; },
+        },
+        context);
+  }
+  return out;
+}
+
 // Writes a newline on destruction.
 class ErrorWriter {
  public:
@@ -82,10 +100,6 @@ class ErrorWriter {
   ErrorWriter& operator=(ErrorWriter&&) = delete;
 
   std::ostringstream& operator*() { return *stream_; }
-
-  void operator()(base::StringPiece key) { *stream_ << "[\"" << key << "\"]"; }
-
-  void operator()(size_t index) { *stream_ << '[' << index << ']'; }
 
  private:
   const raw_ref<std::ostringstream> stream_;
@@ -226,18 +240,8 @@ class AttributionInteropParser {
 
   ErrorWriter Error() {
     has_error_ = true;
-
-    if (context_path_.empty()) {
-      error_stream_ << "input root";
-    }
-
-    ErrorWriter writer(error_stream_);
-    for (Context context : context_path_) {
-      absl::visit(writer, context);
-    }
-
-    error_stream_ << ": ";
-    return writer;
+    error_stream_ << context_path_ << ": ";
+    return ErrorWriter(error_stream_);
   }
 
   void ParseListOfDicts(
@@ -318,15 +322,20 @@ class AttributionInteropParser {
             ParseDict(
                 response_dict, "Attribution-Reporting-Register-Source",
                 [&](base::Value::Dict registration_dict) {
-                  ASSIGN_OR_RETURN(
-                      auto registration,
+                  auto registration =
                       attribution_reporting::SourceRegistration::Parse(
-                          std::move(registration_dict)),
-                      [&](auto error) { *Error() << error; });
+                          std::move(registration_dict));
+                  // TODO(apaseltiner): Defer parsing until the intended
+                  // time.
+                  if (!registration.has_value()) {
+                    LOG(WARNING)
+                        << context_path_ << ": " << registration.error();
+                    return;
+                  }
 
                   events_.emplace_back(
                       StorableSource(std::move(*reporting_origin),
-                                     std::move(registration),
+                                     std::move(*registration),
                                      std::move(*source_origin), *source_type,
                                      /*is_within_fenced_frame=*/false),
                       source_time, debug_permission);
@@ -368,15 +377,20 @@ class AttributionInteropParser {
             ParseDict(
                 response_dict, "Attribution-Reporting-Register-Trigger",
                 [&](base::Value::Dict registration_dict) {
-                  ASSIGN_OR_RETURN(
-                      auto trigger_registration,
+                  // TODO(apaseltiner): Defer parsing until the intended
+                  // time.
+                  auto registration =
                       attribution_reporting::TriggerRegistration::Parse(
-                          std::move(registration_dict)),
-                      [&](auto error) { *Error() << error; });
+                          std::move(registration_dict));
+                  if (!registration.has_value()) {
+                    LOG(WARNING)
+                        << context_path_ << ": " << registration.error();
+                    return;
+                  }
 
                   events_.emplace_back(
                       AttributionTrigger(std::move(*reporting_origin),
-                                         std::move(trigger_registration),
+                                         std::move(*registration),
                                          std::move(*destination_origin),
                                          /*verifications=*/{},
                                          /*is_within_fenced_frame=*/false),
