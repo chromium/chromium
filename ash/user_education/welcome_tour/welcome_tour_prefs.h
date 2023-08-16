@@ -16,6 +16,7 @@ namespace ash {
 
 namespace welcome_tour_metrics {
 enum class Interaction;
+enum class PreventedReason;
 }  // namespace welcome_tour_metrics
 
 namespace welcome_tour_prefs {
@@ -30,6 +31,17 @@ ASH_EXPORT absl::optional<base::Time> GetTimeOfFirstTourCompletion(
 ASH_EXPORT absl::optional<base::Time> GetTimeOfFirstTourPrevention(
     PrefService* prefs);
 
+// Retrieves the reason the tour was first prevented. If the tour has not been
+// prevented, returns `absl::nullopt`.
+ASH_EXPORT absl::optional<welcome_tour_metrics::PreventedReason>
+GetReasonForFirstTourPrevention(PrefService* prefs);
+
+// Marks now as the first time the tour was prevented, with the given `reason`.
+// Returns true if it was successfully marked.
+ASH_EXPORT bool MarkFirstTourPrevention(
+    PrefService* prefs,
+    welcome_tour_metrics::PreventedReason reason);
+
 // Marks now as the first time that a given `interaction` has occurred. Returns
 // true if it was successfully marked.
 ASH_EXPORT bool MarkTimeOfFirstInteraction(
@@ -39,10 +51,6 @@ ASH_EXPORT bool MarkTimeOfFirstInteraction(
 // Marks now as the first time the tour was completed. Returns true if it was
 // successfully marked.
 ASH_EXPORT bool MarkTimeOfFirstTourCompletion(PrefService* prefs);
-
-// Marks now as the first time the tour was prevented. Returns true if it was
-// successfully marked.
-ASH_EXPORT bool MarkTimeOfFirstTourPrevention(PrefService* prefs);
 
 // Registers the Welcome Tour prefs to the given `registry`.
 ASH_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);

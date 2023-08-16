@@ -3608,6 +3608,8 @@ test("ash_unittests") {
     "user_education/views/help_bubble_view_ash_unittest.cc",
     "user_education/welcome_tour/welcome_tour_controller_unittest.cc",
     "user_education/welcome_tour/welcome_tour_dialog_unittest.cc",
+    "user_education/welcome_tour/welcome_tour_metrics_unittest.cc",
+    "user_education/welcome_tour/welcome_tour_prefs_unittest.cc",
     "user_education/welcome_tour/welcome_tour_scrim_unittest.cc",
     "user_education/welcome_tour/welcome_tour_window_minimizer_unittest.cc",
     "utility/cropping_util_unittest.cc",

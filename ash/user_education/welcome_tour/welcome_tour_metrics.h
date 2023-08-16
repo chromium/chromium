@@ -32,9 +32,10 @@ enum class AbortedReason {
 
 // Enumeration of reasons the Welcome Tour may be prevented. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
-// never be reused.
+// never be reused. Be sure to update `kAllPreventedReasonsSet` accordingly.
 enum class PreventedReason {
-  kUnknown = 0,
+  kMinValue = 0,
+  kUnknown = kMinValue,
   kChromeVoxEnabled = 1,
   kCounterfactualExperimentArm = 2,
   kManagedAccount = 3,
@@ -45,6 +46,21 @@ enum class PreventedReason {
   kUserNotNewLocally = 8,
   kMaxValue = kUserNotNewLocally,
 };
+
+static constexpr auto kAllPreventedReasonsSet =
+    base::EnumSet<PreventedReason,
+                  PreventedReason::kMinValue,
+                  PreventedReason::kMaxValue>({
+        PreventedReason::kUnknown,
+        PreventedReason::kChromeVoxEnabled,
+        PreventedReason::kCounterfactualExperimentArm,
+        PreventedReason::kManagedAccount,
+        PreventedReason::kTabletModeEnabled,
+        PreventedReason::kUserNewnessNotAvailable,
+        PreventedReason::kUserNotNewCrossDevice,
+        PreventedReason::kUserTypeNotRegular,
+        PreventedReason::kUserNotNewLocally,
+    });
 
 // Enumeration of steps in the Welcome Tour. These values are persisted to logs.
 // Entries should not be renumbered and numeric values should never be reused.

@@ -21,8 +21,10 @@ constexpr char kTimeOfFirstInteractionPrefPrefix[] =
     "ash.welcome_tour.interaction_time.";
 constexpr char kTimeOfFirstTourCompletion[] =
     "ash.welcome_tour.completed.first_time";
-constexpr char kTimeOfFirstTourPrevention[] =
+static constexpr char kTimeOfFirstTourPrevention[] =
     "ash.welcome_tour.prevented.first_time";
+static constexpr char kReasonForFirstTourPrevention[] =
+    "ash.welcome_tour.prevented.first_reason";
 
 // Helpers ---------------------------------------------------------------------
 
@@ -54,6 +56,38 @@ absl::optional<base::Time> GetTimeOfFirstTourPrevention(PrefService* prefs) {
   return GetTimePrefIfSet(prefs, kTimeOfFirstTourPrevention);
 }
 
+absl::optional<welcome_tour_metrics::PreventedReason>
+GetReasonForFirstTourPrevention(PrefService* prefs) {
+  using welcome_tour_metrics::PreventedReason;
+
+  CHECK(features::IsWelcomeTourEnabled());
+
+  auto* pref = prefs->FindPreference(kReasonForFirstTourPrevention);
+  if (!pref || pref->IsDefaultValue() || !pref->GetValue()->is_int()) {
+    return absl::nullopt;
+  }
+
+  auto reason = static_cast<PreventedReason>(pref->GetValue()->GetInt());
+  if (welcome_tour_metrics::kAllPreventedReasonsSet.Has(reason)) {
+    return reason;
+  }
+
+  return PreventedReason::kUnknown;
+}
+
+bool MarkFirstTourPrevention(PrefService* prefs,
+                             welcome_tour_metrics::PreventedReason reason) {
+  CHECK(features::IsWelcomeTourEnabled());
+
+  if (prefs->FindPreference(kTimeOfFirstTourPrevention)->IsDefaultValue()) {
+    prefs->SetTime(kTimeOfFirstTourPrevention, base::Time::Now());
+    prefs->SetInteger(kReasonForFirstTourPrevention, static_cast<int>(reason));
+    return true;
+  }
+
+  return false;
+}
+
 bool MarkTimeOfFirstInteraction(PrefService* prefs,
                                 welcome_tour_metrics::Interaction interaction) {
   CHECK(features::IsWelcomeTourEnabled());
@@ -74,18 +108,10 @@ bool MarkTimeOfFirstTourCompletion(PrefService* prefs) {
   return false;
 }
 
-bool MarkTimeOfFirstTourPrevention(PrefService* prefs) {
-  CHECK(features::IsWelcomeTourEnabled());
-  if (prefs->FindPreference(kTimeOfFirstTourPrevention)->IsDefaultValue()) {
-    prefs->SetTime(kTimeOfFirstTourPrevention, base::Time::Now());
-    return true;
-  }
-  return false;
-}
-
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kTimeOfFirstTourCompletion, base::Time());
   registry->RegisterTimePref(kTimeOfFirstTourPrevention, base::Time());
+  registry->RegisterIntegerPref(kReasonForFirstTourPrevention, -1);
 
   for (const auto interaction : welcome_tour_metrics::AllInteractionsSet()) {
     registry->RegisterTimePref(GetTimeOfFirstInteractionPrefName(interaction),
