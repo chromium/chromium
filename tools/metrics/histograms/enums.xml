@@ -55644,6 +55644,8 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="8" label="Lockscreen Launcher Widget - Voice Search"/>
   <int value="9" label="Lockscreen Launcher Widget - Dino Game"/>
   <int value="10" label="Quick Actions Widget - Lens"/>
+  <int value="11" label="Shortcuts Widget - Search"/>
+  <int value="12" label="Shortcuts Widget - Open Shortcut"/>
 </enum>
 
 <enum name="IOSWidgetKitExtensionKind">
