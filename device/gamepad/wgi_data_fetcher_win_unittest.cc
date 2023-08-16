@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -1004,11 +1005,12 @@ TEST_P(WgiDataFetcherWinGamepadIdTest, GamepadIds) {
   EXPECT_EQ(gamepads.size(), 4u);
 
   // Build vector with the expected id strings.
-  const std::u16string display_name_16 = base::UTF8ToUTF16(display_name);
   std::vector<std::u16string> expected_gamepad_id_strings{
-      display_name_16 + u" (STANDARD GAMEPAD Vendor: 045e Product: 0b21)",
+      base::StringPrintf(u"%ls (STANDARD GAMEPAD Vendor: 045e Product: 0b21)",
+                         base::UTF8ToUTF16(display_name).data()),
       kKnownXInputDeviceId, kKnownXInputDeviceId,
-      display_name_16 + u" (STANDARD GAMEPAD)"};
+      base::StringPrintf(u"%ls (STANDARD GAMEPAD)",
+                         base::UTF8ToUTF16(display_name).data())};
 
   size_t id_string_index = 0;
   for (auto it = gamepads.begin(); it != gamepads.end(); ++it) {
