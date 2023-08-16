@@ -297,6 +297,10 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
         base::BindRepeating(&DriveInternalsWebUIHandler::OnPeriodicUpdate,
                             weak_ptr_factory_.GetWeakPtr()));
     web_ui()->RegisterMessageCallback(
+        "setBulkPinningVisible",
+        base::BindRepeating(&DriveInternalsWebUIHandler::SetBulkPinningVisible,
+                            weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
         "setVerboseLoggingEnabled",
         base::BindRepeating(
             &DriveInternalsWebUIHandler::SetVerboseLoggingEnabled,
@@ -499,10 +503,13 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
   void UpdateDriveDebugSection() {
     SetSectionEnabled("drive-debug", true);
-
-    bool verbose_logging_enabled =
-        GetPrefs()->GetBoolean(drive::prefs::kDriveFsEnableVerboseLogging);
-    MaybeCallJavascript("updateVerboseLogging", Value(verbose_logging_enabled));
+    const PrefService* const prefs = GetPrefs();
+    MaybeCallJavascript(
+        "updateBulkPinningVisible",
+        Value(prefs->GetBoolean(drive::prefs::kDriveFsBulkPinningVisible)));
+    MaybeCallJavascript(
+        "updateVerboseLogging",
+        Value(prefs->GetBoolean(drive::prefs::kDriveFsEnableVerboseLogging)));
 
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -845,16 +852,30 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     }
   }
 
+  // Called when the "bulk-pinning-visible" checkbox on the page is changed.
+  void SetBulkPinningVisible(const Value::List& args) {
+    AllowJavascript();
+
+    if (args.size() != 1 || !args[0].is_bool()) {
+      LOG(ERROR) << "Args in not a bool";
+      return;
+    }
+
+    const bool b = args[0].GetBool();
+    VLOG(1) << "Set pref " << drive::prefs::kDriveFsBulkPinningVisible << " to "
+            << b;
+    GetPrefs()->SetBoolean(drive::prefs::kDriveFsBulkPinningVisible, b);
+  }
+
   void SetBulkPinningEnabled(const Value::List& args) {
     AllowJavascript();
 
     if (args.size() != 1 || !args[0].is_bool()) {
-      LOG(ERROR) << "args in not a bool";
+      LOG(ERROR) << "Args in not a bool";
       return;
     }
 
-    const bool enabled = args[0].GetBool();
-    GetPrefs()->SetBoolean(kDriveFsBulkPinningEnabled, enabled);
+    GetPrefs()->SetBoolean(kDriveFsBulkPinningEnabled, args[0].GetBool());
     UpdateBulkPinningDeveloperSection();
     drivefs::pinning::RecordBulkPinningEnabledSource(
         drivefs::pinning::BulkPinningEnabledSource::kDriveInternal);
