@@ -12,10 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cstddef>
+#include <cstdint>
+#include <functional>
 #include <limits>
-#include <scoped_allocator>
+#include <memory>
+#include <ostream>
+#include <set>
+#include <type_traits>
+#include <utility>
 
 #include "gtest/gtest.h"
+#include "absl/base/config.h"
 #include "absl/container/internal/raw_hash_set.h"
 #include "absl/container/internal/tracked.h"
 

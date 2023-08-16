@@ -34,11 +34,13 @@ absl_cc_library(
     absl::core_headers
     absl::function_ref
     absl::inlined_vector
+    absl::memory
     absl::optional
     absl::raw_logging_internal
+    absl::span
     absl::stacktrace
-    absl::str_format
     absl::strerror
+    absl::str_format
     absl::strings
     absl::symbolize
   PUBLIC
@@ -69,11 +71,12 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::base
-    absl::status
+    absl::config
     absl::core_headers
     absl::raw_logging_internal
-    absl::type_traits
+    absl::status
     absl::strings
+    absl::type_traits
     absl::utility
     absl::variant
   PUBLIC

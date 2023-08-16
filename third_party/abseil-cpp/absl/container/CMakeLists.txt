@@ -754,9 +754,9 @@ absl_cc_test(
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
+    absl::config
     absl::raw_hash_set
     absl::tracked
-    absl::core_headers
     GTest::gmock_main
 )
 
@@ -789,8 +789,8 @@ absl_cc_test(
     absl::layout
     absl::check
     absl::config
-    absl::core_headers
     absl::span
+    absl::utility
     GTest::gmock_main
 )
 

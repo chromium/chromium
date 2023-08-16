@@ -24,6 +24,7 @@
 #ifndef ABSL_BASE_PREFETCH_H_
 #define ABSL_BASE_PREFETCH_H_
 
+#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 
 #if defined(ABSL_INTERNAL_HAVE_SSE)
@@ -140,15 +141,18 @@ void PrefetchToLocalCacheForWrite(const void* addr);
 // See __builtin_prefetch:
 // https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html.
 //
-inline void PrefetchToLocalCache(const void* addr) {
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline void PrefetchToLocalCache(
+    const void* addr) {
   __builtin_prefetch(addr, 0, 3);
 }
 
-inline void PrefetchToLocalCacheNta(const void* addr) {
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline void PrefetchToLocalCacheNta(
+    const void* addr) {
   __builtin_prefetch(addr, 0, 0);
 }
 
-inline void PrefetchToLocalCacheForWrite(const void* addr) {
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline void PrefetchToLocalCacheForWrite(
+    const void* addr) {
   // [x86] gcc/clang don't generate PREFETCHW for __builtin_prefetch(.., 1)
   // unless -march=broadwell or newer; this is not generally the default, so we
   // manually emit prefetchw. PREFETCHW is recognized as a no-op on older Intel
@@ -164,15 +168,18 @@ inline void PrefetchToLocalCacheForWrite(const void* addr) {
 
 #define ABSL_HAVE_PREFETCH 1
 
-inline void PrefetchToLocalCache(const void* addr) {
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline void PrefetchToLocalCache(
+    const void* addr) {
   _mm_prefetch(reinterpret_cast<const char*>(addr), _MM_HINT_T0);
 }
 
-inline void PrefetchToLocalCacheNta(const void* addr) {
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline void PrefetchToLocalCacheNta(
+    const void* addr) {
   _mm_prefetch(reinterpret_cast<const char*>(addr), _MM_HINT_NTA);
 }
 
-inline void PrefetchToLocalCacheForWrite(const void* addr) {
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline void PrefetchToLocalCacheForWrite(
+    const void* addr) {
 #if defined(_MM_HINT_ET0)
   _mm_prefetch(reinterpret_cast<const char*>(addr), _MM_HINT_ET0);
 #elif !defined(_MSC_VER) && defined(__x86_64__)
@@ -186,9 +193,12 @@ inline void PrefetchToLocalCacheForWrite(const void* addr) {
 
 #else
 
-inline void PrefetchToLocalCache(const void* addr) {}
-inline void PrefetchToLocalCacheNta(const void* addr) {}
-inline void PrefetchToLocalCacheForWrite(const void* addr) {}
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline void PrefetchToLocalCache(
+    const void* addr) {}
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline void PrefetchToLocalCacheNta(
+    const void* addr) {}
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline void PrefetchToLocalCacheForWrite(
+    const void* addr) {}
 
 #endif
 

@@ -257,6 +257,15 @@ absl_source_set("proto") {
   ]
 }
 
+absl_source_set("fnmatch") {
+  sources = [ "fnmatch.cc" ]
+  public = [ "fnmatch.h" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/strings",
+  ]
+}
+
 absl_test("stderr_log_sink_test") {
   sources = [ "stderr_log_sink_test.cc" ]
   if (is_apple || is_android) {
@@ -269,4 +278,9 @@ absl_test("stderr_log_sink_test") {
     "//third_party/abseil-cpp/absl/log",
     "//third_party/abseil-cpp/absl/log:globals",
   ]
+}
+
+absl_test("fnmatch_test") {
+  sources = [ "fnmatch_test.cc" ]
+  deps = [ ":fnmatch" ]
 }

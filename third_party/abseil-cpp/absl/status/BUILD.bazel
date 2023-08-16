@@ -43,6 +43,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         "//absl/base:atomic_hook",
+        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
         "//absl/base:strerror",
@@ -50,10 +51,12 @@ cc_library(
         "//absl/debugging:stacktrace",
         "//absl/debugging:symbolize",
         "//absl/functional:function_ref",
+        "//absl/memory",
         "//absl/strings",
         "//absl/strings:cord",
         "//absl/strings:str_format",
         "//absl/types:optional",
+        "//absl/types:span",
     ],
 )
 
@@ -65,6 +68,7 @@ cc_test(
     deps = [
         ":status",
         "//absl/strings",
+        "//absl/strings:cord",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -83,6 +87,7 @@ cc_library(
     deps = [
         ":status",
         "//absl/base",
+        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
         "//absl/meta:type_traits",
@@ -103,6 +108,7 @@ cc_test(
         "//absl/memory",
         "//absl/strings",
         "//absl/types:any",
+        "//absl/types:variant",
         "//absl/utility",
         "@com_google_googletest//:gtest_main",
     ],

@@ -243,7 +243,6 @@ absl_cc_library(
     absl::flags_private_handle_accessor
     absl::flags_program_name
     absl::flags_reflection
-    absl::flat_hash_map
     absl::strings
     absl::synchronization
 )

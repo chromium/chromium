@@ -143,8 +143,8 @@ absl_source_set("hash_function_defaults") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/hash",
     "//third_party/abseil-cpp/absl/strings",
-    "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/strings:cord",
+    "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
 
@@ -273,6 +273,15 @@ absl_source_set("raw_hash_set") {
   ]
 }
 
+absl_test("raw_hash_set_allocator_test") {
+  sources = [ "internal/raw_hash_set_allocator_test.cc" ]
+  deps = [
+    ":raw_hash_set",
+    ":tracked",
+    "//third_party/abseil-cpp/absl/base:config",
+  ]
+}
+
 absl_source_set("layout") {
   public = [ "internal/layout.h" ]
   deps = [
@@ -280,6 +289,17 @@ absl_source_set("layout") {
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/types:span",
+    "//third_party/abseil-cpp/absl/utility",
+  ]
+}
+
+absl_test("layout_test") {
+  sources = [ "internal/layout_test.cc" ]
+  deps = [
+    ":layout",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/log:check",
     "//third_party/abseil-cpp/absl/types:span",
     "//third_party/abseil-cpp/absl/utility",
   ]
@@ -409,9 +429,7 @@ absl_source_set("btree") {
 
 absl_source_set("btree_test_common") {
   testonly = true
-  public = [
-    "btree_test.h",
-  ]
+  public = [ "btree_test.h" ]
   deps = [
     ":btree",
     ":flat_hash_set",
@@ -420,7 +438,6 @@ absl_source_set("btree_test_common") {
     "//third_party/abseil-cpp/absl/time",
   ]
 }
-
 # TODO(mbonadei): Fix issue with EXPECT_DEATH and uncomment.
 # absl_test("btree_test") {
 #   sources = [ "btree_test.cc" ]

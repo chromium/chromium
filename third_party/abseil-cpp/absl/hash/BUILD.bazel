@@ -85,9 +85,13 @@ cc_test(
         "//absl/container:flat_hash_set",
         "//absl/container:node_hash_map",
         "//absl/container:node_hash_set",
+        "//absl/memory",
         "//absl/meta:type_traits",
         "//absl/numeric:int128",
         "//absl/strings:cord_test_helpers",
+        "//absl/strings:string_view",
+        "//absl/types:optional",
+        "//absl/types:variant",
         "@com_google_googletest//:gtest_main",
     ],
 )

@@ -67,8 +67,7 @@ struct RawUsage<Mode::kTotalMorePrecise> {
   std::unordered_set<const CordRep*> counted;
 
   void Add(size_t size, CordRepRef<Mode::kTotalMorePrecise> repref) {
-    if (counted.find(repref.rep) == counted.end()) {
-      counted.insert(repref.rep);
+    if (counted.insert(repref.rep).second) {
       total += size;
     }
   }

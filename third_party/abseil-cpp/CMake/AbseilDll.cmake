@@ -161,6 +161,8 @@ set(ABSL_INTERNAL_DLL_FILES
   "log/internal/conditions.cc"
   "log/internal/conditions.h"
   "log/internal/config.h"
+  "log/internal/fnmatch.h"
+  "log/internal/fnmatch.cc"
   "log/internal/globals.cc"
   "log/internal/globals.h"
   "log/internal/log_format.cc"

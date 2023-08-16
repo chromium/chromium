@@ -671,6 +671,22 @@ absl_cc_library(
   PUBLIC
 )
 
+absl_cc_library(
+    NAME
+      log_internal_fnmatch
+    SRCS
+      "internal/fnmatch.cc"
+    HDRS
+      "internal/fnmatch.h"
+    COPTS
+      ${ABSL_DEFAULT_COPTS}
+    LINKOPTS
+      ${ABSL_DEFAULT_LINKOPTS}
+    DEPS
+      absl::config
+      absl::strings
+)
+
 # Test targets
 
 absl_cc_test(
@@ -1038,6 +1054,21 @@ absl_cc_test(
     absl::log_internal_test_matchers
     absl::log_structured
     absl::scoped_mock_log
+    GTest::gmock
+    GTest::gtest_main
+)
+
+absl_cc_test(
+  NAME
+    internal_fnmatch_test
+  SRCS
+    "internal/fnmatch_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::log_internal_fnmatch
     GTest::gmock
     GTest::gtest_main
 )
