@@ -722,6 +722,34 @@ TEST_P(UnifiedAudioDetailedViewControllerTest, SliderFocusToggleMute) {
                            kInternalSpeakerId);
 }
 
+TEST_P(UnifiedAudioDetailedViewControllerTest,
+       BluetoothOutputDeviceVolumeChange) {
+  std::unique_ptr<views::View> view =
+      audio_detailed_view_controller_->CreateView();
+  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
+      GenerateAudioNodeList({kHeadphone}));
+
+  cras_audio_handler_->SwitchToDevice(
+      AudioDevice(GenerateAudioNode(kHeadphone)), true,
+      CrasAudioHandler::ACTIVATE_BY_USER);
+  EXPECT_EQ(kHeadphoneId, cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  // Sets the device level to 0 to mute the device.
+  cras_audio_handler_->SetVolumeGainPercentForDevice(kHeadphoneId, /*value=*/0);
+
+  // For QsRevamp: level is 0 state should be equal to the muted state.
+  if (IsQsRevampEnabled()) {
+    EXPECT_TRUE(cras_audio_handler_->IsOutputMutedForDevice(kHeadphoneId));
+  } else {
+    EXPECT_FALSE(cras_audio_handler_->IsOutputMutedForDevice(kHeadphoneId));
+  }
+
+  // Unmute the device by setting a volume level greater than 0.
+  cras_audio_handler_->SetVolumeGainPercentForDevice(kHeadphoneId,
+                                                     /*value=*/10);
+  EXPECT_FALSE(cras_audio_handler_->IsOutputMutedForDevice(kHeadphoneId));
+}
+
 class UnifiedAudioDetailedViewControllerSodaTest
     : public UnifiedAudioDetailedViewControllerTest {
  protected:

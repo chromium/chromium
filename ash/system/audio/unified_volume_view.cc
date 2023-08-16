@@ -271,9 +271,10 @@ void UnifiedVolumeView::OnLiveCaptionButtonPressed() {
 
 void UnifiedVolumeView::OnOutputNodeVolumeChanged(uint64_t node_id,
                                                   int volume) {
-  // For QsRevamp: we don't distinguish volume is 0 and muted state.
-  if (features::IsQsRevampEnabled() && volume == 0) {
-    CrasAudioHandler::Get()->SetOutputMute(true);
+  // For QsRevamp: we don't distinguish volume is 0 and muted state. Also unmute
+  // the output node if volume is not 0.
+  if (features::IsQsRevampEnabled()) {
+    CrasAudioHandler::Get()->SetOutputMute(/*mute_on=*/volume == 0);
   }
   Update(/*by_user=*/true);
 }
