@@ -910,8 +910,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, InvokeIphByUnlock_Bubble) {
   scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kUnlocked);
 }
 
-// TODO(b/290307529): Fix the test.
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, DISABLED_ShowBubble) {
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, ShowBubbleAndDismiss) {
   EnableTestIphFeature();
   mock_delegate()->FakeShowBubble();
 
@@ -922,13 +921,26 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, DISABLED_ShowBubble) {
   // The action is not performed.
   EXPECT_CALL(*mock_tracker(), NotifyEvent(kTestButtonActionEvent)).Times(0);
 
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  {
+    // A timer used for a nudge dismiss is created via
+    // `AnchoredNudgeManager::Show` call. Call the method in the scoped context
+    // of `TestMockTimeTaskRunner` as we can fast-forward it below.
+    base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner());
+    TriggerConditionsCheckWithAFakeEvent(
+        scalable_iph::ScalableIph::Event::kFiveMinTick);
+  }
+
+  ash::AnchoredNudgeManager* anchored_nudge_manager =
+      ash::AnchoredNudgeManager::Get();
+  CHECK(anchored_nudge_manager);
+  EXPECT_TRUE(anchored_nudge_manager->IsNudgeShown(kTestBubbleId));
 
   // Default nudge duration is 6 seconds.
   task_runner()->FastForwardBy(base::Seconds(7));
+
+  EXPECT_FALSE(anchored_nudge_manager->IsNudgeShown(kTestBubbleId));
+
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
-  // TODO(b/290066999): Verify the nudge is shown.
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, RemoveBubble) {
