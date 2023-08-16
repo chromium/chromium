@@ -11,7 +11,9 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/palette/palette_tray.h"
+#include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "components/prefs/pref_service.h"
@@ -95,6 +97,33 @@ TEST_F(StatusAreaInternalsHandlerTest, TogglePaletteTray) {
   SendMessage(StatusAreaInternalsHandler::kTogglePalette, args);
 
   EXPECT_FALSE(palette_tray->GetVisible());
+}
+
+// Sending `kTriggerPrivacyIndicators` message from the web UI should update the
+// visibility of the privacy indicators accordingly.
+TEST_F(StatusAreaInternalsHandlerTest, TriggerPrivacyIndicators) {
+  auto* privacy_indicators_view = GetStatusAreaWidget()
+                                      ->notification_center_tray()
+                                      ->privacy_indicators_view();
+  ASSERT_FALSE(privacy_indicators_view->GetVisible());
+
+  base::Value::List args;
+  args.Append("app_id");
+  args.Append("app_name");
+  args.Append(true);
+  args.Append(true);
+  SendMessage(StatusAreaInternalsHandler::kTriggerPrivacyIndicators, args);
+
+  EXPECT_TRUE(privacy_indicators_view->GetVisible());
+
+  args.clear();
+  args.Append("app_id");
+  args.Append("app_name");
+  args.Append(false);
+  args.Append(false);
+  SendMessage(StatusAreaInternalsHandler::kTriggerPrivacyIndicators, args);
+
+  EXPECT_FALSE(privacy_indicators_view->GetVisible());
 }
 
 }  // namespace ash

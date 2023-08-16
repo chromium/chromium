@@ -23,6 +23,8 @@ namespace ash {
 // static
 const char StatusAreaInternalsHandler::kToggleIme[] = "toggleIme";
 const char StatusAreaInternalsHandler::kTogglePalette[] = "togglePalette";
+const char StatusAreaInternalsHandler::kTriggerPrivacyIndicators[] =
+    "triggerPrivacyIndicators";
 
 StatusAreaInternalsHandler::StatusAreaInternalsHandler() = default;
 
@@ -36,6 +38,10 @@ void StatusAreaInternalsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       kTogglePalette,
       base::BindRepeating(&StatusAreaInternalsHandler::TogglePaletteTray,
+                          weak_pointer_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      kTriggerPrivacyIndicators,
+      base::BindRepeating(&StatusAreaInternalsHandler::TriggerPrivacyIndicators,
                           weak_pointer_factory_.GetWeakPtr()));
 }
 
@@ -74,6 +80,22 @@ void StatusAreaInternalsHandler::TogglePaletteTray(
         ->palette_tray()
         ->SetDisplayHasStylusForTesting();
   }
+}
+
+void StatusAreaInternalsHandler::TriggerPrivacyIndicators(
+    const base::Value::List& args) {
+  AllowJavascript();
+
+  // Parse JS args.
+  auto app_id = args[0].GetString();
+  auto app_name = args[1].GetString();
+  auto is_camera_used = args[2].GetBool();
+  auto is_microphone_used = args[3].GetBool();
+
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      app_id, base::UTF8ToUTF16(app_name), is_camera_used, is_microphone_used,
+      base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>(),
+      PrivacyIndicatorsSource::kApps);
 }
 
 }  // namespace ash

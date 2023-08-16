@@ -8,7 +8,11 @@ build_webui("build") {
   grd_prefix = "status_area_internals"
 
   static_files = [ "main.html" ]
-  web_component_files = [ "status_area_internals.ts" ]
+  web_component_files = [
+    "privacy_indicator_app.ts",
+    "privacy_indicator_app_manager.ts",
+    "status_area_internals.ts",
+  ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [

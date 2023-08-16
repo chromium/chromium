@@ -27,6 +27,7 @@ class StatusAreaInternalsHandler : public content::WebUIMessageHandler {
   // Handler names
   static const char kToggleIme[];
   static const char kTogglePalette[];
+  static const char kTriggerPrivacyIndicators[];
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
@@ -37,6 +38,7 @@ class StatusAreaInternalsHandler : public content::WebUIMessageHandler {
   // Callbacks for events coming from the web UI.
   void ToggleImeTray(const base::Value::List& args);
   void TogglePaletteTray(const base::Value::List& args);
+  void TriggerPrivacyIndicators(const base::Value::List& args);
 
   base::WeakPtrFactory<StatusAreaInternalsHandler> weak_pointer_factory_{this};
 };
