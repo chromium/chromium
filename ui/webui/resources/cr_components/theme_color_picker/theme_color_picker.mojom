@@ -31,6 +31,8 @@ struct Theme {
   bool is_grey_baseline;
   // BrowserColorVariant for the current theme.
   ui.mojom.BrowserColorVariant browser_color_variant;
+  // True if following the OS theme.
+  bool follow_device_theme;
 };
 
 struct ChromeColor {

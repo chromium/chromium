@@ -96,6 +96,7 @@ class MockThemeService : public ThemeService {
   using ThemeService::NotifyThemeChanged;
   MOCK_METHOD(void, UseDefaultTheme, ());
   MOCK_CONST_METHOD0(UsingDefaultTheme, bool());
+  MOCK_METHOD(void, UseDeviceTheme, (bool));
   MOCK_CONST_METHOD0(UsingSystemTheme, bool());
   MOCK_CONST_METHOD0(UsingExtensionTheme, bool());
   MOCK_CONST_METHOD0(UsingPolicyTheme, bool());
@@ -105,6 +106,7 @@ class MockThemeService : public ThemeService {
   MOCK_CONST_METHOD0(GetBrowserColorScheme, ThemeService::BrowserColorScheme());
   MOCK_METHOD(void, SetUserColor, (absl::optional<SkColor>));
   MOCK_CONST_METHOD0(GetUserColor, absl::optional<SkColor>());
+  MOCK_CONST_METHOD0(UsingDeviceTheme, bool());
   MOCK_CONST_METHOD0(GetBrowserColorVariant, ui::mojom::BrowserColorVariant());
   MOCK_METHOD(void,
               SetUserColorAndBrowserColorVariant,
@@ -338,6 +340,8 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetTheme) {
       .WillByDefault(testing::Return(true));
   ON_CALL(mock_theme_service(), GetIsGrayscale())
       .WillByDefault(testing::Return(true));
+  ON_CALL(mock_theme_service(), UsingDeviceTheme())
+      .WillByDefault(testing::Return(false));
   ON_CALL(mock_theme_service(), GetBrowserColorVariant())
       .WillByDefault(testing::Return(ui::mojom::BrowserColorVariant::kNeutral));
   ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
@@ -362,6 +366,7 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetTheme) {
   EXPECT_TRUE(theme->is_grey_baseline);
   EXPECT_EQ(theme->browser_color_variant,
             ui::mojom::BrowserColorVariant::kNeutral);
+  EXPECT_FALSE(theme->follow_device_theme);
 }
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeColorSchemeGM3) {
@@ -418,6 +423,51 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeColorSchemeGM3) {
   mock_client_.FlushForTesting();
 
   EXPECT_FALSE(theme->is_dark_mode);
+}
+
+TEST_P(ThemeColorPickerHandlerSetThemeTest, UsingDeviceThemeGM3) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kChromeRefresh2023, features::kChromeWebuiRefresh2023}, {});
+  theme_color_picker::mojom::ThemePtr theme;
+  EXPECT_CALL(mock_client_, SetTheme)
+      .Times(1)
+      .WillRepeatedly(
+          testing::Invoke([&theme](theme_color_picker::mojom::ThemePtr arg) {
+            theme = std::move(arg);
+          }));
+
+  // Set mocks needed for UpdateTheme.
+  CustomBackground custom_background;
+  custom_background.custom_background_url = GURL("https://foo.com/img.png");
+  custom_background.custom_background_attribution_line_1 = "foo line";
+  custom_background.is_uploaded_image = false;
+  custom_background.custom_background_main_color = SK_ColorGREEN;
+  custom_background.collection_id = "test_collection";
+  custom_background.daily_refresh_enabled = false;
+  ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
+      .WillByDefault(testing::Return(absl::make_optional(custom_background)));
+  ON_CALL(mock_theme_service(), UsingDefaultTheme())
+      .WillByDefault(testing::Return(false));
+  ON_CALL(mock_theme_service(), UsingSystemTheme())
+      .WillByDefault(testing::Return(false));
+  ON_CALL(mock_theme_service(), UsingPolicyTheme())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_theme_service(), GetIsGrayscale())
+      .WillByDefault(testing::Return(false));
+  ON_CALL(mock_theme_service(), GetBrowserColorScheme())
+      .WillByDefault(testing::Return(ThemeService::BrowserColorScheme::kLight));
+
+  // User color should be ignored as UsingDeviceTheme() will override it.
+  ON_CALL(mock_theme_service(), GetUserColor())
+      .WillByDefault(testing::Return(SK_ColorGREEN));
+  ON_CALL(mock_theme_service(), UsingDeviceTheme())
+      .WillByDefault(testing::Return(true));
+  ui::NativeTheme::GetInstanceForNativeUi()->set_user_color(SK_ColorBLUE);
+
+  UpdateTheme();
+  mock_client_.FlushForTesting();
+
+  EXPECT_EQ(SK_ColorBLUE, theme->seed_color);
 }
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeWithDailyRefresh) {
@@ -528,6 +578,7 @@ TEST_F(ThemeColorPickerHandlerTest, SetDefaultColorGM3) {
   EXPECT_CALL(mock_theme_service(), SetUserColor)
       .Times(1)
       .WillOnce(testing::SaveArg<0>(&color));
+  EXPECT_CALL(mock_theme_service(), UseDeviceTheme(false)).Times(1);
 
   handler().SetDefaultColor();
 
@@ -539,6 +590,19 @@ TEST_F(ThemeColorPickerHandlerTest, SetGreyDefaultColor) {
   EXPECT_CALL(mock_theme_service(), SetIsGrayscale)
       .Times(1)
       .WillOnce(testing::SaveArg<0>(&is_grey));
+
+  handler().SetGreyDefaultColor();
+  EXPECT_TRUE(is_grey);
+}
+
+TEST_F(ThemeColorPickerHandlerTest, SetGreyDefaultColorGM3) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kChromeRefresh2023, features::kChromeWebuiRefresh2023}, {});
+  bool is_grey;
+  EXPECT_CALL(mock_theme_service(), SetIsGrayscale)
+      .Times(1)
+      .WillOnce(testing::SaveArg<0>(&is_grey));
+  EXPECT_CALL(mock_theme_service(), UseDeviceTheme(false)).Times(1);
 
   handler().SetGreyDefaultColor();
   EXPECT_TRUE(is_grey);
@@ -565,6 +629,7 @@ TEST_F(ThemeColorPickerHandlerTest, SetSeedColorGM3) {
       .Times(1)
       .WillOnce(testing::DoAll(testing::SaveArg<0>(&color),
                                testing::SaveArg<1>(&variant)));
+  EXPECT_CALL(mock_theme_service(), UseDeviceTheme(false)).Times(1);
 
   handler().SetSeedColor(SK_ColorBLUE,
                          ui::mojom::BrowserColorVariant::kTonalSpot);

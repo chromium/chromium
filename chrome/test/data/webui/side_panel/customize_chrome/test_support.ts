@@ -64,6 +64,7 @@ export function createTheme(): Theme {
     backgroundColor: {value: 0xffff0000},
     foregroundColor: undefined,
     backgroundManagedByPolicy: false,
+    followDeviceTheme: false,
   };
 }
 

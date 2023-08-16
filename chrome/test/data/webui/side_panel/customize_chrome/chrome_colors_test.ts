@@ -29,6 +29,7 @@ function createTheme(): Theme {
     colorsManagedByPolicy: false,
     isGreyBaseline: false,
     browserColorVariant: BrowserColorVariant.kTonalSpot,
+    followDeviceTheme: false,
   };
 }
 

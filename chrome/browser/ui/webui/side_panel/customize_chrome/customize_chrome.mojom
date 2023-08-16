@@ -43,6 +43,8 @@ struct Theme {
   skia.mojom.SkColor? foreground_color;
   // True if the background is managed by a policy.
   bool background_managed_by_policy;
+  // True if we are following the OS theme.
+  bool follow_device_theme;
 };
 
 // A collection of background images.
@@ -115,6 +117,9 @@ interface CustomizeChromePageHandler {
 
   // Sets Chrome's theme according to the default color.
   SetDefaultColor();
+
+  // Set that the theme should follow the device's.
+  SetFollowDeviceTheme(bool follow);
 
   // Removes background image.
   RemoveBackgroundImage();

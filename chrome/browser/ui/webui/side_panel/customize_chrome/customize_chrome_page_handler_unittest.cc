@@ -197,11 +197,13 @@ class MockThemeService : public ThemeService {
   MockThemeService() : ThemeService(nullptr, theme_helper_) { set_ready(); }
   using ThemeService::NotifyThemeChanged;
   MOCK_METHOD(void, UseDefaultTheme, ());
+  MOCK_METHOD(void, UseDeviceTheme, (bool));
   MOCK_CONST_METHOD0(UsingDefaultTheme, bool());
   MOCK_CONST_METHOD0(UsingSystemTheme, bool());
   MOCK_CONST_METHOD0(UsingExtensionTheme, bool());
   MOCK_CONST_METHOD0(GetThemeID, std::string());
   MOCK_CONST_METHOD0(GetUserColor, absl::optional<SkColor>());
+  MOCK_CONST_METHOD0(UsingDeviceTheme, bool());
 
  private:
   ThemeHelper theme_helper_;
@@ -407,6 +409,8 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
       .WillByDefault(testing::Return(false));
   ON_CALL(mock_theme_service(), UsingSystemTheme())
       .WillByDefault(testing::Return(false));
+  ON_CALL(mock_theme_service(), UsingDeviceTheme())
+      .WillByDefault(testing::Return(false));
   ON_CALL(mock_ntp_custom_background_service_,
           IsCustomBackgroundDisabledByPolicy())
       .WillByDefault(testing::Return(true));
@@ -428,6 +432,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
   EXPECT_EQ(web_contents().GetColorProvider().GetColor(ui::kColorFrameActive),
             theme->foreground_color);
   EXPECT_TRUE(theme->background_managed_by_policy);
+  EXPECT_FALSE(theme->follow_device_theme);
 }
 
 TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThemeWithDailyRefresh) {
@@ -683,6 +688,18 @@ TEST_F(CustomizeChromePageHandlerTest, SetDailyRefreshCollectionId) {
   EXPECT_CALL(mock_ntp_custom_background_service_, SetCustomBackgroundInfo)
       .Times(1);
   handler().SetDailyRefreshCollectionId("test_id");
+}
+
+TEST_F(CustomizeChromePageHandlerTest, SetFollowDeviceTheme_On) {
+  EXPECT_CALL(mock_theme_service(), UseDeviceTheme(true)).Times(1);
+
+  handler().SetFollowDeviceTheme(true);
+}
+
+TEST_F(CustomizeChromePageHandlerTest, SetUseDeviceTheme_Off) {
+  EXPECT_CALL(mock_theme_service(), UseDeviceTheme(false)).Times(1);
+
+  handler().SetFollowDeviceTheme(false);
 }
 
 TEST_F(CustomizeChromePageHandlerTest, ScrollToSection) {

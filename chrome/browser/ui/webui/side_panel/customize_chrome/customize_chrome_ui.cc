@@ -117,6 +117,13 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       IsCartModuleEnabled() &&
           base::FeatureList::IsEnabled(
               ntp_features::kNtpChromeCartInHistoryClusterModule));
+
+  source->AddBoolean("showDeviceThemeToggle",
+#if BUILDFLAG(IS_CHROMEOS)
+                     features::IsChromeWebuiRefresh2023());
+#else
+                     false);
+#endif
   webui::SetupChromeRefresh2023(source);
 
   webui::SetupWebUIDataSource(
