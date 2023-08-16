@@ -170,11 +170,11 @@ public class UmaUtils {
         RecordHistogram.recordEnumeratedHistogram("Android.BackgroundRestrictions.StandbyBucket",
                 standbyBucketUma, StandbyBucketStatus.COUNT);
 
-        String histogramNameSplitByUserRestriction = isBackgroundRestricted
-                ? "Android.BackgroundRestrictions.StandbyBucket.WithUserRestriction"
-                : "Android.BackgroundRestrictions.StandbyBucket.WithoutUserRestriction";
-        RecordHistogram.recordEnumeratedHistogram(
-                histogramNameSplitByUserRestriction, standbyBucketUma, StandbyBucketStatus.COUNT);
+        if (isBackgroundRestricted) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.BackgroundRestrictions.StandbyBucket.WithUserRestriction",
+                    standbyBucketUma, StandbyBucketStatus.COUNT);
+        }
     }
 
     /** Record minidump uploading time split by background restriction status. */

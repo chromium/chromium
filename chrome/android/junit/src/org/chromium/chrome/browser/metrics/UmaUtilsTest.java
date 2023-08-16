@@ -33,8 +33,6 @@ public class UmaUtilsTest {
             "Android.BackgroundRestrictions.StandbyBucket";
     private static final String HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION =
             "Android.BackgroundRestrictions.StandbyBucket.WithUserRestriction";
-    private static final String HISTOGRAM_STANDBY_BUCKET_WITHOUT_USER_RESTRICTION =
-            "Android.BackgroundRestrictions.StandbyBucket.WithoutUserRestriction";
     private static final String HISTOGRAM_MINIDUMP_UPLOADING_TIME =
             "Stability.Android.MinidumpUploadingTime";
 
@@ -60,7 +58,6 @@ public class UmaUtilsTest {
                         .expectNoRecords(HISTOGRAM_IS_BACKGROUND_RESTRICTED)
                         .expectNoRecords(HISTOGRAM_STANDBY_BUCKET)
                         .expectNoRecords(HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION)
-                        .expectNoRecords(HISTOGRAM_STANDBY_BUCKET_WITHOUT_USER_RESTRICTION)
                         .build();
 
         // Act
@@ -171,8 +168,6 @@ public class UmaUtilsTest {
                         .expectBooleanRecord(HISTOGRAM_IS_BACKGROUND_RESTRICTED, false)
                         .expectIntRecord(HISTOGRAM_STANDBY_BUCKET, expectedUmaStandbyBucketStatus)
                         .expectNoRecords(HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION)
-                        .expectIntRecord(HISTOGRAM_STANDBY_BUCKET_WITHOUT_USER_RESTRICTION,
-                                expectedUmaStandbyBucketStatus)
                         .build();
 
         // Act
@@ -194,7 +189,6 @@ public class UmaUtilsTest {
                         .expectIntRecord(HISTOGRAM_STANDBY_BUCKET, expectedUmaStandbyBucketStatus)
                         .expectIntRecord(HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION,
                                 expectedUmaStandbyBucketStatus)
-                        .expectNoRecords(HISTOGRAM_STANDBY_BUCKET_WITHOUT_USER_RESTRICTION)
                         .build();
 
         // Act

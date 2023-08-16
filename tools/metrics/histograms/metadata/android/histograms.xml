@@ -358,19 +358,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Android.BackgroundRestrictions.StandbyBucket.WithoutUserRestriction"
-    enum="StandbyBucket" expires_after="2022-10-23">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-segmentation-platform@google.com</owner>
-  <summary>
-    Records the standby bucket (UsageStatsManager.getAppStandbyBucket) in which
-    chrome is currently placed by android, when user hasn't explicitly enabled
-    background restrictions. Recorded after native initialization in browser
-    process.
-  </summary>
-</histogram>
-
-<histogram
     name="Android.BackgroundRestrictions.StandbyBucket.WithUserRestriction"
     enum="StandbyBucket" expires_after="2023-04-30">
   <owner>shaktisahu@chromium.org</owner>
