@@ -238,9 +238,38 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     bool is_thread_safe,
     gfx::BufferUsage buffer_usage) {
-  return CreateSharedImage(mailbox, format, surface_handle, size, color_space,
-                           surface_origin, alpha_type, usage, debug_label,
-                           is_thread_safe);
+  // |scoped_progress_reporter| will notify |progress_reporter_| upon
+  // construction and destruction. We limit the scope so that progress is
+  // reported immediately after allocation/upload and before other GL
+  // operations.
+  gfx::ScopedIOSurface io_surface;
+  {
+    gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
+    const gfx::BufferFormat buffer_format = ToBufferFormat(format);
+    const bool should_clear = true;
+    const bool override_rgba_to_bgra =
+#if BUILDFLAG(IS_IOS)
+        false;
+#else
+        gr_context_type_ == GrContextType::kGL;
+#endif
+    io_surface = gfx::CreateIOSurface(size, buffer_format, should_clear,
+                                      override_rgba_to_bgra);
+    if (!io_surface) {
+      LOG(ERROR) << "CreateSharedImage: Failed to create bindable image";
+      return nullptr;
+    }
+  }
+  SetIOSurfaceColorSpace(io_surface.get(), color_space);
+
+  gfx::GpuMemoryBufferHandle handle;
+  handle.type = gfx::IO_SURFACE_BUFFER;
+  handle.io_surface = std::move(io_surface);
+  handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
+
+  return CreateSharedImage(mailbox, format, size, color_space, surface_origin,
+                           alpha_type, usage, std::move(debug_label),
+                           std::move(handle));
 }
 
 bool IOSurfaceImageBackingFactory::IsSupported(
