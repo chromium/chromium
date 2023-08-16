@@ -155,7 +155,7 @@ void SetupIDLObservableArrayBackingListTemplate(
   instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
 }
 
-void SetupIDLSyncIteratorTemplate(
+void SetupIDLIteratorTemplate(
     v8::Isolate* isolate,
     const WrapperTypeInfo* wrapper_type_info,
     v8::Local<v8::ObjectTemplate> instance_template,
@@ -163,12 +163,14 @@ void SetupIDLSyncIteratorTemplate(
     v8::Local<v8::FunctionTemplate> interface_template,
     v8::Intrinsic parent_intrinsic_prototype,
     const char* class_string) {
-  DCHECK(parent_intrinsic_prototype == v8::Intrinsic::kIteratorPrototype ||
+  DCHECK(parent_intrinsic_prototype == v8::Intrinsic::kAsyncIteratorPrototype ||
+         parent_intrinsic_prototype == v8::Intrinsic::kIteratorPrototype ||
          parent_intrinsic_prototype == v8::Intrinsic::kMapIteratorPrototype ||
          parent_intrinsic_prototype == v8::Intrinsic::kSetIteratorPrototype);
 
   v8::Local<v8::String> v8_class_string = V8String(isolate, class_string);
 
+  // https://webidl.spec.whatwg.org/#es-asynchronous-iterator-prototype-object
   // https://webidl.spec.whatwg.org/#es-iterator-prototype-object
   // https://webidl.spec.whatwg.org/#es-map-iterator
   // https://webidl.spec.whatwg.org/#es-set-iterator

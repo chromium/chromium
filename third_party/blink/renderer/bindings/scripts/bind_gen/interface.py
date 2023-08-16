@@ -1803,10 +1803,10 @@ def make_v8_set_return_value(cg_context):
                  "(${info}, ${return_value}->GetExoticObject(), "
                  "${blink_receiver});")
 
-    if return_type_body.is_sync_iterator:
-        # Sync iterator objects (default iterator objects, map iterator
-        # objects, and set iterator objects) are implemented as ScriptWrappable
-        # instances.
+    if return_type_body.is_async_iterator or return_type_body.is_sync_iterator:
+        # Async iterator objects and sync iterator objects (default iterator
+        # objects, map iterator objects, and set iterator objects) are
+        # implemented as ScriptWrappable instances.
         return T("bindings::V8SetReturnValue(${info}, ${return_value}, "
                  "${blink_receiver});")
 
@@ -4545,7 +4545,8 @@ def bind_installer_local_vars(code_node, cg_context):
            "${class_name}::GetWrapperTypeInfo();")),
     ])
 
-    if cg_context.interface or cg_context.sync_iterator:
+    if (cg_context.interface or cg_context.async_iterator
+            or cg_context.sync_iterator):
         local_vars.extend([
             S("interface_function_template",
               ("v8::Local<v8::FunctionTemplate> "
@@ -5396,8 +5397,9 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
         iterate(class_like.operation_groups, process_operation_group)
     if interface and interface.stringifier:
         iterate([interface.stringifier.operation], process_stringifier)
-    collectionlike = interface and (interface.iterable or interface.maplike
-                                    or interface.setlike)
+    collectionlike = (interface
+                      and (interface.async_iterable or interface.iterable
+                           or interface.maplike or interface.setlike))
     if collectionlike:
 
         def should_define(target):
@@ -5476,16 +5478,39 @@ ${prototype_object}->Delete(
     ${v8_context}, V8AtomicString(${isolate}, "constructor")).ToChecked();
 """))
 
-    collectionlike = interface and (interface.iterable or interface.maplike
-                                    or interface.setlike)
-    if collectionlike:
-        property_name = None
+    # Install @@asyncIterator property.
+    if interface and interface.async_iterable:
+        for operation_group in interface.async_iterable.operation_groups:
+            if operation_group[0].is_async_iterator:
+                property_name = operation_group.identifier
+                break
+        else:
+            assert False
+        pattern = """\
+// @@asyncIterator == "{property_name}"
+{{
+  v8::Local<v8::Value> v8_value = ${prototype_object}->Get(
+      ${v8_context}, V8AtomicString(${isolate}, "{property_name}"))
+      .ToLocalChecked();
+  ${prototype_object}->DefineOwnProperty(
+      ${v8_context}, v8::Symbol::GetAsyncIterator(${isolate}), v8_value,
+      v8::DontEnum).ToChecked();
+}}
+"""
+        nodes.append(FormatNode(pattern, property_name=property_name))
+
+    # Install @@iterator property.
+    if (interface and ((interface.iterable and interface.iterable.key_type)
+                       or interface.maplike or interface.setlike)):
+        collectionlike = (interface.iterable or interface.maplike
+                          or interface.setlike)
         for operation_group in collectionlike.operation_groups:
             if operation_group[0].is_iterator:
                 property_name = operation_group.identifier
                 break
-        if property_name:
-            pattern = """\
+        else:
+            assert False
+        pattern = """\
 // @@iterator == "{property_name}"
 {{
   v8::Local<v8::Value> v8_value = ${prototype_object}->Get(
@@ -5496,8 +5521,7 @@ ${prototype_object}->Delete(
       v8::DontEnum).ToChecked();
 }}
 """
-            nodes.append(
-                TextNode(_format(pattern, property_name=property_name)))
+        nodes.append(FormatNode(pattern, property_name=property_name))
 
     if class_like.identifier == "FileSystemDirectoryHandle":
         pattern = """\
@@ -5642,27 +5666,36 @@ def make_install_interface_template(cg_context, function_name, class_name,
               "${interface_function_template});"),
             EmptyNode(),
         ])
-    elif cg_context.sync_iterator:
-        if cg_context.sync_iterator.interface.iterable:
+    elif cg_context.async_iterator or cg_context.sync_iterator:
+        iterator_interface = (cg_context.async_iterator
+                              or cg_context.sync_iterator).interface
+        if iterator_interface.async_iterable:
+            parent_intrinsic_prototype = (
+                "v8::Intrinsic::kAsyncIteratorPrototype")
+        elif iterator_interface.iterable:
             parent_intrinsic_prototype = "v8::Intrinsic::kIteratorPrototype"
-        elif cg_context.sync_iterator.interface.maplike:
+        elif iterator_interface.maplike:
             parent_intrinsic_prototype = "v8::Intrinsic::kMapIteratorPrototype"
-        elif cg_context.sync_iterator.interface.setlike:
+        elif iterator_interface.setlike:
             parent_intrinsic_prototype = "v8::Intrinsic::kSetIteratorPrototype"
         else:
             assert False
+        if iterator_interface.async_iterable:
+            class_string = "{} AsyncIterator".format(
+                iterator_interface.identifier)
+        else:
+            class_string = "{} Iterator".format(iterator_interface.identifier)
         body.extend([
             FormatNode(
-                "bindings::SetupIDLSyncIteratorTemplate("
+                "bindings::SetupIDLIteratorTemplate("
                 "${isolate}, ${wrapper_type_info}, "
                 "${instance_object_template}, "
                 "${prototype_object_template}, "
                 "${interface_function_template}, "
                 "{parent_intrinsic_prototype}, "
-                "\"{interface_identifier} Iterator\");",
+                "\"{class_string}\");",
                 parent_intrinsic_prototype=parent_intrinsic_prototype,
-                interface_identifier=(
-                    cg_context.sync_iterator.interface.identifier)),
+                class_string=class_string),
             EmptyNode(),
         ])
     else:
@@ -6771,8 +6804,10 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
         idl_definition_kind = "WrapperTypeInfo::kIdlNamespace"
     elif class_like.is_callback_interface:
         idl_definition_kind = "WrapperTypeInfo::kIdlCallbackInterface"
-    elif class_like.is_sync_iterator:
-        idl_definition_kind = "WrapperTypeInfo::kIdlSyncIterator"
+    elif class_like.is_async_iterator or class_like.is_sync_iterator:
+        idl_definition_kind = "WrapperTypeInfo::kIdlAsyncOrSyncIterator"
+    else:
+        assert False
     wrapper_type_info_def.append(
         F(pattern,
           install_interface_template_func=FN_INSTALL_INTERFACE_TEMPLATE,
@@ -6784,7 +6819,8 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
               active_script_wrappable_inheritance),
           idl_definition_kind=idl_definition_kind))
 
-    if class_like.is_interface or class_like.is_sync_iterator:
+    if (class_like.is_interface or class_like.is_async_iterator
+            or class_like.is_sync_iterator):
         blink_class = blink_class_name(class_like)
         pattern = """\
 const WrapperTypeInfo& {blink_class}::wrapper_type_info_ =
@@ -7021,9 +7057,9 @@ return ${class_name}::{func}(
 
 
 def _collect_include_headers(class_like):
-    assert isinstance(
-        class_like,
-        (web_idl.Interface, web_idl.Namespace, web_idl.SyncIterator))
+    assert isinstance(class_like,
+                      (web_idl.Interface, web_idl.Namespace,
+                       web_idl.AsyncIterator, web_idl.SyncIterator))
 
     headers = set(class_like.code_generator_info.blink_headers or [])
 
@@ -7058,7 +7094,8 @@ def _collect_include_headers(class_like):
     operations.extend(class_like.constructors)
     operations.extend(class_like.operations)
     if class_like.is_interface:
-        for x in [class_like.iterable, class_like.maplike, class_like.setlike]:
+        for x in (class_like.async_iterable, class_like.iterable,
+                  class_like.maplike, class_like.setlike):
             if x:
                 operations.extend(x.operations)
         for exposed_construct in class_like.exposed_constructs:
@@ -7090,10 +7127,10 @@ def _collect_include_headers(class_like):
 
 
 def generate_class_like(class_like,
-                        generate_sync_iterator_blink_impl_class_callback=None):
-    assert isinstance(
-        class_like,
-        (web_idl.Interface, web_idl.Namespace, web_idl.SyncIterator))
+                        generate_iterator_blink_impl_class_callback=None):
+    assert isinstance(class_like,
+                      (web_idl.Interface, web_idl.Namespace,
+                       web_idl.AsyncIterator, web_idl.SyncIterator))
 
     path_manager = PathManager(class_like)
     api_component = path_manager.api_component
@@ -7118,9 +7155,14 @@ def generate_class_like(class_like,
         namespace = class_like
         cg_context = CodeGenContext(namespace=namespace,
                                     class_name=api_class_name)
+    elif class_like.is_async_iterator:
+        cg_context = CodeGenContext(async_iterator=class_like,
+                                    class_name=api_class_name)
     elif class_like.is_sync_iterator:
         cg_context = CodeGenContext(sync_iterator=class_like,
                                     class_name=api_class_name)
+    else:
+        assert False
 
     # Filepaths
     api_header_path = path_manager.api_path(ext="h")
@@ -7502,7 +7544,7 @@ def generate_class_like(class_like,
             make_forward_declarations(impl_source_node.accumulator),
             EmptyNode(),
         ])
-    if class_like.is_sync_iterator:
+    if class_like.is_async_iterator or class_like.is_sync_iterator:
         api_header_node.accumulator.add_class_decls(
             [blink_class_name(class_like.interface)])
     else:
@@ -7542,10 +7584,11 @@ def generate_class_like(class_like,
         _collect_include_headers(class_like))
 
     # Assemble the parts.
-    if generate_sync_iterator_blink_impl_class_callback:
-        assert isinstance(class_like, web_idl.SyncIterator)
-        generate_sync_iterator_blink_impl_class_callback(
-            sync_iterator=class_like,
+    if generate_iterator_blink_impl_class_callback:
+        assert isinstance(class_like,
+                          (web_idl.AsyncIterator, web_idl.SyncIterator))
+        generate_iterator_blink_impl_class_callback(
+            iterator_class_like=class_like,
             api_component=api_component,
             for_testing=for_testing,
             header_blink_ns=api_header_blink_ns,

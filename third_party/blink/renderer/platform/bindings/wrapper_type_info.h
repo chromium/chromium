@@ -88,7 +88,7 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
     kIdlCallbackInterface,
     kIdlBufferSourceType,
     kIdlObservableArray,
-    kIdlSyncIterator,
+    kIdlAsyncOrSyncIterator,
     kCustomWrappableKind,
   };
 
@@ -121,7 +121,8 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
   // - kIdlNamespace: v8::ObjectTemplate of namespace object
   // - kIdlCallbackInterface: v8::FunctionTemplate of legacy callback
   //       interface object
-  // - kIdlSyncIterator: v8::FunctionTemplate of default iterator object
+  // - kIdlAsyncOrSyncIterator: v8::FunctionTemplate of default (asynchronous
+  //       or synchronous) iterator object
   // - kCustomWrappableKind: v8::FunctionTemplate
   v8::Local<v8::Template> GetV8ClassTemplate(
       v8::Isolate* isolate,

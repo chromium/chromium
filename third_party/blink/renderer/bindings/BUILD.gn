@@ -182,6 +182,9 @@ generate_bindings("generate_bindings_all") {
 
   targets = []
   outputs = []
+  targets += [ "async_iterator" ]
+  outputs += generated_async_iterator_sources_in_core +
+             generated_async_iterator_sources_in_modules
   targets += [ "callback_function" ]
   outputs += generated_callback_function_sources_in_core +
              generated_callback_function_sources_in_modules +
@@ -249,6 +252,12 @@ action_with_pydeps("check_generated_file_list") {
 
   file_list = []
   file_list += [ "--for_prod" ]
+  file_list += [
+    "--kind",
+    "async_iterator",
+  ]
+  file_list += generated_async_iterator_sources_in_core +
+               generated_async_iterator_sources_in_modules
   file_list += [
     "--kind",
     "callback_function",

@@ -12,7 +12,8 @@ blink_core_sources("v8") {
   visibility = []
   visibility = [ "//third_party/blink/renderer/core" ]
 
-  sources = generated_callback_function_sources_in_core +
+  sources = generated_async_iterator_sources_in_core +
+            generated_callback_function_sources_in_core +
             generated_callback_interface_sources_in_core +
             generated_dictionary_sources_in_core +
             generated_enumeration_sources_in_core +

@@ -1,4 +1,4 @@
-# Copyright 2022 The Chromium Authors. All rights reserved.
+# Copyright 2023 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,7 +20,7 @@ from .codegen_utils import component_export
 from .package_initializer import package_initializer
 from .task_queue import TaskQueue
 
-# Sync iterators are mostly the same as platform objects, so this module uses
+# Async iterators are mostly the same as platform objects, so this module uses
 # the implementation of IDL interface.
 from .interface import generate_class_like
 
@@ -36,7 +36,7 @@ def make_constructors(cg_context):
                        member_initializer_list=[
                            "${base_class_name}(source, kind)",
                        ]),
-        CxxFuncDeclNode(name="~SyncIterator",
+        CxxFuncDeclNode(name="~AsyncIterator",
                         arg_decls=[],
                         return_type="",
                         override=True,
@@ -46,22 +46,22 @@ def make_constructors(cg_context):
     return decls, None
 
 
-def generate_sync_iterator_blink_impl_class(iterator_class_like=None,
-                                            api_component=None,
-                                            for_testing=None,
-                                            header_blink_ns=None,
-                                            source_blink_ns=None):
-    assert isinstance(iterator_class_like, web_idl.SyncIterator)
+def generate_async_iterator_blink_impl_class(iterator_class_like=None,
+                                             api_component=None,
+                                             for_testing=None,
+                                             header_blink_ns=None,
+                                             source_blink_ns=None):
+    assert isinstance(iterator_class_like, web_idl.AsyncIterator)
     assert api_component is not None
     assert for_testing is not None
     assert header_blink_ns is not None
     assert source_blink_ns is not None
 
-    # SyncIterator<InterfaceClass> (ScriptWrappable) definition
-    sync_iterator = iterator_class_like
-    cg_context = CodeGenContext(sync_iterator=sync_iterator,
-                                class_name=blink_class_name(sync_iterator),
-                                base_class_name="bindings::SyncIteratorBase")
+    # AsyncIterator<InterfaceClass> (ScriptWrappable) definition
+    async_iterator = iterator_class_like
+    cg_context = CodeGenContext(async_iterator=async_iterator,
+                                class_name=blink_class_name(async_iterator),
+                                base_class_name="bindings::AsyncIteratorBase")
     class_def = CxxClassDefNode(cg_context.class_name,
                                 base_class_names=[cg_context.base_class_name],
                                 template_params=[],
@@ -70,9 +70,9 @@ def generate_sync_iterator_blink_impl_class(iterator_class_like=None,
                                     api_component, for_testing))
     class_def.set_base_template_vars(cg_context.template_bindings())
 
-    key_type = (sync_iterator.key_type.unwrap(
-        typedef=True) if sync_iterator.key_type else None)
-    value_type = sync_iterator.value_type.unwrap(typedef=True)
+    key_type = (async_iterator.key_type.unwrap(
+        typedef=True) if async_iterator.key_type else None)
+    value_type = async_iterator.value_type.unwrap(typedef=True)
     key_value_type_list = tuple(filter(None, [key_type, value_type]))
 
     (header_forward_decls, header_include_headers, source_forward_decls,
@@ -82,7 +82,7 @@ def generate_sync_iterator_blink_impl_class(iterator_class_like=None,
         CodeGenAccumulator.require_class_decls(
             set.union(header_forward_decls, source_forward_decls)))
     headers = set([
-        "third_party/blink/renderer/platform/bindings/sync_iterator_base.h",
+        "third_party/blink/renderer/platform/bindings/async_iterator_base.h",
     ])
     headers.update(header_include_headers)
     for idl_type in key_value_type_list:
@@ -118,21 +118,22 @@ def generate_sync_iterator_blink_impl_class(iterator_class_like=None,
     source_blink_ns.body.append(EmptyNode())
 
 
-def generate_sync_iterator(sync_iterator_identifier):
-    assert isinstance(sync_iterator_identifier, web_idl.Identifier)
+def generate_async_iterator(async_iterator_identifier):
+    assert isinstance(async_iterator_identifier, web_idl.Identifier)
 
     web_idl_database = package_initializer().web_idl_database()
-    sync_iterator = web_idl_database.find(sync_iterator_identifier)
+    async_iterator = web_idl_database.find(async_iterator_identifier)
 
-    generate_class_like(sync_iterator,
+    generate_class_like(async_iterator,
                         generate_iterator_blink_impl_class_callback=(
-                            generate_sync_iterator_blink_impl_class))
+                            generate_async_iterator_blink_impl_class))
 
 
-def generate_sync_iterators(task_queue):
+def generate_async_iterators(task_queue):
     assert isinstance(task_queue, TaskQueue)
 
     web_idl_database = package_initializer().web_idl_database()
 
-    for sync_iterator in web_idl_database.sync_iterators:
-        task_queue.post_task(generate_sync_iterator, sync_iterator.identifier)
+    for async_iterator in web_idl_database.async_iterators:
+        task_queue.post_task(generate_async_iterator,
+                             async_iterator.identifier)

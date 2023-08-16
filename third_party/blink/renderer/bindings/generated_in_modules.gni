@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/config.gni")
 
 # Generated sources for production
 
+generated_async_iterator_sources_in_modules = []
+
 generated_callback_function_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_animate_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_animate_callback.h",

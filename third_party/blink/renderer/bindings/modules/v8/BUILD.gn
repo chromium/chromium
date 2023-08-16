@@ -12,6 +12,7 @@ blink_modules_sources("v8") {
   visibility = [ "//third_party/blink/renderer/modules" ]
 
   sources =
+      generated_async_iterator_sources_in_modules +
       generated_callback_function_sources_in_modules +
       generated_callback_interface_sources_in_modules +
       generated_dictionary_sources_in_modules +
