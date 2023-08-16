@@ -20,7 +20,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -28,7 +28,10 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
-#endif
+#else
+#include "base/test/scoped_feature_list.h"
+#include "chrome/common/chrome_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using ::testing::Contains;
 using ::testing::ElementsAre;
@@ -65,6 +68,10 @@ class AppManagementPageHandlerTestBase : public testing::Test {
     handler_ = std::make_unique<AppManagementPageHandler>(
         handler.BindNewPipeAndPassReceiver(),
         page.InitWithNewPipeAndPassRemote(), profile_.get(), *delegate_.get());
+#if !BUILDFLAG(IS_CHROMEOS)
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDesktopPWAsLinkCapturing);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
   Profile* profile() { return profile_.get(); }
@@ -97,6 +104,9 @@ class AppManagementPageHandlerTestBase : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestDelegate> delegate_;
   std::unique_ptr<AppManagementPageHandler> handler_;
+#if !BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 TEST_F(AppManagementPageHandlerTestBase, GetApp) {

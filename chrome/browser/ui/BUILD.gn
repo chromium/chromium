@@ -3844,7 +3844,10 @@ static_library("ui") {
       "webui/ntp/app_launcher_handler.h",
     ]
 
-    deps += [ "//chrome/browser/ui/webui/app_home:mojo_bindings" ]
+    deps += [
+      "//chrome/app:generated_resources",
+      "//chrome/browser/ui/webui/app_home:mojo_bindings",
+    ]
   }
 
   if (is_win || is_mac || is_fuchsia || is_linux || is_chromeos_lacros) {

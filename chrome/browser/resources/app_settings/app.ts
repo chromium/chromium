@@ -14,9 +14,13 @@ import 'chrome://resources/cr_components/app_management/window_mode_item.js';
 import 'chrome://resources/cr_components/app_management/icons.html.js';
 import 'chrome://resources/cr_components/app_management/uninstall_button.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_components/app_management/supported_links_item.js';
+import 'chrome://resources/cr_components/app_management/supported_links_overlapping_apps_dialog.js';
+import 'chrome://resources/cr_components/app_management/supported_links_dialog.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -43,14 +47,17 @@ export class WebAppSettingsAppElement extends PolymerElement {
       },
       iconUrl_: {type: String, computed: 'getAppIcon_(app_)'},
       showSearch_: {type: Boolean, value: false, readonly: true},
+      apps_: Object,
     };
   }
 
   private app_: App|null;
+  private apps_: AppMap;
   private iconUrl_: string;
   private showSearch_: boolean;
 
   override connectedCallback() {
+    this.apps_ = {};
     super.connectedCallback();
     const urlPath = new URL(document.URL).pathname;
     if (urlPath.length <= 1) {
@@ -67,15 +74,28 @@ export class WebAppSettingsAppElement extends PolymerElement {
       this.app_ = result.app;
     });
 
+    BrowserProxy.getInstance().handler.getApps().then((result) => {
+      for (const app of result.apps) {
+        this.apps_[app.id] = app;
+      }
+    });
+
     // Listens to app update.
     const callbackRouter = BrowserProxy.getInstance().callbackRouter;
     callbackRouter.onAppChanged.addListener(this.onAppChanged_.bind(this));
+    callbackRouter.onAppRemoved.addListener(this.onAppRemoved_.bind(this));
   }
 
   private onAppChanged_(app: App) {
     if (this.app_ && app.id === this.app_.id) {
       this.app_ = app;
     }
+    this.apps_ = {...this.apps_, [app.id]: app};
+  }
+
+  private onAppRemoved_(appId: string) {
+    delete this.apps_[appId];
+    this.apps_ = {...this.apps_};
   }
 
   private getAppIcon_(app: App|null): string {

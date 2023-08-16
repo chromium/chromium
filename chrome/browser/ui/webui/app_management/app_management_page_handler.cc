@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -583,7 +584,13 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
 #if BUILDFLAG(IS_CHROMEOS)
   app->supported_links = GetSupportedLinks(profile_, app->id);
 #else
-  app->supported_links = GetSupportedLinksForPWAs(app->id, *provider);
+  // This allows us to bypass showing the supported links item on the PWA app
+  // settings page on Windows, Mac and Linux platforms.
+  if (base::FeatureList::IsEnabled(features::kDesktopPWAsLinkCapturing)) {
+    app->supported_links = GetSupportedLinksForPWAs(app->id, *provider);
+  } else {
+    app->supported_links = std::vector<std::string>();
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   auto run_on_os_login = update.RunOnOsLogin();
   if (run_on_os_login.has_value()) {

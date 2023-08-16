@@ -1,4 +1,4 @@
-<style include="app-management-shared-style settings-shared">
+<style include="app-management-shared-style">
   #disabledExplanationText {
     align-items: center;
     display: flex;
@@ -20,6 +20,30 @@
     margin-block-start: -12px;
     margin-inline-start: 36px;
   }
+
+  .list-frame {
+    display: block;
+    padding-block-end: 0;
+    padding-block-start: 0;
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  cr-radio-group {
+    width: 100%;
+  }
+
+  iron-icon {
+    flex-shrink: 0;  /* Prevent distortion of icons in cramped UI.*/
+  }
+
+<if expr='chromeos_ash'>
+  /* This increases the height on chrome://app-settings/, so this is
+  /* only applied on ChromeOS. */
+  cr-radio-button {
+    min-height: var(--cr-section-min-height);
+  }
+</if>
 </style>
 <div class="permission-section-header">
   <localized-link id="heading" class="header-text"

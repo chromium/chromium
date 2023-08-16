@@ -10,6 +10,9 @@ export {PermissionTypeIndex} from 'chrome://resources/cr_components/app_manageme
 export {AppManagementPermissionItemElement} from 'chrome://resources/cr_components/app_management/permission_item.js';
 export {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 export {AppManagementRunOnOsLoginItemElement} from 'chrome://resources/cr_components/app_management/run_on_os_login_item.js';
+export {AppManagementSupportedLinksDialogElement} from 'chrome://resources/cr_components/app_management/supported_links_dialog.js';
+export {AppManagementSupportedLinksItemElement} from 'chrome://resources/cr_components/app_management/supported_links_item.js';
+export {AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://resources/cr_components/app_management/supported_links_overlapping_apps_dialog.js';
 export {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
 export {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 export {AppManagementWindowModeElement} from 'chrome://resources/cr_components/app_management/window_mode_item.js';

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './app_management_shared_style.css.js';
+import 'chrome://resources/cr_components/app_management/supported_links_dialog.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
@@ -75,14 +77,10 @@ export class AppManagementSupportedLinksItemElement extends
         type: String,
       },
 
-      showOverlappingAppsWarning_: {
-        type: Boolean,
-        value: false,
-      },
+      showOverlappingAppsWarning_:
+          {type: Boolean, value: false, reflectToAttribute: true},
 
-      apps: {
-        type: Object,
-      },
+      apps: Object,
 
       overlappingAppIds_: {
         type: Array,
@@ -92,7 +90,7 @@ export class AppManagementSupportedLinksItemElement extends
 
   static get observers() {
     return [
-      'getOverlappingAppsWarning_(apps, app)',
+      'updateOverlappingAppsWarning_(apps, app)',
     ];
   }
 
@@ -137,7 +135,7 @@ export class AppManagementSupportedLinksItemElement extends
         {substitutions: [String(app.title)]});
   }
 
-  private async getOverlappingAppsWarning_(
+  private async updateOverlappingAppsWarning_(
       apps: AppMap|undefined, app: App|undefined): Promise<void> {
     if (!apps || !app || app.isPreferredApp) {
       this.showOverlappingAppsWarning_ = false;
