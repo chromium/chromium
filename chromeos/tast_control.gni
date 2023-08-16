@@ -351,9 +351,6 @@ tast_disabled_tests_from_chrome_all = [
   "arc.Downloads",
   "network.ConfigBaseline.login",
 
-  # https://b/294004569
-  "lacros.CompareVersionWithAsh",
-
   # https://b/294977915
   "bruschetta.*@eve",
 
