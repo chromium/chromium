@@ -297,6 +297,14 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
     }
   }
 
+  void SetLoaderDestructionCallbackForTesting(
+      const GURL& canonical_search_url,
+      base::OnceClosure streaming_url_loader_destruction_callback) {
+    search_prefetch_service()->SetLoaderDestructionCallbackForTesting(
+        canonical_search_url,
+        std::move(streaming_url_loader_destruction_callback));
+  }
+
   // `WaitEvent::kLoadStopped` is the default value for a
   // TestNavigationObserver. Pass another event type to not wait until it
   // finishes loading.
@@ -1709,8 +1717,12 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
           GetCanonicalSearchURL(expected_prerender_url));
   EXPECT_TRUE(prefetch_status.has_value());
 
+  base::RunLoop run_loop;
+  SetLoaderDestructionCallbackForTesting(
+      GetCanonicalSearchURL(expected_prerender_url), run_loop.QuitClosure());
   ASSERT_TRUE(
       content::NavigateToURL(GetActiveWebContents(), expected_prerender_url));
+  run_loop.Run();
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
       SearchPrefetchStatus::kPrefetchServedForRealNavigation, 1);
@@ -1722,6 +1734,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   CheckCorrectForwardingResultMetric(
       histogram_tester,
       StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.Search.ResponseReuseCount",
+      /*prerender_serving_times*/ 1, 1);
 }
 
 // Tests that prefetched response can be served to prerender client
@@ -1763,8 +1778,11 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
 
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
+  base::RunLoop run_loop;
+  SetLoaderDestructionCallbackForTesting(
+      GetCanonicalSearchURL(expected_prerender_url), run_loop.QuitClosure());
   NavigateToPrerenderedResult(expected_prerender_url);
-  prerender_observer.WaitForActivation();
+  run_loop.Run();
   WaitForActivatedPageLoaded();
   histogram_tester.ExpectBucketCount(
       "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender",
@@ -1773,6 +1791,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
       1);
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPreload.ForwardingResult.WasServedToPrerender", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.Search.ResponseReuseCount", 1, 1);
 }
 
 // Tests that the SearchSuggestionService can trigger prerendering if it
@@ -2078,6 +2098,88 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
       StreamingSearchPrefetchURLLoader::ResponseReader::
           ResponseDataReaderStatus::kCompleted,
       1);
+}
+
+// It is possible that one prefetched response is served to multiple prerender
+// in the current design.
+IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
+                       ServingToPrerenderNavigationTwice) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kNavigatedUrl = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  SetUpContext();
+
+  // 1. Type the first query.
+  std::string search_query_1 = "pre";
+  std::string prerender_query = "prerender";
+  GURL expected_prerender_url =
+      GetSearchUrl(prerender_query, UrlType::kPrerender);
+  ChangeAutocompleteResult(search_query_1, prerender_query,
+                           PrerenderHint::kEnabled, PrefetchHint::kEnabled);
+  WaitUntilStatusChangesTo(
+      GetCanonicalSearchURL(expected_prerender_url),
+      {SearchPrefetchStatus::kCanBeServed, SearchPrefetchStatus::kComplete});
+
+  // 2. Prefetch and prerender should be triggered.
+  prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
+                                                    expected_prerender_url);
+
+  EXPECT_TRUE(prerender_manager()->HasSearchResultPagePrerendered());
+  absl::optional<SearchPrefetchStatus> prefetch_status =
+      search_prefetch_service()->GetSearchPrefetchStatusForTesting(
+          GetCanonicalSearchURL(expected_prerender_url));
+  EXPECT_TRUE(prefetch_status.has_value());
+  EXPECT_NE(prefetch_status.value(), SearchPrefetchStatus::kPrerendered);
+
+  // 3. Turns to another prediction.
+  {
+    int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
+    content::test::PrerenderHostObserver prerender_observer(
+        *GetActiveWebContents(), host_id);
+    ChangeAutocompleteResult("pref", "prefetch", PrerenderHint::kEnabled,
+                             PrefetchHint::kEnabled);
+    prerender_observer.WaitForDestroyed();
+    prerender_helper().WaitForPrerenderLoadCompletion(
+        *GetActiveWebContents(), GetSearchUrl("prefetch", UrlType::kPrerender));
+  }
+  // 4. The previous prefetch response should still exist.
+  prefetch_status =
+      search_prefetch_service()->GetSearchPrefetchStatusForTesting(
+          GetCanonicalSearchURL(expected_prerender_url));
+  ASSERT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
+
+  // 5. Prerender the page again.
+  {
+    content::test::PrerenderHostRegistryObserver registry_observer(
+        *GetActiveWebContents());
+    ChangeAutocompleteResult(search_query_1, prerender_query,
+                             PrerenderHint::kEnabled, PrefetchHint::kEnabled);
+    registry_observer.WaitForTrigger(expected_prerender_url);
+  }
+  {
+    prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
+                                                      expected_prerender_url);
+    content::test::PrerenderHostObserver prerender_observer(
+        *GetActiveWebContents(), expected_prerender_url);
+    base::RunLoop run_loop;
+    SetLoaderDestructionCallbackForTesting(
+        GetCanonicalSearchURL(expected_prerender_url), run_loop.QuitClosure());
+    NavigateToPrerenderedResult(expected_prerender_url);
+    prerender_observer.WaitForActivation();
+    search_prefetch_service()->FireAllExpiryTimerForTesting();
+    run_loop.Run();
+  }
+
+  // This one was recorded by the loader fetching the "prerender" search term.
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.Search.ResponseReuseCount",
+      /*prerender_serving_times*/ 2, 1);
+  // This one was recorded by the loader fetching the "prefetch" search term.
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.Search.ResponseReuseCount",
+      /*prerender_serving_times*/ 1, 1);
 }
 
 // We cannot open the result in another tab on Android.

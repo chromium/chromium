@@ -1226,3 +1226,12 @@ void SearchPrefetchService::FireAllExpiryTimerForTesting() {
     prefetch_expiry_timer_it->second->FireNow();
   }
 }
+
+void SearchPrefetchService::SetLoaderDestructionCallbackForTesting(
+    const GURL& canonical_search_url,
+    base::OnceClosure streaming_url_loader_destruction_callback) {
+  CHECK(base::Contains(prefetches_, canonical_search_url));
+  return prefetches_[canonical_search_url]
+      ->SetLoaderDestructionCallbackForTesting(  // IN-TEST
+          std::move(streaming_url_loader_destruction_callback));
+}

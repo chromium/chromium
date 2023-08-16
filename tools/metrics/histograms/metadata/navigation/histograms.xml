@@ -1998,6 +1998,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Prerender.Experimental.Search.ResponseReuseCount"
+    units="count" expires_after="2023-11-20">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Recorded by StreamingSearchPrefetchURLLoader in its destructor. This
+    instance is created per (non-duplicated) prefetch attempt. The destructor
+    runs upon:
+
+    - Case 1: A prefetched response is deleted upon expiration or network error.
+
+    - Case 2: A prefetched response deletes itself after finishing serving to
+    navigations. This will be executed asynchronously.
+
+    See comments in StreamingSearchPrefetchURLLoader for more information.
+
+    Indicates the number of prerendering DSE navigation that one prefetched
+    response served to. In most cases, it should record 0 (which means the
+    loader does not serve to any prerendering navigations) or 1 (served to one
+    prerender). And we will track the count that is greater than 2 to determine
+    whether the loader should be designed to target multiple serving
+    destinations.
+
+    This number should be quite small (0 or 1 in most cases), so the count is
+    capped at 9 and put into 10 buckets, from 0 to 9.
+  </summary>
+</histogram>
+
 <histogram name="Prerender.FinalStatus" enum="PrerenderFinalStatus"
     expires_after="2023-12-24">
   <owner>ryansturm@chromium.org</owner>
