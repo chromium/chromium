@@ -350,6 +350,13 @@ VideoDecoderPipeline::GetSupportedConfigs(
     });
   }
 
+  if (workarounds.disable_accelerated_h264_decode) {
+    base::EraseIf(configs.value(), [](const auto& config) {
+      return config.profile_min >= H264PROFILE_MIN &&
+             config.profile_max <= H264PROFILE_MAX;
+    });
+  }
+
   return configs;
 }
 
