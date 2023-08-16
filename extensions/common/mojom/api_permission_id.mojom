@@ -277,6 +277,7 @@ enum APIPermissionID {
   kReadingList = 250,
   kImageLoaderPrivate = 251,
   kAccessibilityServicePrivate = 252,
+  kUserScripts = 253,
 
   // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in tools/metrics/histograms/enums.xml

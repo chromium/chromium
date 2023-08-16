@@ -55,6 +55,7 @@ extensions_api_schema_files_ = [
   "system_storage.idl",
   "test.json",
   "types.json",
+  "user_scripts.idl",
   "usb.idl",
   "virtual_keyboard.idl",
   "virtual_keyboard_private.json",

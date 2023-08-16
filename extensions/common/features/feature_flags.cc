@@ -24,6 +24,7 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiReadingList,
     &extensions_features::kApiRuntimeGetContexts,
     &extensions_features::kApiSidePanelOpen,
+    &extensions_features::kApiUserScripts,
     &extensions_features::kNewWebstoreDomain,
     &extensions_features::kTelemetryExtensionPendingApprovalApi,
 };

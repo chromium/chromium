@@ -800,6 +800,7 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kProxy);
   skip.insert(APIPermissionID::kScripting);
   skip.insert(APIPermissionID::kTabCapture);
+  skip.insert(APIPermissionID::kUserScripts);
   skip.insert(APIPermissionID::kWebRequest);
   skip.insert(APIPermissionID::kWebRequestBlocking);
   skip.insert(APIPermissionID::kWebRequestAuthProvider);

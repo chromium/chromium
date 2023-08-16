@@ -1876,6 +1876,7 @@ enum HistogramValue {
   IMAGELOADERPRIVATE_GETDRIVETHUMBNAIL = 1814,
   IMAGELOADERPRIVATE_GETPDFTHUMBNAIL = 1815,
   ACCESSIBILITYSERVICEPRIVATE_SPEAKSELECTEDTEXT = 1816,
+  USERSCRIPTS_REGISTER = 1817,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

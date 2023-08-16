@@ -420,9 +420,15 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
     // TODO(crbug.com/1385165): Remove handling code for un-prefixed IDs once
     // all UserScript IDs have been migrated to using prefixes.
     bool is_id_prefixed = (*id)[0] == UserScript::kReservedScriptIDPrefix;
-    script->set_id(is_id_prefixed ? *id
-                                  : scripting::CreateDynamicScriptID(*id));
-    script_without_prefix_retrieved |= is_id_prefixed;
+    if (is_id_prefixed) {
+      script->set_id(*id);
+      // TODO(crbug.com/1473082): This is incorrect, it should record when id is
+      // NOT prefixed. Fix and properly update the histogram.
+      script_without_prefix_retrieved = true;
+    } else {
+      script->set_id(scripting::AddPrefixToDynamicScriptId(
+          *id, UserScript::Source::kDynamicContentScript));
+    }
 
     script->set_host_id(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension.id()));

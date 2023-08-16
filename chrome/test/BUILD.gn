@@ -3319,6 +3319,7 @@ if (!is_android) {
         "../browser/extensions/api/test/apitest_apitest.cc",
         "../browser/extensions/api/top_sites/top_sites_apitest.cc",
         "../browser/extensions/api/usb/chrome_usb_apitest.cc",
+        "../browser/extensions/api/user_scripts/user_scripts_apitest.cc",
         "../browser/extensions/api/web_accessible_resources_apitest.cc",
         "../browser/extensions/api/web_navigation/web_navigation_apitest.cc",
         "../browser/extensions/api/web_request/web_request_apitest.cc",

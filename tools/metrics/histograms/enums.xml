@@ -37175,6 +37175,7 @@ Called by update_extension_histograms.py.-->
   <int value="1814" label="IMAGELOADERPRIVATE_GETDRIVETHUMBNAIL"/>
   <int value="1815" label="IMAGELOADERPRIVATE_GETPDFTHUMBNAIL"/>
   <int value="1816" label="ACCESSIBILITYSERVICEPRIVATE_SPEAKSELECTEDTEXT"/>
+  <int value="1817" label="USERSCRIPTS_REGISTER"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -37825,6 +37826,7 @@ Called by update_extension_permission.py.-->
   <int value="250" label="kReadingList"/>
   <int value="251" label="kImageLoaderPrivate"/>
   <int value="252" label="kAccessibilityServicePrivate"/>
+  <int value="253" label="kUserScripts"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

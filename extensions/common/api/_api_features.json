@@ -758,6 +758,12 @@
     "dependencies": ["permission:usb"],
     "contexts": ["blessed_extension"]
   },
+  "userScripts": {
+    "dependencies": [ "permission:userScripts" ],
+    "contexts": [ "blessed_extension" ],
+    "channel": "trunk",
+    "feature_flag": "ApiUserScripts"
+  },
   "virtualKeyboard": {
     "dependencies": ["permission:virtualKeyboard"],
     "contexts": ["blessed_extension"]
