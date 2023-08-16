@@ -12,15 +12,28 @@
 
 namespace {
 
-#if BUILDFLAG(IS_MAC)
-bool IsWidgetInFullscreenWorkspace(views::Widget* widget) {
+bool ShouldStackAboveParent(views::Widget* widget) {
+#if !BUILDFLAG(IS_MAC)
+  return false;
+#else
+  // macOS bug: a child widget might be rendered behind its parent in fullscreen
+  // if the child is not explicitly StackAbove()'ed its parent.
+  int level = 0;
   views::Widget* root = widget;
   while (root->parent()) {
     root = root->parent();
+    // StackAbove() will make `widget` visible. We don't want this when its
+    // ancestor is invisible.
+    if (!root->IsVisible()) {
+      return false;
+    }
+    level++;
   }
-  return root->IsFullscreen();
-}
+  // Only StackAbove() when `widget` is a grandchild (or deeper) of the root
+  // fullscreen window.
+  return level > 1 && root->IsFullscreen();
 #endif
+}
 
 }  // namespace
 
@@ -71,16 +84,9 @@ void SublevelManager::OrderChildWidget(Widget* child) {
   DCHECK_EQ(1, base::ranges::count(children_, child));
   children_.erase(base::ranges::remove(children_, child), std::end(children_));
 
-#if BUILDFLAG(IS_MAC)
-  // macOS bug: a child widget might be rendered behind its parent in fullscreen
-  // if the child is not explicitly StackAbove()'ed its parent.
-  // Note that StackAbove() will make child visible even if its parent is
-  // hidden. We'd like to avoid that therefore only calling StackAbove() when
-  // the parent is visible.
-  if (IsWidgetInFullscreenWorkspace(child) && owner_->IsVisible()) {
+  if (ShouldStackAboveParent(child)) {
     child->StackAboveWidget(owner_);
   }
-#endif
 
   ui::ZOrderLevel child_level = child->GetZOrderLevel();
   auto insert_it = FindInsertPosition(child);
