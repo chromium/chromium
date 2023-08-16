@@ -144,3 +144,16 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest,
   [mediator_ bannerInfobarButtonWasPressed:nil];
   [commands_handler verify];
 }
+
+// Ensures that calling the -bannerInfobarButtonWasPressed: after the infobar
+// has been removed does not cause a crash. This could happen if the infobar is
+// removed before the banner has finished appearing.
+TEST_F(PasswordInfobarBannerOverlayMediatorTest,
+       BannerInfobarButtonWasPressedAfterRemoval) {
+  InitInfobar();
+
+  // Removes the infobar.
+  infobar_ = nullptr;
+
+  [mediator_ bannerInfobarButtonWasPressed:nil];
+}
