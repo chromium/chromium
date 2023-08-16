@@ -1963,13 +1963,6 @@ void PaintLayer::ExpandRectForSelfPaintingDescendants(
     if (!child_layer->IsSelfPaintingLayer())
       continue;
 
-    // The layer created for the LayoutFlowThread is just a helper for painting
-    // and hit-testing, and should not contribute to the bounding box. The
-    // LayoutMultiColumnSets will contribute the correct size for the layout
-    // content of the multicol container.
-    if (child_layer->GetLayoutObject().IsLayoutFlowThread())
-      continue;
-
     PhysicalRect added_rect = child_layer->LocalBoundingBox();
     child_layer->ExpandRectForSelfPaintingDescendants(added_rect);
 

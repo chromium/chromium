@@ -194,10 +194,6 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
     return PaintInvalidationReason::kLayout;
   }
 
-  // Needs to repaint column rules.
-  if (box_.IsLayoutMultiColumnSet())
-    return PaintInvalidationReason::kLayout;
-
   // Background invalidation has been done during InvalidateBackground(), so
   // we don't need to check background in this function.
 
