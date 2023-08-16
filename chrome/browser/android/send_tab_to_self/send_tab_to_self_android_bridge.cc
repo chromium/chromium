@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -133,13 +132,13 @@ JNI_SendTabToSelfAndroidBridge_GetEntryPointDisplayReason(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& j_url_to_share) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+  send_tab_to_self::SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(
+          ProfileAndroid::FromProfileAndroid(j_profile));
   absl::optional<send_tab_to_self::EntryPointDisplayReason> reason =
-      send_tab_to_self::GetEntryPointDisplayReason(
-          GURL(ConvertJavaStringToUTF8(env, j_url_to_share)),
-          SyncServiceFactory::GetForProfile(profile),
-          SendTabToSelfSyncServiceFactory::GetForProfile(profile),
-          profile->GetPrefs());
+      service ? service->GetEntryPointDisplayReason(
+                    GURL(ConvertJavaStringToUTF8(env, j_url_to_share)))
+              : absl::nullopt;
 
   if (!reason) {
     return nullptr;

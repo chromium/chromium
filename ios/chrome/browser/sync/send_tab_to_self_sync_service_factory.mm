@@ -36,7 +36,7 @@ std::unique_ptr<KeyedService> BuildSendTabToSelfService(
 
   return std::make_unique<SendTabToSelfSyncService>(
       GetChannel(), std::move(store_factory), history_service,
-      device_info_tracker);
+      browser_state->GetPrefs(), device_info_tracker);
 }
 
 // static

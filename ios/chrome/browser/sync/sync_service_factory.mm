@@ -15,6 +15,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/prefs/pref_service.h"
+#import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/supervised_user/core/common/buildflags.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/sync_util.h"
@@ -49,6 +50,7 @@
 #import "ios/chrome/browser/sync/ios_chrome_sync_client.h"
 #import "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/sync/model_type_store_service_factory.h"
+#import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_invalidations_service_factory.h"
 #import "ios/chrome/browser/trusted_vault/ios_trusted_vault_service_factory.h"
@@ -107,6 +109,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
   // Sync needs this service to still be present when the sync engine is
   // disabled, so that preferences can be cleared.
   DependsOn(GoogleGroupsUpdaterServiceFactory::GetInstance());
@@ -206,6 +209,9 @@ std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
   sync_preferences::PrefServiceSyncable* pref_service =
       browser_state->GetSyncablePrefs();
   pref_service->OnSyncServiceInitialized(sync_service.get());
+
+  SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state)
+      ->OnSyncServiceInitialized(sync_service.get());
 
   return sync_service;
 }

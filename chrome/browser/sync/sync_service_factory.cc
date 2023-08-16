@@ -50,6 +50,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "components/network_time/network_time_tracker.h"
+#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -181,6 +182,9 @@ std::unique_ptr<KeyedService> BuildSyncService(
   if (password_store) {
     password_store->OnSyncServiceInitialized(sync_service.get());
   }
+
+  SendTabToSelfSyncServiceFactory::GetForProfile(profile)
+      ->OnSyncServiceInitialized(sync_service.get());
 
   // Allow sync_preferences/ components to use SyncService.
   sync_preferences::PrefServiceSyncable* pref_service =

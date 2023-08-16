@@ -62,5 +62,5 @@ KeyedService* SendTabToSelfSyncServiceFactory::BuildServiceInstanceFor(
 
   return new send_tab_to_self::SendTabToSelfSyncService(
       chrome::GetChannel(), std::move(store_factory), history_service,
-      device_info_tracker);
+      profile->GetPrefs(), device_info_tracker);
 }
