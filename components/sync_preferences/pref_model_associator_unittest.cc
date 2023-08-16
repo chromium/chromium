@@ -112,29 +112,35 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
   TestSyncablePrefsDatabase syncable_prefs_database_;
 };
 
+scoped_refptr<user_prefs::PrefRegistrySyncable> CreatePrefRegistry() {
+  scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry =
+      base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
+  pref_registry->RegisterStringPref(
+      kStringPrefName, std::string(),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  pref_registry->RegisterListPref(
+      kListPrefName, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  pref_registry->RegisterDictionaryPref(
+      kDictionaryPrefName, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  pref_registry->RegisterStringPref(
+      kCustomMergePrefName, std::string(),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  return pref_registry;
+}
+
+std::unique_ptr<PrefServiceSyncable> CreatePrefService(
+    PrefModelAssociatorClient* client,
+    scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
+    scoped_refptr<PersistentPrefStore> user_prefs) {
+  PrefServiceMockFactory factory;
+  factory.SetPrefModelAssociatorClient(client);
+  factory.set_user_prefs(user_prefs);
+  return factory.CreateSyncable(pref_registry.get());
+}
+
 class AbstractPreferenceMergeTest : public testing::Test {
  protected:
-  AbstractPreferenceMergeTest()
-      : pref_registry_(
-            base::MakeRefCounted<user_prefs::PrefRegistrySyncable>()),
-        user_prefs_(base::MakeRefCounted<TestingPrefStore>()) {
-    PrefServiceMockFactory factory;
-    factory.SetPrefModelAssociatorClient(&client_);
-    factory.set_user_prefs(user_prefs_);
-    pref_registry_->RegisterStringPref(
-        kStringPrefName, std::string(),
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-    pref_registry_->RegisterListPref(
-        kListPrefName, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-    pref_registry_->RegisterDictionaryPref(
-        kDictionaryPrefName, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-    pref_service_ = factory.CreateSyncable(pref_registry_.get());
-    pref_registry_->RegisterStringPref(
-        kCustomMergePrefName, std::string(),
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-    pref_sync_service_ = static_cast<PrefModelAssociator*>(
-        pref_service_->GetSyncableService(syncer::PREFERENCES));
-  }
+  AbstractPreferenceMergeTest() = default;
 
   void SetContentPattern(base::Value::Dict& patterns_dict,
                          const std::string& expression,
@@ -159,10 +165,15 @@ class AbstractPreferenceMergeTest : public testing::Test {
   }
 
   TestPrefModelAssociatorClient client_;
-  scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
-  scoped_refptr<TestingPrefStore> user_prefs_;
-  std::unique_ptr<PrefServiceSyncable> pref_service_;
-  raw_ptr<PrefModelAssociator> pref_sync_service_;
+  const scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_ =
+      CreatePrefRegistry();
+  const scoped_refptr<TestingPrefStore> user_prefs_ =
+      base::MakeRefCounted<TestingPrefStore>();
+  const std::unique_ptr<PrefServiceSyncable> pref_service_ =
+      CreatePrefService(&client_, pref_registry_, user_prefs_);
+  const raw_ptr<PrefModelAssociator> pref_sync_service_ =
+      static_cast<PrefModelAssociator*>(
+          pref_service_->GetSyncableService(syncer::PREFERENCES));
 };
 
 using CustomPreferenceMergeTest = AbstractPreferenceMergeTest;
