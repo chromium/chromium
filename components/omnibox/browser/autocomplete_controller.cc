@@ -1807,18 +1807,6 @@ void AutocompleteController::OnUrlScoringModelDone(
       match_itr->RecordAdditionalInfo("ml_legacy_relevance",
                                       match_itr->relevance);
       match_itr->relevance = relevance_heap.top();
-
-      // Fuzzy matches use the scoring signals for history and bookmark
-      // providers with the "corrected" input. This leads to an artificially
-      // high confidence from the model. Correct for this by re-applying the
-      // penalty from the history fuzzy provider.
-      if (match_itr->provider && match_itr->provider->type() ==
-                                     AutocompleteProvider::TYPE_HISTORY_FUZZY) {
-        match_itr->RecordAdditionalInfo("ml_relevance_before_penalty",
-                                        match_itr->relevance);
-        HistoryFuzzyProvider::ApplyRelevancePenalty(
-            *match_itr, match_itr->fuzzy_match_penalty);
-      }
     }
     relevance_heap.pop();
     prediction_and_match_itr_heap.pop();

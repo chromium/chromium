@@ -207,11 +207,6 @@ class HistoryFuzzyProvider : public HistoryProvider,
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const override;
 
-  // Reduces a match's relevance score according to the penalty and records the
-  // penalty amount.  `penalty` is the percentage that will be deducted from the
-  // match's relevance.
-  static void ApplyRelevancePenalty(AutocompleteMatch& match, int penalty);
-
  private:
   ~HistoryFuzzyProvider() override;
 
