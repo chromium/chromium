@@ -40,6 +40,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Paano mo mapapamahalaan ang iyong data:<ph name="END_BOLD" /> Para protektahan ang iyong privacy, awtomatiko naming dine-delete ang mga interes mo na mas matagal sa 4 na linggo. Habang patuloy kang nagba-browse, posibleng lumabas ulit sa listahan ang isang interes. O puwede kang mag-alis ng mga interes na ayaw mong isaalang-alang ng Chrome.</translation>
 <translation id="1628000112320670027">Humingi ng tulong sa Chrome</translation>
 <translation id="1640672724030957280">Dina-download...</translation>
+<translation id="1642309806724967937">Depende sa iyong mga setting, posible ring magpadala ang Chrome ng cookies at kasalukuyang URL mo</translation>
 <translation id="1662146548738125461">Tungkol sa ChromeOS Flex</translation>
 <translation id="1674870198290878346">Buksan ang link sa Inco&amp;gnito Window ng Chrome</translation>
 <translation id="1682634494516646069">Hindi makapagbasa at makapagsulat ang Google Chrome sa direktoryo nito ng data:
@@ -97,6 +98,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2597976513418770460">Kunin ang iyong mga bagay sa Chrome browser mula sa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Hindi matingnan ng Chrome kung may mga update. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2649768380733403658">Regular na nagsusuri ang Chrome para tiyaking may mga pinakaligtas na setting ang iyong browser. Ipapaalam namin sa iyo kung may anumang nangangailangan ng iyong pagsusuri.</translation>
 <translation id="2652691236519827073">Buksan ang Link sa Bagong &amp;tab ng Chrome</translation>
 <translation id="2665296953892887393">Tumulong na gawing mas mahusay ang Google Chrome sa pamamagitan ng pagpapadala ng mga ulat ng pag-crash at <ph name="UMA_LINK" /> sa Google</translation>
 <translation id="2689103672227170538">Binago ng extension na ito ang ipinapakitang page kapag sinimulan mo ang Chrome.</translation>
@@ -236,6 +238,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 
 Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktoryo ng profile o gumamit ng mas bagong bersyon ng Chrome.</translation>
 <translation id="521447420733633466">Kung magpapahiram ka ng device, puwedeng mag-browse nang hiwalay ang mga kaibigan at kapamilya, at puwede nilang i-set up ang Chrome sa paraang gusto nila</translation>
+<translation id="5239627039202700673">Gamitin ang Chrome sa tuwing magki-click ka ng mga link sa mga mensahe, dokumento, at iba pang app</translation>
 <translation id="5251420635869119124">Makakagamit ng Chrome ang mga bisita nang hindi nag-iiwan ng anumang bakas.</translation>
 <translation id="5334309298019785904">Hindi ma-sync ng ChromeOS ang iyong data dahil hindi available ang Pag-sync para sa iyong domain.</translation>
 <translation id="5334487786912937552">Kailangan ng Chrome ng pahintulot sa access sa storage para makapag-download ng mga file</translation>
@@ -252,6 +255,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Maaaring mapanganib ang <ph name="FILE_NAME" />, kaya na-block ito ng Chrome.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang update na ito}=1{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang update na ito. Hindi bubukas ulit ang iyong Incognito window.}one{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang update na ito. Hindi bubukas ulit ang iyong # Incognito window.}other{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang update na ito. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
+<translation id="5682679001737420487">Bina-block ng Chrome ang ilang pag-download</translation>
 <translation id="5686916850681061684">I-customize at kontrolin ang Google Chrome. May kailangan kang pagtuunan ng pansin - mag-click para sa mga detalye.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Kapag naka-on ito, nagbabakante ng memory ang Chrome mula sa mga hindi aktibong tab. Binibigyan nito ang mga aktibong tab at iba pang app ng higit pang resource ng computer at pinapanatili nitong mabilis ang Chrome. Awtomatikong nagiging aktibo ulit ang iyong mga hindi aktibong tab kapag bumalik ka sa mga ito.</translation>
@@ -309,6 +313,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6739177684496155661">Magpatuloy sa bagong profile sa Chrome?</translation>
 <translation id="6750954913813541382">Para ayusin ang mga error sa pagbabaybay, ipinapadala ng Chrome sa Google ang text na na-type mo sa browser</translation>
 <translation id="677276454032249905">Lumabas pa rin sa Chrome?</translation>
+<translation id="6794858689789885890">Palaging i-delete ang data ng site mula sa iyong device kapag isinasara mo ang Chrome</translation>
 <translation id="683440813066116847">Inbound na panuntunan para sa Google Chrome Canary upang payagan ang trapiko ng mDNS.</translation>
 <translation id="6881299373831449287">Ina-update ang Chrome</translation>
 <translation id="6885412569789873916">Mga Chrome Beta App</translation>
@@ -393,6 +398,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Paano namin ginagamit ang data na ito:<ph name="END_BOLD" /> Puwedeng tantyahin ng Chrome ang iyong mga interes. Sa ibang pagkakataon, puwedeng hilingin ng site na binibisita mo sa Chrome na makita ang iyong mga interes para ma-personalize ang mga ad na nakikita mo.</translation>
 <translation id="8387459386171870978">Ipagpatuloy ang paggamit ng Chrome</translation>
 <translation id="8394720698884623075">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chrome</translation>
+<translation id="8403038600646341038">Logo ng Chrome sa loob ng screen ng computer.</translation>
 <translation id="8416347857511542594">Matuto pa tungkol sa pag-personalize ng ad sa Chrome</translation>
 <translation id="8418845734693287262">Hindi ma-sync ng ChromeOS ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
 <translation id="8433638294851456451">Para magpadala ng numero sa iyong Android phone mula rito, mag-sign in sa Chrome sa parehong device.</translation>

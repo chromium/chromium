@@ -2021,7 +2021,6 @@
 <translation id="5287456746628258573">此网站使用的安全性配置已过期，这可能会导致您的信息（例如密码或信用卡卡号）在发送至此网站时出现泄露。</translation>
 <translation id="5288108484102287882">政策值验证引发了警告</translation>
 <translation id="5288393065350884210">会计与审计</translation>
-<translation id="5288808348893593856">您与此类网站之间的连接是安全的，除非 Chrome 另行通知。</translation>
 <translation id="5289384342738547352">多文档处理</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{必须在今天更新}=2{必须在明天更新}other{必须在 # 天内更新}}</translation>
 <translation id="5293919335876685914">轿跑车</translation>

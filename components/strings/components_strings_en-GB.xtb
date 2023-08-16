@@ -2025,7 +2025,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5287456746628258573">This site uses an outdated security configuration, which may expose your information (for example, passwords or credit card numbers) when it is sent to this site.</translation>
 <translation id="5288108484102287882">Validation of policy values has raised warnings</translation>
 <translation id="5288393065350884210">Accounting and auditing</translation>
-<translation id="5288808348893593856">The site's connection is secure unless Chrome tells you otherwise.</translation>
 <translation id="5289384342738547352">Multiple documents handling</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Update required today}=2{Update required by tomorrow}other{Update required within # days}}</translation>
 <translation id="5293919335876685914">Coupés</translation>

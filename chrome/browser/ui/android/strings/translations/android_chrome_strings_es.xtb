@@ -3,6 +3,7 @@
 <translationbundle lang="es">
 <translation id="1011749477052068769">Mover aquí</translation>
 <translation id="1016498331642356377">Busca rápidamente con la voz. Para editar este acceso directo, mantenlo pulsado.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Enviando a <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">¿Borrar también datos de estos sitios y aplicaciones?</translation>
 <translation id="1034259925032978114">La ventana está abierta</translation>
@@ -51,6 +52,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1240288207750131269">Cargando <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo e imagen de perfil con este sitio. Consulta la <ph name="BEGIN_LINK1" />política de privacidad<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />términos del servicio<ph name="END_LINK2" /> de este sitio.</translation>
 <translation id="124116460088058876">Más idiomas</translation>
+<translation id="1241792820757384812">Tus contraseñas se eliminarán del Gestor de contraseñas de Google para <ph name="CHROME_CHANNEL" />. Conservarás el archivo de contraseñas que acabas de descargar.</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Cierra la pestaña actual</translation>
 <translation id="1246905108078336582">¿Quitar la sugerencia del portapapeles?</translation>
@@ -576,6 +578,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="4124152339699379357">Flujo del permiso de notificaciones abierto a altura completa</translation>
 <translation id="4135200667068010335">La lista de dispositivos con los que puedes compartir una pestaña está cerrada.</translation>
 <translation id="4137746084635924146">Idioma actual del dispositivo</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Sitios para ordenadores solicitados de forma predeterminada</translation>
 <translation id="4147131678541801076">Cuando las pruebas están activas, la reducción del spam y el fraude se basa en tokens de confianza que ayudan a los sitios a luchar contra el fraude y a distinguir a los bots de las personas.
 
@@ -1561,6 +1564,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="9158770349521403363">Compartir solo contenido</translation>
 <translation id="9159716826369098114">Restaurar grupo de <ph name="TAB_COUNT" /> pestañas como nuevo grupo de pestañas en segundo plano.</translation>
 <translation id="9169507124922466868">El historial de navegación está medio abierto</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Tendrás tu historial en todos tus dispositivos sincronizados y podrás continuar con lo que estabas haciendo</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Comprobado hace 1 minuto}other{Comprobado hace # minutos}}</translation>
 <translation id="9204021776105550328">Eliminando</translation>
@@ -1576,6 +1580,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="927968626442779827">Usa el modo básico en Google Chrome</translation>
 <translation id="928550791203542716">Ahora sigues a <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Página principal</translation>
+<translation id="93533588269984624">Todas las contraseñas se descargarán en tu dispositivo y se eliminarán de <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introducir frase de contraseña</translation>
 <translation id="952301137339791907">La hoja inferior de métricas de la página está abierta</translation>

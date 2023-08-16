@@ -1069,6 +1069,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6649642165559792194">Aurreikusi irudia <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Pasahitza</translation>
 <translation id="6659594942844771486">Fitxa</translation>
+<translation id="6662119761881114773">Une honetan, gailuan gordetako pasahitzak ezin dira erabili Chrome-ren kanaletan. Chrome-ren 121. bertsiotik aurrera, Chrome-rako eta <ph name="CHROME_CHANNEL" /> kanalerako gailuan gordetako pasahitzak bateratu egingo dira, eta bi aplikazioetan erabili ahal izango dituzu.</translation>
 <translation id="666731172850799929">Ireki <ph name="APP_NAME" /> aplikazioan</translation>
 <translation id="6671495933530132209">Kopiatu irudia</translation>
 <translation id="6672917148207387131">Gehitu <ph name="DOMAIN" /></translation>

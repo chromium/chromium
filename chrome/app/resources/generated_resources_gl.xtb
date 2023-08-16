@@ -7701,6 +7701,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7396017167185131589">Os cartafoles compartidos aparecerán aquí</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> empezará a executarse cando se inicie o sistema e seguirá executándose en segundo plano aínda que peches todas as demais ventás de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizar sincronización</translation>
+<translation id="7399616692258236448">Bloquéanse automaticamente as solicitudes de localización para todos os sitios, excepto para os que permitas</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Queres volver cambiar ao provedor <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Configura a conexión no teléfono <ph name="PHONE_NAME" /></translation>

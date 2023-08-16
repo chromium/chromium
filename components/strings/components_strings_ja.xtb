@@ -2024,7 +2024,6 @@
 <translation id="5287456746628258573">このサイトでは古いセキュリティ設定を使用しています。このサイトにパスワードやクレジット カード番号などの情報を送信すると流出する恐れがあります。</translation>
 <translation id="5288108484102287882">ポリシー値の検証で警告が返されました</translation>
 <translation id="5288393065350884210">会計、監査</translation>
-<translation id="5288808348893593856">サイトの接続は保護されます（保護されない場合は通知されます）</translation>
 <translation id="5289384342738547352">複数ドキュメントの処理</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{今日中に更新が必要です}=2{明日までに更新が必要です}other{# 日以内に更新が必要です}}</translation>
 <translation id="5293919335876685914">クーペ</translation>

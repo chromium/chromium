@@ -3,6 +3,7 @@
 <translationbundle lang="tr">
 <translation id="1011749477052068769">Buraya taşı</translation>
 <translation id="1016498331642356377">Hızlıca sesinizle arama yapın. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> cihazına gönderiliyor...</translation>
 <translation id="103269572468856066">Veriler bu siteler ve uygulamalardan da silinsin mi?</translation>
 <translation id="1034259925032978114">Pencere açık</translation>
@@ -51,6 +52,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1240288207750131269"><ph name="LANG" /> yükleniyor</translation>
 <translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, devam etmek için adınızı, e-posta adresinizi ve profil resminizi bu siteyle paylaşacaktır. Bu sitenin <ph name="BEGIN_LINK1" />gizlilik politikasını<ph name="END_LINK1" /> ve <ph name="BEGIN_LINK2" />hizmet şartlarını<ph name="END_LINK2" /> inceleyin.</translation>
 <translation id="124116460088058876">Diğer diller</translation>
+<translation id="1241792820757384812"><ph name="CHROME_CHANNEL" /> şifreleriniz Google Şifre Yöneticisi'nden silinecek. Az önce indirdiğiniz şifre dosyasını saklayabilirsiniz.</translation>
 <translation id="1242883863226959074">cihaz</translation>
 <translation id="124678866338384709">Geçerli sekmeyi kapatır</translation>
 <translation id="1246905108078336582">Öneri panodan kaldırılsın mı?</translation>
@@ -576,6 +578,7 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="4124152339699379357">Bildirim izni akışı tam ekranda açıldı</translation>
 <translation id="4135200667068010335">Sekme paylaşılacak cihazların listesi kapalı.</translation>
 <translation id="4137746084635924146">Mevcut cihaz dili</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Masaüstü siteleri varsayılan olarak istenir</translation>
 <translation id="4147131678541801076">Spam ve sahtekarlık azaltma, denemeler açıkken sitelerin sahtekarlıkla mücadele etmesine ve botları insanlardan ayırt etmesine yardımcı olmak için gizlilik jetonlarını kullanır.
 
@@ -1069,6 +1072,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6649642165559792194">Resmin önizlemesini aç <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Şifre</translation>
 <translation id="6659594942844771486">Sekme</translation>
+<translation id="6662119761881114773">Bu cihaza kaydedilen şifreler şu anda Chrome kanallarında kullanılamaz. Chrome 121 sürümünden sonra, Chrome ve <ph name="CHROME_CHANNEL" /> için cihazınıza kaydedilen şifreler birleştirilip her iki uygulamada da kullanılabilir.</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> uygulamasında aç</translation>
 <translation id="6671495933530132209">Resmi kopyala</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ekle</translation>
@@ -1561,6 +1565,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="9158770349521403363">Yalnızca içerik paylaşılıyor</translation>
 <translation id="9159716826369098114"><ph name="TAB_COUNT" /> sekmeden oluşan sekme grubunu, yeni bir arka plan sekme grubu olarak geri yükleyin.</translation>
 <translation id="9169507124922466868">Gezinme geçmişi yarım açık</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Geçmiş bilgilerinizi senkronize edilmiş tüm cihazlarınızda bulabilirsiniz. Bu şekilde, son bıraktığınız yerden devam edebilirsiniz</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 dakika önce kontrol edildi}other{# dakika önce kontrol edildi}}</translation>
 <translation id="9204021776105550328">Siliniyor</translation>
@@ -1576,6 +1581,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="927968626442779827">Google Chrome'da Basit modu kullanın</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> takip ediliyor</translation>
 <translation id="932327136139879170">Ana Sayfa</translation>
+<translation id="93533588269984624">Tüm şifreler cihazınıza indirilir ve Chrome <ph name="CHROME_CHANNEL" /> hizmetinden kaldırılır</translation>
 <translation id="938850635132480979">Hata: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Parolayı girin</translation>
 <translation id="952301137339791907">Sayfa analizleri alt sayfası açıldı</translation>

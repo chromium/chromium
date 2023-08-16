@@ -3,6 +3,7 @@
 <translationbundle lang="sk">
 <translation id="1011749477052068769">Presunúť sem</translation>
 <translation id="1016498331642356377">Skratka na rýchle vyhľadávanie hlasom. Ak ju chcete upraviť, pridržte ju.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Odosiela sa do zariadenia <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Chcete vymazať dáta aj z týchto webov a aplikácií?</translation>
 <translation id="1034259925032978114">Okno je otvorené</translation>
@@ -51,6 +52,7 @@
 <translation id="1240288207750131269">Načítava sa <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Ak chcete pokračovať, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s týmto webom zdieľať vaše meno, e‑mailovú adresu a profilovú fotku. Pozrite si <ph name="BEGIN_LINK1" />pravidlá ochrany súkromia<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />zmluvné podmienky<ph name="END_LINK2" /> tohto webu.</translation>
 <translation id="124116460088058876">Ďalšie jazyky</translation>
+<translation id="1241792820757384812">Vaše heslá budú odstránené zo Správcu hesiel Google v kanáli <ph name="CHROME_CHANNEL" />. Súbor s heslami, ktorý ste práve stiahli, vám zostane.</translation>
 <translation id="1242883863226959074">zariadenie</translation>
 <translation id="124678866338384709">Zavretie aktuálnej karty</translation>
 <translation id="1246905108078336582">Chcete odstrániť návrh zo schránky?</translation>
@@ -576,6 +578,7 @@ Tokeny súkromného stavu zlepšujú ochranu súkromia na internete a nedá sa 
 <translation id="4124152339699379357">Postup povolenia posielať upozornenia je otvorený na celú výšku</translation>
 <translation id="4135200667068010335">Zoznam zariadení, s ktorými sa má zdieľať karta, je zavretý.</translation>
 <translation id="4137746084635924146">Aktuálny jazyk zariadenia</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">V predvolenom nastavení sú požadované weby pre počítače</translation>
 <translation id="4147131678541801076">Keď sú zapnuté skúšobné obdobia, redukcia spamu a podvodov závisí od tokenov súkromného stavu, ktoré pomáhajú webom bojovať proti podvodom a rozlišovať robotov od ľudí.
 
@@ -1069,6 +1072,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6649642165559792194">Zobraziť ukážku obrázka <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6659594942844771486">Karta</translation>
+<translation id="6662119761881114773">Momentálne nemôžete používať heslá uložené v tomto zariadení v kanáloch Chromu. Od verzie Chrome 121 budú heslá pre Chrome a <ph name="CHROME_CHANNEL" /> uložené vo vašom zariadení zlúčené a budú sa dať používať v oboch aplikáciách.</translation>
 <translation id="666731172850799929">Otvoriť v aplikácii <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Kopírovať obrázok</translation>
 <translation id="6672917148207387131">Pridať <ph name="DOMAIN" /></translation>
@@ -1561,6 +1565,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="9158770349521403363">Zdieľať iba obsah</translation>
 <translation id="9159716826369098114">Obnovte skupinu kariet s <ph name="TAB_COUNT" /> kartami ako novú skupinu kariet na pozadí.</translation>
 <translation id="9169507124922466868">História navigácie je dopoly otvorená</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Históriu budete mať vo všetkých synchronizovaných zariadeniach, takže budete môcť pokračovať v tom, čo ste robili</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Kontrola prebehla pred minútou}few{Kontrola prebehla pred # minútami}many{Kontrola prebehla pred # minúty}other{Kontrola prebehla pred # minútami}}</translation>
 <translation id="9204021776105550328">Odstraňuje sa</translation>
@@ -1576,6 +1581,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="927968626442779827">Používanie zjednodušeného režimu v prehliadači Google Chrome</translation>
 <translation id="928550791203542716">Sledujete <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Domov</translation>
+<translation id="93533588269984624">Všetky heslá budú stiahnuté do vášho zariadenia a odstránené z kanála <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Chyba: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Zadať prístupovú frázu</translation>
 <translation id="952301137339791907">Dolný hárok štatistík stránky je otvorený</translation>

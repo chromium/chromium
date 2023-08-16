@@ -1095,6 +1095,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1856715684130786728">Add location...</translation>
 <translation id="1858585891038687145">Trust this certificate for identifying software makers</translation>
+<translation id="1859294693760125695">No longer interested</translation>
 <translation id="1859339856433307593">A password for this account is already saved to your <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">This folder is empty</translation>
 <translation id="1862311223300693744">Do you have any special VPN, proxy, firewall or NAS software
@@ -3293,6 +3294,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3660234220361471169">Untrusted</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 existing password found}other{{NUM_PASSWORDS} existing passwords found}}</translation>
 <translation id="3664511988987167893">Extension Icon</translation>
+<translation id="3665301845536101715">Open in side panel</translation>
 <translation id="3665589677786828986">Chrome detected that some of your settings were corrupted by another program and reset them to their original defaults.</translation>
 <translation id="3665919494326051362">Current version is <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel WiFi NICs Debug Dump</translation>
@@ -8661,6 +8663,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="814204052173971714">{COUNT,plural, =1{a video}other{# videos}}</translation>
 <translation id="8143442547342702591">Invalid application</translation>
 <translation id="8143609395536282994">How you can manage your data:</translation>
+<translation id="8144429778087524791">Mark as done and hide</translation>
 <translation id="8145170459658034418">Memory saver</translation>
 <translation id="8146177459103116374">If you've already registered on this device, you can <ph name="LINK2_START" />sign in as an existing user<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Add and rank your preferred languages. Websites will show in your preferred languages, when possible. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>

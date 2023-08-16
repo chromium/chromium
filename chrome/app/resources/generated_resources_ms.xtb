@@ -1095,6 +1095,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1854180393107901205">Berhenti menghantar</translation>
 <translation id="1856715684130786728">Tambah lokasi...</translation>
 <translation id="1858585891038687145">Percayakan sijil ini untuk mengenal pasti pembuat perisian</translation>
+<translation id="1859294693760125695">Tidak berminat lagi</translation>
 <translation id="1859339856433307593">Kata laluan untuk akaun ini telah disimpan pada <ph name="BRAND" /> (<ph name="USER_EMAIL" />) anda</translation>
 <translation id="1861262398884155592">Folder ini kosong</translation>
 <translation id="1862311223300693744">Adakah anda mempunyai sebarang VPN, proksi, tembok api khas atau perisian NAS yang
@@ -3293,6 +3294,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3660234220361471169">Tidak Dipercayai</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 kata laluan sedia ada ditemukan}other{{NUM_PASSWORDS} kata laluan sedia ada ditemukan}}</translation>
 <translation id="3664511988987167893">Ikon Sambungan</translation>
+<translation id="3665301845536101715">Buka dalam panel sisi</translation>
 <translation id="3665589677786828986">Chrome mengesan bahawa sesetengah tetapan anda telah terganggu oleh program lain dan menetapkannya semula kepada tetapan lalainya yang asal.</translation>
 <translation id="3665919494326051362">Versi semasa ialah <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Pembuangan Nyahpepijat NIC Wi-Fi Intel</translation>
@@ -7719,6 +7721,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7396017167185131589">Folder dikongsi akan dipaparkan di sini</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> akan melancarkan permulaan sistem dan terus dijalankan di latar belakang walaupun sebaik sahaja anda menutup semua tetingkap <ph name="PRODUCT_NAME" /> lain.</translation>
 <translation id="7399045143794278225">Sesuaikan penyegerakan</translation>
+<translation id="7399616692258236448">Permintaan lokasi disekat secara automatik untuk semua laman kecuali pada laman yang anda benarkan</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Tukar kembali kepada <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Sediakan sambungan pada <ph name="PHONE_NAME" /> anda</translation>
@@ -8660,6 +8663,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="814204052173971714">{COUNT,plural, =1{satu video}other{# video}}</translation>
 <translation id="8143442547342702591">Aplikasi tidak sah</translation>
 <translation id="8143609395536282994">Cara anda dapat mengurus data anda:</translation>
+<translation id="8144429778087524791">Tandai sebagai selesai dan sembunyikan</translation>
 <translation id="8145170459658034418">Penyimpan Memori</translation>
 <translation id="8146177459103116374">Jika anda telah mendaftar pada peranti ini, anda boleh <ph name="LINK2_START" />log masuk sebagai pengguna sedia ada<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Tambah dan tentukan kedudukan bahasa pilihan anda. Laman web akan dipaparkan dalam bahasa pilihan anda, jika boleh. Pilihan ini disegerakkan dengan tetapan penyemak imbas anda. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>

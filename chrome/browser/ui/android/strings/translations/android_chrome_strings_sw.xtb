@@ -3,6 +3,7 @@
 <translationbundle lang="sw">
 <translation id="1011749477052068769">Hamishia hapa</translation>
 <translation id="1016498331642356377">Tafuta kwa haraka ukitumia sauti yako. Ili ubadilishe njia hii ya mkato, gusa na ushikilie.</translation>
+<translation id="1024113959924243553">Chrome - toleo la Dev</translation>
 <translation id="1028699632127661925">Unatuma kwenye <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Utafuta data kwenye tovuti na programu hizi?</translation>
 <translation id="1034259925032978114">Dirisha limefunguliwa</translation>
@@ -51,6 +52,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1240288207750131269">Inapakia <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Ili uendelee, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> itashiriki jina, anwani ya barua pepe, pamoja na picha yako ya wasifu na tovuti hii. Angalia <ph name="BEGIN_LINK1" />sera ya faragha<ph name="END_LINK1" /> pamoja na <ph name="BEGIN_LINK2" />sheria na masharti<ph name="END_LINK2" /> ya tovuti hii.</translation>
 <translation id="124116460088058876">Lugha zaidi</translation>
+<translation id="1241792820757384812">Manenosiri yako yatafutwa katika Kidhibiti cha Manenosiri cha Google kwenye <ph name="CHROME_CHANNEL" />. Utahifadhi faili ya manenosiri uliyoipakua.</translation>
 <translation id="1242883863226959074">kifaa</translation>
 <translation id="124678866338384709">Funga kichupo kilichofunguka</translation>
 <translation id="1246905108078336582">Je, ungependa kuondoa pendekezo kwenye ubao wa kunakili?</translation>
@@ -576,6 +578,7 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="4124152339699379357">Utaratibu wa ruhusa ya arifa umefunguliwa katika skrini nzima</translation>
 <translation id="4135200667068010335">Orodha ya vifaa vinavyoweza kutumia kichupo pamoja imefungwa.</translation>
 <translation id="4137746084635924146">Lugha inayotumika sasa kwenye kifaa</translation>
+<translation id="4139654229316918773">Chrome Canary (toleo la jaribio)</translation>
 <translation id="414128724510021958">Tovuti za kompyuta ya mezani zinaombwa kwa chaguomsingi</translation>
 <translation id="4147131678541801076">Vipindi vya kujaribu vinapowashwa, upunguzaji wa taka na ulaghai hutegemea tokeni za hali ya faragha ili kusaidia tovuti zipambane na ulaghai na zitofautishe kati ya roboti na watu halisi.
 
@@ -1561,6 +1564,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="9158770349521403363">Shiriki maudhui pekee</translation>
 <translation id="9159716826369098114">Rejesha kikundi cha vichupo <ph name="TAB_COUNT" /> kiwe kikundi kipya cha vichupo vinavyofanya kazi chinichini.</translation>
 <translation id="9169507124922466868">Historia ya uelekezaji imefunguliwa nusu</translation>
+<translation id="918419812064856259">Chrome - toleo la Beta</translation>
 <translation id="9190276265094487094">Utaona historia yako kwenye vifaa vyako vyote vilivyosawazishwa ili uweze kuendelea na shughuli uliyokuwa ukifanya</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Imekaguliwa dakika moja iliyopita}other{Imekaguliwa dakika # zilizopita}}</translation>
 <translation id="9204021776105550328">Inafuta</translation>
@@ -1576,6 +1580,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="927968626442779827">Tumia Hali Nyepesi kwenye Google Chrome</translation>
 <translation id="928550791203542716">Unafuatilia <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Mwanzo</translation>
+<translation id="93533588269984624">Manenosiri yote yatapakuliwa kwenye kifaa chako na kuondolewa kwenye <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Hitilafu: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ingiza kaulisiri</translation>
 <translation id="952301137339791907">Safu ya chini ya maarifa ya ukurasa imefunguliwa</translation>

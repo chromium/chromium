@@ -37,6 +37,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Slik kan du administrere dataene dine:<ph name="END_BOLD" /> For å beskytte personvernet ditt sletter vi automatisk interessene dine som er eldre enn fire uker. Når du fortsetter å surfe, kan det hende at interesser havner på listen igjen. Alternativt kan du fjerne interesse du ikke vil at Chrome skal vurdere.</translation>
 <translation id="1628000112320670027">Få hjelp med Chrome</translation>
 <translation id="1640672724030957280">Laster ned …</translation>
+<translation id="1642309806724967937">Avhengig av innstillingene dine kan det også hende at Chrome sender informasjonskapsler og den nåværende nettadressen din</translation>
 <translation id="1662146548738125461">Om ChromeOS Flex</translation>
 <translation id="1674870198290878346">Åpne linken i et inko&amp;gnitovindu i Chrome</translation>
 <translation id="1682634494516646069">Google Chrome kan ikke lese og skrive til sin egen datakatalog: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -92,6 +93,7 @@
 <translation id="2597976513418770460">Få Chrome-nettlesertingene dine fra <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome kan ikke se etter oppdateringer. Prøv å kontrollere internettilkoblingen.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2649768380733403658">Chrome sjekker regelmessig at nettleseren din har de tryggeste innstillingene. Vi gir deg beskjed hvis det er noe du må se nærmere på.</translation>
 <translation id="2652691236519827073">Åpne linken i en ny &amp;fane i Chrome</translation>
 <translation id="2665296953892887393">Bidra til å gjøre Google Chrome bedre ved å sende programstopprapporter og <ph name="UMA_LINK" /> til Google</translation>
 <translation id="2689103672227170538">Denne utvidelsen har endret hvilken side som vises når du starter Chrome.</translation>
@@ -229,6 +231,7 @@
 <translation id="5163087008893166964">Velkommen til Chrome – et nytt nettleservindu er åpnet</translation>
 <translation id="5170938038195470297">Profilen din kan ikke brukes fordi den er fra en nyere versjon av Google Chrome. Enkelte funksjoner kan være utilgjengelige. Angi en annen profilkatalog, eller bruk en nyere versjon av Chrome.</translation>
 <translation id="521447420733633466">Hvis du deler en enhet med andre, kan venner og familie surfe hver for seg og konfigurere Chrome akkurat slik de vil</translation>
+<translation id="5239627039202700673">Bruk Chrome hver gang du klikker på linker i meldinger, dokumenter og andre apper</translation>
 <translation id="5251420635869119124">Gjester kan bruke Chrome uten å etterlate seg spor.</translation>
 <translation id="5334309298019785904">ChromeOS kunne ikke synkronisere dataene dine, ettersom synkronisering ikke er tilgjengelig for domenet ditt.</translation>
 <translation id="5334487786912937552">Chrome må ha lagringstilgang for å kunne laste ned filer</translation>
@@ -243,6 +246,7 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-Inn)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan være farlig, så Chrome har blokkert den.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratoren din ber deg om å starte Chrome på nytt for å ta i bruk denne oppdateringen}=1{Administratoren din ber deg om å starte Chrome på nytt for å ta i bruk denne oppdateringen. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din ber deg om å starte Chrome på nytt for å ta i bruk denne oppdateringen. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
+<translation id="5682679001737420487">Chrome blokkerer enkelte nedlastinger</translation>
 <translation id="5686916850681061684">Tilpass og kontroller Google Chrome. Det er noe du må se på – klikk for mer informasjon.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Når dette er på, frigjør Chrome minne fra inaktive faner. Dette gir aktive faner og andre apper flere datamaskinressurser og holder Chrome rask. De inaktive fanene dine blir automatisk aktive igjen når du går tilbake til dem.</translation>
@@ -300,6 +304,7 @@
 <translation id="6739177684496155661">Vil du fortsette i en ny Chrome-profil?</translation>
 <translation id="6750954913813541382">For å rette stavefeil sender Chrome teksten du skriver inn i nettleseren, til Google</translation>
 <translation id="677276454032249905">Vil du avslutte Chrome likevel?</translation>
+<translation id="6794858689789885890">Slett alltid nettstedsdata fra enheten når du lukker Chrome</translation>
 <translation id="683440813066116847">Regel om innkommende trafikk for Google Chrome Canary for å tillate mDNS-trafikk.</translation>
 <translation id="6881299373831449287">Oppdaterer Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta-apper</translation>
@@ -384,6 +389,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Slik bruker vi disse dataene:<ph name="END_BOLD" /> Chrome kan anslå interessene dine. Senere kan nettsteder du besøker, spørre Chrome om interessene dine for å kunne sette personlig preg på annonsene du ser.</translation>
 <translation id="8387459386171870978">Fortsett å bruke Chrome</translation>
 <translation id="8394720698884623075">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder</translation>
+<translation id="8403038600646341038">Chrome-logo på en dataskjerm.</translation>
 <translation id="8416347857511542594">Finn ut mer om personlig tilpasning av annonser i Chrome</translation>
 <translation id="8418845734693287262">ChromeOS kunne ikke synkronisere dataene dine, ettersom påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="8433638294851456451">For å sende numre herfra til Android-telefonen din, logg på Chrome på begge enhetene.</translation>

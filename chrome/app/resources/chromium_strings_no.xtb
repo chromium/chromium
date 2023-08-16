@@ -207,11 +207,13 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5527463683072221100">Åpne PDF-filer i Chromium</translation>
 <translation id="5614091477838198795">Når dette er på, blir du også logget av Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{En Chromium-oppdatering er tilgjengelig}=1{En Chromium-oppdatering er tilgjengelig}other{En Chromium-oppdatering har vært tilgjengelig i # dager}}</translation>
+<translation id="5643865575100044307">Slett alltid nettstedsdata fra enheten når du lukker Chromium</translation>
 <translation id="5653831366781983928">Start Chromium på nytt nå</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Vis Chromium på dette språket</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5883558403894052917">Chromium har oppdaget at disse elementene inneholder skadelig programvare:</translation>
+<translation id="5889361821821684993">Chromium sjekker regelmessig at nettleseren din har de tryggeste innstillingene. Vi gir deg beskjed hvis det er noe du må se nærmere på.</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – nettverkspålogging</translation>
 <translation id="5924017743176219022">Kobler til internett …</translation>
@@ -222,6 +224,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5988505247484123880">Det er vanlig at nettsteder du besøker, husker ting du er interessert i, for å gi opplevelsen din personlig preg. Nettsteder kan også lagre informasjon om interessene dine i Chromium.</translation>
 <translation id="6003112304606738118">Laster ned … <ph name="HOURS" /> time(r) igjen</translation>
 <translation id="6040143037577758943">Lukk</translation>
+<translation id="6055611795418209449">Chromium blokkerer enkelte nedlastinger</translation>
 <translation id="6055895534982063517">En nyere versjon av Chromium er tilgjengelig, og den er raskere enn noen gang.</translation>
 <translation id="6063093106622310249">&amp;Åpne i Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> er lagt til i Chromium</translation>
@@ -235,6 +238,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6132897690380286411">Chromium lukkes snart og sletter data</translation>
 <translation id="6134968993075716475">Safe Browsing er slått av. Chromium anbefaler at du slår det på.</translation>
 <translation id="6145820983052037069">Du kan bytte mellom Chromium-profiler her</translation>
+<translation id="6175304430031192654">Avhengig av innstillingene dine kan det også hende at Chromium sender informasjonskapsler og den nåværende nettadressen din</translation>
 <translation id="6183079672144801177">Sørg for at du er logget på Chromium på <ph name="TARGET_DEVICE_NAME" />, og prøv å sende på nytt.</translation>
 <translation id="6212496753309875659">Denne datamaskinen har allerede en nyere versjon av Chromium. Hvis programvaren ikke fungerer, må du avinstallere Chromium og prøve på nytt.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium startes på nytt nå}=1{Chromium startes på nytt om 1 sekund}other{Chromium startes på nytt om # sekunder}}</translation>
@@ -255,6 +259,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6373523479360886564">Er du sikker på at du vil avinstallere Chromium?</translation>
 <translation id="6375219077595103062">Legg til en snarvei i Passordlagring</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Slik bruker vi disse dataene:<ph name="END_BOLD" /> Chromium kan anslå interessene dine. Senere kan nettsteder du besøker, spørre Chromium om interessene dine for å kunne sette personlig preg på annonsene du ser.</translation>
+<translation id="6400112897226594999">Chromium-logo på en dataskjerm.</translation>
 <translation id="6403826409255603130">Chromium er en nettleser som kjører nettsider og programmer i lynets hastighet. Den er rask, stabil og enkel å bruke. Surf på nettet på en tryggere måte med Chromium, som har innebygd beskyttelse mot skadelig programvare og nettfisking.</translation>
 <translation id="6442900851116057561">Start ChromiumOS på nytt</translation>
 <translation id="6455857529632101747">Velkommen til Chromium-profiler</translation>
@@ -303,6 +308,7 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="718435575166326686">Chromium trenger kameratillatelse for dette nettstedet</translation>
 <translation id="7196312274710523067">Kunne ikke starte Chromium. Prøv på nytt.</translation>
 <translation id="7197677400338048821">Chromium kan ikke sjekke passordene dine. Prøv på nytt når det har gått 24 timer.</translation>
+<translation id="7213407614656404070">Bruk Chromium hver gang du klikker på linker i meldinger, dokumenter og andre apper</translation>
 <translation id="7223968959479464213">Oppgavebehandling – Chromium</translation>
 <translation id="7246575524853130370">Interessene dine som Chromium har anslått</translation>
 <translation id="7309928523159922338">Med annonsemålinger kan nettsteder du besøker, spørre Chromium om informasjon som hjelper nettstedet å måle annonseresultatene sine. Annonsemålinger begrenser sporing på tvers av nettsteder ved å overføre så lite informasjon som mulig mellom nettsteder.</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="is">
 <translation id="1011749477052068769">Flytja hingað</translation>
 <translation id="1016498331642356377">Beittu röddinni til að leita á skjótan hátt. Haltu fingri á þessari flýtileið til að breyta henni.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Sendir í <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Hreinsa líka gögn af þessum svæðum og forritum?</translation>
 <translation id="1034259925032978114">Gluggi er opinn</translation>
@@ -51,6 +52,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1240288207750131269">Hleður <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Til að halda áfram mun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deila nafni þínu, netfangi og prófílmynd með þessu vefsvæði. Sjá <ph name="BEGIN_LINK1" />persónuverndarstefnu<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />þjónustuskilmála<ph name="END_LINK2" /> vefsvæðisins.</translation>
 <translation id="124116460088058876">Fleiri tungumál</translation>
+<translation id="1241792820757384812">Aðgangsorðunum þínum verður eytt úr Google-aðgangsorðastjórnun fyrir <ph name="CHROME_CHANNEL" />. Þú munt halda aðgangsorðaskránni sem þú varst að sækja.</translation>
 <translation id="1242883863226959074">tæki</translation>
 <translation id="124678866338384709">Loka núverandi flipa</translation>
 <translation id="1246905108078336582">Fjarlægja tillögu af klippiborði?</translation>
@@ -576,6 +578,7 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="4124152339699379357">Flæði tilkynningaheimildar opnað í fullri hæð</translation>
 <translation id="4135200667068010335">Tækjalisti fyrir deilingu flipa er lokaður.</translation>
 <translation id="4137746084635924146">Núverandi tungumál tækis</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Sjálfgefið beðið um tölvuvefsvæði</translation>
 <translation id="4147131678541801076">Þegar kveikt er á prufuútgáfum eru traustslyklar notaðir til að draga úr rusli og svikum til að auðvelda vefsvæðum að berjast gegn svikum og greina á milli spjallara og fólks.
 
@@ -1069,6 +1072,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6649642165559792194">Forskoða mynd <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Aðgangsorð</translation>
 <translation id="6659594942844771486">Flipi</translation>
+<translation id="6662119761881114773">Eins og stendur er ekki hægt að nota aðgangsorð sem eru vistuð í þessu tæki á öllum Chrome-rásum. Frá útgáfu Chrome 121 verða aðgangsorð sem eru vistuð í tækinu fyrir Chrome og <ph name="CHROME_CHANNEL" /> sameinuð og hægt verður að nota þau í báðum forritunum.</translation>
 <translation id="666731172850799929">Opna í <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Afrita mynd</translation>
 <translation id="6672917148207387131">Bæta <ph name="DOMAIN" /> við</translation>
@@ -1561,6 +1565,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="9158770349521403363">Aðeins deila efni</translation>
 <translation id="9159716826369098114">Endurheimta flipahóp með <ph name="TAB_COUNT" /> flipum sem nýjan flipahóp í bakgrunni.</translation>
 <translation id="9169507124922466868">Ferill er hálfopinn</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Ferilinn þinn verður í öllum samstilltum tækjum svo þú getir haldið áfram þar sem frá var horfið</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Athugað fyrir 1 mínútu}one{Athugað fyrir # mínútu}other{Athugað fyrir # mínútum}}</translation>
 <translation id="9204021776105550328">Eyðir</translation>
@@ -1576,6 +1581,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="927968626442779827">Nota Léttútgáfu í Google Chrome</translation>
 <translation id="928550791203542716">Fylgist með <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Heim</translation>
+<translation id="93533588269984624">Öll aðgangsorð verða sótt í tækið þitt og fjarlægð úr <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Villa: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Sláðu inn aðgangsorð</translation>
 <translation id="952301137339791907">Blað neðst með síðuinnsýn er opið.</translation>

@@ -7689,6 +7689,7 @@
 <translation id="7396017167185131589">共享文件夹将会显示在此处</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> 会在系统启动时启动，即使您将其他所有 <ph name="PRODUCT_NAME" />窗口关闭，它也会继续在后台运行。</translation>
 <translation id="7399045143794278225">自定义同步</translation>
+<translation id="7399616692258236448">系统会自动屏蔽除您允许的网站之外的其他所有网站的位置信息请求</translation>
 <translation id="7400418766976504921">网址</translation>
 <translation id="7400447915166857470">改回 <ph name="OLD_SEARCH_PROVIDER" />？</translation>
 <translation id="7400839060291901923">请在您的 <ph name="PHONE_NAME" /> 设备上设置连接</translation>

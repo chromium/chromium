@@ -1084,6 +1084,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1854180393107901205">Parar de transmitir</translation>
 <translation id="1856715684130786728">Adicionar localização...</translation>
 <translation id="1858585891038687145">Confiar neste certificado para identificar fabricantes de software</translation>
+<translation id="1859294693760125695">Já não tenho interesse</translation>
 <translation id="1859339856433307593">Já foi guardada uma palavra-passe para esta conta no seu <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1862311223300693744">Tem alguma VPN, proxy, firewall ou software NAS especial instalado?</translation>
@@ -3279,6 +3280,7 @@ Quer pará-lo?</translation>
 <translation id="3660234220361471169">Não fidedigno</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 palavra-passe existente encontrada}other{{NUM_PASSWORDS} palavras-passe existentes encontradas}}</translation>
 <translation id="3664511988987167893">Ícone da extensão</translation>
+<translation id="3665301845536101715">Abrir no painel lateral</translation>
 <translation id="3665589677786828986">O Chrome detetou que algumas das suas definições foram danificadas por outro programa e repôs as respetivas predefinições originais.</translation>
 <translation id="3665919494326051362">A versão atual é <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Descarregamento de depuração de NICs Intel WiFi</translation>
@@ -8647,6 +8649,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="814204052173971714">{COUNT,plural, =1{um vídeo}other{# vídeos}}</translation>
 <translation id="8143442547342702591">Aplicação inválida</translation>
 <translation id="8143609395536282994">Como pode gerir os seus dados:</translation>
+<translation id="8144429778087524791">Marcar como concluído e ocultar</translation>
 <translation id="8145170459658034418">Poupança de memória</translation>
 <translation id="8146177459103116374">Se já estiver registado neste aparelho, pode <ph name="LINK2_START" />iniciar sessão como um utilizador existente<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Adicione e classifique os seus idiomas favoritos. Os Websites serão apresentados nos seus idiomas favoritos, quando tal for possível. Estas preferências serão sincronizadas com as definições do seu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="th">
 <translation id="1011749477052068769">ย้ายมาที่นี่</translation>
 <translation id="1016498331642356377">ค้นหาด้วยเสียงอย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">กำลังส่งไปที่ <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">ล้างข้อมูลเว็บไซต์และแอปเหล่านี้ด้วยไหม</translation>
 <translation id="1034259925032978114">หน้าต่างเปิดอยู่</translation>
@@ -51,6 +52,7 @@
 <translation id="1240288207750131269">กำลังโหลดภาษา<ph name="LANG" /></translation>
 <translation id="1240903469550363138">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ โปรดอ่าน<ph name="BEGIN_LINK1" />นโยบายความเป็นส่วนตัว<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการ<ph name="END_LINK2" />ของเว็บไซต์</translation>
 <translation id="124116460088058876">ภาษาเพิ่มเติม</translation>
+<translation id="1241792820757384812">ระบบจะลบรหัสผ่านของคุณจากเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="CHROME_CHANNEL" /> คุณจะต้องเก็บไฟล์รหัสผ่านที่เพิ่งดาวน์โหลดไว้</translation>
 <translation id="1242883863226959074">อุปกรณ์</translation>
 <translation id="124678866338384709">ปิดแท็บปัจจุบัน</translation>
 <translation id="1246905108078336582">นำคำแนะนำออกจากคลิปบอร์ดไหม</translation>
@@ -576,6 +578,7 @@
 <translation id="4124152339699379357">ขั้นตอนการให้สิทธิ์การแจ้งเตือนเปิดแบบเต็มความสูง</translation>
 <translation id="4135200667068010335">รายการอุปกรณ์ที่จะแชร์แท็บด้วยปิดอยู่</translation>
 <translation id="4137746084635924146">ภาษาปัจจุบันของอุปกรณ์</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">เว็บไซต์เวอร์ชันเดสก์ท็อปเปิดใช้งานโดยค่าเริ่มต้น</translation>
 <translation id="4147131678541801076">เมื่อเริ่มการทดสอบ การลดจำนวนสแปมและการประพฤติมิชอบจะใช้โทเค็นสถานะส่วนตัวเพื่อช่วยเว็บไซต์ป้องกันการประพฤติมิชอบและแยกบ็อตออกจากมนุษย์
 
@@ -1069,6 +1072,7 @@
 <translation id="6649642165559792194">พรีวิวรูปภาพ <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6659594942844771486">แท็บ</translation>
+<translation id="6662119761881114773">ขณะนี้ รหัสผ่านที่บันทึกไว้ในอุปกรณ์นี้จะนำไปใช้ใน Chrome เวอร์ชันอื่นๆ ไม่ได้ หลังจาก Chrome 121 รหัสผ่านที่คุณบันทึกไว้ใน Chrome และ <ph name="CHROME_CHANNEL" /> บนอุปกรณ์จะรวมกัน และใช้ได้ในทั้ง 2 แอป</translation>
 <translation id="666731172850799929">เปิดใน <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">คัดลอกรูปภาพ</translation>
 <translation id="6672917148207387131">เพิ่ม <ph name="DOMAIN" /></translation>
@@ -1561,6 +1565,7 @@
 <translation id="9158770349521403363">แชร์เนื้อหาเท่านั้น</translation>
 <translation id="9159716826369098114">คืนค่ากลุ่มแท็บ <ph name="TAB_COUNT" /> แท็บเป็นกลุ่มแท็บใหม่ในเบื้องหลัง</translation>
 <translation id="9169507124922466868">ประวัติการนำทางเปิดอยู่ครึ่งเดียว</translation>
+<translation id="918419812064856259">Chrome เบต้า</translation>
 <translation id="9190276265094487094">อุปกรณ์ทั้งหมดที่ซิงค์ไว้จะมีประวัติการเข้าชม คุณจึงทำสิ่งที่ดำเนินการอยู่ต่อได้</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ตรวจสอบเมื่อ 1 นาทีที่ผ่านมา}other{ตรวจสอบเมื่อ # นาทีที่ผ่านมา}}</translation>
 <translation id="9204021776105550328">กำลังลบ</translation>
@@ -1576,6 +1581,7 @@
 <translation id="927968626442779827">ใช้โหมด Lite ใน Google Chrome</translation>
 <translation id="928550791203542716">กำลังติดตาม <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">หน้าแรก</translation>
+<translation id="93533588269984624">ระบบจะดาวน์โหลดรหัสผ่านทั้งหมดในอุปกรณ์ของคุณ และนําออกจาก <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">ข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">ป้อนข้อความรหัสผ่าน</translation>
 <translation id="952301137339791907">Bottom Sheet ข้อมูลเชิงลึกของหน้าเปิดอยู่</translation>

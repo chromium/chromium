@@ -3,6 +3,7 @@
 <translationbundle lang="ml">
 <translation id="1011749477052068769">ഇവിടേക്ക് നീക്കുക</translation>
 <translation id="1016498331642356377">നിങ്ങളുടെ ശബ്ദം ഉപയോഗിച്ച് വേഗത്തിൽ തിരയുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് അയ‌യ്‌ക്കുന്നു...</translation>
 <translation id="103269572468856066">ഇവയിലെ ഡാറ്റയും മായ്ക്കണോ?</translation>
 <translation id="1034259925032978114">വിൻഡോ തുറന്നിരിക്കുന്നു</translation>
@@ -51,6 +52,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> ലോഡ് ചെയ്യുന്നു</translation>
 <translation id="1240903469550363138">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സ്വകാര്യതാ നയവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />സേവന നിബന്ധനകളും<ph name="END_LINK2" /> കാണുക.</translation>
 <translation id="124116460088058876">കൂടുതൽ ഭാഷകൾ</translation>
+<translation id="1241792820757384812"><ph name="CHROME_CHANNEL" /> എന്നതിനുള്ള Google Password Manager-ൽ നിന്ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ ഇല്ലാതാക്കും. ഇപ്പോൾ ഡൗൺലോഡ് ചെയ്ത, പാസ്‌വേഡുകളുടെ ഫയൽ നിങ്ങൾ നിലനിർത്തും.</translation>
 <translation id="1242883863226959074">ഉപകരണം</translation>
 <translation id="124678866338384709">നിലവിലെ ടാബ് അടയ്‌ക്കുക</translation>
 <translation id="1246905108078336582">ക്ലിപ്പ്ബോർഡിൽ നിന്ന് നിർദ്ദേശം നീക്കം ചെയ്യണോ?</translation>
@@ -576,6 +578,7 @@
 <translation id="4124152339699379357">അറിയിപ്പ് അനുമതി ഫ്ലോ മുഴുവനായും തുറന്നിരിക്കുന്നു</translation>
 <translation id="4135200667068010335">ടാബ് പങ്കിടാനാകുന്ന ഉപകരണങ്ങളുടെ ലിസ്‌റ്റ് അടച്ചിരിക്കുന്നു.</translation>
 <translation id="4137746084635924146">നിലവിലെ ഉപകരണ ഭാഷ</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">ഡിഫോൾട്ടായി അഭ്യർത്ഥിച്ച ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റുകൾ</translation>
 <translation id="4147131678541801076">ട്രയലുകൾ ഓണായിരിക്കുമ്പോൾ, വഞ്ചനയ്‌ക്കെതിരെ പോരാടാനും ബോട്ടുകളെ ആളുകളിൽ നിന്ന് വേർതിരിച്ചറിയാനും സൈറ്റുകളെ സഹായിക്കുന്നതിന് സ്‌പാമും വഞ്ചനയും കുറയ്ക്കൽ പ്രൈവറ്റ് സ്റ്റേറ്റ് ടോക്കണുകളെ ആശ്രയിക്കുന്നു.
 
@@ -1069,6 +1072,7 @@
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />പുതിയ<ph name="END_NEW" /> ചിത്രം പ്രിവ്യൂ ചെയ്യുക</translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="6659594942844771486">ബ്രൗസർ ടാബ്</translation>
+<translation id="6662119761881114773">ഇപ്പോൾ ഈ ഉപകരണത്തിൽ സംരക്ഷിച്ചിരിക്കുന്ന പാസ്‌വേഡുകൾ Chrome ചാനലുകളിൽ ഉടനീളം ഉപയോഗിക്കാനാകില്ല. Chrome 121-ന് ശേഷമുള്ള പതിപ്പുകളിൽ, Chrome-നും <ph name="CHROME_CHANNEL" /> എന്നതിനും സംരക്ഷിച്ചിരിക്കുന്ന പാസ്‌വേഡുകൾ ലയിപ്പിക്കും, അവ രണ്ട് ആപ്പുകളിലും ഉപയോഗിക്കാം.</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ചേർക്കുക</translation>
@@ -1561,6 +1565,7 @@
 <translation id="9158770349521403363">ഉള്ളടക്കം മാത്രം പങ്കിടുക</translation>
 <translation id="9159716826369098114">പുതിയ പശ്ചാത്തല ടാബ് ഗ്രൂപ്പായി <ph name="TAB_COUNT" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ് പുനഃസ്ഥാപിക്കുക.</translation>
 <translation id="9169507124922466868">നാവിഗേഷൻ ചരിത്രം പകുതിയായി തുറന്നിരിക്കുന്നു</translation>
+<translation id="918419812064856259">Chrome ബീറ്റ</translation>
 <translation id="9190276265094487094">സമന്വയിപ്പിച്ച എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ ചരിത്രം ഉണ്ടാകുമെന്നതിനാൽ ചെയ്തുകൊണ്ടിരുന്ന കാര്യങ്ങൾ നിങ്ങൾക്ക് തുടരാനാകും</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ഒരു മിനിറ്റ് മുമ്പ് പരിശോധിച്ചു}other{# മിനിറ്റ് മുമ്പ് പരിശോധിച്ചു}}</translation>
 <translation id="9204021776105550328">ഇല്ലാതാക്കുന്നു</translation>
@@ -1576,6 +1581,7 @@
 <translation id="927968626442779827">Google Chrome-ൽ ലൈറ്റ് മോഡ് ഉപയോഗിക്കൂ</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> പിന്തുടരുന്നു</translation>
 <translation id="932327136139879170">ഹോം</translation>
+<translation id="93533588269984624">എല്ലാ പാസ്‌വേഡുകളും നിങ്ങളുടെ ഉപകരണത്തിൽ ഡൗൺലോഡ് ചെയ്യും, <ph name="CHROME_CHANNEL" /> എന്നതിൽ നിന്ന് നീക്കം ചെയ്യും</translation>
 <translation id="938850635132480979">പിശക്: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">പാസ്ഫ്രെയ്‍സ് നല്‍കുക</translation>
 <translation id="952301137339791907">പേജ് ഉൾക്കാഴ്‌ചകളുടെ ബോട്ടം ഷീറ്റ് തുറന്നു</translation>

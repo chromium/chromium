@@ -1072,6 +1072,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6649642165559792194">Afbeelding bekijken <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="6659594942844771486">Browsertabblad</translation>
+<translation id="6662119761881114773">Wachtwoorden die op dit apparaat zijn opgeslagen, kunnen op dit moment niet worden gebruikt voor verschillende Chrome-kanalen. Na Chrome 121 worden de wachtwoorden die op je apparaat zijn opgeslagen voor Chrome en <ph name="CHROME_CHANNEL" /> samengevoegd. Je kunt ze dan in beide apps gebruiken.</translation>
 <translation id="666731172850799929">Openen in <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Afbeelding kopiëren</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> toevoegen</translation>

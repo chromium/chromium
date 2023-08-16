@@ -3,6 +3,7 @@
 <translationbundle lang="hy">
 <translation id="1011749477052068769">Տեղափոխել այստեղ</translation>
 <translation id="1016498331642356377">Արագ որոնեք ձայնային հրահանգների օգնությամբ։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Ուղարկվում է <ph name="DEVICE_NAME" /> սարքին...</translation>
 <translation id="103269572468856066">Մաքրե՞լ այս տվյալները</translation>
 <translation id="1034259925032978114">Պատուհանը բաց է</translation>
@@ -51,6 +52,7 @@
 <translation id="1240288207750131269">Բեռնվում է <ph name="LANG" /> լեզվի փաթեթը</translation>
 <translation id="1240903469550363138">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />օգտագործման պայմաններին<ph name="END_LINK2" />։</translation>
 <translation id="124116460088058876">Այլ լեզուներ</translation>
+<translation id="1241792820757384812">Ձեր գաղտնաբառերը կջնջվեն Google գաղտնաբառերի կառավարչից <ph name="CHROME_CHANNEL" />-ում։ Գաղտնաբառերով ֆայլը, որը հենց նոր ներբեռնեցիք, կպահպանվի։</translation>
 <translation id="1242883863226959074">սարք</translation>
 <translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
 <translation id="1246905108078336582">Հեռացնե՞լ առաջարկը սեղմատախտակից:</translation>
@@ -576,6 +578,7 @@
 <translation id="4124152339699379357">Ծանուցումների թույլտվության պատուհանը բացված է ամբողջությամբ</translation>
 <translation id="4135200667068010335">Սարքերը, որոնց հետ կիսվելու եք ներդիրով, ցուցադրված չեն էկրանին:</translation>
 <translation id="4137746084635924146">Սարքի ընթացիկ լեզուն</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Կայքերի համակարգչային տարբերակները պահանջվում են ըստ կանխադրման</translation>
 <translation id="4147131678541801076">Երբ փորձնական գործառույթները միացված են, սպամի և խարդախության դեմ պայքարի համար օգտագործվում են վիճակի անձնական թոքեններ, որոնք օգնում են կայքերին կանխել խարդախության փորձերը և տարբերել բոտերին մարդկանցից։
 
@@ -1561,6 +1564,7 @@
 <translation id="9158770349521403363">Կիսվել միայն բովանդակությամբ</translation>
 <translation id="9159716826369098114">Վերականգնել <ph name="TAB_COUNT" /> ներդիրից բաղկացած խումբը որպես ներդիրների նոր ֆոնային խումբ։</translation>
 <translation id="9169507124922466868">Նավիգացիայի պատմության թերթը կիսաբացված է</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Ձեր գործողությունների պատմությունը հասանելի կլինի բոլոր համաժամացված սարքերում, և դուք կկարողանաք շարունակել այն, ինչ անում էիք</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Ստուգվել է 1 րոպե առաջ}one{Ստուգվել է # րոպե առաջ}other{Ստուգվել է # րոպե առաջ}}</translation>
 <translation id="9204021776105550328">Ջնջում</translation>
@@ -1576,6 +1580,7 @@
 <translation id="927968626442779827">Փորձեք Lite ռեժիմը Google Chrome-ում</translation>
 <translation id="928550791203542716">Դուք բաժանորդագրվեցիք <ph name="SITE_NAME" /> կայքին</translation>
 <translation id="932327136139879170">Գլխավոր էջ</translation>
+<translation id="93533588269984624">Բոլոր գաղտնաբառերը կներբեռնվեն ձեր սարքում և կհեռացվեն <ph name="CHROME_CHANNEL" />-ից</translation>
 <translation id="938850635132480979">Սխալ՝ <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Մուտքագրեք անցաբառը</translation>
 <translation id="952301137339791907">Էջի վիճակագրության ներքևի էկրանը բացված է</translation>

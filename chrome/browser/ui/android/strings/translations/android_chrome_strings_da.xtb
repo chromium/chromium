@@ -3,6 +3,7 @@
 <translationbundle lang="da">
 <translation id="1011749477052068769">Flyt hertil</translation>
 <translation id="1016498331642356377">Søg hurtigt med din stemme. Hold fingeren på genvejen for at redigere.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Sender til <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Vil du rydde data fra disse websites og apps?</translation>
 <translation id="1034259925032978114">Et vindue er åbent</translation>
@@ -51,6 +52,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1240288207750131269"><ph name="LANG" /> indlæses</translation>
 <translation id="1240903469550363138">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse, og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />servicevilkår<ph name="END_LINK2" />.</translation>
 <translation id="124116460088058876">Flere sprog</translation>
+<translation id="1241792820757384812">Dine adgangskoder slettes fra Google Adgangskodeadministrator for <ph name="CHROME_CHANNEL" />. Du kan beholde den adgangskodefil, du lige har downloadet.</translation>
 <translation id="1242883863226959074">enhed</translation>
 <translation id="124678866338384709">Luk aktuel fane</translation>
 <translation id="1246905108078336582">Vil du fjerne forslaget fra udklipsholderen?</translation>
@@ -579,6 +581,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="4124152339699379357">Flow for notifikationstilladelse er åbnet i fuld højde</translation>
 <translation id="4135200667068010335">Lukket liste over enheder, der skal deles en fane med.</translation>
 <translation id="4137746084635924146">Aktuelt enhedssprog</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Der anmodes som standard om computerwebsites</translation>
 <translation id="4147131678541801076">Når prøveversioner er aktiveret, kræver "Reducering af spam og svindel" brugen af private state tokens, som hjælper websites med at bekæmpe svindel og skelne mellem bots og mennesker.
 
@@ -1079,6 +1082,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6649642165559792194">Se forhåndsvisning af <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Adgangskode</translation>
 <translation id="6659594942844771486">Fane</translation>
+<translation id="6662119761881114773">Lige nu kan adgangskoder, der er gemt på denne enhed, ikke bruges på tværs af Chrome-kanaler. Efter Chrome 121 flettes de adgangskoder, der er gemt på din enhed til Chrome og <ph name="CHROME_CHANNEL" />, og adgangskoderne kan bruges i begge apps.</translation>
 <translation id="666731172850799929">Åbn i <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Kopiér billede</translation>
 <translation id="6672917148207387131">Tilføj <ph name="DOMAIN" /></translation>
@@ -1575,6 +1579,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="9158770349521403363">Del kun indhold</translation>
 <translation id="9159716826369098114">Gendan fanegruppen med <ph name="TAB_COUNT" /> faner som en ny fanegruppe i baggrunden.</translation>
 <translation id="9169507124922466868">Navigationshistorikken er åbnet halvt</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Din historik er på alle synkroniserede enheder, så du kan fortsætte med det, du var i gang med</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tjekket for 1 minut siden}one{Tjekket for # minut siden}other{Tjekket for # minutter siden}}</translation>
 <translation id="9204021776105550328">Sletter</translation>
@@ -1590,6 +1595,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="927968626442779827">Brug Lite-tilstand i Google Chrome</translation>
 <translation id="928550791203542716">Følger <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Start</translation>
+<translation id="93533588269984624">Alle adgangskoder downloades til din enhed og fjernes fra <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Fejl: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Angiv adgangssætning</translation>
 <translation id="952301137339791907">Det nederste ark med sideindsigt er åbnet</translation>

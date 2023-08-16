@@ -3,6 +3,7 @@
 <translationbundle lang="gl">
 <translation id="1011749477052068769">Mover aquí</translation>
 <translation id="1016498331642356377">Buscar rapidamente coa voz. Para editar este atallo, mantén premido o botón.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Enviando pestana a <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Queres borrar tamén os datos destes sitios e aplicacións?</translation>
 <translation id="1034259925032978114">A ventá está aberta</translation>
@@ -51,6 +52,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="1240288207750131269">Cargando <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />condicións de servizo<ph name="END_LINK2" /> deste sitio.</translation>
 <translation id="124116460088058876">Máis idiomas</translation>
+<translation id="1241792820757384812">Os contrasinais eliminaranse do xestor de contrasinais de Google para <ph name="CHROME_CHANNEL" />. Conservarás o ficheiro de contrasinais que acabas de descargar.</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Pechar a pestana actual</translation>
 <translation id="1246905108078336582">Queres quitar a suxestión do portapapeis?</translation>
@@ -576,6 +578,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="4124152339699379357">Fluxo de permiso de notificación aberto completamente</translation>
 <translation id="4135200667068010335">A lista de dispositivos cos que compartir unha pestana está pechada.</translation>
 <translation id="4137746084635924146">Idioma actual do dispositivo</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Os sitios para ordenadores solicítanse de forma predeterminada</translation>
 <translation id="4147131678541801076">Cando as probas están activas, a redución do spam e da fraude baséase en tokens de estado privado, que lles axudan aos sitios a loitar contra a fraude, así como a distinguir entre os bots e as persoas.
 
@@ -1069,6 +1072,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6649642165559792194">Vista previa: imaxe <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Contrasinal</translation>
 <translation id="6659594942844771486">Pestana</translation>
+<translation id="6662119761881114773">De momento, os contrasinais gardados neste dispositivo non se poden usar en todas as canles de Chrome. Despois da versión 121 de Chrome, os contrasinais que teñas almacenados no dispositivo para Chrome e <ph name="CHROME_CHANNEL" /> combinaranse e poderanse usar en ambas as aplicacións.</translation>
 <translation id="666731172850799929">Abrir en <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Copiar imaxe</translation>
 <translation id="6672917148207387131">Engadir <ph name="DOMAIN" /></translation>
@@ -1561,6 +1565,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="9158770349521403363">Compartir só contido</translation>
 <translation id="9159716826369098114">Restablecer grupo de <ph name="TAB_COUNT" /> pestanas como un novo grupo de pestanas en segundo plano.</translation>
 <translation id="9169507124922466868">O historial de navegación abriuse ata a metade</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Terás o teu historial en todos os dispositivos sincronizados, de tal xeito que poidas continuar co que estabas facendo</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A comprobación realizouse hai 1 minuto}other{A comprobación realizouse hai # minutos}}</translation>
 <translation id="9204021776105550328">Eliminando</translation>
@@ -1576,6 +1581,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="927968626442779827">Usa o modo básico en Google Chrome</translation>
 <translation id="928550791203542716">Comezaches a seguir <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Inicio</translation>
+<translation id="93533588269984624">Descargaranse todos os contrasinais que haxa no teu dispositivo e quitaranse de <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Erro: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introducir frase de acceso</translation>
 <translation id="952301137339791907">O panel inferior de estatísticas da páxina está aberto</translation>

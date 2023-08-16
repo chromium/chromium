@@ -1083,6 +1083,7 @@
 <translation id="1854180393107901205">Заустави пребацивање</translation>
 <translation id="1856715684130786728">Додај локацију...</translation>
 <translation id="1858585891038687145">Овај сертификат је поуздан за идентификацију произвођача софтвера</translation>
+<translation id="1859294693760125695">Ово ме више не занима</translation>
 <translation id="1859339856433307593">Лозинка за овај налог је већ сачувана у апликацији <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Овај фолдер је празан</translation>
 <translation id="1862311223300693744">Да ли сте инсталирали било какав посебан софтвер за VPN, прокси, заштитни зид или NAS?</translation>
@@ -3277,6 +3278,7 @@
 <translation id="3660234220361471169">Непоуздани</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Пронађена је 1 постојећа лозинка}one{Пронађена је {NUM_PASSWORDS} постојећа лозинка}few{Пронађене су {NUM_PASSWORDS} постојеће лозинке}other{Пронађено је {NUM_PASSWORDS} постојећих лозинки}}</translation>
 <translation id="3664511988987167893">Икона додатка</translation>
+<translation id="3665301845536101715">Отвори на бочној табли</translation>
 <translation id="3665589677786828986">Chrome је открио да је други програм оштетио нека од подешавања и ресетовао их је на првобитне подразумеване вредности.</translation>
 <translation id="3665919494326051362">Актуелна верзија је <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Уклањање података о отклањању грешака за NIC-ове за Intel WiFi</translation>
@@ -8648,6 +8650,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{видео}one{# видео}few{# видео снимка}other{# видео снимака}}</translation>
 <translation id="8143442547342702591">Неважећа апликација</translation>
 <translation id="8143609395536282994">Како можете да управљате подацима:</translation>
+<translation id="8144429778087524791">Означи као готово и сакриј се</translation>
 <translation id="8145170459658034418">Уштеда меморије</translation>
 <translation id="8146177459103116374">Ако сте се већ регистровали на овом уређају, можете да <ph name="LINK2_START" />се пријавите као постојећи корисник<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Додајте и рангирајте жељене језике. Веб-сајтови ће се приказивати на жељеним језицима када је то могуће. Ова подешавања се синхронизују са подешавањима прегледача. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>

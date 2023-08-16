@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="1143896152279775643">Ise-save ang iyong password sa Google Password Manager para sa <ph name="EMAIL" />.</translation>
+<translation id="1180362651362502943">Patuloy na gamitin ang data sa Chrome sa iyong Google Account.</translation>
 <translation id="1282031177488366470">Tumulong sa Pagpapahusay sa Mga Feature at Performance ng Chrome</translation>
 <translation id="1352919863522755794">Hindi masuri ng Google Password Manager ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
+<translation id="1407843355326180937">Mag-sign in sa site na ito at sa Chrome para makuha mo ang iyong mga bookmark at higit pa sa lahat ng device mo.</translation>
 <translation id="1462727070346936664">Mag-sign in para masulit ang Chrome.</translation>
 <translation id="1479202195792305274">Masusuri ng Chrome ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
 <translation id="1491435845014430217">I-on ang “I-lock ang Mga Tab na Incognito Kapag Isinara Mo ang Chrome.”</translation>
 <translation id="1493827051843127077">Itakda ang Chrome bilang default para ma-sync ang iyong mga tab, password, at impormasyon sa pagbabayad sa lahat ng device mo</translation>
 <translation id="1504372625950710826">Hindi matingnan ng Chrome kung may mga update. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="1511320244449497906">Naka-sign in ka at sini-sync ang iyong data sa isang account na pinamamahalaan ng <ph name="DOMAIN" /> kung saan magagawa na ng administrator nito na magtakda ng mga patakaran ng user na partikular sa account na iyon na puwedeng makabago sa pagkilos ng Chrome.</translation>
+<translation id="1526327845902180576">Kapag naka-on:
+<ph name="BEGIN_INDENT" />  • Tumulong na pahusayin ang Chrome para sa mga taong gumagamit nito gaya ng iyong paggamit.<ph name="END_INDENT" />
+
+Mga bagay na dapat isaalang-alang:
+<ph name="BEGIN_INDENT" />  • Ipapadala sa Google ang impormasyon tungkol sa paggamit mo sa Chrome, pero hindi ito nauugnay sa iyo.
+
+  • Kung magka-crash ang Chrome, posibleng kasama sa mga detalye tungkol sa pag-crash ang ilang personal na impormasyon.
+
+  • Kung isi-sync mo ang iyong history sa Google Account mo, posibleng kasama rin sa mga sukatan ang impormasyon tungkol sa mga URL na binibisita mo.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Nasa iyo ang pinakamaigting na seguridad ng Chrome laban sa mga mapaminsalang website</translation>
 <translation id="1682483655351012182">I-sync ang Iyong Data sa Chrome</translation>
 <translation id="1733654336159102143">I-lock ang iyong incognito kapag umalis ka sa Chrome o lumipat ka sa ibang app.</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">I-lock ang Mga Tab na Incognito Kapag Isinara Mo ang Chrome</translation>
 <translation id="3827545470516145620">Mayroon kang standard na proteksyon sa seguridad sa device na ito</translation>
 <translation id="384394811301901750">Hindi magamit ng Google Chrome ang camera mo ngayon</translation>
+<translation id="3901001113120561395">Sulitin ang Chrome.</translation>
 <translation id="3980220367029651214">Lumilipat ka mula sa naka-sync na account na <ph name="USER_EMAIL1" /> papunta sa <ph name="USER_EMAIL2" />. Pinamamahalaan ng <ph name="DOMAIN" /> ang kasalukuyan mong data sa Chrome. Ide-delete nito ang data mo sa device na ito, ngunit mananatili ang iyong data sa <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Hinihiling sa iyo ng organisasyon mo na manatiling naka-sign out sa Chrome.</translation>
 <translation id="3988789688219830639">Walang access ang Google Chrome sa larawan o video. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">Mag-sign in sa site na ito at sa Chrome.</translation>
 <translation id="4698415050768537821">Hindi masuri ng Chrome ang lahat ng password. Subukan ulit bukas o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">Para makatulong na mapaganda ang app, nagpapadala ang Chrome ng data ng paggamit at pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome.
+
+        Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="484033449593719797">Hindi sinusuportahan sa Chrome Beta</translation>
 <translation id="4840404732697892756">Masusuri ng Google Password Manager ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
 <translation id="4903674399067644695">Magpapakita sa iyo ang card na ito ng mga suhestyon sa kung paano masusulit ang Chrome.</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">Pahusayin ang Chrome</translation>
 <translation id="5119391094379141756">Piliin ang Chrome</translation>
 <translation id="5162467219239570114">Luma na ang Chrome. Kung walang available na update sa <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, posibleng hindi na sinusuportahan ng iyong device ang mga bagong bersyon ng Chrome.</translation>
+<translation id="5190139289262548459">Pinapamahalaan ng iyong organisasyon at <ph name="DOMAIN" /> ang account kung saan ka naka-sign in at kung paano ginagamit ang Chrome.</translation>
 <translation id="5389212809648216794">Hindi magamit ng Google Chrome ang iyong camera ngayon dahil ginagamit ito sa isa pang application</translation>
 <translation id="5395376160638294582">Tiyaking magagamit mo sa anumang oras ang data ng Chrome sa iyong Google Account</translation>
 <translation id="5439191312780166229">Babalaan ka tungkol sa mga mapanganib na site, kahit iyong mga hindi alam ng Google noon, sa pamamagitan ng pagsusuri sa higit pang data mula sa mga site kaysa sa karaniwang proteksyon. Puwede mong piliing laktawan ang mga babala ng Chrome.</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">Nagsa-sign in ka gamit ang isang account na pinamamahalaan ng <ph name="DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chrome. Permanenteng mauugnay ang iyong data sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chrome, ngunit mananatili itong naka-store sa iyong Google Account.</translation>
 <translation id="6676840375528380067">I-clear ang iyong data sa Chrome sa device na ito?</translation>
 <translation id="6709398533399187136">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Google Password Manager na palitan na ito ngayon.</translation>
+<translation id="6815466750807582739">Hindi mae-encrypt ang mga paraan ng pagbabayad at address. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
+
+Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data. Hindi ipinapadala sa o sino-store ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Hindi masuri ng Chrome ang lahat ng password. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="6964931465519938134">Magagamit mo na ngayon ang Chrome sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="6975725306479268850">Piliin ang Chrome para sa AutoFill</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">Nagpapakita ng mga prompt na mag-sign in sa Chrome.</translation>
 <translation id="8788269841521769222">Hindi mo kailangang tandaan ang password na ito. Mase-save ito sa Google Password Manager para sa <ph name="EMAIL" /></translation>
 <translation id="8808828119384186784">Mga Setting ng Chrome</translation>
+<translation id="8856877214925961642">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address.
+
+Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="8897749957032330183">Sine-save ang mga password sa Google Password Manager sa device na ito.</translation>
 <translation id="8969290730818637510">Kapag naka-on:

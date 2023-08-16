@@ -1072,6 +1072,7 @@
 <translation id="6649642165559792194">Προεπισκόπηση εικόνας <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6659594942844771486">Καρτέλα</translation>
+<translation id="6662119761881114773">Οι κωδικοί πρόσβασης που είναι αποθηκευμένοι σε αυτήν τη συσκευή δεν μπορούν προς το παρόν να χρησιμοποιηθούν στα κανάλια Chrome. Μετά το Chrome 121, οι κωδικοί πρόσβασης που είναι αποθηκευμένοι στη συσκευή σας για το Chrome και το <ph name="CHROME_CHANNEL" /> θα συγχωνευτούν και θα μπορούν να χρησιμοποιηθούν και στις δύο εφαρμογές.</translation>
 <translation id="666731172850799929">Άνοιγμα σε <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Αντιγραφή εικόνας</translation>
 <translation id="6672917148207387131">Προσθήκη <ph name="DOMAIN" /></translation>

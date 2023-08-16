@@ -52,7 +52,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="1240288207750131269">Učitavanje jezika <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Da nastavite, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će dijeliti vaše ime i prezime, adresu e-pošte, adresu i sliku profila s ovom web lokacijom. Pogledajte <ph name="BEGIN_LINK1" />pravila privatnosti<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />uslove korištenja usluge<ph name="END_LINK2" /> ove web lokacije.</translation>
 <translation id="124116460088058876">Više jezika</translation>
-<translation id="1241792820757384812">Vaše će se zaporke izbrisati s Google upravitelja zaporki za <ph name="CHROME_CHANNEL" />. Zadržat ćete datoteku sa zaporkama koju ste upravo preuzeli.</translation>
+<translation id="1241792820757384812">Lozinke će se izbrisati s Google upravitelja lozinki za <ph name="CHROME_CHANNEL" />. Zadržat ćete fajl lozinki koji ste upravo preuzeli.</translation>
 <translation id="1242883863226959074">uređaj</translation>
 <translation id="124678866338384709">Zatvori trenutnu karticu</translation>
 <translation id="1246905108078336582">Ukloniti prijedlog iz međumemorije?</translation>
@@ -1581,7 +1581,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="927968626442779827">Koristite Jednostavni način rada u Google Chromeu</translation>
 <translation id="928550791203542716">Pratite web lokaciju <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Dom</translation>
-<translation id="93533588269984624">Sve zaporke preuzet će se na vašem uređaju i ukloniti iz: <ph name="CHROME_CHANNEL" /></translation>
+<translation id="93533588269984624">Sve lozinke će se preuzeti na uređaj i ukloniti iz preglednika <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Greška: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Unesite pristupni izraz</translation>
 <translation id="952301137339791907">Donja tabela uvida u stranicu je otvorena</translation>

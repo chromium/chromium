@@ -2025,7 +2025,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5287456746628258573">To spletno mesto uporablja zastarelo varnostno konfiguracijo, zaradi česar so lahko vaši podatki ob pošiljanju temu spletnemu mestu izpostavljeni (npr. gesla ali številke kreditnih kartic).</translation>
 <translation id="5288108484102287882">Preverjanje vrednosti pravilnika je aktiviralo opozorila</translation>
 <translation id="5288393065350884210">Računovodstvo in revidiranje</translation>
-<translation id="5288808348893593856">Povezava spletnega mesta je varna, razen če Chrome ne sporoči drugače.</translation>
 <translation id="5289384342738547352">Obravnava več dokumentov</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Posodobitev je treba izvesti danes.}=2{Posodobitev je treba izvesti do jutri.}one{Posodobitev je treba izvesti v # dnevu.}two{Posodobitev je treba izvesti v # dnevih.}few{Posodobitev je treba izvesti v # dneh.}other{Posodobitev je treba izvesti v # dneh.}}</translation>
 <translation id="5293919335876685914">Kupeji</translation>

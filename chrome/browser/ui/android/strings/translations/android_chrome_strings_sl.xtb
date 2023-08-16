@@ -3,6 +3,7 @@
 <translationbundle lang="sl">
 <translation id="1011749477052068769">Premik sem</translation>
 <translation id="1016498331642356377">Hitro iščite z glasom. Če želite urediti to bližnjico, pridržite.</translation>
+<translation id="1024113959924243553">Chrome za razvijalce</translation>
 <translation id="1028699632127661925">Pošiljanje v napravo <ph name="DEVICE_NAME" /> ...</translation>
 <translation id="103269572468856066">Želite izbrisati tudi podatke s teh mest in iz aplikacij?</translation>
 <translation id="1034259925032978114">Okno je odprto.</translation>
@@ -51,6 +52,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1240288207750131269">Nalaganje: <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Če želite nadaljevati, bo ponudnik <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delil vaše ime, e-poštni naslov in profilno sliko s tem spletnim mestom. Oglejte si <ph name="BEGIN_LINK1" />pravilnik o zasebnosti<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />pogoje storitve<ph name="END_LINK2" /> tega spletnega mesta.</translation>
 <translation id="124116460088058876">Več jezikov</translation>
+<translation id="1241792820757384812">Gesla bodo izbrisana iz Googlovega upravitelja gesel za <ph name="CHROME_CHANNEL" />. Obdržali boste datoteko z gesli, ki ste jo pravkar prenesli.</translation>
 <translation id="1242883863226959074">napravi</translation>
 <translation id="124678866338384709">Zapiranje trenutnega zavihka</translation>
 <translation id="1246905108078336582">Ali želite odstraniti predlog iz odložišča?</translation>
@@ -576,6 +578,7 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="4124152339699379357">Potek za dovoljenja za obvestila je odprt pri polni višini</translation>
 <translation id="4135200667068010335">Seznam naprav, s katerimi želite deliti zavihek, je zaprt.</translation>
 <translation id="4137746084635924146">Trenutni jezik naprave</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Namizna spletna mesta so privzeto zahtevana</translation>
 <translation id="4147131678541801076">Če so preizkusi vklopljeni, zmanjšanje vsiljene vsebine in prevar temelji na zasebnih žetonih stanja, s katerimi si spletna mesta pomagajo pri boju zoper prevare in ločevanju botov od ljudi.
 
@@ -1069,6 +1072,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6649642165559792194">Predogled slike <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Geslo</translation>
 <translation id="6659594942844771486">Zavihek</translation>
+<translation id="6662119761881114773">Gesel, shranjenih v tej napravi, za zdaj ni mogoče uporabljati v Chromovih kanalih. Po Chromu 121 bodo gesla, shranjena v napravi za Chrome in <ph name="CHROME_CHANNEL" />, združena in jih bo mogoče uporabljati v obeh aplikacijah.</translation>
 <translation id="666731172850799929">Odpri v: <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Kopiraj sliko</translation>
 <translation id="6672917148207387131">Dodajanje spletnega mesta <ph name="DOMAIN" /></translation>
@@ -1561,6 +1565,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="9158770349521403363">Deli samo vsebino</translation>
 <translation id="9159716826369098114">Obnovitev skupine zavihkov (št. zavihkov: <ph name="TAB_COUNT" />) kot nove skupine zavihkov v ozadju.</translation>
 <translation id="9169507124922466868">Zgodovina krmarjenja je napol odprta</translation>
+<translation id="918419812064856259">Chrome beta</translation>
 <translation id="9190276265094487094">Zgodovino si boste lahko ogledali v vseh sinhroniziranih napravah, da boste lahko nadaljevali, kar ste počeli.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Preverjeno pred 1 minuto}one{Preverjeno pred # minuto}two{Preverjeno pred # minutama}few{Preverjeno pred # minutami}other{Preverjeno pred # minutami}}</translation>
 <translation id="9204021776105550328">Brisanje</translation>
@@ -1576,6 +1581,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="927968626442779827">Uporabite lahki način v Google Chromu</translation>
 <translation id="928550791203542716">Spremljate <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Domov</translation>
+<translation id="93533588269984624">Vsa gesla bodo prenesena v napravo in odstranjena iz brskalnika <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Napaka: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Vnesite geslo</translation>
 <translation id="952301137339791907">Razdelek na dnu zaslona s podrobnimi podatki o strani je odprt</translation>

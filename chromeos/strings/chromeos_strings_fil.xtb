@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Nakabukas ang window para i-update ang firmware para sa mga external device. <ph name="NUM_UPDATES" /> (na) update ang available.</translation>
 <translation id="1145516343487477149">Maghanap ng mga artikulo ng tulong at sagot sa mga karaniwang tanong sa Chromebook</translation>
+<translation id="1154390310959620237">5 shortcut lang ang puwede mong i-customize. Mag-delete ng shortcut para makapagdagdag ng bago.</translation>
 <translation id="1164939766849482256">Screen saver na pagtakipsilim</translation>
 <translation id="1167755866710282443">Buksan ang menu para mag-customize ng mga key. I-drag ang menu para maglipat.</translation>
 <translation id="1175697296044146566">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Nagre-restart...</translation>
 <translation id="2533048460510040082">Iminumungkahing content ng tulong</translation>
 <translation id="2536159006530886390">Hindi makakonekta sa internet.</translation>
+<translation id="2555662516429796509">Pumindot ng 1-4 na modifier at 1 pang key sa iyong keyboard</translation>
 <translation id="2570743873672969996">Nagpapatakbo ng test sa <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Para mag-set up, pumunta sa Mga Setting</translation>
 <translation id="2597774443162333062">Ipapadala ang mga file sa Google para sa pagde-debug</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">Sigurado ka bang gusto mong i-clear ang lahat ng history ng pag-print? Hindi maki-clear ang iyong mga kasalukuyang pag-print.</translation>
 <translation id="3373141842870501561">Wallpaper na paggalaw ng mundo</translation>
 <translation id="337375748120863155">Impormasyong nauugnay sa iyong pinili. Gamitin ang Pakaliwa o Pakanang arrow key para i-access ang mga kontrol.</translation>
+<translation id="3383623117265110236">Eksklusibo</translation>
 <translation id="3404249063913988450">I-enable ang screen saver</translation>
 <translation id="3413935475507503304">Para magpatuloy sa update, i-click ang Susunod.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">babaan ang liwanag</translation>
 <translation id="4176463684765177261">Hindi pinapagana</translation>
 <translation id="4176659219503619100">Control Panel</translation>
+<translation id="4185315616950253617">Kailangang kasama ang key sa paghahanap sa shortcut na may mga top row key.</translation>
 <translation id="420283545744377356">I-off ang screen saver</translation>
 <translation id="4213104098953699324">USB na keyboard</translation>
 <translation id="4227825898293920515">Mag-e-expire ang password sa loob ng <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">Latency ng HTTP</translation>
 <translation id="4271957103967917607">Tingnan nang Full Screen</translation>
 <translation id="4275663329226226506">Media</translation>
+<translation id="4278766082079064416">Ginagamit ang shortcut para sa "<ph name="CONFLICT_ACCEL_NAME" />". I-edit o alisin para malutas ang salungatan.</translation>
 <translation id="4289540628985791613">Pangkalahatang-ideya</translation>
 <translation id="4289849978083912975">Slide show</translation>
 <translation id="4297501883039923494">Huminto - Hindi kilalang error</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} pagsubok na lang ang natitira}one{<ph name="ERROR_MESSAGE" /> {0} pagsubok na lang ang natitira}other{<ph name="ERROR_MESSAGE" /> {0} na pagsubok na lang ang natitira}}</translation>
 <translation id="4873827928179867585">Algorithm ng pag-authenticate</translation>
 <translation id="4880328057631981605">Access point name</translation>
+<translation id="488307179443832524">Ginagamit ang shortcut para sa "<ph name="CONFLICT_ACCEL_NAME" />". Pumindot ng bagong shortcut.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Pumili agad ng bago</translation>
 <translation id="4891842000192098784">Stress</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Taasan ang liwanag ng display</translation>
 <translation id="57838592816432529">I-mute</translation>
 <translation id="5784136236926853061">Mataas na latency ng HTTP</translation>
+<translation id="5816802250591013230">Walang itinalagang shortcut</translation>
 <translation id="5826644637650799838">Tungkol sa sining</translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at mayroon itong access sa lahat ng aktibidad ng user, kabilang ang mga webpage na binisita, mga password, at email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Hindi nakakonekta ang device.</translation>
+<translation id="7046522406494308071">I-reset sa mga default ang lahat ng shortcut?</translation>
 <translation id="7058278511608979688">Tapusin at i-save</translation>
 <translation id="7059230779847288458">Nagcha-charge, <ph name="TIME_VALUE" /> hanggang sa mapuno</translation>
 <translation id="7068619307603204412">Ihanda ang iyong device</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nabigo - Hindi Nabigyan ng Pahintulot</translation>
 <translation id="7103252855940681301">Device <ph name="INDEX" /> sa <ph name="COUNT" /> na nagngangalang <ph name="NAME" />.</translation>
+<translation id="7107255225945990211">Pumili ng artwork na eksklusibo sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Access point name (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}one{Mga name server}other{Mga name server}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Cellular provider</translation>
 <translation id="725133483556299729">Pumili ng email</translation>
 <translation id="7271040990581020067">Kasalukuyang ginagamit ang scanner. Subukan ulit sa ibang pagkakataon.</translation>
+<translation id="7273347807225967898">Hindi available ang shortcut. Pumindot ng bagong shortcut gamit ang isang modifier key (ctrl, alt, shift, maghanap, o launcher).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Mga Koleksyon ng Wallpaper</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">liwanag ng keyboard</translation>
 <translation id="773153675489693198">Bilang ng cycke</translation>
 <translation id="7747039790905080783">Preshared key</translation>
+<translation id="7752963721013053477">Madaling araw hanggang pagdilim - eksklusibo</translation>
 <translation id="7762130827864645708">Matagumpay ang iyong pagpapalit ng password. Pakigamit ang bagong password mula ngayon.</translation>
 <translation id="7763470514545477072">Pagtugma sa domain suffix</translation>
 <translation id="7769672763586021400">Model ID</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Uri ng provider</translation>
 <translation id="7882501334836096755">Pampublikong key</translation>
+<translation id="7903695460270716054">Pumili ng na-curate na artwork at mga larawan</translation>
 <translation id="7915220255123750251">Pamahalaan ang mga setting ng APN ng network. Nagtatatag ang mga APN ng koneksyon sa pagitan ng isang cellular network at internet.</translation>
 <translation id="7936303884198020182">Walang nakitang name server</translation>
 <translation id="7942349550061667556">Pula</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Palitan ang password</translation>
 <translation id="8094062939584182041">Payagan ang Google na mag-email sa iyo tungkol sa isyung ito</translation>
 <translation id="8104083085214006426">Gumagamit ka ng bukas at hindi secure na network</translation>
+<translation id="8111706652656628199">Hindi available ang shortcut. Pumindot ng bagong shortcut gamit ang shift at 1 pang modifier key (ctrl, alt, maghanap, o launcher).</translation>
 <translation id="811820734797650957">(Android) Puwedeng I-ping ang Gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Humiling ng Mga Traffic Counter</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album sa Google Photos</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">Ginagamit ang shortcut para sa "<ph name="CONFLICT_ACCEL_NAME" />". Pumindot ng bagong shortcut. Para palitan ang orihinal na shortcut, pindutin ulit ang shortcut na ito.</translation>
 <translation id="879568662008399081">Posibleng may captive portal ang network na ito</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8798441408945964110">Pangalan ng provider</translation>

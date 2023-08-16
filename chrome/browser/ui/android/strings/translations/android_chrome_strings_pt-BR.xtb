@@ -3,6 +3,7 @@
 <translationbundle lang="pt-BR">
 <translation id="1011749477052068769">Mover para cá</translation>
 <translation id="1016498331642356377">Pesquisar rapidamente usando sua voz. Para editar este atalho, toque e pressione.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Enviando para este dispositivo: <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Remover também dados desses sites e apps?</translation>
 <translation id="1034259925032978114">A janela está aberta</translation>
@@ -51,6 +52,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="1240288207750131269">Carregando <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço<ph name="END_LINK2" /> do site.</translation>
 <translation id="124116460088058876">Mais idiomas</translation>
+<translation id="1241792820757384812">Suas senhas serão excluídas do Gerenciador de senhas do Google para o <ph name="CHROME_CHANNEL" />. Elas vão estar no arquivo de senhas que você acabou de transferir por download.</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Fechar a guia atual</translation>
 <translation id="1246905108078336582">Remover sugestão da área de transferência?</translation>
@@ -576,6 +578,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="4124152339699379357">Fluxo de permissão de notificações aberto no tamanho máximo</translation>
 <translation id="4135200667068010335">A lista de dispositivos com os quais é possível compartilhar uma guia está fechada.</translation>
 <translation id="4137746084635924146">Idioma atual do dispositivo</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Sites para computador solicitados por padrão</translation>
 <translation id="4147131678541801076">Quando os testes estão ativados, a redução de spam e fraudes depende de tokens de estado particular para ajudar os sites a evitar fraudes e diferenciar robôs de pessoas.
 
@@ -1070,6 +1073,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6649642165559792194">Visualizar imagem <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Senha</translation>
 <translation id="6659594942844771486">Guia</translation>
+<translation id="6662119761881114773">No momento, as senhas salvas neste dispositivo não podem ser usadas nos canais do Chrome. Após o Chrome 121, as senhas do Chrome e do <ph name="CHROME_CHANNEL" /> salvas no dispositivo serão mescladas e poderão ser usadas nos dois apps.</translation>
 <translation id="666731172850799929">Abrir no <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Copiar imagem</translation>
 <translation id="6672917148207387131">Adicionar <ph name="DOMAIN" /></translation>
@@ -1562,6 +1566,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="9158770349521403363">Compartilhar apenas o conteúdo</translation>
 <translation id="9159716826369098114">Restaurar grupo de <ph name="TAB_COUNT" /> guias como um novo grupo de guias em segundo plano.</translation>
 <translation id="9169507124922466868">Histórico de navegação parcialmente aberto</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Seu histórico vai ser mostrado em todos os dispositivos sincronizados para que você possa continuar o que estava fazendo</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Verificado 1 minuto atrás}one{Verificado # minuto atrás}other{Verificado # minutos atrás}}</translation>
 <translation id="9204021776105550328">Excluindo</translation>
@@ -1577,6 +1582,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="927968626442779827">Use o Modo Lite no Google Chrome</translation>
 <translation id="928550791203542716">Seguindo <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Início</translation>
+<translation id="93533588269984624">Todas as senhas serão transferidas por download para seu dispositivo e removidas do <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Erro: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Inserir senha</translation>
 <translation id="952301137339791907">A página inferior de insights está aberta</translation>

@@ -1068,6 +1068,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6649642165559792194">Rhagweld y ddelwedd <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Cyfrinair</translation>
 <translation id="6659594942844771486">Tab</translation>
+<translation id="6662119761881114773">Ar hyn o bryd, ni ellir defnyddio cyfrineiriau sydd wedi'u cadw ar y ddyfais hon ar draws sianeli Chrome. Ar ôl Chrome 121, bydd cyfrineiriau sy'n cael eu cadw ar eich dyfais ar gyfer Chrome a <ph name="CHROME_CHANNEL" /> yn cael eu huno a gellir eu defnyddio yn y ddau ap.</translation>
 <translation id="666731172850799929">Agor yn <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Copïo’r llun</translation>
 <translation id="6672917148207387131">Ychwanegu <ph name="DOMAIN" /></translation>

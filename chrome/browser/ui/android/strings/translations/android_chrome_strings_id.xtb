@@ -3,6 +3,7 @@
 <translationbundle lang="id">
 <translation id="1011749477052068769">Pindahkan ke sini</translation>
 <translation id="1016498331642356377">Telusuri dengan cepat menggunakan suara Anda. Sentuh lama untuk mengedit pintasan ini.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Mengirim ke <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Hapus data dari situs dan aplikasi ini juga?</translation>
 <translation id="1034259925032978114">Jendela terbuka</translation>
@@ -51,6 +52,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1240288207750131269">Memuat <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan nama, alamat email, dan foto profil Anda ke situs ini. Lihat <ph name="BEGIN_LINK1" />kebijakan privasi<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />persyaratan layanan<ph name="END_LINK2" /> situs ini.</translation>
 <translation id="124116460088058876">Bahasa lainnya</translation>
+<translation id="1241792820757384812">Sandi Anda akan dihapus dari Pengelola Sandi Google untuk <ph name="CHROME_CHANNEL" />. Anda akan menyimpan file sandi yang baru saja didownload.</translation>
 <translation id="1242883863226959074">perangkat</translation>
 <translation id="124678866338384709">Menutup tab aktif</translation>
 <translation id="1246905108078336582">Hapus saran dari papan klip?</translation>
@@ -576,6 +578,7 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="4124152339699379357">Alur izin notifikasi terbuka sepenuhnya</translation>
 <translation id="4135200667068010335">Daftar perangkat yang dapat digunakan untuk berbagi tab tertutup.</translation>
 <translation id="4137746084635924146">Bahasa perangkat saat ini</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Situs desktop diminta secara default</translation>
 <translation id="4147131678541801076">Jika uji coba diaktifkan, Pengurangan spam &amp; penipuan akan mengandalkan private state token untuk membantu situs melawan penipuan dan membedakan bot dari manusia.
 
@@ -1069,6 +1072,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6649642165559792194">Lihat pratinjau gambar <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Sandi</translation>
 <translation id="6659594942844771486">Tab</translation>
+<translation id="6662119761881114773">Saat ini, sandi yang disimpan di perangkat ini tidak dapat digunakan di seluruh saluran Chrome. Setelah Chrome 121, sandi yang disimpan di perangkat Anda untuk Chrome dan <ph name="CHROME_CHANNEL" /> akan digabungkan dan dapat digunakan di kedua aplikasi.</translation>
 <translation id="666731172850799929">Buka di <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Salin gambar</translation>
 <translation id="6672917148207387131">Tambahkan <ph name="DOMAIN" /></translation>
@@ -1561,6 +1565,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="9158770349521403363">Hanya bagikan konten</translation>
 <translation id="9159716826369098114">Pulihkan grup tab sebanyak <ph name="TAB_COUNT" /> tab sebagai grup tab latar belakang baru.</translation>
 <translation id="9169507124922466868">Histori navigasi terbuka setengah</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Histori Anda akan tersedia di semua perangkat yang disinkronkan, sehingga Anda dapat melanjutkan kegiatan Anda</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Diperiksa 1 menit yang lalu}other{Diperiksa # menit yang lalu}}</translation>
 <translation id="9204021776105550328">Menghapus</translation>
@@ -1576,6 +1581,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="927968626442779827">Gunakan Mode Ringan di Google Chrome</translation>
 <translation id="928550791203542716">Mengikuti <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Beranda</translation>
+<translation id="93533588269984624">Semua sandi akan didownload di perangkat Anda dan dihapus dari <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Kesalahan: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Masukkan frasa sandi</translation>
 <translation id="952301137339791907">Sheet bawah analisis halaman dibuka</translation>

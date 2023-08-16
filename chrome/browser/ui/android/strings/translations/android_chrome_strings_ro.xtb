@@ -1069,6 +1069,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6649642165559792194">Previzualizează imaginea <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Parolă</translation>
 <translation id="6659594942844771486">Filă</translation>
+<translation id="6662119761881114773">Momentan, parolele salvate pe acest dispozitiv nu pot fi folosite pe canalele Chrome. După versiunea Chrome 121, parolele salvate pe dispozitiv pentru Chrome și <ph name="CHROME_CHANNEL" /> vor fi îmbinate și pot fi folosite în ambele aplicații.</translation>
 <translation id="666731172850799929">Deschide în <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Copiați imaginea</translation>
 <translation id="6672917148207387131">Adaugă <ph name="DOMAIN" /></translation>

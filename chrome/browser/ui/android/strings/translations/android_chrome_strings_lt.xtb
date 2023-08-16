@@ -3,6 +3,7 @@
 <translationbundle lang="lt">
 <translation id="1011749477052068769">Perkelti čia</translation>
 <translation id="1016498331642356377">Sparčiai ieškokite balsu. Jei norite redaguoti šį spartųjį klavišą, palieskite ir palaikykite.</translation>
+<translation id="1024113959924243553">„Chrome“ kūrėjams</translation>
 <translation id="1028699632127661925">Siunčiama į „<ph name="DEVICE_NAME" />“...</translation>
 <translation id="103269572468856066">Taip pat išvalyti duomenis iš šių svetainių ir programų?</translation>
 <translation id="1034259925032978114">Langas atidarytas</translation>
@@ -51,6 +52,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1240288207750131269">Įkeliama <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Kad būtų galima tęsti, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bendrins jūsų vardą ir pavardę, el. pašto adresą, adresą ir profilio nuotrauką su šia svetaine. Žr. šios svetainės <ph name="BEGIN_LINK1" />privatumo politiką<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />paslaugų teikimo sąlygas<ph name="END_LINK2" />.</translation>
 <translation id="124116460088058876">Daugiau kalbų</translation>
+<translation id="1241792820757384812">„<ph name="CHROME_CHANNEL" />“ slaptažodžiai bus ištrinti iš „Google“ slaptažodžių tvarkyklės. Išsaugosite ką tik atsisiųstą slaptažodžių failą.</translation>
 <translation id="1242883863226959074">įrenginyje</translation>
 <translation id="124678866338384709">Uždaryti dabartinį skirtuką</translation>
 <translation id="1246905108078336582">Pašalinti pasiūlymą iš iškarpinės?</translation>
@@ -576,6 +578,7 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="4124152339699379357">Pranešimų leidimo srautas atidarytas per visą ekrano aukštį</translation>
 <translation id="4135200667068010335">Įrenginių, su kuriais reikia bendrinti skirtuką, sąrašas uždarytas.</translation>
 <translation id="4137746084635924146">Dabartinės įrenginio kalba</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Svetainės kompiuteriams, kurių užklausos pateikiamos pagal numatytuosius nustatymus</translation>
 <translation id="4147131678541801076">Naudojant šias bandomąsias versijas, siekiama sumažinti šlamšto ir apgaulių pasikliaujant privačiais prieigos raktais, kurie padeda svetainėms išvengti apgaulių bei atskirti robotus nuo žmonių.
 
@@ -1562,6 +1565,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="9158770349521403363">Bendrinti tik turinį</translation>
 <translation id="9159716826369098114">Atkurkite skirtukų grupę, kurioje yra tiek skirtukų: <ph name="TAB_COUNT" />, kaip naują foninę skirtukų grupę.</translation>
 <translation id="9169507124922466868">Naršymo istorija atidaryta puse aukščio</translation>
+<translation id="918419812064856259">„Chrome“ beta versija</translation>
 <translation id="9190276265094487094">Istorija bus rodoma visuose sinchronizuojamuose įrenginiuose, todėl galėsite tęsti tai, ką darėte</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tikrinta prieš 1 minutę}one{Tikrinta prieš # minutę}few{Tikrinta prieš # minutes}many{Tikrinta prieš # minutės}other{Tikrinta prieš # minučių}}</translation>
 <translation id="9204021776105550328">Trinama</translation>
@@ -1577,6 +1581,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="927968626442779827">Naudokite supaprastintą režimą naršyklėje „Google Chrome“</translation>
 <translation id="928550791203542716">Stebima „<ph name="SITE_NAME" />“</translation>
 <translation id="932327136139879170">Kontaktinė namų informacija</translation>
+<translation id="93533588269984624">Visi slaptažodžiai bus atsisiųsti į įrenginį ir pašalinti iš kanalo „<ph name="CHROME_CHANNEL" />“</translation>
 <translation id="938850635132480979">Klaida: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Įvesti slaptafrazę</translation>
 <translation id="952301137339791907">Puslapio įžvalgų apatinis lapas atidarytas</translation>

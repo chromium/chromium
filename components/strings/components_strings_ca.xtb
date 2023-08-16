@@ -2025,7 +2025,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5287456746628258573">Aquest lloc web utilitza una configuració de seguretat obsoleta i, per tant, la informació que hi enviïs podria quedar exposada (per exemple, les contrasenyes o els números de les targetes de crèdit).</translation>
 <translation id="5288108484102287882">La validació dels valors de la política ha generat advertiments</translation>
 <translation id="5288393065350884210">Auditories i comptabilitat</translation>
-<translation id="5288808348893593856">La connexió del lloc web és segura tret que Chrome t'indiqui el contrari.</translation>
 <translation id="5289384342738547352">Gestió de diversos documents</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Cal fer una actualització avui}=2{Cal fer una actualització demà}other{Cal fer una actualització en un termini de # dies}}</translation>
 <translation id="5293919335876685914">Cupès</translation>

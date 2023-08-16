@@ -3,6 +3,7 @@
 <translationbundle lang="zh-CN">
 <translation id="1011749477052068769">移至这里</translation>
 <translation id="1016498331642356377">使用语音快速搜索。若要修改此快捷方式，请轻触并按住这里。</translation>
+<translation id="1024113959924243553">Chrome 开发者版</translation>
 <translation id="1028699632127661925">正在发送到<ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">一并清除来自这些网站和应用的数据？</translation>
 <translation id="1034259925032978114">窗口已打开</translation>
@@ -51,6 +52,7 @@
 <translation id="1240288207750131269">正在加载<ph name="LANG" /></translation>
 <translation id="1240903469550363138">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的姓名、电子邮件地址和个人资料照片提供给此网站。不妨看看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
 <translation id="124116460088058876">更多语言</translation>
+<translation id="1241792820757384812">系统将从 <ph name="CHROME_CHANNEL" />的 Google 密码管理工具中删除您的密码。您可以保留刚刚下载的密码文件。</translation>
 <translation id="1242883863226959074">设备</translation>
 <translation id="124678866338384709">关闭当前标签页</translation>
 <translation id="1246905108078336582">从剪贴板中移除建议？</translation>
@@ -576,6 +578,7 @@
 <translation id="4124152339699379357">通知权限流程已全屏打开</translation>
 <translation id="4135200667068010335">要与之分享标签页的设备的列表已关闭。</translation>
 <translation id="4137746084635924146">当前设备语言</translation>
+<translation id="4139654229316918773">Chrome Canary 版</translation>
 <translation id="414128724510021958">默认请求桌面版网站</translation>
 <translation id="4147131678541801076">在试用期间，“垃圾内容和欺诈行为削减”功能依靠私密状态令牌来协助网站打击欺诈行为并将机器人与真人区分开来。
 
@@ -1561,6 +1564,7 @@
 <translation id="9158770349521403363">仅分享内容</translation>
 <translation id="9159716826369098114">将包含 <ph name="TAB_COUNT" /> 个标签页的标签页分组恢复为新的背景标签页分组。</translation>
 <translation id="9169507124922466868">导航历史记录在下半屏中显示</translation>
+<translation id="918419812064856259">Chrome Beta 版</translation>
 <translation id="9190276265094487094">您将能够在所有已同步的设备上查看您的历史记录，以继续执行先前未完成的操作</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 分钟前检查过}other{# 分钟前检查过}}</translation>
 <translation id="9204021776105550328">正在删除</translation>
@@ -1576,6 +1580,7 @@
 <translation id="927968626442779827">使用 Google Chrome 的精简模式</translation>
 <translation id="928550791203542716">已关注<ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">首页</translation>
+<translation id="93533588269984624">所有密码都将下载到您的设备上，并且会从 <ph name="CHROME_CHANNEL" />中移除</translation>
 <translation id="938850635132480979">错误：<ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">请输入密码</translation>
 <translation id="952301137339791907">显示网页数据洞见的底部工作表已打开</translation>

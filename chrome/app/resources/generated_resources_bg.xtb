@@ -7717,6 +7717,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7396017167185131589">Споделените папки ще се показват тук</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ще се изпълнява при стартиране на системата и ще продължи да работи на заден план дори след като затворите всички други прозорци на <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Персонализиране на синхронизирането</translation>
+<translation id="7399616692258236448">Заявките за местоположение се блокират автоматично за всички сайтове освен за онези, за които ги разрешите</translation>
 <translation id="7400418766976504921">URL адрес</translation>
 <translation id="7400447915166857470">Искате ли да се върнете към <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Настройте връзката на телефона си <ph name="PHONE_NAME" /></translation>

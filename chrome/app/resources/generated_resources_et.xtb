@@ -7709,6 +7709,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7396017167185131589">Jagatud kaustad kuvatakse siin</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> käivitub süsteemi käivitamisel ja jätkab tööd taustal ka siis, kui sulgete kõik muud rakenduse <ph name="PRODUCT_NAME" /> aknad.</translation>
 <translation id="7399045143794278225">Kohanda sünkroonimist</translation>
+<translation id="7399616692258236448">Asukohapäringud blokeeritakse automaatselt kõigi saitide, välja arvatud lubatud saitide puhul</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Kas muuta tagasi teenusepakkujale <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Seadistage ühendus seadmes <ph name="PHONE_NAME" /></translation>

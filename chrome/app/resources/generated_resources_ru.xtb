@@ -7711,6 +7711,7 @@
 <translation id="7396017167185131589">Здесь будут появляться общие папки.</translation>
 <translation id="7396845648024431313">Приложение <ph name="APP_NAME" /> будет запущено при старте системы и продолжит работу в фоновом режиме даже после закрытия всех окон <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Настроить синхронизацию</translation>
+<translation id="7399616692258236448">Запросы местоположения автоматически блокируются от всех сайтов, кроме тех, которым вы дали разрешение.</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Вернуться к поисковой системе "<ph name="OLD_SEARCH_PROVIDER" />"?</translation>
 <translation id="7400839060291901923">Настройте соединение на устройстве <ph name="PHONE_NAME" /></translation>

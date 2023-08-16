@@ -7722,7 +7722,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7396017167185131589">Dijeljeni folderi će se pojaviti ovdje</translation>
 <translation id="7396845648024431313">Aplikacija <ph name="APP_NAME" /> će se pokrenuti pri pokretanju sistema i nastavit će raditi u pozadini čak i nakon što zatvorite sve druge prozore proizvoda <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Prilagodi sinhronizaciju</translation>
-<translation id="7399616692258236448">Zahtjevi za lokacije automatski se blokiraju za sve web-lokacije osim onih koje dopustite</translation>
+<translation id="7399616692258236448">Zahtjevi za lokaciju se automatski blokiraju za sve web lokacije osim onih koje omogućite</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Vratiti na <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Postavite vezu na uređaju <ph name="PHONE_NAME" /></translation>
