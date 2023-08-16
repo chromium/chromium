@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -43,7 +44,7 @@ bool ExportedObject::ExportMethodAndBlock(
   // Check if the method is already exported.
   const std::string absolute_method_name =
       GetAbsoluteMemberName(interface_name, method_name);
-  if (method_table_.find(absolute_method_name) != method_table_.end()) {
+  if (base::Contains(method_table_, absolute_method_name)) {
     LOG(ERROR) << absolute_method_name << " is already exported";
     return false;
   }
