@@ -25,6 +25,12 @@ export interface ReadAnythingToolbar {
   };
 }
 
+enum MenuStateValue {
+  LINE_STANDARD = 0,
+  LOOSE = 1,
+  VERY_LOOSE = 2,
+}
+
 
 const ReadAnythingToolbarBase = WebUiListenerMixin(PolymerElement);
 export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
@@ -38,7 +44,12 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   }
 
   static get properties() {
-    return {};
+    return {
+      menuStateEnum_: {
+        type: Object,
+        value: MenuStateValue,
+      },
+    };
   }
 
   private showAtPositionConfig_: ShowAtPositionConfig = {
@@ -46,6 +57,10 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     left: 8,
     anchorAlignmentY: AnchorAlignment.AFTER_END,
   };
+
+  // This is needed to keep a reference to any dynamically added callbacks so
+  // that they can be removed with #removeEventListener.
+  private elementCallbackMap = new Map<any, () => void>();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -67,6 +82,70 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
         element.addEventListener('click', function() {
           onFontClick(element.innerText);
         });
+      }
+    });
+
+    // Configure on-click listeners for line spacing.
+    const onLineSpacingClick = (element: number) => {
+      let data: number|undefined;
+
+      switch (element) {
+        case MenuStateValue.LINE_STANDARD:
+          chrome.readingMode.onStandardLineSpacing();
+          data = chrome.readingMode.standardLineSpacing;
+          break;
+        case MenuStateValue.LOOSE:
+          chrome.readingMode.onLooseLineSpacing();
+          data = chrome.readingMode.looseLineSpacing;
+          break;
+        case MenuStateValue.VERY_LOOSE:
+          chrome.readingMode.onVeryLooseLineSpacing();
+          data = chrome.readingMode.veryLooseLineSpacing;
+          break;
+        default:
+          // Do nothing;
+      }
+
+      if (this.contentPage && data) {
+        this.contentPage.updateLineSpacing(
+            chrome.readingMode.getLineSpacingValue(data));
+      }
+      this.closeMenus_();
+    };
+    this.addOnClickListeners(this.$.lineSpacingSubmenu, onLineSpacingClick);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeOnClickListeners(this.$.lineSpacingSubmenu);
+  }
+
+  private removeOnClickListeners(menu: CrActionMenuElement) {
+    const nodes = Array.from(menu.children);
+    nodes.forEach((element) => {
+      if ((element instanceof HTMLButtonElement) &&
+          !element.classList.contains('back') && element.hasAttribute('data')) {
+        const callback = this.elementCallbackMap.get(element);
+        if (callback) {
+          element.removeEventListener('click', callback);
+        }
+        this.elementCallbackMap.delete(element);
+      }
+    });
+  }
+
+  private addOnClickListeners(
+      menu: CrActionMenuElement,
+      onMenuElementClick: (element: number) => void) {
+    const nodes = Array.from(menu.children);
+    nodes.forEach((element) => {
+      if ((element instanceof HTMLButtonElement) &&
+          !element.classList.contains('back') && element.hasAttribute('data')) {
+        const callback = () => {
+          onMenuElementClick(parseInt(element.getAttribute('data')!));
+        };
+        this.elementCallbackMap.set(element, callback);
+        element.addEventListener('click', callback);
       }
     });
   }
@@ -143,30 +222,6 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     const button = shadowRoot.getElementById('settings');
     assert(button);
     menuToOpen.showAt(button, this.showAtPositionConfig_);
-  }
-
-  private onLineSpacingStandardClick_() {
-    chrome.readingMode.onStandardLineSpacing();
-    this.onLineSpacingClick_(chrome.readingMode.standardLineSpacing);
-  }
-
-  private onLineSpacingLooseClick_() {
-    chrome.readingMode.onLooseLineSpacing();
-    this.onLineSpacingClick_(chrome.readingMode.looseLineSpacing);
-  }
-
-  private onLineSpacingVeryLooseClick_() {
-    chrome.readingMode.onVeryLooseLineSpacing();
-    this.onLineSpacingClick_(chrome.readingMode.veryLooseLineSpacing);
-  }
-
-  private onLineSpacingClick_(lineSpacing: number) {
-    if (this.contentPage) {
-      this.contentPage.updateLineSpacing(
-          chrome.readingMode.getLineSpacingValue(lineSpacing));
-    }
-
-    this.closeMenus_();
   }
 
   private onLetterSpacingStandardClick_() {

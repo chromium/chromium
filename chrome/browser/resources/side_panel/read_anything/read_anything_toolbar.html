@@ -128,17 +128,17 @@
       <iron-icon class="button-image" icon="cr:arrow-back"></iron-icon>
       $i18n{back}
     </button>
-    <button class="dropdown-item" on-click="onLineSpacingStandardClick_">
+    <button class="dropdown-item" data$="[[menuStateEnum_.LINE_STANDARD]]">
       <iron-icon class="button-image"
       icon="read-anything:line-spacing-standard"></iron-icon>
       $i18n{lineSpacingStandardTitle}
     </button>
-    <button class="dropdown-item" on-click="onLineSpacingLooseClick_">
+    <button class="dropdown-item" data$="[[menuStateEnum_.LOOSE]]">
       <iron-icon class="button-image"
       icon="read-anything:line-spacing-loose"></iron-icon>
       $i18n{lineSpacingLooseTitle}
     </button>
-    <button class="dropdown-item" on-click="onLineSpacingVeryLooseClick_">
+    <button class="dropdown-item" data$="[[menuStateEnum_.VERY_LOOSE]]">
       <iron-icon class="button-image"
       icon="read-anything:line-spacing-very-loose"></iron-icon>
       $i18n{lineSpacingVeryLooseTitle}
