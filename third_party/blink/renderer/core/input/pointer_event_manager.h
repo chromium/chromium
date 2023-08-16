@@ -298,6 +298,11 @@ class CORE_EXPORT PointerEventManager final
   bool skip_touch_filter_discrete_ = false;
   bool skip_touch_filter_all_ = false;
 
+  struct {
+    DOMNodeId target = kInvalidDOMNodeId;
+    base::TimeTicks time;
+  } discarded_event_;
+
   WeakMember<Scrollbar> captured_scrollbar_;
 };
 

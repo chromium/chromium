@@ -141,11 +141,20 @@ class BLINK_COMMON_EXPORT WebInputEvent {
     // ancestor frames moved within its embedding page's viewport recently.
     kTargetFrameMovedRecently = 1 << 24,
 
+    // TODO(szager): This is the same as kTargetFrameMovedRecently, but it
+    // overrides that value for iframes that are using IntersectionObserver V2
+    // features (i.e. occlusion detection). The purpose of this distinction is
+    // to preserve existing behavior for IOv2-using iframes while dialing in the
+    // feature parameters for kDiscardInputEventsToRecentlyMovedFrames, which is
+    // broader in scope. At the end of that process, this flag should be removed
+    // in favor of kTargetFrameMovedRecently.
+    kTargetFrameMovedRecentlyForIOv2 = 1 << 25,
+
     // When an event is forwarded to the main thread, this modifier will tell if
     // the event was already handled by the compositor thread or not. Based on
     // this, the decision of whether or not the main thread should handle this
     // event for the scrollbar can then be made.
-    kScrollbarManipulationHandledOnCompositorThread = 1 << 25,
+    kScrollbarManipulationHandledOnCompositorThread = 1 << 26,
 
     // The set of non-stateful modifiers that specifically change the
     // interpretation of the key being pressed. For example; IsLeft,
@@ -324,6 +333,10 @@ class BLINK_COMMON_EXPORT WebInputEvent {
 
   void SetTargetFrameMovedRecently() {
     modifiers_ |= kTargetFrameMovedRecently;
+  }
+
+  void SetTargetFrameMovedRecentlyForIOv2() {
+    modifiers_ |= kTargetFrameMovedRecentlyForIOv2;
   }
 
   void SetScrollbarManipulationHandledOnCompositorThread() {

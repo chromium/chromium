@@ -315,8 +315,12 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
       const viz::AggregatedHitTestRegion& region) {}
 
   // Indicates whether the widget has resized or moved within its embedding
-  // page during the 500 milliseconds prior to the event.
+  // page during a feature-parameter-determined time interval.
   virtual bool ScreenRectIsUnstableFor(const blink::WebInputEvent& event);
+
+  // See kTargetFrameMovedRecentlyForIOv2 in web_input_event.h.
+  virtual bool ScreenRectIsUnstableForIOv2For(
+      const blink::WebInputEvent& event);
 
   virtual void PreProcessMouseEvent(const blink::WebMouseEvent& event) {}
   virtual void PreProcessTouchEvent(const blink::WebTouchEvent& event) {}

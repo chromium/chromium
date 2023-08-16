@@ -3968,6 +3968,7 @@ enum WebFeature {
   kSharedDictionaryUsedWithSharedZstd = 4628,
   kZstdContentEncoding = 4629,
   kGetAllScreensMedia = 4630,
+  kInputEventToRecentlyMovedIframeMistakenlyDiscarded = 4631,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

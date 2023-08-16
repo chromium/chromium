@@ -5359,6 +5359,42 @@
             ]
         }
     ],
+    "DiscardInputEventsToRecentlyMovedFrames": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "DoNotDiscard",
+                    "params": {
+                        "distance": "2147483647",
+                        "time_ms": "0"
+                    },
+                    "enable_features": [
+                        "DiscardInputEventsToRecentlyMovedFrames"
+                    ]
+                },
+                {
+                    "name": "50_Pixels_1000_Ms",
+                    "params": {
+                        "distance": "50",
+                        "time_ms": "1000"
+                    },
+                    "enable_features": [
+                        "DiscardInputEventsToRecentlyMovedFrames"
+                    ]
+                }
+            ]
+        }
+    ],
     "DiscoFeedEndpoint": [
         {
             "platforms": [

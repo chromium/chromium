@@ -7,13 +7,6 @@ module blink.mojom;
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
 
-// These values are used to implement a browser intervention: if a cross-
-// origin iframe has moved more than 30 screen pixels (manhattan distance)
-// within its embedding page's viewport within the last 500 milliseconds, most
-// input events targeting the iframe will be quietly discarded.
-const uint32 kMaxChildFrameScreenRectMovement = 30;
-const uint32 kMinScreenRectStableTimeMs = 500;
-
 // Indicates whether a child frame is occluded or visually altered (e.g., with
 // CSS opacity or transform) by content or styles in the parent frame.
 enum FrameOcclusionState {

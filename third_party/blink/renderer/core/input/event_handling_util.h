@@ -60,6 +60,12 @@ LocalFrame* SubframeForTargetNode(Node*, bool* is_remote_frame = nullptr);
 bool ShouldDiscardEventTargetingFrame(const WebInputEvent& event,
                                       const LocalFrame& frame);
 
+// If a "down" event was discarded by the above intervention, and the next down
+// event arrives within `DiscardedEventMistakeInterval` with the same target as
+// the discarded event, we conclude that the first event was intentional and
+// should not have been discarded.
+constexpr base::TimeDelta kDiscardedEventMistakeInterval = base::Seconds(5);
+
 class PointerEventTarget {
   DISALLOW_NEW();
 

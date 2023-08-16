@@ -69,6 +69,9 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
 
   bool RectInParentIsStable(const base::TimeTicks& timestamp) const;
 
+  // See kTargetFrameMovedRecentlyForIOv2 in web_input_event.h.
+  bool RectInParentIsStableForIOv2(const base::TimeTicks& timestamp) const;
+
  protected:
   virtual bool NeedsViewportOffset() const { return false; }
   virtual void SetViewportIntersection(
@@ -97,7 +100,9 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
 
  private:
   PhysicalRect rect_in_parent_;
+  PhysicalRect rect_in_parent_for_iov2_;
   base::TimeTicks rect_in_parent_stable_since_;
+  base::TimeTicks rect_in_parent_stable_since_for_iov2_;
   blink::mojom::FrameVisibility frame_visibility_;
   // Caches the result of UpdateVIewportIntersection().
   gfx::Vector2dF min_scroll_delta_to_update_viewport_intersection_;

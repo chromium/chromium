@@ -661,6 +661,10 @@ BASE_FEATURE(kDisableArrayBufferSizeLimitsForTesting,
              "DisableArrayBufferSizeLimitsForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDiscardInputEventsToRecentlyMovedFrames,
+             "DiscardInputEventsToRecentlyMovedFrames",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDisableThirdPartyStoragePartitioningDeprecationTrial,
              "DisableThirdPartyStoragePartitioningDeprecationTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);

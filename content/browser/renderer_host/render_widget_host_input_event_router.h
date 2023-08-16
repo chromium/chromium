@@ -341,7 +341,9 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   }
 
   void SetTouchscreenGestureTarget(RenderWidgetHostViewBase* target,
-                                   bool moved_recently = false);
+                                   bool moved_recently,
+                                   bool moved_recently_for_iov2);
+  void ClearTouchscreenGestureTarget();
 
   void ForwardDelegatedInkPoint(
       RenderWidgetHostViewBase* target_view,
@@ -362,6 +364,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   RAW_PTR_EXCLUSION RenderWidgetHostViewBase* touch_target_ = nullptr;
   base::WeakPtr<RenderWidgetHostViewBase> touchscreen_gesture_target_;
   bool touchscreen_gesture_target_moved_recently_ = false;
+  bool touchscreen_gesture_target_moved_recently_for_iov2_ = false;
   // // This field is not a raw_ptr<> because of a reference to raw_ptr in
   // not-rewritten platform specific code.
   RAW_PTR_EXCLUSION RenderWidgetHostViewBase* touchpad_gesture_target_ =

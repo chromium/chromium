@@ -690,6 +690,11 @@ bool RenderWidgetHostViewBase::ScreenRectIsUnstableFor(
   return false;
 }
 
+bool RenderWidgetHostViewBase::ScreenRectIsUnstableForIOv2For(
+    const blink::WebInputEvent& event) {
+  return false;
+}
+
 void RenderWidgetHostViewBase::ProcessMouseEvent(
     const blink::WebMouseEvent& event,
     const ui::LatencyInfo& latency) {

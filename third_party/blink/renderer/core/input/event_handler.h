@@ -445,6 +445,13 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   // This is used in gesture event hit test.
   TouchAdjustmentResult touch_adjustment_result_;
 
+  struct {
+    DOMNodeId mouse_down_target = kInvalidDOMNodeId;
+    DOMNodeId tap_target = kInvalidDOMNodeId;
+    base::TimeTicks mouse_down_time;
+    base::TimeTicks tap_time;
+  } discarded_events_;
+
   // ShouldShowIBeamForNode's unit tests:
   FRIEND_TEST_ALL_PREFIXES(EventHandlerTest, HitOnNothingDoesNotShowIBeam);
   FRIEND_TEST_ALL_PREFIXES(EventHandlerTest, HitOnTextShowsIBeam);

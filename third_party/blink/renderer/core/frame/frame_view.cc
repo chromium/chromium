@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/frame_view.h"
 
+#include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -115,12 +116,26 @@ gfx::Vector2dF FrameView::UpdateViewportIntersection(
     if (new_rect_in_parent.size != rect_in_parent_.size ||
         ((new_rect_in_parent.X() - rect_in_parent_.X()).Abs() +
              (new_rect_in_parent.Y() - rect_in_parent_.Y()).Abs() >
-         LayoutUnit(mojom::blink::kMaxChildFrameScreenRectMovement))) {
+         LayoutUnit(
+             FrameVisualProperties::MaxChildFrameScreenRectMovement()))) {
       rect_in_parent_ = new_rect_in_parent;
       if (Page* page = GetFrame().GetPage()) {
         rect_in_parent_stable_since_ = page->Animator().Clock().CurrentTime();
       } else {
         rect_in_parent_stable_since_ = base::TimeTicks::Now();
+      }
+    }
+    if (new_rect_in_parent.size != rect_in_parent_for_iov2_.size ||
+        ((new_rect_in_parent.X() - rect_in_parent_for_iov2_.X()).Abs() +
+             (new_rect_in_parent.Y() - rect_in_parent_for_iov2_.Y()).Abs() >
+         LayoutUnit(FrameVisualProperties::
+                        MaxChildFrameScreenRectMovementForIOv2()))) {
+      rect_in_parent_for_iov2_ = new_rect_in_parent;
+      if (Page* page = GetFrame().GetPage()) {
+        rect_in_parent_stable_since_for_iov2_ =
+            page->Animator().Clock().CurrentTime();
+      } else {
+        rect_in_parent_stable_since_for_iov2_ = base::TimeTicks::Now();
       }
     }
     if (should_compute_occlusion && !geometry.IsVisible())
@@ -316,7 +331,8 @@ void FrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
 bool FrameView::RectInParentIsStable(
     const base::TimeTicks& event_timestamp) const {
   if (event_timestamp - rect_in_parent_stable_since_ <
-      base::Milliseconds(mojom::blink::kMinScreenRectStableTimeMs)) {
+      base::Milliseconds(
+          blink::FrameVisualProperties::MinScreenRectStableTimeMs())) {
     return false;
   }
   LocalFrameView* parent = ParentFrameView();
@@ -325,4 +341,17 @@ bool FrameView::RectInParentIsStable(
   return parent->RectInParentIsStable(event_timestamp);
 }
 
+bool FrameView::RectInParentIsStableForIOv2(
+    const base::TimeTicks& event_timestamp) const {
+  if (event_timestamp - rect_in_parent_stable_since_for_iov2_ <
+      base::Milliseconds(
+          blink::FrameVisualProperties::MinScreenRectStableTimeMsForIOv2())) {
+    return false;
+  }
+  LocalFrameView* parent = ParentFrameView();
+  if (!parent) {
+    return true;
+  }
+  return parent->RectInParentIsStableForIOv2(event_timestamp);
+}
 }  // namespace blink

@@ -337,6 +337,14 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kDisableThirdPartyStoragePartitioningDeprecationTrial);
 
+// These values are used to implement a browser intervention: if a cross-origin
+// iframe has moved more than {param:distance} screen pixels (manhattan
+// distance) within its embedding page's viewport within the last
+// {param:time_ms} milliseconds, most input events targeting the iframe will be
+// quietly discarded.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kDiscardInputEventsToRecentlyMovedFrames);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDispatchBeforeUnloadOnFreeze);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDisplayLocking);

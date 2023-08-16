@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -3375,6 +3376,119 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresOnKeyUpAfterScrollInstant) {
   EXPECT_EQ(
       GetDocument().getElementById(AtomicString("log"))->innerHTML().Utf8(),
       "scrollend");
+}
+
+TEST_F(EventHandlerSimTest, DiscardEventsToRecentlyMovedIframe) {
+  base::FieldTrialParams field_trial_params;
+  field_trial_params["time_ms"] = "500";
+  field_trial_params["distance"] = "50";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kDiscardInputEventsToRecentlyMovedFrames, field_trial_params);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimRequest frame_resource("https://cross-origin.com/iframe.html",
+                            "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <iframe id='iframe' src='https://cross-origin.com/iframe.html'></iframe>
+  )HTML");
+  frame_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Hello, world!</div>
+  )HTML");
+
+  // The first BeginFrame() sets the last known position of the iframe. The
+  // second BeginFrame(), after a delay with no layout changes, will mark the
+  // iframe as having a stable position, so input events will not be discarded.
+  Compositor().BeginFrame();
+  GetDocument().GetFrame()->View()->ScheduleAnimation();
+  Compositor().BeginFrame(0.5);
+
+  // Iframe position is stable, do not discard events.
+  WebInputEventResult event_result =
+      GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+          WebMouseEvent(WebInputEvent::Type::kMouseDown, gfx::PointF(100, 50),
+                        gfx::PointF(100, 50),
+                        WebPointerProperties::Button::kLeft, 1,
+                        WebInputEvent::Modifiers::kLeftButtonDown,
+                        base::TimeTicks::Now()));
+  EXPECT_NE(event_result, WebInputEventResult::kHandledSuppressed);
+  event_result =
+      GetDocument().GetFrame()->GetEventHandler().HandleMouseReleaseEvent(
+          WebMouseEvent(WebInputEvent::Type::kMouseUp, gfx::PointF(100, 50),
+                        gfx::PointF(100, 50),
+                        WebPointerProperties::Button::kLeft, 1,
+                        WebInputEvent::kNoModifiers, base::TimeTicks::Now()));
+  EXPECT_NE(event_result, WebInputEventResult::kHandledSuppressed);
+
+  Element* iframe =
+      GetDocument().getElementById(AtomicString::FromUTF8("iframe"));
+  ASSERT_TRUE(iframe);
+
+  // Move iframe, but within the threshold for discarding. Events should not be
+  // discarded.
+  iframe->SetInlineStyleProperty(CSSPropertyID::kMarginLeft, "40px");
+  Compositor().BeginFrame();
+  event_result =
+      GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+          WebMouseEvent(WebInputEvent::Type::kMouseDown, gfx::PointF(100, 50),
+                        gfx::PointF(100, 50),
+                        WebPointerProperties::Button::kLeft, 1,
+                        WebInputEvent::Modifiers::kLeftButtonDown,
+                        base::TimeTicks::Now()));
+  EXPECT_NE(event_result, WebInputEventResult::kHandledSuppressed);
+  event_result =
+      GetDocument().GetFrame()->GetEventHandler().HandleMouseReleaseEvent(
+          WebMouseEvent(WebInputEvent::Type::kMouseUp, gfx::PointF(100, 50),
+                        gfx::PointF(100, 50),
+                        WebPointerProperties::Button::kLeft, 1,
+                        WebInputEvent::kNoModifiers, base::TimeTicks::Now()));
+  EXPECT_NE(event_result, WebInputEventResult::kHandledSuppressed);
+
+  // Move iframe past threshold for discarding; events should be discarded.
+  iframe->SetInlineStyleProperty(CSSPropertyID::kMarginLeft, "60px");
+  Compositor().BeginFrame();
+  base::TimeTicks event_time =
+      Compositor().LastFrameTime() + base::Milliseconds(400);
+
+  event_result =
+      GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+          WebMouseEvent(WebInputEvent::Type::kMouseDown, gfx::PointF(100, 50),
+                        gfx::PointF(100, 50),
+                        WebPointerProperties::Button::kLeft, 1,
+                        WebInputEvent::Modifiers::kLeftButtonDown, event_time));
+  EXPECT_EQ(event_result, WebInputEventResult::kHandledSuppressed);
+  event_result =
+      GetDocument().GetFrame()->GetEventHandler().HandleMouseReleaseEvent(
+          WebMouseEvent(WebInputEvent::Type::kMouseUp, gfx::PointF(100, 50),
+                        gfx::PointF(100, 50),
+                        WebPointerProperties::Button::kLeft, 1,
+                        WebInputEvent::kNoModifiers, event_time));
+  EXPECT_EQ(event_result, WebInputEventResult::kHandledSuppressed);
+
+  // A second click on the same target within 5 seconds of a discarded click
+  // should be recorded as "mistakenly discarded".
+  EXPECT_FALSE(
+      To<HTMLIFrameElement>(iframe)
+          ->contentDocument()
+          ->Loader()
+          ->GetUseCounter()
+          .IsCounted(
+              WebFeature::kInputEventToRecentlyMovedIframeMistakenlyDiscarded));
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+      WebMouseEvent(WebInputEvent::Type::kMouseDown, gfx::PointF(100, 50),
+                    gfx::PointF(100, 50), WebPointerProperties::Button::kLeft,
+                    1, WebInputEvent::Modifiers::kLeftButtonDown, event_time));
+  EXPECT_TRUE(
+      To<HTMLIFrameElement>(iframe)
+          ->contentDocument()
+          ->Loader()
+          ->GetUseCounter()
+          .IsCounted(
+              WebFeature::kInputEventToRecentlyMovedIframeMistakenlyDiscarded));
 }
 
 // Tests that click.pointerId is valid for a gesture tap for which no low-level
