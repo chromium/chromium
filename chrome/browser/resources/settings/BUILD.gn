@@ -284,6 +284,7 @@ build_webui("build") {
     "on_startup_page/on_startup_browser_proxy.ts",
     "on_startup_page/startup_urls_page_browser_proxy.ts",
     "page_visibility.ts",
+    "performance_page/constants.ts",
     "performance_page/discard_timer_options.ts",
     "performance_page/performance_browser_proxy.ts",
     "performance_page/performance_metrics_proxy.ts",

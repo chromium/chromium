@@ -159,9 +159,10 @@ export {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcu
 export {SettingsSyncControlsElement} from './people_page/sync_controls.js';
 export {SettingsSyncEncryptionOptionsElement} from './people_page/sync_encryption_options.js';
 export {SettingsSyncPageElement} from './people_page/sync_page.js';
+export {NetworkPredictionOptions} from './performance_page/constants.js';
 export {SettingsAntiAbusePageElement} from './privacy_page/anti_abuse_page.js';
 export {SettingsCollapseRadioButtonElement} from './privacy_page/collapse_radio_button.js';
-export {NetworkPredictionOptions, SettingsCookiesPageElement} from './privacy_page/cookies_page.js';
+export {SettingsCookiesPageElement} from './privacy_page/cookies_page.js';
 export {SettingsDoNotTrackToggleElement} from './privacy_page/do_not_track_toggle.js';
 export {SettingsPersonalizationOptionsElement} from './privacy_page/personalization_options.js';
 export {PreloadingPageElement} from './privacy_page/preloading_page.js';
