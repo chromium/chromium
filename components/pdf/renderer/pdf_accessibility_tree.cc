@@ -493,6 +493,20 @@ std::unique_ptr<ui::AXNodeData> CreateStatusNode(
       CreateNode(ax::mojom::Role::kStatus, ax::mojom::Restriction::kReadOnly,
                  render_accessibility);
   node->relative_bounds = node_wrapper->relative_bounds;
+  // Encode ARIA live region attributes including aria-atomic, aria-status, and
+  // aria-relevant to define aria-live="polite" for this status node.
+  node->AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic, true);
+  node->AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus, "polite");
+  node->AddStringAttribute(ax::mojom::StringAttribute::kLiveRelevant,
+                           "additions text");
+  // The status node is the root of live region. Use `kContainerLive*`
+  // attributes to define this node as the root of the live region.
+  node->AddBoolAttribute(ax::mojom::BoolAttribute::kContainerLiveAtomic, true);
+  node->AddStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus,
+                           "polite");
+  node->AddStringAttribute(ax::mojom::StringAttribute::kContainerLiveRelevant,
+                           "additions text");
+
   // As we add this status node to its node wrapper, this node will be added
   // as the first node to the node wrapper.
   CHECK(node_wrapper->child_ids.empty());

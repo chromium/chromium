@@ -46,6 +46,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -106,6 +107,22 @@ constexpr uint32_t MakeARGB(unsigned int a,
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+using testing::Matches;
+using testing::PrintToString;
+using testing::UnorderedElementsAre;
+
+// `MATCHER_P2` is copied from ui/accessibility/ax_event_generator_unittest.cc.
+MATCHER_P2(HasEventAtNode,
+           expected_event_type,
+           expected_node_id,
+           std::string(negation ? "does not have" : "has") + " " +
+               PrintToString(expected_event_type) + " on " +
+               PrintToString(expected_node_id)) {
+  const auto& event = arg;
+  return Matches(expected_event_type)(event.event_params.event) &&
+         Matches(expected_node_id)(event.node_id);
+}
+
 ui::AXTreeUpdate CreateMockOCRResult(const gfx::RectF& image_bounds,
                                      const gfx::RectF& text_bounds1,
                                      const gfx::RectF& text_bounds2) {
@@ -2259,9 +2276,7 @@ TEST_F(PdfAccessibilityTreeTest, TestTransformFromOnOcrDataReceived) {
    * ++++++ image
    */
 
-  const ui::AXTree& ax_tree_in_pdf =
-      pdf_accessibility_tree_->tree_for_testing();
-  ui::AXNode* root_node = ax_tree_in_pdf.root();
+  ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   ASSERT_TRUE(root_node);
   EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
   ASSERT_EQ(2u, root_node->children().size());
@@ -2334,7 +2349,7 @@ TEST_F(PdfAccessibilityTreeTest, TestTransformFromOnOcrDataReceived) {
    * ++++++++ Static Text
    */
 
-  root_node = ax_tree_in_pdf.root();
+  root_node = pdf_accessibility_tree_->GetRoot();
   ASSERT_TRUE(root_node);
   ASSERT_EQ(2u, root_node->children().size());
 
@@ -2435,10 +2450,7 @@ class PdfOcrServiceTest
     }
     WaitForThreadTasks();
 
-    const ui::AXTree& ax_tree_in_pdf =
-        pdf_accessibility_tree_->tree_for_testing();
-
-    ui::AXNode* root_node = ax_tree_in_pdf.root();
+    ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
     ASSERT_NE(nullptr, root_node);
     ASSERT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
     uint32_t pages_plus_status_node_count = doc_info_.page_count + 1u;
@@ -2490,9 +2502,7 @@ TEST_P(PdfOcrServiceTest, PageBatching) {
 
   for (uint32_t i = 0; i < page_count; ++i) {
     if (!is_ocr_service_started_before_pdf_loads) {
-      const ui::AXTree& ax_tree_in_pdf =
-          pdf_accessibility_tree_->tree_for_testing();
-      ui::AXNode* root_node = ax_tree_in_pdf.root();
+      ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
       ui::AXNode* page_node = root_node->children()[i + 1];
       ASSERT_NE(nullptr, page_node);
       ui::AXNode* paragraph_node = page_node->children()[0];
@@ -2563,9 +2573,7 @@ TEST_P(PdfOcrServiceTest, UMAMetrics) {
 
   for (uint32_t i = 0; i < page_count; ++i) {
     if (!is_ocr_service_started_before_pdf_loads) {
-      const ui::AXTree& ax_tree_in_pdf =
-          pdf_accessibility_tree_->tree_for_testing();
-      ui::AXNode* root_node = ax_tree_in_pdf.root();
+      ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
       ui::AXNode* page_node = root_node->children()[i + 1];
       ASSERT_NE(nullptr, page_node);
       ui::AXNode* paragraph_node = page_node->children()[0];
@@ -2625,9 +2633,7 @@ TEST_P(PdfOcrServiceTest, EmptyOCRResults) {
 
   for (uint32_t i = 0; i < page_count; ++i) {
     if (!is_ocr_service_started_before_pdf_loads) {
-      const ui::AXTree& ax_tree_in_pdf =
-          pdf_accessibility_tree_->tree_for_testing();
-      ui::AXNode* root_node = ax_tree_in_pdf.root();
+      ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
       ui::AXNode* page_node = root_node->children()[i + 1];
       ASSERT_NE(nullptr, page_node);
       ui::AXNode* paragraph_node = page_node->children()[0];
@@ -2684,9 +2690,92 @@ INSTANTIATE_TEST_SUITE_P(
         /* is_ocr_service_started_before_pdf_loads */ testing::Bool(),
         /* page_count */ testing::Values(5u, 105u, 280u)));
 
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
 // TODO(crbug.com/1443341): Add test for end result on a non-synthetic
 // multi-page PDF.
+
+class PdfOcrTest : public PdfAccessibilityTreeTest {
+ public:
+  PdfOcrTest() : feature_list_(::features::kPdfOcr) {}
+  PdfOcrTest(const PdfOcrTest&) = delete;
+  PdfOcrTest& operator=(const PdfOcrTest&) = delete;
+  ~PdfOcrTest() override = default;
+
+ protected:
+  void SetUp() override {
+    PdfAccessibilityTreeTest::SetUp();
+    CreatePdfAccessibilityTree();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(PdfOcrTest, CheckLiveRegionPoliteStatus) {
+  page_objects_.images.push_back(CreateMockInaccessibleImage());
+
+  // Get and use the underlying AXTree to create an AXEventGenerator. This
+  // event generator is usually instrumented in the test.
+  ui::AXTree& tree = pdf_accessibility_tree_->tree_for_testing();
+  ui::AXEventGenerator event_generator(&tree);
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
+  page_info_.page_index = 0;
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+
+  ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
+  ASSERT_NE(nullptr, root_node);
+  EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
+  uint32_t pages_plus_status_node_count = doc_info_.page_count + 1u;
+  ASSERT_EQ(pages_plus_status_node_count, root_node->children().size());
+
+  ui::AXNode* status_wrapper_node = root_node->children()[0];
+  ASSERT_NE(nullptr, status_wrapper_node);
+  EXPECT_EQ(ax::mojom::Role::kBanner, status_wrapper_node->GetRole());
+  ASSERT_EQ(1u, status_wrapper_node->children().size());
+
+  ui::AXNode* status_node = status_wrapper_node->children()[0];
+  ASSERT_NE(nullptr, status_node);
+  EXPECT_EQ(ax::mojom::Role::kStatus, status_node->GetRole());
+  EXPECT_EQ(0u, status_node->children().size());
+  EXPECT_TRUE(
+      status_node->GetBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic));
+  constexpr char kDefaultLiveRegionRelevant[] = "additions text";
+  EXPECT_EQ(kDefaultLiveRegionRelevant,
+            status_node->GetStringAttribute(
+                ax::mojom::StringAttribute::kLiveRelevant));
+  constexpr char kStatusLiveRegion[] = "polite";
+  EXPECT_EQ(kStatusLiveRegion, status_node->GetStringAttribute(
+                                   ax::mojom::StringAttribute::kLiveStatus));
+  EXPECT_TRUE(status_node->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kContainerLiveAtomic));
+  EXPECT_EQ(kDefaultLiveRegionRelevant,
+            status_node->GetStringAttribute(
+                ax::mojom::StringAttribute::kContainerLiveRelevant));
+  EXPECT_EQ(kStatusLiveRegion,
+            status_node->GetStringAttribute(
+                ax::mojom::StringAttribute::kContainerLiveStatus));
+
+  ui::AXNode* page_node = root_node->children()[1];
+  ASSERT_NE(nullptr, page_node);
+  ASSERT_EQ(1u, page_node->children().size());
+
+  ui::AXNode* paragraph_node = page_node->children()[0];
+  ASSERT_NE(nullptr, paragraph_node);
+  ASSERT_EQ(1u, paragraph_node->children().size());
+
+  ui::AXNode* image_node = paragraph_node->children()[0];
+  ASSERT_NE(nullptr, image_node);
+
+  EXPECT_THAT(
+      event_generator,
+      UnorderedElementsAre(
+          HasEventAtNode(ui::AXEventGenerator::Event::SUBTREE_CREATED,
+                         root_node->id()),
+          HasEventAtNode(ui::AXEventGenerator::Event::LIVE_REGION_CREATED,
+                         status_node->id())));
+}
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace pdf

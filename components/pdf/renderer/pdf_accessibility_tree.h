@@ -235,7 +235,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   virtual void OnOcrDataReceived(std::vector<PdfOcrRequest> ocr_requests,
                                  std::vector<ui::AXTreeUpdate> tree_updates);
 
-  const ui::AXTree& tree_for_testing() const { return tree_; }
+  ui::AXTree& tree_for_testing() { return tree_; }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   bool ShowContextMenu();
