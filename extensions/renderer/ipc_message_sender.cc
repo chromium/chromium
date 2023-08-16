@@ -74,11 +74,11 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
         request_uuid);
   }
 
-  mojom::EventListenerParamPtr GetEventListenerParam(ScriptContext* context) {
+  mojom::EventListenerOwnerPtr GetEventListenerOwner(ScriptContext* context) {
     return !context->GetExtensionID().empty()
-               ? mojom::EventListenerParam::NewExtensionId(
+               ? mojom::EventListenerOwner::NewExtensionId(
                      context->GetExtensionID())
-               : mojom::EventListenerParam::NewListenerUrl(context->url());
+               : mojom::EventListenerOwner::NewListenerUrl(context->url());
   }
 
   void SendAddUnfilteredEventListenerIPC(
@@ -87,7 +87,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    GetEventRouter()->AddListenerForMainThread(GetEventListenerParam(context),
+    GetEventRouter()->AddListenerForMainThread(GetEventListenerOwner(context),
                                                event_name);
   }
 
@@ -98,7 +98,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
     GetEventRouter()->RemoveListenerForMainThread(
-        GetEventListenerParam(context), event_name);
+        GetEventListenerOwner(context), event_name);
   }
 
   void SendAddUnfilteredLazyEventListenerIPC(
@@ -129,7 +129,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
     GetEventRouter()->AddFilteredListenerForMainThread(
-        GetEventListenerParam(context), event_name, filter.Clone(), is_lazy);
+        GetEventListenerOwner(context), event_name, filter.Clone(), is_lazy);
   }
 
   void SendRemoveFilteredEventListenerIPC(ScriptContext* context,
@@ -140,7 +140,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
     GetEventRouter()->RemoveFilteredListenerForMainThread(
-        GetEventListenerParam(context), event_name, filter.Clone(),
+        GetEventListenerOwner(context), event_name, filter.Clone(),
         remove_lazy_listener);
   }
 

@@ -491,7 +491,7 @@ TEST_P(EventRouterFilterTest, Basic) {
   const std::string kEventName = "webNavigation.onBeforeNavigate";
 
   const std::string kExtensionId = "mbflcebpggnecokmikipoihdbecnjfoj";
-  auto param = mojom::EventListenerParam::NewExtensionId(kExtensionId);
+  auto param = mojom::EventListenerOwner::NewExtensionId(kExtensionId);
   const std::string kHostSuffixes[] = {"foo.com", "bar.com", "baz.com"};
 
   std::unique_ptr<mojom::ServiceWorkerContext> worker_context;
@@ -556,11 +556,11 @@ TEST_P(EventRouterFilterTest, URLBasedFilteredEventListener) {
   EXPECT_FALSE(event_router()->HasEventListener(kEventName));
   event_router()->AddFilteredEventListener(
       kEventName, render_process_host(),
-      mojom::EventListenerParam::NewListenerUrl(kUrl), nullptr, filter, lazy);
+      mojom::EventListenerOwner::NewListenerUrl(kUrl), nullptr, filter, lazy);
   EXPECT_TRUE(event_router()->HasEventListener(kEventName));
   event_router()->RemoveFilteredEventListener(
       kEventName, render_process_host(),
-      mojom::EventListenerParam::NewListenerUrl(kUrl), nullptr, filter, lazy);
+      mojom::EventListenerOwner::NewListenerUrl(kUrl), nullptr, filter, lazy);
   EXPECT_FALSE(event_router()->HasEventListener(kEventName));
 }
 

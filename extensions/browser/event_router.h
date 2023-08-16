@@ -161,7 +161,7 @@ class EventRouter : public KeyedService,
   ~EventRouter() override;
 
   // mojom::EventRouter:
-  void AddListenerForMainThread(mojom::EventListenerParamPtr param,
+  void AddListenerForMainThread(mojom::EventListenerOwnerPtr listener_owner,
                                 const std::string& name) override;
 
   void AddListenerForServiceWorker(
@@ -176,10 +176,11 @@ class EventRouter : public KeyedService,
                                        const GURL& worker_scope_url,
                                        const std::string& name) override;
 
-  void AddFilteredListenerForMainThread(mojom::EventListenerParamPtr param,
-                                        const std::string& name,
-                                        base::Value::Dict filter,
-                                        bool add_lazy_listener) override;
+  void AddFilteredListenerForMainThread(
+      mojom::EventListenerOwnerPtr listener_owner,
+      const std::string& name,
+      base::Value::Dict filter,
+      bool add_lazy_listener) override;
 
   void AddFilteredListenerForServiceWorker(
       const std::string& extension_id,
@@ -188,7 +189,7 @@ class EventRouter : public KeyedService,
       base::Value::Dict filter,
       bool add_lazy_listener) override;
 
-  void RemoveListenerForMainThread(mojom::EventListenerParamPtr param,
+  void RemoveListenerForMainThread(mojom::EventListenerOwnerPtr listener_owner,
                                    const std::string& name) override;
 
   void RemoveListenerForServiceWorker(
@@ -203,10 +204,11 @@ class EventRouter : public KeyedService,
                                           const GURL& worker_scope_url,
                                           const std::string& name) override;
 
-  void RemoveFilteredListenerForMainThread(mojom::EventListenerParamPtr param,
-                                           const std::string& name,
-                                           base::Value::Dict filter,
-                                           bool remove_lazy_listener) override;
+  void RemoveFilteredListenerForMainThread(
+      mojom::EventListenerOwnerPtr listener_owner,
+      const std::string& name,
+      base::Value::Dict filter,
+      bool remove_lazy_listener) override;
 
   void RemoveFilteredListenerForServiceWorker(
       const std::string& extension_id,
@@ -255,7 +257,7 @@ class EventRouter : public KeyedService,
   void AddFilteredEventListener(
       const std::string& event_name,
       content::RenderProcessHost* process,
-      mojom::EventListenerParamPtr param,
+      mojom::EventListenerOwnerPtr listener_owner,
       mojom::ServiceWorkerContext* service_worker_context,
       const base::Value::Dict& filter,
       bool add_lazy_listener);
@@ -265,7 +267,7 @@ class EventRouter : public KeyedService,
   void RemoveFilteredEventListener(
       const std::string& event_name,
       content::RenderProcessHost* process,
-      mojom::EventListenerParamPtr param,
+      mojom::EventListenerOwnerPtr listener_owner,
       mojom::ServiceWorkerContext* service_worker_context,
       const base::Value::Dict& filter,
       bool remove_lazy_listener);
