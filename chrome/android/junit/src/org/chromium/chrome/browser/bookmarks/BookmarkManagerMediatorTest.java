@@ -1304,4 +1304,16 @@ public class BookmarkManagerMediatorTest {
         verify(mHideKeyboardRunnable).run();
         assertFalse(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testChangeSelectionIndexWhenNoBookmarksPresent() {
+        finishLoading();
+
+        mMediator.openFolder(mFolderId3);
+        mMediator.changeSelectionMode(true);
+
+        assertEquals(1, mModelList.size());
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+    }
 }

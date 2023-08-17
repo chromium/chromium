@@ -1059,7 +1059,9 @@ class BookmarkManagerMediator
 
     private int getBookmarkItemEndIndex() {
         int endIndex = mModelList.size() - 1;
-        BookmarkItem bookmarkItem = getItemByPosition(endIndex).getBookmarkItem();
+        BookmarkListEntry bookmarkListEntry = getItemByPosition(endIndex);
+        BookmarkItem bookmarkItem =
+                bookmarkListEntry == null ? null : bookmarkListEntry.getBookmarkItem();
         if (bookmarkItem == null || !BookmarkUtils.isMovable(mBookmarkModel, bookmarkItem)) {
             endIndex--;
         }
