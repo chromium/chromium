@@ -21,9 +21,6 @@
 // Request to relaod data from the table view's data source.
 - (void)reloadTableViewData;
 
-// Returns the estimated height of the bottom sheet.
-- (CGFloat)bottomSheetEstimatedHeight;
-
 // Returns the estimated height of a single row in the table view.
 - (CGFloat)tableViewEstimatedRowHeight;
 
@@ -38,9 +35,6 @@
 
 // Select the first row in the table view.
 - (void)selectFirstRow;
-
-// Returns the initial height of the bottom sheet while showing a single row.
-- (CGFloat)initialHeight;
 
 // Returns the initial number of cells the user sees.
 - (CGFloat)initialNumberOfVisibleCells;

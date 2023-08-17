@@ -158,12 +158,7 @@
     preferredHeightDetent API_AVAILABLE(ios(16));
 
 // Calculates the preferred height of the content.
-// If the value of `contained` is set to YES: the preferred height would be
-// between mediumDetent and 0.75% of the maximumDetent.
-- (CGFloat)detentForPreferredHeightInContext:
-               (id<UISheetPresentationControllerDetentResolutionContext>)context
-                              andIsContained:(BOOL)contained
-    API_AVAILABLE(ios(16));
+- (CGFloat)preferredHeightForContent;
 
 @end
 

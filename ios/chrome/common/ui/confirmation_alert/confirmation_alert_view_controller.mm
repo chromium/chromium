@@ -409,26 +409,14 @@ const CGFloat kFaviconBadgeSideLength = 24;
   __typeof(self) __weak weakSelf = self;
   auto resolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return [weakSelf detentForPreferredHeightInContext:context
-                                        andIsContained:YES];
+    return [weakSelf detentForPreferredHeightInContext:context];
   };
   return [UISheetPresentationControllerDetent
       customDetentWithIdentifier:@"preferred_height"
                         resolver:resolver];
 }
 
-- (CGFloat)detentForPreferredHeightInContext:
-               (id<UISheetPresentationControllerDetentResolutionContext>)context
-                              andIsContained:(BOOL)contained
-    API_AVAILABLE(ios(16)) {
-  // Only activate this detent in portrait orientation on iPhone.
-  UITraitCollection* traitCollection = context.containerTraitCollection;
-  if (contained &&
-      (traitCollection.horizontalSizeClass != UIUserInterfaceSizeClassCompact ||
-       traitCollection.verticalSizeClass != UIUserInterfaceSizeClassRegular)) {
-    return UISheetPresentationControllerDetentInactive;
-  }
-
+- (CGFloat)preferredHeightForContent {
   // Obtain container view from presentation controller directly because
   // this view may not have been added to its container view yet.
   UIView* containerView = self.sheetPresentationController.containerView;
@@ -448,19 +436,31 @@ const CGFloat kFaviconBadgeSideLength = 24;
   height -= MAX(kActionsBottomMargin, self.view.safeAreaInsets.bottom);
   height += MAX(kActionsBottomMargin, containerView.safeAreaInsets.bottom);
 
-  // Make sure detent is not larger than 75% of the maximum detent value but at
-  // least as large as a standard medium detent.
-  if (contained) {
-    height = MIN(height, 0.75 * context.maximumDetentValue);
-    CGFloat mediumDetentHeight =
-        [UISheetPresentationControllerDetent.mediumDetent
-            resolvedValueInContext:context];
-    height = MAX(height, mediumDetentHeight);
-  }
   return height;
 }
 
 #pragma mark - Private
+
+- (CGFloat)detentForPreferredHeightInContext:
+    (id<UISheetPresentationControllerDetentResolutionContext>)context
+    API_AVAILABLE(ios(16)) {
+  // Only activate this detent in portrait orientation on iPhone.
+  UITraitCollection* traitCollection = context.containerTraitCollection;
+  if (traitCollection.horizontalSizeClass != UIUserInterfaceSizeClassCompact ||
+      traitCollection.verticalSizeClass != UIUserInterfaceSizeClassRegular) {
+    return UISheetPresentationControllerDetentInactive;
+  }
+
+  CGFloat height = [self preferredHeightForContent];
+
+  // Make sure detent is not larger than 75% of the maximum detent value but at
+  // least as large as a standard medium detent.
+  height = MIN(height, 0.75 * context.maximumDetentValue);
+  CGFloat mediumDetentHeight = [UISheetPresentationControllerDetent.mediumDetent
+      resolvedValueInContext:context];
+  height = MAX(height, mediumDetentHeight);
+  return height;
+}
 
 // Handle taps on the dismiss button.
 - (void)didTapDismissBarButton {
