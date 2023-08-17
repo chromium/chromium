@@ -9198,6 +9198,22 @@
             ]
         }
     ],
+    "MainThreadCompositingPriority": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230817",
+                    "enable_features": [
+                        "MainThreadCompositingPriority"
+                    ]
+                }
+            ]
+        }
+    ],
     "MainThreadHighPriorityImageLoading": [
         {
             "platforms": [
