@@ -47,6 +47,10 @@ using TestEnvironment =
 using UserSessionType =
     ::ash::CustomizableTestEnvBrowserTestBase::UserSessionType;
 
+BASE_FEATURE(kScalableIphTest,
+             "ScalableIphTest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsGoogleChrome() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return true;
@@ -301,6 +305,44 @@ class ScalableIphBrowserTestBubble : public ScalableIphBrowserTest {
     base::FieldTrialParams params;
     AppendVersionNumber(params);
     AppendFakeUiParamsBubble(params);
+    base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
+
+    base::test::FeatureRefAndParams scalable_iph_feature(
+        ash::features::kScalableIph, {});
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {scalable_iph_feature, test_config}, {});
+  }
+};
+
+class ScalableIphBrowserTestNotificationInvalidConfig
+    : public ScalableIphBrowserTest {
+ protected:
+  void InitializeScopedFeatureList() override {
+    base::FieldTrialParams params;
+    AppendVersionNumber(params);
+    AppendFakeUiParamsNotification(params);
+    params[FullyQualified(kScalableIphTest,
+                          scalable_iph::kCustomNotificationIdParamName)] = "";
+    base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
+
+    base::test::FeatureRefAndParams scalable_iph_feature(
+        ash::features::kScalableIph, {});
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {scalable_iph_feature, test_config}, {});
+  }
+};
+
+class ScalableIphBrowserTestBubbleInvalidConfig
+    : public ScalableIphBrowserTest {
+ protected:
+  void InitializeScopedFeatureList() override {
+    base::FieldTrialParams params;
+    AppendVersionNumber(params);
+    AppendFakeUiParamsBubble(params);
+    params[FullyQualified(kScalableIphTest,
+                          scalable_iph::kCustomBubbleIdParamName)] = "";
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
 
     base::test::FeatureRefAndParams scalable_iph_feature(
@@ -961,6 +1003,81 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, RemoveBubble) {
   // TODO(b/290066999): Verify the nudge is not shown.
 }
 
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotificationInvalidConfig,
+                       NotShowNotification) {
+  EnableTestIphFeature();
+
+  // Tracker::Dismissed must be called when an IPH gets dismissed.
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameFiveMinTick));
+  // The action is not performed.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(kTestButtonActionEvent)).Times(0);
+
+  // Simulate an invalid config (i.e. missing notification_id).
+  scalable_iph::ScalableIphDelegate::NotificationParams invalid_params;
+  invalid_params.notification_id = "";
+  invalid_params.title = ScalableIphBrowserTestBase::kTestNotificationTitle;
+  invalid_params.text = ScalableIphBrowserTestBase::kTestNotificationBodyText;
+  invalid_params.button.text =
+      ScalableIphBrowserTestBase::kTestNotificationButtonText;
+  invalid_params.button.action.action_type =
+      scalable_iph::ActionType::kOpenChrome;
+  invalid_params.button.action.iph_event_name =
+      ScalableIphBrowserTestBase::kTestButtonActionEvent;
+
+  // When the config params are invalid and/or not parsable, the notification
+  // should not be shown.
+  EXPECT_CALL(*mock_delegate(), ShowNotification(::testing::Eq(invalid_params),
+                                                 ::testing::NotNull()))
+      .Times(0);
+
+  TriggerConditionsCheckWithAFakeEvent(
+      scalable_iph::ScalableIph::Event::kFiveMinTick);
+
+  // Check that a notification is not shown.
+  auto* message_center = message_center::MessageCenter::Get();
+  auto* notification = message_center->FindVisibleNotificationById("");
+  EXPECT_FALSE(notification);
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubbleInvalidConfig,
+                       NotShowBubble) {
+  EnableTestIphFeature();
+  mock_delegate()->FakeShowBubble();
+
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameFiveMinTick));
+  // The action is not performed.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(kTestButtonActionEvent)).Times(0);
+
+  // Simulate an invalid config (i.e. missing bubble_id).
+  scalable_iph::ScalableIphDelegate::BubbleParams invalid_params;
+  invalid_params.bubble_id = "";
+  invalid_params.text = ScalableIphBrowserTestBase::kTestBubbleText;
+  invalid_params.button.text =
+      ScalableIphBrowserTestBase::kTestBubbleButtonText;
+  invalid_params.button.action.action_type =
+      scalable_iph::ActionType::kOpenGoogleDocs;
+  invalid_params.button.action.iph_event_name =
+      ScalableIphBrowserTestBase::kTestButtonActionEvent;
+  invalid_params.icon =
+      scalable_iph::ScalableIphDelegate::BubbleIcon::kGoogleDocsIcon;
+
+  // When the config params are invalid and/or not parsable, the notification
+  // should not be shown.
+  EXPECT_CALL(*mock_delegate(),
+              ShowBubble(::testing::Eq(invalid_params), ::testing::NotNull()))
+      .Times(0);
+  TriggerConditionsCheckWithAFakeEvent(
+      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  ash::AnchoredNudgeManager* anchored_nudge_manager =
+      ash::AnchoredNudgeManager::Get();
+  CHECK(anchored_nudge_manager);
+  EXPECT_FALSE(anchored_nudge_manager->IsNudgeShown(""));
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     NoScalableIph,
     ScalableIphBrowserTestParameterized,
@@ -998,5 +1115,3 @@ IN_PROC_BROWSER_TEST_P(ScalableIphBrowserTestParameterized,
   EXPECT_EQ(nullptr,
             ScalableIphFactory::GetForBrowserContext(browser()->profile()));
 }
-
-// TODO(b/284053005): Add a test case for invalid event name.

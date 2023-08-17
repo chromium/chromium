@@ -197,11 +197,19 @@ std::string GetParamValue(const base::Feature& feature,
   return value;
 }
 
+void LogParamValueParseError(const std::string& feature_name,
+                             const std::string& param_name) {
+  DLOG(WARNING) << feature_name << " does not have a valid " << param_name
+                << " param value. Stop parsing the config.";
+}
+
 UiType ParseUiType(const base::Feature& feature) {
   std::string ui_type = GetParamValue(feature, kCustomUiTypeParamName);
-  CHECK(ui_type == kCustomUiTypeValueNotification ||
-        ui_type == kCustomUiTypeValueBubble ||
-        ui_type == kCustomUiTypeValueNone);
+  if (ui_type != kCustomUiTypeValueNotification &&
+      ui_type != kCustomUiTypeValueBubble &&
+      ui_type != kCustomUiTypeValueNone) {
+    DLOG(WARNING) << ui_type << " is not a valid UI type.";
+  }
 
   if (ui_type == kCustomUiTypeValueNotification) {
     return UiType::kNotification;
@@ -244,44 +252,61 @@ std::string ParseActionEventName(const std::string& event_used_param) {
   return name_value[1];
 }
 
-NotificationParams ParseNotificationParams(const base::Feature& feature) {
-  // TODO(b/288167957): Implement a fallback for an invalid config, e.g. Do not
-  // show an IPH for the case instead of CHECK failure. Config is served from
-  // the server. This is not a constraint coming from client side.
-  NotificationParams param;
-  param.notification_id =
+std::unique_ptr<NotificationParams> ParseNotificationParams(
+    const base::Feature& feature) {
+  std::unique_ptr<NotificationParams> param =
+      std::make_unique<NotificationParams>();
+  param->notification_id =
       GetParamValue(feature, kCustomNotificationIdParamName);
-  CHECK(!param.notification_id.empty())
-      << kCustomNotificationIdParamName << " is a required field";
-  param.title = GetParamValue(feature, kCustomNotificationTitleParamName);
-  CHECK(!param.title.empty())
-      << kCustomNotificationTitleParamName << " is a required field";
-  param.text = GetParamValue(feature, kCustomNotificationBodyTextParamName);
-  CHECK(!param.text.empty())
-      << kCustomNotificationBodyTextParamName << " is a required field";
-  param.button.text =
+  if (param->notification_id.empty()) {
+    LogParamValueParseError(feature.name, kCustomNotificationIdParamName);
+    return nullptr;
+  }
+  param->title = GetParamValue(feature, kCustomNotificationTitleParamName);
+  if (param->title.empty()) {
+    LogParamValueParseError(feature.name, kCustomNotificationTitleParamName);
+    return nullptr;
+  }
+  param->text = GetParamValue(feature, kCustomNotificationBodyTextParamName);
+  if (param->text.empty()) {
+    LogParamValueParseError(feature.name, kCustomNotificationBodyTextParamName);
+    return nullptr;
+  }
+  param->button.text =
       GetParamValue(feature, kCustomNotificationButtonTextParamName);
-  CHECK(!param.button.text.empty())
-      << kCustomNotificationButtonTextParamName << " is a required field";
+  if (param->button.text.empty()) {
+    LogParamValueParseError(feature.name,
+                            kCustomNotificationButtonTextParamName);
+    return nullptr;
+  }
   std::string action_type =
       GetParamValue(feature, kCustomButtonActionTypeParamName);
-  CHECK(!action_type.empty()) << kCustomButtonActionTypeParamName
-                              << " is a required field for notification";
-  param.button.action.action_type = ParseActionType(action_type);
-  CHECK(param.button.action.action_type != ActionType::kInvalid)
-      << " action type cannot be parsed";
+  if (action_type.empty()) {
+    LogParamValueParseError(feature.name, kCustomButtonActionTypeParamName);
+    return nullptr;
+  }
+  param->button.action.action_type = ParseActionType(action_type);
+  if (param->button.action.action_type == ActionType::kInvalid) {
+    LogParamValueParseError(feature.name, kCustomButtonActionTypeParamName);
+    return nullptr;
+  }
   std::string event_used =
       GetParamValue(feature, kCustomButtonActionEventParamName);
-  CHECK(!event_used.empty())
-      << kCustomButtonActionEventParamName << " is a required field";
-  param.button.action.iph_event_name = ParseActionEventName(event_used);
-  CHECK(!event_used.empty()) << " ihp_event_name cannot be parsed";
+  if (event_used.empty()) {
+    LogParamValueParseError(feature.name, kCustomButtonActionEventParamName);
+    return nullptr;
+  }
+  param->button.action.iph_event_name = ParseActionEventName(event_used);
+  if (param->button.action.iph_event_name.empty()) {
+    LogParamValueParseError(feature.name, kCustomButtonActionEventParamName);
+    return nullptr;
+  }
 
   std::string image_type =
       GetParamValue(feature, kCustomNotificationImageTypeParamName);
-  param.image_type = ScalableIphDelegate::NotificationImageType::kNoImage;
+  param->image_type = ScalableIphDelegate::NotificationImageType::kNoImage;
   if (image_type == kCustomNotificationImageTypeValueWallpaper) {
-    param.image_type = ScalableIphDelegate::NotificationImageType::kWallpaper;
+    param->image_type = ScalableIphDelegate::NotificationImageType::kWallpaper;
   }
   return param;
 }
@@ -296,42 +321,52 @@ BubbleIcon ParseBubbleIcon(const std::string& icon_string) {
   return it->second;
 }
 
-BubbleParams ParseBubbleParams(const base::Feature& feature) {
-  // TODO(b/288167957): Implement a fallback for an invalid config, e.g. Do not
-  // show an IPH for the case instead of CHECK failure. Config is served from
-  // the server. This is not a constraint coming from client side.
-  BubbleParams param;
-  param.bubble_id = GetParamValue(feature, kCustomBubbleIdParamName);
-  CHECK(!param.bubble_id.empty())
-      << kCustomBubbleIdParamName << " is a required field";
-  param.text = GetParamValue(feature, kCustomBubbleTextParamName);
-  CHECK(!param.text.empty())
-      << kCustomBubbleTextParamName << " is a required field";
+std::unique_ptr<BubbleParams> ParseBubbleParams(const base::Feature& feature) {
+  std::unique_ptr<BubbleParams> param = std::make_unique<BubbleParams>();
+  param->bubble_id = GetParamValue(feature, kCustomBubbleIdParamName);
+  if (param->bubble_id.empty()) {
+    LogParamValueParseError(feature.name, kCustomBubbleIdParamName);
+    return nullptr;
+  }
+  param->text = GetParamValue(feature, kCustomBubbleTextParamName);
+  if (param->text.empty()) {
+    LogParamValueParseError(feature.name, kCustomBubbleTextParamName);
+    return nullptr;
+  }
 
   // Button and action:
   // Some nudge may not have a button and action.
-  param.button.text = GetParamValue(feature, kCustomBubbleButtonTextParamName);
-  if (!param.button.text.empty()) {
+  param->button.text = GetParamValue(feature, kCustomBubbleButtonTextParamName);
+  if (!param->button.text.empty()) {
     std::string action_type =
         GetParamValue(feature, kCustomButtonActionTypeParamName);
-    CHECK(!action_type.empty())
-        << kCustomButtonActionTypeParamName << " is a required field";
+    if (action_type.empty()) {
+      LogParamValueParseError(feature.name, kCustomButtonActionTypeParamName);
+      return nullptr;
+    }
 
-    param.button.action.action_type = ParseActionType(action_type);
-    CHECK(param.button.action.action_type != ActionType::kInvalid)
-        << " action type cannot be parsed";
+    param->button.action.action_type = ParseActionType(action_type);
+    if (param->button.action.action_type == ActionType::kInvalid) {
+      LogParamValueParseError(feature.name, kCustomButtonActionTypeParamName);
+      return nullptr;
+    }
 
     std::string event_used =
         GetParamValue(feature, kCustomButtonActionEventParamName);
-    CHECK(!event_used.empty())
-        << kCustomButtonActionEventParamName << " is a required field";
-    param.button.action.iph_event_name = ParseActionEventName(event_used);
-    CHECK(!event_used.empty()) << " ihp_event_name cannot be parsed";
+    if (event_used.empty()) {
+      LogParamValueParseError(feature.name, kCustomButtonActionEventParamName);
+      return nullptr;
+    }
+    param->button.action.iph_event_name = ParseActionEventName(event_used);
+    if (param->button.action.iph_event_name.empty()) {
+      LogParamValueParseError(feature.name, kCustomButtonActionEventParamName);
+      return nullptr;
+    }
   }
 
   auto icon_string = GetParamValue(feature, kCustomBubbleIconParamName);
-  param.icon = ParseBubbleIcon(icon_string);
-  param.anchor_view_app_id =
+  param->icon = ParseBubbleIcon(icon_string);
+  param->anchor_view_app_id =
       GetParamValue(feature, kCustomBubbleAnchorViewAppIdParamName);
 
   return param;
@@ -601,16 +636,32 @@ void ScalableIph::CheckTriggerConditions() {
         tracker_->ShouldTriggerHelpUI(*feature)) {
       UiType ui_type = ParseUiType(*feature);
       switch (ui_type) {
-        case UiType::kNotification:
+        case UiType::kNotification: {
+          std::unique_ptr<NotificationParams> notification_params =
+              ParseNotificationParams(*feature);
+          if (!notification_params) {
+            DLOG(WARNING) << "Failed to parse notification params for "
+                          << feature->name << ". Skipping the config.";
+            continue;
+          }
           delegate_->ShowNotification(
-              ParseNotificationParams(*feature),
+              *notification_params.get(),
               std::make_unique<IphSession>(*feature, tracker_, this));
           break;
-        case UiType::kBubble:
+        }
+        case UiType::kBubble: {
+          std::unique_ptr<BubbleParams> bubble_params =
+              ParseBubbleParams(*feature);
+          if (!bubble_params) {
+            DLOG(WARNING) << "Failed to parse bubble params for "
+                          << feature->name << ". Skipping the config.";
+            continue;
+          }
           delegate_->ShowBubble(
-              ParseBubbleParams(*feature),
+              *bubble_params.get(),
               std::make_unique<IphSession>(*feature, tracker_, this));
           break;
+        }
         case UiType::kNone:
           break;
       }
