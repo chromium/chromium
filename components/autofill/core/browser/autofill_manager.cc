@@ -136,12 +136,6 @@ bool CachedFormNeedsUpdate(const FormData& live_form,
 void AutofillManager::LogAutofillTypePredictionsAvailable(
     LogManager* log_manager,
     const std::vector<FormStructure*>& forms) {
-  if (VLOG_IS_ON(1)) {
-    VLOG(1) << "Parsed forms:";
-    for (FormStructure* form : forms)
-      VLOG(1) << *form;
-  }
-
   LogBuffer buffer(IsLoggingActive(log_manager));
   for (FormStructure* form : forms)
     LOG_AF(buffer) << *form;
