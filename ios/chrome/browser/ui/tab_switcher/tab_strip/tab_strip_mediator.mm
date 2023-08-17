@@ -203,7 +203,7 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
 }
 
 - (void)closeItemWithID:(NSString*)itemID {
-  int index = GetTabIndex(
+  int index = GetWebStateIndex(
       self.webStateList,
       WebStateSearchCriteria{
           .identifier = itemID,

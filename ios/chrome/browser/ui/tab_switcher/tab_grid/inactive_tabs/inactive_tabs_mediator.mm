@@ -451,9 +451,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 - (void)closeItemWithID:(NSString*)itemID {
   // TODO(crbug.com/1418021): Add metrics when the user closes an inactive tab.
-  int index = GetTabIndex(_webStateList, WebStateSearchCriteria{
-                                             .identifier = itemID,
-                                         });
+  int index = GetWebStateIndex(_webStateList, WebStateSearchCriteria{
+                                                  .identifier = itemID,
+                                              });
   if (index != WebStateList::kInvalidIndex) {
     _webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
   }

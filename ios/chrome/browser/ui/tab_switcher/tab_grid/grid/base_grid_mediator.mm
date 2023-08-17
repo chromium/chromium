@@ -116,11 +116,11 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
                                     : browser_list->AllRegularBrowsers();
   for (Browser* browser : browsers) {
     WebStateList* webStateList = browser->GetWebStateList();
-    int index =
-        GetTabIndex(webStateList, WebStateSearchCriteria{
-                                      .identifier = identifier,
-                                      .pinned_state = PinnedState::kNonPinned,
-                                  });
+    int index = GetWebStateIndex(webStateList,
+                                 WebStateSearchCriteria{
+                                     .identifier = identifier,
+                                     .pinned_state = PinnedState::kNonPinned,
+                                 });
     if (index != WebStateList::kInvalidIndex) {
       return browser;
     }
@@ -431,11 +431,11 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 }
 
 - (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)destinationIndex {
-  int sourceIndex = GetTabIndex(self.webStateList,
-                                WebStateSearchCriteria{
-                                    .identifier = itemID,
-                                    .pinned_state = PinnedState::kNonPinned,
-                                });
+  int sourceIndex = GetWebStateIndex(
+      self.webStateList, WebStateSearchCriteria{
+                             .identifier = itemID,
+                             .pinned_state = PinnedState::kNonPinned,
+                         });
   if (sourceIndex != WebStateList::kInvalidIndex) {
     int destinationWebStateListIndex =
         [self webStateListIndexFromItemIndex:destinationIndex];
@@ -445,9 +445,9 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 }
 
 - (void)selectItemWithID:(NSString*)itemID {
-  int index = GetTabIndex(self.webStateList, WebStateSearchCriteria{
-                                                 .identifier = itemID,
-                                             });
+  int index = GetWebStateIndex(self.webStateList, WebStateSearchCriteria{
+                                                      .identifier = itemID,
+                                                  });
   WebStateList* itemWebStateList = self.webStateList;
   if (index == WebStateList::kInvalidIndex) {
     // If this is a search result, it may contain items from other windows or
@@ -470,11 +470,11 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     } else {
       // Other windows case.
       itemWebStateList = browser->GetWebStateList();
-      index = GetTabIndex(itemWebStateList,
-                          WebStateSearchCriteria{
-                              .identifier = itemID,
-                              .pinned_state = PinnedState::kNonPinned,
-                          });
+      index = GetWebStateIndex(itemWebStateList,
+                               WebStateSearchCriteria{
+                                   .identifier = itemID,
+                                   .pinned_state = PinnedState::kNonPinned,
+                               });
       SceneState* targetSceneState =
           SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
       SceneState* currentSceneState =
@@ -531,8 +531,8 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 }
 
 - (BOOL)isItemWithIDSelected:(NSString*)itemID {
-  int index = GetTabIndex(self.webStateList,
-                          WebStateSearchCriteria{.identifier = itemID});
+  int index = GetWebStateIndex(self.webStateList,
+                               WebStateSearchCriteria{.identifier = itemID});
   if (index == WebStateList::kInvalidIndex) {
     return NO;
   }
@@ -544,11 +544,11 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 }
 
 - (void)closeItemWithID:(NSString*)itemID {
-  int index = GetTabIndex(self.webStateList,
-                          WebStateSearchCriteria{
-                              .identifier = itemID,
-                              .pinned_state = PinnedState::kNonPinned,
-                          });
+  int index = GetWebStateIndex(self.webStateList,
+                               WebStateSearchCriteria{
+                                   .identifier = itemID,
+                                   .pinned_state = PinnedState::kNonPinned,
+                               });
   if (index != WebStateList::kInvalidIndex) {
     self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
     return;
@@ -571,11 +571,11 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   // associated web state list.
   if (browser) {
     WebStateList* itemWebStateList = browser->GetWebStateList();
-    index = GetTabIndex(itemWebStateList,
-                        WebStateSearchCriteria{
-                            .identifier = itemID,
-                            .pinned_state = PinnedState::kNonPinned,
-                        });
+    index = GetWebStateIndex(itemWebStateList,
+                             WebStateSearchCriteria{
+                                 .identifier = itemID,
+                                 .pinned_state = PinnedState::kNonPinned,
+                             });
     itemWebStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
   }
 }
@@ -589,11 +589,11 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   self.webStateList->PerformBatchOperation(
       base::BindOnce(^(WebStateList* list) {
         for (NSString* itemID in itemIDs) {
-          int index =
-              GetTabIndex(list, WebStateSearchCriteria{
-                                    .identifier = itemID,
-                                    .pinned_state = PinnedState::kNonPinned,
-                                });
+          int index = GetWebStateIndex(
+              list, WebStateSearchCriteria{
+                        .identifier = itemID,
+                        .pinned_state = PinnedState::kNonPinned,
+                    });
           if (index != WebStateList::kInvalidIndex) {
             list->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
           }

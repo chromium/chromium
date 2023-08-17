@@ -307,11 +307,11 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 - (void)selectItemWithID:(NSString*)itemID {
   base::RecordAction(base::UserMetricsAction("MobileTabGridPinnedTabSelected"));
 
-  int index =
-      GetTabIndex(self.webStateList, WebStateSearchCriteria{
-                                         .identifier = itemID,
-                                         .pinned_state = PinnedState::kPinned,
-                                     });
+  int index = GetWebStateIndex(self.webStateList,
+                               WebStateSearchCriteria{
+                                   .identifier = itemID,
+                                   .pinned_state = PinnedState::kPinned,
+                               });
   WebStateList* itemWebStateList = self.webStateList;
 
   if (index == WebStateList::kInvalidIndex) {
@@ -337,11 +337,11 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 }
 
 - (void)closeItemWithID:(NSString*)itemID {
-  int index =
-      GetTabIndex(self.webStateList, WebStateSearchCriteria{
-                                         .identifier = itemID,
-                                         .pinned_state = PinnedState::kPinned,
-                                     });
+  int index = GetWebStateIndex(self.webStateList,
+                               WebStateSearchCriteria{
+                                   .identifier = itemID,
+                                   .pinned_state = PinnedState::kPinned,
+                               });
   if (index == WebStateList::kInvalidIndex) {
     return;
   }
@@ -354,8 +354,8 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 }
 
 - (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)destinationIndex {
-  int sourceIndex =
-      GetTabIndex(self.webStateList, WebStateSearchCriteria{
+  int sourceIndex = GetWebStateIndex(self.webStateList,
+                                     WebStateSearchCriteria{
                                          .identifier = itemID,
                                          .pinned_state = PinnedState::kPinned,
                                      });
@@ -517,10 +517,11 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
   // cancel the drop operation.
   if (_dragItemID == tabInfo.tabID) {
     const BOOL tabExists =
-        GetTabIndex(self.webStateList, WebStateSearchCriteria{
-                                           .identifier = tabInfo.tabID,
-                                           .pinned_state = PinnedState::kPinned,
-                                       }) != WebStateList::kInvalidIndex;
+        GetWebStateIndex(self.webStateList,
+                         WebStateSearchCriteria{
+                             .identifier = tabInfo.tabID,
+                             .pinned_state = PinnedState::kPinned,
+                         }) != WebStateList::kInvalidIndex;
     if (!tabExists) {
       return UIDropOperationCancel;
     }

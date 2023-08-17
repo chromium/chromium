@@ -25,17 +25,6 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
 int GetWebStateIndex(WebStateList* web_state_list,
                      WebStateSearchCriteria criteria) {
-  for (int i = 0; i < web_state_list->count(); i++) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    if ([criteria.identifier
-            isEqualToString:web_state->GetStableIdentifier()]) {
-      return i;
-    }
-  }
-  return WebStateList::kInvalidIndex;
-}
-
-int GetTabIndex(WebStateList* web_state_list, WebStateSearchCriteria criteria) {
   int start = 0;
   int end = web_state_list->count();
   switch (criteria.pinned_state) {
@@ -95,7 +84,7 @@ NSString* GetActiveWebStateIdentifier(WebStateList* web_state_list,
 
 web::WebState* GetWebState(WebStateList* web_state_list,
                            WebStateSearchCriteria criteria) {
-  int index = GetTabIndex(web_state_list, criteria);
+  int index = GetWebStateIndex(web_state_list, criteria);
   if (index == WebStateList::kInvalidIndex) {
     return nullptr;
   }
@@ -126,9 +115,9 @@ int SetWebStatePinnedState(WebStateList* web_state_list,
 
   const PinnedState pinned_state =
       pin_state ? PinnedState::kNonPinned : PinnedState::kPinned;
-  int index = GetTabIndex(web_state_list,
-                          WebStateSearchCriteria{.identifier = identifier,
-                                                 .pinned_state = pinned_state});
+  int index = GetWebStateIndex(
+      web_state_list, WebStateSearchCriteria{.identifier = identifier,
+                                             .pinned_state = pinned_state});
   if (index == WebStateList::kInvalidIndex) {
     return WebStateList::kInvalidIndex;
   }
