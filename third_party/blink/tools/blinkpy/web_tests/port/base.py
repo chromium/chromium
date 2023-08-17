@@ -1538,14 +1538,9 @@ class Port(object):
         # Ensure that this was called at least once, to process all suites
         # information
         vts = self.virtual_test_suites()
-        if test in self._skip_base_tests:
-            return True
-        # We also need to check if a parent folder of a test is in the list
-        # Can't use "Starts with" as we need the exact entry for an efficient
-        # search of the set
-        test_folders = test.split('/')
-        for i in range(len(test_folders)):
-            if '/'.join(test_folders[:i]) + '/' in self._skip_base_tests:
+
+        for skipped_base_test in self._skip_base_tests:
+            if test.startswith(skipped_base_test):
                 return True
         return False
 
@@ -2379,8 +2374,14 @@ class Port(object):
                 virtual_test_suites.append(vts)
                 if self.operating_system() in vts.platforms:
                     for entry in vts.skip_base_tests:
-                        self._skip_base_tests.add(
-                            self.normalize_test_name(entry))
+                        normalized_base = self.normalize_test_name(entry)
+                        # Wpt js file can expand to multiple tests. Remove the "js"
+                        # suffix so that the startswith test can pass. This could
+                        # be inaccurate but is computationally cheap.
+                        if (self.is_wpt_test(normalized_base)
+                                and normalized_base.endswith(".js")):
+                            normalized_base = normalized_base[:-2]
+                        self._skip_base_tests.add(normalized_base)
         except ValueError as error:
             raise ValueError('{} is not a valid JSON file: {}'.format(
                 path_to_virtual_test_suites, error))

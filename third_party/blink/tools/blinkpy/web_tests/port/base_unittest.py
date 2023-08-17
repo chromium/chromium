@@ -1729,6 +1729,34 @@ class PortTest(LoggingTestCase):
         self.assertFalse(
             port.skipped_due_to_skip_base_tests('virtual/v1/b2/test2.html'))
 
+    # test.any.js shows up on the filesystem as one file but it effectively becomes two test files:
+    # test.any.html and test.any.worker.html. We should support skipping test.any.js.
+    def test_virtual_skip_base_tests_with_generated_tests(self):
+        port = self.make_port()
+        fs = port.host.filesystem
+        web_tests_dir = port.web_tests_dir()
+        fs.write_text_file(
+            fs.join(web_tests_dir, 'VirtualTestSuites'), '['
+            '{"prefix": "v", "platforms": ["Linux"], "bases": ["external/wpt/console/test.any.js"],'
+            '"skip_base_tests": "ALL",'
+            '"args": ["-a"], "expires": "never"}'
+            ']')
+        fs.write_text_file(
+            fs.join(web_tests_dir, 'external/wpt/console', 'test.any.js'), '')
+
+        self.assertTrue(
+            port.skipped_due_to_skip_base_tests(
+                'external/wpt/console/test.any.html'))
+        self.assertTrue(
+            port.skipped_due_to_skip_base_tests(
+                'external/wpt/console/test.any.worker.html'))
+        self.assertFalse(
+            port.skipped_due_to_skip_base_tests(
+                'virtual/v/external/wpt/console/test.any.html'))
+        self.assertFalse(
+            port.skipped_due_to_skip_base_tests(
+                'virtual/v/external/wpt/console/test.any.worker.html'))
+
     def test_default_results_directory(self):
         port = self.make_port(
             options=optparse.Values({
