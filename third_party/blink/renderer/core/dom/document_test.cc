@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/time/time.h"
@@ -99,7 +100,6 @@ namespace blink {
 using network::mojom::ContentSecurityPolicySource;
 using network::mojom::ContentSecurityPolicyType;
 using ::testing::ElementsAre;
-using ::testing::ElementsAreArray;
 
 class DocumentTest : public PageTestBase {
  public:
@@ -1781,12 +1781,14 @@ TEST_F(UnassociatedListedElementTest, GetUnassociatedListedElements) {
 
   ListedElement::List listed_elements =
       GetDocument().UnassociatedListedElements();
-  EXPECT_THAT(listed_elements, ElementsAreArray(expected_elements));
+  EXPECT_TRUE(std::equal(listed_elements.begin(), listed_elements.end(),
+                         expected_elements.begin(), expected_elements.end()));
 
   // Try getting the cached unassociated listed elements again (calling
   // UnassociatedListedElements() again will not re-extract them).
   listed_elements = GetDocument().UnassociatedListedElements();
-  EXPECT_THAT(listed_elements, ElementsAreArray(expected_elements));
+  EXPECT_TRUE(std::equal(listed_elements.begin(), listed_elements.end(),
+                         expected_elements.begin(), expected_elements.end()));
 }
 
 // We don't extract unassociated listed element in a shadow DOM.
