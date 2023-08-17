@@ -107,10 +107,17 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
     OnLog("LocalVideoCapturerSource::OnStateUpdate discarding state update.");
     return;
   }
-  RunState run_state =
-      (state == VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED)
-          ? RunState::kSystemPermissionsError
-          : RunState::kStopped;
+  RunState run_state;
+  switch (state) {
+    case VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED:
+      run_state = RunState::kSystemPermissionsError;
+      break;
+    case VIDEO_CAPTURE_STATE_ERROR_CAMERA_BUSY:
+      run_state = RunState::kCameraBusyError;
+      break;
+    default:
+      run_state = RunState::kStopped;
+  }
 
   auto* frame = LocalFrame::FromFrameToken(frame_token_);
   switch (state) {
@@ -125,6 +132,7 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
     case VIDEO_CAPTURE_STATE_STOPPED:
     case VIDEO_CAPTURE_STATE_ERROR:
     case VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED:
+    case VIDEO_CAPTURE_STATE_ERROR_CAMERA_BUSY:
     case VIDEO_CAPTURE_STATE_ENDED:
       std::move(release_device_cb_).Run();
       release_device_cb_ =

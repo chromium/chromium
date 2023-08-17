@@ -807,6 +807,10 @@ void VideoCaptureImpl::StartCapture(
       state_update_cb.Run(
           blink::VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED);
       return;
+    case VIDEO_CAPTURE_STATE_ERROR_CAMERA_BUSY:
+      OnLog("VideoCaptureImpl is in camera busy error state.");
+      state_update_cb.Run(blink::VIDEO_CAPTURE_STATE_ERROR_CAMERA_BUSY);
+      return;
     case VIDEO_CAPTURE_STATE_PAUSED:
     case VIDEO_CAPTURE_STATE_RESUMED:
       // The internal |state_| is never set to PAUSED/RESUMED since
@@ -886,6 +890,12 @@ void VideoCaptureImpl::OnStateChanged(
       OnLog(
           "VideoCaptureImpl changing state to "
           "VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED");
+    } else if (result->get_error_code() ==
+               media::VideoCaptureError::kWinMediaFoundationCameraBusy) {
+      state_ = VIDEO_CAPTURE_STATE_ERROR_CAMERA_BUSY;
+      OnLog(
+          "VideoCaptureImpl changing state to "
+          "VIDEO_CAPTURE_STATE_ERROR_CAMERA_BUSY");
     } else {
       state_ = VIDEO_CAPTURE_STATE_ERROR;
       OnLog("VideoCaptureImpl changing state to VIDEO_CAPTURE_STATE_ERROR");
