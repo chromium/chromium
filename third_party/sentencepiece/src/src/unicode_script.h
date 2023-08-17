@@ -15,11 +15,11 @@
 #ifndef UNICODE_SCRIPT_H_
 #define UNICODE_SCRIPT_H_
 
-#include "src/common.h"
+#include "common.h"
 
 namespace sentencepiece {
 namespace unicode_script {
-enum ScriptType {
+enum ScriptType : int32_t {
   U_Adlam,
   U_Ahom,
   U_Anatolian_Hieroglyphs,

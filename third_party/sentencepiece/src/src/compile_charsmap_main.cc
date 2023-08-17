@@ -18,17 +18,19 @@
 #include <sstream>
 #include <string>
 
-#include <gflags/gflags.h>
-
+#include "absl/flags/flag.h"
 #include "absl/strings/string_view.h"
-#include "src/builder.h"
-#include "src/filesystem.h"
-#include "src/sentencepiece_processor.h"
+#include "builder.h"
+#include "filesystem.h"
+#include "init.h"
+#include "sentencepiece_processor.h"
 
 using sentencepiece::normalizer::Builder;
-using ::util::Status;
 
-DEFINE_bool(output_precompiled_header, false, "make normalization_rule.h file");
+ABSL_FLAG(bool,
+          output_precompiled_header,
+          false,
+          "make normalization_rule.h file");
 
 namespace sentencepiece {
 namespace {
@@ -156,14 +158,17 @@ struct BinaryBlob {
 }  // namespace sentencepiece
 
 int main(int argc, char **argv) {
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  sentencepiece::ScopedResourceDestructor cleaner;
+  sentencepiece::ParseCommandLineFlags(argv[0], &argc, &argv, true);
 
   const std::vector<
-      std::pair<std::string, std::function<Status(Builder::CharsMap *)>>>
+      std::pair<std::string,
+                std::function<sentencepiece::util::Status(Builder::CharsMap*)>>>
       kRuleList = {{"nfkc", Builder::BuildNFKCMap},
                    {"nmt_nfkc", Builder::BuildNmtNFKCMap},
                    {"nfkc_cf", Builder::BuildNFKC_CFMap},
-                   {"nmt_nfkc_cf", Builder::BuildNmtNFKC_CFMap}};
+                   {"nmt_nfkc_cf", Builder::BuildNmtNFKC_CFMap},
+                   {"nfkd", Builder::BuildNFKDMap}};
 
   std::vector<std::pair<std::string, std::string>> data;
   for (const auto &p : kRuleList) {
@@ -173,13 +178,19 @@ int main(int argc, char **argv) {
     // Write Header.
     std::string index;
     CHECK_OK(Builder::CompileCharsMap(normalized_map, &index));
-    data.emplace_back(p.first, index);
 
     // Write TSV file.
     CHECK_OK(Builder::SaveCharsMap(p.first + ".tsv", normalized_map));
+
+    // Do not make NFKD map as it is optionally created.
+    if (p.first.find("nfkd") != std::string::npos) {
+      continue;
+    }
+
+    data.emplace_back(p.first, index);
   }
 
-  if (FLAGS_output_precompiled_header) {
+  if (absl::GetFlag(FLAGS_output_precompiled_header)) {
     constexpr char kPrecompiledHeaderFileName[] = "normalization_rule.h";
     auto output =
         sentencepiece::filesystem::NewWritableFile(kPrecompiledHeaderFileName);

@@ -12,19 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/bpe_model_trainer.h"
-
 #include <string>
 #include <vector>
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_join.h"
-#include "src/filesystem.h"
-#include "src/sentencepiece_processor.h"
-#include "src/sentencepiece_trainer.h"
-#include "src/util.h"
+#include "bpe_model_trainer.h"
+#include "filesystem.h"
+#include "sentencepiece_processor.h"
+#include "sentencepiece_trainer.h"
+#include "testharness.h"
+#include "util.h"
 
 namespace sentencepiece {
 namespace bpe {
@@ -36,8 +34,10 @@ namespace {
 std::string RunTrainer(
     const std::vector<std::string> &input, int size,
     const std::vector<std::string> &user_defined_symbols = {}) {
-  const std::string input_file = absl::StrCat(getenv("TEST_TMPDIR"), "/input");
-  const std::string model_prefix = absl::StrCat(getenv("TEST_TMPDIR"), "/model");
+  const std::string input_file =
+      util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "input");
+  const std::string model_prefix =
+      util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "model");
   {
     auto output = filesystem::NewWritableFile(input_file);
     for (const auto &line : input) {
@@ -55,11 +55,13 @@ std::string RunTrainer(
   normalizer_spec.set_name("identity");
   normalizer_spec.set_add_dummy_prefix(false);
 
+  NormalizerSpec denormalizer_spec;
+
   for (const auto &w : user_defined_symbols) {
     trainer_spec.add_user_defined_symbols(w);
   }
 
-  Trainer trainer(trainer_spec, normalizer_spec);
+  Trainer trainer(trainer_spec, normalizer_spec, denormalizer_spec);
   EXPECT_TRUE(trainer.Train().ok());
 
   SentencePieceProcessor processor;
@@ -87,25 +89,27 @@ TEST(BPETrainerTest, BasicTest) {
             RunTrainer({"pen", "pineapple", "apple"}, 20, {"app"}));
 }
 
-static constexpr char kTestInputData[] =
-    "src/test_data/wagahaiwa_nekodearu.txt";
+static constexpr char kTestInputData[] = "wagahaiwa_nekodearu.txt";
 
 TEST(BPETrainerTest, EndToEndTest) {
-  const std::string input = absl::StrCat(getenv("TEST_SRCDIR"), kTestInputData);
+  const std::string input =
+      util::JoinPath(absl::GetFlag(FLAGS_test_srcdir), kTestInputData);
 
   ASSERT_TRUE(
       SentencePieceTrainer::Train(
-          absl::StrCat("--model_prefix=", getenv("TEST_TMPDIR"), "/tmp_model",
-                       " --input=", input,
-                       " --vocab_size=8000 --normalization_rule_name=identity"
-                       " --model_type=bpe --control_symbols=<ctrl> "
-                       "--max_sentence_length=2048"))
+          absl::StrCat(
+              "--model_prefix=",
+              util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "tmp_model"),
+              " --input=", input,
+              " --vocab_size=8000 --normalization_rule_name=identity"
+              " --model_type=bpe --control_symbols=<ctrl> "
+              "--max_sentence_length=2048"))
           .ok());
 
   SentencePieceProcessor sp;
-  ASSERT_TRUE(
-      sp.Load(std::string(absl::StrCat(getenv("TEST_TMPDIR"), "/tmp_model.model")))
-          .ok());
+  ASSERT_TRUE(sp.Load(std::string(util::JoinPath(
+                          absl::GetFlag(FLAGS_test_tmpdir), "tmp_model.model")))
+                  .ok());
   EXPECT_EQ(8000, sp.GetPieceSize());
 
   const int cid = sp.PieceToId("<ctrl>");

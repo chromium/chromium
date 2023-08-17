@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/model_factory.h"
-
+#include "model_factory.h"
 #include "absl/memory/memory.h"
-#include "src/bpe_model.h"
-#include "src/char_model.h"
-#include "src/unigram_model.h"
-#include "src/word_model.h"
+#include "bpe_model.h"
+#include "char_model.h"
+#include "unigram_model.h"
+#include "word_model.h"
 
 namespace sentencepiece {
 

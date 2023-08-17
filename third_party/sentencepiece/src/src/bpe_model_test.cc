@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/bpe_model.h"
-
+#include <cstdio>
 #include <string>
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include "bpe_model.h"
+#include "model_interface.h"
+#include "testharness.h"
 
 namespace sentencepiece {
 namespace bpe {
@@ -190,7 +190,6 @@ TEST(BPEModelTest, NotSupportedTest) {
   ModelProto model_proto = MakeBaseModelProto();
   const Model model(model_proto);
   EXPECT_EQ(NBestEncodeResult(), model.NBestEncode("test", 10));
-  EXPECT_EQ(EncodeResult(), model.SampleEncode("test", 0.1));
 }
 
 TEST(BPEModelTest, EncodeWithUnusedTest) {
@@ -247,6 +246,57 @@ TEST(BPEModelTest, EncodeWithUnusedTest) {
     EXPECT_EQ("ab", result[0].first);
     EXPECT_EQ("c", result[1].first);
     EXPECT_EQ("d", result[2].first);
+  }
+}
+
+TEST(SampleModelTest, EncodeTest) {
+  ModelProto model_proto = MakeBaseModelProto();
+
+  AddPiece(&model_proto, "ab", 0.0);
+  AddPiece(&model_proto, "cd", -0.1);
+  AddPiece(&model_proto, "abc", -0.2);
+  AddPiece(&model_proto, "abcd", -0.3);
+
+  // No regularization
+  {
+    const Model model(model_proto);
+    const auto result = model.Encode("abcd");
+    EXPECT_EQ(1, result.size());
+    EXPECT_EQ("abcd", result[0].first);
+  }
+
+  {
+    auto get_tokens = [](const EncodeResult& result) {
+      std::string out;
+      for (const auto& r : result) {
+        if (!result.empty()) {
+          out += ' ';
+        }
+        out += std::string(r.first);
+      }
+      return out;
+    };
+
+    const Model model(model_proto);
+    const std::vector<double> kAlpha = {0.0, 0.1, 0.5, 0.7, 0.9};
+    for (const auto alpha : kAlpha) {
+      constexpr int kTrial = 100000;
+      std::map<std::string, int> freq;
+      for (int n = 0; n < kTrial; ++n) {
+        freq[get_tokens(
+            model.SampleEncode("abcd", static_cast<float>(alpha)))]++;
+      }
+      int num = 0;
+      if (alpha == 0.0) {
+        EXPECT_EQ(1, freq.size());
+      } else {
+        EXPECT_GT(freq.size(), 1);
+      }
+      for (const auto& it : freq) {
+        num += it.second;
+      }
+      EXPECT_EQ(num, kTrial);
+    }
   }
 }
 

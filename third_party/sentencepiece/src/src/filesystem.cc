@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/filesystem.h"
-
 #include <iostream>
 
 #include "absl/memory/memory.h"
-#include "src/util.h"
-
+#include "filesystem.h"
+#include "util.h"
 
 #if defined(OS_WIN) && defined(UNICODE) && defined(_UNICODE)
 #define WPATH(path) (::sentencepiece::win32::Utf8ToWide(path).c_str())
@@ -38,7 +36,7 @@ class PosixReadableFile : public ReadableFile {
                                     is_binary ? std::ios::binary | std::ios::in
                                               : std::ios::in)) {
     if (!*is_)
-      status_ = ::util::StatusBuilder(::util::error::NOT_FOUND, GTL_LOC)
+      status_ = util::StatusBuilder(util::StatusCode::kNotFound, GTL_LOC)
                 << "\"" << filename.data() << "\": " << util::StrError(errno);
   }
 
@@ -46,7 +44,7 @@ class PosixReadableFile : public ReadableFile {
     if (is_ != &std::cin) delete is_;
   }
 
-  ::util::Status status() const { return status_; }
+  util::Status status() const { return status_; }
 
   bool ReadLine(std::string *line) {
     return static_cast<bool>(std::getline(*is_, *line));
@@ -63,7 +61,7 @@ class PosixReadableFile : public ReadableFile {
   }
 
  private:
-  ::util::Status status_;
+  util::Status status_;
   std::istream *is_;
 };
 
@@ -76,15 +74,16 @@ class PosixWritableFile : public WritableFile {
                                     is_binary ? std::ios::binary | std::ios::out
                                               : std::ios::out)) {
     if (!*os_)
-      status_ = ::util::StatusBuilder(::util::error::PERMISSION_DENIED, GTL_LOC)
-                << "\"" << filename.data() << "\": " << util::StrError(errno);
+      status_ =
+          util::StatusBuilder(util::StatusCode::kPermissionDenied, GTL_LOC)
+          << "\"" << filename.data() << "\": " << util::StrError(errno);
   }
 
   ~PosixWritableFile() {
     if (os_ != &std::cout) delete os_;
   }
 
-  ::util::Status status() const { return status_; }
+  util::Status status() const { return status_; }
 
   bool Write(absl::string_view text) {
     os_->write(text.data(), text.size());
@@ -94,10 +93,9 @@ class PosixWritableFile : public WritableFile {
   bool WriteLine(absl::string_view text) { return Write(text) && Write("\n"); }
 
  private:
-  ::util::Status status_;
+  util::Status status_;
   std::ostream *os_;
 };
-
 
 using DefaultReadableFile = PosixReadableFile;
 using DefaultWritableFile = PosixWritableFile;

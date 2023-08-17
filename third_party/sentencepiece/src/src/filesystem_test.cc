@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/filesystem.h"
-
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include "filesystem.h"
 #include "absl/strings/str_cat.h"
-#include "src/util.h"
+#include "testharness.h"
+#include "util.h"
 
 namespace sentencepiece {
 
@@ -30,7 +28,7 @@ TEST(UtilTest, FilesystemTest) {
 
   {
     auto output = filesystem::NewWritableFile(
-        absl::StrCat(getenv("TEST_TMPDIR"), "/test_file"));
+        util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "test_file"));
     for (size_t i = 0; i < kData.size(); ++i) {
       output->WriteLine(kData[i]);
     }
@@ -38,7 +36,7 @@ TEST(UtilTest, FilesystemTest) {
 
   {
     auto input = filesystem::NewReadableFile(
-        absl::StrCat(getenv("TEST_TMPDIR"), "/test_file"));
+        util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "test_file"));
     std::string line;
     for (size_t i = 0; i < kData.size(); ++i) {
       EXPECT_TRUE(input->ReadLine(&line));

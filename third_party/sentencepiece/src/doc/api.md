@@ -14,9 +14,9 @@ if (!status.ok()) {
    // error
 }
 
-// You can also load a model from std::ifstream.
-// std::ifstream in("//path/to/model.model");
-// auto status = processor.Load(in);
+// You can also load a serialized model from std::string.
+// const std::stirng str = // Load blob contents from a file.
+// auto status = processor.LoadFromSerializedProto(str);
 ```
 
 ## Tokenize text (preprocessing)
@@ -75,16 +75,20 @@ Calls `SentencePieceTrainer::Train` function to train sentencepiece model. You c
 sentencepiece::SentencePieceTrainer::Train("--input=test/botchan.txt --model_prefix=m --vocab_size=1000");
 ```
 
-## SentencePieceText proto
-You will want to use `SentencePieceText` class to obtain the pieces and ids at the same time. This proto also encodes a utf8-byte offset of each piece over user input or detokenized text.
+## ImmutableSentencePieceText
+You will want to use `ImmutableSentencePieceText` class to obtain the pieces and ids at the same time.
+This proto also encodes a utf8-byte offset of each piece over user input or detokenized text.
 
 ```C++
-#include <sentencepiece.pb.h>
+#include <sentencepiece_processor.h>
 
-sentencepiece::SentencePieceText spt;
+sentencepiece::ImmutableSentencePieceText spt;
 
 // Encode
-processor.Encode("This is a test.", &spt);
+processor.Encode("This is a test.", spt.mutable_proto());
+
+// or
+// spt = processor.EncodeAsImmutableProto("This is a test.");
 
 std::cout << spt.text() << std::endl;   // This is the same as the input.
 for (const auto &piece : spt.pieces()) {
@@ -96,7 +100,7 @@ for (const auto &piece : spt.pieces()) {
 }
 
 // Decode
-processor.Decode({10, 20, 30}, &spt);
+processor.Decode({10, 20, 30}, spt.mutable_proto());
 std::cout << spt.text() << std::endl;   // This is the same as the decoded string.
 for (const auto &piece : spt.pieces()) {
    // the same as above.

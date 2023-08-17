@@ -24,38 +24,19 @@
 #include <random>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
 #include "absl/strings/string_view.h"
-#include "src/common.h"
-#include "src/sentencepiece_processor.h"
-#include "src/deps/threadpool.h"
-#include "src/deps/status_builder.h"
+#include "common.h"
+#include "sentencepiece_processor.h"
 
 #ifdef SPM_NO_THREADLOCAL
 #include <pthread.h>
 #endif
 
-#define GTL_LOC (0)
-
-#define CHECK_OR_RETURN(condition)                                 \
-  if (condition) {                                                 \
-  } else /* NOLINT */                                              \
-    return ::util::StatusBuilder(::util::error::INTERNAL, GTL_LOC) \
-           << __FILE__ << "(" << __LINE__ << ") [" << #condition << "] "
-
-#define CHECK_EQ_OR_RETURN(a, b) CHECK_OR_RETURN((a) == (b))
-#define CHECK_NE_OR_RETURN(a, b) CHECK_OR_RETURN((a) != (b))
-#define CHECK_GE_OR_RETURN(a, b) CHECK_OR_RETURN((a) >= (b))
-#define CHECK_LE_OR_RETURN(a, b) CHECK_OR_RETURN((a) <= (b))
-#define CHECK_GT_OR_RETURN(a, b) CHECK_OR_RETURN((a) > (b))
-#define CHECK_LT_OR_RETURN(a, b) CHECK_OR_RETURN((a) < (b))
-
 namespace sentencepiece {
-
-static constexpr uint32 kUnicodeError = 0xFFFD;
-
 template <typename T>
 std::ostream &operator<<(std::ostream &out, const std::vector<T> &v) {
   for (const auto n : v) {
@@ -64,19 +45,10 @@ std::ostream &operator<<(std::ostream &out, const std::vector<T> &v) {
   return out;
 }
 
+uint32 GetRandomGeneratorSeed();
+
 // String utilities
 namespace string_util {
-
-struct string_view_hash {
-  // DJB hash function.
-  inline size_t operator()(const absl::string_view &sp) const {
-    size_t hash = 5381;
-    for (size_t i = 0; i < sp.size(); ++i) {
-      hash = ((hash << 5) + hash) + sp[i];
-    }
-    return hash;
-  }
-};
 
 template <typename Target>
 inline bool lexical_cast(absl::string_view arg, Target *result) {
@@ -310,13 +282,6 @@ inline uint64 FingerprintCat(uint64 x, uint64 y) {
   return y;
 }
 
-template <typename T>
-void STLDeleteElements(std::vector<T *> *vec) {
-  for (auto item : *vec) {
-    delete item;
-  }
-  vec->clear();
-}
 }  // namespace port
 
 namespace random {
@@ -326,9 +291,9 @@ std::mt19937 *GetRandomGenerator();
 template <typename T>
 class ReservoirSampler {
  public:
-  explicit ReservoirSampler(std::vector<T> *sampled, size_t size)
-      : sampled_(sampled), size_(size), engine_(std::random_device{}()) {}
-  explicit ReservoirSampler(std::vector<T> *sampled, size_t size, size_t seed)
+  explicit ReservoirSampler(std::vector<T>* sampled, uint64 size)
+      : sampled_(sampled), size_(size), engine_(GetRandomGeneratorSeed()) {}
+  explicit ReservoirSampler(std::vector<T>* sampled, uint64 size, uint64 seed)
       : sampled_(sampled), size_(size), engine_(seed) {}
   virtual ~ReservoirSampler() {}
 
@@ -339,18 +304,18 @@ class ReservoirSampler {
     if (sampled_->size() < size_) {
       sampled_->push_back(item);
     } else {
-      std::uniform_int_distribution<size_t> dist(0, total_ - 1);
-      const size_t n = dist(engine_);
+      std::uniform_int_distribution<uint64> dist(0, total_ - 1);
+      const uint64 n = dist(engine_);
       if (n < sampled_->size()) (*sampled_)[n] = item;
     }
   }
 
-  size_t total_size() const { return total_; }
+  uint64 total_size() const { return total_; }
 
  private:
   std::vector<T> *sampled_ = nullptr;
-  size_t size_ = 0;
-  size_t total_ = 0;
+  uint64 size_ = 0;
+  uint64 total_ = 0;
   std::mt19937 engine_;
 };
 
@@ -363,7 +328,7 @@ inline std::string JoinPath(absl::string_view path) {
 }
 
 template <typename... T>
-inline std::string JoinPath(absl::string_view first, const T &... rest) {
+inline std::string JoinPath(absl::string_view first, const T&... rest) {
 #ifdef OS_WIN
   return JoinPath(first) + "\\" + JoinPath(rest...);
 #else
@@ -372,7 +337,98 @@ inline std::string JoinPath(absl::string_view first, const T &... rest) {
 }
 
 std::string StrError(int errnum);
-}  // namespace util
-}  // namespace sentencepiece
 
+std::vector<std::string> StrSplitAsCSV(absl::string_view text);
+
+inline Status OkStatus() {
+  return Status();
+}
+
+#define DECLARE_ERROR(FUNC)                                \
+  inline util::Status FUNC##Error(absl::string_view str) { \
+    return util::Status(StatusCode::k##FUNC, str.data());  \
+  }                                                        \
+  inline bool Is##FUNC(const util::Status& status) {       \
+    return status.code() == StatusCode::k##FUNC;           \
+  }
+
+DECLARE_ERROR(Cancelled)
+DECLARE_ERROR(InvalidArgument)
+DECLARE_ERROR(NotFound)
+DECLARE_ERROR(AlreadyExists)
+DECLARE_ERROR(ResourceExhausted)
+DECLARE_ERROR(Unavailable)
+DECLARE_ERROR(FailedPrecondition)
+DECLARE_ERROR(OutOfRange)
+DECLARE_ERROR(Unimplemented)
+DECLARE_ERROR(Internal)
+DECLARE_ERROR(Aborted)
+DECLARE_ERROR(DeadlineExceeded)
+DECLARE_ERROR(DataLoss)
+DECLARE_ERROR(Unknown)
+DECLARE_ERROR(PermissionDenied)
+DECLARE_ERROR(Unauthenticated)
+
+#define GTL_LOC (0)
+
+class StatusBuilder {
+ public:
+  explicit StatusBuilder(StatusCode code) : code_(code) {}
+  explicit StatusBuilder(StatusCode code, int loc) : code_(code) {}
+
+  template <typename T>
+  StatusBuilder& operator<<(const T& value) {
+    os_ << value;
+    return *this;
+  }
+
+  operator Status() const { return Status(code_, os_.str()); }
+
+ private:
+  StatusCode code_;
+  std::ostringstream os_;
+};
+
+#define CHECK_OR_RETURN(condition)                           \
+  if (condition) {                                           \
+  } else /* NOLINT */                                        \
+    return ::sentencepiece::util::StatusBuilder(             \
+               ::sentencepiece::util::StatusCode::kInternal) \
+           << __FILE__ << "(" << __LINE__ << ") [" << #condition << "] "
+
+#define CHECK_EQ_OR_RETURN(a, b) CHECK_OR_RETURN((a) == (b))
+#define CHECK_NE_OR_RETURN(a, b) CHECK_OR_RETURN((a) != (b))
+#define CHECK_GE_OR_RETURN(a, b) CHECK_OR_RETURN((a) >= (b))
+#define CHECK_LE_OR_RETURN(a, b) CHECK_OR_RETURN((a) <= (b))
+#define CHECK_GT_OR_RETURN(a, b) CHECK_OR_RETURN((a) > (b))
+#define CHECK_LT_OR_RETURN(a, b) CHECK_OR_RETURN((a) < (b))
+
+}  // namespace util
+
+namespace port {
+template <typename T>
+void STLDeleteElements(std::vector<T*>* vec) {
+  for (auto item : *vec) {
+    delete item;
+  }
+  vec->clear();
+}
+}  // namespace port
+
+class ThreadPool {
+ public:
+  ThreadPool(int32 n) {}
+  virtual ~ThreadPool() {
+    for (auto& task : tasks_) {
+      task.join();
+    }
+  }
+
+  void Schedule(std::function<void()> closure) { tasks_.emplace_back(closure); }
+  void StartWorkers() {}
+
+ private:
+  std::vector<std::thread> tasks_;
+};
+}  // namespace sentencepiece
 #endif  // UTIL_H_

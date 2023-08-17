@@ -12,18 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/word_model_trainer.h"
-
 #include <string>
 #include <vector>
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_join.h"
-#include "src/filesystem.h"
-#include "src/sentencepiece_processor.h"
-#include "src/util.h"
+#include "filesystem.h"
+#include "sentencepiece_processor.h"
+#include "testharness.h"
+#include "util.h"
+#include "word_model_trainer.h"
 
 namespace sentencepiece {
 namespace word {
@@ -33,8 +31,10 @@ namespace {
 #define WS "\xE2\x96\x81"
 
 std::string RunTrainer(const std::vector<std::string> &input, int size) {
-  const std::string input_file = absl::StrCat(getenv("TEST_TMPDIR"), "/input");
-  const std::string model_prefix = absl::StrCat(getenv("TEST_TMPDIR"), "/model");
+  const std::string input_file =
+      util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "input");
+  const std::string model_prefix =
+      util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "model");
   {
     auto output = filesystem::NewWritableFile(input_file);
     for (const auto &line : input) {
@@ -52,7 +52,9 @@ std::string RunTrainer(const std::vector<std::string> &input, int size) {
   normalizer_spec.set_name("identity");
   normalizer_spec.set_add_dummy_prefix(true);
 
-  Trainer trainer(trainer_spec, normalizer_spec);
+  NormalizerSpec denormalizer_spec;
+
+  Trainer trainer(trainer_spec, normalizer_spec, denormalizer_spec);
   EXPECT_TRUE(trainer.Train().ok());
 
   SentencePieceProcessor processor;

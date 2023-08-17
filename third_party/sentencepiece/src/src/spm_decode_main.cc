@@ -16,47 +16,51 @@
 #include <string>
 #include <vector>
 
-#include <gflags/gflags.h>
-
+#include "absl/flags/flag.h"
 #include "absl/strings/str_split.h"
-#include "src/common.h"
-#include "src/filesystem.h"
-#include "src/sentencepiece.pb.h"
-#include "src/sentencepiece_processor.h"
-#include "src/util.h"
+#include "common.h"
+#include "filesystem.h"
+#include "init.h"
+#include "sentencepiece.pb.h"
+#include "sentencepiece_processor.h"
+#include "util.h"
 
-DEFINE_string(model, "", "model file name");
-DEFINE_string(input, "", "input filename");
-DEFINE_string(output, "", "output filename");
-DEFINE_string(input_format, "piece", "choose from piece or id");
-DEFINE_string(output_format, "string", "choose from string or proto");
-DEFINE_string(extra_options, "",
-              "':' separated encoder extra options, e.g., \"reverse:bos:eos\"");
+ABSL_FLAG(std::string, model, "", "model file name");
+ABSL_FLAG(std::string, input, "", "input filename");
+ABSL_FLAG(std::string, output, "", "output filename");
+ABSL_FLAG(std::string, input_format, "piece", "choose from piece or id");
+ABSL_FLAG(std::string, output_format, "string", "choose from string or proto");
+ABSL_FLAG(std::string,
+          extra_options,
+          "",
+          "':' separated encoder extra options, e.g., \"reverse:bos:eos\"");
 
 int main(int argc, char *argv[]) {
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  sentencepiece::ScopedResourceDestructor cleaner;
+  sentencepiece::ParseCommandLineFlags(argv[0], &argc, &argv, true);
   std::vector<std::string> rest_args;
 
-  if (FLAGS_input.empty()) {
+  if (absl::GetFlag(FLAGS_input).empty()) {
     for (int i = 1; i < argc; ++i) {
       rest_args.push_back(std::string(argv[i]));
     }
   } else {
-    rest_args.push_back(FLAGS_input);
+    rest_args.push_back(absl::GetFlag(FLAGS_input));
   }
-
-  CHECK(!FLAGS_model.empty());
-
-  sentencepiece::SentencePieceProcessor sp;
-  CHECK_OK(sp.Load(FLAGS_model));
-  CHECK_OK(sp.SetDecodeExtraOptions(FLAGS_extra_options));
-
-  auto output = sentencepiece::filesystem::NewWritableFile(FLAGS_output);
-  CHECK_OK(output->status());
 
   if (rest_args.empty()) {
     rest_args.push_back("");  // empty means that reading from stdin.
   }
+
+  CHECK(!absl::GetFlag(FLAGS_model).empty());
+
+  sentencepiece::SentencePieceProcessor sp;
+  CHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
+  CHECK_OK(sp.SetDecodeExtraOptions(absl::GetFlag(FLAGS_extra_options)));
+
+  auto output =
+      sentencepiece::filesystem::NewWritableFile(absl::GetFlag(FLAGS_output));
+  CHECK_OK(output->status());
 
   std::string detok, line;
   sentencepiece::SentencePieceText spt;
@@ -64,43 +68,46 @@ int main(int argc, char *argv[]) {
 
   auto ToIds = [&](const std::vector<std::string> &pieces) {
     std::vector<int> ids;
+    ids.reserve(pieces.size());
     for (const auto &s : pieces) {
       ids.push_back(atoi(s.c_str()));
     }
     return ids;
   };
 
-  if (FLAGS_input_format == "piece") {
-    if (FLAGS_output_format == "string") {
+  if (absl::GetFlag(FLAGS_input_format) == "piece") {
+    if (absl::GetFlag(FLAGS_output_format) == "string") {
       process = [&](const std::vector<std::string> &pieces) {
         CHECK_OK(sp.Decode(pieces, &detok));
         output->WriteLine(detok);
       };
-    } else if (FLAGS_output_format == "proto") {
+    } else if (absl::GetFlag(FLAGS_output_format) == "proto") {
       process = [&](const std::vector<std::string> &pieces) {
         CHECK_OK(sp.Decode(pieces, &spt));
       };
     } else {
-      LOG(FATAL) << "Unknown output format: " << FLAGS_output_format;
+      LOG(FATAL) << "Unknown output format: "
+                 << absl::GetFlag(FLAGS_output_format);
     }
-  } else if (FLAGS_input_format == "id") {
-    if (FLAGS_output_format == "string") {
+  } else if (absl::GetFlag(FLAGS_input_format) == "id") {
+    if (absl::GetFlag(FLAGS_output_format) == "string") {
       process = [&](const std::vector<std::string> &pieces) {
         CHECK_OK(sp.Decode(ToIds(pieces), &detok));
         output->WriteLine(detok);
       };
-    } else if (FLAGS_output_format == "proto") {
+    } else if (absl::GetFlag(FLAGS_output_format) == "proto") {
       process = [&](const std::vector<std::string> &pieces) {
         CHECK_OK(sp.Decode(ToIds(pieces), &spt));
       };
     } else {
-      LOG(FATAL) << "Unknown output format: " << FLAGS_output_format;
+      LOG(FATAL) << "Unknown output format: "
+                 << absl::GetFlag(FLAGS_output_format);
     }
   } else {
-    LOG(FATAL) << "Unknown input format: " << FLAGS_input_format;
+    LOG(FATAL) << "Unknown input format: " << absl::GetFlag(FLAGS_input_format);
   }
 
-  for (const auto filename : rest_args) {
+  for (const auto& filename : rest_args) {
     auto input = sentencepiece::filesystem::NewReadableFile(filename);
     CHECK_OK(input->status());
     while (input->ReadLine(&line)) {

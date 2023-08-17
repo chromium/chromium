@@ -164,7 +164,8 @@ suffixsort(string_type T, sarray_type SA,
            bool isbwt) {
 typedef typename std::iterator_traits<string_type>::value_type char_type;
   sarray_type RA;
-  index_type i, j, m, p, q, plen, qlen, name, pidx = 0;
+  index_type i, j, m, p, q, plen, qlen, name;
+  int pidx = 0;
   bool diff;
   int c;
 #ifdef _OPENMP
@@ -178,7 +179,7 @@ typedef typename std::iterator_traits<string_type>::value_type char_type;
      sort all the S-substrings */
   if(fs < (maxthreads * k)) {
     index_type *C, *B;
-    if((C = new index_type[maxthreads * k]) == 0) { return -2; }
+    C = new index_type[maxthreads * k];
     B = (1 < maxthreads) ? C + k : C;
     getCounts(T, C, n, k); getBuckets(C, B, k, true); /* find ends of buckets */
 #ifdef _OPENMP
@@ -270,7 +271,7 @@ typedef typename std::iterator_traits<string_type>::value_type char_type;
   /* stage 3: induce the result for the original problem */
   if(fs < (maxthreads * k)) {
     index_type *B, *C;
-    if((C = new index_type[maxthreads * k]) == 0) { return -2; }
+    C = new index_type[maxthreads * k];
     B = (1 < maxthreads) ? C + k : C;
     /* put all left-most S characters into their buckets */
     getCounts(T, C, n, k); getBuckets(C, B, k, true); /* find ends of buckets */
@@ -326,7 +327,7 @@ saisxx(string_type T, sarray_type SA, index_type n, index_type k = 256) {
   int err;
   if((n < 0) || (k <= 0)) { return -1; }
   if(n <= 1) { if(n == 1) { SA[0] = 0; } return 0; }
-  try { err = saisxx_private::suffixsort(T, SA, 0, n, k, false); }
+  try { err = saisxx_private::suffixsort(T, SA, index_type(0), n, k, false); }
   catch(...) { err = -2; }
   return err;
 }

@@ -12,10 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/util.h"
+#include "util.h"
+
+#include <atomic>
 #include <iostream>
 
 namespace sentencepiece {
+
+namespace {
+constexpr unsigned int kDefaultSeed = static_cast<unsigned int>(-1);
+static std::atomic<unsigned int> g_seed = kDefaultSeed;
+static std::atomic<int> g_minloglevel = 0;
+}  // namespace
+
+void SetRandomGeneratorSeed(unsigned int seed) {
+  if (seed != kDefaultSeed) {
+    g_seed.store(seed);
+  }
+}
+
+uint32 GetRandomGeneratorSeed() {
+  try {
+    return g_seed == kDefaultSeed ? std::random_device{}() : g_seed.load();
+  } catch (...) {
+    return g_seed.load();
+  }
+}
+
+namespace logging {
+int GetMinLogLevel() {
+  return g_minloglevel.load();
+}
+void SetMinLogLevel(int v) {
+  g_minloglevel.store(v);
+}
+}  // namespace logging
+
 namespace string_util {
 
 // mblen sotres the number of bytes consumed after decoding.
@@ -143,7 +175,7 @@ class RandomGeneratorStorage {
   std::mt19937 *Get() {
     auto *result = static_cast<std::mt19937 *>(pthread_getspecific(key_));
     if (result == nullptr) {
-      result = new std::mt19937(std::random_device{}());
+      result = new std::mt19937(GetRandomGeneratorSeed());
       pthread_setspecific(key_, result);
     }
     return result;
@@ -161,7 +193,7 @@ std::mt19937 *GetRandomGenerator() {
 }
 #else
 std::mt19937 *GetRandomGenerator() {
-  thread_local static std::mt19937 mt(std::random_device{}());
+  thread_local static std::mt19937 mt(GetRandomGeneratorSeed());
   return &mt;
 }
 #endif
@@ -186,41 +218,59 @@ std::string StrError(int errnum) {
   os << str << " Error #" << errnum;
   return os.str();
 }
+
+std::vector<std::string> StrSplitAsCSV(absl::string_view text) {
+  std::string buf = std::string(text);
+  char* str = const_cast<char*>(buf.data());
+  char* eos = str + text.size();
+  char* start = nullptr;
+  char* end = nullptr;
+
+  std::vector<std::string> result;
+  for (; str < eos; ++str) {
+    if (*str == '"') {
+      start = ++str;
+      end = start;
+      for (; str < eos; ++str) {
+        if (*str == '"') {
+          str++;
+          if (*str != '"') {
+            break;
+          }
+        }
+        *end++ = *str;
+      }
+      str = std::find(str, eos, ',');
+    } else {
+      start = str;
+      str = std::find(str, eos, ',');
+      end = str;
+    }
+    *end = '\0';
+    result.push_back(start);
+  }
+
+  return result;
+}
 }  // namespace util
 
 #ifdef OS_WIN
 namespace win32 {
-std::wstring Utf8ToWide(const std::string &input) {
-  int output_length =
-      ::MultiByteToWideChar(CP_UTF8, 0, input.c_str(), -1, nullptr, 0);
+std::wstring Utf8ToWide(absl::string_view input) {
+  int output_length = ::MultiByteToWideChar(
+      CP_UTF8, 0, input.data(), static_cast<int>(input.size()), nullptr, 0);
   output_length = output_length <= 0 ? 0 : output_length - 1;
   if (output_length == 0) {
     return L"";
   }
   std::unique_ptr<wchar_t[]> input_wide(new wchar_t[output_length + 1]);
-  const int result = ::MultiByteToWideChar(CP_UTF8, 0, input.c_str(), -1,
+  std::fill(input_wide.get(), input_wide.get() + output_length + 1, L'\0');
+  const int result = ::MultiByteToWideChar(CP_UTF8, 0, input.data(),
+                                           static_cast<int>(input.size()),
                                            input_wide.get(), output_length + 1);
   std::wstring output;
   if (result > 0) {
     output.assign(input_wide.get());
-  }
-  return output;
-}
-
-std::string WideToUtf8(const std::wstring &input) {
-  const int output_length = ::WideCharToMultiByte(CP_UTF8, 0, input.c_str(), -1,
-                                                  nullptr, 0, nullptr, nullptr);
-  if (output_length == 0) {
-    return "";
-  }
-
-  std::unique_ptr<char[]> input_encoded(new char[output_length + 1]);
-  const int result =
-      ::WideCharToMultiByte(CP_UTF8, 0, input.c_str(), -1, input_encoded.get(),
-                            output_length + 1, nullptr, nullptr);
-  std::string output;
-  if (result > 0) {
-    output.assign(input_encoded.get());
   }
   return output;
 }

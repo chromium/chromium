@@ -15,8 +15,8 @@
 #ifndef CHAR_MODEL_H_
 #define CHAR_MODEL_H_
 
-#include "src/model_interface.h"
-#include "src/sentencepiece_model.pb.h"
+#include "model_interface.h"
+#include "sentencepiece_model.pb.h"
 
 namespace sentencepiece {
 namespace character {

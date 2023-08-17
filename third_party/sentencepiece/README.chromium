@@ -1,8 +1,8 @@
 Name: Sentencepiece
 Short Name: sentencepiece
 URL: https://github.com/google/sentencepiece
-Version: 1.0.0
-Date: 2023/06/28
+Version: 8cbdf13794284c30877936f91c6f31e2c1d5aef7
+Date: 2023/08/16
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
@@ -23,10 +23,15 @@ Making new patches:
 2. Run `git format-patch -o third_party/sentencepiece/patches/ origin/main third_party/sentencepiece/src/`
 
 Patches:
-* rename_version.patch - Renames the src/VERSION file because otherwise C++
-includes of the form `#include <version>` will find that text file instead of
-the header they are meant to find.
+* 0001-Remove-config-include.patch - Removes a header for version information
+that is not used and requires cmake.
+* 0002-Fix-absl-includes.patch - Rewrites absl includes from third_party/absl to
+just absl.
+* 0003-Remove-absl-flags.patch - Removes some usage of absl flags which was not
+needed for chromium.
+* 0004-Remove-util-Status.patch - Swaps out the custom util::Status for
+absl::Status.
 
-* remove-dart-exceptions.patch - Removes all try/catch blocks and changes
-`DART_THROW` to `ABSL_CHECK(false)` to be compatible with chromium which is
-built with exceptions disabled.
+In addition the python, third_party/absl, and third_party/protobuf-lite
+directories were removed to avoid adding a bunch of unused code which could
+cause strange compile errors if include paths were incorrect.

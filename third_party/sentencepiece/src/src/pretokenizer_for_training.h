@@ -19,8 +19,9 @@
 #include <string>
 
 #include "absl/strings/string_view.h"
-#include "src/common.h"
-#include "src/sentencepiece.pb.h"
+#include "common.h"
+#include "sentencepiece.pb.h"
+#include "sentencepiece_processor.h"
 
 namespace sentencepiece {
 namespace pretokenizer {
@@ -29,7 +30,7 @@ class PretokenizerForTrainingInterface {
  public:
   PretokenizerForTrainingInterface() {}
   virtual ~PretokenizerForTrainingInterface() {}
-  virtual ::util::Status status() const = 0;
+  virtual util::Status status() const = 0;
 
   // Puts kUPPBoundaryStr before and after the pre-tokenizer's segmentation
   // when there are no spaces between these tokens.
@@ -43,7 +44,7 @@ class PretokenizerForTrainingInterface {
   // segmentation: piece[0] = {0, 1}, piece[1] = {2, 6},
   //               piece[2] = {7, 15}, piece[3] = {15, 20}
   // output: I love sentence<tab>piece.
-  std::string PreTokenize(absl::string_view text) const;
+  std::vector<std::string> PreTokenize(absl::string_view text) const;
 
   // Returns pre-tokenized result.
   // Note that the pre-tokenized constraint is specified with the
@@ -53,7 +54,7 @@ class PretokenizerForTrainingInterface {
 
  private:
   static std::string Preprocess(absl::string_view text);
-  static std::string Postprocess(const SentencePieceText &spt);
+  static std::vector<std::string> Postprocess(const SentencePieceText& spt);
 };
 
 }  // namespace pretokenizer

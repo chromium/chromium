@@ -20,67 +20,80 @@
 
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_split.h"
+#include "sentencepiece_processor.h"
+#include "util.h"
 
-#define PARSE_STRING(param_name)      \
-  if (name == #param_name) {          \
-    message->set_##param_name(value); \
-    return ::util::OkStatus();        \
+namespace sentencepiece {
+
+#define PARSE_STRING(param_name)                   \
+  if (name == #param_name) {                       \
+    message->set_##param_name(std::string(value)); \
+    return util::OkStatus();                       \
   }
 
-#define PARSE_REPEATED_STRING(param_name)                               \
-  if (name == #param_name) {                                            \
-    const std::vector<std::string> values = absl::StrSplit(value, ','); \
-    for (const std::string &val : values) {                             \
-      message->add_##param_name(val);                                   \
-    }                                                                   \
-    return ::util::OkStatus();                                          \
+#define PARSE_REPEATED_STRING(param_name)                       \
+  if (name == #param_name) {                                    \
+    for (const std::string& val : util::StrSplitAsCSV(value)) { \
+      message->add_##param_name(val);                           \
+    }                                                           \
+    return util::OkStatus();                                    \
   }
 
 #define PARSE_BYTE(param_name)                             \
   if (name == #param_name) {                               \
     message->set_##param_name(value.data(), value.size()); \
-    return ::util::OkStatus();                             \
+    return util::OkStatus();                               \
   }
 
-#define PARSE_INT32(param_name)                                              \
-  if (name == #param_name) {                                                 \
-    int32 v;                                                                 \
-    if (!string_util::lexical_cast(value, &v))                               \
-      return ::util::StatusBuilder(::util::error::INVALID_ARGUMENT, GTL_LOC) \
-             << "cannot parse \"" << value << "\" as int.";                  \
-    message->set_##param_name(v);                                            \
-    return ::util::OkStatus();                                               \
+#define PARSE_INT32(param_name)                                               \
+  if (name == #param_name) {                                                  \
+    int32 v;                                                                  \
+    if (!string_util::lexical_cast(value, &v))                                \
+      return util::StatusBuilder(util::StatusCode::kInvalidArgument, GTL_LOC) \
+             << "cannot parse \"" << value << "\" as int.";                   \
+    message->set_##param_name(v);                                             \
+    return util::OkStatus();                                                  \
   }
 
-#define PARSE_DOUBLE(param_name)                                             \
-  if (name == #param_name) {                                                 \
-    double v;                                                                \
-    if (!string_util::lexical_cast(value, &v))                               \
-      return ::util::StatusBuilder(::util::error::INVALID_ARGUMENT, GTL_LOC) \
-             << "cannot parse \"" << value << "\" as int.";                  \
-    message->set_##param_name(v);                                            \
-    return ::util::OkStatus();                                               \
+#define PARSE_UINT64(param_name)                                              \
+  if (name == #param_name) {                                                  \
+    uint64 v;                                                                 \
+    if (!string_util::lexical_cast(value, &v))                                \
+      return util::StatusBuilder(util::StatusCode::kInvalidArgument, GTL_LOC) \
+             << "cannot parse \"" << value << "\" as int.";                   \
+    message->set_##param_name(v);                                             \
+    return util::OkStatus();                                                  \
   }
 
-#define PARSE_BOOL(param_name)                                               \
-  if (name == #param_name) {                                                 \
-    bool v;                                                                  \
-    if (!string_util::lexical_cast(value.empty() ? "true" : value, &v))      \
-      return ::util::StatusBuilder(::util::error::INVALID_ARGUMENT, GTL_LOC) \
-             << "cannot parse \"" << value << "\" as bool.";                 \
-    message->set_##param_name(v);                                            \
-    return ::util::OkStatus();                                               \
+#define PARSE_DOUBLE(param_name)                                              \
+  if (name == #param_name) {                                                  \
+    double v;                                                                 \
+    if (!string_util::lexical_cast(value, &v))                                \
+      return util::StatusBuilder(util::StatusCode::kInvalidArgument, GTL_LOC) \
+             << "cannot parse \"" << value << "\" as int.";                   \
+    message->set_##param_name(v);                                             \
+    return util::OkStatus();                                                  \
   }
 
-#define PARSE_ENUM(param_name, map_name)                                     \
-  if (name == #param_name) {                                                 \
-    const auto it = map_name.find(absl::AsciiStrToUpper(value));             \
-    if (it == map_name.end())                                                \
-      return ::util::StatusBuilder(::util::error::INVALID_ARGUMENT, GTL_LOC) \
-             << "unknown enumeration value of \"" << value << "\" as "       \
-             << #map_name;                                                   \
-    message->set_##param_name(it->second);                                   \
-    return ::util::OkStatus();                                               \
+#define PARSE_BOOL(param_name)                                                \
+  if (name == #param_name) {                                                  \
+    bool v;                                                                   \
+    if (!string_util::lexical_cast(value.empty() ? "true" : value, &v))       \
+      return util::StatusBuilder(util::StatusCode::kInvalidArgument, GTL_LOC) \
+             << "cannot parse \"" << value << "\" as bool.";                  \
+    message->set_##param_name(v);                                             \
+    return util::OkStatus();                                                  \
+  }
+
+#define PARSE_ENUM(param_name, map_name)                                      \
+  if (name == #param_name) {                                                  \
+    const auto it = map_name.find(absl::AsciiStrToUpper(value));              \
+    if (it == map_name.end())                                                 \
+      return util::StatusBuilder(util::StatusCode::kInvalidArgument, GTL_LOC) \
+             << "unknown enumeration value of \"" << value << "\" as "        \
+             << #map_name;                                                    \
+    message->set_##param_name(it->second);                                    \
+    return util::OkStatus();                                                  \
   }
 
 #define PRINT_PARAM(param_name) \
@@ -93,14 +106,15 @@
 #define PRINT_ENUM(param_name, map_name)               \
   const auto it = map_name.find(message.param_name()); \
   if (it == map_name.end())                            \
-    os << "  " << #map_name << ": unknown\n";          \
+    os << "  " << #param_name << ": unknown\n";        \
   else                                                 \
-    os << "  " << #map_name << ": " << it->second << "\n";
+    os << "  " << #param_name << ": " << it->second << "\n";
 
-inline std::string PrintProto(const TrainerSpec &message) {
+inline std::string PrintProto(const TrainerSpec& message,
+                              absl::string_view name) {
   std::ostringstream os;
 
-  os << "TrainerSpec {\n";
+  os << name << " {\n";
 
   PRINT_REPEATED_STRING(input);
   PRINT_PARAM(input_format);
@@ -129,10 +143,16 @@ inline std::string PrintProto(const TrainerSpec &message) {
   PRINT_PARAM(split_by_unicode_script);
   PRINT_PARAM(split_by_number);
   PRINT_PARAM(split_by_whitespace);
+  PRINT_PARAM(split_digits);
+  PRINT_PARAM(pretokenization_delimiter);
   PRINT_PARAM(treat_whitespace_as_suffix);
+  PRINT_PARAM(allow_whitespace_only_pieces);
   PRINT_REPEATED_STRING(control_symbols);
   PRINT_REPEATED_STRING(user_defined_symbols);
+  PRINT_PARAM(required_chars);
+  PRINT_PARAM(byte_fallback);
   PRINT_PARAM(vocabulary_output_piece_score);
+  PRINT_PARAM(train_extremely_large_corpus);
   PRINT_PARAM(hard_vocab_limit);
   PRINT_PARAM(use_all_vocab);
   PRINT_PARAM(unk_id);
@@ -144,16 +164,20 @@ inline std::string PrintProto(const TrainerSpec &message) {
   PRINT_PARAM(eos_piece);
   PRINT_PARAM(pad_piece);
   PRINT_PARAM(unk_surface);
+  PRINT_PARAM(enable_differential_privacy);
+  PRINT_PARAM(differential_privacy_noise_level);
+  PRINT_PARAM(differential_privacy_clipping_threshold);
 
   os << "}\n";
 
   return os.str();
 }
 
-inline std::string PrintProto(const NormalizerSpec &message) {
+inline std::string PrintProto(const NormalizerSpec& message,
+                              absl::string_view name) {
   std::ostringstream os;
 
-  os << "NormalizerSpec {\n";
+  os << name << " {\n";
 
   PRINT_PARAM(name);
   PRINT_PARAM(add_dummy_prefix);
@@ -166,9 +190,9 @@ inline std::string PrintProto(const NormalizerSpec &message) {
   return os.str();
 }
 
-::util::Status SentencePieceTrainer::SetProtoField(const std::string &name,
-                                                   const std::string &value,
-                                                   TrainerSpec *message) {
+util::Status SentencePieceTrainer::SetProtoField(absl::string_view name,
+                                                 absl::string_view value,
+                                                 TrainerSpec* message) {
   CHECK_OR_RETURN(message);
 
   PARSE_REPEATED_STRING(input);
@@ -187,7 +211,7 @@ inline std::string PrintProto(const NormalizerSpec &message) {
   PARSE_REPEATED_STRING(accept_language);
   PARSE_INT32(self_test_sample_size);
   PARSE_DOUBLE(character_coverage);
-  PARSE_INT32(input_sentence_size);
+  PARSE_UINT64(input_sentence_size);
   PARSE_BOOL(shuffle_input_sentence);
   PARSE_INT32(seed_sentencepiece_size);
   PARSE_DOUBLE(shrinking_factor);
@@ -198,11 +222,17 @@ inline std::string PrintProto(const NormalizerSpec &message) {
   PARSE_BOOL(split_by_unicode_script);
   PARSE_BOOL(split_by_number);
   PARSE_BOOL(split_by_whitespace);
+  PARSE_BOOL(split_digits);
+  PARSE_STRING(pretokenization_delimiter);
   PARSE_BOOL(treat_whitespace_as_suffix);
+  PARSE_BOOL(allow_whitespace_only_pieces);
   PARSE_REPEATED_STRING(control_symbols);
   PARSE_REPEATED_STRING(user_defined_symbols);
+  PARSE_STRING(required_chars);
+  PARSE_BOOL(byte_fallback);
   PARSE_BOOL(hard_vocab_limit);
   PARSE_BOOL(vocabulary_output_piece_score);
+  PARSE_BOOL(train_extremely_large_corpus);
   PARSE_BOOL(use_all_vocab);
   PARSE_INT32(unk_id);
   PARSE_INT32(bos_id);
@@ -213,14 +243,17 @@ inline std::string PrintProto(const NormalizerSpec &message) {
   PARSE_STRING(eos_piece);
   PARSE_STRING(pad_piece);
   PARSE_STRING(unk_surface);
+  PARSE_BOOL(enable_differential_privacy);
+  PARSE_DOUBLE(differential_privacy_noise_level);
+  PARSE_UINT64(differential_privacy_clipping_threshold);
 
-  return ::util::StatusBuilder(::util::error::NOT_FOUND, GTL_LOC)
+  return util::StatusBuilder(util::StatusCode::kNotFound, GTL_LOC)
          << "unknown field name \"" << name << "\" in TrainerSpec.";
 }
 
-::util::Status SentencePieceTrainer::SetProtoField(const std::string &name,
-                                                   const std::string &value,
-                                                   NormalizerSpec *message) {
+util::Status SentencePieceTrainer::SetProtoField(absl::string_view name,
+                                                 absl::string_view value,
+                                                 NormalizerSpec* message) {
   CHECK_OR_RETURN(message);
 
   PARSE_STRING(name);
@@ -230,7 +263,7 @@ inline std::string PrintProto(const NormalizerSpec &message) {
   PARSE_BOOL(escape_whitespaces);
   PARSE_STRING(normalization_rule_tsv);
 
-  return ::util::StatusBuilder(::util::error::NOT_FOUND, GTL_LOC)
+  return util::StatusBuilder(util::StatusCode::kNotFound, GTL_LOC)
          << "unknown field name \"" << name << "\" in NormalizerSpec.";
 }
 
@@ -244,5 +277,6 @@ inline std::string PrintProto(const NormalizerSpec &message) {
 #undef PRINT_MAP
 #undef PRINT_REPEATED_STRING
 #undef PRINT_ENUM
+}  // namespace sentencepiece
 
 #endif  // SPEC_PARSER_H_

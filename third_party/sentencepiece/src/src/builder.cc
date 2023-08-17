@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/builder.h"
+#include "builder.h"
 
 #include <algorithm>
 #include <functional>
@@ -22,7 +22,7 @@
 #include "absl/strings/str_replace.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/strip.h"
-#include "src/filesystem.h"
+#include "filesystem.h"
 
 #ifdef ENABLE_NFKC_COMPILE
 #include <unicode/errorcode.h>
@@ -35,10 +35,10 @@
 
 #include <set>
 
-#include "src/normalization_rule.h"
-#include "src/normalizer.h"
-#include "third_party/darts_clone/include/darts.h"
-#include "src/util.h"
+#include "normalization_rule.h"
+#include "normalizer.h"
+#include "third_party/darts_clone/darts.h"
+#include "util.h"
 
 namespace sentencepiece {
 namespace normalizer {
@@ -48,6 +48,12 @@ constexpr int kMaxUnicode = 0x10FFFF;
 
 static constexpr char kDefaultNormalizerName[] = "nfkc";
 
+#ifndef ENABLE_NFKC_COMPILE
+static constexpr char kCompileError[] =
+    "NFK compile is not enabled. rebuild with ./configure "
+    "--enable-nfkc-compile";
+#endif
+
 #ifdef ENABLE_NFKC_COMPILE
 // Normalize `input` with ICU's normalizer with `mode`.
 Builder::Chars UnicodeNormalize(UNormalizationMode mode,
@@ -55,14 +61,7 @@ Builder::Chars UnicodeNormalize(UNormalizationMode mode,
   const std::string utf8 = string_util::UnicodeTextToUTF8(input);
   CHECK(!utf8.empty());
 
-  icu::UnicodeString ustr;
-  const size_t utf8_length = utf8.size();
-  UChar *utf16 = ustr.getBuffer(utf8.size() + 1);
-  int32 utf16_length = 0;
-  icu::ErrorCode icuerrorcode;
-  u_strFromUTF8Lenient(utf16, ustr.getCapacity(), &utf16_length, utf8.data(),
-                       utf8_length, icuerrorcode);
-  ustr.releaseBuffer(utf16_length);
+  icu::UnicodeString ustr = icu::UnicodeString::fromUTF8(utf8.c_str());
 
   UErrorCode status = U_ZERO_ERROR;
   icu::UnicodeString dst;
@@ -153,8 +152,8 @@ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
 }  // namespace
 
 // static
-::util::Status Builder::CompileCharsMap(const CharsMap &chars_map,
-                                        std::string *output) {
+util::Status Builder::CompileCharsMap(const CharsMap& chars_map,
+                                      std::string* output) {
   CHECK_OR_RETURN(output);
   CHECK_OR_RETURN(!chars_map.empty());
 
@@ -216,18 +215,19 @@ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
 
   LOG(INFO) << "Generated normalizer blob. size=" << output->size();
 
-  return ::util::OkStatus();
+  return util::OkStatus();
 }
 
 // static
-::util::Status Builder::DecompileCharsMap(absl::string_view blob,
-                                          Builder::CharsMap *chars_map) {
+util::Status Builder::DecompileCharsMap(absl::string_view blob,
+                                        Builder::CharsMap* chars_map) {
   CHECK_OR_RETURN(chars_map);
   chars_map->clear();
 
   absl::string_view trie_blob, normalized;
-  RETURN_IF_ERROR(
-      Normalizer::DecodePrecompiledCharsMap(blob, &trie_blob, &normalized));
+  std::string buf;
+  RETURN_IF_ERROR(Normalizer::DecodePrecompiledCharsMap(blob, &trie_blob,
+                                                        &normalized, &buf));
 
   Darts::DoubleArray trie;
   trie.set_array(const_cast<char *>(trie_blob.data()),
@@ -268,17 +268,17 @@ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
 
   traverse(0, 0);
 
-  return ::util::OkStatus();
+  return util::OkStatus();
 }
 
 // static
-::util::Status Builder::GetPrecompiledCharsMap(const std::string &name,
-                                               std::string *output) {
+util::Status Builder::GetPrecompiledCharsMap(absl::string_view name,
+                                             std::string* output) {
   CHECK_OR_RETURN(output);
 
   if (name == "identity") {
     output->clear();
-    return ::util::OkStatus();
+    return util::OkStatus();
   }
 
   std::string result;
@@ -286,15 +286,15 @@ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
     const auto *blob = &kNormalizationRules_blob[i];
     if (blob->name == name) {
       output->assign(blob->data, blob->size);
-      return ::util::OkStatus();
+      return util::OkStatus();
     }
   }
-  return ::util::StatusBuilder(::util::error::NOT_FOUND, GTL_LOC)
+  return util::StatusBuilder(util::StatusCode::kNotFound, GTL_LOC)
          << "No precompiled charsmap is found: " << name;
 }
 
 // static
-::util::Status Builder::BuildNFKCMap(CharsMap *chars_map) {
+util::Status Builder::BuildNFKCMap(CharsMap* chars_map) {
 #ifdef ENABLE_NFKC_COMPILE
   LOG(INFO) << "Running BuildNFKCMap";
 
@@ -345,14 +345,13 @@ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
   *chars_map = std::move(nfkc_map);
 
 #else
-  LOG(ERROR) << "NFKC compile is not enabled."
-             << " rebuild with ./configure --enable-nfkc-compile";
+  LOG(ERROR) << kCompileError;
 #endif
 
-  return ::util::OkStatus();
+  return util::OkStatus();
 }
 
-::util::Status Builder::BuildNmtNFKCMap(CharsMap *chars_map) {
+util::Status Builder::BuildNmtNFKCMap(CharsMap* chars_map) {
 #ifdef ENABLE_NFKC_COMPILE
   LOG(INFO) << "Running BuildNmtNFKCMap";
 
@@ -374,7 +373,7 @@ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
   nfkc_map[{0xFEFF}] = {0x20};  // ZERO WIDTH NO-BREAK
   nfkc_map[{0xFFFD}] = {0x20};  // REPLACEMENT CHARACTER
   nfkc_map[{0x200C}] = {0x20};  // ZERO WIDTH NON-JOINER
-  nfkc_map[{0x200D}] = {0x20};  // ZERO WIDTH JOINER
+  //  nfkc_map[{0x200D}] = {0x20};  // ZERO WIDTH JOINER
 
   // Ascii Control characters
   nfkc_map[{0x0001}] = {};
@@ -419,15 +418,14 @@ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
   *chars_map = std::move(nfkc_map);
 
 #else
-  LOG(ERROR) << "NFKC compile is not enabled."
-             << " rebuild with ./configure --enable-nfkc-compile";
+  LOG(ERROR) << kCompileError;
 #endif
 
-  return ::util::OkStatus();
+  return util::OkStatus();
 }
 
 // static
-::util::Status Builder::MergeUnicodeCaseFoldMap(Builder::CharsMap *chars_map) {
+util::Status Builder::MergeUnicodeCaseFoldMap(Builder::CharsMap* chars_map) {
 #ifdef ENABLE_NFKC_COMPILE
   for (auto &c : *chars_map) {
     std::vector<char32> trg;
@@ -448,43 +446,60 @@ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
   RETURN_IF_ERROR(RemoveRedundantMap(chars_map));
 #endif
 
-  return ::util::OkStatus();
+  return util::OkStatus();
 }
 
 // static
-::util::Status Builder::BuildNFKC_CFMap(CharsMap *chars_map) {
+util::Status Builder::BuildNFKC_CFMap(CharsMap* chars_map) {
 #ifdef ENABLE_NFKC_COMPILE
   CharsMap nfkc_map;
   RETURN_IF_ERROR(Builder::BuildNFKCMap(&nfkc_map));
   RETURN_IF_ERROR(Builder::MergeUnicodeCaseFoldMap(&nfkc_map));
   *chars_map = std::move(nfkc_map);
 #else
-  LOG(ERROR) << "NFKC_CF compile is not enabled."
-             << " rebuild with ./configure --enable-nfkc-compile";
+  LOG(ERROR) << kCompileError;
 #endif
 
-  return ::util::OkStatus();
+  return util::OkStatus();
 }
 
 //  static
-::util::Status Builder::BuildNmtNFKC_CFMap(CharsMap *chars_map) {
+util::Status Builder::BuildNmtNFKC_CFMap(CharsMap* chars_map) {
 #ifdef ENABLE_NFKC_COMPILE
   CharsMap nfkc_map;
   RETURN_IF_ERROR(Builder::BuildNmtNFKCMap(&nfkc_map));
   RETURN_IF_ERROR(Builder::MergeUnicodeCaseFoldMap(&nfkc_map));
   *chars_map = std::move(nfkc_map);
 #else
-  LOG(ERROR) << "NMT_NFKC_CF compile is not enabled."
-             << " rebuild with ./configure --enable-nfkc-compile";
+  LOG(ERROR) << kCompileError;
 #endif
 
-  return ::util::OkStatus();
+  return util::OkStatus();
 }
 
 // static
-::util::Status Builder::LoadCharsMap(absl::string_view filename,
-                                     CharsMap *chars_map) {
-  LOG(INFO) << "Loading maping file: " << filename.data();
+util::Status Builder::BuildNFKDMap(CharsMap* chars_map) {
+#ifdef ENABLE_NFKC_COMPILE
+  constexpr int kMaxUnicode = 0x10FFFF;
+  for (char32 cp = 1; cp <= kMaxUnicode; ++cp) {
+    if (!U_IS_UNICODE_CHAR(cp)) {
+      continue;
+    }
+    const auto nfkd = ToNFKD({cp});
+    if (nfkd.size() >= 2 || (nfkd.size() == 1 && nfkd[0] != cp)) {
+      (*chars_map)[{cp}] = nfkd;
+    }
+  }
+#else
+  LOG(ERROR) << kCompileError;
+#endif
+  return util::OkStatus();
+}
+
+// static
+util::Status Builder::LoadCharsMap(absl::string_view filename,
+                                   CharsMap* chars_map) {
+  LOG(INFO) << "Loading mapping file: " << filename.data();
   CHECK_OR_RETURN(chars_map);
 
   auto input = filesystem::NewReadableFile(filename);
@@ -495,16 +510,16 @@ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
   chars_map->clear();
   while (input->ReadLine(&line)) {
     std::vector<std::string> fields =
-        absl::StrSplit(line, "\t", absl::AllowEmpty());
+        absl::StrSplit(line, '\t', absl::AllowEmpty());
     CHECK_GE(fields.size(), 1);
     if (fields.size() == 1) fields.push_back("");  // Deletion rule.
     std::vector<char32> src, trg;
-    for (auto s : absl::StrSplit(fields[0], " ")) {
+    for (auto s : absl::StrSplit(fields[0], ' ')) {
       if (s.empty()) continue;
       absl::ConsumePrefix(&s, "U+");
       src.push_back(string_util::HexToInt<char32>(s));
     }
-    for (auto s : absl::StrSplit(fields[1], " ")) {
+    for (auto s : absl::StrSplit(fields[1], ' ')) {
       if (s.empty()) continue;
       absl::ConsumePrefix(&s, "U+");
       trg.push_back(string_util::HexToInt<char32>(s));
@@ -513,12 +528,12 @@ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
     (*chars_map)[src] = trg;
   }
 
-  return ::util::OkStatus();
+  return util::OkStatus();
 }
 
 // static
-::util::Status Builder::SaveCharsMap(absl::string_view filename,
-                                     const Builder::CharsMap &chars_map) {
+util::Status Builder::SaveCharsMap(absl::string_view filename,
+                                   const Builder::CharsMap& chars_map) {
   auto output = filesystem::NewWritableFile(filename);
   RETURN_IF_ERROR(output->status());
 
@@ -537,19 +552,17 @@ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
                        absl::StrJoin(trg, " ") + "\t# " +
                        string_util::UnicodeTextToUTF8(c.first) + " => " +
                        string_util::UnicodeTextToUTF8(c.second);
-    line = absl::StrReplaceAll(line, {{"\b", " "}});
-    line = absl::StrReplaceAll(line, {{"\v", " "}});
-    line = absl::StrReplaceAll(line, {{"\f", " "}});
-    line = absl::StrReplaceAll(line, {{"\n", " "}});
-    line = absl::StrReplaceAll(line, {{"\r", " "}});
+    line = absl::StrReplaceAll(
+        line,
+        {{"\b", " "}, {"\v", " "}, {"\f", " "}, {"\n", " "}, {"\r", " "}});
     output->WriteLine(line);
   }
 
-  return ::util::OkStatus();
+  return util::OkStatus();
 }
 
 // static
-::util::Status Builder::RemoveRedundantMap(CharsMap *chars_map) {
+util::Status Builder::RemoveRedundantMap(CharsMap* chars_map) {
   CHECK_OR_RETURN(chars_map);
 
   CharsMap new_chars_map;
@@ -580,7 +593,7 @@ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
 
   *chars_map = std::move(new_chars_map);
 
-  return ::util::OkStatus();
+  return util::OkStatus();
 }
 }  // namespace normalizer
 }  // namespace sentencepiece

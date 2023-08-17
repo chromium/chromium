@@ -12,30 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include <gflags/gflags.h>
+#include "absl/flags/flag.h"
+#include "builder.h"
+#include "common.h"
+#include "filesystem.h"
+#include "init.h"
+#include "normalizer.h"
+#include "sentencepiece.pb.h"
+#include "sentencepiece_model.pb.h"
+#include "sentencepiece_processor.h"
+#include "sentencepiece_trainer.h"
 
-#include "src/builder.h"
-#include "src/common.h"
-#include "src/filesystem.h"
-#include "src/normalizer.h"
-#include "src/sentencepiece.pb.h"
-#include "src/sentencepiece_model.pb.h"
-#include "src/sentencepiece_processor.h"
-#include "src/sentencepiece_trainer.h"
-
-DEFINE_string(model, "", "Model file name");
-DEFINE_bool(use_internal_normalization, false,
-            "Use NormalizerSpec \"as-is\" to run the normalizer "
-            "for SentencePiece segmentation");
-DEFINE_string(normalization_rule_name, "",
-              "Normalization rule name. "
-              "Choose from nfkc or identity");
-DEFINE_string(normalization_rule_tsv, "", "Normalization rule TSV file. ");
-DEFINE_bool(remove_extra_whitespaces, true, "Remove extra whitespaces");
-DEFINE_bool(decompile, false,
-            "Decompile compiled charamap and output it as TSV.");
-DEFINE_string(input, "", "Input filename");
-DEFINE_string(output, "", "Output filename");
+ABSL_FLAG(std::string, model, "", "Model file name");
+ABSL_FLAG(bool,
+          use_internal_normalization,
+          false,
+          "Use NormalizerSpec \"as-is\" to run the normalizer "
+          "for SentencePiece segmentation");
+ABSL_FLAG(std::string,
+          normalization_rule_name,
+          "",
+          "Normalization rule name. "
+          "Choose from nfkc or identity");
+ABSL_FLAG(std::string,
+          normalization_rule_tsv,
+          "",
+          "Normalization rule TSV file. ");
+ABSL_FLAG(bool, remove_extra_whitespaces, true, "Remove extra whitespaces");
+ABSL_FLAG(bool,
+          decompile,
+          false,
+          "Decompile compiled charamap and output it as TSV.");
+ABSL_FLAG(std::string, input, "", "Input filename");
+ABSL_FLAG(std::string, output, "", "Output filename");
 
 using sentencepiece::ModelProto;
 using sentencepiece::NormalizerSpec;
@@ -45,29 +54,31 @@ using sentencepiece::normalizer::Builder;
 using sentencepiece::normalizer::Normalizer;
 
 int main(int argc, char *argv[]) {
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
-
+  sentencepiece::ScopedResourceDestructor cleaner;
+  sentencepiece::ParseCommandLineFlags(argv[0], &argc, &argv, true);
   std::vector<std::string> rest_args;
-  if (FLAGS_input.empty()) {
+
+  if (absl::GetFlag(FLAGS_input).empty()) {
     for (int i = 1; i < argc; ++i) {
       rest_args.push_back(std::string(argv[i]));
     }
   } else {
-    rest_args.push_back(FLAGS_input);
+    rest_args.push_back(absl::GetFlag(FLAGS_input));
   }
 
   NormalizerSpec spec;
 
-  if (!FLAGS_model.empty()) {
+  if (!absl::GetFlag(FLAGS_model).empty()) {
     ModelProto model_proto;
     SentencePieceProcessor sp;
-    CHECK_OK(sp.Load(FLAGS_model));
+    CHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
     spec = sp.model_proto().normalizer_spec();
-  } else if (!FLAGS_normalization_rule_tsv.empty()) {
-    spec.set_normalization_rule_tsv(FLAGS_normalization_rule_tsv);
+  } else if (!absl::GetFlag(FLAGS_normalization_rule_tsv).empty()) {
+    spec.set_normalization_rule_tsv(
+        absl::GetFlag(FLAGS_normalization_rule_tsv));
     CHECK_OK(SentencePieceTrainer::PopulateNormalizerSpec(&spec));
-  } else if (!FLAGS_normalization_rule_name.empty()) {
-    spec.set_name(FLAGS_normalization_rule_name);
+  } else if (!absl::GetFlag(FLAGS_normalization_rule_name).empty()) {
+    spec.set_name(absl::GetFlag(FLAGS_normalization_rule_name));
     CHECK_OK(SentencePieceTrainer::PopulateNormalizerSpec(&spec));
   } else {
     LOG(FATAL) << "Sets --model, normalization_rule_tsv, or "
@@ -75,20 +86,22 @@ int main(int argc, char *argv[]) {
   }
 
   // Uses the normalizer spec encoded in the model_pb.
-  if (!FLAGS_use_internal_normalization) {
+  if (!absl::GetFlag(FLAGS_use_internal_normalization)) {
     spec.set_add_dummy_prefix(false);    // do not add dummy prefix.
     spec.set_escape_whitespaces(false);  // do not output meta symbol.
-    spec.set_remove_extra_whitespaces(FLAGS_remove_extra_whitespaces);
+    spec.set_remove_extra_whitespaces(
+        absl::GetFlag(FLAGS_remove_extra_whitespaces));
   }
 
-  if (FLAGS_decompile) {
+  if (absl::GetFlag(FLAGS_decompile)) {
     Builder::CharsMap chars_map;
     CHECK_OK(
         Builder::DecompileCharsMap(spec.precompiled_charsmap(), &chars_map));
-    CHECK_OK(Builder::SaveCharsMap(FLAGS_output, chars_map));
+    CHECK_OK(Builder::SaveCharsMap(absl::GetFlag(FLAGS_output), chars_map));
   } else {
     const Normalizer normalizer(spec);
-    auto output = sentencepiece::filesystem::NewWritableFile(FLAGS_output);
+    auto output =
+        sentencepiece::filesystem::NewWritableFile(absl::GetFlag(FLAGS_output));
     CHECK_OK(output->status());
 
     if (rest_args.empty()) {

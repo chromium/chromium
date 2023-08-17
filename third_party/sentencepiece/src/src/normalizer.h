@@ -21,12 +21,11 @@
 #include <utility>
 #include <vector>
 
-#include "gtest/gtest_prod.h"
 #include "absl/strings/string_view.h"
-#include "third_party/darts_clone/include/darts.h"
-#include "src/common.h"
-#include "src/sentencepiece_model.pb.h"
-#include "src/sentencepiece_processor.h"
+#include "common.h"
+#include "sentencepiece_model.pb.h"
+#include "sentencepiece_processor.h"
+#include "third_party/darts_clone/darts.h"
 
 namespace sentencepiece {
 namespace normalizer {
@@ -75,7 +74,7 @@ class Normalizer {
 
   // Returns Status.
   // Normalizes function is valid only when status is OK.
-  virtual ::util::Status status() const { return status_; }
+  virtual util::Status status() const { return status_; }
 
   // Normalizes a plain utf8 string into an internal representation for
   // Sentencepiece model. |norm_to_orig| stores the byte-alignment from
@@ -86,9 +85,9 @@ class Normalizer {
   // - Adds a prefix space.
   // - Replaces a space with a meta symbol.
   // - Removing heading, tailing and other redundant spaces.
-  virtual ::util::Status Normalize(absl::string_view input,
-                                   std::string *normalized,
-                                   std::vector<size_t> *norm_to_orig) const;
+  virtual util::Status Normalize(absl::string_view input,
+                                 std::string* normalized,
+                                 std::vector<size_t>* norm_to_orig) const;
 
   // Returns a normalized string without alignments.
   // This function is used in sentencepiece training.
@@ -121,9 +120,10 @@ class Normalizer {
                                                absl::string_view normalized);
 
   // Decodes blob into trie_blob and normalized string.
-  static ::util::Status DecodePrecompiledCharsMap(
-      absl::string_view blob, absl::string_view *trie_blob,
-      absl::string_view *normalized);
+  static util::Status DecodePrecompiledCharsMap(absl::string_view blob,
+                                                absl::string_view* trie_blob,
+                                                absl::string_view* normalized,
+                                                std::string* buffer = nullptr);
 
   // Maximum size of the return value of Trie, which corresponds
   // to the maximum size of shared common prefix in the chars map.
@@ -146,8 +146,13 @@ class Normalizer {
   // "_hello" and "_world".
   const bool treat_whitespace_as_suffix_ = false;
 
+#ifdef IS_BIG_ENDIAN
+  // Stores the blob for TRIE encoded in big-endian.
+  std::string precompiled_charsmap_buffer_;
+#endif
+
   // Normalizer's status.
-  ::util::Status status_;
+  util::Status status_;
 };
 }  // namespace normalizer
 }  // namespace sentencepiece

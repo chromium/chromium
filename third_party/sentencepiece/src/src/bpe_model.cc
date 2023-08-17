@@ -12,17 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/bpe_model.h"
+#include "bpe_model.h"
 
 #include <functional>
 #include <memory>
 #include <queue>
+#include <random>
 #include <utility>
 #include <vector>
 
 #include "absl/container/flat_hash_map.h"
-#include "src/freelist.h"
-#include "src/util.h"
+#include "freelist.h"
+#include "util.h"
 
 namespace sentencepiece {
 namespace bpe {
@@ -34,8 +35,9 @@ Model::Model(const ModelProto &model_proto) {
 
 Model::~Model() {}
 
-std::vector<std::pair<absl::string_view, int>> Model::Encode(
-    absl::string_view normalized) const {
+std::vector<std::pair<absl::string_view, int>> Model::SampleEncode(
+    absl::string_view normalized,
+    float alpha) const {
   if (!status().ok() || normalized.empty()) {
     return {};
   }
@@ -71,8 +73,7 @@ std::vector<std::pair<absl::string_view, int>> Model::Encode(
   // Reverse merge rules.
   // key: merged symbol, value: pair of original symbols.
   absl::flat_hash_map<absl::string_view,
-                      std::pair<absl::string_view, absl::string_view>,
-                      string_util::string_view_hash>
+                      std::pair<absl::string_view, absl::string_view>>
       rev_merge;
 
   // Pre-allocates SymbolPair for efficiency.
@@ -128,6 +129,22 @@ std::vector<std::pair<absl::string_view, int>> Model::Encode(
     MaybeAddNewSymbolPair(i - 1, i);
   }
 
+  // BPE-dropout: https://arxiv.org/pdf/1910.13267.pdf
+  std::mt19937* rand_gen = nullptr;
+  auto skip_merge = [&]() {
+    if (alpha <= 0.0) {
+      return false;
+    }
+    if (alpha >= 1.0) {
+      return true;
+    }
+    if (rand_gen == nullptr) {
+      rand_gen = random::GetRandomGenerator();
+    }
+    std::uniform_real_distribution<> gen(0.0, 1.0);
+    return gen(*rand_gen) < alpha;
+  };
+
   // Main loop.
   while (!agenda.empty()) {
     SymbolPair *top = agenda.top();
@@ -137,6 +154,13 @@ std::vector<std::pair<absl::string_view, int>> Model::Encode(
     if (symbols[top->left].piece.empty() || symbols[top->right].piece.empty() ||
         symbols[top->left].piece.size() + symbols[top->right].piece.size() !=
             top->size) {
+      continue;
+    }
+
+    // Note that orignal BPE-dropout paper assumes that all merged symbols are
+    // pre computed, but here we randomly skip merge opration inside this loop.
+    // This implemenation is theoretically equivalent to the original one.
+    if (skip_merge()) {
       continue;
     }
 

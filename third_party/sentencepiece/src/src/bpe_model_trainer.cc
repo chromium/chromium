@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/bpe_model_trainer.h"
+#include "bpe_model_trainer.h"
 
 #include <algorithm>
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include "absl/container/node_hash_set.h"
-#include "src/util.h"
+
+#include "absl/container/flat_hash_set.h"
+#include "absl/strings/str_join.h"
+#include "absl/strings/str_replace.h"
+#include "pretokenizer_for_training.h"
+#include "util.h"
 
 namespace sentencepiece {
 namespace bpe {
@@ -82,28 +86,16 @@ void Trainer::ComputeFreq(Symbol *symbol) const {
   if (symbol->freq > 0) {  // if freq == 0, re-computation is required.
     return;
   }
-  // Avoids double-count. ("AAA" => only count the first "AA").
-  Position prev_pos = {-1, 0};
   CHECK_EQ(0, symbol->freq);
   for (auto it = symbol->positions.begin(); it != symbol->positions.end();) {
     const Position pos = DecodePos(*it);
-    // There are two same bigrams in "AAA", [AA] [AA], and we want to
-    // remove the second one to avoid double counts.
-    // If the right symbol in the first bigram and the left symbol in the
-    // second bigram have the same position, (pos.left == prev_pos.right),
-    // duplicated bigram exisit.
-    // Also, symbols_[sid][left] and symbols_[sid]right] must store
+    // symbols_[sid][left] and symbols_[sid]right] must store
     // the same symbols in symbol->left and symbols->right.
-    if ((pos.sid == prev_pos.sid && pos.left == prev_pos.right) ||
-        symbol->left != symbols_[pos.sid][pos.left] ||
+    if (symbol->left != symbols_[pos.sid][pos.left] ||
         symbol->right != symbols_[pos.sid][pos.right]) {
       it = symbol->positions.erase(it);
-      // Initializes prev_pos.
-      // In "AAAA", the last "AA" can be counted.
-      prev_pos = {-1, 0};
     } else {
       symbol->freq += sentences_[pos.sid].second;
-      prev_pos = pos;
       ++it;
     }
   }
@@ -171,7 +163,7 @@ void Trainer::UpdateActiveSymbols() {
   active_symbols_.insert(symbols.begin(), symbols.begin() + size);
 }
 
-::util::Status Trainer::Train() {
+util::Status Trainer::Train() {
   RETURN_IF_ERROR(status());
 
   CHECK_OR_RETURN(normalizer_spec_.escape_whitespaces());
@@ -187,6 +179,24 @@ void Trainer::UpdateActiveSymbols() {
 
   if (trainer_spec_.split_by_whitespace()) {
     SplitSentencesByWhitespace();
+  }
+
+  // Pretokenizer applied only in training time.
+  // Pretokenizer is used as a constraint of piece extractions.
+  const auto* pretokenizer = SentencePieceTrainer::GetPretokenizerForTraining();
+
+  if (pretokenizer || !trainer_spec_.pretokenization_delimiter().empty()) {
+    absl::string_view delimiter = trainer_spec_.pretokenization_delimiter();
+    LOG(INFO) << "Preprocessing with pretokenizer...";
+    for (auto& w : sentences_) {
+      if (pretokenizer) {
+        w.first = absl::StrJoin(pretokenizer->PreTokenize(w.first),
+                                TrainerInterface::kUPPBoundaryStr);
+      } else if (!delimiter.empty()) {
+        w.first = absl::StrReplaceAll(
+            w.first, {{delimiter, TrainerInterface::kUPPBoundaryStr}});
+      }
+    }
   }
 
   // Initializes symbols_. symbols_[sid][i] stores an unary symbol.
@@ -211,7 +221,7 @@ void Trainer::UpdateActiveSymbols() {
   // We may see duplicated pieces that are extracted with different path.
   // In real segmentation phase, we can consider them as one symbol.
   // e.g., "aaa" => "aa" + "a" or "a" + "aa".
-  absl::node_hash_set<std::string> dup;
+  absl::flat_hash_set<std::string> dup;
 
   // Main loop.
   CHECK_OR_RETURN(final_pieces_.empty());
@@ -269,7 +279,7 @@ void Trainer::UpdateActiveSymbols() {
       const Position pos = DecodePos(encoded_pos);
 
       if (symbols_[pos.sid][pos.left] == nullptr) {
-        // left index might be NULL (set in the privous iteration)
+        // left index might be NULL (set in the previous iteration)
         // when left_symbol == right_symbol.
         continue;
       }

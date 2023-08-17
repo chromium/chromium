@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/unicode_script.h"
 #include <unordered_map>
-#include "absl/container/node_hash_map.h"
-#include "src/unicode_script_map.h"
-#include "src/util.h"
+
+#include "absl/container/flat_hash_map.h"
+#include "unicode_script.h"
+#include "unicode_script_map.h"
+#include "util.h"
 
 namespace sentencepiece {
 namespace unicode_script {
@@ -30,7 +31,7 @@ class GetScriptInternal {
   }
 
  private:
-  absl::node_hash_map<char32, ScriptType> smap_;
+  absl::flat_hash_map<char32, ScriptType> smap_;
 };
 }  // namespace
 

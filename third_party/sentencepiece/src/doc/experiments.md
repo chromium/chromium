@@ -112,7 +112,7 @@ We have evaluated SentencePiece segmentation with the following configurations.
     *   [KFTT](http://www.phontron.com/kftt/index.html)
     *   [MultiUN](http://opus.lingfil.uu.se/MultiUN.php) (First 5M and next
         5k/5k sentences are used for training and development/testing respectively.)
-    *   [WMT16](http://www.statmt.org/WMT16/)
+    *   [WMT16](https://www.statmt.org/wmt16/)
     *   In-house: (Used 5M parallel sentences for training)
 
 **NoPretok** and **WsPretok** do not use any language-dependent resources.

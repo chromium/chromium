@@ -1,0 +1,190 @@
+From c9502627a134b4ec78548a86d2795b07f4b0a0f6 Mon Sep 17 00:00:00 2001
+From: Clark DuVall <cduvall@chromium.org>
+Date: Wed, 16 Aug 2023 16:07:15 -0700
+Subject: [PATCH 4/4] Remove util::Status
+
+---
+ third_party/sentencepiece/src/src/error.cc    | 103 ------------------
+ .../src/src/sentencepiece_processor.h         |  47 +-------
+ 2 files changed, 4 insertions(+), 146 deletions(-)
+
+diff --git a/third_party/sentencepiece/src/src/error.cc b/third_party/sentencepiece/src/src/error.cc
+index 19ef6f35b822e..6e327f1779af9 100644
+--- a/third_party/sentencepiece/src/src/error.cc
++++ b/third_party/sentencepiece/src/src/error.cc
+@@ -54,107 +54,4 @@ void SetTestCounter(int c) { gTestCounter = c; }
+ bool GetTestCounter() { return gTestCounter; }
+ }  // namespace error
+ 
+-namespace util {
+-
+-Status::Status() {}
+-Status::~Status() {}
+-
+-struct Status::Rep {
+-  StatusCode code;
+-  std::string error_message;
+-};
+-
+-Status::Status(StatusCode code, absl::string_view error_message)
+-    : rep_(new Rep) {
+-  rep_->code = code;
+-  rep_->error_message = std::string(error_message);
+-}
+-
+-Status::Status(const Status& s)
+-    : rep_((s.rep_ == nullptr) ? nullptr : new Rep(*s.rep_)) {}
+-
+-void Status::operator=(const Status& s) {
+-  if (rep_ != s.rep_)
+-    rep_.reset((s.rep_ == nullptr) ? nullptr : new Rep(*s.rep_));
+-}
+-
+-bool Status::operator==(const Status& s) const { return (rep_ == s.rep_); }
+-
+-bool Status::operator!=(const Status& s) const { return (rep_ != s.rep_); }
+-
+-const char* Status::error_message() const {
+-  return ok() ? "" : rep_->error_message.c_str();
+-}
+-
+-void Status::set_error_message(const char* str) {
+-  if (rep_ == nullptr) rep_.reset(new Rep);
+-  rep_->error_message = str;
+-}
+-
+-StatusCode Status::code() const { return ok() ? StatusCode::kOk : rep_->code; }
+-
+-std::string Status::ToString() const {
+-  if (rep_ == nullptr) return "OK";
+-
+-  std::string result;
+-  switch (code()) {
+-    case StatusCode::kCancelled:
+-      result = "Cancelled";
+-      break;
+-    case StatusCode::kUnknown:
+-      result = "Unknown";
+-      break;
+-    case StatusCode::kInvalidArgument:
+-      result = "Invalid argument";
+-      break;
+-    case StatusCode::kDeadlineExceeded:
+-      result = "Deadline exceeded";
+-      break;
+-    case StatusCode::kNotFound:
+-      result = "Not found";
+-      break;
+-    case StatusCode::kAlreadyExists:
+-      result = "Already exists";
+-      break;
+-    case StatusCode::kPermissionDenied:
+-      result = "Permission denied";
+-      break;
+-    case StatusCode::kResourceExhausted:
+-      result = "Unauthenticated";
+-      break;
+-    case StatusCode::kFailedPrecondition:
+-      result = "Failed precondition";
+-      break;
+-    case StatusCode::kAborted:
+-      result = "Aborted";
+-      break;
+-    case StatusCode::kOutOfRange:
+-      result = "Out of range";
+-      break;
+-    case StatusCode::kUnimplemented:
+-      result = "Unimplemented";
+-      break;
+-    case StatusCode::kInternal:
+-      result = "Internal";
+-      break;
+-    case StatusCode::kUnavailable:
+-      result = "Unavailable";
+-      break;
+-    case StatusCode::kDataLoss:
+-      result = "Data loss";
+-      break;
+-    case StatusCode::kUnauthenticated:
+-      result = "Unauthenticated";
+-    default:
+-      break;
+-  }
+-
+-  result += ": ";
+-  result += rep_->error_message;
+-  return result;
+-}
+-
+-void Status::IgnoreError() {}
+-
+-}  // namespace util
+ }  // namespace sentencepiece
+diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor.h b/third_party/sentencepiece/src/src/sentencepiece_processor.h
+index 14b1e8cd830c7..d6c7da32d05b1 100644
+--- a/third_party/sentencepiece/src/src/sentencepiece_processor.h
++++ b/third_party/sentencepiece/src/src/sentencepiece_processor.h
+@@ -22,6 +22,8 @@
+ #include <utility>
+ #include <vector>
+ 
++#include "absl/status/status.h"
++
+ #ifndef SWIG
+ namespace absl {
+ using std::string_view;
+@@ -31,49 +33,8 @@ using std::string_view;
+ namespace sentencepiece {
+ namespace util {
+ 
+-enum class StatusCode : int {
+-  kOk = 0,
+-  kCancelled = 1,
+-  kUnknown = 2,
+-  kInvalidArgument = 3,
+-  kDeadlineExceeded = 4,
+-  kNotFound = 5,
+-  kAlreadyExists = 6,
+-  kPermissionDenied = 7,
+-  kResourceExhausted = 8,
+-  kFailedPrecondition = 9,
+-  kAborted = 10,
+-  kOutOfRange = 11,
+-  kUnimplemented = 12,
+-  kInternal = 13,
+-  kUnavailable = 14,
+-  kDataLoss = 15,
+-  kUnauthenticated = 16,
+-};
+-
+-class Status {
+- public:
+-  Status();
+-  ~Status();
+-  Status(StatusCode code, absl::string_view error_message);
+-  Status(const Status &s);
+-  void operator=(const Status &s);
+-  bool operator==(const Status &s) const;
+-  bool operator!=(const Status &s) const;
+-  inline bool ok() const { return rep_ == nullptr; }
+-
+-  void set_error_message(const char *str);
+-  const char *error_message() const;
+-  const char *message() const { return error_message(); }
+-  StatusCode code() const;
+-  std::string ToString() const;
+-
+-  void IgnoreError();
+-
+- private:
+-  struct Rep;
+-  std::unique_ptr<Rep> rep_;
+-};
++using StatusCode = absl::StatusCode;
++using Status = absl::Status;
+ }  // namespace util
+ 
+ // SentencePieceProcessor:
+-- 
+2.42.0.rc1.204.g551eb34607-goog
+

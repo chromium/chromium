@@ -16,6 +16,7 @@
 #define FREELIST_H_
 
 #include <string.h>
+
 #include <vector>
 
 namespace sentencepiece {
@@ -36,7 +37,7 @@ class FreeList {
     const int size = std::min<int>(chunk_index_ + 1, freelist_.size());
     for (int i = 0; i < size; ++i) {
       T* chunk = freelist_[i];
-      memset(chunk, 0, sizeof(*chunk) * chunk_size_);
+      memset(static_cast<void*>(chunk), 0, sizeof(*chunk) * chunk_size_);
     }
     chunk_index_ = 0;
     element_index_ = 0;
@@ -44,6 +45,13 @@ class FreeList {
 
   // Returns the number of allocated elements.
   size_t size() const { return chunk_size_ * chunk_index_ + element_index_; }
+
+  void swap(FreeList<T>& other) {
+    std::swap(freelist_, other.freelist_);
+    std::swap(element_index_, other.element_index_);
+    std::swap(chunk_index_, other.chunk_index_);
+    std::swap(chunk_size_, other.chunk_size_);
+  }
 
   // Returns the element as an array.
   T* operator[](size_t index) const {
@@ -59,7 +67,7 @@ class FreeList {
 
     if (chunk_index_ == freelist_.size()) {
       T* chunk = new T[chunk_size_];
-      memset(chunk, 0, sizeof(*chunk) * chunk_size_);
+      memset(static_cast<void*>(chunk), 0, sizeof(*chunk) * chunk_size_);
       freelist_.push_back(chunk);
     }
 
@@ -75,7 +83,7 @@ class FreeList {
   // The last element is stored at freelist_[chunk_index_][element_index_]
   size_t element_index_ = 0;
   size_t chunk_index_ = 0;
-  const size_t chunk_size_ = 0;
+  size_t chunk_size_ = 0;  // Do not modify except in swap()
 };
 }  // namespace model
 }  // namespace sentencepiece

@@ -15,8 +15,8 @@
 #ifndef WORD_MODEL_TRAINER_H_
 #define WORD_MODEL_TRAINER_H_
 
-#include "src/sentencepiece_model.pb.h"
-#include "src/trainer_interface.h"
+#include "sentencepiece_model.pb.h"
+#include "trainer_interface.h"
 
 namespace sentencepiece {
 namespace word {
@@ -28,11 +28,14 @@ namespace word {
 // |vocab_size| frequent tokens.
 class Trainer : public TrainerInterface {
  public:
-  Trainer(const TrainerSpec &trainer_spec,
-          const NormalizerSpec &normalizer_spec)
-      : TrainerInterface::TrainerInterface(trainer_spec, normalizer_spec) {}
+  Trainer(const TrainerSpec& trainer_spec,
+          const NormalizerSpec& normalizer_spec,
+          const NormalizerSpec& denormalizer_spec)
+      : TrainerInterface::TrainerInterface(trainer_spec,
+                                           normalizer_spec,
+                                           denormalizer_spec) {}
 
-  ::util::Status Train() override;
+  util::Status Train() override;
 };
 }  // namespace word
 }  // namespace sentencepiece

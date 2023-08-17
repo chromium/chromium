@@ -11,12 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.!
-#include "src/pretokenizer_for_training.h"
+#include "pretokenizer_for_training.h"
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
 #include "absl/strings/str_cat.h"
-#include "src/trainer_interface.h"
+#include "absl/strings/str_join.h"
+#include "absl/strings/str_split.h"
+#include "testharness.h"
+#include "trainer_interface.h"
 
 namespace sentencepiece {
 namespace pretokenizer {
@@ -30,7 +31,7 @@ class MockPretokenizer : public PretokenizerForTrainingInterface {
     return spt_;
   }
 
-  ::util::Status status() const override { return ::util::OkStatus(); }
+  util::Status status() const override { return util::OkStatus(); }
 
   void SetOutput(const SentencePieceText &spt) { spt_ = spt; }
 
@@ -66,9 +67,11 @@ TEST(PretokenizerForTrainingTest, BaseTest) {
 
     mock.SetOutput(spt);
 
-    EXPECT_EQ(absl::StrCat("I", TrainerInterface::kWSStr, "love",
-                           TrainerInterface::kWSStr, "sentence\tpiece"),
-              mock.PreTokenize("I love sentencepiece"));
+    const auto expected =
+        absl::StrCat("I", TrainerInterface::kWSStr, "love",
+                     TrainerInterface::kWSStr, "sentence||||piece");
+    EXPECT_EQ(expected,
+              absl::StrJoin(mock.PreTokenize("I love sentencepiece"), "||||"));
   }
 
   {
@@ -96,7 +99,9 @@ TEST(PretokenizerForTrainingTest, BaseTest) {
 
     mock.SetOutput(spt);
 
-    EXPECT_EQ("これ\tは\tペン\tです", mock.PreTokenize("これはペンです"));
+    const auto expected = "これ||||は||||ペン||||です";
+    EXPECT_EQ(expected,
+              absl::StrJoin(mock.PreTokenize("これはペンです"), "||||"));
   }
 }
 

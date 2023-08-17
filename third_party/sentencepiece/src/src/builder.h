@@ -19,11 +19,10 @@
 #include <string>
 #include <vector>
 
-#include "gtest/gtest_prod.h"
 #include "absl/strings/string_view.h"
-#include "src/common.h"
-#include "src/sentencepiece_model.pb.h"
-#include "src/sentencepiece_processor.h"
+#include "common.h"
+#include "sentencepiece_model.pb.h"
+#include "sentencepiece_processor.h"
 
 namespace sentencepiece {
 namespace normalizer {
@@ -44,16 +43,16 @@ class Builder {
   // String-to-string mapping.
   using CharsMap = std::map<Chars, Chars>;
 
-  static ::util::Status CompileCharsMap(const CharsMap &chars_map,
-                                      std::string *output);
+  static util::Status CompileCharsMap(const CharsMap& chars_map,
+                                      std::string* output);
 
   // Decompiles `blob` into `chars_map`.
-  static ::util::Status DecompileCharsMap(absl::string_view blob,
-                                        CharsMap *chars_map);
+  static util::Status DecompileCharsMap(absl::string_view blob,
+                                        CharsMap* chars_map);
 
   // Returns a pre-compiled binary index with `name`.
-  static ::util::Status GetPrecompiledCharsMap(const std::string &name,
-                                             std::string *output);
+  static util::Status GetPrecompiledCharsMap(absl::string_view name,
+                                             std::string* output);
 
   // Makes a normalization mapping based on NFKC.
   //
@@ -90,31 +89,34 @@ class Builder {
   //     normalizer is the goal of SentencePiece.
   //
   // TODO(taku): Make NFC, NFD, and NFKD mapping if necessary.
-  static ::util::Status BuildNFKCMap(CharsMap *chars_map);
+  static util::Status BuildNFKCMap(CharsMap* chars_map);
 
   // Makes an NFKC-based mapping with NMT specific modifications around
   // whitespaces.
-  static ::util::Status BuildNmtNFKCMap(CharsMap *chars_map);
+  static util::Status BuildNmtNFKCMap(CharsMap* chars_map);
 
   // Merge Unicode case folding mapping into `chars_map`.
-  static ::util::Status MergeUnicodeCaseFoldMap(CharsMap *chars_map);
+  static util::Status MergeUnicodeCaseFoldMap(CharsMap* chars_map);
 
   // Makes NFKC with Unicode case folding.
-  static ::util::Status BuildNFKC_CFMap(CharsMap *chars_map);
+  static util::Status BuildNFKC_CFMap(CharsMap* chars_map);
 
   // Makes NMT NFKC with Unicode case folding.
-  static ::util::Status BuildNmtNFKC_CFMap(CharsMap *chars_map);
+  static util::Status BuildNmtNFKC_CFMap(CharsMap* chars_map);
+
+  // Given NFKC maps, convert them to NFKD.
+  static util::Status BuildNFKDMap(CharsMap* chars_map);
 
   // Builds Chars map save in `filename`.
   // Format:
   // src_uchar1 src_uchar2 ... <tab> trg_uchar1 trg_uchar2...
   // (src|trg)_ucharX must be a hex of Unicode code point.
-  static ::util::Status LoadCharsMap(absl::string_view filename,
-                                   CharsMap *chars_map);
+  static util::Status LoadCharsMap(absl::string_view filename,
+                                   CharsMap* chars_map);
 
   // Saves Chars map to `filename` as TSV.
-  static ::util::Status SaveCharsMap(absl::string_view filename,
-                                   const CharsMap &chars_map);
+  static util::Status SaveCharsMap(absl::string_view filename,
+                                   const CharsMap& chars_map);
 
  private:
   FRIEND_TEST(BuilderTest, RemoveRedundantMapTest);
@@ -122,7 +124,7 @@ class Builder {
   // Removes redundant rules from `chars_map`.
   // When char_maps have "aa" => "bb" and "a" => "b", the first
   // rule is not necessary since the second rule can cover the first rule.
-  static ::util::Status RemoveRedundantMap(CharsMap *chars_map);
+  static util::Status RemoveRedundantMap(CharsMap* chars_map);
 };
 }  // namespace normalizer
 }  // namespace sentencepiece

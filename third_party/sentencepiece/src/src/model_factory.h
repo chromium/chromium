@@ -16,8 +16,9 @@
 #define MODEL_FACTORY_H_
 
 #include <memory>
-#include "src/model_interface.h"
-#include "src/sentencepiece_model.pb.h"
+
+#include "model_interface.h"
+#include "sentencepiece_model.pb.h"
 
 namespace sentencepiece {
 

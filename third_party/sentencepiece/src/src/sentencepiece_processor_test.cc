@@ -12,24 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/sentencepiece_processor.h"
+#include "sentencepiece_processor.h"
 
 #include <utility>
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
 #include "absl/container/flat_hash_map.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
-#include "src/builder.h"
-#include "src/filesystem.h"
-#include "src/model_interface.h"
-#include "src/normalizer.h"
-#include "src/sentencepiece.pb.h"
-#include "src/sentencepiece_model.pb.h"
-#include "src/sentencepiece_trainer.h"
-#include "src/util.h"
+#include "builder.h"
+#include "filesystem.h"
+#include "model_interface.h"
+#include "normalizer.h"
+#include "sentencepiece.pb.h"
+#include "sentencepiece_model.pb.h"
+#include "sentencepiece_trainer.h"
+#include "testharness.h"
+#include "util.h"
 
 namespace sentencepiece {
 
@@ -65,6 +64,10 @@ class MockModel : public ModelInterface {
     return nbest_output_;
   }
 
+  bool IsSampleEncodeAvailable() const override { return true; }
+
+  bool IsNBestEncodeAvailable() const override { return true; }
+
   bool IsControl(int id) const { return id == 1 || id == 2; }
 
   bool IsUnknown(int id) const { return id == 0; }
@@ -82,6 +85,11 @@ class MockModel : public ModelInterface {
   EncodeResult output_;
   NBestEncodeResult nbest_output_;
   const std::string kEmptyString;
+};
+
+class ByteFallbackMockModel : public MockModel {
+ public:
+  bool ByteFallbackEnabled() const override { return true; }
 };
 
 std::vector<std::string> GetSpVec(const EncodeResult &pieces) {
@@ -223,6 +231,76 @@ TEST(SentencepieceProcessorTest, EncodeTest) {
     EXPECT_EQ(7, spt.pieces(2).end());
     EXPECT_EQ(7, spt.pieces(3).begin());
     EXPECT_EQ(7, spt.pieces(3).end());
+  }
+
+  // Byte-fallback.
+  {
+    const absl::string_view kInput2 = WS "ABC" WS "DEFあ";
+    auto mock = absl::make_unique<ByteFallbackMockModel>();
+
+    const EncodeResult result = {{WS "ABC", 3}, {WS "D", 4}, {"E", 0},
+                                 {"F", 0},      {"あ", 0},   {"</s>", 2}};
+    // "E" -> 0x45
+    // "F" -> 0x46
+    // "あ" -> 0xe38182
+    const EncodeResult expected = {{WS "ABC", 3}, {WS "D", 4},   {"<0x45>", 0},
+                                   {"<0x46>", 0}, {"<0xE3>", 0}, {"<0x81>", 0},
+                                   {"<0x82>", 0}, {"</s>", 2}};
+
+    mock->SetEncodeResult(kInput2, result);
+    sp.SetModel(std::move(mock));
+    sp.SetNormalizer(
+        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+
+    std::vector<std::string> output;
+    EXPECT_TRUE(sp.Encode("ABC DEFあ", &output).ok());
+    EXPECT_EQ(GetSpVec(expected), output);
+
+    std::vector<int> ids;
+    EXPECT_TRUE(sp.Encode("ABC DEFあ", &ids).ok());
+    EXPECT_EQ(GetIdVec(expected), ids);
+
+    SentencePieceText spt;
+    EXPECT_TRUE(sp.Encode("ABC DEFあ", &spt).ok());
+    EXPECT_EQ(8, spt.pieces_size());
+    for (int i = 0; i < 8; ++i) {
+      EXPECT_EQ(expected[i].first, spt.pieces(i).piece());
+    }
+
+    EXPECT_EQ("ABC", spt.pieces(0).surface());
+    EXPECT_EQ(" D", spt.pieces(1).surface());
+    EXPECT_EQ("E", spt.pieces(2).surface());
+    EXPECT_EQ("F", spt.pieces(3).surface());
+    EXPECT_EQ("", spt.pieces(4).surface());    // あ
+    EXPECT_EQ("", spt.pieces(5).surface());    // あ
+    EXPECT_EQ("あ", spt.pieces(6).surface());  // あ
+    EXPECT_EQ("", spt.pieces(7).surface());    // </s>
+
+    EXPECT_EQ(3, spt.pieces(0).id());
+    EXPECT_EQ(4, spt.pieces(1).id());
+    EXPECT_EQ(0, spt.pieces(2).id());
+    EXPECT_EQ(0, spt.pieces(3).id());
+    EXPECT_EQ(0, spt.pieces(4).id());
+    EXPECT_EQ(0, spt.pieces(5).id());
+    EXPECT_EQ(0, spt.pieces(6).id());
+    EXPECT_EQ(2, spt.pieces(7).id());
+
+    EXPECT_EQ(0, spt.pieces(0).begin());
+    EXPECT_EQ(3, spt.pieces(0).end());
+    EXPECT_EQ(3, spt.pieces(1).begin());
+    EXPECT_EQ(5, spt.pieces(1).end());
+    EXPECT_EQ(5, spt.pieces(2).begin());
+    EXPECT_EQ(6, spt.pieces(2).end());
+    EXPECT_EQ(6, spt.pieces(3).begin());
+    EXPECT_EQ(7, spt.pieces(3).end());
+    EXPECT_EQ(7, spt.pieces(4).begin());  // あ
+    EXPECT_EQ(7, spt.pieces(4).end());
+    EXPECT_EQ(7, spt.pieces(5).begin());  // あ
+    EXPECT_EQ(7, spt.pieces(5).end());
+    EXPECT_EQ(7, spt.pieces(6).begin());  // あ
+    EXPECT_EQ(10, spt.pieces(6).end());
+    EXPECT_EQ(10, spt.pieces(7).begin());  // </s>
+    EXPECT_EQ(10, spt.pieces(7).end());
   }
 
   // Crash if
@@ -474,10 +552,9 @@ TEST(SentencepieceProcessorTest, DecodeTest) {
     int GetPieceSize() const override { return 7; }
 
     int PieceToId(absl::string_view piece) const override {
-      static absl::flat_hash_map<absl::string_view, int,
-                                 string_util::string_view_hash>
-          kMap = {{"<unk>", 0}, {"<s>", 1}, {"</s>", 2},    {WS "ABC", 3},
-                  {WS "DE", 4}, {"F", 5},   {"G" WS "H", 6}};
+      static absl::flat_hash_map<absl::string_view, int> kMap = {
+          {"<unk>", 0}, {"<s>", 1}, {"</s>", 2},    {WS "ABC", 3},
+          {WS "DE", 4}, {"F", 5},   {"G" WS "H", 6}};
       return port::FindWithDefault(kMap, piece, 0);
     }
 
@@ -490,6 +567,8 @@ TEST(SentencepieceProcessorTest, DecodeTest) {
     bool IsUnknown(int id) const override { return (id == 0); }
 
     bool IsControl(int id) const override { return (id == 1 || id == 2); }
+
+    bool IsByte(int id) const override { return false; }
 
     float GetScore(int id) const override { return 0.0; }
   };
@@ -606,6 +685,263 @@ TEST(SentencepieceProcessorTest, DecodeTest) {
     EXPECT_EQ("ABC<UNK> DEFG HI", spt.text());
     EXPECT_EQ(8, spt.pieces_size());
   }
+
+  {
+    SentencePieceProcessor sp;
+    auto proto = absl::make_unique<ModelProto>();
+    proto->mutable_trainer_spec()->set_unk_surface("");
+    proto->mutable_normalizer_spec()->set_add_dummy_prefix(false);
+    proto->mutable_normalizer_spec()->set_remove_extra_whitespaces(false);
+    sp.Load(std::move(proto)).IgnoreError();
+
+    auto mock = absl::make_unique<DecodeMockModel>();
+    sp.SetModel(std::move(mock));
+
+    const auto normalization_spec = MakeDefaultNormalizerSpec();
+    sp.SetNormalizer(
+        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+
+    SentencePieceText spt;
+
+    EXPECT_TRUE(sp.Decode(input, &spt).ok());
+    EXPECT_EQ(" ABC DEFG HI", spt.text());
+    EXPECT_EQ(8, spt.pieces_size());
+  }
+}
+
+TEST(SentencepieceProcessorTest, DummyPrefixDecodeTest) {
+  class DecodeMockModel : public ModelInterface {
+   public:
+    EncodeResult Encode(absl::string_view normalized) const override {
+      return {};
+    }
+
+    int GetPieceSize() const override { return 7; }
+
+    int PieceToId(absl::string_view piece) const override {
+      static absl::flat_hash_map<absl::string_view, int> kMap = {
+          {"<unk>", 0}, {"<s>", 1}, {"</s>", 2},     {WS "ABC", 3},
+          {WS "DE", 4}, {"F", 5},   {"G" WS "H", 6}, {WS, 7}};
+      return port::FindWithDefault(kMap, piece, 0);
+    }
+
+    const std::string& IdToPiece(int id) const override {
+      static std::vector<std::string> kMap = {
+          "<unk>", "<s>", "</s>", WS "ABC", WS "DE", "F", "G" WS "H", WS};
+      return kMap[id];
+    }
+
+    bool IsUnknown(int id) const override { return (id == 0); }
+
+    bool IsControl(int id) const override { return (id == 1 || id == 2); }
+
+    bool IsByte(int id) const override { return false; }
+
+    float GetScore(int id) const override { return 0.0; }
+  };
+
+  // start the sequence with a whitespace token
+  const std::vector<std::string> input = {
+      "<s>", WS, WS "ABC", "<unk>", WS "DE", "F", "G" WS "H", "I", "</s>"};
+
+  {
+    SentencePieceProcessor sp;
+    auto proto = absl::make_unique<ModelProto>();
+    proto->mutable_trainer_spec()->set_unk_surface("");
+    proto->mutable_normalizer_spec()->set_add_dummy_prefix(true);
+    proto->mutable_normalizer_spec()->set_remove_extra_whitespaces(false);
+    sp.Load(std::move(proto)).IgnoreError();
+
+    auto mock = absl::make_unique<DecodeMockModel>();
+    sp.SetModel(std::move(mock));
+
+    const auto normalization_spec = MakeDefaultNormalizerSpec();
+    sp.SetNormalizer(
+        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+
+    SentencePieceText spt;
+
+    EXPECT_TRUE(sp.Decode(input, &spt).ok());
+    EXPECT_EQ(" ABC DEFG HI", spt.text());
+    EXPECT_EQ(9, spt.pieces_size());
+  }
+
+  {
+    SentencePieceProcessor sp;
+    auto proto = absl::make_unique<ModelProto>();
+    proto->mutable_trainer_spec()->set_unk_surface("");
+    proto->mutable_normalizer_spec()->set_add_dummy_prefix(true);
+    proto->mutable_normalizer_spec()->set_remove_extra_whitespaces(true);
+    sp.Load(std::move(proto)).IgnoreError();
+
+    auto mock = absl::make_unique<DecodeMockModel>();
+    sp.SetModel(std::move(mock));
+
+    const auto normalization_spec = MakeDefaultNormalizerSpec();
+    sp.SetNormalizer(
+        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+
+    SentencePieceText spt;
+
+    EXPECT_TRUE(sp.Decode(input, &spt).ok());
+    EXPECT_EQ("ABC DEFG HI", spt.text());
+    EXPECT_EQ(9, spt.pieces_size());
+  }
+}
+
+TEST(SentencepieceProcessorTest, ByteFallbackDecodeTest) {
+  class ByteFallbackDecodeMockModel : public ModelInterface {
+   public:
+    EncodeResult Encode(absl::string_view normalized) const override {
+      return {};
+    }
+
+    int PieceToId(absl::string_view piece) const override {
+      using Map = absl::flat_hash_map<std::string, int>;
+      static const Map kMap = []() -> Map {
+        Map m = {
+            {"<unk>", 0}, {"<s>", 1}, {"</s>", 2}, {"A", 3}, {"B", 4}, {"C", 5},
+        };
+        for (int i = 0; i < 256; ++i) {
+          m[ByteToPiece(i)] = 6 + i;
+        }
+        return m;
+      }();
+      return port::FindWithDefault(kMap, std::string(piece), 0);
+    }
+
+    const std::string& IdToPiece(int id) const override {
+      static std::vector<std::string> kMap = []() -> std::vector<std::string> {
+        std::vector<std::string> m = {"<unk>", "<s>", "</s>", "A", "B", "C"};
+        for (int i = 0; i < 256; ++i) {
+          m.push_back(ByteToPiece(i));
+        }
+        return m;
+      }();
+      return kMap[id];
+    }
+
+    int GetPieceSize() const override { return 256; }
+
+    bool IsUnknown(int id) const override { return (id == 0); }
+
+    bool IsControl(int id) const override { return (id == 1 || id == 2); }
+
+    bool IsByte(int id) const override { return id >= 6; }
+
+    bool ByteFallbackEnabled() const override { return true; }
+  };
+
+  SentencePieceProcessor sp;
+  auto mock = absl::make_unique<ByteFallbackDecodeMockModel>();
+  sp.SetModel(std::move(mock));
+
+  const auto normalization_spec = MakeDefaultNormalizerSpec();
+  sp.SetNormalizer(
+      absl::make_unique<normalizer::Normalizer>(normalization_spec));
+
+  {
+    const std::vector<std::string> input = {
+        "<s>",
+        "A",
+        "B",
+        // "あ" -> 0xE3 0x81 0x82
+        "<0xE3>",
+        "<0x81>",
+        "<0x82>",
+        // "Z" -> 0x5A
+        "<0x5A>",
+        // "Ω" -> 0xCE 0xA9
+        "<0xCE>",
+        "<0xA9>",
+        "C",
+        // Invalid UTF-8 bytes.
+        "<0xE0>",
+        "<0x80>",
+        // "い" -> 0xE3 0x81 0x84
+        "<0xE3>",
+        "<0x81>",
+        "<0x84>",
+        // REPLACEMENT CHARACTER as byte pieces.
+        "<0xEF>",
+        "<0xBF>",
+        "<0xBD>",
+    };
+
+    SentencePieceText spt;
+    EXPECT_TRUE(sp.Decode(input, &spt).ok());
+    EXPECT_EQ("ABあZΩC\xEF\xBF\xBD\xEF\xBF\xBDい\xEF\xBF\xBD", spt.text());
+    EXPECT_EQ(18, spt.pieces_size());
+
+    for (int i = 0; i < 18; ++i) {
+      EXPECT_EQ(input[i], spt.pieces(i).piece());
+    }
+
+    EXPECT_EQ("", spt.pieces(0).surface());
+    EXPECT_EQ(0, spt.pieces(0).begin());
+    EXPECT_EQ(0, spt.pieces(0).end());
+
+    EXPECT_EQ("A", spt.pieces(1).surface());
+    EXPECT_EQ(0, spt.pieces(1).begin());
+    EXPECT_EQ(1, spt.pieces(1).end());
+
+    EXPECT_EQ("B", spt.pieces(2).surface());
+    EXPECT_EQ(1, spt.pieces(2).begin());
+    EXPECT_EQ(2, spt.pieces(2).end());
+
+    EXPECT_EQ("", spt.pieces(3).surface());
+    EXPECT_EQ("", spt.pieces(4).surface());
+    EXPECT_EQ("あ", spt.pieces(5).surface());
+    EXPECT_EQ(2, spt.pieces(3).begin());
+    EXPECT_EQ(2, spt.pieces(3).end());
+    EXPECT_EQ(2, spt.pieces(4).begin());
+    EXPECT_EQ(2, spt.pieces(4).end());
+    EXPECT_EQ(2, spt.pieces(5).begin());
+    EXPECT_EQ(5, spt.pieces(5).end());
+
+    EXPECT_EQ("Z", spt.pieces(6).surface());
+    EXPECT_EQ(5, spt.pieces(6).begin());
+    EXPECT_EQ(6, spt.pieces(6).end());
+
+    EXPECT_EQ("", spt.pieces(7).surface());
+    EXPECT_EQ("Ω", spt.pieces(8).surface());
+    EXPECT_EQ(6, spt.pieces(7).begin());
+    EXPECT_EQ(6, spt.pieces(7).end());
+    EXPECT_EQ(6, spt.pieces(8).begin());
+    EXPECT_EQ(8, spt.pieces(8).end());
+
+    EXPECT_EQ("C", spt.pieces(9).surface());
+    EXPECT_EQ(8, spt.pieces(9).begin());
+    EXPECT_EQ(9, spt.pieces(9).end());
+
+    EXPECT_EQ("\xEF\xBF\xBD", spt.pieces(10).surface());
+    EXPECT_EQ(9, spt.pieces(10).begin());
+    EXPECT_EQ(12, spt.pieces(10).end());
+
+    EXPECT_EQ("\xEF\xBF\xBD", spt.pieces(11).surface());
+    EXPECT_EQ(12, spt.pieces(11).begin());
+    EXPECT_EQ(15, spt.pieces(11).end());
+
+    EXPECT_EQ("", spt.pieces(12).surface());
+    EXPECT_EQ("", spt.pieces(13).surface());
+    EXPECT_EQ("い", spt.pieces(14).surface());
+    EXPECT_EQ(15, spt.pieces(12).begin());
+    EXPECT_EQ(15, spt.pieces(12).end());
+    EXPECT_EQ(15, spt.pieces(13).begin());
+    EXPECT_EQ(15, spt.pieces(13).end());
+    EXPECT_EQ(15, spt.pieces(14).begin());
+    EXPECT_EQ(18, spt.pieces(14).end());
+
+    EXPECT_EQ("", spt.pieces(15).surface());
+    EXPECT_EQ("", spt.pieces(16).surface());
+    EXPECT_EQ("\xEF\xBF\xBD", spt.pieces(17).surface());
+    EXPECT_EQ(18, spt.pieces(15).begin());
+    EXPECT_EQ(18, spt.pieces(15).end());
+    EXPECT_EQ(18, spt.pieces(16).begin());
+    EXPECT_EQ(18, spt.pieces(16).end());
+    EXPECT_EQ(18, spt.pieces(17).begin());
+    EXPECT_EQ(21, spt.pieces(17).end());
+  }
 }
 
 void AddPiece(ModelProto *model_proto, absl::string_view piece,
@@ -659,12 +995,13 @@ TEST(SentencePieceProcessorTest, EndToEndTest) {
 
   {
     auto output = filesystem::NewWritableFile(
-        absl::StrCat(getenv("TEST_TMPDIR"), "/model"), true);
+        util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "model"), true);
     output->Write(model_proto.SerializeAsString());
   }
 
   SentencePieceProcessor sp;
-  EXPECT_TRUE(sp.Load(absl::StrCat(getenv("TEST_TMPDIR"), "/model")).ok());
+  EXPECT_TRUE(
+      sp.Load(util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "model")).ok());
 
   EXPECT_EQ(model_proto.SerializeAsString(),
             sp.model_proto().SerializeAsString());
@@ -893,6 +1230,13 @@ TEST(SentencePieceProcessorTest, EndToEndTest) {
     const std::vector<int> ids = {3, 4, 5};
     EXPECT_TRUE(sp.Decode(ids, &output).ok());
     EXPECT_EQ("cba", output);
+  }
+
+  // Out of range
+  {
+    std::string output;
+    const std::vector<int> ids = {3, 4, 127};
+    EXPECT_FALSE(sp.Decode(ids, &output).ok());
   }
 
   {
@@ -1124,10 +1468,10 @@ TEST(SentencePieceProcessorTest, VocabularyTest) {
   auto GetInlineFilename = [](const std::string content) {
     {
       auto out = filesystem::NewWritableFile(
-          absl::StrCat(getenv("TEST_TMPDIR"), "/vocab.txt"));
+          util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "vocab.txt"));
       out->Write(content);
     }
-    return absl::StrCat(getenv("TEST_TMPDIR"), "/vocab.txt");
+    return util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "vocab.txt");
   };
 
   sp1->set_type(ModelProto::SentencePiece::UNKNOWN);
@@ -1217,4 +1561,153 @@ TEST(SentencePieceProcessorTest, VocabularyTest) {
   EXPECT_FALSE(sp.IsUnused(6));
   EXPECT_FALSE(sp.IsUnused(7));
 }
+
+TEST(SentencePieceProcessorTest, ImmutableSentencePieceTextTest) {
+  ImmutableSentencePieceText spt;
+  EXPECT_TRUE(spt.text().empty());
+  EXPECT_EQ(spt.score(), 0.0);
+  EXPECT_TRUE(spt.SerializeAsString().empty());
+
+  auto* v = spt.mutable_proto();
+
+  v->set_text("hello world");
+  v->set_score(1.0);
+  for (int i = 0; i < 10; ++i) {
+    auto* p = v->add_pieces();
+    p->set_surface(absl::StrCat("surface_", i));
+    p->set_piece(absl::StrCat("surface_", i));
+    p->set_id(i);
+    p->set_begin(i + 10);
+    p->set_end(i + 20);
+  }
+
+  EXPECT_EQ(v->pieces_size(), spt.pieces_size());
+  for (int i = 0; i < spt.pieces_size(); ++i) {
+    EXPECT_EQ(v->pieces(i).surface(), spt.pieces(i).surface());
+    EXPECT_EQ(v->pieces(i).piece(), spt.pieces(i).piece());
+    EXPECT_EQ(v->pieces(i).id(), spt.pieces(i).id());
+    EXPECT_EQ(v->pieces(i).begin(), spt.pieces(i).begin());
+    EXPECT_EQ(v->pieces(i).end(), spt.pieces(i).end());
+  }
+
+  auto check_proto = [&v](const ImmutableSentencePieceText& s) {
+    int n = 0;
+    for (auto& p : s.pieces()) {
+      EXPECT_EQ(v->pieces(n).surface(), p.surface());
+      EXPECT_EQ(v->pieces(n).piece(), p.piece());
+      EXPECT_EQ(v->pieces(n).id(), p.id());
+      EXPECT_EQ(v->pieces(n).begin(), p.begin());
+      EXPECT_EQ(v->pieces(n).end(), p.end());
+      ++n;
+    }
+    EXPECT_EQ(v->text(), s.text());
+    EXPECT_EQ(v->score(), s.score());
+    EXPECT_EQ(v->SerializeAsString(), s.SerializeAsString());
+  };
+
+  // test copy.
+  const auto spt2 = spt;
+  check_proto(spt2);
+
+  // test assign.
+  const ImmutableSentencePieceText spt3(spt);
+  check_proto(spt3);
+
+  // default piece.
+  const ImmutableSentencePieceText_ImmutableSentencePiece piece;
+  EXPECT_TRUE(piece.surface().empty());
+  EXPECT_TRUE(piece.piece().empty());
+  EXPECT_EQ(piece.begin(), 0);
+  EXPECT_EQ(piece.end(), 0);
+  EXPECT_EQ(piece.id(), 0);
+}
+
+TEST(SentencePieceProcessorTest, ImmutableNBestSentencePieceTextTest) {
+  ImmutableNBestSentencePieceText spt;
+  EXPECT_EQ(spt.nbests_size(), 0);
+  EXPECT_TRUE(spt.SerializeAsString().empty());
+
+  auto* v = spt.mutable_proto();
+
+  for (int i = 0; i < 10; ++i) {
+    auto* p = v->add_nbests();
+    p->set_text(absl::StrCat("text_", i));
+    p->set_score(2.0 * i);
+  }
+
+  auto check_proto = [&v](const ImmutableNBestSentencePieceText& s) {
+    EXPECT_EQ(v->nbests_size(), s.nbests_size());
+    for (int i = 0; i < v->nbests_size(); ++i) {
+      EXPECT_EQ(v->nbests(i).text(), s.nbests(i).text());
+      EXPECT_EQ(v->nbests(i).score(), s.nbests(i).score());
+    }
+    EXPECT_EQ(v->SerializeAsString(), s.SerializeAsString());
+  };
+
+  check_proto(spt);
+
+  // test copy.
+  const auto spt2 = spt;
+  check_proto(spt2);
+
+  // test assign.
+  const ImmutableNBestSentencePieceText spt3(spt);
+  check_proto(spt3);
+}
+
+TEST(SentencePieceProcessorTest, ConvertToUnicodeSpansTest) {
+  auto make_spt = [&](const std::vector<std::string>& tokens) {
+    ImmutableSentencePieceText ispt;
+    auto* spt = ispt.mutable_proto();
+    int prev = 0;
+    std::string text;
+    for (const auto& tok : tokens) {
+      auto* piece = spt->add_pieces();
+      piece->set_surface(tok);
+      piece->set_piece(tok);
+      piece->set_begin(prev);
+      piece->set_end(prev + tok.size());
+      prev += tok.size();
+      text += tok;
+    }
+    spt->set_text(text);
+    ispt.ConvertToUnicodeSpans();
+    return ispt;
+  };
+
+  {
+    const auto spt = make_spt({"hello", "_world", "."});
+    EXPECT_EQ(spt.pieces_size(), 3);
+    EXPECT_EQ(spt.pieces(0).begin(), 0);
+    EXPECT_EQ(spt.pieces(0).end(), 5);
+    EXPECT_EQ(spt.pieces(1).begin(), 5);
+    EXPECT_EQ(spt.pieces(1).end(), 11);
+    EXPECT_EQ(spt.pieces(2).begin(), 11);
+    EXPECT_EQ(spt.pieces(2).end(), 12);
+  }
+
+  {
+    const auto spt = make_spt({"これは", "test", "です"});
+    EXPECT_EQ(spt.pieces_size(), 3);
+    EXPECT_EQ(spt.pieces(0).begin(), 0);
+    EXPECT_EQ(spt.pieces(0).end(), 3);
+    EXPECT_EQ(spt.pieces(1).begin(), 3);
+    EXPECT_EQ(spt.pieces(1).end(), 7);
+
+    EXPECT_EQ(spt.pieces(2).begin(), 7);
+    EXPECT_EQ(spt.pieces(2).end(), 9);
+  }
+
+  {
+    const auto spt = make_spt({"いABは", "にほCD", "へと"});
+    EXPECT_EQ(spt.pieces_size(), 3);
+    EXPECT_EQ(spt.pieces(0).begin(), 0);
+    EXPECT_EQ(spt.pieces(0).end(), 4);
+    EXPECT_EQ(spt.pieces(1).begin(), 4);
+    EXPECT_EQ(spt.pieces(1).end(), 8);
+    EXPECT_EQ(spt.pieces(2).begin(), 8);
+    EXPECT_EQ(spt.pieces(2).end(), 10);
+  }
+}
+
 }  // namespace sentencepiece

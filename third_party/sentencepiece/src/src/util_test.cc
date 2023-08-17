@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/util.h"
-
 #include <map>
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
 #include "absl/strings/str_cat.h"
-#include "src/filesystem.h"
+#include "filesystem.h"
+#include "testharness.h"
+#include "util.h"
 
 namespace sentencepiece {
 namespace {
@@ -334,7 +332,7 @@ TEST(UtilTest, InputOutputBufferTest) {
 
   {
     auto output = filesystem::NewWritableFile(
-        absl::StrCat(getenv("TEST_TMPDIR"), "/test_file"));
+        util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "test_file"));
     for (size_t i = 0; i < kData.size(); ++i) {
       output->WriteLine(kData[i]);
     }
@@ -342,7 +340,7 @@ TEST(UtilTest, InputOutputBufferTest) {
 
   {
     auto input = filesystem::NewReadableFile(
-        absl::StrCat(getenv("TEST_TMPDIR"), "/test_file"));
+        util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "test_file"));
     std::string line;
     for (size_t i = 0; i < kData.size(); ++i) {
       EXPECT_TRUE(input->ReadLine(&line));
@@ -377,6 +375,32 @@ TEST(UtilTest, STLDeleteELementsTest) {
   EXPECT_EQ(0, data.size());
 }
 
+TEST(UtilTest, StatusTest) {
+  const util::Status ok;
+  EXPECT_TRUE(ok.ok());
+  EXPECT_EQ(util::StatusCode::kOk, ok.code());
+  EXPECT_EQ(std::string(""), ok.message());
+
+  const util::Status s1(util::StatusCode::kUnknown, "unknown");
+  const util::Status s2(util::StatusCode::kUnknown, std::string("unknown"));
+
+  EXPECT_EQ(util::StatusCode::kUnknown, s1.code());
+  EXPECT_EQ(util::StatusCode::kUnknown, s2.code());
+  EXPECT_EQ(std::string("unknown"), s1.message());
+  EXPECT_EQ(std::string("unknown"), s2.message());
+
+  auto ok2 = util::OkStatus();
+  EXPECT_TRUE(ok2.ok());
+  EXPECT_EQ(util::StatusCode::kOk, ok2.code());
+  EXPECT_EQ(std::string(""), ok2.message());
+
+  util::OkStatus().IgnoreError();
+  for (int i = 1; i <= 16; ++i) {
+    util::Status s(static_cast<util::StatusCode>(i), "message");
+    EXPECT_TRUE(s.ToString().find("message") != std::string::npos)
+        << s.ToString();
+  }
+}
 
 TEST(UtilTest, JoinPathTest) {
 #ifdef OS_WIN
@@ -398,5 +422,30 @@ TEST(UtilTest, ReservoirSamplerTest) {
   }
   EXPECT_EQ(100, sampled.size());
   EXPECT_EQ(10000, sampler.total_size());
+}
+
+TEST(UtilTest, StrSplitAsCSVTest) {
+  {
+    const auto v = util::StrSplitAsCSV("foo,bar,buz");
+    EXPECT_EQ(3, v.size());
+    EXPECT_EQ("foo", v[0]);
+    EXPECT_EQ("bar", v[1]);
+    EXPECT_EQ("buz", v[2]);
+  }
+
+  {
+    const auto v = util::StrSplitAsCSV("foo,\"\"\"bar\"\"\",buzz");
+    EXPECT_EQ(3, v.size());
+    EXPECT_EQ("foo", v[0]);
+    EXPECT_EQ("\"bar\"", v[1]);
+    EXPECT_EQ("buzz", v[2]);
+  }
+
+  {
+    const auto v = util::StrSplitAsCSV("foo,\"1,2,3,4\"");
+    EXPECT_EQ(2, v.size());
+    EXPECT_EQ("foo", v[0]);
+    EXPECT_EQ("1,2,3,4", v[1]);
+  }
 }
 }  // namespace sentencepiece

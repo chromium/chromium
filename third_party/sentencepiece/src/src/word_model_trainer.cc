@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "src/word_model_trainer.h"
-
 #include <cmath>
 #include <string>
 
 #include "absl/container/flat_hash_map.h"
 #include "absl/strings/string_view.h"
-#include "src/util.h"
-#include "src/word_model.h"
+#include "util.h"
+#include "word_model.h"
+#include "word_model_trainer.h"
 
 namespace sentencepiece {
 namespace word {
 
-::util::Status Trainer::Train() {
+util::Status Trainer::Train() {
   RETURN_IF_ERROR(status());
 
   CHECK_OR_RETURN(normalizer_spec_.escape_whitespaces());
@@ -48,7 +47,7 @@ namespace word {
     sum += it.second;
   }
 
-  const float logsum = log(sum);
+  const auto logsum = std::log(static_cast<float>(sum));
 
   CHECK_OR_RETURN(final_pieces_.empty());
   for (const auto &it : Sorted(freq)) {
@@ -59,7 +58,8 @@ namespace word {
         final_pieces_.size() == static_cast<size_t>(vocab_size)) {
       break;
     }
-    final_pieces_.emplace_back(it.first, log(it.second) - logsum);
+    final_pieces_.emplace_back(
+        it.first, std::log(static_cast<float>(it.second)) - logsum);
   }
 
   if (trainer_spec_.use_all_vocab()) {

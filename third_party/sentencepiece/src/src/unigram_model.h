@@ -20,11 +20,11 @@
 #include <utility>
 #include <vector>
 
-#include "src/common.h"
-#include "src/freelist.h"
-#include "src/model_interface.h"
-#include "src/sentencepiece_model.pb.h"
-#include "third_party/darts_clone/include/darts.h"
+#include "common.h"
+#include "freelist.h"
+#include "model_interface.h"
+#include "sentencepiece_model.pb.h"
+#include "third_party/darts_clone/darts.h"
 
 namespace sentencepiece {
 namespace unigram {
@@ -82,16 +82,28 @@ class Lattice {
   // After calling this method, The caller must set Node::score and Node::id.
   Node *Insert(int pos, int length);
 
+  using LatticePathWithScore = std::pair<std::vector<Node*>, float>;
+
   // Returns Viterbi path. All nodes must be populated in advance.
-  std::vector<Node *> Viterbi();
+  LatticePathWithScore Viterbi();
+
+  // Runs forwards/backwards algorithm, returns vector with normalised
+  // transition probs.
+  std::vector<float> ForwardAlgorithm(float theta) const;
+  std::vector<float> BackwardAlgorithm(float theta) const;
 
   // Returns n-best results.
-  std::vector<std::vector<Node *>> NBest(size_t nbest_size);
+  std::vector<LatticePathWithScore> NBest(size_t nbest_size,
+                                          bool sample,
+                                          float theta);
 
   // Samples one path from the lattice according to the
   // generation probability (Product of piece probabilities).
   // `theta` is a smoothing parameter.
   std::vector<Node *> Sample(float theta);
+
+  // Calculates the entropy of the lattice.
+  float CalculateEntropy(float theta) const;
 
   // Populates marginal probability of every node in this lattice.
   // |freq| is the frequency of the sentence.
@@ -127,6 +139,23 @@ class Model : public ModelInterface {
   EncodeResult SampleEncode(absl::string_view normalized,
                             float theta) const override;
 
+  NBestEncodeResult SampleEncodeAndScore(absl::string_view normalized,
+                                         float theta,
+                                         int samples,
+                                         bool wor,
+                                         bool include_best) const override;
+
+  float CalculateEntropy(absl::string_view normalized,
+                         float theta) const override;
+
+  bool IsSampleEncodeAvailable() const override { return true; }
+
+  bool IsSampleEncodeAndScoreAvailable() const override { return true; }
+
+  bool IsCalculateEntropyAvailable() const override { return true; }
+
+  bool IsNBestEncodeAvailable() const override { return true; }
+
   // Returns the minimum score in sentence pieces.
   // min_score() - 10 is used for the cost of unknown sentence.
   float min_score() const { return min_score_; }
@@ -143,9 +172,36 @@ class Model : public ModelInterface {
   // Returns a vocab id of |piece|.
   int PieceToId(absl::string_view piece) const override;
 
+  // Verifies if two outputs are equivalent by comparing their scores.
+  bool VerifyOutputsEquivalent(absl::string_view expected,
+                               absl::string_view actual) const override;
+
+  enum EncoderVersion {
+    kOptimized,  // The optimized encoder.
+    kOriginal    // The original encoder.
+  };
+
+  void SetEncoderVersion(EncoderVersion encoder_version) {
+    encoder_version_ = encoder_version;
+  }
+
+  // Returns the current encoder version in use.
+  EncoderVersion GetEncoderVersion() const { return encoder_version_; }
+
  protected:
   // Builds a Trie index.
   void BuildTrie(std::vector<std::pair<absl::string_view, int>> *pieces);
+
+  // The optimized Viterbi encode.
+  // Main differences from the original function:
+  // 1. Memorizes the best path at each postion so far,
+  // 2. No need to store the Lattice nodes,
+  // 3. Works in utf-8 directly,
+  // 4. Defines a new struct with fewer fields than Lattice,
+  // 5. Does not depend on `class Lattice` nor call `SetSentence()`,
+  // `PopulateNodes()`, or `Viterbi()`. It does everything in one function.
+  // For detailed explanations please see the comments inside the function body.
+  EncodeResult EncodeOptimized(absl::string_view normalized) const;
 
   float min_score_ = 0.0;
   float max_score_ = 0.0;
@@ -154,6 +210,9 @@ class Model : public ModelInterface {
   // Maximum size of the return value of Trie, which corresponds
   // to the maximum size of shared common prefix in the sentence pieces.
   int trie_results_size_;
+
+  // encoder version.
+  EncoderVersion encoder_version_ = kOptimized;
 };
 
 }  // namespace unigram
