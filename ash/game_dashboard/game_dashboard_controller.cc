@@ -75,7 +75,8 @@ GameDashboardContext* GameDashboardController::GetGameDashboardContext(
 }
 
 void GameDashboardController::StartCaptureSession(
-    GameDashboardContext* game_context) {
+    GameDashboardContext* game_context,
+    bool record_instantly) {
   CHECK(!active_recording_context_);
   auto* game_window = game_context->game_window();
   CHECK(game_window_contexts_.contains(game_window));
@@ -83,8 +84,12 @@ void GameDashboardController::StartCaptureSession(
   CHECK(!capture_mode_controller->is_recording_in_progress());
 
   active_recording_context_ = game_context;
-  capture_mode_controller->StartForGameDashboard(
-      active_recording_context_->game_window());
+  if (record_instantly) {
+    capture_mode_controller->StartRecordingInstantlyForGameDashboard(
+        game_window);
+  } else {
+    capture_mode_controller->StartForGameDashboard(game_window);
+  }
 }
 
 void GameDashboardController::OnWindowInitialized(aura::Window* new_window) {

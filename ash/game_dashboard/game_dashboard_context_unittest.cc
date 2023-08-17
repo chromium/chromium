@@ -1074,7 +1074,11 @@ class GameDashboardStartAndStopCaptureSessionTest
 // Verifies the game window recording starts and stops for the given set of test
 // parameters.
 TEST_P(GameDashboardStartAndStopCaptureSessionTest, RecordGameFromMainMenu) {
+  auto* capture_mode_controller = CaptureModeController::Get();
+
   test_api_->OpenTheMainMenu();
+  EXPECT_FALSE(capture_mode_controller->is_recording_in_progress());
+
   if (should_start_from_main_menu_) {
     // Retrieve the record game tile from the main menu.
     auto* record_game_tile = test_api_->GetMainMenuRecordGameTile();
@@ -1093,10 +1097,9 @@ TEST_P(GameDashboardStartAndStopCaptureSessionTest, RecordGameFromMainMenu) {
 
     // Start the video recording from the toolbar.
     LeftClickOn(record_game_button);
-    // TODO(b/293982122): Remove the the following line after the toolbar can
-    // start a capture session skipping showing the countdown timer UI.
-    ClickOnStartRecordingButtonInCaptureModeBarView();
   }
+
+  EXPECT_TRUE(capture_mode_controller->is_recording_in_progress());
 
   if (should_stop_from_main_menu_) {
     // Stop the video recording from the main menu.
@@ -1114,7 +1117,7 @@ TEST_P(GameDashboardStartAndStopCaptureSessionTest, RecordGameFromMainMenu) {
     // Stop the video recording from the toolbar.
     LeftClickOn(test_api_->GetToolbarRecordGameButton());
   }
-  EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
+  EXPECT_FALSE(capture_mode_controller->is_recording_in_progress());
   WaitForCaptureFileToBeSaved();
 }
 
