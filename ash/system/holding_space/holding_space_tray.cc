@@ -414,28 +414,31 @@ bool HoldingSpaceTray::CanDrop(const ui::OSExchangeData& data) {
 }
 
 int HoldingSpaceTray::OnDragUpdated(const ui::DropTargetEvent& event) {
-  return ExtractUnpinnedFilePaths(event.data()).empty()
-             ? ui::DragDropTypes::DRAG_NONE
-             : ui::DragDropTypes::DRAG_COPY;
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  // NOTE: Data is assumed to be constant during a drag-and-drop sequence.
+  DCHECK(CanDrop(event.data()));
+  DCHECK(can_drop_to_pin_.value_or(false));
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+  return ui::DragDropTypes::DRAG_COPY;
 }
 
 views::View::DropCallback HoldingSpaceTray::GetDropCallback(
     const ui::DropTargetEvent& event) {
-  std::vector<base::FilePath> unpinned_file_paths(
-      ExtractUnpinnedFilePaths(event.data()));
-  if (unpinned_file_paths.empty())
-    return base::NullCallback();
-
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  // NOTE: Data is assumed to be constant during a drag-and-drop sequence.
+  // Also note that `can_drop_to_pin_` has been reset when this code is reached.
+  DCHECK(CanDrop(event.data()));
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
   return base::BindOnce(&HoldingSpaceTray::PerformDrop,
-                        weak_factory_.GetWeakPtr(),
-                        std::move(unpinned_file_paths));
+                        weak_factory_.GetWeakPtr());
 }
 
 void HoldingSpaceTray::PerformDrop(
-    std::vector<base::FilePath> unpinned_file_paths,
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
+  std::vector<base::FilePath> unpinned_file_paths =
+      ExtractUnpinnedFilePaths(event.data());
   DCHECK(!unpinned_file_paths.empty());
 
   holding_space_metrics::RecordPodAction(
@@ -471,6 +474,7 @@ void HoldingSpaceTray::VisibilityChanged(views::View* starting_from,
   // Therefore, `IsDrawn()` should not be replaced by `is_visible`.
   if (!IsDrawn()) {
     drag_drop_observer_.reset();
+    can_drop_to_pin_.reset();
     return;
   }
 
@@ -856,8 +860,26 @@ void HoldingSpaceTray::UpdateDropTargetState(
     const ui::DropTargetEvent* event) {
   bool is_drop_target = false;
 
-  if (event_type == ScopedDragDropObserver::EventType::kDragUpdated &&
-      !ExtractUnpinnedFilePaths(event->data()).empty()) {
+  switch (event_type) {
+    case ScopedDragDropObserver::EventType::kDragUpdated:
+      if (!can_drop_to_pin_) {
+        // Cache `can_drop_to_pin_` to avoid costly recalculation.
+        can_drop_to_pin_ = CanDrop(event->data());
+      }
+#if EXPENSIVE_DCHECKS_ARE_ON()
+      else {
+        // NOTE: Data is assumed to be constant during a drag-and-drop sequence.
+        DCHECK_EQ(CanDrop(event->data()), can_drop_to_pin_.value());
+      }
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+      break;
+    case ScopedDragDropObserver::EventType::kDragCompleted:
+    case ScopedDragDropObserver::EventType::kDragCancelled:
+      can_drop_to_pin_.reset();
+      break;
+  }
+
+  if (can_drop_to_pin_.value_or(false)) {
     // If the `event` contains pinnable files and is within range of this view,
     // indicate this view is a drop target to increase discoverability.
     constexpr int kProximityThreshold = 20;
