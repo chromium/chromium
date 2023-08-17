@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -204,7 +205,9 @@ class PasswordDetailsTableViewControllerTest
  protected:
   PasswordDetailsTableViewControllerTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kPasswordNotesWithBackup},
+        /*enabled_features=*/{syncer::kPasswordNotesWithBackup,
+                              password_manager::features::
+                                  kIOSPasswordAuthOnEntryV2},
         /*disabled_features=*/{});
     handler_ = [[FakePasswordDetailsHandler alloc] init];
     delegate_ = [[FakePasswordDetailsDelegate alloc] init];
@@ -701,10 +704,15 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestShowHidePassword) {
 
 // Tests that passwords was not shown in case reauth failed.
 TEST_F(PasswordDetailsTableViewControllerTest, TestShowPasswordReauthFailed) {
-  // This test makes sense with notes for password disabled only since the
-  // feature moves reauth one level above.
+  // This test makes sense with notes for password and auth on entry v2 disabled
+  // only since those features require auth before opening password details.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kPasswordNotesWithBackup);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          syncer::kPasswordNotesWithBackup,
+          password_manager::features::kIOSPasswordAuthOnEntryV2});
+
   SetPassword();
 
   CheckEditCellText(kMaskedPassword, 0, 2);
@@ -745,10 +753,15 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestPasswordShownDuringEditing) {
 
 // Tests that editing mode was not entered because reauth failed.
 TEST_F(PasswordDetailsTableViewControllerTest, TestEditingReauthFailed) {
-  // This test makes sense with notes for password disabled only since the
-  // feature moves reauth one level above.
+  // This test makes sense with notes for password and auth on entry v2 disabled
+  // only since those features require auth before opening password details.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kPasswordNotesWithBackup);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          syncer::kPasswordNotesWithBackup,
+          password_manager::features::kIOSPasswordAuthOnEntryV2});
+
   SetPassword();
 
   CheckEditCellText(kMaskedPassword, 0, 2);
@@ -998,10 +1011,14 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordSuccess) {
 
 // Tests copy password works as intended.
 TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordFail) {
-  // This test makes sense with notes for password disabled only since the
-  // feature moves reauth one level above.
+  // This test makes sense with notes for password and auth on entry v2 disabled
+  // only since those features require auth before opening password details.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kPasswordNotesWithBackup);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          syncer::kPasswordNotesWithBackup,
+          password_manager::features::kIOSPasswordAuthOnEntryV2});
 
   base::HistogramTester histogram_tester;
   SetPassword();

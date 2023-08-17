@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
@@ -51,6 +52,7 @@
 using base::UmaHistogramEnumeration;
 using password_manager::GetWarningTypeForDetailsContext;
 using password_manager::constants::kMaxPasswordNoteLength;
+using password_manager::features::IsAuthOnEntryV2Enabled;
 using password_manager::features::IsPasswordCheckupEnabled;
 using password_manager::metrics_util::LogPasswordNoteActionInSettings;
 using password_manager::metrics_util::LogPasswordSettingsReauthResult;
@@ -870,12 +872,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 // Shows reauthentication dialog if needed. If the reauthentication is
 // successful reveals the password.
 - (void)attemptToShowPasswordFor:(ReauthenticationReason)reason {
-  // If password was already shown (before editing or copying) or the flag to
-  // override auth is YES, we don't need to request reauth again.
-  // With password notes feature enabled the authentication happens during
-  // navigation from the password list view to the password details view.
-  if (self.isPasswordShown || self.showPasswordWithoutAuth ||
-      IsPasswordNotesWithBackupEnabled()) {
+  if (![self shouldAuthenticateBeforeShowingPassword]) {
     [self showPasswordFor:reason];
     return;
   }
@@ -1251,7 +1248,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 // Starts the timer after passing an authentication to open password details
 // view or extends it on an interaction with the details view.
 - (void)setOrExtendAuthValidityTimer {
-  if (!IsPasswordNotesWithBackupEnabled()) {
+  // With Auth on Entry V2 instead of kicking the user out, we block the surface
+  // and request for authentication on app switch or device lock.
+  if (!IsPasswordNotesWithBackupEnabled() || IsAuthOnEntryV2Enabled()) {
     return;
   }
 
@@ -1584,6 +1583,21 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
                            action:@selector(dismissView)];
   self.backButtonItem = cancelButton;
   self.navigationItem.leftBarButtonItem = self.backButtonItem;
+}
+
+#pragma mark - Private
+
+// Whether local authentication should be required before revealing a password
+// to the user.
+- (BOOL)shouldAuthenticateBeforeShowingPassword {
+  // If password was already shown (before editing or copying) or the flag to
+  // override auth is YES, we don't need to request reauth again.
+  // With password notes feature enabled the authentication happens during
+  // navigation from the password list view to the password details view.
+  // With Auth On Entry V2, reauthentication happens when opening this view or
+  // one of its parents so at this point the user is already authenticated.
+  return !(self.isPasswordShown || self.showPasswordWithoutAuth ||
+           IsPasswordNotesWithBackupEnabled() || IsAuthOnEntryV2Enabled());
 }
 
 @end
