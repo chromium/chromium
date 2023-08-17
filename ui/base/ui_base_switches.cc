@@ -37,6 +37,11 @@ const char kEnableResourcesFileSharing[] = "enable-resources-file-sharing";
 const char kSystemFontFamily[] = "system-font-family";
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+// Specify the toolkit used to construct the Linux GUI.
+const char kUiToolkitFlag[] = "ui-toolkit";
+#endif
+
 // Disables layer-edge anti-aliasing in the compositor.
 const char kDisableCompositedAntialiasing[] = "disable-composited-antialiasing";
 

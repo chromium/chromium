@@ -31,6 +31,10 @@ COMPONENT_EXPORT(UI_BASE) extern const char kEnableResourcesFileSharing[];
 COMPONENT_EXPORT(UI_BASE) extern const char kSystemFontFamily[];
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+COMPONENT_EXPORT(UI_BASE) extern const char kUiToolkitFlag[];
+#endif
+
 COMPONENT_EXPORT(UI_BASE) extern const char kDisableCompositedAntialiasing[];
 COMPONENT_EXPORT(UI_BASE) extern const char kDisableTouchDragDrop[];
 COMPONENT_EXPORT(UI_BASE) extern const char kDRMVirtualConnectorIsExternal[];
