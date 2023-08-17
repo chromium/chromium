@@ -4,7 +4,6 @@
 
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -16,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -24,6 +24,12 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_FEATURE(kIgnoreRaptErrors,
+             "IgnoreRaptErrors",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -53,6 +59,11 @@ constexpr char kIdTokenKey[] = "id_token";
 constexpr char kErrorKey[] = "error";
 constexpr char kErrorSubTypeKey[] = "error_subtype";
 constexpr char kErrorDescriptionKey[] = "error_description";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kRaptRequiredError[] = "rapt_required";
+constexpr char kInvalidRaptError[] = "invalid_rapt";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 OAuth2AccessTokenFetcherImpl::OAuth2Response
 OAuth2ResponseErrorToOAuth2Response(const std::string& error) {
@@ -120,6 +131,33 @@ static std::unique_ptr<network::SimpleURLLoader> CreateURLLoader(
 
   return url_loader;
 }
+
+GoogleServiceAuthError CreateErrorForInvalidGrant(
+    const std::string& error_subtype,
+    const std::string& error_description) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(kIgnoreRaptErrors)) {
+    // ChromeOS cannot handle RAPT-type re-authentication requests and is
+    // supposed to be excluded from RAPT re-authentication on the server side.
+    // Just to be safe we need to handle this anyways. If we do not handle this,
+    // any service requesting a RAPT re-auth protected OAuth scope can
+    // potentially invalidate the entire ChromeOS session and send the user into
+    // a never ending re-authentication loop.
+    std::string error_subtype_lowercase = base::ToLowerASCII(error_subtype);
+    if (error_subtype_lowercase == kRaptRequiredError ||
+        error_subtype_lowercase == kInvalidRaptError) {
+      return GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
+          error_description);
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Persistent error requiring the user to sign in again.
+  return GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+          CREDENTIALS_REJECTED_BY_SERVER);
+}
+
 }  // namespace
 
 OAuth2AccessTokenFetcherImpl::OAuth2AccessTokenFetcherImpl(
@@ -229,10 +267,7 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
       break;
 
     case kInvalidGrant:
-      // Persistent error requiring the user to sign in again.
-      error = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-              CREDENTIALS_REJECTED_BY_SERVER);
+      error = CreateErrorForInvalidGrant(error_subtype, error_description);
       break;
 
     case kInvalidScope:
@@ -277,9 +312,7 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
       // HTTP_BAD_REQUEST errors usually contains errors as per
       // http://tools.ietf.org/html/rfc6749#section-5.2.
       if (response == kInvalidGrant) {
-        error = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                CREDENTIALS_REJECTED_BY_SERVER);
+        error = CreateErrorForInvalidGrant(error_subtype, error_description);
       } else {
         error = GoogleServiceAuthError::FromServiceError(response_str);
       }

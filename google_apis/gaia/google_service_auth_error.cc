@@ -189,7 +189,7 @@ std::string GoogleServiceAuthError::ToString() const {
       return base::StringPrintf("Service responded with error: '%s'",
                                 error_message_.c_str());
     case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
-      return base::StringPrintf("Service responded with error: '%s'",
+      return base::StringPrintf("OAuth scope error: '%s'",
                                 error_message_.c_str());
     case CHALLENGE_RESPONSE_REQUIRED:
       return "Service responded with a token binding challenge.";
