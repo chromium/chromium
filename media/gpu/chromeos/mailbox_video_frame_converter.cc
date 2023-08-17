@@ -251,8 +251,7 @@ class MailboxVideoFrameConverter::ScopedSharedImage {
 // static
 std::unique_ptr<MailboxVideoFrameConverter> MailboxVideoFrameConverter::Create(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-    GetCommandBufferStubCB get_stub_cb,
-    bool enable_unsafe_webgpu) {
+    GetCommandBufferStubCB get_stub_cb) {
   DCHECK(gpu_task_runner);
   DCHECK(get_stub_cb);
 
@@ -269,17 +268,14 @@ std::unique_ptr<MailboxVideoFrameConverter> MailboxVideoFrameConverter::Create(
       gpu_task_runner, std::move(get_gpu_channel_cb));
 
   return base::WrapUnique(new MailboxVideoFrameConverter(
-      std::move(gpu_task_runner), std::move(gpu_delegate),
-      enable_unsafe_webgpu));
+      std::move(gpu_task_runner), std::move(gpu_delegate)));
 }
 
 MailboxVideoFrameConverter::MailboxVideoFrameConverter(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-    std::unique_ptr<GpuDelegate> gpu_delegate,
-    bool enable_unsafe_webgpu)
+    std::unique_ptr<GpuDelegate> gpu_delegate)
     : gpu_task_runner_(std::move(gpu_task_runner)),
-      gpu_delegate_(std::move(gpu_delegate)),
-      enable_unsafe_webgpu_(enable_unsafe_webgpu) {
+      gpu_delegate_(std::move(gpu_delegate)) {
   DVLOGF(2);
 
   parent_weak_this_ = parent_weak_this_factory_.GetWeakPtr();
@@ -440,7 +436,7 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
   }
   mailbox_frame->metadata().read_lock_fences_enabled = true;
   mailbox_frame->metadata().is_webgpu_compatible =
-      enable_unsafe_webgpu_ && frame->metadata().is_webgpu_compatible;
+      frame->metadata().is_webgpu_compatible;
 
   output_cb_.Run(mailbox_frame);
 }
@@ -550,8 +546,9 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
   // and, potentially, for overlays (Scanout).
   uint32_t shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-  if (enable_unsafe_webgpu_ && video_frame->metadata().is_webgpu_compatible)
+  if (video_frame->metadata().is_webgpu_compatible) {
     shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
+  }
 
   gpu::SharedImageStub::SharedImageDestructionCallback destroy_shared_image_cb;
   if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
