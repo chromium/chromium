@@ -220,10 +220,6 @@ const char kTabHoverCardImagesCrossfadePreviewAtParameterName[] =
 const char kTabHoverCardAdditionalMaxWidthDelay[] =
     "additional_max_width_delay";
 
-BASE_FEATURE(kTabOrganization,
-             "TabOrganization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabSearchChevronIcon,
              "TabSearchChevronIcon",
              base::FEATURE_ENABLED_BY_DEFAULT);
