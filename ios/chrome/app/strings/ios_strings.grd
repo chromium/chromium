@@ -3001,9 +3001,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_MAGIC_STACK_DESCRIPTION" desc="Description for the Set Up List item in the Magic Stack that encourages the user to sign in and set up syncing.">
         Sign in with your Google Account to sync your passwords and more.
       </message>
-      <message name="IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SEE_MORE_DESCRIPTION" desc="Description for the Set Up List item in the See More modal that encourages the user to sign in and set up syncing.">
-          New menu to help you get to where you want to go.
-      </message>
       <message name="IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION" desc="Shortened description for the Set Up List item that encourages the user to sign in and set up syncing.">
         Sync your bookmarks, history, and more.
       </message>
