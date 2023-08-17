@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
@@ -63,19 +64,22 @@ LayoutSVGResourceClipper* ResolveElementReference(
 }
 
 // https://drafts.fxtf.org/css-masking/#typedef-geometry-box
+// TODO(crbug.com/1473440): Convert this to take a NGPhysicalBoxFragment
+// instead of a LayoutBoxModelObject.
 PhysicalRect ComputeReferenceBoxInternal(GeometryBox geometry_box,
-                                         const NGPhysicalBoxFragment& fragment,
+                                         const LayoutBoxModelObject& object,
                                          PhysicalRect border_box_rect) {
   switch (geometry_box) {
     case GeometryBox::kPaddingBox:
-      border_box_rect.Contract(fragment.Borders());
+      border_box_rect.Contract(object.BorderOutsets());
       return border_box_rect;
     case GeometryBox::kContentBox:
     case GeometryBox::kFillBox:
-      border_box_rect.Contract(fragment.Borders() + fragment.Padding());
+      border_box_rect.Contract(object.BorderOutsets() +
+                               object.PaddingOutsets());
       return border_box_rect;
     case GeometryBox::kMarginBox:
-      border_box_rect.Expand(fragment.Margins());
+      border_box_rect.Expand(object.MarginOutsets());
       return border_box_rect;
     case GeometryBox::kBorderBox:
     case GeometryBox::kStrokeBox:
@@ -219,13 +223,26 @@ gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
     if (box->PhysicalFragmentCount() == 0u) {
       return gfx::RectF();
     }
-    return gfx::RectF(
-        ComputeReferenceBoxInternal(geometry_box, *box->GetPhysicalFragment(0),
-                                    box->PhysicalBorderBoxRect()));
+    return gfx::RectF(ComputeReferenceBoxInternal(
+        geometry_box, *box, box->PhysicalBorderBoxRect()));
   }
 
-  return gfx::RectF(
-      To<LayoutInline>(object).ReferenceBoxForClipPath(geometry_box));
+  const LayoutInline& layout_inline = To<LayoutInline>(object);
+  // The spec doesn't say what to do if there are multiple lines. Gecko uses the
+  // first fragment in that case. We'll do the same here.
+  // See: https://crbug.com/641907
+  if (layout_inline.IsInLayoutNGInlineFormattingContext()) {
+    NGInlineCursor cursor;
+    cursor.MoveTo(layout_inline);
+    if (cursor) {
+      PhysicalRect border_box = cursor.Current().RectInContainerFragment();
+      if (const auto* box_fragment = cursor.Current().BoxFragment()) {
+        return gfx::RectF(ComputeReferenceBoxInternal(
+            geometry_box, layout_inline, border_box));
+      }
+    }
+  }
+  return gfx::RectF();
 }
 
 absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(

@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "ui/gfx/geometry/quad_f.h"
 
@@ -767,39 +766,6 @@ PhysicalRect LayoutInline::PhysicalVisualOverflowRect() const {
   }
   // TODO(rendering-core): Add in Text Decoration overflow rect.
   return overflow_rect;
-}
-
-PhysicalRect LayoutInline::ReferenceBoxForClipPath(
-    GeometryBox geometry_box) const {
-  NOT_DESTROYED();
-  // The spec doesn't say what to do if there are multiple lines. Gecko uses the
-  // first fragment in that case. We'll do the same here.
-  // See: https://crbug.com/641907
-  if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
-    cursor.MoveTo(*this);
-    if (cursor) {
-      // https://drafts.fxtf.org/css-masking/#typedef-geometry-box
-      PhysicalRect reference_box = cursor.Current().RectInContainerFragment();
-      switch (geometry_box) {
-        case GeometryBox::kPaddingBox:
-          reference_box.Contract(BorderOutsets());
-          return reference_box;
-        case GeometryBox::kContentBox:
-        case GeometryBox::kFillBox:
-          reference_box.Contract(BorderOutsets() + PaddingOutsets());
-          return reference_box;
-        case GeometryBox::kMarginBox:
-          reference_box.Expand(MarginOutsets());
-          return reference_box;
-        case GeometryBox::kBorderBox:
-        case GeometryBox::kStrokeBox:
-        case GeometryBox::kViewBox:
-          return reference_box;
-      }
-    }
-  }
-  return PhysicalRect();
 }
 
 bool LayoutInline::MapToVisualRectInAncestorSpaceInternal(
