@@ -1337,29 +1337,6 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
     break;
   }
 
-  // Now work around some driver misreporting for JPEG decoding.
-  if (va_profile == VAProfileJPEGBaseline && entrypoint == VAEntrypointVLD) {
-    auto va_display_state_handle = VADisplayStateSingleton::GetHandle();
-
-    // Note: FillProfileInfo_Locked() is called only from
-    // FillSupportedProfileInfos() which in turn is called only from the
-    // VASupportedProfiles constructor. This call occurs while a valid
-    // VADisplayStateHandle exists (because of the check in the constructor).
-    // That means that at this point, there is an initialized
-    // VADisplayStateSingleton, so the VADisplayStateSingleton::GetHandle() call
-    // above must produce a valid handle.
-    CHECK(va_display_state_handle);
-
-    if (va_display_state_handle->implementation_type() ==
-        VAImplementation::kMesaGallium) {
-      // TODO(andrescj): the VAAPI state tracker in mesa does not report
-      // VA_RT_FORMAT_YUV422 as being supported for JPEG decoding. However, it
-      // is happy to allocate YUYV surfaces
-      // (https://gitlab.freedesktop.org/mesa/mesa/commit/5608f442). Remove this
-      // workaround once b/128337341 is resolved.
-      profile_info->supported_internal_formats.yuv422 = true;
-    }
-  }
   const bool is_any_profile_supported =
       profile_info->supported_internal_formats.yuv420 ||
       profile_info->supported_internal_formats.yuv420_10 ||
