@@ -30,6 +30,7 @@ source_set("unit_tests") {
     ":routines",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

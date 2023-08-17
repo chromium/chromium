@@ -35267,6 +35267,7 @@ Called by update_extension_histograms.py.-->
   <int value="539" label="OS_DIAGNOSTICS_ON_ROUTINE_INITIALIZED"/>
   <int value="540" label="OS_DIAGNOSTICS_ON_ROUTINE_RUNNING"/>
   <int value="541" label="OS_DIAGNOSTICS_ON_ROUTINE_WAITING"/>
+  <int value="542" label="OS_DIAGNOSTICS_ON_MEMORY_ROUTINE_FINISHED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

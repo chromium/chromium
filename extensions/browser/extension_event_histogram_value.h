@@ -561,6 +561,7 @@ enum HistogramValue {
   OS_DIAGNOSTICS_ON_ROUTINE_INITIALIZED = 539,
   OS_DIAGNOSTICS_ON_ROUTINE_RUNNING = 540,
   OS_DIAGNOSTICS_ON_ROUTINE_WAITING = 541,
+  OS_DIAGNOSTICS_ON_MEMORY_ROUTINE_FINISHED = 542,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

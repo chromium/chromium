@@ -24,6 +24,27 @@ namespace {
 namespace crosapi = ::crosapi::mojom;
 namespace cx_diag = api::os_diagnostics;
 
+std::unique_ptr<extensions::Event> GetEventForFinishedRoutine(
+    crosapi::TelemetryDiagnosticRoutineStateFinishedPtr finished,
+    base::Uuid uuid,
+    content::BrowserContext* browser_context) {
+  switch (finished->detail->which()) {
+    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kUnrecognizedArgument:
+      LOG(WARNING) << "Got unknown routine detail";
+      return nullptr;
+    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kMemory: {
+      auto finished_info = converters::routines::ConvertPtr(
+          std::move(finished->detail->get_memory()), uuid,
+          finished->has_passed);
+      return std::make_unique<extensions::Event>(
+          extensions::events::OS_DIAGNOSTICS_ON_MEMORY_ROUTINE_FINISHED,
+          cx_diag::OnMemoryRoutineFinished::kEventName,
+          base::Value::List().Append(finished_info.ToValue()), browser_context);
+    }
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace
 
 DiagnosticRoutineObservation::DiagnosticRoutineObservation(
@@ -76,9 +97,14 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
           base::Value::List().Append(running_info.ToValue()), browser_context_);
       break;
     }
-    case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kFinished:
-      NOTIMPLEMENTED();
-      break;
+    case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kFinished: {
+      event = GetEventForFinishedRoutine(
+          std::move(state->state_union->get_finished()), uuid_,
+          browser_context_);
+      if (!event) {
+        return;
+      }
+    }
   }
 
   extensions::EventRouter::Get(browser_context_)

@@ -200,6 +200,72 @@ namespace os.diagnostics {
     DOMString? message;
   };
 
+  enum MemtesterTestItemEnum {
+    // The memtester test is not recognized.
+    unknown,
+
+    // Test that all memory addresses to be tested can be set to itself and its
+    // complement.
+    stuck_address,
+
+    // These tests test different operation of a random int64 with buffer
+    // initialized as 0xFFFFFFFF, repeating over 64 bit blocks.
+    // Perform AND operation.
+    compare_and,
+    // Perform DIV operation.
+    compare_div,
+    // Perform MUL operation.
+    compare_mul,
+    // Perform OR operation.
+    compare_or,
+    // Perform SUB operation.
+    compare_sub,
+    // Perform XOR operation.
+    compare_xor,
+    // Perform ADD operation.
+    sequential_increment,
+
+    // These tests test setting memory regions in a certain pattern, repeating
+    // over each 64 bit blocks.
+    // Test Pattern: |0*10*| and |1*01*|.
+    bit_flip,
+    // Test Pattern:|0*1010*| and |1*0101*|.
+    bit_spread,
+    // Test Pattern: all 256 possible combinations of a 8 bit block, repeated 8
+    // times.
+    block_sequential,
+    // Test Pattern: Alternating 0 and 1.
+    checkerboard,
+    // Test Pattern: Random 64 bits.
+    random_value,
+    // Test Pattern: all 0s and all 1s.
+    solid_bits,
+    // Test Pattern: |0*10*|.
+    walking_ones,
+    // Test Pattern: |1*01*|.
+    walking_zeroes,
+
+    // These tests test writing random n bit words across the memory regions.
+    // Test Pattern: 8 bit random words.
+    byte_writes,
+    // Test Pattern: 16 bit random words.
+    word_writes
+  };
+
+  dictionary MemtesterResult {
+    MemtesterTestItemEnum[] passed_items;
+    MemtesterTestItemEnum[] failed_items;
+  };
+
+  dictionary MemoryRoutineFinishedInfo {
+    DOMString? uuid;
+    boolean? has_passed;
+    // Number of bytes tested in the memory routine.
+    double? bytesTested;
+    // Contains the memtester test results.
+    MemtesterResult? result;
+  };
+
   interface Functions {
     [supportsPromises] static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
 
@@ -291,6 +357,9 @@ namespace os.diagnostics {
     // event, e.g. user interaction. `RoutineWaitingInfo` contains information
     // about what the routine is waiting for (see prototype above).
     static void onRoutineWaiting(RoutineWaitingInfo waitingInfo);
+
+    // Informs the extension that a memory routine finished.
+    static void onMemoryRoutineFinished(MemoryRoutineFinishedInfo finishedInfo);
   };
 
   // LINT.ThenChange(//docs/telemetry_extension/api_overview.md)

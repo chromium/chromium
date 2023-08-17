@@ -36,10 +36,33 @@ api::os_diagnostics::RoutineWaitingInfo UncheckedConvertPtr(
     base::Uuid uuid,
     uint32_t percentage);
 
+api::os_diagnostics::MemtesterResult UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticMemtesterResultPtr input);
+
+api::os_diagnostics::MemoryRoutineFinishedInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticMemoryRoutineDetailPtr input,
+    base::Uuid uuid,
+    bool has_passed);
+
 }  // namespace unchecked
 
 api::os_diagnostics::RoutineWaitingReason Convert(
     crosapi::mojom::TelemetryDiagnosticRoutineStateWaiting::Reason input);
+
+api::os_diagnostics::MemtesterTestItemEnum Convert(
+    crosapi::mojom::TelemetryDiagnosticMemtesterTestItemEnum input);
+
+template <class InputT,
+          class OutputT = decltype(Convert(std::declval<InputT>())),
+          class = std::enable_if_t<std::is_enum_v<InputT> ||
+                                   std::is_integral_v<InputT>>>
+std::vector<OutputT> ConvertVector(std::vector<InputT> input) {
+  std::vector<OutputT> output;
+  for (auto elem : input) {
+    output.push_back(Convert(std::move(elem)));
+  }
+  return output;
+}
 
 template <class InputT,
           class... Types,

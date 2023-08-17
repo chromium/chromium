@@ -146,6 +146,26 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
+    CanObserveOnMemoryRoutineFinishedWithoutFeatureFlagFail) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function canObserveOnMemoryRoutineFinishedFail() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.onMemoryRoutineFinished.addListener((event) => {
+            // unreachable
+          });
+        }, [],
+          'Cannot read properties of undefined (reading \'addListener\')'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 class PendingApprovalTelemetryExtensionDiagnosticRoutineObserverBrowserTest
     : public TelemetryExtensionDiagnosticRoutineObserverBrowserTest {
  public:
@@ -251,6 +271,69 @@ IN_PROC_BROWSER_TEST_F(
             percentage: 50,
             reason: "waiting_to_be_scheduled",
             uuid: "%s",
+          });
+
+          chrome.test.succeed();
+        });
+      }
+    ]);
+  )",
+                         uuid_.AsLowercaseString().c_str()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PendingApprovalTelemetryExtensionDiagnosticRoutineObserverBrowserTest,
+    CanObserveOnMemoryRoutineFinished) {
+  RegisterEventObserver(
+      api::os_diagnostics::OnMemoryRoutineFinished::kEventName,
+      base::BindLambdaForTesting([this] {
+        auto memtester_result =
+            crosapi::TelemetryDiagnosticMemtesterResult::New();
+        memtester_result->passed_items = {
+            crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareDIV,
+            crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareMUL};
+        memtester_result->failed_items = {
+            crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareAND,
+            crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareSUB};
+
+        auto memory_detail =
+            crosapi::TelemetryDiagnosticMemoryRoutineDetail::New();
+        memory_detail->bytes_tested = 500;
+        memory_detail->result = std::move(memtester_result);
+
+        auto finished_detail =
+            crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(
+                std::move(memory_detail));
+
+        auto finished_state = crosapi::TelemetryDiagnosticRoutineState::New();
+        finished_state->state_union =
+            crosapi::TelemetryDiagnosticRoutineStateUnion::NewFinished(
+                crosapi::TelemetryDiagnosticRoutineStateFinished::New(
+                    /*has_passed=*/true, std::move(finished_detail)));
+        finished_state->percentage = 100;
+
+        remote_->OnRoutineStateChange(std::move(finished_state));
+      }));
+
+  CreateExtensionAndRunServiceWorker(
+      base::StringPrintf(R"(
+    chrome.test.runTests([
+      async function canObserveOnMemoryRoutineFinished() {
+        chrome.os.diagnostics.onMemoryRoutineFinished.addListener((event) => {
+          chrome.test.assertEq(event, {
+            "bytesTested": 500,
+            "has_passed": true,
+            "result": {
+              "failed_items": [
+                "compare_and",
+                "compare_sub"
+              ],
+              "passed_items": [
+                "compare_div",
+                "compare_mul"
+              ]
+            },
+            "uuid":"%s"
           });
 
           chrome.test.succeed();
