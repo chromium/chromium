@@ -16,6 +16,7 @@ void MenuConfig::Init() {
 
 void MenuConfig::InitPlatformCR2023() {
   context_menu_font_list = font_list;
+  use_bubble_border = true;
 }
 
 }  // namespace views
