@@ -42,11 +42,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -92,8 +90,6 @@ public class SingleTabSwitcherMediatorUnitTest {
     private TabSwitcherViewObserver mTabSwitcherViewObserver;
     @Mock
     private TabContentManager mTabContentManager;
-    @Mock
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Captor
     private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor
@@ -129,9 +125,9 @@ public class SingleTabSwitcherMediatorUnitTest {
                 .getTabThumbnailWithCallback(anyInt(), any(), any(), anyBoolean(), anyBoolean());
 
         mPropertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
-        mMediator = new SingleTabSwitcherMediator(ContextUtils.getApplicationContext(),
-                mBrowserControlsStateProvider, mPropertyModel, mTabModelSelector,
-                mTabListFaviconProvider, mTabContentManager, false);
+        mMediator =
+                new SingleTabSwitcherMediator(ContextUtils.getApplicationContext(), mPropertyModel,
+                        mTabModelSelector, mTabListFaviconProvider, mTabContentManager, false);
     }
 
     @After
@@ -175,8 +171,8 @@ public class SingleTabSwitcherMediatorUnitTest {
     @Test
     public void showAndHide_SurfacePolish() {
         mMediator = new SingleTabSwitcherMediator(ContextUtils.getApplicationContext(),
-                mBrowserControlsStateProvider, mPropertyModel, mTabModelSelector,
-                mTabListFaviconProvider, mTabContentManager, true /* isSurfacePolishEnabled */);
+                mPropertyModel, mTabModelSelector, mTabListFaviconProvider, mTabContentManager,
+                true /* isSurfacePolishEnabled */);
 
         assertNotNull(mPropertyModel.get(FAVICON));
         assertNotNull(mPropertyModel.get(CLICK_LISTENER));
@@ -193,10 +189,8 @@ public class SingleTabSwitcherMediatorUnitTest {
                         eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
 
         int width = ContextUtils.getApplicationContext().getResources().getDimensionPixelSize(
-                org.chromium.chrome.R.dimen.single_tab_module_tab_thumbnail_width);
-        int height = (int) (width
-                / TabUtils.getTabThumbnailAspectRatio(
-                        ContextUtils.getApplicationContext(), mBrowserControlsStateProvider));
+                org.chromium.chrome.R.dimen.single_tab_module_tab_thumbnail_size);
+        int height = width;
         Size thumbnailSize = new Size(width, height);
         verify(mTabContentManager)
                 .getTabThumbnailWithCallback(

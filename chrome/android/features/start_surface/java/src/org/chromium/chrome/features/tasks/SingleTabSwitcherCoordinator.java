@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -55,8 +54,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
             boolean isScrollableMvtEnabled, Tab mostRecentTab,
             @Nullable Runnable singleTabCardClickedCallback,
             @Nullable Runnable snapshotParentViewRunnable,
-            @Nullable TabContentManager tabContentManager,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider) {
+            @Nullable TabContentManager tabContentManager) {
         mTabModelSelector = tabModelSelector;
         mIsTablet = isTablet;
         mLastActiveTab = mostRecentTab;
@@ -75,15 +73,14 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
                 isSurfacePolishEnabled ? R.dimen.favicon_corner_radius_polished
                                        : R.dimen.default_favicon_corner_radius);
         if (!mIsTablet) {
-            mMediator = new SingleTabSwitcherMediator(activity, browserControlsStateProvider,
-                    propertyModel, tabModelSelector, mTabListFaviconProvider,
-                    isSurfacePolishEnabled ? tabContentManager : null, isSurfacePolishEnabled);
+            mMediator = new SingleTabSwitcherMediator(activity, propertyModel, tabModelSelector,
+                    mTabListFaviconProvider, isSurfacePolishEnabled ? tabContentManager : null,
+                    isSurfacePolishEnabled);
             mMediatorOnTablet = null;
         } else {
-            mMediatorOnTablet = new SingleTabSwitcherOnTabletMediator(activity,
-                    browserControlsStateProvider, propertyModel, activityLifecycleDispatcher,
-                    tabModelSelector, mTabListFaviconProvider, mostRecentTab,
-                    isScrollableMvtEnabled, singleTabCardClickedCallback,
+            mMediatorOnTablet = new SingleTabSwitcherOnTabletMediator(activity, propertyModel,
+                    activityLifecycleDispatcher, tabModelSelector, mTabListFaviconProvider,
+                    mostRecentTab, isScrollableMvtEnabled, singleTabCardClickedCallback,
                     isSurfacePolishEnabled ? tabContentManager : null);
             mMediator = null;
         }

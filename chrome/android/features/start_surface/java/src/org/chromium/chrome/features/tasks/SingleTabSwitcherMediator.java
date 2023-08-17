@@ -26,7 +26,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -34,7 +33,6 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -78,8 +76,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     private ThumbnailProvider mThumbnailProvider;
     private Size mThumbnailSize;
 
-    SingleTabSwitcherMediator(Context context,
-            BrowserControlsStateProvider browserControlsStateProvider, PropertyModel propertyModel,
+    SingleTabSwitcherMediator(Context context, PropertyModel propertyModel,
             TabModelSelector tabModelSelector, TabListFaviconProvider tabListFaviconProvider,
             TabContentManager tabContentManager, boolean isSurfacePolishEnabled) {
         mTabModelSelector = tabModelSelector;
@@ -89,7 +86,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         mIsSurfacePolishEnabled = isSurfacePolishEnabled;
         mThumbnailProvider = getThumbnailProvider(tabContentManager);
         if (mThumbnailProvider != null) {
-            mThumbnailSize = getThumbnailSize(mContext, browserControlsStateProvider);
+            mThumbnailSize = getThumbnailSize(mContext);
         }
 
         mPropertyModel.set(FAVICON, mTabListFaviconProvider.getDefaultFaviconDrawable(false));
@@ -368,12 +365,10 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         };
     }
 
-    static Size getThumbnailSize(
-            Context context, BrowserControlsStateProvider browserControlsStateProvider) {
-        int width = context.getResources().getDimensionPixelSize(
-                R.dimen.single_tab_module_tab_thumbnail_width);
-        int height = (int) (width
-                / TabUtils.getTabThumbnailAspectRatio(context, browserControlsStateProvider));
-        return new Size(width, height);
+    @VisibleForTesting
+    public static Size getThumbnailSize(Context context) {
+        int size = context.getResources().getDimensionPixelSize(
+                R.dimen.single_tab_module_tab_thumbnail_size);
+        return new Size(size, size);
     }
 }

@@ -41,7 +41,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -72,8 +71,6 @@ public class SingleTabViewBinderUnitTest {
     private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
     @Mock
     private TabListFaviconProvider mTabListFaviconProvider;
-    @Mock
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     @Before
     public void setUp() throws Exception {
@@ -150,9 +147,9 @@ public class SingleTabViewBinderUnitTest {
     public void testRecordHistogramSingleTabCardClick_StartSurface() {
         doReturn(mTabId).when(mTabModelSelector).getCurrentTabId();
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        SingleTabSwitcherMediator mediator = new SingleTabSwitcherMediator(
-                ContextUtils.getApplicationContext(), mBrowserControlsStateProvider, mPropertyModel,
-                mTabModelSelector, mTabListFaviconProvider, null, false);
+        SingleTabSwitcherMediator mediator =
+                new SingleTabSwitcherMediator(ContextUtils.getApplicationContext(), mPropertyModel,
+                        mTabModelSelector, mTabListFaviconProvider, null, false);
         mediator.setOnTabSelectingListener(mOnTabSelectingListener);
         mSingleTabView.performClick();
         assertEquals(HISTOGRAM_START_SURFACE_MODULE_CLICK

@@ -23,6 +23,7 @@ android_resources("java_resources") {
     "java/res/layout/tasks_view_layout.xml",
     "java/res/layout/tasks_view_layout_polish.xml",
     "java/res/values-night/dimens.xml",
+    "java/res/values-sw600dp/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
   ]

@@ -24,7 +24,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -58,8 +57,7 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
     private ThumbnailProvider mThumbnailProvider;
     private Size mThumbnailSize;
 
-    SingleTabSwitcherOnTabletMediator(Context context,
-            BrowserControlsStateProvider browserControlsStateProvider, PropertyModel propertyModel,
+    SingleTabSwitcherOnTabletMediator(Context context, PropertyModel propertyModel,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             TabModelSelector tabModelSelector, TabListFaviconProvider tabListFaviconProvider,
             Tab mostRecentTab, boolean isScrollableMvtEnabled,
@@ -92,8 +90,7 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
 
         mThumbnailProvider = SingleTabSwitcherMediator.getThumbnailProvider(tabContentManager);
         if (mThumbnailProvider != null) {
-            mThumbnailSize = SingleTabSwitcherMediator.getThumbnailSize(
-                    mContext, browserControlsStateProvider);
+            mThumbnailSize = SingleTabSwitcherMediator.getThumbnailSize(mContext);
         }
 
         mPropertyModel.set(CLICK_LISTENER, v -> {

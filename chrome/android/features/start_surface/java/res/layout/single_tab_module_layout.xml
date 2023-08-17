@@ -46,8 +46,8 @@ found in the LICENSE file.
 
       <org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView
           android:id="@+id/tab_thumbnail"
-          android:layout_width="@dimen/single_tab_module_tab_thumbnail_width"
-          android:layout_height="@dimen/single_tab_module_tab_thumbnail_height"
+          android:layout_width="@dimen/single_tab_module_tab_thumbnail_size"
+          android:layout_height="@dimen/single_tab_module_tab_thumbnail_size"
           android:layout_alignParentStart="true"
           android:layout_marginStart="@dimen/single_tab_thumbnail_margin"
           android:layout_marginEnd="@dimen/single_tab_thumbnail_margin"
@@ -95,7 +95,6 @@ found in the LICENSE file.
         android:id="@+id/tab_url_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_marginBottom="2dp"
         android:layout_marginStart="@dimen/single_tab_module_lateral_margin"
         android:layout_alignParentEnd="true"

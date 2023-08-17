@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
@@ -118,7 +117,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     @Test
     public void testSingleTabSwitcherOnTablet() {
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
-                ContextUtils.getApplicationContext(), null, mPropertyModel, null, mTabModelSelector,
+                ContextUtils.getApplicationContext(), mPropertyModel, null, mTabModelSelector,
                 mTabListFaviconProvider, mTab, false, null, null);
         assertNull(mPropertyModel.get(FAVICON));
         assertNull(mPropertyModel.get(TITLE));
@@ -147,7 +146,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     @Test
     public void testSingleTabSwitcherOnTablet_SurfacePolish() {
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
-                ContextUtils.getApplicationContext(), null, mPropertyModel, null, mTabModelSelector,
+                ContextUtils.getApplicationContext(), mPropertyModel, null, mTabModelSelector,
                 mTabListFaviconProvider, mTab, false, null, mTabContentManager);
         doNothing()
                 .when(mTabContentManager)
@@ -161,10 +160,8 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
 
         mediator.setVisibility(true);
         int width = ContextUtils.getApplicationContext().getResources().getDimensionPixelSize(
-                org.chromium.chrome.R.dimen.single_tab_module_tab_thumbnail_width);
-        int height = (int) (width
-                / TabUtils.getTabThumbnailAspectRatio(
-                        ContextUtils.getApplicationContext(), mBrowserControlsStateProvider));
+                org.chromium.chrome.R.dimen.single_tab_module_tab_thumbnail_size);
+        int height = width;
         Size thumbnailSize = new Size(width, height);
 
         verify(mTabListFaviconProvider)
@@ -195,7 +192,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     @Test
     public void testWhenMostRecentTabIsNull() {
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
-                ContextUtils.getApplicationContext(), null, mPropertyModel, null, mTabModelSelector,
+                ContextUtils.getApplicationContext(), mPropertyModel, null, mTabModelSelector,
                 mTabListFaviconProvider, null, false, null, null);
         assertNotNull(mPropertyModel.get(CLICK_LISTENER));
 
@@ -210,7 +207,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     @Test
     public void testUpdateMostRecentTabInfo() {
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
-                ContextUtils.getApplicationContext(), null, mPropertyModel, null, mTabModelSelector,
+                ContextUtils.getApplicationContext(), mPropertyModel, null, mTabModelSelector,
                 mTabListFaviconProvider, mTab, false, null, null);
         assertFalse(mediator.getInitialized());
 
@@ -237,7 +234,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
         doReturn("").when(mTab3).getTitle();
         doReturn(mUrl).when(mTab3).getUrl();
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
-                ContextUtils.getApplicationContext(), null, mPropertyModel, null, mTabModelSelector,
+                ContextUtils.getApplicationContext(), mPropertyModel, null, mTabModelSelector,
                 mTabListFaviconProvider, mTab3, false, null, null);
         mediator.updateTitle();
         verify(mTab3).addObserver(mTabObserverCaptor.capture());
@@ -250,8 +247,8 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     @Test
     public void testStartMarginWith1RowMvTiles() {
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
-                ContextUtils.getApplicationContext(), null, mPropertyModel,
-                mActivityLifecycleDispatcher, mTabModelSelector, mTabListFaviconProvider, mTab3,
+                ContextUtils.getApplicationContext(), mPropertyModel, mActivityLifecycleDispatcher,
+                mTabModelSelector, mTabListFaviconProvider, mTab3,
                 true /* isScrollableMvtEnabled */, null, null);
         verify(mActivityLifecycleDispatcher).register(mConfigurationChangedObserver.capture());
 
@@ -283,8 +280,8 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     @Test
     public void testStartMarginWith2RowMvTiles() {
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
-                ContextUtils.getApplicationContext(), null, mPropertyModel,
-                mActivityLifecycleDispatcher, mTabModelSelector, mTabListFaviconProvider, mTab3,
+                ContextUtils.getApplicationContext(), mPropertyModel, mActivityLifecycleDispatcher,
+                mTabModelSelector, mTabListFaviconProvider, mTab3,
                 false /* isScrollableMvtEnabled */, null, null);
         verify(mActivityLifecycleDispatcher).register(mConfigurationChangedObserver.capture());
 
@@ -316,8 +313,8 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     public void testNoLateralMargin_SurfacePolish() {
         TabContentManager tabContentManager = Mockito.mock(TabContentManager.class);
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
-                ContextUtils.getApplicationContext(), null, mPropertyModel,
-                mActivityLifecycleDispatcher, mTabModelSelector, mTabListFaviconProvider, mTab3,
+                ContextUtils.getApplicationContext(), mPropertyModel, mActivityLifecycleDispatcher,
+                mTabModelSelector, mTabListFaviconProvider, mTab3,
                 false /* isScrollableMvtEnabled */, null, tabContentManager);
         verify(mActivityLifecycleDispatcher, never())
                 .register(mConfigurationChangedObserver.capture());
@@ -331,9 +328,9 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     @Test
     public void testSingleTabCardClickCallback() {
         Runnable callback = Mockito.mock(Runnable.class);
-        new SingleTabSwitcherOnTabletMediator(ContextUtils.getApplicationContext(), null,
-                mPropertyModel, mActivityLifecycleDispatcher, mTabModelSelector,
-                mTabListFaviconProvider, mTab3, false /* isScrollableMvtEnabled */, callback, null);
+        new SingleTabSwitcherOnTabletMediator(ContextUtils.getApplicationContext(), mPropertyModel,
+                mActivityLifecycleDispatcher, mTabModelSelector, mTabListFaviconProvider, mTab3,
+                false /* isScrollableMvtEnabled */, callback, null);
         verify(callback, never()).run();
 
         mPropertyModel.get(CLICK_LISTENER).onClick(null);
