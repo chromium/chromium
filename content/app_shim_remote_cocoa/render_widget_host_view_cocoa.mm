@@ -800,6 +800,14 @@ void ExtractUnderlines(NSAttributedString* string,
   WebMouseEvent web_event = WebMouseEventBuilder::Build(event, self);
   web_event.SetModifiers(web_event.GetModifiers() |
                          WebInputEvent::kRelativeMotionEvent);
+  // TODO(crbug.com/1465562): We shouldn't be posting events with null
+  // timestamps. However `MessagePumpNSApplication::DoQuit` usage of
+  // `otherEventWithType` seems to truncate `NSTimeInterval` to seconds. Which
+  // could lead to those generated events be in the past, compared to ones
+  // created directly in later parts of the pipeline or in tests.
+  if (web_event.TimeStamp().is_null()) {
+    web_event.SetTimeStamp(ui::EventTimeForNow());
+  }
   _hostHelper->ForwardMouseEvent(web_event);
 }
 
