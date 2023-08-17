@@ -91,6 +91,10 @@ class BatterySaverControllerTest : public AshTestBase {
     return Shell::Get()->toast_manager()->GetCurrentOverlayForTesting();
   }
 
+  void DismissToast() {
+    Shell::Get()->toast_manager()->CloseAllToastsWithoutAnimation();
+  }
+
   bool IsBatterySaverActive() {
     return PowerStatus::Get()->IsBatterySaverActive();
   }
@@ -357,7 +361,7 @@ TEST_F(BatterySaverControllerTest, ShowDisableToast) {
 
   // Enable battery saver mode.
   battery_saver_controller()->SetState(
-      true, BatterySaverController::UpdateReason::kSettings);
+      true, BatterySaverController::UpdateReason::kThreshold);
 
   // There should be no `ToastOverlay` displayed when battery saver is enabled.
   current_toast = GetCurrentToast();
@@ -365,7 +369,7 @@ TEST_F(BatterySaverControllerTest, ShowDisableToast) {
 
   // Disable battery saver mode.
   battery_saver_controller()->SetState(
-      false, BatterySaverController::UpdateReason::kSettings);
+      false, BatterySaverController::UpdateReason::kThreshold);
 
   // Check to see if a `ToastOverlay` was displayed, and that it's accurate.
   current_toast = GetCurrentToast();
@@ -373,6 +377,19 @@ TEST_F(BatterySaverControllerTest, ShowDisableToast) {
   EXPECT_EQ(
       current_toast->GetText(),
       l10n_util::GetStringUTF16(IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT));
+  DismissToast();
+
+  // Reenable to test that toast doesn't appear when toggled via Settings.
+  battery_saver_controller()->SetState(
+      true, BatterySaverController::UpdateReason::kSettings);
+
+  // Disable battery saver mode via Settings toggle.
+  battery_saver_controller()->SetState(
+      false, BatterySaverController::UpdateReason::kSettings);
+
+  // Check there is still no toast since we disabled via Settings.
+  current_toast = GetCurrentToast();
+  EXPECT_EQ(current_toast, nullptr);
 }
 
 TEST_P(BatterySaverControllerNotificationTest,

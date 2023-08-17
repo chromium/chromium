@@ -233,7 +233,9 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
   if (!active && enable_record_) {
     // NB: We show the toast after checking enable_record_ to make sure we were
     // enabled before this Disable call.
-    DisplayBatterySaverModeDisabledToast();
+    if (reason != UpdateReason::kSettings) {
+      DisplayBatterySaverModeDisabledToast();
+    }
 
     // Log metrics.
     base::UmaHistogramPercentage("Ash.BatterySaver.BatteryPercent.Disabled",
