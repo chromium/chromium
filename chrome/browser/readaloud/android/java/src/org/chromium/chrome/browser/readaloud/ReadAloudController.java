@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelTabObserver;
 import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.chrome.modules.readaloud.ExpandedPlayer;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -42,9 +43,9 @@ public class ReadAloudController {
     private final Map<String, Boolean> mTimepointsSupportedMap = new HashMap<>();
     private final HashSet<String> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
-    private final ViewStub mMiniPlayerStub;
-    private final MiniPlayerCoordinator mMiniPlayerCoordinator;
-    private final ExpandedPlayerCoordinator mExpandedPlayerCoordinator;
+    private final MiniPlayerCoordinator mMiniPlayer;
+    private final ExpandedPlayer mExpandedPlayer;
+    private final PlayerController mPlayerController;
     private TabModelTabObserver mTabObserver;
 
     private final ReadAloudReadabilityHooks mReadabilityHooks;
@@ -81,12 +82,12 @@ public class ReadAloudController {
             BottomSheetController bottomSheetController) {
         mProfileSupplier = profileSupplier;
         mTabModel = tabModel;
-        mMiniPlayerStub = miniPlayerStub;
         mReadabilityHooks = sReadabilityHooksForTesting != null
                 ? sReadabilityHooksForTesting
                 : new ReadAloudReadabilityHooksImpl(context, /* apiKeyOverride= */ null);
-        mMiniPlayerCoordinator = new MiniPlayerCoordinator(miniPlayerStub);
-        mExpandedPlayerCoordinator = new ExpandedPlayerCoordinator(context, bottomSheetController);
+        mMiniPlayer = new MiniPlayerCoordinator(miniPlayerStub);
+        mExpandedPlayer = new ExpandedPlayerCoordinator(context, bottomSheetController);
+        mPlayerController = new PlayerController(mMiniPlayer, mExpandedPlayer);
         if (mReadabilityHooks.isEnabled()) {
             mTabObserver = new TabModelTabObserver(mTabModel) {
                 @Override
@@ -172,6 +173,10 @@ public class ReadAloudController {
         PlaybackArgs args =
                 new PlaybackArgs(tab.getUrl().getSpec(), TranslateBridge.getCurrentLanguage(tab),
                         /* voice=*/null, /* dateModifiedMsSinceEpock=*/0);
+        // TODO request playback here and call mPlayerController.playbackReady()
+
+        // Notify player UI that playback is happening soon.
+        mPlayerController.playTabRequested(tab);
     }
 
     /**
@@ -191,6 +196,8 @@ public class ReadAloudController {
         if (mTabObserver != null) {
             mTabObserver.destroy();
         }
+        // Stop playback and hide players.
+        mPlayerController.destroy();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

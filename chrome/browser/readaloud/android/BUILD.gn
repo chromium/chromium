@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/PlayerController.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudFeatures.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonController.java",
@@ -96,6 +97,7 @@ android_library("hooks_public_impl_java") {
 robolectric_library("junit") {
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/PlayerControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/expandedplayer/ExpandedPlayerCoordinatorUnitTest.java",
