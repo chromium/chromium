@@ -25,9 +25,7 @@ class CC_EXPORT SnapSelectionStrategy {
   static std::unique_ptr<SnapSelectionStrategy> CreateForEndPosition(
       const gfx::PointF& current_position,
       bool scrolled_x,
-      bool scrolled_y,
-      SnapTargetsPrioritization prioritization =
-          SnapTargetsPrioritization::kIgnore);
+      bool scrolled_y);
 
   // |use_fractional_offsets| should be true when the current position is
   // provided in fractional pixels.
@@ -109,7 +107,8 @@ class EndPositionStrategy : public SnapSelectionStrategy {
   EndPositionStrategy(const gfx::PointF& current_position,
                       bool scrolled_x,
                       bool scrolled_y,
-                      SnapTargetsPrioritization snap_targets_prioritization)
+                      SnapTargetsPrioritization snap_targets_prioritization =
+                          SnapTargetsPrioritization::kIgnore)
       : SnapSelectionStrategy(current_position),
         scrolled_x_(scrolled_x),
         scrolled_y_(scrolled_y),

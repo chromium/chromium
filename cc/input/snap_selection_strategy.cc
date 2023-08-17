@@ -9,13 +9,11 @@
 namespace cc {
 
 std::unique_ptr<SnapSelectionStrategy>
-SnapSelectionStrategy::CreateForEndPosition(
-    const gfx::PointF& current_position,
-    bool scrolled_x,
-    bool scrolled_y,
-    SnapTargetsPrioritization prioritization) {
+SnapSelectionStrategy::CreateForEndPosition(const gfx::PointF& current_position,
+                                            bool scrolled_x,
+                                            bool scrolled_y) {
   return std::make_unique<EndPositionStrategy>(current_position, scrolled_x,
-                                               scrolled_y, prioritization);
+                                               scrolled_y);
 }
 
 std::unique_ptr<SnapSelectionStrategy>
