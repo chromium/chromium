@@ -3,16 +3,12 @@
     --key-alpha-numeric-selected-bg-color: var(--cros-bg-color-dropped-elevation-1);
     --key-modifier-selected-bg-color: var(--cros-highlight-color);
     --key-modifier-selected-shadow-color: var(--cros-highlight-color);
-    --key-not-selected-border-color: var(--google-grey-200);
-    --key-not-selected-shadow-color: var(--google-grey-200);
   }
 
   :host-context(body.jelly-enabled) {
     --key-alpha-numeric-selected-bg-color: var(--cros-sys-surface_variant);
     --key-modifier-selected-bg-color: var(--cros-sys-highlight_shape);
     --key-modifier-selected-shadow-color: var(--cros-sys-highlight_shape);
-    --key-not-selected-border-color: var(--cros-sys-on_surface);
-    --key-not-selected-shadow-color: var(--cros-sys-on_surface);
   }
 
   .key-container {
@@ -42,10 +38,15 @@
   }
 
   :host([key-state='not-selected']) .key-container {
-    border-color: var(--key-not-selected-border-color);
-    border-style: solid;
-    border-width: thin;
-    box-shadow: 0 1px 1px var(--key-not-selected-shadow-color);
+    outline: 1px solid var(--cros-separator-color);
+  }
+
+  :host([key-state='not-selected']) #key-text {
+    color: var(--cros-text-color-disabled);
+  }
+
+  :host([key-state='not-selected']) #key-icon{
+    --iron-icon-fill-color: var(--cros-text-color-disabled);
   }
 
   :host([key-state='modifier-selected']) .key-container {

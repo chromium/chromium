@@ -69,13 +69,18 @@
   }
 
   :host([is-edit-view]) #acceleratorView {
+    background-color: var(--cros-sys-input_field_on_base);
     border-color: var(--cros-sys-focus_ring);
     border-radius: 10px;
     border-style: solid;
-    border-width: thin;
+    border-width: 2px;
     height: 52px;
     margin: 0;
     padding-inline: 10px;
+  }
+
+  :host([is-edit-view][has-error]) #acceleratorView {
+    border-color: var(--cros-sys-error);
   }
 </style>
 
