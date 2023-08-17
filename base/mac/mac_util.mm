@@ -599,6 +599,14 @@ void OpenSystemSettingsPane(SystemSettingsPane pane) {
               @"Privacy_ScreenCapture";
       }
       break;
+    case SystemSettingsPane::kTrackpad:
+      if (IsAtLeastOS13()) {
+        url = @"x-apple.systempreferences:com.apple.Trackpad-Settings."
+              @"extension";
+      } else {
+        url = @"x-apple.systempreferences:com.apple.preference.trackpad";
+      }
+      break;
   }
 
   DCHECK(url != nil ^ pane_file != nil);

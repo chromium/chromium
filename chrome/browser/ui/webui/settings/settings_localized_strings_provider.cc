@@ -285,7 +285,7 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
     {"focusHighlightLabel",
      IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION},
 #endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     {"overscrollHistoryNavigationTitle",
      IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_TITLE},
     {"overscrollHistoryNavigationSubtitle",

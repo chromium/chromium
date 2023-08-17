@@ -215,6 +215,9 @@ enum class SystemSettingsPane {
 
   // Privacy & Security > Screen Recording
   kPrivacySecurity_ScreenRecording,
+
+  // Trackpad
+  kTrackpad,
 };
 
 // Opens the specified System Settings pane. If the specified subpane does not

@@ -4173,6 +4173,8 @@ static_library("ui") {
       "views/tab_contents/chrome_web_contents_view_delegate_views_mac.mm",
       "webui/help/version_updater_mac.h",
       "webui/help/version_updater_mac.mm",
+      "webui/settings/mac_system_settings_handler.cc",
+      "webui/settings/mac_system_settings_handler.h",
       "webui/settings/settings_utils_mac.mm",
       "window_sizer/window_sizer_mac.mm",
     ]

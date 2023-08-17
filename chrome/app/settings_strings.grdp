@@ -183,12 +183,19 @@
       Manage accessibility features
     </message>
   </if>
-  <if expr="is_win or is_linux">
+  <if expr="is_win or is_linux or is_macosx">
     <message name="IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_TITLE" desc="Title for the overscroll history navigation setting, which allows you to navigate back and forward by swiping left or right with a touch device.">
       Swipe between pages
     </message>
+  </if>
+  <if expr="is_win or is_linux">
     <message name="IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_SUBTITLE" desc="Subtitle for the overscroll history navigation setting, which allows you to navigate back and forward by swiping left or right with a touch device.">
       Navigate back and forward with swipe gesture
+    </message>
+  </if>
+  <if expr="is_macosx">
+    <message name="IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_SUBTITLE" desc="Subtitle for the overscroll history navigation setting, which allows you to navigate back and forward by swiping left or right with a touch device.">
+      Turn on to navigate back and forward
     </message>
   </if>
 

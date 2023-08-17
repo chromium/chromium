@@ -172,6 +172,10 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/webui/settings/mac_system_settings_handler.h"
+#endif
+
 namespace settings {
 
 // static
@@ -267,6 +271,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("isSecondaryUser", !profile->IsMainProfile());
 #endif
 
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  AddSettingsPageUIHandler(std::make_unique<MacSystemSettingsHandler>());
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
