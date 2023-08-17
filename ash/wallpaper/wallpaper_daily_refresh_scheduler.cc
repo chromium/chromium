@@ -6,20 +6,10 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
+#include "base/rand_util.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
-
-namespace {
-
-// 6:00 PM. The primary checkpoint to signal whether the daily wallpaper
-// should be refreshed.
-constexpr int kFirstCheckpointOffsetMinutes = 18 * 60;
-// 7:00 PM. The secondary checkpoint to serve as a retry in case the wallpaper
-// wasn't refreshed successfully when the first checkpoint is fired.
-constexpr int kSecondCheckpointOffsetMinutes = 19 * 60;
-
-}  // namespace
 
 WallpaperDailyRefreshScheduler::WallpaperDailyRefreshScheduler()
     : ScheduledFeature(prefs::kWallpaperDailyRefreshCheck,
@@ -30,6 +20,11 @@ WallpaperDailyRefreshScheduler::WallpaperDailyRefreshScheduler()
 // static
 void WallpaperDailyRefreshScheduler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
+  // Randomize the checkpoint time to prevent server load spikes.
+  // First time is between 12:00am and 10:59pm and the second time is an hour
+  // from the first.
+  const int kFirstCheckpointOffsetMinutes = base::RandInt(0, 23 * 60 - 1);
+  const int kSecondCheckpointOffsetMinutes = kFirstCheckpointOffsetMinutes + 60;
   registry->RegisterIntegerPref(prefs::kWallpaperDailyRefreshScheduleType,
                                 static_cast<int>(ScheduleType::kCustom));
   registry->RegisterBooleanPref(prefs::kWallpaperDailyRefreshCheck, false);
