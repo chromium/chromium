@@ -7,6 +7,7 @@
 
 import argparse
 import collections
+import json
 import logging
 import os
 import pathlib
@@ -28,6 +29,10 @@ from dep_operations import NO_VALID_GN_STR
 # TODO(crbug.com/1099522): Remove this and make jdeps on by default.
 _USE_JDEPS = False
 
+# This is temporary in case another revert & debug session is necessary.
+# TODO(crbug.com/1099522): Remove this when jdeps is on by default.
+_DEBUG = False
+
 
 def _ShouldIgnoreDep(dep_name: str):
   if 'gen.base_module.R' in dep_name:
@@ -35,9 +40,8 @@ def _ShouldIgnoreDep(dep_name: str):
   return False
 
 
-def _ParseDepGraph(jar_path: str, output_dir: str):
-  output = jar_utils.run_jdeps(build_output_dir=pathlib.Path(output_dir),
-                               filepath=pathlib.Path(jar_path))
+def _ParseDepGraph(jar_path: str):
+  output = jar_utils.run_jdeps(pathlib.Path(jar_path))
   assert output is not None, f'Unable to parse jdep for {jar_path}'
   dep_graph = collections.defaultdict(set)
   # pylint: disable=line-too-long
@@ -62,7 +66,7 @@ def _ParseDepGraph(jar_path: str, output_dir: str):
     dep_from = parsed[0]
     dep_to = parsed[2]
     dep_graph[dep_from].add(dep_to)
-  return dep_graph
+  return dep_graph, output
 
 
 def _GnTargetToBuildFilePath(gn_target: str):
@@ -93,23 +97,20 @@ def _EnsureDirectClasspathIsComplete(
   logging.info('Parsing %d direct classpath jars', len(sdk_classpath_jars))
   sdk_classpath_deps = set()
   for jar in sdk_classpath_jars:
-    deps = jar_utils.extract_full_class_names_from_jar(
-        build_output_dir=pathlib.Path(output_dir), jar_path=pathlib.Path(jar))
+    deps = jar_utils.extract_full_class_names_from_jar(jar)
     sdk_classpath_deps.update(deps)
 
   logging.info('Parsing %d direct classpath jars', len(direct_classpath_jars))
   direct_classpath_deps = set()
   for jar in direct_classpath_jars:
-    deps = jar_utils.extract_full_class_names_from_jar(
-        build_output_dir=pathlib.Path(output_dir), jar_path=pathlib.Path(jar))
+    deps = jar_utils.extract_full_class_names_from_jar(jar)
     direct_classpath_deps.update(deps)
 
   logging.info('Parsing %d full classpath jars', len(full_classpath_jars))
   full_classpath_deps = set()
   dep_to_target = collections.defaultdict(set)
   for jar, target in zip(full_classpath_jars, full_classpath_gn_targets):
-    deps = jar_utils.extract_full_class_names_from_jar(
-        build_output_dir=pathlib.Path(output_dir), jar_path=pathlib.Path(jar))
+    deps = jar_utils.extract_full_class_names_from_jar(jar)
     full_classpath_deps.update(deps)
     for dep in deps:
       dep_to_target[dep].add(target)
@@ -117,7 +118,7 @@ def _EnsureDirectClasspathIsComplete(
   transitive_deps = full_classpath_deps - direct_classpath_deps
 
   missing_classes: Dict[str, str] = {}
-  dep_graph = _ParseDepGraph(input_jar, output_dir)
+  dep_graph, output = _ParseDepGraph(input_jar)
   logging.info('Finding missing deps from %d classes', len(dep_graph))
   # dep_graph.keys() is a list of all the classes in the current input_jar. Skip
   # all of these to avoid checking dependencies in the same target (e.g. A
@@ -155,6 +156,19 @@ def _EnsureDirectClasspathIsComplete(
         for dep_to in deps_to:
           dep_from = missing_classes[dep_to]
           print(f'     ** {dep_to} (needed by {dep_from})')
+      if _DEBUG:
+        gn_target_name = gn_target.split(':', 1)[-1]
+        debug_fname = f'/tmp/bytecode_processor_debug_{gn_target_name}.json'
+        with open(debug_fname, 'w') as f:
+          print(gn_target, file=f)
+          print(input_jar, file=f)
+          print(json.dumps(sorted(sdk_classpath_deps), indent=4), file=f)
+          print(json.dumps(sorted(direct_classpath_deps), indent=4), file=f)
+          print(json.dumps(sorted(full_classpath_deps), indent=4), file=f)
+          print(json.dumps(sorted(transitive_deps), indent=4), file=f)
+          print(json.dumps(missing_classes, sort_keys=True, indent=4), file=f)
+          print(output, file=f)
+        print(f'DEBUG FILE: {debug_fname}')
       if warnings_as_errors:
         sys.exit(1)
 

@@ -337,10 +337,7 @@ def main():
     jdeps_process_number = math.ceil(multiprocessing.cpu_count() / 2)
     with multiprocessing.Pool(jdeps_process_number) as pool:
         jdeps_outputs = pool.map(
-            functools.partial(jar_utils.run_jdeps,
-                              jdeps_path=jdeps_path,
-                              src_path=src_path,
-                              build_output_dir=args.build_output_dir),
+            functools.partial(jar_utils.run_jdeps, jdeps_path=jdeps_path),
             target_jars.values())
 
     logging.info('Parsing jdeps output...')

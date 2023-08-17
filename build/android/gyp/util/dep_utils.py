@@ -223,7 +223,7 @@ class ClassLookupIndex:
 
         full_class_names.update(
             jar_utils.extract_full_class_names_from_jar(
-                self._abs_build_output_dir, abs_unprocessed_jar_path))
+                abs_unprocessed_jar_path))
 
     return full_class_names
 
