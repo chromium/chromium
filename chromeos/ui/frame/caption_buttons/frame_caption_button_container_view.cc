@@ -10,9 +10,11 @@
 #include <tuple>
 
 #include "base/command_line.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/tablet_state.h"
@@ -38,9 +40,11 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"  // Accessibility names
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -434,7 +438,20 @@ void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
   menu_button_->SetPreferredSize(size);
   minimize_button_->SetPreferredSize(size);
   size_button_->SetPreferredSize(size);
-  close_button_->SetPreferredSize(size);
+  if (features::IsRoundedWindowsEnabled()) {
+    // When rounded window is enabled, make the target width of close button
+    // 8 DIP wider to cover the rounded corners region.
+    constexpr int kExtraTargetSpaceForCloseButton = 8;
+    close_button_->SetPreferredSize(gfx::Size(
+        size.width() + kExtraTargetSpaceForCloseButton, size.height()));
+    // Add padding to trailing edge to keep distance between caption buttons
+    // unchanged.
+    close_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        0, base::i18n::IsRTL() ? kExtraTargetSpaceForCloseButton : 0, 0,
+        base::i18n::IsRTL() ? 0 : kExtraTargetSpaceForCloseButton)));
+  } else {
+    close_button_->SetPreferredSize(size);
+  }
 
   SetMinimumCrossAxisSize(size.height());
 }

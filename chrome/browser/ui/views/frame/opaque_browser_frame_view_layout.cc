@@ -517,20 +517,21 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
   // to the screen left, for left-aligned buttons) to obey Fitts' Law.
   const bool is_frame_condensed = delegate_->IsFrameCondensed();
 
+  const int button_width = views::GetCaptionButtonWidth();
+
   gfx::Size button_size = button->GetPreferredSize();
   if (delegate_->GetFrameButtonStyle() ==
       OpaqueBrowserFrameViewLayoutDelegate::FrameButtonStyle::kMdButton) {
     DCHECK_EQ(std::string(views::FrameCaptionButton::kViewClassName),
               button->GetClassName());
-    constexpr int kCaptionButtonCenterSize =
-        views::kCaptionButtonWidth -
-        2 * views::kCaptionButtonInkDropDefaultCornerRadius;
+    const int caption_button_center_size =
+        button_width - 2 * views::kCaptionButtonInkDropDefaultCornerRadius;
     const int height =
         delegate_->GetTopAreaHeight() - FrameEdgeInsets(false).top();
     const int corner_radius =
-        std::clamp((height - kCaptionButtonCenterSize) / 2, 0,
-                    views::kCaptionButtonInkDropDefaultCornerRadius);
-    button_size = gfx::Size(views::kCaptionButtonWidth, height);
+        std::clamp((height - caption_button_center_size) / 2, 0,
+                   views::kCaptionButtonInkDropDefaultCornerRadius);
+    button_size = gfx::Size(button_width, height);
     button->SetPreferredSize(button_size);
     static_cast<views::FrameCaptionButton*>(button)->SetInkDropCornerRadius(
         corner_radius);

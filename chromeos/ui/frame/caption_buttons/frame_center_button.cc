@@ -65,7 +65,7 @@ gfx::Size FrameCenterButton::GetMinimumSize() const {
                             kMarginBetweenContents +
                             base::ClampCeil(sub_icon_image_->width() / 2.0f)
                       : 0) +
-                 views::kCaptionButtonWidth);
+                 views::GetCaptionButtonWidth());
   return size;
 }
 
@@ -143,7 +143,7 @@ gfx::Size FrameCenterButton::CalculatePreferredSize() const {
       (sub_icon_image_ ? kMarginBetweenContents +
                              base::ClampCeil(sub_icon_image_->width() / 2.0f)
                        : 0) +
-      views::kCaptionButtonWidth);
+      views::GetCaptionButtonWidth());
   return size;
 }
 
@@ -223,7 +223,7 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
   // adjust the corner radius on both sides from views::kCaptionButtonWidth to
   // the actual content radius.
   int available_content_width =
-      width() - views::kCaptionButtonWidth +
+      width() - views::GetCaptionButtonWidth() +
       base::ClampCeil(icon_image().width() / 2.0f) +
       (sub_icon_image_ ? base::ClampCeil(sub_icon_image_->width() / 2.0f)
                        : base::ClampCeil(icon_image().width() / 2.0f));
@@ -260,7 +260,7 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
 
 // The width calculated here is the same as that of CalculatePreferredSize()
 // except that |ink_drop_corner_radius_| is used instead of
-// |views::kCaptionButtonWidth|.
+// |views::GetCaptionButtonWidth()|.
 // See CalculatePreferredSize() for more details.
 gfx::Size FrameCenterButton::GetInkDropSize() const {
   if (chromeos::features::IsJellyEnabled()) {

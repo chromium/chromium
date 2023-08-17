@@ -14,6 +14,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 int GetLayoutConstant(LayoutConstant constant) {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   switch (constant) {
@@ -90,11 +94,14 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 12 : 16;
     case TAB_CLOSE_BUTTON_SIZE:
       return touch_ui ? 24 : 16;
-    case TAB_HEIGHT:
-      if (features::IsChromeRefresh2023()) {
-        return 34 + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
-      }
-      return (touch_ui ? 41 : 34) + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+    case TAB_HEIGHT: {
+      bool use_touch_padding = touch_ui && !features::IsChromeRefresh2023();
+#if BUILDFLAG(IS_CHROMEOS)
+      use_touch_padding &= !chromeos::features::IsRoundedWindowsEnabled();
+#endif
+      return (use_touch_padding ? 41 : 34) +
+             GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+    }
     case TAB_STRIP_HEIGHT:
       return GetLayoutConstant(TAB_HEIGHT) +
              GetLayoutConstant(TAB_STRIP_PADDING);

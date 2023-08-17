@@ -2788,7 +2788,11 @@ TEST_F(ShellSurfaceTest, OverlayOverlapsFrame) {
   {
     gfx::Size overlay_size =
         shell_surface->GetWidget()->GetWindowBoundsInScreen().size();
-    overlay_size.set_height(overlay_size.height() - views::kCaptionButtonWidth);
+    overlay_size.set_height(
+        overlay_size.height() -
+        views::GetCaptionButtonLayoutSize(
+            views::CaptionButtonLayoutSize::kNonBrowserCaption)
+            .height());
     EXPECT_EQ(overlay_size, shell_surface->overlay_widget_for_testing()
                                 ->GetWindowBoundsInScreen()
                                 .size());
