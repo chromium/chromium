@@ -2517,8 +2517,8 @@ crbug.com/1029514 [ Debug Mac13-arm64 ] external/wpt/html/semantics/embedded-con
 crbug.com/1085772 external/wpt/css/css-pseudo/first-line-opacity-001.html [ Failure ]
 crbug.com/798257 external/wpt/css/css-pseudo/first-line-line-height-002.html [ Failure ]
 
-crbug.com/1472118 [ Fuchsia ] fast/autoresize/basic.html [ Failure ]
-crbug.com/1472118 [ Fuchsia ] fast/autoresize/turn-off-autoresize.html [ Failure ]
+crbug.com/1472118 [ Fuchsia ] fast/autoresize/basic.html [ Timeout Failure ]
+crbug.com/1472118 [ Fuchsia ] fast/autoresize/turn-off-autoresize.html [ Timeout Failure ]
 crbug.com/1472118 [ Fuchsia ] http/tests/worklet/webexposed/global-interface-listing-paint-worklet.html [ Failure ]
 
 # Various css-values WPT failures
