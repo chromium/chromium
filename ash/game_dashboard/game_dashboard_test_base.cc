@@ -10,6 +10,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/window_util.h"
+#include "ui/aura/window.h"
 
 namespace ash {
 

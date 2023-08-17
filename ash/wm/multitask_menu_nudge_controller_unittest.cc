@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/display/display_move_window_util.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/shell.h"
