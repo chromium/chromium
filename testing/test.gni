@@ -434,7 +434,6 @@ template("test") {
         apk_name = invoker.target_name
         if (defined(invoker.output_name)) {
           apk_name = invoker.output_name
-          install_script_name = "install_${invoker.output_name}"
         }
 
         if (defined(invoker.deps)) {
