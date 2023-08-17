@@ -200,17 +200,21 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   // codecs (the decoder doesn't support H264PROFILE_HIGH10PROFILE). We'll get
   // a config change once we know the real bit depth if this turns out to be
   // wrong.
-  bit_depth_ =
-      accelerated_video_decoder_
-          ? accelerated_video_decoder_->GetBitDepth()
-          : (config_.profile() == VP9PROFILE_PROFILE2 ||
-                     config_.profile() == HEVCPROFILE_REXT ||
-                     config_.profile() == HEVCPROFILE_MAIN10 ||
-                     (config_.color_space_info().GuessGfxColorSpace().IsHDR() &&
-                      config_.codec() != VideoCodec::kH264 &&
-                      config_.profile() != HEVCPROFILE_MAIN)
-                 ? 10
-                 : 8);
+  bit_depth_ = 0;
+  if (accelerated_video_decoder_) {
+    bit_depth_ = accelerated_video_decoder_->GetBitDepth();
+  }
+  if (!bit_depth_) {
+    bit_depth_ =
+        (config_.profile() == VP9PROFILE_PROFILE2 ||
+                 config_.profile() == HEVCPROFILE_REXT ||
+                 config_.profile() == HEVCPROFILE_MAIN10 ||
+                 (config_.color_space_info().GuessGfxColorSpace().IsHDR() &&
+                  config_.codec() != VideoCodec::kH264 &&
+                  config_.profile() != HEVCPROFILE_MAIN)
+             ? 10
+             : 8);
+  }
 
   // TODO: supported check?
   decoder_configurator_ = D3D11DecoderConfigurator::Create(
