@@ -27,6 +27,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
@@ -417,6 +418,13 @@ void BruschettaInstallerView::OnStateUpdated() {
   const bool progress_bar_visible =
       (state_ == State::kInstalling || state_ == State::kCleaningUp);
   progress_bar_->SetVisible(progress_bar_visible);
+  secondary_message_label_->GetViewAccessibility().OverrideIsIgnored(
+      progress_bar_visible);
+  if (progress_bar_visible) {
+    progress_bar_->SetAccessibleDescription(secondary_message_label_);
+    progress_bar_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
+                                            true);
+  }
 
   DialogModelChanged();
   primary_message_label_->NotifyAccessibilityEvent(

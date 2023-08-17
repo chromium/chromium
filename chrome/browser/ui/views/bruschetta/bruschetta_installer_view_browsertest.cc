@@ -263,5 +263,23 @@ IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest, InstallWithRetry) {
             l10n_util::GetStringUTF16(IDS_BRUSCHETTA_INSTALLER_ONGOING_TITLE));
 }
 
+IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest,
+                       A11yProgressBarDescription) {
+  ShowUi("default");
+
+  // Start installing
+  view_->AcceptDialog();
+  EXPECT_TRUE(view_->progress_bar_for_testing()->GetVisible());
+  EXPECT_EQ(view_->progress_bar_for_testing()->GetAccessibleDescription(),
+            view_->GetSecondaryMessage());
+
+  // InstallThenSuccess already checks that the secondary message changes
+  // between states, so we just check that the new progress bar description
+  // matches the new message.
+  view_->StateChanged(bruschetta::BruschettaInstaller::State::kStartVm);
+  EXPECT_EQ(view_->progress_bar_for_testing()->GetAccessibleDescription(),
+            view_->GetSecondaryMessage());
+}
+
 }  // namespace
 }  // namespace bruschetta
