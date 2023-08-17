@@ -435,15 +435,25 @@ PrintBrowserTest::WorkerHelper::WorkerHelper(
 PrintBrowserTest::WorkerHelper::~WorkerHelper() = default;
 
 void PrintBrowserTest::WorkerHelper::OnNewDocument(
+#if BUILDFLAG(IS_MAC)
+    bool destination_is_preview,
+#endif
     const PrintSettings& settings) {
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     content::GetUIThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WorkerHelper::OnNewDocument, this, settings));
+        FROM_HERE, base::BindOnce(&WorkerHelper::OnNewDocument, this,
+#if BUILDFLAG(IS_MAC)
+                                  destination_is_preview,
+#endif
+                                  settings));
     return;
   }
   if (owner_) {
-    owner_->OnNewDocument(settings);
+    owner_->OnNewDocument(
+#if BUILDFLAG(IS_MAC)
+        destination_is_preview,
+#endif
+        settings);
   }
 }
 
@@ -652,12 +662,19 @@ void PrintBrowserTest::OverrideBinderForTesting(
           base::Unretained(GetFrameContent(render_frame_host))));
 }
 
-void PrintBrowserTest::OnNewDocument(const PrintSettings& settings) {
+void PrintBrowserTest::OnNewDocument(
+#if BUILDFLAG(IS_MAC)
+    bool destination_is_preview,
+#endif
+    const PrintSettings& settings) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   DVLOG(1) << " Observed: new document";
   new_document_called_count_++;
   document_print_settings_ = settings;
+#if BUILDFLAG(IS_MAC)
+  destination_is_preview_ = destination_is_preview;
+#endif
 }
 
 void PrintBrowserTest::ShowPrintErrorDialog() {

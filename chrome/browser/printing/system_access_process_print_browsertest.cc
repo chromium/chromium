@@ -631,12 +631,12 @@ class SystemAccessProcessPrintBrowserTestBase
     // This script locates and clicks the "Print using system dialog",
     // which is still enabled even if it is hidden.
     const char kPrintWithSystemDialogScript[] = R"(
-      const printSystemDialog
-          = document.getElementsByTagName('print-preview-app')[0]
+      const printSystemDialog =
+          document.getElementsByTagName('print-preview-app')[0]
               .$['sidebar']
               .shadowRoot.querySelector('print-preview-link-container')
               .$['systemDialogLink'];
-        printSystemDialog.click();)";
+      printSystemDialog.click();)";
     // It is possible for sufficient processing for the system print to
     // complete such that the renderer naturally terminates before ExecJs()
     // returns here.  This causes ExecJs() to return false, with a JavaScript
@@ -650,6 +650,28 @@ class SystemAccessProcessPrintBrowserTestBase
     }
   }
 #endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
+
+#if BUILDFLAG(IS_MAC)
+  void OpenPdfInPreviewOnceReadyAndLoaded() {
+    // First invoke the Print Preview dialog with `StartPrint()`.
+    content::WebContents* preview_dialog =
+        PrintAndWaitUntilPreviewIsReadyAndLoaded();
+    ASSERT_TRUE(preview_dialog);
+
+    // Print Preview is completely ready, can now initiate printing.
+    // This script locates and clicks "Open PDF in Preview", which is still
+    // enabled even if it is hidden.
+    const char kOpenPdfWithPreviewScript[] = R"(
+      const openPdfInPreview =
+          document.getElementsByTagName('print-preview-app')[0]
+              .$['sidebar']
+              .shadowRoot.querySelector('print-preview-link-container')
+              .$['openPdfInPreviewLink'];
+      openPdfInPreview.click();)";
+    ASSERT_TRUE(content::ExecJs(preview_dialog, kOpenPdfWithPreviewScript));
+    WaitUntilCallbackReceived();
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   void PrimeAsRepeatingErrorGenerator() { reset_errors_after_check_ = false; }
 
@@ -2067,7 +2089,49 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 }
 #endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
 
-#endif  //  BUILDFLAG(ENABLE_OOP_PRINTING)
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest, OpenPdfInPreview) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  if (GetParam() == PrintBackendFeatureVariation::kInBrowserProcess) {
+    // The expected events for this are:
+    // 1.  Wait for the one print job to be destroyed, to ensure printing
+    //     finished cleanly before completing the test.
+    SetNumExpectedMessages(/*num=*/1);
+  } else {
+    // The expected events for this are:
+    // 1.  Update printer settings.
+    // 2.  A print job is started.
+    // 3.  Rendering for 1 page of document of content.
+    // 4.  Completes with document done.
+    // 5.  Wait for the one print job to be destroyed, to ensure printing
+    //     finished cleanly before completing the test.
+    SetNumExpectedMessages(/*num=*/5);
+  }
+  OpenPdfInPreviewOnceReadyAndLoaded();
+
+  if (GetParam() != PrintBackendFeatureVariation::kInBrowserProcess) {
+    EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
+    EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
+    EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
+  }
+  EXPECT_TRUE(destination_is_preview());
+  EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(print_job_destruction_count(), 1);
+}
+#endif  // BUILDFLAG(IS_MAC)
+
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {

@@ -81,7 +81,11 @@ class PrintBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  void OnNewDocument(const PrintSettings& settings);
+  void OnNewDocument(
+#if BUILDFLAG(IS_MAC)
+      bool destination_is_preview,
+#endif
+      const PrintSettings& settings);
 
   TestPrintBackend* test_print_backend() { return test_print_backend_.get(); }
 
@@ -99,6 +103,10 @@ class PrintBrowserTest : public InProcessBrowserTest {
     return document_print_settings_;
   }
 
+#if BUILDFLAG(IS_MAC)
+  bool destination_is_preview() const { return destination_is_preview_; }
+#endif
+
  private:
   // Helper to bounce worker thread callbacks onto PrintBrowserTest's callback
   // equivalent on the UI thread.
@@ -106,7 +114,11 @@ class PrintBrowserTest : public InProcessBrowserTest {
    public:
     explicit WorkerHelper(base::WeakPtr<PrintBrowserTest> owner);
 
-    void OnNewDocument(const PrintSettings& settings);
+    void OnNewDocument(
+#if BUILDFLAG(IS_MAC)
+        bool destination_is_preview,
+#endif
+        const PrintSettings& settings);
 
    private:
     friend class base::RefCountedThreadSafe<WorkerHelper>;
@@ -125,6 +137,9 @@ class PrintBrowserTest : public InProcessBrowserTest {
 
   int new_document_called_count_ = 0;
   absl::optional<PrintSettings> document_print_settings_;
+#if BUILDFLAG(IS_MAC)
+  bool destination_is_preview_ = false;
+#endif
   uint32_t error_dialog_shown_count_ = 0;
   uint32_t rendered_page_count_ = 0;
   unsigned int num_expected_messages_;

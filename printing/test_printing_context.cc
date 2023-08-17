@@ -142,9 +142,6 @@ gfx::Size TestPrintingContext::GetPdfPaperSizeDeviceUnits() {
 mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
     const PrinterSettings& printer_settings) {
   DCHECK(!in_print_job_);
-#if BUILDFLAG(IS_MAC)
-  DCHECK(!printer_settings.external_preview) << "Not implemented";
-#endif
 
   // The printer name is to be embedded in the printing context's existing
   // settings.
@@ -177,6 +174,10 @@ mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
   }
 #endif
 
+#if BUILDFLAG(IS_MAC)
+  destination_is_preview_ = printer_settings.external_preview;
+#endif
+
   // Capture a snapshot, simluating changes made to platform device context.
   applied_settings_ = *settings_;
 
@@ -188,7 +189,11 @@ mojom::ResultCode TestPrintingContext::NewDocument(
   DCHECK(!in_print_job_);
 
   if (on_new_document_callback_) {
-    on_new_document_callback_.Run(applied_settings_);
+    on_new_document_callback_.Run(
+#if BUILDFLAG(IS_MAC)
+        destination_is_preview_,
+#endif
+        applied_settings_);
   }
 
   abort_printing_ = false;
