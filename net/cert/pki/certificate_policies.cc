@@ -4,6 +4,8 @@
 
 #include <algorithm>
 
+#include "third_party/boringssl/src/include/openssl/base.h"
+
 #include "net/cert/pki/certificate_policies.h"
 
 #include "net/cert/pki/cert_error_params.h"
@@ -43,7 +45,7 @@ bool ParsePolicyQualifiers(bool restrict_to_known_qualifiers,
                            der::Parser* policy_qualifiers_sequence_parser,
                            std::vector<PolicyQualifierInfo>* policy_qualifiers,
                            CertErrors* errors) {
-  DCHECK(errors);
+  BSSL_CHECK(errors);
 
   // If it is present, the policyQualifiers sequence should have at least 1
   // element.

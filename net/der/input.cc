@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/check_op.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace net::der {
 
@@ -59,7 +59,7 @@ bool ByteReader::HasMore() {
 }
 
 void ByteReader::Advance(size_t len) {
-  CHECK_LE(len, len_);
+  BSSL_CHECK(len <= len_);
   data_ += len;
   len_ -= len;
 }

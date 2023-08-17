@@ -4,17 +4,17 @@
 
 #include "net/der/tag.h"
 
-#include "base/check_op.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace net::der {
 
 Tag ContextSpecificConstructed(uint8_t tag_number) {
-  DCHECK_EQ(tag_number, tag_number & kTagNumberMask);
+  BSSL_CHECK(tag_number == (tag_number & kTagNumberMask));
   return (tag_number & kTagNumberMask) | kTagConstructed | kTagContextSpecific;
 }
 
 Tag ContextSpecificPrimitive(uint8_t base) {
-  DCHECK_EQ(base, base & kTagNumberMask);
+  BSSL_CHECK(base == (base & kTagNumberMask));
   return (base & kTagNumberMask) | kTagPrimitive | kTagContextSpecific;
 }
 

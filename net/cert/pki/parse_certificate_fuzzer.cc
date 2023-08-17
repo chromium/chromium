@@ -7,6 +7,7 @@
 
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
@@ -18,8 +19,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
           {}, &errors);
 
   // Severe errors must be provided iff the parsing failed.
-  CHECK_EQ(errors.ContainsAnyErrorWithSeverity(net::CertError::SEVERITY_HIGH),
-           cert == nullptr);
+  BSSL_CHECK(errors.ContainsAnyErrorWithSeverity(
+                 net::CertError::SEVERITY_HIGH) == (cert == nullptr));
 
   return 0;
 }
