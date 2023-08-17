@@ -123,6 +123,14 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif
+
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -192,6 +200,16 @@ class TabstripLikeBackground : public views::Background {
 
   const raw_ptr<BrowserView> browser_view_;
 };
+
+bool IsCrosBatterySaverAvailable() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::features::IsBatterySaverAvailable();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsCrosBatterySaverAvailable();
+#else
+  return false;
+#endif
+}
 
 }  // namespace
 
@@ -416,8 +434,10 @@ void ToolbarView::Init() {
     }
   }
 
-  battery_saver_button_ = container_view_->AddChildView(
-      std::make_unique<BatterySaverButton>(browser_view_));
+  if (!IsCrosBatterySaverAvailable()) {
+    battery_saver_button_ = container_view_->AddChildView(
+        std::make_unique<BatterySaverButton>(browser_view_));
+  }
 
   if (cast)
     cast_ = container_view_->AddChildView(std::move(cast));

@@ -1000,8 +1000,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 68
-// Next id: 68
+// Next version: 69
+// Next id: 69
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1415,6 +1415,11 @@ struct BrowserInitParams {
   // enabled in Ash, so as to allow the browser to disable competing behaviors.
   [MinVersion=67]
   bool is_sys_ui_downloads_integration_v2_enabled@67;
+
+  // Indicates whether ChromeOS Battery Saver is available, so browser specific
+  // energy saving UI should defer to the OS.
+  [MinVersion=68]
+  bool is_cros_battery_saver_available@68;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

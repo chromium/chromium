@@ -338,4 +338,8 @@ bool BrowserParamsProxy::IsSysUiDownloadsIntegrationV2Enabled() const {
   return BrowserInitParams::Get()->is_sys_ui_downloads_integration_v2_enabled;
 }
 
+bool BrowserParamsProxy::IsCrosBatterySaverAvailable() const {
+  return BrowserInitParams::Get()->is_cros_battery_saver_available;
+}
+
 }  // namespace chromeos
