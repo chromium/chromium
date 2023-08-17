@@ -10,6 +10,7 @@
 
 #include "apps/switches.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/process/launch.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_switches.h"
@@ -211,9 +212,8 @@ IN_PROC_BROWSER_TEST_F(LoadAndLaunchExtensionBrowserTest,
 #else
   // Expect |extension_instead_of_app_error|.
   EXPECT_EQ(1u, errors->size());
-  EXPECT_NE(std::u16string::npos,
-            errors->at(0).find(
-                u"App loading flags cannot be used to load extensions"));
+  EXPECT_TRUE(base::Contains(
+      *errors, u"App loading flags cannot be used to load extensions"));
 #endif
 
   extensions::ExtensionRegistry* registry =
