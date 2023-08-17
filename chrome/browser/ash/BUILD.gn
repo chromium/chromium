@@ -3491,7 +3491,6 @@ source_set("ash") {
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
     "//chrome/browser/ash/fusebox:fusebox_proto",
-    "//chrome/browser/ash/fusebox:fusebox_staging_proto",
     "//chrome/browser/ash/guest_os:guest_os_diagnostics_mojom",
     "//chrome/browser/ash/input_method/mojom:mojom",
     "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start",
