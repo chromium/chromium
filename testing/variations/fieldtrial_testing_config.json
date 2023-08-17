@@ -4817,6 +4817,27 @@
             ]
         }
     ],
+    "DeprecatedNonStreamingDeclarativeShadowDOM": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_20230815",
+                    "disable_features": [
+                        "DeprecatedNonStreamingDeclarativeShadowDOM"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpDriveCache": [
         {
             "platforms": [
@@ -9796,27 +9817,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NonBlockingCommit"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NonStandardDeclarativeShadowDOM": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "DeclarativeShadowRoot"
                     ]
                 }
             ]

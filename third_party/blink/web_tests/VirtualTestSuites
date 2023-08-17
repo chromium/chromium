@@ -1150,14 +1150,14 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "non-streaming-declarative-shadow-dom-disabled",
+    "prefix": "non-streaming-declarative-shadow-dom-enabled",
     "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "external/wpt/shadow-dom/declarative"
+      "external/wpt/shadow-dom/declarative",
+      "http/tests/inspector-protocol/issues/non-streaming-declarative-shadow-dom-issue.js"
     ],
-    "args": ["--disable-features=DeprecatedNonStreamingDeclarativeShadowDOM",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "args": ["--enable-features=DeprecatedNonStreamingDeclarativeShadowDOM"],
     "expires": "Feb 1, 2024"
   },
   {
