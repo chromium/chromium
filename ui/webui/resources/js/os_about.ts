@@ -6,6 +6,14 @@ import {getRequiredElement} from './util_ts.js';
 
 getRequiredElement('os-link-href').onclick = crosUrlAboutRedirect;
 
-function crosUrlAboutRedirect() {
+// trigger the click handler for middle-button clicks
+getRequiredElement('os-link-href').onauxclick = ((event: MouseEvent) => {
+                                                  if (event.button === 1) {
+                                                    crosUrlAboutRedirect(event);
+                                                  }
+                                                }) as EventListener;
+
+function crosUrlAboutRedirect(event: Event) {
+  event.preventDefault();
   chrome.send('crosUrlAboutRedirect');
 }
