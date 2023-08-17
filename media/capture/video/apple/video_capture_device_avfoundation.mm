@@ -1015,16 +1015,32 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
         media::SampleBufferTransformer::GetBestTransformerForNv12Output(
             sampleBuffer),
         kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
-        media::GetSampleBufferSize(sampleBuffer), kPixelBufferPoolSize);
+        media::GetSampleBufferSize(sampleBuffer), _rotation,
+        kPixelBufferPoolSize);
     base::ScopedCFTypeRef<CVPixelBufferRef> pixelBuffer =
         _sampleBufferTransformer->Transform(sampleBuffer);
     if (!pixelBuffer) {
       LOG(ERROR) << "Failed to transform captured frame. Dropping frame.";
       return;
     }
+
+#if BUILDFLAG(IS_MAC)
+    base::ScopedCFTypeRef<CVPixelBufferRef> final_pixel_buffer = pixelBuffer;
+#else
+    // The rotated_pixelBuffer might not be the same size as the source
+    // pixelBuffer as it gets rotated by rotation_angle_. In order to restore
+    // the original size, rotated_pixelBuffer need to scale it to its original
+    // size by transforming it.
+    base::ScopedCFTypeRef<CVPixelBufferRef> rotated_pixelBuffer =
+        _sampleBufferTransformer->Rotate(pixelBuffer);
+    base::ScopedCFTypeRef<CVPixelBufferRef> final_pixel_buffer =
+        _sampleBufferTransformer->Transform(rotated_pixelBuffer);
+
+#endif
+
     const media::VideoCaptureFormat captureFormat(
-        gfx::Size(CVPixelBufferGetWidth(pixelBuffer),
-                  CVPixelBufferGetHeight(pixelBuffer)),
+        gfx::Size(CVPixelBufferGetWidth(final_pixel_buffer),
+                  CVPixelBufferGetHeight(final_pixel_buffer)),
         _frameRate, media::PIXEL_FORMAT_NV12);
     // When the |pixelBuffer| is the result of a conversion (not camera
     // pass-through) then it originates from a CVPixelBufferPool and the color
@@ -1036,7 +1052,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     // TODO(hbos): Investigate how to successfully parse and/or configure the
     // color space correctly. The implications of this hack is not fully
     // understood.
-    [self processPixelBufferNV12IOSurface:pixelBuffer
+    [self processPixelBufferNV12IOSurface:final_pixel_buffer
                             captureFormat:captureFormat
                                colorSpace:kColorSpaceRec709Apple
                                 timestamp:timestamp];

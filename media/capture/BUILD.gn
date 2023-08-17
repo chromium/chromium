@@ -210,6 +210,13 @@ component("capture_lib") {
     deps += [ "//third_party/decklink" ]
   }
 
+  if (is_ios) {
+    sources += [
+      "video/ios/pixel_buffer_rotator.cc",
+      "video/ios/pixel_buffer_rotator.h",
+    ]
+  }
+
   if (is_win) {
     sources += [
       "video/win/capability_list_win.cc",
