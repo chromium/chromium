@@ -31,15 +31,6 @@ enum class CookieCacheLookupResult {
   kMaxValue = kCacheMissAfterSet,
 };
 
-void LogCookieHistogram(const char* prefix,
-                        bool cookie_manager_requested,
-                        base::TimeDelta elapsed) {
-  base::UmaHistogramTimes(
-      base::StrCat({prefix, cookie_manager_requested ? "ManagerRequested"
-                                                     : "ManagerAvailable"}),
-      elapsed);
-}
-
 // TODO(crbug.com/1276520): Remove after truncating characters are fully
 // deprecated.
 bool ContainsTruncatingChar(UChar c) {
@@ -65,7 +56,7 @@ void CookieJar::SetCookie(const String& value) {
     return;
 
   base::ElapsedTimer timer;
-  bool requested = RequestRestrictedCookieManagerIfNeeded();
+  RequestRestrictedCookieManagerIfNeeded();
   bool site_for_cookies_ok = true;
   bool top_frame_origin_ok = true;
   backend_->SetCookieFromString(
@@ -73,7 +64,7 @@ void CookieJar::SetCookie(const String& value) {
       document_->GetExecutionContext()->HasStorageAccess(), value,
       &site_for_cookies_ok, &top_frame_origin_ok);
   last_operation_was_set_ = true;
-  LogCookieHistogram("Blink.SetCookieTime.", requested, timer.Elapsed());
+  base::UmaHistogramTimes("Blink.SetCookieTime", timer.Elapsed());
 
   // TODO(crbug.com/1276520): Remove after truncating characters are fully
   // deprecated
@@ -126,7 +117,7 @@ String CookieJar::Cookies() {
     return String();
 
   base::ElapsedTimer timer;
-  bool requested = RequestRestrictedCookieManagerIfNeeded();
+  RequestRestrictedCookieManagerIfNeeded();
 
   String value;
   base::ReadOnlySharedMemoryRegion new_mapped_region;
@@ -146,8 +137,7 @@ String CookieJar::Cookies() {
     mapping_ = mapped_region_.Map();
     shared_memory_initialized_ = true;
   }
-
-  LogCookieHistogram("Blink.CookiesTime.", requested, timer.Elapsed());
+  base::UmaHistogramTimes("Blink.CookiesTime", timer.Elapsed());
   UpdateCacheAfterGetRequest(cookie_url, value, new_version);
 
   last_operation_was_set_ = false;
@@ -160,12 +150,12 @@ bool CookieJar::CookiesEnabled() {
     return false;
 
   base::ElapsedTimer timer;
-  bool requested = RequestRestrictedCookieManagerIfNeeded();
+  RequestRestrictedCookieManagerIfNeeded();
   bool cookies_enabled = false;
   backend_->CookiesEnabledFor(
       cookie_url, document_->SiteForCookies(), document_->TopFrameOrigin(),
       document_->GetExecutionContext()->HasStorageAccess(), &cookies_enabled);
-  LogCookieHistogram("Blink.CookiesEnabledTime.", requested, timer.Elapsed());
+  base::UmaHistogramTimes("Blink.CookiesEnabledTime", timer.Elapsed());
   return cookies_enabled;
 }
 
@@ -192,7 +182,7 @@ uint64_t CookieJar::GetSharedCookieVersion() {
   return network::mojom::blink::kInvalidCookieVersion;
 }
 
-bool CookieJar::RequestRestrictedCookieManagerIfNeeded() {
+void CookieJar::RequestRestrictedCookieManagerIfNeeded() {
   if (!backend_.is_bound() || !backend_.is_connected()) {
     backend_.reset();
 
@@ -203,9 +193,7 @@ bool CookieJar::RequestRestrictedCookieManagerIfNeeded() {
     document_->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
         backend_.BindNewPipeAndPassReceiver(
             document_->GetTaskRunner(TaskType::kInternalDefault)));
-    return true;
   }
-  return false;
 }
 
 void CookieJar::UpdateCacheAfterGetRequest(const KURL& cookie_url,

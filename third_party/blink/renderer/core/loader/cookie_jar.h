@@ -39,7 +39,7 @@ class CookieJar : public GarbageCollected<CookieJar> {
   void InvalidateCache();
 
  private:
-  bool RequestRestrictedCookieManagerIfNeeded();
+  void RequestRestrictedCookieManagerIfNeeded();
   void OnBackendDisconnect();
   uint64_t GetSharedCookieVersion();
 
