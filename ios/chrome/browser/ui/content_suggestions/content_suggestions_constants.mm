@@ -24,6 +24,8 @@ const CGFloat kMagicStackWideWidth = 430;
 
 const CGFloat kMostVisitedBottomMargin = 13;
 
+const CGFloat kMagicStackFaviconWidth = 28;
+
 const int kTileAblationImpressionThresholdMinutes = 5;
 const int kTileAblationMinimumUseThresholdInDays = 7;
 const int kTileAblationMaximumUseThresholdInDays = 14;
