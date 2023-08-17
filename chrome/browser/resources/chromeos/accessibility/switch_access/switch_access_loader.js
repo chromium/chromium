@@ -7,4 +7,11 @@ import {InstanceChecker} from '../common/instance_checker.js';
 import {SwitchAccess} from './switch_access.js';
 
 InstanceChecker.closeExtraInstances();
-SwitchAccess.initialize();
+
+async function initAll() {
+  await SwitchAccess.init();
+
+  SwitchAccess.start();
+}
+
+initAll();

@@ -17,14 +17,20 @@ const EventType = chrome.automation.EventType;
 const FindParams = chrome.automation.FindParams;
 const RoleType = chrome.automation.RoleType;
 
+let readyCallback;
+const readyPromise = new Promise(resolve => readyCallback = resolve);
+
 /**
  * The top-level class for the Switch Access accessibility feature. Handles
  * initialization and small matters that don't fit anywhere else in the
  * codebase.
  */
 export class SwitchAccess {
-  static async initialize() {
+  static async init() {
     await Flags.init();
+    if (SwitchAccess.instance) {
+      throw new Error('Cannot create two SwitchAccess.instances');
+    }
     SwitchAccess.instance = new SwitchAccess();
 
     const desktop = await AsyncUtil.getDesktop();
@@ -36,8 +42,18 @@ export class SwitchAccess {
     Navigator.initializeSingletonInstances(desktop);
 
     SwitchAccess.commands = new SACommands();
-    KeyboardRootNode.startWatchingVisibility();
     PreferenceManager.initialize();
+  }
+
+  /** Starts Switch Access behavior. */
+  static start() {
+    KeyboardRootNode.startWatchingVisibility();
+    readyCallback();
+  }
+
+  /** @return {!Promise} */
+  static async ready() {
+    return readyPromise;
   }
 
   /**
@@ -157,3 +173,6 @@ export class SwitchAccess {
     return new Error(errorString);
   }
 }
+
+/** @type {SwitchAccess} */
+SwitchAccess.instance;

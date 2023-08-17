@@ -29,6 +29,13 @@ SwitchAccessE2ETest = class extends E2ETestBase {
     super.testGenPreambleCommon('kSwitchAccessExtensionId');
   }
 
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('SwitchAccess', '/switch_access/switch_access.js');
+    await SwitchAccess.ready();
+  }
+
   /**
    * @param {string} id The HTML id of an element.
    * @return {!AutomationNode}
