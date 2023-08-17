@@ -98,9 +98,32 @@ export const Vkey = AcceleratorKeysTypes.VKey;
 export type AcceleratorAction = AcceleratorActionTypes.AcceleratorAction;
 export const AcceleratorAction = AcceleratorActionTypes.AcceleratorAction;
 
-export type ButtonRemapping = InputDeviceSettingsTypes.ButtonRemapping;
+export interface FakeKeyEvent {
+  vkey: AcceleratorKeysTypes.VKey;
+  domCode: number;
+  domKey: number;
+  modifiers: number;
+  keyDisplay: string;
+}
+
+export interface FakeRemappingAction {
+  keyEvent?: FakeKeyEvent;
+  action?: AcceleratorActionTypes.AcceleratorAction;
+}
+
+export interface FakeButtonRemapping {
+  name: string;
+  button: InputDeviceSettingsTypes.Button;
+  remappingAction?: FakeRemappingAction;
+}
+
+export type ButtonRemapping =
+    Required<InputDeviceSettingsTypes.ButtonRemapping>&
+    Partial<FakeButtonRemapping>;
+
 export type RemappingAction = InputDeviceSettingsTypes.RemappingAction;
-export type KeyEvent = InputDeviceSettingsTypes.KeyEvent;
+export type KeyEvent =
+    Required<InputDeviceSettingsTypes.KeyEvent>&Partial<FakeKeyEvent>;
 
 export type CustomizableButton = InputDeviceSettingsTypes.CustomizableButton;
 export const CustomizableButton = InputDeviceSettingsTypes.CustomizableButton;
