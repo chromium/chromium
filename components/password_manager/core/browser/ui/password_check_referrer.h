@@ -21,7 +21,8 @@ enum class PasswordCheckReferrer {
   kPasswordBreachDialog = 3,  // Native UI, recorded in C++.
   kMoreToFixBubble = 4,       // Native UI, recorded in C++.
   // kUnsafeStateBubble = 5,  // obsolete.
-  kMaxValue = kMoreToFixBubble,
+  kSafetyCheckMagicStack = 6,
+  kMaxValue = kSafetyCheckMagicStack,
 };
 
 // Name of the corresponding Password Check referrer histogram.

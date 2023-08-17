@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 
+#import <vector>
+
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
@@ -12,6 +14,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/ntp_tiles/most_visited_sites.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/sync/base/features.h"
@@ -26,9 +30,12 @@
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/ios_most_visited_sites_factory.h"
+#import "ios/chrome/browser/passwords/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager.h"
+#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -64,6 +71,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_view_controller.h"
@@ -86,6 +95,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 namespace {
 // Kill-switch for quick fix of crbug.com/1204507
@@ -404,11 +414,49 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 #pragma mark - SafetyCheckViewDelegate
 
 - (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type {
-  // TODO(crbug.com/1472380): In a follow-up CL, different UI commands will be
-  // fired based on `type`. For now, though, tapping the Safety Check (Magic
-  // Stack) module will simply open the Safety Check modal view.
-  [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
-      showSafetyCheckSettingsAndStartSafetyCheck];
+  CHECK(IsSafetyCheckMagicStackEnabled());
+
+  IOSChromeSafetyCheckManager* safetyCheckManager =
+      IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
+  switch (type) {
+    case SafetyCheckItemType::kUpdateChrome: {
+      const GURL& chrome_upgrade_url =
+          safetyCheckManager->GetChromeAppUpgradeUrl();
+
+      HandleSafetyCheckUpdateChromeTap(
+          chrome_upgrade_url,
+          HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                             ApplicationCommands));
+
+      break;
+    }
+    case SafetyCheckItemType::kPassword: {
+      std::vector<password_manager::CredentialUIEntry> credentials =
+          safetyCheckManager->GetInsecureCredentials();
+
+      HandleSafetyCheckPasswordTap(
+          credentials, HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                                          ApplicationCommands));
+
+      break;
+    }
+    case SafetyCheckItemType::kSafeBrowsing:
+      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                          ApplicationSettingsCommands)
+          showSafeBrowsingSettings];
+
+      break;
+    case SafetyCheckItemType::kAllSafe:
+    case SafetyCheckItemType::kRunning:
+    case SafetyCheckItemType::kDefault:
+      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                          ApplicationCommands)
+          showSafetyCheckSettingsAndStartSafetyCheck];
+
+      break;
+  }
 }
 
 #pragma mark - SetUpListViewDelegate

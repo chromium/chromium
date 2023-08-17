@@ -10,6 +10,7 @@ include_rules = [
   "+ios/chrome/browser/main",
   "+ios/chrome/browser/ntp",
   "+ios/chrome/browser/policy",
+  "+ios/chrome/browser/passwords",
   "+ios/chrome/browser/promos_manager",
   "+ios/chrome/browser/screenshot",
   "+ios/chrome/browser/sessions",

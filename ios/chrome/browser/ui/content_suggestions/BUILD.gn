@@ -52,6 +52,7 @@ source_set("content_suggestions") {
     "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/history/core/browser",
     "//components/ntp_tiles",
+    "//components/password_manager/core/browser",
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs/ios",
@@ -79,9 +80,12 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/ntp:set_up_list_prefs",
     "//ios/chrome/browser/ntp_tiles",
+    "//ios/chrome/browser/passwords:password_checkup_utils",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/promos_manager:factory",
     "//ios/chrome/browser/reading_list",
+    "//ios/chrome/browser/safety_check",
+    "//ios/chrome/browser/safety_check:factory",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/segmentation_platform",
     "//ios/chrome/browser/shared/coordinator/alert",
@@ -136,6 +140,7 @@ source_set("content_suggestions") {
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ui/base",
     "//ui/strings",
+    "//url",
   ]
   if (ios_enable_widget_kit_extension) {
     deps += [ "//ios/chrome/browser/widget_kit:widget_kit_swift" ]
