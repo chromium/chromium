@@ -2046,7 +2046,7 @@ BASE_FEATURE(kPrintManagementJelly,
 // management app.
 BASE_FEATURE(kPrintManagementSetupAssistance,
              "PrintManagementSetupAssistance",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the new OS Printer Settings UI.
 BASE_FEATURE(kPrinterSettingsRevamp,
