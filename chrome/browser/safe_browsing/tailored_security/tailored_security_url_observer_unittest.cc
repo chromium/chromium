@@ -44,7 +44,7 @@ class TailoredSecurityUrlObserverTest : public ChromeRenderViewHostTestHarness {
                    auto sync_service =
                        std::make_unique<syncer::TestSyncService>();
                    sync_service->GetUserSettings()->SetSelectedType(
-                       syncer::UserSelectableType::kPreferences, false);
+                       syncer::UserSelectableType::kHistory, false);
                    return sync_service;
                  })}};
   }

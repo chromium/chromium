@@ -404,13 +404,13 @@ void TailoredSecurityService::MaybeNotifySyncUser(bool is_enabled,
   if (!base::FeatureList::IsEnabled(kTailoredSecurityIntegration))
     return;
 
-  bool sync_preferences_enabled =
+  bool sync_history_enabled =
       sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kPreferences);
-  if (!sync_preferences_enabled) {
+          syncer::UserSelectableType::kHistory);
+  if (!sync_history_enabled) {
     if (is_enabled) {
       RecordEnabledNotificationResult(
-          TailoredSecurityNotificationResult::kPreferencesNotSynced);
+          TailoredSecurityNotificationResult::kHistoryNotSynced);
     }
     return;
   }

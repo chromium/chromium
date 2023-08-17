@@ -28,10 +28,10 @@ bool CanShowUnconsentedTailoredSecurityDialog(syncer::SyncService* sync_service,
     return false;
   }
 
-  bool sync_preferences_enabled =
+  bool sync_history_enabled =
       sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kPreferences);
-  if (sync_preferences_enabled) {
+          syncer::UserSelectableType::kHistory);
+  if (sync_history_enabled) {
     return false;
   }
 
