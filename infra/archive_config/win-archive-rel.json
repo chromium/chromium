@@ -11,6 +11,8 @@
                 "chrome_pwa_launcher.exe",
                 "chrome_wer.dll",
                 "D3DCompiler_47.dll",
+                "dxcompiler.dll",
+                "dxil.dll",
                 "elevation_service.exe",
                 "eventlog_provider.dll",
                 "First Run",
