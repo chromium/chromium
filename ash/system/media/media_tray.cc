@@ -191,22 +191,30 @@ MediaTray::PinButton::PinButton()
           base::BindRepeating(&PinButton::ButtonPressed,
                               base::Unretained(this)),
           IconButton::Type::kMedium,
-          MediaTray::IsPinnedToShelf() ? &kPinnedIcon : &kUnpinnedIcon,
+          &kUnpinnedIcon,
           MediaTray::IsPinnedToShelf()
               ? IDS_ASH_GLOBAL_MEDIA_CONTROLS_PINNED_BUTTON_TOOLTIP_TEXT
-              : IDS_ASH_GLOBAL_MEDIA_CONTROLS_UNPINNED_BUTTON_TOOLTIP_TEXT) {}
+              : IDS_ASH_GLOBAL_MEDIA_CONTROLS_UNPINNED_BUTTON_TOOLTIP_TEXT,
+          /*is_togglable=*/true,
+          /*has_border=*/false) {
+  SetIconSize(kTrayTopShortcutButtonIconSize);
+  SetToggledVectorIcon(kPinnedIcon);
+  if (chromeos::features::IsJellyEnabled()) {
+    SetIconColorId(cros_tokens::kCrosSysOnSurface);
+    SetBackgroundToggledColorId(cros_tokens::kCrosSysSystemPrimaryContainer);
+  } else {
+    SetIconColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorPrimary));
+  }
+  SetToggled(MediaTray::IsPinnedToShelf());
+}
 
 void MediaTray::PinButton::ButtonPressed() {
   MediaTray::SetPinnedToShelf(!MediaTray::IsPinnedToShelf());
   base::UmaHistogramBoolean("Media.CrosGlobalMediaControls.PinAction",
                             MediaTray::IsPinnedToShelf());
 
-  SetImage(views::Button::STATE_NORMAL,
-           CreateVectorIcon(
-               MediaTray::IsPinnedToShelf() ? kPinnedIcon : kUnpinnedIcon,
-               kTrayTopShortcutButtonIconSize,
-               AshColorProvider::Get()->GetContentLayerColor(
-                   AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  SetToggled(MediaTray::IsPinnedToShelf());
   SetTooltipText(l10n_util::GetStringUTF16(
       MediaTray::IsPinnedToShelf()
           ? IDS_ASH_GLOBAL_MEDIA_CONTROLS_PINNED_BUTTON_TOOLTIP_TEXT
