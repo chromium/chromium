@@ -249,6 +249,7 @@ class DedicatedWorkerHost final
   // RenderProcessHostObserver:
   void RenderProcessExited(RenderProcessHost* render_process_host,
                            const ChildProcessTerminationInfo& info) override;
+  void InProcessRendererExiting(RenderProcessHost* host) override;
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
   // Called from `WorkerScriptFetcher`. Continues starting the dedicated worker

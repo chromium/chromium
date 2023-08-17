@@ -193,16 +193,18 @@ void DedicatedWorkerHost::RenderProcessExited(
   delete this;
 }
 
-void DedicatedWorkerHost::RenderProcessHostDestroyed(
+void DedicatedWorkerHost::InProcessRendererExiting(
     RenderProcessHost* render_process_host) {
   DCHECK_EQ(worker_process_host_, render_process_host);
 
-  // In --single-process mode, RenderProcessExited() is not called, so we must
-  // also listen to RenderProcessHostDestroyed() to know to delete `this` and
-  // preserve the invariant that RenderProcessHostImpl outlives `this`.
-  DCHECK(RenderProcessHost::run_renderer_in_process());
-
   delete this;
+}
+
+void DedicatedWorkerHost::RenderProcessHostDestroyed(
+    RenderProcessHost* render_process_host) {
+  // This is never reached as either RenderProcessExited() or InProcessRendererExiting() is
+  // guaranteed to be called before this function and `this` is deleted there.
+  NOTREACHED_NORETURN();
 }
 
 void DedicatedWorkerHost::StartScriptLoad(
