@@ -6,6 +6,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -232,6 +233,24 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(LaunchNavigationBrowserTestParam(/*enable_feature=*/false,
                                                      StartupPrefs(),
                                                      {url1})));
+
+INSTANTIATE_TEST_SUITE_P(
+    CmdLineURLIncognitoBasicTestFeatureEnabled,
+    LaunchNavigationBrowserBasicTest,
+    testing::Values(LaunchNavigationBrowserTestParam(/*enable_feature=*/true,
+                                                     StartupPrefs(),
+                                                     {url1},
+                                                     {},
+                                                     {switches::kIncognito})));
+
+INSTANTIATE_TEST_SUITE_P(
+    CmdLineURLIncognitoBasicTestFeatureDisabled,
+    LaunchNavigationBrowserBasicTest,
+    testing::Values(LaunchNavigationBrowserTestParam(/*enable_feature=*/false,
+                                                     StartupPrefs(),
+                                                     {url1},
+                                                     {},
+                                                     {switches::kIncognito})));
 
 class LaunchNavigationBrowserRestartTest : public LaunchNavigationBrowserTest {
  public:

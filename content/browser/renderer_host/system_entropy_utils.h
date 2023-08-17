@@ -15,13 +15,12 @@ class SystemEntropyUtils {
  public:
   // Determines the current system entropy value for `frame_tree_node`.
   //
-  // Returns `SystemEntropy::kHigh` for all non-off-the-record top level
-  // navigations that occur between the start of the browser process up until
-  // the first visible page completes loading.
+  // Returns `SystemEntropy::kHigh` for all top level navigations that
+  // occur between the start of the browser process up until the first
+  // visible page completes loading.
   //
-  // Returns `SystemEntropy::kNormal` for all off-the-record top level
-  // navigations, or top level navigations that occur after the first visible
-  // page has completed loading.
+  // Returns `SystemEntropy::kNormal` for all top level navigations
+  // that occur after the first visible page has completed loading.
   //
   // Returns `SystemEntropy::kEmpty` for all framed navigations, or if the
   // `suggested_system_entropy` is `SystemEntropy::kEmpty`.
@@ -33,14 +32,6 @@ class SystemEntropyUtils {
     if (suggested_system_entropy == blink::mojom::SystemEntropy::kEmpty ||
         !frame_tree_node->IsOutermostMainFrame()) {
       return blink::mojom::SystemEntropy::kEmpty;
-    }
-
-    // Off-the-record navigations always return `SystemEntropy::kNormal`.
-    if (frame_tree_node->navigator()
-            .controller()
-            .GetBrowserContext()
-            ->IsOffTheRecord()) {
-      return blink::mojom::SystemEntropy::kNormal;
     }
 
     // During browser startup, return `SystemEntropy::kHigh`.
