@@ -10,5 +10,7 @@ include_rules = [
   "+ui/accessibility/platform/automation/automation_v8_bindings.h",
   "+ui/accessibility/platform/automation/automation_v8_router.h",
   "+ui/accessibility/platform/automation/automation_api_util.h",
+  "+third_party/blink/public/mojom/devtools",
+  "+third_party/inspector_protocol/crdtp",
   "+v8/include",
 ]

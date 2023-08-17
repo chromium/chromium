@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "services/accessibility/assistive_technology_controller_impl.h"
+#include "services/accessibility/features/v8_manager.h"
 
 namespace ax {
 
@@ -34,9 +35,11 @@ void OSAccessibilityService::BindAssistiveTechnologyController(
 }
 
 void OSAccessibilityService::ConnectDevToolsAgent(
-    ::mojo::PendingAssociatedReceiver<::blink::mojom::DevToolsAgent> agent,
+    mojo::PendingAssociatedReceiver<::blink::mojom::DevToolsAgent> agent,
     mojom::AssistiveTechnologyType type) {
-  // TODO(francisjp): b/266767410 implement.
+  auto* manager = at_controller_->GetV8Manager(type);
+  CHECK(manager);
+  manager->ConnectDevToolsAgent(std::move(agent));
 }
 
 }  // namespace ax
