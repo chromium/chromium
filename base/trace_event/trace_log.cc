@@ -597,7 +597,7 @@ void TraceLog::SetAddTraceEventOverrides(
 struct TraceLog::RegisteredAsyncObserver {
   explicit RegisteredAsyncObserver(WeakPtr<AsyncEnabledStateObserver> observer)
       : observer(observer),
-        task_runner(SingleThreadTaskRunner::GetCurrentDefault()) {}
+        task_runner(SequencedTaskRunner::GetCurrentDefault()) {}
   ~RegisteredAsyncObserver() = default;
 
   WeakPtr<AsyncEnabledStateObserver> observer;
