@@ -6,6 +6,8 @@
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
+#include "ash/shell.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
@@ -34,6 +36,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/aura/test/event_generator_delegate_aura.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -995,12 +998,57 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, RemoveBubble) {
               NotifyEvent(scalable_iph::kEventNameFiveMinTick));
   // The action is not performed.
   EXPECT_CALL(*mock_tracker(), NotifyEvent(kTestButtonActionEvent)).Times(0);
+  EXPECT_CALL(*mock_delegate(), PerformActionForScalableIph(::testing::Eq(
+                                    scalable_iph::ActionType::kOpenGoogleDocs)))
+      .Times(0);
 
   TriggerConditionsCheckWithAFakeEvent(
       scalable_iph::ScalableIph::Event::kFiveMinTick);
+
+  ash::AnchoredNudgeManager* anchored_nudge_manager =
+      ash::AnchoredNudgeManager::Get();
+  CHECK(anchored_nudge_manager);
+  EXPECT_TRUE(anchored_nudge_manager->IsNudgeShown(kTestBubbleId));
+
   ash::AnchoredNudgeManager::Get()->Cancel(kTestBubbleId);
+  EXPECT_FALSE(anchored_nudge_manager->IsNudgeShown(kTestBubbleId));
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
-  // TODO(b/290066999): Verify the nudge is not shown.
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, ClickBubble) {
+  EnableTestIphFeature();
+  mock_delegate()->FakeShowBubble();
+
+  // Tracker::Dismissed must be called when an IPH gets dismissed.
+  EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameFiveMinTick));
+  // The action is performed.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(kTestButtonActionEvent)).Times(1);
+
+  TriggerConditionsCheckWithAFakeEvent(
+      scalable_iph::ScalableIph::Event::kFiveMinTick);
+
+  ash::AnchoredNudgeManager* anchored_nudge_manager =
+      ash::AnchoredNudgeManager::Get();
+  CHECK(anchored_nudge_manager);
+  EXPECT_TRUE(anchored_nudge_manager->IsNudgeShown(kTestBubbleId));
+
+  // `PerformActionForScalableIph` should be called with the corresponding CTA
+  // action_type when a bubble is clicked.
+  EXPECT_CALL(*mock_delegate(),
+              PerformActionForScalableIph(
+                  ::testing::Eq(scalable_iph::ActionType::kOpenGoogleDocs)));
+
+  views::View* nudge_button =
+      ash::Shell::Get()->anchored_nudge_manager()->GetNudgeFirstButtonForTest(
+          kTestBubbleId);
+  ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
+  event_generator.MoveMouseTo(nudge_button->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+
+  EXPECT_FALSE(anchored_nudge_manager->IsNudgeShown(kTestBubbleId));
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotificationInvalidConfig,
