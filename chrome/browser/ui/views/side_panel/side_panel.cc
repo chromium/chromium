@@ -87,8 +87,9 @@ class SidePanelBorder : public views::Border {
         view.GetLocalBounds(), view.layer()->device_scale_factor());
 
     gfx::RectF scaled_contents_bounds_f = scaled_view_bounds_f;
-    const float corner_radius = view.GetLayoutProvider()->GetCornerRadiusMetric(
-        views::ShapeContextTokens::kSidePanelContentRadius);
+    const float corner_radius =
+        dsf * view.GetLayoutProvider()->GetCornerRadiusMetric(
+                  views::ShapeContextTokens::kSidePanelContentRadius);
     const gfx::InsetsF insets_in_pixels(
         gfx::ConvertInsetsToPixels(GetInsets(), dsf));
     scaled_contents_bounds_f.Inset(insets_in_pixels);
@@ -144,10 +145,7 @@ class SidePanelBorder : public views::Border {
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setAntiAlias(true);
 
-    // Outset half of the stroke thickness so that it's painted fully on the
-    // outside of the clipping region.
-    clip_bounds.Inset(gfx::Insets(-stroke_thickness / 2));
-    canvas->DrawRoundRect(clip_bounds, corner_radius, flags);
+    canvas->sk_canvas()->drawRRect(rect, flags);
   }
 
   gfx::Insets GetInsets() const override {
