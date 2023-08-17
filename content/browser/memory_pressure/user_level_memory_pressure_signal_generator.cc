@@ -53,19 +53,27 @@ base::TimeDelta MeasurementIntervalFor6GbDevices() {
   return kMeasurementInterval.Get();
 }
 
-constexpr size_t kDefaultMemoryThresholdMB = 485;
+// The memory threshold: 458 was selected at around the 99th percentile of
+// the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
+// system memory were 4GB.
+constexpr size_t kMemoryThresholdMBOf4GbDevices = 458;
 
 uint64_t MemoryThresholdParamFor4GbDevices() {
   static const base::FeatureParam<int> kMemoryThresholdParam{
       &features::kUserLevelMemoryPressureSignalOn4GbDevices,
-      "memory_threshold_mb", kDefaultMemoryThresholdMB};
+      "memory_threshold_mb", kMemoryThresholdMBOf4GbDevices};
   return base::as_unsigned(kMemoryThresholdParam.Get()) * k1MB;
 }
+
+// The memory threshold: 494 was selected at around the 99th percentile of
+// the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
+// system memory were 6GB.
+constexpr size_t kMemoryThresholdMBOf6GbDevices = 494;
 
 uint64_t MemoryThresholdParamFor6GbDevices() {
   static const base::FeatureParam<int> kMemoryThresholdParam{
       &features::kUserLevelMemoryPressureSignalOn6GbDevices,
-      "memory_threshold_mb", kDefaultMemoryThresholdMB};
+      "memory_threshold_mb", kMemoryThresholdMBOf6GbDevices};
   return base::as_unsigned(kMemoryThresholdParam.Get()) * k1MB;
 }
 
