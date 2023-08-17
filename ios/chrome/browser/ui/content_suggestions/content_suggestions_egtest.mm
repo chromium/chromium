@@ -339,13 +339,7 @@ void TapMoreButtonIfVisible() {
 
 // Tests that the SetUpList can be expanded and unexpanded by touching the
 // "expand" button at the bottom of the list.
-// TODO(crbug.com/1473705): Test is flaky on device. Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testSetUpListExpands FLAKY_testSetUpListExpands
-#else
-#define MAYBE_testSetUpListExpands testSetUpListExpands
-#endif
-- (void)MAYBE_testSetUpListExpands {
+- (void)testSetUpListExpands {
   [self prepareToTestSetUpList];
 
   id<GREYMatcher> signinItem = grey_accessibilityID(set_up_list::kSignInItemID);
@@ -377,15 +371,7 @@ void TapMoreButtonIfVisible() {
 // Tests that each item opens the appropriate UI flow and that dismissing that
 // UI marks the item complete. Also tests that the "All Set" view appears when
 // all items are complete.
-// TODO(crbug.com/1473705): Test is flaky on device. Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testSetUpListDismissItemsWithSyncToSigninDisabled \
-  FLAKY_testSetUpListDismissItemsWithSyncToSigninDisabled
-#else
-#define MAYBE_testSetUpListDismissItemsWithSyncToSigninDisabled \
-  testSetUpListDismissItemsWithSyncToSigninDisabled
-#endif
-- (void)MAYBE_testSetUpListDismissItemsWithSyncToSigninDisabled {
+- (void)testSetUpListDismissItemsWithSyncToSigninDisabled {
   [self prepareToTestSetUpList];
 
   // Tap the signin item.
@@ -451,15 +437,7 @@ void TapMoreButtonIfVisible() {
 // Tests that each item opens the appropriate UI flow and that dismissing that
 // UI marks the item complete. Also tests that the "All Set" view appears when
 // all items are complete.
-// TODO(crbug.com/1473705): Test is flaky on device. Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testSetUpListDismissItemsWithSyncToSigninEnabled \
-  FLAKY_testSetUpListDismissItemsWithSyncToSigninEnabled
-#else
-#define MAYBE_testSetUpListDismissItemsWithSyncToSigninEnabled \
-  testSetUpListDismissItemsWithSyncToSigninEnabled
-#endif
-- (void)MAYBE_testSetUpListDismissItemsWithSyncToSigninEnabled {
+- (void)testSetUpListDismissItemsWithSyncToSigninEnabled {
   [self prepareToTestSetUpList];
 
   // Tap the signin item.
@@ -613,15 +591,7 @@ void TapMoreButtonIfVisible() {
   [[EarlGrey selectElementWithMatcher:syncView] assertWithMatcher:grey_nil()];
 }
 
-// TODO(crbug.com/1473705): Test is flaky on device. Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testMagicStackSetUpListCompleteAllItems \
-  FLAKY_testMagicStackSetUpListCompleteAllItems
-#else
-#define MAYBE_testMagicStackSetUpListCompleteAllItems \
-  testMagicStackSetUpListCompleteAllItems
-#endif
-- (void)MAYBE_testMagicStackSetUpListCompleteAllItems {
+- (void)testMagicStackSetUpListCompleteAllItems {
   [self prepareToTestSetUpListInMagicStack];
 
   // Tap the signin item.
