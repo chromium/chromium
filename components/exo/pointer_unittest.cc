@@ -272,8 +272,9 @@ class PointerConstraintTest : public PointerTest {
   testing::NiceMock<MockPointerConstraintDelegate> constraint_delegate_;
   testing::NiceMock<MockPointerDelegate> delegate_;
   std::unique_ptr<ShellSurface> shell_surface_;
-  raw_ptr<Surface, ExperimentalAsh> surface_;
-  raw_ptr<aura::client::FocusClient, ExperimentalAsh> focus_client_;
+  raw_ptr<Surface, DanglingUntriaged | ExperimentalAsh> surface_;
+  raw_ptr<aura::client::FocusClient, DanglingUntriaged | ExperimentalAsh>
+      focus_client_;
 };
 
 // Instantiate the values of disabling/enabling reactive frame submission in the

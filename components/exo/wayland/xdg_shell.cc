@@ -314,7 +314,8 @@ class WaylandToplevel : public aura::WindowObserver {
   }
 
   const raw_ptr<wl_resource, ExperimentalAsh> xdg_toplevel_resource_;
-  const raw_ptr<wl_resource, ExperimentalAsh> xdg_surface_resource_;
+  const raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
+      xdg_surface_resource_;
   raw_ptr<WaylandXdgSurface, ExperimentalAsh> shell_surface_data_;
   base::WeakPtrFactory<WaylandToplevel> weak_ptr_factory_{this};
 };

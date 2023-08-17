@@ -150,7 +150,7 @@ class WaylandAuraShellServerTest : public test::WaylandServerTest {
                                                               surface_key);
   }
 
-  raw_ptr<Display, ExperimentalAsh> display_;
+  raw_ptr<Display, DanglingUntriaged | ExperimentalAsh> display_;
 };
 
 // Home screen -> any window

@@ -126,7 +126,8 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<SodaInstallerImplChromeOS> soda_installer_impl_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  raw_ptr<ash::FakeDlcserviceClient, ExperimentalAsh> fake_dlcservice_client_;
+  raw_ptr<ash::FakeDlcserviceClient, DanglingUntriaged | ExperimentalAsh>
+      fake_dlcservice_client_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

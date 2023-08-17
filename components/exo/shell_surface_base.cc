@@ -283,7 +283,7 @@ class CustomWindowTargeter : public aura::WindowTargeter {
   }
 
   raw_ptr<ShellSurfaceBase, ExperimentalAsh> shell_surface_;
-  const raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  const raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_;
 };
 
 void CloseAllShellSurfaceTransientChildren(aura::Window* window) {

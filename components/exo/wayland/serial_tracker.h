@@ -63,7 +63,7 @@ class SerialTracker {
   absl::optional<EventType> GetEventType(uint32_t serial) const;
 
  private:
-  raw_ptr<struct wl_display, ExperimentalAsh> display_;
+  raw_ptr<struct wl_display, DanglingUntriaged | ExperimentalAsh> display_;
 
   // EventTypes are stored in a circular buffer, because serial numbers are
   // issued sequentially and we only want to store the most recent events.

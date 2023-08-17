@@ -44,7 +44,8 @@ class GamingSeat : public aura::client::FocusChangeObserver,
 
  private:
   // The delegate that handles gamepad_added.
-  const raw_ptr<GamingSeatDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<GamingSeatDelegate, DanglingUntriaged | ExperimentalAsh>
+      delegate_;
 
   // Contains the delegate for each gamepad device.
   base::flat_map<int, std::unique_ptr<Gamepad>> gamepads_;

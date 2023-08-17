@@ -108,7 +108,8 @@ class DataOffer final : public ui::PropertyHandler {
   void OnPickledUrlsResolved(SendDataCallback callback,
                              const std::vector<GURL>& urls);
 
-  const raw_ptr<DataOfferDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<DataOfferDelegate, DanglingUntriaged | ExperimentalAsh>
+      delegate_;
 
   // Data for a given mime type may not ever be requested, or may be requested
   // more than once. Using callbacks and a cache allows us to delay any

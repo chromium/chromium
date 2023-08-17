@@ -59,7 +59,7 @@ class Touch : public ui::EventHandler,
   void CancelAllTouches();
 
   // The delegate instance that all events are dispatched to.
-  const raw_ptr<TouchDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<TouchDelegate, DanglingUntriaged | ExperimentalAsh> delegate_;
 
   const raw_ptr<Seat, ExperimentalAsh> seat_;
 

@@ -158,8 +158,8 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
         exo_test_helper()->CreateGpuMemoryBuffer(size));
   }
 
-  raw_ptr<ash::DragDropController, ExperimentalAsh> drag_drop_controller_ =
-      nullptr;
+  raw_ptr<ash::DragDropController, DanglingUntriaged | ExperimentalAsh>
+      drag_drop_controller_ = nullptr;
   std::unique_ptr<Seat> seat_;
   std::unique_ptr<DataSource> data_source_;
   std::unique_ptr<ExtendedDragSource> extended_drag_source_;

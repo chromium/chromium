@@ -193,7 +193,8 @@ class Buffer::Texture : public viz::ContextLostObserver {
   void ScheduleWaitForRelease(base::TimeDelta delay);
   void WaitForRelease();
 
-  const raw_ptr<gfx::GpuMemoryBuffer, ExperimentalAsh> gpu_memory_buffer_;
+  const raw_ptr<gfx::GpuMemoryBuffer, DanglingUntriaged | ExperimentalAsh>
+      gpu_memory_buffer_;
   const gfx::Size size_;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
   const unsigned texture_target_;

@@ -223,7 +223,9 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
 
  private:
   raw_ptr<ClientControlledShellSurface, ExperimentalAsh> shell_surface_;
-  raw_ptr<ash::ClientControlledState::Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<ash::ClientControlledState::Delegate,
+          DanglingUntriaged | ExperimentalAsh>
+      delegate_;
 };
 
 bool IsPinned(const ash::WindowState* window_state) {

@@ -219,7 +219,7 @@ class Pointer : public SurfaceTreeHost,
                            const gfx::PointF& location_in_target);
 
   // The delegate instance that all events are dispatched to.
-  const raw_ptr<PointerDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<PointerDelegate, DanglingUntriaged | ExperimentalAsh> delegate_;
 
   const raw_ptr<Seat, ExperimentalAsh> seat_;
 

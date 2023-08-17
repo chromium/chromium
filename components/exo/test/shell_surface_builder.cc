@@ -27,7 +27,8 @@ namespace {
 // Internal structure that owns buffer, surface and subsurface instances.
 // This is owned by the host window as an owned property.
 struct Holder {
-  raw_ptr<exo::Surface, ExperimentalAsh> root_surface = nullptr;
+  raw_ptr<exo::Surface, DanglingUntriaged | ExperimentalAsh> root_surface =
+      nullptr;
   std::vector<std::tuple<std::unique_ptr<exo::Buffer>,
                          std::unique_ptr<exo::Surface>,
                          std::unique_ptr<exo::SubSurface>>>

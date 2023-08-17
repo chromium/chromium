@@ -42,7 +42,7 @@ class WaylandDisplayOutputTest : public test::WaylandServerTest {
 TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
   class ClientData : public test::TestClient::CustomData {
    public:
-    raw_ptr<wl_output, ExperimentalAsh> output = nullptr;
+    raw_ptr<wl_output, DanglingUntriaged | ExperimentalAsh> output = nullptr;
   };
 
   // Start with 2 displays.
