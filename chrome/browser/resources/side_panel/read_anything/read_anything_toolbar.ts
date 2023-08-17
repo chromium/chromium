@@ -87,9 +87,11 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
         element.style.fontFamily = element.innerText;
         // Set the onclick listener for each button so that the content
         // page font updates when a button is clicked.
-        element.addEventListener('click', function() {
+        const callback = () => {
           onFontClick(element.innerText);
-        });
+        };
+        element.addEventListener('click', callback);
+        this.elementCallbackMap.set(element, callback);
       }
     });
 
@@ -190,6 +192,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.removeOnClickListeners(this.$.fontSubmenu);
     this.removeOnClickListeners(this.$.lineSpacingSubmenu);
     this.removeOnClickListeners(this.$.colorSubmenu);
     this.removeOnClickListeners(this.$.letterSpacingSubmenu);
@@ -199,7 +202,8 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     const nodes = Array.from(menu.children);
     nodes.forEach((element) => {
       if ((element instanceof HTMLButtonElement) &&
-          !element.classList.contains('back') && element.hasAttribute('data')) {
+          !element.classList.contains('back') &&
+          (element.className === 'dropdown-item')) {
         const callback = this.elementCallbackMap.get(element);
         if (callback) {
           element.removeEventListener('click', callback);
