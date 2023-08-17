@@ -281,7 +281,7 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
     if (show_power_off_button) {
       context_menu_model_->AddItemWithIcon(
           VIEW_ID_QS_POWER_OFF_MENU_BUTTON,
-          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_OFF),
+          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SHUTDOWN),
           ui::ImageModel::FromVectorIcon(kSystemPowerButtonMenuPowerOffIcon,
                                          cros_tokens::kCrosSysOnSurface,
                                          kTrayTopShortcutButtonIconSize));
