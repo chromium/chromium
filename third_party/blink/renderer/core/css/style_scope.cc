@@ -48,7 +48,7 @@ bool StyleScope::HasImplicitRoot(Element* element) const {
   if (!contents_) {
     return false;
   }
-  return contents_->HasOwnerParentNode(element);
+  return contents_->HasOwnerParentElementOrAdoptiveHost(element);
 }
 
 StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,

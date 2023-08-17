@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -595,10 +596,19 @@ Document* StyleSheetContents::AnyOwnerDocument() const {
   return RootStyleSheet()->ClientAnyOwnerDocument();
 }
 
-bool StyleSheetContents::HasOwnerParentNode(Node* candidate) const {
+bool StyleSheetContents::HasOwnerParentElementOrAdoptiveHost(
+    Element* candidate) const {
   for (const WeakMember<CSSStyleSheet>& sheet : completed_clients_) {
+    // Handles the normal case of e.g. <div><style>@scope{}</style></div>,
+    // and (due to ParentOrShadowHostElement) also handles the case where
+    // the <style> element appears directly below the shadow root.
     if (Node* node = sheet->ownerNode();
-        node && (node->parentNode() == candidate)) {
+        node && (node->ParentOrShadowHostElement() == candidate)) {
+      return true;
+    }
+    // Handles constructed/adopted stylesheets.
+    if (IsShadowHost(candidate) &&
+        sheet->IsAdoptedByTreeScope(*candidate->GetShadowRoot())) {
       return true;
     }
   }

@@ -93,9 +93,17 @@ class CORE_EXPORT StyleSheetContents final
   // if there are none.
   Document* AnyOwnerDocument() const;
 
-  // True if any the StyleSheetContents's owner nodes have a *parent* that is
-  // equal to `candidate`.
-  bool HasOwnerParentNode(Node* candidate) const;
+  // True if either:
+  //
+  // - The parent element of the stylesheet's owner node is equal
+  //   to `candidate`, or if no such element exists:
+  // - The stylesheet is adopted by a shadow root attached to
+  //   a host equal to `candidate`.
+  //
+  // Note that a single StyleSheetContents can have multiple CSSStyleSheets
+  // associated with it, and this function returns true if the
+  // requirements above are met for *any* CSSStyleSheet.
+  bool HasOwnerParentElementOrAdoptiveHost(Element* candidate) const;
 
   const WTF::TextEncoding& Charset() const {
     return parser_context_->Charset();
