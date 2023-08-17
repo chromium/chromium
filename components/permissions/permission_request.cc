@@ -71,7 +71,8 @@ std::u16string PermissionRequest::GetDialogMessageText() const {
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_INFOBAR_TEXT;
       break;
     case RequestType::kMidi:
-      // TODO(crbug.com/1420307): Add dialog message text specific to MIDI.
+      message_id = IDS_MIDI_INFOBAR_TEXT;
+      break;
     case RequestType::kMidiSysex:
       message_id = IDS_MIDI_SYSEX_INFOBAR_TEXT;
       break;
