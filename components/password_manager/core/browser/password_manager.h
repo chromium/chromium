@@ -302,6 +302,12 @@ class PasswordManager : public PasswordManagerInterface {
   PasswordFormManager* GetMatchedManager(PasswordManagerDriver* driver,
                                          autofill::FormRendererId form_id);
 
+  // Finds FormPredictions for a form containing field identified by |field_id|
+  // and |driver_id|.
+  absl::optional<FormPredictions> FindPredictionsForField(
+      autofill::FieldRendererId field_id,
+      int driver_id);
+
   //  If |possible_username_.form_predictions| is missing, this functions tries
   //  to find predictions for the form which contains |possible_username_| in
   //  |predictions_|.

@@ -4530,7 +4530,42 @@ TEST_F(PasswordManagerTest, HaveFormManagersReceivedDataDependsOnDriver) {
   EXPECT_FALSE(manager()->HaveFormManagersReceivedData(&other_driver));
 }
 
-TEST_F(PasswordManagerTest, FieldDataManagerGetsData) {
+TEST_F(PasswordManagerTest,
+       FieldInfoManagerHasDataPredictionsInitiallyAvailable) {
+  feature_list_.InitAndEnableFeature(
+      password_manager::features::kForgotPasswordFormSupport);
+
+  // Process server predictions.
+  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
+  std::vector<const FormData*> forms = {&username_form.form_data};
+  const ServerFieldType kFieldType =
+      ServerFieldType::SINGLE_USERNAME_FORGOT_PASSWORD;
+  manager()->ProcessAutofillPredictions(
+      &driver_, forms,
+      CreateServerPredictions(username_form.form_data, {{0, kFieldType}}));
+
+  // Simulate the user typed in a text field..
+  ON_CALL(driver_, GetLastCommittedURL())
+      .WillByDefault(ReturnRef(username_form.url));
+  std::u16string potential_username_value = u"is_that_a_username?";
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, username_form.form_data.fields[0].unique_renderer_id,
+      /*value=*/potential_username_value,
+      /*autocomplete_attribute_has_username=*/false, /*is_likely_otp=*/false);
+
+  std::string signon_realm = GetSignonRealm(username_form.url);
+  ASSERT_EQ(field_info_manager_->GetFieldInfo(signon_realm).size(), 1u);
+
+  FieldInfo info = field_info_manager_->GetFieldInfo(signon_realm)[0];
+  EXPECT_EQ(info.driver_id, driver_.GetId());
+  EXPECT_EQ(info.field_id,
+            username_form.form_data.fields[0].unique_renderer_id);
+  EXPECT_EQ(info.signon_realm, signon_realm);
+  EXPECT_EQ(info.value, potential_username_value);
+  EXPECT_EQ(info.type, kFieldType);
+}
+
+TEST_F(PasswordManagerTest, FieldInfoManagerHasDataPredictionsPropagatedLater) {
   feature_list_.InitAndEnableFeature(
       password_manager::features::kForgotPasswordFormSupport);
 
@@ -4544,11 +4579,23 @@ TEST_F(PasswordManagerTest, FieldDataManagerGetsData) {
       /*value=*/potential_username_value,
       /*autocomplete_attribute_has_username=*/false, /*is_likely_otp=*/false);
 
+  // Process server predictions.
+  std::vector<const FormData*> forms = {&username_form.form_data};
+  const ServerFieldType kFieldType =
+      ServerFieldType::SINGLE_USERNAME_FORGOT_PASSWORD;
+  manager()->ProcessAutofillPredictions(
+      &driver_, forms,
+      CreateServerPredictions(username_form.form_data, {{0, kFieldType}}));
+
   std::string signon_realm = GetSignonRealm(username_form.url);
-  std::vector<FieldInfo> expected = {
-      {driver_.GetId(), username_form.form_data.fields[0].unique_renderer_id,
-       signon_realm, potential_username_value}};
-  EXPECT_EQ(field_info_manager_->GetFieldInfo(signon_realm), expected);
+  ASSERT_EQ(field_info_manager_->GetFieldInfo(signon_realm).size(), 1u);
+  FieldInfo info = field_info_manager_->GetFieldInfo(signon_realm)[0];
+  EXPECT_EQ(info.driver_id, driver_.GetId());
+  EXPECT_EQ(info.field_id,
+            username_form.form_data.fields[0].unique_renderer_id);
+  EXPECT_EQ(info.signon_realm, signon_realm);
+  EXPECT_EQ(info.value, potential_username_value);
+  EXPECT_EQ(info.type, kFieldType);
 }
 
 enum class PredictionSource {

@@ -37,6 +37,9 @@ struct PasswordFieldPrediction {
   autofill::FieldSignature signature;
   autofill::ServerFieldType type;
   bool may_use_prefilled_placeholder = false;
+
+  friend bool operator==(const PasswordFieldPrediction& lhs,
+                         const PasswordFieldPrediction& rhs) = default;
 };
 
 // Contains server predictions for a form.
@@ -53,6 +56,9 @@ struct FormPredictions {
 
   autofill::FormSignature form_signature;
   std::vector<PasswordFieldPrediction> fields;
+
+  friend bool operator==(const FormPredictions& lhs,
+                         const FormPredictions& rhs) = default;
 };
 
 // Extracts password related server predictions from `form` and `predictions`.
