@@ -61,7 +61,7 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
   display::TabletState GetTabletState() const;
 
  private:
-  // zaura_shell_listeners
+  // zaura_shell_listener handler functions:
   static void OnLayoutMode(void* data,
                            struct zaura_shell* zaura_shell,
                            uint32_t layout_mode);
@@ -78,8 +78,8 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
                           struct zaura_shell* zaura_shell,
                           struct wl_surface* gained_active,
                           struct wl_surface* lost_active);
-  static void SetOverviewMode(void* data, struct zaura_shell* zaura_shell);
-  static void UnsetOverviewMode(void* data, struct zaura_shell* zaura_shell);
+  static void OnSetOverviewMode(void* data, struct zaura_shell* zaura_shell);
+  static void OnUnsetOverviewMode(void* data, struct zaura_shell* zaura_shell);
   static void OnCompositorVersion(void* data,
                                   struct zaura_shell* zaura_shell,
                                   const char* version_label);
