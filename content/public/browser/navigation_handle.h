@@ -551,6 +551,10 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // the navigation: no error page will commit.
   virtual void SetSilentlyIgnoreErrors() = 0;
 
+  // The sandbox flags of the initiator of the navigation, if any.
+  // WebSandboxFlags::kNone otherwise.
+  virtual network::mojom::WebSandboxFlags SandboxFlagsInitiator() = 0;
+
   // The sandbox flags inherited at the beginning of the navigation.
   //
   // This is the sandbox flags intersection of:

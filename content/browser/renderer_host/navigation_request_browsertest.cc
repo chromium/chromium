@@ -4759,4 +4759,92 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   }
 }
 
+// Check the output of NavigationHandle::SandboxFlagsInitiator() when the
+// navigation is initiated from the omnibox. It must be `kNone`.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       InitiatorSandboxFlags_BrowserInitiated) {
+  GURL url_initiator = embedded_test_server()->GetURL(
+      "a.com", "/set-header?Content-Security-Policy: sandbox allow-scripts");
+  ASSERT_TRUE(NavigateToURL(shell(), url_initiator));
+
+  GURL url_target = embedded_test_server()->GetURL("a.com", "/");
+  TestNavigationManager manager(shell()->web_contents(), url_target);
+  shell()->LoadURL(url_target);
+  EXPECT_TRUE(manager.WaitForRequestStart());
+  ASSERT_TRUE(manager.GetNavigationHandle());
+  EXPECT_EQ(manager.GetNavigationHandle()->SandboxFlagsInitiator(),
+            network::mojom::WebSandboxFlags::kNone);
+  EXPECT_EQ(manager.GetNavigationHandle()->SandboxFlagsInherited(),
+            network::mojom::WebSandboxFlags::kNone);
+}
+
+// Check the output of NavigationHandle::SandboxFlagsInitiator() when the
+// navigation is initiated by the top-level document. It must match.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       InitiatorSandboxFlags_DocumentInitiated) {
+  GURL url_initiator = embedded_test_server()->GetURL(
+      "a.com", "/set-header?Content-Security-Policy: sandbox allow-scripts");
+  ASSERT_TRUE(NavigateToURL(shell(), url_initiator));
+
+  GURL url_target = embedded_test_server()->GetURL("a.com", "/");
+  TestNavigationManager manager(shell()->web_contents(), url_target);
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     JsReplace("location.href = $1", url_target)));
+  EXPECT_TRUE(manager.WaitForRequestStart());
+  ASSERT_TRUE(manager.GetNavigationHandle());
+  EXPECT_EQ(manager.GetNavigationHandle()->SandboxFlagsInitiator(),
+            network::mojom::WebSandboxFlags::kAll &
+                ~network::mojom::WebSandboxFlags::kScripts &
+                ~network::mojom::WebSandboxFlags::kAutomaticFeatures);
+  EXPECT_EQ(manager.GetNavigationHandle()->SandboxFlagsInherited(),
+            network::mojom::WebSandboxFlags::kNone);
+}
+
+// Check the output of NavigationHandle::SandboxFlagsInitiator() when the
+// navigation is initiated by a sandboxed iframe.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       InitiatorSandboxFlags_SandboxedIframe) {
+  // Create the parent document:
+  GURL parent_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), parent_url));
+
+  // Create the child frame. It has sandbox flags from the
+  // Content-Security-Policy and from its iframe.sandbox flags:
+  GURL url_initiator = embedded_test_server()->GetURL(
+      "a.com",
+      "/set-header?Content-Security-Policy: sandbox allow-scripts allow-forms");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), JsReplace(R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = $1;
+    iframe.sandbox = "allow-scripts allow-popups";
+    document.body.appendChild(iframe);
+  )",
+                                                        url_initiator)));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_EQ(1u, main_frame->child_count());
+
+  // Navigate the child frame.
+  GURL url_target = embedded_test_server()->GetURL("a.com", "/");
+  TestNavigationManager manager(shell()->web_contents(), url_target);
+  EXPECT_TRUE(ExecJs(main_frame->child_at(0),
+                     JsReplace("location.href = $1", url_target)));
+  EXPECT_TRUE(manager.WaitForRequestStart());
+  ASSERT_TRUE(manager.GetNavigationHandle());
+  EXPECT_EQ(manager.GetNavigationHandle()->SandboxFlagsInitiator(),
+            // `allow-script`:
+            network::mojom::WebSandboxFlags::kAll &
+                ~network::mojom::WebSandboxFlags::kScripts &
+                ~network::mojom::WebSandboxFlags::kAutomaticFeatures);
+  EXPECT_EQ(
+      manager.GetNavigationHandle()->SandboxFlagsInherited(),
+      //`allow-scripts allow-poupups`:
+      network::mojom::WebSandboxFlags::kAll &
+          ~network::mojom::WebSandboxFlags::kScripts &
+          ~network::mojom::WebSandboxFlags::kPopups &
+          ~network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols &
+          ~network::mojom::WebSandboxFlags::kAutomaticFeatures);
+}
+
 }  // namespace content

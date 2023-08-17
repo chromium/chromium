@@ -1029,6 +1029,28 @@ bool IsMhtmlMimeType(const std::string& mime_type) {
   return mime_type == "multipart/related" || mime_type == "message/rfc822";
 }
 
+network::mojom::WebSandboxFlags GetSandboxFlagsInitiator(
+    const absl::optional<blink::LocalFrameToken>& frame_token) {
+  if (!frame_token) {
+    return network::mojom::WebSandboxFlags::kNone;
+  }
+
+  // Even if the navigation was initiated from an unload handler and the
+  // RenderFrameHost is gone, its associated PolicyContainerHost should be
+  // available by design.
+  //
+  // Note: See https://crbug.com/1473165. The "design" is currently not 100%
+  // achieved. The PolicyContainer might be missing when the navigation is
+  // initiated from RenderViewContextMenu::ExecuteCommand(...).
+  const auto* policy_container_host =
+      PolicyContainerHost::FromFrameToken(frame_token.value());
+  if (!policy_container_host) {
+    return network::mojom::WebSandboxFlags::kNone;
+  }
+
+  return policy_container_host->policies().sandbox_flags;
+}
+
 }  // namespace
 
 NavigationRequest::PrerenderActivationNavigationState::
@@ -1537,6 +1559,8 @@ NavigationRequest::NavigationRequest(
           frame_tree_node->current_frame_host()->GetGlobalId()),
       initiator_frame_token_(begin_params_->initiator_frame_token),
       initiator_process_id_(initiator_process_id),
+      sandbox_flags_initiator_(
+          GetSandboxFlagsInitiator(initiator_frame_token_)),
       was_opener_suppressed_(was_opener_suppressed),
       is_credentialless_(
           IsDocumentToCommitAnonymous(frame_tree_node,
@@ -4896,6 +4920,10 @@ void NavigationRequest::OnServiceWorkerAccessed(
     const GURL& scope,
     AllowServiceWorkerResult allowed) {
   GetDelegate()->OnServiceWorkerAccessed(this, scope, allowed);
+}
+
+network::mojom::WebSandboxFlags NavigationRequest::SandboxFlagsInitiator() {
+  return sandbox_flags_initiator_;
 }
 
 network::mojom::WebSandboxFlags NavigationRequest::SandboxFlagsInherited() {
