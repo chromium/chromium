@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/html/forms/select_list_part_traversal.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/keywords.h"
@@ -392,6 +393,37 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   suggested_option_popover_->SetShadowPseudoId(
       AtomicString("-internal-selectlist-preview"));
   root.AppendChild(suggested_option_popover_);
+
+  auto* style =
+      MakeGarbageCollected<HTMLStyleElement>(document, CreateElementFlags());
+  // For small touch screens, expand the touch targets and enlarge the overall
+  // picker, akin to the native <select> picker.
+  // TODO(crbug.com/1121840) Add back (pointer: coarse) once testing is
+  // complete:
+  //   @media (pointer: coarse) and (max-width: 500px) {
+  style->setInnerHTML(R"CSS(
+    @media (max-width: 500px) {
+      ::backdrop,
+      slot[name=listbox]::slotted([popover])::backdrop {
+        background-color: rgba(0, 0, 0, .7);
+      }
+      slot[name=listbox]>div[popover=auto],
+      slot[name=listbox]::slotted([popover]) {
+        box-shadow: none;
+        border-radius: 0.5em;
+        padding: 0.25em 0;
+        border: none;
+        max-height: 50%;
+        inset: 0;
+        margin: auto;
+      }
+      ::slotted(option) {
+        padding: 0.5em;
+        font-size: 1em;
+      }
+    }
+  )CSS");
+  root.AppendChild(style);
 }
 
 void HTMLSelectListElement::DidMoveToNewDocument(Document& old_document) {
