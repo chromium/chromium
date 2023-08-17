@@ -45,26 +45,6 @@ void ArcAppPerformanceTracingTestHelper::TearDown() {
   profile_ = nullptr;
 }
 
-// static
-views::Widget* ArcAppPerformanceTracingTestHelper::CreateArcWindow(
-    const std::string& window_app_id,
-    exo::Surface* shell_root_surface) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
-  params.bounds = gfx::Rect(5, 5, 20, 20);
-  params.context = nullptr;
-  views::Widget* widget = new views::Widget();
-  widget->Init(std::move(params));
-  // Set ARC id before showing the window to be recognized in
-  // AppServiceAppWindowShelfController.
-  exo::SetShellApplicationId(widget->GetNativeWindow(), window_app_id);
-  exo::SetShellRootSurface(widget->GetNativeWindow(), shell_root_surface
-                                                          ? shell_root_surface
-                                                          : new exo::Surface());
-  widget->Show();
-  widget->Activate();
-  return widget;
-}
-
 ArcAppPerformanceTracing* ArcAppPerformanceTracingTestHelper::GetTracing() {
   DCHECK(profile_);
   return ArcAppPerformanceTracing::GetForBrowserContext(profile_);

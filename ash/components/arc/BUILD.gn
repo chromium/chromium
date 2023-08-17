@@ -300,6 +300,8 @@ static_library("arc_test_support") {
   sources = [
     "test/arc_payment_app_bridge_test_support.cc",
     "test/arc_payment_app_bridge_test_support.h",
+    "test/arc_task_window_builder.cc",
+    "test/arc_task_window_builder.h",
     "test/arc_util_test_support.cc",
     "test/arc_util_test_support.h",
     "test/fake_adbd_monitor_instance.cc",
@@ -382,14 +384,17 @@ static_library("arc_test_support") {
   deps = [
     ":arc",
     "//ash/constants",
+    "//ash/public/cpp",
     "//base",
     "//chromeos/components/payments:test_support",
+    "//components/exo",
     "//components/keyed_service/content",
     "//components/prefs:test_support",
     "//components/user_prefs",
     "//content/test:test_support",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
+    "//ui/views",
   ]
 }
 

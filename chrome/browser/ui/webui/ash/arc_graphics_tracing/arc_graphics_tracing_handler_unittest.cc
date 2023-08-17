@@ -5,9 +5,8 @@
 #include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.h"
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/arc_task_window_builder.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/window_properties.h"
-#include "ash/test/test_widget_builder.h"
 #include "base/files/file_path.h"
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
@@ -148,20 +147,6 @@ class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
     handler_->OnKeyEvent(&ev);
   }
 
-  std::unique_ptr<views::Widget> CreateArcTaskWidget(
-      int task_id,
-      const std::string& package_name) {
-    ash::TestWidgetBuilder builder;
-    builder.SetShow(false);
-    auto widget = builder.BuildOwnsNativeWidget();
-    exo::SetShellApplicationId(
-        widget->GetNativeWindow(),
-        base::StringPrintf("org.chromium.arc.%d", task_id));
-    widget->GetNativeWindow()->SetProperty(ash::kArcPackageNameKey,
-                                           package_name);
-    return widget;
-  }
-
   // The time relative to which trace tick timestamps are calculated. This is
   // typically when the system was booted.
   base::Time trace_time_base_;
@@ -205,7 +190,7 @@ TEST_F(ArcGraphicsTracingHandlerTest, FilterSystemTraceByTimestamp) {
   handler_->set_now(base::Time::FromJavaTime(1'500'088'880'000));
   handler_->set_trace_time_base(base::Time::FromJavaTime(1'500'000'000'000));
 
-  auto arc_widget = CreateArcTaskWidget(42, "org.funstuff.client");
+  auto arc_widget = arc::ArcTaskWindowBuilder().BuildOwnsNativeWidget();
   arc_widget->Show();
   SendStartStopKey();
   handler_->StartTracingOnControllerRespond();
@@ -260,9 +245,21 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
   handler_->set_now(base::Time::FromJavaTime(1'600'044'440'000));
   handler_->set_trace_time_base(base::Time::FromJavaTime(1'600'000'000'000));
 
-  auto arc_widget = CreateArcTaskWidget(22, "org.funstuff.client");
-  auto other_arc_widget = CreateArcTaskWidget(88, "net.differentapp");
+  exo::Surface s;
+  auto arc_widget = arc::ArcTaskWindowBuilder()
+                        .SetTaskId(22)
+                        .SetPackageName("org.funstuff.client")
+                        .SetShellRootSurface(&s)
+                        .BuildOwnsNativeWidget();
+
+  auto other_arc_widget = arc::ArcTaskWindowBuilder()
+                              .SetTaskId(88)
+                              .SetPackageName("net.differentapp")
+                              .SetShellRootSurface(&s)
+                              .BuildOwnsNativeWidget();
+
   arc_widget->Show();
+  other_arc_widget->ShowInactive();
   SendStartStopKey();
   handler_->StartTracingOnControllerRespond();
 
@@ -275,7 +272,7 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
   // min_tracing_time_. This sets the min trace time to 300ms after the end of
   // the trace.
   FastForwardClockAndTaskQueue(base::Milliseconds(300));
-  other_arc_widget->Show();
+  other_arc_widget->Activate();
 
   // Pass results from trace controller to handler.
   handler_->StopTracingOnControllerRespond(std::make_unique<std::string>(
