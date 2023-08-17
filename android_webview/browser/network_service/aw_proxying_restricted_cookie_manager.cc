@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace android_webview {
@@ -169,7 +170,8 @@ void AwProxyingRestrictedCookieManager::GetCookiesString(
         url, site_for_cookies, top_frame_origin, has_storage_access,
         /*get_version_shared_memory=*/false, std::move(callback));
   } else {
-    std::move(callback).Run(base::ReadOnlySharedMemoryRegion(), "");
+    std::move(callback).Run(network::mojom::kInvalidCookieVersion,
+                            base::ReadOnlySharedMemoryRegion(), "");
   }
 }
 

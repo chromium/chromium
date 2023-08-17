@@ -542,6 +542,42 @@ TEST_P(RestrictedCookieManagerTest,
   }
 }
 
+// TODO(crbug.com/1393050): Add test cases that modify the cookies through
+// net::CookieStore::SetCanonicalCookie and/or modify the subscription URL.
+TEST_P(RestrictedCookieManagerTest, CookieVersion) {
+  std::string cookies_out;
+  base::ReadOnlySharedMemoryRegion mapped_region;
+  uint64_t version;
+
+  EXPECT_TRUE(backend()->GetCookiesString(
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      /*has_storage_access=*/false, /*get_version_shared_memory=*/false,
+      &version, &mapped_region, &cookies_out));
+  // Version is at initial value on first query.
+  EXPECT_EQ(version, mojom::kInitialCookieVersion);
+
+  EXPECT_TRUE(backend()->GetCookiesString(
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      /*has_storage_access=*/false, /*get_version_shared_memory=*/false,
+      &version, &mapped_region, &cookies_out));
+  // Version is still at initial value since nothing modified the cookie.
+  EXPECT_EQ(version, mojom::kInitialCookieVersion);
+
+  bool site_for_cookies_ok = false;
+  bool top_frame_origin_ok = false;
+  EXPECT_TRUE(backend()->SetCookieFromString(
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      /*has_storage_access=*/false, "new-name=new-value;path=/",
+      &site_for_cookies_ok, &top_frame_origin_ok));
+
+  EXPECT_TRUE(backend()->GetCookiesString(
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      /*has_storage_access=*/false, /*get_version_shared_memory=*/false,
+      &version, &mapped_region, &cookies_out));
+  // Version has been incremented by the set operation.
+  EXPECT_NE(version, mojom::kInitialCookieVersion);
+}
+
 TEST_P(RestrictedCookieManagerTest, GetAllForUrlBlankFilter) {
   SetSessionCookie("cookie-name", "cookie-value", "example.com", "/");
   SetSessionCookie("cookie-name-2", "cookie-value-2", "example.com", "/");
@@ -562,11 +598,12 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlBlankFilter) {
   // Can also use the document.cookie-style API to get the same info.
   std::string cookies_out;
   base::ReadOnlySharedMemoryRegion mapped_region;
+  uint64_t version;
 
   EXPECT_TRUE(backend()->GetCookiesString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       /*has_storage_access=*/false, /*get_version_shared_memory=*/false,
-      &mapped_region, &cookies_out));
+      &version, &mapped_region, &cookies_out));
   EXPECT_FALSE(mapped_region.IsValid());
   EXPECT_EQ("cookie-name=cookie-value; cookie-name-2=cookie-value-2",
             cookies_out);
@@ -575,7 +612,7 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlBlankFilter) {
   EXPECT_TRUE(backend()->GetCookiesString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       /*has_storage_access=*/false, /*get_version_shared_memory=*/true,
-      &mapped_region, &cookies_out));
+      &version, &mapped_region, &cookies_out));
   EXPECT_TRUE(mapped_region.IsValid());
   EXPECT_EQ("cookie-name=cookie-value; cookie-name-2=cookie-value-2",
             cookies_out);
@@ -722,11 +759,12 @@ TEST_P(RestrictedCookieManagerTest, GetCookieStringFromWrongOrigin) {
   ExpectBadMessage();
   std::string cookies_out;
   base::ReadOnlySharedMemoryRegion mapped_region;
+  uint64_t version;
 
   EXPECT_TRUE(backend()->GetCookiesString(
       kOtherUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       /*has_storage_access=*/false, /*get_version_shared_memory=*/false,
-      &mapped_region, &cookies_out));
+      &version, &mapped_region, &cookies_out));
   EXPECT_TRUE(received_bad_message());
   EXPECT_THAT(cookies_out, IsEmpty());
 
@@ -734,7 +772,7 @@ TEST_P(RestrictedCookieManagerTest, GetCookieStringFromWrongOrigin) {
   EXPECT_TRUE(backend()->GetCookiesString(
       kOtherUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       /*has_storage_access=*/false, /*get_version_shared_memory=*/true,
-      &mapped_region, &cookies_out));
+      &version, &mapped_region, &cookies_out));
   EXPECT_TRUE(received_bad_message());
   EXPECT_THAT(cookies_out, IsEmpty());
 }

@@ -189,6 +189,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // cookies the other side could have cached.
   void IncrementSharedVersion();
 
+  // Returns the cookie version shared with clients to determine whether a
+  // cookie string has changed since the last request and a new request needs to
+  // be issued.
+  uint64_t GetSharedVersion();
+
   // The state associated with a CookieChangeListener.
   class Listener;
 
@@ -277,6 +282,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   const net::CookieSettingOverrides cookie_setting_overrides_;
 
   url::Origin origin_;
+
+  std::unique_ptr<net::CookieChangeSubscription> cookie_store_subscription_;
+  GURL change_subscribed_url_;
 
   // Holds the browser-provided site_for_cookies and top_frame_origin to which
   // this RestrictedCookieManager is bound. (The frame_origin field is not used

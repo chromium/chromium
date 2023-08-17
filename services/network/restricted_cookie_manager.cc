@@ -4,6 +4,7 @@
 
 #include "services/network/restricted_cookie_manager.h"
 
+#include <cstdint>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -377,11 +378,21 @@ RestrictedCookieManager::~RestrictedCookieManager() {
 }
 
 void RestrictedCookieManager::IncrementSharedVersion() {
+  CHECK(mapped_region_.IsValid());
   // Relaxed memory order since only the version is stored within the region
   // and as such is the only data shared between processes. There is no
   // re-ordering to worry about.
   mapped_region_.mapping.GetMemoryAs<SharedVersionType>()->fetch_add(
       1, std::memory_order_relaxed);
+}
+
+uint64_t RestrictedCookieManager::GetSharedVersion() {
+  CHECK(mapped_region_.IsValid());
+  // Relaxed memory order since only the version is stored within the region
+  // and as such is the only data shared between processes. There is no
+  // re-ordering to worry about.
+  return mapped_region_.mapping.GetMemoryAs<SharedVersionType>()->load(
+      std::memory_order_relaxed);
 }
 
 void RestrictedCookieManager::OnCookieSettingsChanged() {
@@ -688,11 +699,6 @@ void RestrictedCookieManager::SetCanonicalCookie(
     return;
   }
 
-  // The cookie is about to change, increment version. This is best effort
-  // change detection. Remove this line once proper change listening is set
-  // up as part of crbug.com/1393050.
-  IncrementSharedVersion();
-
   net::CanonicalCookie cookie_copy = *sanitized_cookie;
   net::CookieOptions options =
       MakeOptionsForSet(role_, url, site_for_cookies, cookie_settings());
@@ -775,6 +781,12 @@ void RestrictedCookieManager::SetCookieFromString(
     SetCookieFromStringCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // The cookie is about to be set. Proactively increment the version so it's
+  // instantly reflected. This ensures that changes a reflected before the
+  // optimistic callback invocation further down that unblocks the caller before
+  // the cookie is actually set.
+  IncrementSharedVersion();
+
   bool site_for_cookies_ok =
       BoundSiteForCookies().IsEquivalent(site_for_cookies);
   bool top_frame_origin_ok = top_frame_origin == BoundTopFrameOrigin();
@@ -835,10 +847,32 @@ void RestrictedCookieManager::GetCookiesString(
   base::ReadOnlySharedMemoryRegion shared_memory_region;
   if (get_version_shared_memory) {
     shared_memory_region = mapped_region_.region.Duplicate();
+
+    // Clients can change their URL. If that happens the subscription needs to
+    // mirror that to get the correct updates.
+    bool new_url = cookie_store_subscription_ && change_subscribed_url_ != url;
+
+    if (!cookie_store_subscription_ || new_url) {
+      change_subscribed_url_ = url;
+      cookie_store_subscription_ =
+          cookie_store_->GetChangeDispatcher().AddCallbackForUrl(
+              url, cookie_partition_key_,
+              base::IgnoreArgs<const net::CookieChangeInfo&>(
+                  base::BindRepeating(
+                      &RestrictedCookieManager::IncrementSharedVersion,
+                      base::Unretained(this))));
+    }
   }
 
-  auto bound_callback =
-      base::BindOnce(std::move(callback), std::move(shared_memory_region));
+  // Bind the current shared cookie version to |callback| to be returned once
+  // the cookie string is retrieved. At that point the cookie version might have
+  // been incremented by actions that happened in the meantime. Returning a
+  // slightly stale version like this is still correct since it's a best effort
+  // mechanism to avoid unnecessary IPCs. When the version is stale an
+  // additional IPC will take place which is the way it would always be if there
+  // was not shared memory versioning.
+  auto bound_callback = base::BindOnce(std::move(callback), GetSharedVersion(),
+                                       std::move(shared_memory_region));
 
   // Match everything.
   auto match_options = mojom::CookieManagerGetOptions::New();
