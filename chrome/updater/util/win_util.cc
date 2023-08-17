@@ -5,6 +5,7 @@
 #include "chrome/updater/util/win_util.h"
 
 #include <aclapi.h>
+#include <combaseapi.h>
 #include <objidl.h>
 #include <regstr.h>
 #include <shellapi.h>
@@ -1047,6 +1048,13 @@ absl::optional<base::FilePath> GetInstallDirectoryX86(UpdaterScope scope) {
   }
   return install_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
+}
+
+bool IsSTA() {
+  APTTYPE apt_type = APTTYPE_CURRENT;
+  APTTYPEQUALIFIER apt_type_qualifier = APTTYPEQUALIFIER_NONE;
+  return SUCCEEDED(::CoGetApartmentType(&apt_type, &apt_type_qualifier)) &&
+         (apt_type == APTTYPE_STA || apt_type == APTTYPE_MAINSTA);
 }
 
 }  // namespace updater

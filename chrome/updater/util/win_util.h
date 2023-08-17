@@ -405,6 +405,12 @@ template <typename T, typename I, typename... TArgs>
 // Does not create the directory if it does not exist.
 [[nodiscard]] absl::optional<base::FilePath> GetInstallDirectoryX86(
     UpdaterScope scope);
+
+// Returns `true` if COM is initialized as a single-threaded apartment.
+// Otherwise, returns `false` if COM in not initialized, or its apartment type
+// is not a form of STA.
+[[nodiscard]] bool IsSTA();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_

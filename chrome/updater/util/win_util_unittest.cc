@@ -22,18 +22,23 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
+#include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "chrome/updater/test/integration_tests_impl.h"
@@ -520,6 +525,26 @@ TEST(WinUtil, GetAppAPValue) {
   EXPECT_EQ(ap, "TestAP");
 
   DeleteAppClientStateKey(GetTestScope(), base::ASCIIToWide(kTestAppID));
+}
+
+TEST(WinUtil, IsSTA) {
+  base::test::TaskEnvironment task_environment;
+
+  // The unit test main has initialized this thread already as an MTA.
+  EXPECT_FALSE(IsSTA());
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED)
+      ->PostTaskAndReply(
+          FROM_HERE, base::BindOnce([] {
+            base::win::ScopedCOMInitializer com_sta;
+            EXPECT_TRUE(IsSTA());
+          }),
+          base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
 }
 
 }  // namespace updater
