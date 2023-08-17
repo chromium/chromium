@@ -121,26 +121,44 @@ bool IsDriveEnabledForProfile(const Profile* const profile) {
 
 bool IsDriveFsBulkPinningEnabled(const Profile* const profile) {
   DCHECK(profile);
+
+  // Check the "DriveFsBulkPinning" Chrome feature. If this feature is disabled,
+  // then it probably means that the kill switch has been activated, and the
+  // bulk-pinning feature should not be available.
+  if (!base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning)) {
+    return false;
+  }
+
+  // Check the "drivefs.bulk_pinning.visible" boolean pref. If this pref is
+  // false, then it probably means that it has been turned down by an enterprise
+  // policy, and the bulk-pinning feature should not be available.
   if (!profile->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningVisible)) {
     return false;
   }
 
+  // Does the user profile belong to a managed user or not?
   if (!profile->GetProfilePolicyConnector()->IsManaged()) {
-    return ash::features::IsDriveFsBulkPinningEnabled();
+    // Not a managed user. The bulk-pinning feature is available on suitable
+    // devices, as controlled by the "FeatureManagementDriveFsBulkPinning"
+    // Chrome feature.
+    return base::FeatureList::IsEnabled(
+        ash::features::kFeatureManagementDriveFsBulkPinning);
   }
 
-  // Managed user.
+  // Managed user. For Googlers, the bulk-pinning feature is available on any
+  // kind of device. This allows Googlers to easily test ("dogfood") the
+  // bulk-pinning feature.
+  //
+  // TODO(b/296316774) Revisit this decision for Googlers.
+  //
+  // Other managed users (non-Googlers) do not have access to the bulk-pinning
+  // feature for the time being.
+  //
+  // TODO(b/296315040) Allow managed users to access the bulk-pinning feature on
+  // suitable devices.
   const User* const user = UserManager::Get()->GetActiveUser();
-  if (!user) {
-    return false;
-  }
-
-  // For Googlers, only rely on the feature flag not the feature management
-  // flag. This enables dogfooding for Googlers and that the regular feature
-  // flag can be kill-switched if needed.
-  return gaia::IsGoogleInternalAccountEmail(
-             user->GetAccountId().GetUserEmail()) &&
-         base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning);
+  return user && gaia::IsGoogleInternalAccountEmail(
+                     user->GetAccountId().GetUserEmail());
 }
 
 ConnectionStatusType GetDriveConnectionStatus(Profile* profile) {
