@@ -558,6 +558,7 @@ enum HistogramValue {
   READING_LIST_ON_ENTRY_ADDED = 536,
   READING_LIST_ON_ENTRY_WILL_BE_REMOVED = 537,
   READING_LIST_ON_ENTRY_UPDATED = 538,
+  OS_DIAGNOSTICS_ON_ROUTINE_INITIALIZED = 539,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

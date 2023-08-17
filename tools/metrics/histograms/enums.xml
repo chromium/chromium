@@ -35264,6 +35264,7 @@ Called by update_extension_histograms.py.-->
   <int value="536" label="READING_LIST_ON_ENTRY_ADDED"/>
   <int value="537" label="READING_LIST_ON_ENTRY_WILL_BE_REMOVED"/>
   <int value="538" label="READING_LIST_ON_ENTRY_UPDATED"/>
+  <int value="539" label="OS_DIAGNOSTICS_ON_ROUTINE_INITIALIZED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
