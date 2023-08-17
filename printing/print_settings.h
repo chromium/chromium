@@ -159,11 +159,6 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   void set_rasterize_pdf_dpi(int32_t dpi) { rasterize_pdf_dpi_ = dpi; }
   int32_t rasterize_pdf_dpi() const { return rasterize_pdf_dpi_; }
 
-  void set_supports_alpha_blend(bool supports_alpha_blend) {
-    supports_alpha_blend_ = supports_alpha_blend;
-  }
-  bool supports_alpha_blend() const { return supports_alpha_blend_; }
-
   int device_units_per_inch() const {
 #if BUILDFLAG(IS_MAC)
     return kMacDeviceUnitsPerInch;
@@ -373,9 +368,6 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
 
   // Is the orientation landscape or portrait.
   bool landscape_;
-
-  // True if this printer supports AlphaBlend.
-  bool supports_alpha_blend_;
 
 #if BUILDFLAG(IS_WIN)
   mojom::PrinterLanguageType printer_language_type_;

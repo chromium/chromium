@@ -59,7 +59,6 @@ struct PrintSettings {
   double scale_factor;
   bool rasterize_pdf;
   bool landscape;
-  bool supports_alpha_blend;
 
   [EnableIf=is_win]
   PrinterLanguageType printer_language_type;

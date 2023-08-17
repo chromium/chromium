@@ -304,7 +304,6 @@ PrintSettings& PrintSettings::operator=(const PrintSettings& settings) {
   rasterize_pdf_ = settings.rasterize_pdf_;
   rasterize_pdf_dpi_ = settings.rasterize_pdf_dpi_;
   landscape_ = settings.landscape_;
-  supports_alpha_blend_ = settings.supports_alpha_blend_;
 #if BUILDFLAG(IS_WIN)
   printer_language_type_ = settings.printer_language_type_;
 #endif
@@ -331,7 +330,7 @@ bool PrintSettings::operator==(const PrintSettings& other) const {
                   display_header_footer_, should_print_backgrounds_, collate_,
                   color_, copies_, duplex_mode_, device_name_, requested_media_,
                   page_setup_device_units_, dpi_, scale_factor_, rasterize_pdf_,
-                  rasterize_pdf_dpi_, landscape_, supports_alpha_blend_,
+                  rasterize_pdf_dpi_, landscape_,
 #if BUILDFLAG(IS_WIN)
                   printer_language_type_,
 #endif
@@ -355,7 +354,6 @@ bool PrintSettings::operator==(const PrintSettings& other) const {
                   other.requested_media_, other.page_setup_device_units_,
                   other.dpi_, other.scale_factor_, other.rasterize_pdf_,
                   other.rasterize_pdf_dpi_, other.landscape_,
-                  other.supports_alpha_blend_,
 #if BUILDFLAG(IS_WIN)
                   other.printer_language_type_,
 #endif
@@ -396,7 +394,6 @@ void PrintSettings::Clear() {
   rasterize_pdf_ = false;
   rasterize_pdf_dpi_ = 0;
   landscape_ = false;
-  supports_alpha_blend_ = true;
 #if BUILDFLAG(IS_WIN)
   printer_language_type_ = mojom::PrinterLanguageType::kNone;
 #endif

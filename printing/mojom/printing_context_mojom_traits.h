@@ -139,9 +139,6 @@ struct StructTraits<printing::mojom::PrintSettingsDataView,
   static bool landscape(const printing::PrintSettings& s) {
     return s.landscape();
   }
-  static bool supports_alpha_blend(const printing::PrintSettings& s) {
-    return s.supports_alpha_blend();
-  }
 
 #if BUILDFLAG(IS_WIN)
   static printing::mojom::PrinterLanguageType printer_language_type(

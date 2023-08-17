@@ -140,9 +140,6 @@ constexpr bool kPrintSettingsRasterizePdf2 = false;
 constexpr bool kPrintSettingsLandscape1 = false;
 constexpr bool kPrintSettingsLandscape2 = true;
 
-constexpr bool kPrintSettingsSupportsAlphaBlend1 = false;
-constexpr bool kPrintSettingsSupportsAlphaBlend2 = true;
-
 #if BUILDFLAG(IS_WIN)
 constexpr mojom::PrinterLanguageType kPrintSettingsPrinterLanguageType1 =
     mojom::PrinterLanguageType::kTextOnly;
@@ -206,7 +203,6 @@ PrintSettings GenerateSamplePrintSettingsDefaultMargins() {
   settings.set_scale_factor(kPrintSettingsScaleFactor1);
   settings.set_rasterize_pdf(kPrintSettingsRasterizePdf1);
   settings.SetOrientation(kPrintSettingsLandscape1);
-  settings.set_supports_alpha_blend(kPrintSettingsSupportsAlphaBlend1);
 
 #if BUILDFLAG(IS_WIN)
   settings.set_printer_language_type(kPrintSettingsPrinterLanguageType1);
@@ -238,7 +234,6 @@ PrintSettings GenerateSamplePrintSettingsCustomMarginsWithParams(
   settings.set_scale_factor(kPrintSettingsScaleFactor2);
   settings.set_rasterize_pdf(kPrintSettingsRasterizePdf2);
   settings.SetOrientation(kPrintSettingsLandscape2);
-  settings.set_supports_alpha_blend(kPrintSettingsSupportsAlphaBlend2);
 
   settings.SetCustomMargins(kPrintSettingsCustomMarginsInPoints);
 
@@ -497,7 +492,6 @@ TEST(PrintingContextMojomTraitsTest,
   EXPECT_EQ(output.scale_factor(), kPrintSettingsScaleFactor1);
   EXPECT_EQ(output.rasterize_pdf(), kPrintSettingsRasterizePdf1);
   EXPECT_EQ(output.landscape(), kPrintSettingsLandscape1);
-  EXPECT_EQ(output.supports_alpha_blend(), kPrintSettingsSupportsAlphaBlend1);
 
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(output.printer_language_type(), kPrintSettingsPrinterLanguageType1);
@@ -553,7 +547,6 @@ TEST(PrintingContextMojomTraitsTest,
   EXPECT_EQ(output.scale_factor(), kPrintSettingsScaleFactor2);
   EXPECT_EQ(output.rasterize_pdf(), kPrintSettingsRasterizePdf2);
   EXPECT_EQ(output.landscape(), kPrintSettingsLandscape2);
-  EXPECT_EQ(output.supports_alpha_blend(), kPrintSettingsSupportsAlphaBlend2);
 
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(output.printer_language_type(), kPrintSettingsPrinterLanguageType2);

@@ -122,8 +122,6 @@ struct PrintParams {
   int32 document_cookie = 0;
   // Should only print currently selected text.
   bool selection_only = false;
-  // Does the printer support alpha blending?
-  bool supports_alpha_blend = false;
 
   // *** Parameters in this section are used only for Print Preview. ***
   // The print preview ui associated with this request.

@@ -115,10 +115,6 @@ void PrintSettingsInitializerWin::InitPrintSettings(
   int dpi = print_settings->dpi();
   DCHECK_EQ(print_settings->device_units_per_inch(), dpi);
 
-  const int kAlphaCaps = SB_CONST_ALPHA | SB_PIXEL_ALPHA;
-  print_settings->set_supports_alpha_blend(
-      (GetDeviceCaps(hdc, SHADEBLENDCAPS) & kAlphaCaps) == kAlphaCaps);
-
   DCHECK_EQ(GetDeviceCaps(hdc, SCALINGFACTORX), 0);
   DCHECK_EQ(GetDeviceCaps(hdc, SCALINGFACTORY), 0);
 

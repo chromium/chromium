@@ -1562,9 +1562,6 @@ void PrintRenderFrameHelper::PrintPreview(base::Value::Dict settings) {
 
   is_print_ready_metafile_sent_ = false;
 
-  // PDF printer device supports alpha blending.
-  print_pages_params_->params->supports_alpha_blend = true;
-
   PrepareFrameForPreviewDocument();
 }
 
