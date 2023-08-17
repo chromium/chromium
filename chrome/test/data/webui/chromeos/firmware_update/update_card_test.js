@@ -4,11 +4,11 @@
 
 import {fakeCriticalFirmwareUpdate, fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
 import {FirmwareUpdate, UpdatePriority} from 'chrome://accessory-update/firmware_update_types.js';
-import {mojoString16ToString} from 'chrome://accessory-update/mojo_utils.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from '../test_util.js';
 
 export function updateCardTest() {

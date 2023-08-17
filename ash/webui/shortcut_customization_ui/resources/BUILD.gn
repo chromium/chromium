@@ -29,7 +29,6 @@ non_web_component_files = [
   "js/fake_data.ts",
   "js/fake_shortcut_provider.ts",
   "js/mojo_interface_provider.ts",
-  "js/mojo_utils.ts",
   "js/router.ts",
   "js/search/fake_shortcut_search_handler.ts",
   "js/search/search_result_bolding.ts",

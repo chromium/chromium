@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {keyToIconNameMap} from './input_key.js';
-import {stringToMojoString16} from './mojo_utils.js';
 import {Accelerator, AcceleratorCategory, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, MojoSearchResult, TextAcceleratorPartType} from './shortcut_types.js';
 
 const fakeTimestamp: TimeTicks = {

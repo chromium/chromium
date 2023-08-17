@@ -286,7 +286,6 @@ generate_grd("build_grd") {
     "fake_method_resolver.js",
     "fake_observables.js",
     "keyboard_layouts.js",
-    "mojo_utils.js",
 
     # Test runner used by file manager tests, webui_resource_browsertest.cc, and
     # default_keyboard_extension_browser_test.cc
@@ -551,7 +550,6 @@ js_type_check("closure_compile_local") {
     ":keyboard_shortcut_list_js",
     ":list_property_update_behavior",
     ":load_time_data.m",
-    ":mojo_utils",
     ":navigation_selector",
     ":navigation_view_panel",
     ":page_toolbar",
@@ -661,10 +659,6 @@ js_library("list_property_update_behavior") {
 }
 
 js_library("load_time_data.m") {
-}
-
-js_library("mojo_utils") {
-  deps = [ "//ash/webui/common/mojom:mojom_js_library_for_compile" ]
 }
 
 js_library("navigation_selector") {

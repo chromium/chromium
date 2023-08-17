@@ -26,7 +26,6 @@ non_web_component_files = [
   "fake_system_routine_controller.ts",
   "frequency_channel_utils.ts",
   "mojo_interface_provider.js",
-  "mojo_utils.ts",
   "routine_group.ts",
   "routine_list_executor.ts",
 ]

@@ -10,11 +10,11 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {keyToIconNameMap} from '../input_key.js';
-import {mojoString16ToString} from '../mojo_utils.js';
 import {Router} from '../router.js';
 import {LayoutStyle, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from '../shortcut_types.js';
 import {getModifiersForAcceleratorInfo, getURLForSearchResult, isStandardAcceleratorInfo, isTextAcceleratorInfo} from '../shortcut_utils.js';

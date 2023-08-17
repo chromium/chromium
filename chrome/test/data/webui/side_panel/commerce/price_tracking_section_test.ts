@@ -5,7 +5,7 @@
 import 'chrome://shopping-insights-side-panel.top-chrome/app.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {PriceTrackingSection} from 'chrome://shopping-insights-side-panel.top-chrome/price_tracking_section.js';
 import {ShoppingListApiProxyImpl} from 'chrome://shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
 import {BookmarkProductInfo, PageCallbackRouter, PageRemote, PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from 'chrome://shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
@@ -67,13 +67,6 @@ suite('PriceTrackingSectionTest', () => {
     assertEquals(
         priceTrackingSection.$.toggle!.getAttribute('aria-pressed')!,
         tracked ? 'true' : 'false');
-  }
-
-  /**
-   * Converts a string to an instance of mojo_base.mojom.String16.
-   */
-  function stringToMojoString16(s: string): String16 {
-    return {data: Array.from(s, c => c.charCodeAt(0))};
   }
 
   setup(async () => {

@@ -13,13 +13,13 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchResultsAvailabilityObserverInterface, SearchResultsAvailabilityObserverReceiver} from '../../mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.js';
-import {stringToMojoString16} from '../mojo_utils.js';
 import {AcceleratorState, MojoSearchResult, ShortcutSearchHandlerInterface} from '../shortcut_types.js';
 
 import {getTemplate} from './search_box.html.js';

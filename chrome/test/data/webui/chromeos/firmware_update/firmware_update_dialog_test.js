@@ -5,12 +5,12 @@
 import {fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
 import {FirmwareUpdateDialogElement} from 'chrome://accessory-update/firmware_update_dialog.js';
 import {FirmwareUpdate, UpdateState} from 'chrome://accessory-update/firmware_update_types.js';
-import {mojoString16ToString} from 'chrome://accessory-update/mojo_utils.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from '../test_util.js';
 
 export function firmwareUpdateDialogTest() {

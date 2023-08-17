@@ -6,13 +6,13 @@ import './input_key.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {InputKeyElement, KeyInputState} from './input_key.js';
-import {mojoString16ToString} from './mojo_utils.js';
 import {AcceleratorSource, TextAcceleratorInfo, TextAcceleratorPart, TextAcceleratorPartType} from './shortcut_types.js';
 import {isCustomizationDisabled, isTextAcceleratorInfo} from './shortcut_utils.js';
 import {getTemplate} from './text_accelerator.html.js';

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 
-import {mojoString16ToString} from './mojo_utils.js';
 import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutStyle, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
 import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, getSourceAndActionFromAcceleratorId, isStandardAcceleratorInfo, isTextAcceleratorInfo} from './shortcut_utils.js';
 

@@ -7,12 +7,12 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/js/input_key.js';
-import {mojoString16ToString, stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
 import {AcceleratorSource, LayoutStyle, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {TextAcceleratorElement} from 'chrome://shortcut-customization/js/text_accelerator.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
