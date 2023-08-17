@@ -40,7 +40,8 @@ class SyncService;
 // The initial account sync state at the time this mediator gets created.
 // While the mediator is running it gets updated only if the user signs
 // out.
-@property(nonatomic, assign) SyncSettingsAccountState initialAccountState;
+@property(nonatomic, assign, readonly)
+    SyncSettingsAccountState initialAccountState;
 // Error command handler.
 @property(nonatomic, weak) id<SyncErrorSettingsCommandHandler> syncErrorHandler;
 // Returns YES if the encryption item should be enabled.
