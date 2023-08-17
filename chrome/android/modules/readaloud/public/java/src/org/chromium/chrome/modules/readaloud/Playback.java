@@ -129,4 +129,13 @@ public interface Playback {
      * @param rate Playback rate. Must be positive.
      */
     default void setRate(float rate) {}
+
+    /**
+     * Releases the playback and all associated resources (e.g audio notification
+     * and media session).
+     *
+     * <p>
+     * This method must be called when the playback is no longer needed.
+     */
+    default void release() {}
 }
