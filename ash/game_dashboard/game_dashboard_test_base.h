@@ -26,7 +26,6 @@ class GameDashboardTestBase : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override;
-  void TearDown() override;
 
  protected:
   // Returns true if the `GameDashboardController` is observing the `window`.

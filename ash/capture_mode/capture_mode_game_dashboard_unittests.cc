@@ -58,9 +58,6 @@ class GameDashboardCaptureModeTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    base::SysInfo::SetChromeOSVersionInfoForTest(
-        "CHROMEOS_RELEASE_TRACK=testimage-channel",
-        base::SysInfo::GetLsbReleaseTime());
     AshTestBase::SetUp();
     EXPECT_TRUE(features::IsGameDashboardEnabled());
 
@@ -71,7 +68,6 @@ class GameDashboardCaptureModeTest : public AshTestBase {
   void TearDown() override {
     game_window_.reset();
     AshTestBase::TearDown();
-    base::SysInfo::ResetChromeOSVersionInfoForTest();
   }
 
   CaptureModeController* StartGameCaptureModeSession() {
