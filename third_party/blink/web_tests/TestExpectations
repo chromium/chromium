@@ -4369,8 +4369,11 @@ crbug.com/1469418 fast/multicol/span/summary-split.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/fast/multicol/span/summary-split.html [ Pass ]
 crbug.com/1469418 html/details_summary/details-inline.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/html/details_summary/details-inline.html [ Pass ]
+crbug.com/1469418 wpt_internal/html/rendering/the-details-element/details-pseudo-elements-disabled-001.tentative.html [ Failure ]
+crbug.com/1469418 virtual/details-styling-disabled/wpt_internal/html/rendering/the-details-element/details-pseudo-elements-disabled-001.tentative.html [ Pass ]
 # A test that expects the DetailsStyling feature to be enabled:
 crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-type-001.tentative.html [ Failure ]
+crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-001.tentative.html [ Failure ]
 
 # SwANGLE issues
 crbug.com/1204234 css3/blending/background-blend-mode-single-accelerated-element.html [ Failure ]

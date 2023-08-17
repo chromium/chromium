@@ -319,6 +319,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoDecrement:
     case kPseudoDefault:
     case kPseudoDefined:
+    case kPseudoDetailsContent:
+    case kPseudoDetailsSummary:
     case kPseudoDialogInTopLayer:
     case kPseudoDir:
     case kPseudoDisabled:
@@ -485,6 +487,8 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"decrement", CSSSelector::kPseudoDecrement},
     {"default", CSSSelector::kPseudoDefault},
     {"defined", CSSSelector::kPseudoDefined},
+    {"details-content", CSSSelector::kPseudoDetailsContent},
+    {"details-summary", CSSSelector::kPseudoDetailsSummary},
     {"disabled", CSSSelector::kPseudoDisabled},
     {"double-button", CSSSelector::kPseudoDoubleButton},
     {"empty", CSSSelector::kPseudoEmpty},
@@ -648,6 +652,12 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if ((match->type == CSSSelector::kPseudoDetailsContent ||
+       match->type == CSSSelector::kPseudoDetailsSummary) &&
+      !RuntimeEnabledFeatures::DetailsStylingEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   if (IsTransitionPseudoElement(
           GetPseudoId(static_cast<CSSSelector::PseudoType>(match->type))) &&
       !RuntimeEnabledFeatures::ViewTransitionEnabled()) {
@@ -753,6 +763,8 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoViewTransitionImagePair:
     case kPseudoViewTransitionOld:
     case kPseudoViewTransitionNew:
+    case kPseudoDetailsContent:
+    case kPseudoDetailsSummary:
       if (match_ != kPseudoElement) {
         pseudo_type_ = kPseudoUnknown;
       }

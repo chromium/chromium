@@ -62,6 +62,8 @@ CSSSelector::RelationType GetImplicitShadowCombinatorForMatching(
     case CSSSelector::PseudoType::kPseudoWebKitCustomElement:
     case CSSSelector::PseudoType::kPseudoBlinkInternalElement:
     case CSSSelector::PseudoType::kPseudoCue:
+    case CSSSelector::PseudoType::kPseudoDetailsContent:
+    case CSSSelector::PseudoType::kPseudoDetailsSummary:
     case CSSSelector::PseudoType::kPseudoPlaceholder:
     case CSSSelector::PseudoType::kPseudoFileSelectorButton:
       return CSSSelector::RelationType::kUAShadow;

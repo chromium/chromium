@@ -6177,10 +6177,17 @@ const AtomicString& Element::ShadowPseudoId() const {
 }
 
 void Element::SetShadowPseudoId(const AtomicString& id) {
-  DCHECK(CSSSelectorParser::ParsePseudoType(id, false, &GetDocument()) ==
-             CSSSelector::kPseudoWebKitCustomElement ||
-         CSSSelectorParser::ParsePseudoType(id, false, &GetDocument()) ==
-             CSSSelector::kPseudoBlinkInternalElement);
+#if DCHECK_IS_ON()
+  {
+    CSSSelector::PseudoType type =
+        CSSSelectorParser::ParsePseudoType(id, false, &GetDocument());
+    DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
+           type == CSSSelector::kPseudoBlinkInternalElement ||
+           type == CSSSelector::kPseudoDetailsContent ||
+           type == CSSSelector::kPseudoDetailsSummary)
+        << type;
+  }
+#endif
   setAttribute(html_names::kPseudoAttr, id);
 }
 

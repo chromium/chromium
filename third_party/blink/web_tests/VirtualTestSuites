@@ -1191,7 +1191,8 @@
     "bases": [
       "external/wpt/html/rendering/the-details-element",
       "fast/multicol/span/summary-split.html",
-      "html/details_summary/details-inline.html"
+      "html/details_summary/details-inline.html",
+      "wpt_internal/html/rendering/the-details-element"
     ],
     "args": ["--disable-blink-features=DetailsStyling",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
