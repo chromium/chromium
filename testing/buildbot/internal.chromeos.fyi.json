@@ -1149,6 +1149,34 @@
         "test_level_retries": 2,
         "timeout_sec": 21600,
         "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
+      },
+      {
+        "autotest_name": "tast.chrome-from-gcs",
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R117-15564.0.0",
+        "experiment_percentage": 100,
+        "name": "chrome_criticalstaging_tast_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
+        "shards": 10,
+        "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !\"dep:lacros\" && informational && \"group:criticalstaging\")",
+        "test": "chrome_criticalstaging_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 7200,
+        "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
+      },
+      {
+        "autotest_name": "tast.chrome-from-gcs",
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R117-15564.0.0",
+        "experiment_percentage": 100,
+        "name": "chrome_disabled_tast_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
+        "shards": 10,
+        "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\")",
+        "test": "chrome_disabled_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
+        "test_level_retries": 1,
+        "timeout_sec": 7200,
+        "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
       }
     ]
   },
@@ -1216,6 +1244,34 @@
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 21600,
+        "variant_id": "VOLTEER_RELEASE_LKGM"
+      },
+      {
+        "autotest_name": "tast.chrome-from-gcs",
+        "cros_board": "volteer",
+        "cros_img": "volteer-release/R118-15574.0.0",
+        "experiment_percentage": 100,
+        "name": "chrome_criticalstaging_tast_tests VOLTEER_RELEASE_LKGM",
+        "shards": 10,
+        "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !\"dep:lacros\" && informational && \"group:criticalstaging\")",
+        "test": "chrome_criticalstaging_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 7200,
+        "variant_id": "VOLTEER_RELEASE_LKGM"
+      },
+      {
+        "autotest_name": "tast.chrome-from-gcs",
+        "cros_board": "volteer",
+        "cros_img": "volteer-release/R118-15574.0.0",
+        "experiment_percentage": 100,
+        "name": "chrome_disabled_tast_tests VOLTEER_RELEASE_LKGM",
+        "shards": 10,
+        "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\")",
+        "test": "chrome_disabled_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
+        "test_level_retries": 1,
+        "timeout_sec": 7200,
         "variant_id": "VOLTEER_RELEASE_LKGM"
       }
     ]
