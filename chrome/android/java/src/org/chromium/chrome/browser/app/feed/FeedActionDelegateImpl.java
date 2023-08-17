@@ -150,14 +150,12 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     @Override
     public void showSignInInterstitial(@SigninAccessPoint int signinAccessPoint,
             BottomSheetController bottomSheetController, WindowAndroid windowAndroid) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_BOC_SIGN_IN_INTERSTITIAL)) {
             SigninMetricsUtils.logSigninStartAccessPoint(signinAccessPoint);
             SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
             SigninBottomSheetCoordinator signinCoordinator = new SigninBottomSheetCoordinator(
                     windowAndroid, DeviceLockActivityLauncherImpl.get(), bottomSheetController,
                     Profile.getLastUsedRegularProfile(), null, null, signinAccessPoint);
             signinCoordinator.show();
-        }
     }
 
     /**
