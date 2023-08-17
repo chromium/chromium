@@ -104,11 +104,14 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
 
     boolean onMenuIdClick(@IdRes int id) {
         // Sorting/viewing submenu needs to be caught, but haven't been implemented yet.
-        // TODO(crbug.com/1413463): Handle the new toolbar options.
         if (id == R.id.create_new_folder_menu_id) {
             mBookmarkAddNewFolderCoordinator.show(mCurrentFolder);
             return true;
         } else if (id == R.id.normal_options_submenu) {
+            return true;
+        } else if (id == R.id.sort_by_manual) {
+            mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.MANUAL);
+            mModel.set(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID, id);
             return true;
         } else if (id == R.id.sort_by_newest) {
             mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL);
@@ -345,6 +348,8 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
                 return R.id.sort_by_reverse_alpha;
             case BookmarkRowSortOrder.RECENTLY_USED:
                 return R.id.sort_by_last_opened;
+            case BookmarkRowSortOrder.MANUAL:
+                return R.id.sort_by_manual;
         }
         return ResourcesCompat.ID_NULL;
     }

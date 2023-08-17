@@ -20,7 +20,7 @@ public class BookmarkUiPrefs {
     private static final @BookmarkRowDisplayPref int INITIAL_BOOKMARK_ROW_DISPLAY_PREF =
             BookmarkRowDisplayPref.VISUAL;
     private static final @BookmarkRowSortOrder int INITIAL_BOOKMARK_ROW_SORT_ORDER =
-            BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL;
+            BookmarkRowSortOrder.MANUAL;
 
     // This is persisted to preferences, entries shouldn't be reordered or removed.
     @IntDef({BookmarkRowDisplayPref.COMPACT, BookmarkRowDisplayPref.VISUAL})
@@ -33,7 +33,7 @@ public class BookmarkUiPrefs {
     // This is persisted to preferences, entries shouldn't be reordered or removed.
     @IntDef({BookmarkRowSortOrder.CHRONOLOGICAL, BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL,
             BookmarkRowSortOrder.ALPHABETICAL, BookmarkRowSortOrder.REVERSE_ALPHABETICAL,
-            BookmarkRowSortOrder.RECENTLY_USED})
+            BookmarkRowSortOrder.RECENTLY_USED, BookmarkRowSortOrder.MANUAL})
     @Retention(RetentionPolicy.SOURCE)
     public @interface BookmarkRowSortOrder {
         int CHRONOLOGICAL = 0;
@@ -41,6 +41,7 @@ public class BookmarkUiPrefs {
         int ALPHABETICAL = 2;
         int REVERSE_ALPHABETICAL = 3;
         int RECENTLY_USED = 4;
+        int MANUAL = 5;
     }
 
     /** Observer for changes to prefs. */

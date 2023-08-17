@@ -390,21 +390,36 @@ public class BookmarkToolbarMediatorTest {
 
     @Test
     public void testOnMenuItemClick_sortOptions() {
+        assertTrue(mMediator.onMenuIdClick(R.id.sort_by_manual));
+        assertEquals(
+                R.id.sort_by_manual, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.MANUAL);
+
         assertTrue(mMediator.onMenuIdClick(R.id.sort_by_newest));
         assertEquals(
                 R.id.sort_by_newest, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs)
+                .setBookmarkRowSortOrder(BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL);
 
         assertTrue(mMediator.onMenuIdClick(R.id.sort_by_oldest));
         assertEquals(
                 R.id.sort_by_oldest, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.CHRONOLOGICAL);
+
+        assertTrue(mMediator.onMenuIdClick(R.id.sort_by_last_opened));
+        assertEquals(R.id.sort_by_last_opened,
+                mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.RECENTLY_USED);
 
         assertTrue(mMediator.onMenuIdClick(R.id.sort_by_alpha));
         assertEquals(
                 R.id.sort_by_alpha, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
 
         assertTrue(mMediator.onMenuIdClick(R.id.sort_by_reverse_alpha));
         assertEquals(R.id.sort_by_reverse_alpha,
                 mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.REVERSE_ALPHABETICAL);
     }
 
     @Test

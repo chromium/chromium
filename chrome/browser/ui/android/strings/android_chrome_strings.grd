@@ -3938,6 +3938,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SORT_SUBMENU"  desc="Sub-menu in the bookmarks manager for sort/view options. [CHAR_LIMIT=24]">
         Sort and view options
       </message>
+      <message name="IDS_SORT_BY_MANUAL"  desc="Option in the bookmarks manager to sort manually. [CHAR_LIMIT=24]">
+        Sort by manual order
+      </message>
       <message name="IDS_SORT_BY_NEWEST"  desc="Option in the bookmarks manager to sort by newest. [CHAR_LIMIT=24]">
         Sort by newest
       </message>

@@ -16,6 +16,8 @@ found in the LICENSE file.
                 <!-- Groups with unique ids used to show a divider. -->
                 <group android:id="@+id/sort_opts"
                        android:checkableBehavior="single">
+                    <item android:id="@+id/sort_by_manual"
+                        android:title="@string/sort_by_manual" />
                     <item android:id="@+id/sort_by_newest"
                         android:title="@string/sort_by_newest" />
                     <item android:id="@+id/sort_by_oldest"

@@ -1164,6 +1164,7 @@ public class BookmarkManagerMediatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testImprovedSpecialFolders() {
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
         final @ColorInt int specialBackgroundColor =
                 SemanticColorUtils.getColorPrimaryContainer(mActivity);
         final @ColorInt int normalBackgroundColor =

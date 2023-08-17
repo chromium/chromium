@@ -116,9 +116,8 @@ public class BookmarkUiPrefsTest {
 
     @Test
     public void testSortOrder() {
-        // Default should be REVERSE_CHRONOLOGICAL.
-        Assert.assertEquals(BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL,
-                mBookmarkUiPrefs.getBookmarkRowSortOrder());
+        Assert.assertEquals(
+                BookmarkRowSortOrder.MANUAL, mBookmarkUiPrefs.getBookmarkRowSortOrder());
 
         mBookmarkUiPrefs.addObserver(mObserver);
         mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
@@ -147,8 +146,8 @@ public class BookmarkUiPrefsTest {
 
     @Test
     public void testSortOrderPref_changesInBackground() {
-        Assert.assertEquals(BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL,
-                mBookmarkUiPrefs.getBookmarkRowSortOrder());
+        Assert.assertEquals(
+                BookmarkRowSortOrder.MANUAL, mBookmarkUiPrefs.getBookmarkRowSortOrder());
 
         mBookmarkUiPrefs.addObserver(mObserver);
         mSharedPreferencesManager.writeInt(

@@ -61,6 +61,8 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
 
     private void sortByStoredPref(List<BookmarkListEntry> bookmarkListEntries) {
         final @BookmarkRowSortOrder int sortOrder = mBookmarkUiPrefs.getBookmarkRowSortOrder();
+        if (sortOrder == BookmarkRowSortOrder.MANUAL) return;
+
         Collections.sort(
                 bookmarkListEntries, (BookmarkListEntry entry1, BookmarkListEntry entry2) -> {
                     BookmarkItem item1 = entry1.getBookmarkItem();
