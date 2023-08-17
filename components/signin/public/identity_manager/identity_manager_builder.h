@@ -92,6 +92,7 @@ struct IdentityManagerBuildParams {
 
 #if BUILDFLAG(IS_IOS)
   std::unique_ptr<DeviceAccountsProvider> device_accounts_provider;
+  bool should_verify_scope_access;
 #endif
 
 #if BUILDFLAG(IS_WIN)
