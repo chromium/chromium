@@ -246,9 +246,12 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   self.navigationItem.titleView = _titleLabel;
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-  [self.handler passwordDetailsTableViewControllerWasDismissed];
-  [super viewDidDisappear:animated];
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+
+  if (!parent) {
+    [self.handler passwordDetailsTableViewControllerWasDismissed];
+  }
 }
 
 #pragma mark - ChromeTableViewController
