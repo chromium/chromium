@@ -187,9 +187,14 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
 
     views::View* suggestion_and_buttons =
         right->AddChildView(std::make_unique<views::View>());
-    suggestion_and_buttons
-        ->SetLayoutManager(std::make_unique<views::FlexLayout>())
-        ->SetOrientation(views::LayoutOrientation::kVertical);
+    if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
+      suggestion_and_buttons->SetLayoutManager(
+          std::make_unique<views::FlexLayout>());
+    } else {
+      suggestion_and_buttons
+          ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+          ->SetOrientation(views::LayoutOrientation::kVertical);
+    }
     suggestion_and_buttons->SetProperty(views::kMarginsKey,
                                         gfx::Insets::VH(6, 0));
     suggestion_and_buttons->SetProperty(

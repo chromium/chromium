@@ -549,7 +549,7 @@ bool OmniboxFieldTrial::HUPSearchDatabase() {
   return value.empty() || (value == "true");
 }
 
-bool IsActionsUISimplificationEnabled() {
+bool OmniboxFieldTrial::IsActionsUISimplificationEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification);
 }
 
