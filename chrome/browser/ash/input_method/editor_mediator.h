@@ -7,8 +7,10 @@
 
 #include "chrome/browser/ash/input_method/editor_event_sink.h"
 #include "chrome/browser/ash/input_method/editor_instance_impl.h"
+#include "chrome/browser/ash/input_method/editor_switch.h"
 #include "chrome/browser/ash/input_method/editor_text_actuator.h"
 #include "chrome/browser/ash/input_method/mojom/editor.mojom.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 
 namespace ash {
@@ -21,7 +23,7 @@ namespace input_method {
 class EditorMediator : public EditorInstanceImpl::Delegate,
                        public EditorEventSink {
  public:
-  EditorMediator();
+  explicit EditorMediator(Profile* profile);
   ~EditorMediator() override;
 
   // Fetch the current instance of this class. Note that this class MUST be
@@ -46,6 +48,7 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
  private:
   EditorInstanceImpl editor_instance_impl_;
   EditorTextActuator text_actuator_;
+  EditorSwitch editor_switch_;
 
   // May contain an instance of MakoPageHandler. This is used to control the
   // lifetime of the Mako WebUI.

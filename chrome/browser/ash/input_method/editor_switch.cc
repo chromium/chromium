@@ -22,9 +22,10 @@ bool IsInputTypeAllowed(ui::TextInputType type) {
 
 }  // namespace
 
-EditorSwitch::EditorSwitch() {
-  is_allowed_for_use_ = base::FeatureList::IsEnabled(features::kOrcaDogfood) ||
-                        chromeos::features::IsOrcaEnabled();
+EditorSwitch::EditorSwitch(bool is_managed) {
+  is_allowed_for_use_ =
+      (base::FeatureList::IsEnabled(features::kOrcaDogfood) && is_managed) ||
+      (chromeos::features::IsOrcaEnabled() && !is_managed);
 }
 
 EditorSwitch::~EditorSwitch() = default;

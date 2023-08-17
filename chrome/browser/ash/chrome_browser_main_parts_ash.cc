@@ -1246,7 +1246,8 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     misconfigured_user_cleaner_->ScheduleCleanup();
 
     if (chromeos::features::IsOrcaEnabled()) {
-      editor_mediator_ = std::make_unique<input_method::EditorMediator>();
+      editor_mediator_ =
+          std::make_unique<input_method::EditorMediator>(profile);
     }
 
     g_browser_process->platform_part()->session_manager()->Initialize(

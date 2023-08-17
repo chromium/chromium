@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 
 #include "base/check_op.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 
 namespace ash {
@@ -15,7 +16,9 @@ EditorMediator* g_instance_ = nullptr;
 
 }  // namespace
 
-EditorMediator::EditorMediator() : editor_instance_impl_(this) {
+EditorMediator::EditorMediator(Profile* profile)
+    : editor_instance_impl_(this),
+      editor_switch_(profile->GetProfilePolicyConnector()->IsManaged()) {
   DCHECK(!g_instance_);
   g_instance_ = this;
 }

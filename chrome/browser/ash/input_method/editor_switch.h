@@ -10,11 +10,11 @@
 namespace ash::input_method {
 
 // EditorSwitch is the centralized switch that decides whether the feature is
-// available for use, and if it is available, further decides whether the
-// feature should be popped up given a particular input context.
+// available for use, and if available, further decides whether the feature
+// should be popped up given a particular input context.
 class EditorSwitch {
  public:
-  EditorSwitch();
+  explicit EditorSwitch(bool is_managed);
   EditorSwitch(const EditorSwitch&) = delete;
   EditorSwitch& operator=(const EditorSwitch&) = delete;
   ~EditorSwitch();
@@ -33,8 +33,8 @@ class EditorSwitch {
  private:
   void UpdateTriggerableCache();
 
-  bool is_allowed_for_use_;
-  bool can_be_triggered_;
+  bool is_allowed_for_use_ = false;
+  bool can_be_triggered_ = false;
 
   ui::TextInputType input_type_ = ui::TEXT_INPUT_TYPE_NONE;
 };

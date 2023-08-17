@@ -26,26 +26,39 @@ class EditorSwitchTest : public ::testing::Test {
 
 TEST_F(EditorSwitchTest,
        FeatureWillNotBeAvailableForUseWithoutReceivingOrcaFlag) {
-  EditorSwitch editor_switch;
+  EditorSwitch editor_switch(/*is_managed=*/false);
 
   EXPECT_FALSE(editor_switch.IsAllowedForUse());
 }
 
-TEST_F(EditorSwitchTest, FeatureWillBeAvailableForUseDogfoodFlagIsTrue) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(/*enabled_features=*/{features::kOrcaDogfood},
-                                /*disabled_features=*/{});
-  EditorSwitch editor_switch;
+TEST_F(EditorSwitchTest,
+       FeatureWillNotBeAvailableForUnmanagedAccountOnDogfoodDevices) {
+  base::test::ScopedFeatureList feature_list(features::kOrcaDogfood);
+  EditorSwitch editor_switch(/*is_managed=*/false);
+
+  EXPECT_FALSE(editor_switch.IsAllowedForUse());
+}
+
+TEST_F(EditorSwitchTest,
+       FeatureWillNotBeAvailableForManagedAccountOnNonDogfoodDevices) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
+  EditorSwitch editor_switch(/*is_managed=*/true);
+
+  EXPECT_FALSE(editor_switch.IsAllowedForUse());
+}
+
+TEST_F(EditorSwitchTest,
+       FeatureWillBeAvailableForUseForManagedAccountOnDogfoodDevices) {
+  base::test::ScopedFeatureList feature_list(features::kOrcaDogfood);
+  EditorSwitch editor_switch(/*is_managed=*/true);
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
 }
 
 TEST_F(EditorSwitchTest, FeatureCanBeTriggeredOnANormalTextField) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kOrca},
-      /*disabled_features=*/{});
-  EditorSwitch editor_switch;
+  base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
+  EditorSwitch editor_switch(/*is_managed=*/false);
+
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
 
@@ -54,11 +67,9 @@ TEST_F(EditorSwitchTest, FeatureCanBeTriggeredOnANormalTextField) {
 }
 
 TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredOnAPasswordField) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kOrca},
-      /*disabled_features=*/{});
-  EditorSwitch editor_switch;
+  base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
+  EditorSwitch editor_switch(/*is_managed=*/false);
+
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_PASSWORD));
 
