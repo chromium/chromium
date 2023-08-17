@@ -60,11 +60,9 @@
   },
   "accessibilityServicePrivate": {
     "dependencies": ["permission:accessibilityServicePrivate"],
-    // TODO(b/271633121): Upgrade to stable channel.
-    "channel": "trunk",
+    "channel": "stable",
     "contexts": ["blessed_extension"],
     "platforms": ["chromeos", "lacros"],
-    // TODO(b/271633121): Enable flag by default.
     "feature_flag": "ApiAccessibilityServicePrivate"
   },
   "action": {
