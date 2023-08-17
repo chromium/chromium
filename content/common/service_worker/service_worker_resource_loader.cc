@@ -10,12 +10,20 @@ ServiceWorkerResourceLoader::~ServiceWorkerResourceLoader() = default;
 
 void ServiceWorkerResourceLoader::SetCommitResponsibility(
     FetchResponseFrom fetch_response_from) {
-  DCHECK(commit_responsibility_ == FetchResponseFrom::kNoResponseYet);
-  commit_responsibility_ = fetch_response_from;
-  RecordFetchResponseFrom();
+  switch (fetch_response_from) {
+    case FetchResponseFrom::kNoResponseYet:
+      NOTREACHED_NORETURN();
+    case FetchResponseFrom::kServiceWorker:
+    case FetchResponseFrom::kWithoutServiceWorker:
+      CHECK_EQ(commit_responsibility_, FetchResponseFrom::kNoResponseYet);
+      commit_responsibility_ = fetch_response_from;
+      break;
+  }
 }
 
 void ServiceWorkerResourceLoader::RecordFetchResponseFrom() {
+  CHECK(commit_responsibility_ == FetchResponseFrom::kServiceWorker ||
+        commit_responsibility_ == FetchResponseFrom::kWithoutServiceWorker);
   if (IsMainResourceLoader()) {
     UMA_HISTOGRAM_ENUMERATION(
         "ServiceWorker.FetchEvent.MainResource.FetchResponseFrom",

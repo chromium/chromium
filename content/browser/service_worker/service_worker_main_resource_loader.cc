@@ -574,6 +574,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
       }
       return;
   }
+  RecordFetchResponseFrom();
 
   DCHECK_EQ(status_, Status::kStarted);
 

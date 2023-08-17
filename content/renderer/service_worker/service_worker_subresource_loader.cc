@@ -688,6 +688,7 @@ void ServiceWorkerSubresourceLoader::StartResponse(
       }
       return;
   }
+  RecordFetchResponseFrom();
 
   // A response with status code 0 is Blink telling us to respond with network
   // error.

@@ -204,6 +204,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CommitResponse() {
   if (!owner_) {
     return;
   }
+  owner_->RecordFetchResponseFrom();
   owner_->CommitResponseHeaders(head_);
   owner_->CommitResponseBody(
       head_, std::move(data_pipe_for_race_network_request_.consumer),
