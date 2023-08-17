@@ -26,6 +26,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_keymap.h"
@@ -919,7 +920,9 @@ bool InputImeEventRouter::RegisterImeExtension(
           std::string(),  // TODO(uekawa): Set short name.
           layout, languages,
           false,  // 3rd party IMEs are always not for login.
-          component.options_page_url, component.input_view_url));
+          component.options_page_url, component.input_view_url,
+          // Not applicable to 3rd-party IMEs.
+          /*handwriting_language=*/absl::nullopt));
     }
   }
 

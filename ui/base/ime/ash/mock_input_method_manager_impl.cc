@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
 namespace ash {
@@ -57,8 +58,9 @@ InputMethodDescriptor MockInputMethodManagerImpl::State::GetCurrentInputMethod()
     return InputMethodDescriptor(
         current_input_method_id, descriptor.name(), descriptor.indicator(),
         descriptor.keyboard_layout(), descriptor.language_codes(), true,
-        GURL(),   // options page url.
-        GURL());  // input view page url.
+        GURL(),  // options page url.
+        GURL(),  // input view page url.
+        /*handwriting_language=*/absl::nullopt);
   }
   return descriptor;
 }

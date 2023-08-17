@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/fake_input_method_delegate.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -79,8 +80,9 @@ class InputMethodUtilTest : public testing::Test {
     return InputMethodDescriptor(Id(id), description,
                                  indicator,  // Short name used for indicator.
                                  layout, language_codes, is_login_keyboard,
-                                 GURL(),   // options page url
-                                 GURL());  // input view page url
+                                 GURL(),  // options page url
+                                 GURL(),  // input view page url
+                                 /*handwriting_language=*/absl::nullopt);
   }
 
   static std::u16string GetDisplayLanguageName(

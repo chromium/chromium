@@ -31,6 +31,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -463,14 +464,17 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
       std::string layout("us");
       InputMethodDescriptor extension_ime(
           GetExtensionImeId(), "ExtensionIme", "", layout, {"vi"},
-          false /* is_login_keyboard */, GURL(), GURL());
+          false /* is_login_keyboard */, GURL(), GURL(),
+          /*handwriting_language=*/absl::nullopt);
       InputMethodDescriptor component_extension_ime(
           GetComponentExtensionImeId(), "ComponentExtensionIme", "", layout,
-          {"en-US", "en"}, false /* is_login_keyboard */, GURL(), GURL());
+          {"en-US", "en"}, false /* is_login_keyboard */, GURL(), GURL(),
+          /*handwriting_language=*/absl::nullopt);
       InputMethodDescriptor arc_ime(GetArcImeId(), "ArcIme", "", layout,
                                     {ash::extension_ime_util::kArcImeLanguage},
                                     false /* is_login_keyboard */, GURL(),
-                                    GURL());
+                                    GURL(),
+                                    /*handwriting_language=*/absl::nullopt);
       input_methods_ = {extension_ime, component_extension_ime, arc_ime};
     }
 

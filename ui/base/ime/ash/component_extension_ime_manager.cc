@@ -125,7 +125,7 @@ input_method::InputMethodDescriptors
           // Enables extension based xkb keyboards on login screen.
           extension_ime_util::IsKeyboardLayoutExtension(input_method_id) &&
               delegate_->IsInLoginLayoutAllowlist(ime.layout),
-          ime.options_page_url, ime.input_view_url));
+          ime.options_page_url, ime.input_view_url, ime.handwriting_language));
     }
   }
   std::stable_sort(result.begin(), result.end(), InputMethodCompare);

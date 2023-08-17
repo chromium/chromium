@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 
@@ -77,10 +78,24 @@ constexpr char supported_ime_id[] =
     "_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:am:phonetic:arm";
 constexpr char unsupported_ime_id[] =
     "_comp_ime_jkghodnilhceideoidjikpgommlajknkvkd_ethi";
-const InputMethodDescriptor
-    supported(supported_ime_id, {}, {}, {}, {}, {}, {}, {});
-const InputMethodDescriptor
-    unsupported(unsupported_ime_id, {}, {}, {}, {}, {}, {}, {});
+const InputMethodDescriptor supported(supported_ime_id,
+                                      {},
+                                      {},
+                                      {},
+                                      {},
+                                      {},
+                                      {},
+                                      {},
+                                      /* handwriting_language=*/absl::nullopt);
+const InputMethodDescriptor unsupported(unsupported_ime_id,
+                                        {},
+                                        {},
+                                        {},
+                                        {},
+                                        {},
+                                        {},
+                                        {},
+                                        /*handwriting_language=*/absl::nullopt);
 }  // namespace
 
 class CrostiniUnsupportedActionNotifierTest

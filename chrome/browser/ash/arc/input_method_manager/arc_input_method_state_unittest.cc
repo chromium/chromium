@@ -13,6 +13,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 
 namespace arc {
@@ -38,7 +39,8 @@ class FakeDelegate : public ArcInputMethodState::Delegate {
   InputMethodDescriptor BuildInputMethodDescriptor(
       const mojom::ImeInfoPtr& info) const override {
     return InputMethodDescriptor(info->ime_id, "", "", {}, {}, false, GURL(),
-                                 GURL());
+                                 GURL(),
+                                 /*handwriting_language=*/absl::nullopt);
   }
   bool allowed = false;
 };

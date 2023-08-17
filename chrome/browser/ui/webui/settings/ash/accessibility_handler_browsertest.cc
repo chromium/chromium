@@ -25,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -274,9 +275,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, DictationLocalesCalculation) {
     input_method::InputMethodDescriptors imes;
     for (auto& locale : testcase.ime_locales) {
       std::string id = "fake-ime-extension-" + locale;
-      input_method::InputMethodDescriptor descriptor(id, locale, std::string(),
-                                                     std::string(), {locale},
-                                                     false, GURL(), GURL());
+      input_method::InputMethodDescriptor descriptor(
+          id, locale, std::string(), std::string(), {locale}, false, GURL(),
+          GURL(), /*handwriting_language=*/absl::nullopt);
       imes.push_back(descriptor);
     }
     ime_manager->GetInputMethodUtil()->ResetInputMethods(imes);
