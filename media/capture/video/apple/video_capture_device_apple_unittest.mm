@@ -4,7 +4,7 @@
 
 #include "media/capture/video/apple/video_capture_device_apple.h"
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #import "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"

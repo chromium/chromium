@@ -6,8 +6,8 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/bit_cast.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_MAC)

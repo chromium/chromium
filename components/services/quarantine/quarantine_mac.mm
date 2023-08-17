@@ -9,12 +9,12 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/osstatus_logging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/services/quarantine/common.h"

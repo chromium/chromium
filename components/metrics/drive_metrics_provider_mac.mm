@@ -13,10 +13,10 @@
 #include <sys/stat.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 
 namespace metrics {

@@ -9,9 +9,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/ios/ios_util.h"
 #include "base/logging.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
 
 namespace {

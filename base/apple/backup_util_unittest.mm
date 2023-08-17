@@ -7,11 +7,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

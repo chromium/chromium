@@ -9,9 +9,9 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"

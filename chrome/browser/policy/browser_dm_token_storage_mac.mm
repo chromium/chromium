@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/base64url.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -15,7 +16,6 @@
 #include "base/hash/sha1.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"

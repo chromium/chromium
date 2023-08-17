@@ -9,7 +9,7 @@
 #include <IOSurface/IOSurfaceRef.h>
 #include <mach/mach.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/generic_shared_memory_id.h"

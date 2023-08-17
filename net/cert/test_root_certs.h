@@ -14,7 +14,7 @@
 #if BUILDFLAG(IS_IOS)
 #include <CoreFoundation/CFArray.h>
 #include <Security/SecTrust.h>
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #endif
 
 namespace net {

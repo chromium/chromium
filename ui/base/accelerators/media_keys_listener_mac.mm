@@ -8,9 +8,9 @@
 #import <Cocoa/Cocoa.h>
 #include <IOKit/hidsystem/ev_keymap.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/accelerators/accelerator.h"
 

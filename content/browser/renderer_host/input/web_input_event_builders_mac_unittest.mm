@@ -10,8 +10,8 @@
 #include <stddef.h>
 
 #include "base/apple/owned_objc.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

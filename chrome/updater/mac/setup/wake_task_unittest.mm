@@ -6,8 +6,8 @@
 
 #include <Foundation/Foundation.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/constants.h"

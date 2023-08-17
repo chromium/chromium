@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/apple/bridging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/span.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"

@@ -9,7 +9,7 @@
 
 #include <CoreMedia/CoreMedia.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "media/base/decoder_buffer.h"
 #include "media/gpu/media_gpu_export.h"
 

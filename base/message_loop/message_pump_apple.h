@@ -36,8 +36,8 @@
 
 #include <memory>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/stack.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"

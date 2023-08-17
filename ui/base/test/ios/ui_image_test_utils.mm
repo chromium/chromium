@@ -4,7 +4,7 @@
 
 #include "ui/base/test/ios/ui_image_test_utils.h"
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 
 namespace ui::test::uiimage_utils {
 

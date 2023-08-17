@@ -6,7 +6,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/sys_string_conversions.h"

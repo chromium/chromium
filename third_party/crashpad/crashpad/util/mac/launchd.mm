@@ -17,8 +17,8 @@
 #import <Foundation/Foundation.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_launch_data.h"
 #include "base/strings/sys_string_conversions.h"
 #include "util/misc/implicit_cast.h"

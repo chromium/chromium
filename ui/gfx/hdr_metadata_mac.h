@@ -5,7 +5,7 @@
 #ifndef UI_GFX_HDR_METADATA_MAC_H_
 #define UI_GFX_HDR_METADATA_MAC_H_
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space_export.h"
 

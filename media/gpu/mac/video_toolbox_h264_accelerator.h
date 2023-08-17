@@ -11,10 +11,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/sequence_checker.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/media_gpu_export.h"

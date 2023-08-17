@@ -14,8 +14,8 @@
 
 #include <memory>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/power_monitor/power_observer.h"

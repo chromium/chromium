@@ -9,9 +9,9 @@
 #include <algorithm>
 
 #include "base/apple/osstatus_logging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"

@@ -8,9 +8,9 @@
 #include <CoreText/CoreText.h>
 #import <Foundation/Foundation.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/base_export.h"
 #include "base/check.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/types/always_false.h"
 #include "build/build_config.h"
 

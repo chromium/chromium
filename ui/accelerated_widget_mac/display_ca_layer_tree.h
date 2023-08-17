@@ -7,7 +7,7 @@
 
 #include <IOSurface/IOSurfaceRef.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink.h"
 

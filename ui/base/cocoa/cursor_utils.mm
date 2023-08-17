@@ -9,9 +9,9 @@
 
 #include <algorithm>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "ui/base/cursor/cursor.h"

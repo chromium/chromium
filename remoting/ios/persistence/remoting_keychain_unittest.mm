@@ -7,8 +7,8 @@
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/base64.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/rand_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"

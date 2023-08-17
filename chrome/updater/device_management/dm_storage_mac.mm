@@ -8,13 +8,13 @@
 
 #include <string>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"

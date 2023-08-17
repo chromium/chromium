@@ -13,10 +13,10 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/launchd.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "build/branding_buildflags.h"
 
 extern "C" {

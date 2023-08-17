@@ -11,11 +11,11 @@
 #include <stddef.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
 #include "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/hang_watcher.h"

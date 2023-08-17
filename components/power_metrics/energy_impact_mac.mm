@@ -7,8 +7,8 @@
 #include <Foundation/Foundation.h>
 #import <IOKit/IOKitLib.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"

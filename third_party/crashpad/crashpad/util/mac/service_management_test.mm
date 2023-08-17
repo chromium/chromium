@@ -21,7 +21,7 @@
 #include <vector>
 
 #include "base/apple/bridging.h"
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "gtest/gtest.h"

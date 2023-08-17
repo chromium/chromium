@@ -9,9 +9,9 @@
 
 #include <memory>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
 

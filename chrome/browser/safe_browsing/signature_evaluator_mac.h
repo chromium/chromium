@@ -9,8 +9,8 @@
 
 #include <string>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "chrome/browser/safe_browsing/incident_reporting/binary_integrity_incident.h"
 
 namespace safe_browsing {

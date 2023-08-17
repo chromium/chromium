@@ -15,8 +15,8 @@
 #include <string>
 #include <vector>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/queue.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"

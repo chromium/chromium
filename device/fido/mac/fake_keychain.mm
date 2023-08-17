@@ -13,9 +13,9 @@
 #include <sanitizer/lsan_interface.h>
 #endif
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/keychain.h"
 

@@ -12,9 +12,9 @@
 
 #include <string>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

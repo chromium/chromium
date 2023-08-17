@@ -6,8 +6,8 @@
 
 #include <tuple>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "build/build_config.h"
 #include "media/capture/video/apple/test/pixel_buffer_test_utils.h"
 #include "media/capture/video/apple/video_capture_device_avfoundation_utils.h"

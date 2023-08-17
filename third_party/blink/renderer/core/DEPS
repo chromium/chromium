@@ -1,5 +1,6 @@
 include_rules = [
     "+base/apple/bridging.h",
+    "+base/apple/scoped_cftyperef.h",
     "+base/atomic_sequence_num.h",
     "+base/barrier_closure.h",
     "+base/cancelable_callback.h",
@@ -7,7 +8,6 @@ include_rules = [
     "+base/files/file.h",
     "+base/files/file_path.h",
     "+base/mac/foundation_util.h",
-    "+base/mac/scoped_cftyperef.h",
     "+base/memory/scoped_refptr.h",
     "+base/profiler/sample_metadata.h",
     "+base/strings/stringprintf.h",

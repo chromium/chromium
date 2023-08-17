@@ -7,9 +7,9 @@
 #include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #import "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

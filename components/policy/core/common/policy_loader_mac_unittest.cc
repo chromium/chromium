@@ -9,9 +9,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"

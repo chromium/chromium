@@ -4,7 +4,7 @@
 
 #include "media/capture/video/apple/test/fake_av_capture_device_format.h"
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 
 @implementation FakeAVFrameRateRange
 #pragma clang diagnostic push

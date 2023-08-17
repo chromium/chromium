@@ -8,7 +8,7 @@
 #import <VideoToolbox/VideoToolbox.h>
 #include <memory>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "media/capture/capture_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

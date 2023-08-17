@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/apple/bridging.h"
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 
 namespace enterprise_connectors {
 

@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -22,7 +23,6 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"

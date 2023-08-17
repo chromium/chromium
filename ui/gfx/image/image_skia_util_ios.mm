@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "skia/ext/skia_utils_ios.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_scale_factor.h"

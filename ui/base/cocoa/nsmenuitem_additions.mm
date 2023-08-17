@@ -8,8 +8,8 @@
 #include <Carbon/Carbon.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
 
 namespace ui::cocoa {

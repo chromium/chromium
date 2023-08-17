@@ -12,7 +12,7 @@
 #import <CoreVideo/CoreVideo.h>
 #import <IOSurface/IOSurfaceRef.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 
 namespace media {
 

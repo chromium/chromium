@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/apple/bridging.h"
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

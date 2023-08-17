@@ -21,7 +21,7 @@
 #include "base/trace_event/base_tracing.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/third_party/icu/icu_utf.h"
 #endif
 

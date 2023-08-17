@@ -1,4 +1,5 @@
 include_rules = [
+    "+base/apple/scoped_cftyperef.h",
     "+base/check.h",
     "+base/check_op.h",
     "+base/containers/flat_set.h",
@@ -7,7 +8,6 @@ include_rules = [
     "+base/files/file.h",
     "+base/location.h",
     "+base/logging.h",
-    "+base/mac/scoped_cftyperef.h",
     "+base/memory/memory_pressure_listener.h",
     "+base/memory/ref_counted.h",
     "+base/memory/scoped_refptr.h",

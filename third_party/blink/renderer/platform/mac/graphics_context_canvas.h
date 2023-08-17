@@ -7,7 +7,7 @@
 
 #include <ApplicationServices/ApplicationServices.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

@@ -13,8 +13,8 @@
 #include <vector>
 
 #include "base/apple/bridging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/span.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/mock_secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"

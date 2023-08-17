@@ -24,7 +24,7 @@
 #if BUILDFLAG(IS_MAC)
 #include <IOKit/IOTypes.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/scoped_ionotificationportref.h"
 #include "base/power_monitor/battery_level_provider.h"
 #include "base/power_monitor/iopm_power_source_sampling_event_source.h"

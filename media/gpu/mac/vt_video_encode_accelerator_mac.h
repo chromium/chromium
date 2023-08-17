@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"

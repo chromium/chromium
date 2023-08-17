@@ -6,7 +6,7 @@
 
 #include "services/device/geolocation/core_location_provider.h"
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"

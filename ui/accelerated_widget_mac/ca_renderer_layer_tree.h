@@ -12,9 +12,9 @@
 #include <list>
 #include <memory>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

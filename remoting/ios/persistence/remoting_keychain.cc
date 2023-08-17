@@ -6,8 +6,8 @@
 
 #import <Security/Security.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 

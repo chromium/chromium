@@ -7,6 +7,7 @@
 
 #include <fcntl.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -14,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"

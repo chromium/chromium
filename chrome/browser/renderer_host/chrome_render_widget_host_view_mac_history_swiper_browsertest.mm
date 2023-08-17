@@ -4,9 +4,9 @@
 
 #include <Cocoa/Cocoa.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"

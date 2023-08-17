@@ -61,7 +61,7 @@
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #endif
 
 using ppapi::thunk::EnterResourceNoLock;

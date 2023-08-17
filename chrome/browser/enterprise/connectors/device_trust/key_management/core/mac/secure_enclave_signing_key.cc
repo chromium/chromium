@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 #include "crypto/signature_verifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

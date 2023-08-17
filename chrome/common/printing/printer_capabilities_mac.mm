@@ -6,10 +6,10 @@
 
 #import <AppKit/AppKit.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"

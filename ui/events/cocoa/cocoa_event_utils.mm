@@ -7,7 +7,7 @@
 #include <Carbon/Carbon.h>  // for <HIToolbox/Events.h>
 #include <IOKit/hidsystem/IOLLEvent.h>  // for NX_ constants
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 

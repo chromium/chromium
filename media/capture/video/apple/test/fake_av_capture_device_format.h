@@ -8,7 +8,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 
 // Create a subclass of AVFrameRateRange because there is no API to initialize
 // a custom AVFrameRateRange.

@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #include <Security/Security.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/memory/ref_counted.h"
 #include "ios/web/public/security/security_style.h"
 

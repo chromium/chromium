@@ -7,8 +7,8 @@
 #include <Foundation/Foundation.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h"

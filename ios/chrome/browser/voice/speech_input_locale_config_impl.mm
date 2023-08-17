@@ -7,9 +7,9 @@
 #import <Foundation/Foundation.h>
 
 #import "base/apple/bundle_locations.h"
+#import "base/apple/scoped_cftyperef.h"
 #import "base/containers/contains.h"
 #import "base/mac/foundation_util.h"
-#import "base/mac/scoped_cftyperef.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/voice/speech_input_locale_match.h"

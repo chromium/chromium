@@ -11,8 +11,8 @@
 #include <IOKit/storage/IOStorageProtocolCharacteristics.h>
 #include <stdint.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"

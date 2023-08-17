@@ -6,8 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "third_party/libyuv/include/libyuv/convert_argb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

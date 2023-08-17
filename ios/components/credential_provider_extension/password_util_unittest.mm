@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
-#import "base/mac/scoped_cftyperef.h"
+#import "base/apple/scoped_cftyperef.h"
 #import "base/strings/sys_string_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"

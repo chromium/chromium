@@ -9,8 +9,8 @@
 #include <stddef.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/scoped_cftyperef.h"
 #import "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/font.h"
 

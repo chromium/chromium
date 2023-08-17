@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/apple/bridging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 

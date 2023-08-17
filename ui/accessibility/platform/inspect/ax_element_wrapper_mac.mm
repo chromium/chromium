@@ -10,11 +10,11 @@
 #include <ostream>
 
 #include "base/apple/bridging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/pattern.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"

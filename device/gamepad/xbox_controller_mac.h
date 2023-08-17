@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/scoped_ioplugininterface.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"

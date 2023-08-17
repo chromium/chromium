@@ -7,7 +7,7 @@
 
 #include <CoreText/CoreText.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/platform_font.h"

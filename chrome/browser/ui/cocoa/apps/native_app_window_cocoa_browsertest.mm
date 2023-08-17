@@ -8,9 +8,9 @@
 
 #include <memory>
 
+#import "base/apple/scoped_cftyperef.h"
 #include "base/functional/callback_helpers.h"
 #import "base/mac/foundation_util.h"
-#import "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

@@ -4,7 +4,7 @@
 
 #include "services/shape_detection/face_detection_impl_mac.h"
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "services/shape_detection/detection_utils_mac.h"
 
 namespace shape_detection {

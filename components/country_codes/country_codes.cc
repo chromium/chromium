@@ -18,7 +18,7 @@
 #include <windows.h>
 #undef IN  // On Windows, windef.h defines this, which screws up "India" cases.
 #elif BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

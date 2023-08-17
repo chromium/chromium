@@ -8,10 +8,10 @@
 #import <CoreServices/CoreServices.h>                      // pre-macOS 11
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>  // macOS 11
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"

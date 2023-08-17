@@ -7,8 +7,8 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <Security/Security.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 
 namespace extensions {

@@ -15,6 +15,7 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/base_switches.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
@@ -30,7 +31,6 @@
 #include "base/mac/foundation_util.h"
 #import "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

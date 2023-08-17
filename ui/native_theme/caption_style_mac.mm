@@ -5,8 +5,8 @@
 #include <AppKit/AppKit.h>
 #include <MediaAccessibility/MediaAccessibility.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "skia/ext/skia_utils_mac.h"

@@ -13,9 +13,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioplugininterface.h"
 #include "base/memory/raw_ptr.h"
 #include "services/device/public/mojom/usb_device.mojom.h"

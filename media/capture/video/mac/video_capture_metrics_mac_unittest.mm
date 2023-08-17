@@ -8,7 +8,7 @@
 #include <CoreMedia/CoreMedia.h>
 #import <Foundation/Foundation.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "media/base/video_types.h"
 #include "testing/gmock/include/gmock/gmock.h"

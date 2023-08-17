@@ -9,9 +9,9 @@
 
 #include <map>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

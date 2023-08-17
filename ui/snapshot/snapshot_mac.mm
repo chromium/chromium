@@ -6,9 +6,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 

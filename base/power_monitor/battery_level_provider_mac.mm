@@ -8,8 +8,8 @@
 #include <IOKit/IOKitLib.h>
 #include <IOKit/ps/IOPSKeys.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 
 namespace base {
