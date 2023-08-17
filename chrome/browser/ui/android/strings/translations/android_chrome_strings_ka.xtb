@@ -3,6 +3,7 @@
 <translationbundle lang="ka">
 <translation id="1011749477052068769">აქ გადმოტანა</translation>
 <translation id="1016498331642356377">სწრაფად მოიძიეთ ხმის მეშვეობით. ამ მალსახმობის რედაქტირებისთვის შეეხეთ ხანგრძლივად.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">იგზავნება <ph name="DEVICE_NAME" />-ზე…</translation>
 <translation id="103269572468856066">ამ საიტებისა და აპების მონაცემთა გასუფთავებაც გსურთ?</translation>
 <translation id="1034259925032978114">ფანჯარა გახსნილია</translation>
@@ -52,6 +53,7 @@
 <translation id="1240288207750131269">იტვირთება <ph name="LANG" /></translation>
 <translation id="1240903469550363138">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს სახელს, ელფოსტის მისამართსა და პროფილის სურათს. გაეცანით ამ საიტის <ph name="BEGIN_LINK1" />კონფიდენციალურობის დებულებასა<ph name="END_LINK1" /> და <ph name="BEGIN_LINK2" />მომსახურების პირობებს<ph name="END_LINK2" />.</translation>
 <translation id="124116460088058876">სხვა ენები</translation>
+<translation id="1241792820757384812">თქვენი პაროლები წაიშლება Google პაროლების მმართველიდან <ph name="CHROME_CHANNEL" />-სთვის. პაროლების თქვენ მიერ ახლახან ჩამოტვირთული ფაილი შენარჩუნდება.</translation>
 <translation id="1242883863226959074">მოწყობილობა</translation>
 <translation id="124678866338384709">მიმდინარე ჩანართის დახურვა</translation>
 <translation id="1246905108078336582">გსურთ შემოთავაზების გაცვლის ბუფერიდან ამოშლა?</translation>
@@ -432,6 +434,7 @@
 <translation id="3303414029551471755">გაგრძელდეს შინაარსის ჩამოტვირთვა?</translation>
 <translation id="3305130791745726624">მოწყობილობებზე გაგზავნა</translation>
 <translation id="3305795716056605962">თარგმნეთ გვერდები „სხვა ვარიანტების“ ღილაკის მეშვეობით</translation>
+<translation id="3324393723900507254">არჩეულია <ph name="TEMPLATE_TITLE" /> შაბლონი</translation>
 <translation id="3334729583274622784">გსურთ ფაილის გაფართოების შეცვლა?</translation>
 <translation id="3341262203274374114">თვალის მიდევნების გაუქმება ვერ მოხერხდა. წარმოიქმნა შეფერხება.</translation>
 <translation id="3359667936385849800">სერვისის ამჟამინდელი პროვაიდერის გამოყენება</translation>
@@ -577,6 +580,7 @@
 <translation id="4124152339699379357">შეტყობინების ნებართვის ნაკადი გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="4135200667068010335">მოწყობილობების სია, რომლებთანაც უნდა გაზიარდეს ჩანართი, დახურულია.</translation>
 <translation id="4137746084635924146">მოწყობილობის ამჟამინდელი ენა</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">ნაგულისხმევად მოთხოვნილია დესკტოპის საიტები</translation>
 <translation id="4147131678541801076">როცა საცდელი ვერსია ჩართულია, სპამისა და თაღლითობისგან დაცვა ფუნქციონირებს პირადი მდგომარეობის ჟეტონების საფუძველზე და ეხმარება საიტებს თაღლითობასთან ბრძოლაში, ასევე, ბოტების ადამიანებისგან გარჩევაში.
 
@@ -1070,6 +1074,7 @@
 <translation id="6649642165559792194">სურათის გადახედვა <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">პაროლი</translation>
 <translation id="6659594942844771486">ჩანართი</translation>
+<translation id="6662119761881114773">ამ მოწყობილობაზე შენახული პაროლების გამოყენება ამჟამად ვერ ხერხდება Chrome-ის სხვადასხვა არხზე. Chrome-ის ვერსია 121-ის შემდეგ, თქვენს მოწყობილობაზე Chrome-ისა და <ph name="CHROME_CHANNEL" />-ისთვის შენახული პაროლები გაერთიანდება და მათი გამოყენება შესაძლებელი იქნება ორივე აპში.</translation>
 <translation id="666731172850799929">გახსნა <ph name="APP_NAME" />-ში</translation>
 <translation id="6671495933530132209">გამოსახულების კოპირება</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" />-ის დამატება</translation>
@@ -1249,6 +1254,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{ჩამოიტვირთა <ph name="FILES_DOWNLOADED_ONE" /> ფაილი}other{ჩამოიტვირთა <ph name="FILES_DOWNLOADED_MANY" /> ფაილი}}</translation>
 <translation id="7581273696622423628">გამოკითხვაში მონაწილეობის მიღება</translation>
 <translation id="7583262514280211622">აქ თქვენს საკითხავ სიას იპოვით</translation>
+<translation id="7587250070160020374">Chrome ახლა უკრავს</translation>
 <translation id="7588219262685291874">მუქი თემის ჩართვა მოწყობილობაზე ბატარეის დამზოგის გააქტიურებისას</translation>
 <translation id="7594687499944811403">ნება დართეთ <ph name="EMBEDDED_ORIGIN" />-ს, რომ დაადასტუროს თქვენი ვინაობა <ph name="TOP_ORIGIN" />-ისთვის</translation>
 <translation id="7596558890252710462">ოპერაციული სისტემა</translation>
@@ -1321,6 +1327,7 @@
 <translation id="7944772052836377867">სინქრონიზაციის ფუნქციას სჭირდება თქვენი ვინაობის დადასტურება</translation>
 <translation id="7947953824732555851">მიღება და შესვლა</translation>
 <translation id="7957413488482743710">ვირტუალური ბარათი დამალავს თქვენს რეალურ ბარათს, რაც დაგიცავთ თაღლითობის პოტენციური შემთხვევებისგან. <ph name="BEGIN_LINK1" />შეიტყვეთ მეტი ვირტუალური ბარათების შესახებ<ph name="END_LINK1" /></translation>
+<translation id="7960972236129063347">ღილაკი „უკან“ გვერდის ანალიზში</translation>
 <translation id="7961926449547174351">მეხსიერებაზე წვდომა გათიშული გაქვთ. ჩასართავად გადადით პარამეტრებზე.</translation>
 <translation id="7963646190083259054">მომწოდებელი:</translation>
 <translation id="7965838025086216108">შენახული პაროლების გამოყენება შეგიძლიათ ნებისმიერ მოწყობილობაზე. ისინი Google პაროლების მმართველის მიერ <ph name="ACCOUNT" />-ისთვის ინახება.</translation>
@@ -1563,6 +1570,7 @@
 <translation id="9158770349521403363">მხოლოდ კონტენტის გაზიარება</translation>
 <translation id="9159716826369098114">ჩანართების ჯგუფის (<ph name="TAB_COUNT" />), როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.</translation>
 <translation id="9169507124922466868">ნავიგაციის ისტორია ნახევრადგახსნილია</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">ისტორია თქვენს ყველა სინქრონიზებულ მოწყობილობაზე გაქვთ ჩართული, ამიტომ შეგიძლიათ არ მოცდეთ</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{შემოწმდა 1 წუთის წინ}other{შემოწმდა # წუთის წინ}}</translation>
 <translation id="9204021776105550328">მიმდინარეობს წაშლა</translation>
@@ -1577,6 +1585,7 @@
 <translation id="926205370408745186">ციფრული კომფორტიდან Chrome-ში თქვენი აქტივობის ამოშლა</translation>
 <translation id="927968626442779827">გამოიყენეთ Lite რეჟიმი Google Chrome-ში</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> თვალმიდევნებულია</translation>
+<translation id="93533588269984624">ყველა პაროლი ჩამოიტვირთება თქვენს მოწყობილობაზე და წაიშლება <ph name="CHROME_CHANNEL" />-დან</translation>
 <translation id="938850635132480979">შეცდომა: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">შეიყვანეთ საიდუმლო ფრაზა</translation>
 <translation id="952301137339791907">გვერდის ანალიზის ქვედა ფურცელი გახსნილია</translation>

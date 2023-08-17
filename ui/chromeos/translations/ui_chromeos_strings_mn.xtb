@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Нийт файлын тоо</translation>
 <translation id="1755345808328621801">Энэ файл Windows программ хангамжийг ашиглаж буй PC-нд зориулагдсан. Энэ нь таны ChromeOS-г ажиллуулдаг төхөөрөмжид тохирохгүй. Chrome Веб Дэлгүүрээс орлуулж болох тохирох аппыг хайна уу.</translation>
 <translation id="1757915090001272240">Латин цагаан толгойгоор</translation>
+<translation id="1761091787730831947"><ph name="VM_NAME" />-тай хуваалцах</translation>
 <translation id="1773212559869067373">Баталгаажуулалтын гэрчилгээг түтгэлзүүлсэн байна</translation>
 <translation id="1775381402323441512">Видеоны мэдээлэл</translation>
 <translation id="180035236176489073">Та эдгээр файлуудад хандахын тулд онлайн байх ёстой.</translation>
@@ -210,6 +211,7 @@
 <translation id="2718540689505416944">Linux-р апп суулгах</translation>
 <translation id="2719020180254996569">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />,<ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="2724954091494693138">F-гартай турк</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" />-н хуваалцахыг удирдах</translation>
 <translation id="2732839045120506979">Вьетнам VNI</translation>
 <translation id="2735623501230989521">Parallels Desktop-д <ph name="FOLDER_NAME" /> фолдерын файлуудад хандах зөвшөөрөл өгнө үү</translation>
 <translation id="2764206540577097904">Та Google Workspace-н хувь хүний хадгалах сангаа бүгдийг нь ашигласан байна.</translation>
@@ -304,6 +306,7 @@
 <translation id="3509680540198371098">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> зүйлийг синк хийхээр бэлтгэж байна...</translation>
 <translation id="3522708245912499433">Португал</translation>
+<translation id="3523225005467146490"><ph name="VM_NAME" />-тай 1 фолдер хуваалцсан</translation>
 <translation id="3524311639100184459">Анхааруулга: Эдгээр файл нь түр зуурын файлууд бөгөөд дискийн зайг чөлөөлөхийн тулд автоматаар устгаж болно.  <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Хавтас</translation>
 <translation id="3548125359243647069">ПИН-г хэт олон удаа буруу оруулсан байна.</translation>
@@ -657,6 +660,7 @@
 <translation id="6164412158936057769">Эрвээхий</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
+<translation id="6181912134988520389"><ph name="VM_NAME" />-д таны Google Драйвын файлуудад хандах зөвшөөрөл өгнө үү. Өөрчлөлтүүдийг таны бусад төхөөрөмжид синк хийнэ.</translation>
 <translation id="6187719147498869044">Унгар</translation>
 <translation id="6198252989419008588">ПИН кодыг өөрчлөх</translation>
 <translation id="6199801702437275229">Орон зайн мэдээлэл хүлээж байна ...</translation>
@@ -760,6 +764,7 @@
 <translation id="6989942356279143254">Швед</translation>
 <translation id="6990081529015358884">Таны хангалттай зай алга байна.</translation>
 <translation id="6993826899923627728">Эдгээр зүйл таны хогийн саванд байна</translation>
+<translation id="6996593023542748157"><ph name="VM_NAME" />-тай фолдер хуваалцах</translation>
 <translation id="7008426324576352165">Танай байгууллагад байршуулалтыг дуусгахад илүү их хадгалах сан шаардлагатай.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> файлыг зөөхийг администраторын бодлогоор блоклосон</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -849,6 +854,7 @@
 <translation id="76959938259365003">Хогийн савыг хоосолж чадсангүй.</translation>
 <translation id="770015031906360009">Грек</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" />-г хуулсан.</translation>
+<translation id="7707941139430559579">Файлыг зөөх боломжгүй. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Энэ сүлжээг ашиглахын тулд та оператор компаниас олгосон 8 оронтой Блокоос гаргах хувийн түлхүүр (PUK)-г оруулах шаардлагатай.</translation>
 <translation id="7711920809702896782">Зургийн мэдээлэл</translation>
 <translation id="7724603315864178912">Хайчлах</translation>
@@ -945,6 +951,7 @@
 <translation id="8335837413233998004">Беларусь</translation>
 <translation id="8336153091935557858">Өчигдөр <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Ийм нэртэй файл болон файлын хадгалалтын сан байна.</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" />-д <ph name="FOLDER_NAME" /> фолдерын файлуудад хандах зөвшөөрөл өгнө үү</translation>
 <translation id="8372369524088641025">WEP сул түлхүүр байна</translation>
 <translation id="8372852072747894550">Грек</translation>
 <translation id="8386903983509584791">Шалгаж дууслаа</translation>
@@ -954,6 +961,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> сүлжээ, холбогдож байна</translation>
 <translation id="8425213833346101688">Өөрчлөлт</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
+<translation id="8429998526804961548"><ph name="VM_NAME" />-тай <ph name="NUMBER_OF_ITEMS" /> фолдер хуваалцсан</translation>
 <translation id="8431909052837336408">SIM-н ПИН-г өөрчлөх</translation>
 <translation id="8437209419043462667">АНУ</translation>
 <translation id="8452135315243592079">SIM карт олдсонгүй</translation>

@@ -1108,6 +1108,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">අප ඔබව වඩා හොඳ ජාලයකට මාරු කර ඇත</translation>
 <translation id="5619862035903135339">පරිපාලක ප්‍රතිපත්තිය තිර ග්‍රහණය අබල කරයි</translation>
+<translation id="5620856676199877916">Google පන්තිකාමරය වෙබ් අඩවියෙහි සියලු ම පන්ති වැඩ බලන්න</translation>
 <translation id="5620979661744857819">මෙය <ph name="APP_NAME" /> සහ කැමරා සහ මයික්‍රොෆෝන අවසර සහිත සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා ප්‍රවේශයට ඉඩ දෙයි. ඔබට වෙබ් පිටුව නැවුම් කිරීමට හෝ යෙදුම නැවත ආරම්භ කිරීමට අවශ්‍ය වේවි.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ඔබේ මුරපදය සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
@@ -1239,6 +1240,7 @@
 <translation id="6154006699632741460">උපාංග සහාය නොදක්වයි</translation>
 <translation id="6156960295318603523">භාෂා සැකසීම්</translation>
 <translation id="615957422585914272">තිරය-මත යතුරුපුවරුව පෙන්වන්න</translation>
+<translation id="616543563528926612">දකුණු-ක්ලික් කිරීමේ කෙටිමඟ alt + <ph name="LAUNCHER_KEY_NAME" /> යතුරෙන් ක්ලික් කිරීම + ක්ලික් කිරීම වෙත යාවත්කාලීන කර ඇත</translation>
 <translation id="6165508094623778733">තව දැන ගන්න</translation>
 <translation id="6166852626429024716">ඔබේ උපාංගය, යෙදුම්, සැකසීම්, වෙබය තුළ සොයන්න...</translation>
 <translation id="6167922743323004256">ඔබේ <ph name="DEVICE_TYPE" /> මත ඔබේ දුරකථනයේ මෑත ඡායාරූප සහ මාධ්‍ය බැලීම සැකසීම අස් කරන්න</translation>
@@ -1531,6 +1533,7 @@
 <translation id="7497767806359279797">භාෂාව සහ යතුරු පුවරුව තෝරන්න</translation>
 <translation id="7508690557411636492">පසුගිය මාසයේ විවෘත කරන ලදි</translation>
 <translation id="7509246181739783082">ඔබගේ අනන්‍යතාව සත්‍යාපනය කරන්න</translation>
+<translation id="7512509370370076552">දකුණු-ක්ලික් කිරීමේ කෙටිමඟ <ph name="LAUNCHER_KEY_NAME" /> යතුර + alt වෙතින් ක්ලික් කිරීම + ක්ලික් කිරීම වෙත යාවත්කාලීන කර ඇත</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, තෝරා නැත</translation>
 <translation id="7513622367902644023">තිර රූ ප්‍රකාරය තෝරන ලදි</translation>
 <translation id="7513922695575567867">දින දර්ශනය, <ph name="DATE" /> හි සතිය, දැනට <ph name="SELECTED_DATE" /> තෝරා ඇත.</translation>
@@ -1636,6 +1639,7 @@
 <translation id="7904094684485781019">මෙම ගිනුමේ පරිපාලක විසින් බහු පිවිසුම් වලට අවසර දී නොමැත.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">උපාංග <ph name="DEVICECOUNT" /> ක් සම්බන්ධ කර ඇත</translation>
+<translation id="7926080067315048321">වෙබය මත Google කාර්ය මත සියලු කාර්යයන් බලන්න</translation>
 <translation id="7930731167419639574">කථනය දැන් ස්ථානීයව සකසන අතර අනුලේඛනය නොබැඳිව ක්‍රියා කරයි.</translation>
 <translation id="7932451802722951285">Google දින දර්ශනය තුළ විවෘත කරන්න</translation>
 <translation id="7933084174919150729">Google සහායක මූලික පැතිකඩ සඳහා පමණක් ලබා ගත හැකිය.</translation>

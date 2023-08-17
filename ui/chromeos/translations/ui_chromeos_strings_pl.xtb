@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">Szukam sieci komórkowych</translation>
 <translation id="1293556467332435079">Pliki</translation>
 <translation id="1297922636971898492">Dysk Google nie jest teraz dostępny. Gdy znów będzie można z niego korzystać, przesyłanie zostanie automatycznie wznowione.</translation>
+<translation id="1306130176943817227">Nie można usunąć. Element jest używany.</translation>
 <translation id="1307931752636661898">Nie można wyświetlić plików Linuksa</translation>
 <translation id="1313405956111467313">Automatyczna konfiguracja serwera proxy</translation>
 <translation id="134645005685694099">Na urządzeniu jest za mało miejsca, aby nadal synchronizować pliki. Nowe pliki nie będą już automatycznie synchronizowane.</translation>
@@ -537,6 +538,7 @@
 <translation id="5218183485292899140">szwajcarski francuski</translation>
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="5253070652067921974">Autor:</translation>
+<translation id="5254207638927440400">Nie można przenieść pliku. Jest on używany.</translation>
 <translation id="5257456363153333584">Ważka</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Korzystaj z plików, gdziekolwiek jesteś – nawet offline.<ph name="MARKUP_2" />
     Pliki zapisane na Dysku Google są zawsze aktualne i dostępne z dowolnego urządzenia.<ph name="MARKUP_3" />
@@ -852,6 +854,7 @@
 <translation id="76959938259365003">Nie udało się opróżnić kosza.</translation>
 <translation id="770015031906360009">Grecki</translation>
 <translation id="7705251383879779343">Plik <ph name="FILE_NAME" /> został skopiowany.</translation>
+<translation id="7707941139430559579">Nie udało się przenieść pliku. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Aby skorzystać z tej sieci, musisz wpisać 8-cyfrowy PUK otrzymany od operatora.</translation>
 <translation id="7711920809702896782">Informacje o pliku graficznym</translation>
 <translation id="7724603315864178912">Wytnij</translation>

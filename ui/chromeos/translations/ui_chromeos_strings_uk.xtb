@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Усього файлів</translation>
 <translation id="1755345808328621801">Цей файл створено для ПК з програмним забезпеченням Windows. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. Знайдіть відповідний додаток у Веб-магазині Chrome.</translation>
 <translation id="1757915090001272240">Розширена латиниця</translation>
+<translation id="1761091787730831947">Поділитися з <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Сертифікат автентифікації відхилений локально</translation>
 <translation id="1775381402323441512">Інформація про відео</translation>
 <translation id="180035236176489073">Щоб отримати доступ до цих файлів, потрібно перебувати в режимі онлайн.</translation>
@@ -210,6 +211,7 @@
 <translation id="2718540689505416944">Установити додаток для Linux</translation>
 <translation id="2719020180254996569">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />. Докладніше</translation>
 <translation id="2724954091494693138">Турецька, розкладка FGĞIOD</translation>
+<translation id="2732288874651063549">Керувати параметрами спільного доступу для <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">В'єтнамська, VNI</translation>
 <translation id="2735623501230989521">Надати додатку Parallels Desktop доступ до файлів у папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="2764206540577097904">Ваше індивідуальне сховище Google Workspace заповнено.</translation>
@@ -304,6 +306,7 @@
 <translation id="3509680540198371098">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>
 <translation id="3511705761158917664">Підготовка до синхронізації файлів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">Португальська</translation>
+<translation id="3523225005467146490"><ph name="VM_NAME" /> надано доступ до 1 папки</translation>
 <translation id="3524311639100184459">Увага: ці файли тимчасові й можуть автоматично видалятися, щоб звільнити місце на диску.  <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3548125359243647069">Ви ввели неправильний PIN-код забагато разів.</translation>
@@ -660,6 +663,7 @@
 <translation id="6164412158936057769">Метелики</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6170470584681422115">Сендвіч</translation>
+<translation id="6181912134988520389">Ви надаєте <ph name="VM_NAME" /> дозвіл на доступ до файлів на Google Диску. Зміни буде синхронізовано на інших ваших пристроях.</translation>
 <translation id="6187719147498869044">Угорська</translation>
 <translation id="6198252989419008588">Змінити PIN-код</translation>
 <translation id="6199801702437275229">Очікування даних про вільне місце...</translation>
@@ -763,6 +767,7 @@
 <translation id="6989942356279143254">Шведська</translation>
 <translation id="6990081529015358884">У вас недостатньо місця</translation>
 <translation id="6993826899923627728">Ці об’єкти містяться в кошику</translation>
+<translation id="6996593023542748157">Поділитися папкою з <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Щоб завершити завантаження, вашій організації потрібно більше пам’яті.</translation>
 <translation id="7009985720488544166">Адміністратор заборонив переміщувати файли (<ph name="COUNT" />)</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" />: <ph name="ROOT_SUMMARY" /></translation>
@@ -948,6 +953,7 @@
 <translation id="8335837413233998004">Білоруська</translation>
 <translation id="8336153091935557858">Учора <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Файл або каталог з таким же ім’ям уже існує.</translation>
+<translation id="83651606385705612">Ви надаєте <ph name="VM_NAME" /> дозвіл на доступ до файлів у папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="8372369524088641025">Поганий WEP-ключ</translation>
 <translation id="8372852072747894550">Грецька</translation>
 <translation id="8386903983509584791">Сканування завершено</translation>
@@ -957,6 +963,7 @@
 <translation id="8408068190360279472">Мережа <ph name="NETWORK_TYPE" />: підключення</translation>
 <translation id="8425213833346101688">Змінити</translation>
 <translation id="8428213095426709021">Налаштування</translation>
+<translation id="8429998526804961548"><ph name="VM_NAME" /> має доступ до стількох папок: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="8431909052837336408">Змінити PIN-код SIM-карти</translation>
 <translation id="8437209419043462667">Американська</translation>
 <translation id="8452135315243592079">Немає SIM-карти</translation>

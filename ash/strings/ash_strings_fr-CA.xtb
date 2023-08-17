@@ -1085,6 +1085,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5601503069213153581">NIP</translation>
 <translation id="5618148318840095371">Nous vous avons connecté à un meilleur réseau</translation>
 <translation id="5619862035903135339">La politique définie par l'administrateur désactive les captures d'écran</translation>
+<translation id="5620856676199877916">Afficher tout le matériel de salle de classe sur le site Web de Google Classroom</translation>
 <translation id="5620979661744857819">Cela autorise l'accès pour <ph name="APP_NAME" /> et pour toutes les applications et tous les sites Web disposant des autorisations d'accès à l'appareil photo et au microphone. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Votre mot de passe n'a pas pu être vérifié. Réessayez.</translation>
@@ -1214,6 +1215,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6154006699632741460">Ce périphérique n'est pas pris en charge</translation>
 <translation id="6156960295318603523">Paramètres de langue</translation>
 <translation id="615957422585914272">Afficher le clavier à l'écran</translation>
+<translation id="616543563528926612">L'ancien raccourci pour le clic droit (<ph name="LAUNCHER_KEY_NAME" />+clic) a été mis à jour par alt+clic</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6166852626429024716">Rechercher sur votre appareil, dans vos applications, dans vos paramètres, sur le Web…</translation>
 <translation id="6168318496333165060">Ouvrir l'application Diagnostics</translation>
@@ -1501,6 +1503,7 @@ Nouvelle installation</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
 <translation id="7508690557411636492">Ouvert au cours du dernier mois</translation>
 <translation id="7509246181739783082">Vérifier votre identité</translation>
+<translation id="7512509370370076552">L'ancien raccourci pour le clic droit (alt+clic) a été mis à jour par touche <ph name="LAUNCHER_KEY_NAME" />+clic</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, non sélectionné(s)</translation>
 <translation id="7513622367902644023">Mode de capture d'écran sélectionné</translation>
 <translation id="7513922695575567867">Agenda, semaine du <ph name="DATE" />, le <ph name="SELECTED_DATE" /> est actuellement sélectionné.</translation>
@@ -1604,6 +1607,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7904094684485781019">L'administrateur de ce compte a désactivé la connexion multicompte.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> appareils connectés</translation>
+<translation id="7926080067315048321">Afficher toutes les tâches dans Google Tâches sur le Web</translation>
 <translation id="7930731167419639574">La langue suivante est maintenant traitée localement et la fonctionnalité Dictée fonctionne hors ligne</translation>
 <translation id="7932451802722951285">Ouvrir dans Google Agenda</translation>
 <translation id="7933084174919150729">L'Assistant Google n'est offert que pour le profil principal.</translation>

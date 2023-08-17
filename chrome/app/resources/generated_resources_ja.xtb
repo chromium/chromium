@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">データの暗号化</translation>
 <translation id="1072700771426194907">USB デバイスが検出されました</translation>
 <translation id="107278043869924952">パスワードに加えて PIN を使用する</translation>
+<translation id="107450319332239199">エラーが発生しました。ウィンドウを手動で開いてください。</translation>
 <translation id="1076176485976385390">テキスト カーソルを使ってページ間を移動する</translation>
 <translation id="1076382954055048850">他のキャスト セッションを表示</translation>
 <translation id="1076698951459398590">テーマを有効にする</translation>
@@ -1164,6 +1165,7 @@
 <translation id="1925124445985510535">安全確認を <ph name="TIME" /> に実行しました</translation>
 <translation id="192564025059434655">古いバージョンの Chrome アプリを Windows デバイスで使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうか確認してみてください。</translation>
 <translation id="1926339101652878330">これらの設定は会社のポリシーによって制御されています。詳しくは管理者にお尋ねください。</translation>
+<translation id="1926887872692564784">カーソル</translation>
 <translation id="1927632033341042996">指紋 <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">画面ロックの PIN</translation>
 <translation id="192858925209436740">OneDrive をファイル アプリに接続して、保存したドキュメントを Chromebook から管理できるようにします。Microsoft アカウントでログインする必要があります。</translation>
@@ -3261,6 +3263,7 @@
 <translation id="3653887973853407813">この拡張機能は使用できません。保護者が Chrome の [サイト、アプリ、拡張機能の権限] をオフにしています。</translation>
 <translation id="3653999333232393305"><ph name="HOST" /> によるマイクへのアクセスを引き続き許可する</translation>
 <translation id="3654045516529121250">ユーザー補助設定の読み取り</translation>
+<translation id="3656328935986149999">カーソル速度</translation>
 <translation id="3658871634334445293">TrackPoint アクセラレーション</translation>
 <translation id="3659550105763988702"><ph name="APP_NAME" /> のパスキーを使用する</translation>
 <translation id="3659929705630080526">間違ったアクセスコードを複数回入力しました。しばらくしてからもう一度お試しください</translation>
@@ -3974,6 +3977,7 @@
 <translation id="4232375817808480934">Kerberos の設定</translation>
 <translation id="4233739489690259993">この Chromebook は、セキュリティ アップデートとソフトウェア アップデートの提供が終了しました。最新のセキュリティと新機能でデバイスをアップグレードしましょう。特典の利用規約が適用されます。</translation>
 <translation id="4235965441080806197">ログインをキャンセル</translation>
+<translation id="4235976607074422892">スクロール速度</translation>
 <translation id="4237282663517880406">Google ドライブの検索候補を表示する</translation>
 <translation id="4241182343707213132">再起動して組織のアプリを更新してください</translation>
 <translation id="4242145785130247982">サポートされていないクライアント証明書が複数あります</translation>
@@ -5295,6 +5299,7 @@
 <translation id="5365881113273618889">選択したフォルダには、機密ファイルが含まれています。このフォルダに対する永続的な書き込みアクセス権を「<ph name="APP_NAME" />」に付与してもよろしいですか？</translation>
 <translation id="536638840841140142">なし</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" /> から「<ph name="NETWORK_NAME" />」を保存しました</translation>
+<translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> のパスワードを作成</translation>
 <translation id="5368720394188453070">スマートフォンがロックされています。ログインするにはロックを解除してしてください。</translation>
 <translation id="5368779022775404937"><ph name="REALM" /> にログインしてください</translation>
 <translation id="536882527576164740">{0,plural, =1{シークレット}other{シークレット（#）}}</translation>
@@ -8623,6 +8628,7 @@
 <translation id="8137559199583651773">拡張機能を管理</translation>
 <translation id="8138217203226449454">検索プロバイダを変更するつもりでしたか？</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> ステータス</translation>
+<translation id="8139440916039659819">カーソル アクセラレーション</translation>
 <translation id="8139447493436036221">Google ドライブのファイル</translation>
 <translation id="8139643636835015859">オフライン ファイルの使用容量 <ph name="OFFLINE_STORAGE_SIZE" /> が空きます。一部のファイルは引き続きオフラインで使用可能です。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />、<ph name="SECOND_DEVICE" /></translation>
@@ -9086,6 +9092,7 @@
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">スピーカー</translation>
 <translation id="8527257351549797148">アプリや拡張機能などにアクセスできるように組織から登録を求められる場合があります。登録により、セキュリティやデバイス設定なども組織で管理できるようになります。</translation>
+<translation id="8527869672961320915"><ph name="VM_NAME" /> アプリ</translation>
 <translation id="8528074251912154910">言語を追加</translation>
 <translation id="8528479410903501741">IBAN を保存</translation>
 <translation id="8528962588711550376">ログインしています。</translation>
@@ -9342,6 +9349,7 @@
 <translation id="8736288397686080465">このサイトはバックグラウンドで更新されました。</translation>
 <translation id="8737709691285775803">サクラ</translation>
 <translation id="8737914367566358838">ページを翻訳する言語を選択してください</translation>
+<translation id="8740086188450289493">Google アカウントのパスワードを使用</translation>
 <translation id="8740247629089392745">この Chromebook を <ph name="SUPERVISED_USER_NAME" /> に渡す準備ができました。設定はあと少しで完了です。</translation>
 <translation id="8740672167979365981">ChromeOS Flex の更新が必要です</translation>
 <translation id="8741944563400125534">スイッチ アクセス設定ガイド</translation>
@@ -9644,6 +9652,7 @@
 <translation id="8989359959810288806">テザリング ステータスを更新</translation>
 <translation id="8991520179165052608">サイトにマイクの使用が許可されています</translation>
 <translation id="8991694323904646277">カメラがありません</translation>
+<translation id="8991766915726096402">ローカルデータの復元</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - メモリ使用量 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> のパスワードを忘れた場合でも、ローカルデータを復元できます。Google アカウントにログインするか、アカウント復元を使用する必要があります。</translation>
 <translation id="8993737615451556423">読み上げを早送り、巻き戻し、一時停止できる操作パネルを表示します</translation>
@@ -9726,6 +9735,7 @@
 <translation id="9045160989383249058">リーディング リストは新しいサイドパネルに移動しました。こちらをお使いください。</translation>
 <translation id="9045430190527754450">アクセスしようとしているページのウェブアドレスを Google に送信します</translation>
 <translation id="9048745018038487540">フォントをすべて選択</translation>
+<translation id="9050135202879860719">パスワードを使用して <ph name="DEVICE_TYPE" /> にログインしてください</translation>
 <translation id="9050666287014529139">パスフレーズ</translation>
 <translation id="9052404922357793350">引き続きブロックする</translation>
 <translation id="90528604757378587">バックグラウンド アクティビティや一部の視覚効果（スムーズ スクロールなど）が制限されることがあります。</translation>

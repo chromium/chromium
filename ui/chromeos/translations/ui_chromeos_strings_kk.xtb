@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">Мобильдік желілер ізделуде</translation>
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1297922636971898492">Google Drive қазір қолжетімді емес. Google Drive қосылғаннан кейін, жүктеп салу процесі автоматты түрде басталады.</translation>
+<translation id="1306130176943817227">Жою мүмкін емес. Элемент қолданыста.</translation>
 <translation id="1307931752636661898">Linux файлдарын көру мүмкін емес</translation>
 <translation id="1313405956111467313">Автоматты прокси конфигурациясы</translation>
 <translation id="134645005685694099">Құрылғыңызда файлды синхрондауды қосулы ұстау үшін жад көлемі жеткіліксіз. Жаңа файлдар бұдан былай автоматты түрде синхрондалмайды.</translation>
@@ -537,6 +538,7 @@
 <translation id="5218183485292899140">Француз (Швейцария)</translation>
 <translation id="5234764350956374838">Жабу</translation>
 <translation id="5253070652067921974">Жасаған:</translation>
+<translation id="5254207638927440400">Файлды жылжыту мүмкін емес. Файл қолданыста.</translation>
 <translation id="5257456363153333584">Инелік</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Файлдарға желіден тыс болғанда да кез келген жерден кіріңіз.<ph name="MARKUP_2" />
     Google Drive ішіндегі файлдар жаңартылған және кез келген құрылғыдан қолжетімді.<ph name="MARKUP_3" />
@@ -851,6 +853,7 @@
 <translation id="76959938259365003">Себетті босату мүмкін болмады.</translation>
 <translation id="770015031906360009">грек</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> көшірілді.</translation>
+<translation id="7707941139430559579">Файлды жылжыту мүмкін емес. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Бұл желіні пайдалану үшін оператор берген 8 таңбалы Жеке құлпын ашу кодын (PUK) енгізіңіз.</translation>
 <translation id="7711920809702896782">Сурет ақпараты</translation>
 <translation id="7724603315864178912">Қиып алу</translation>

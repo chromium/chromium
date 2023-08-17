@@ -1085,6 +1085,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">უკეთეს ქსელზე გადაგრთეთ</translation>
 <translation id="5619862035903135339">ეკრანის აღბეჭდვა გათიშულია ადმინისტრატორის წესების მიხედვით</translation>
+<translation id="5620856676199877916">მთელი საკლასო სამუშაოს ნახვა Google Classroom-ის ვებსაიტზე</translation>
 <translation id="5620979661744857819">წვდომა მიენიჭება <ph name="APP_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც კამერისა და მიკროფონის გამოყენების ნებართვა აქვს. შესაძლოა, დაგჭირდეთ ვებგვერდის განახლება ან აპის გადატვირთვა.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">თქვენი პაროლი ვერ დადასტურდა. ცადეთ ხელახლა.</translation>
@@ -1214,6 +1215,7 @@
 <translation id="6154006699632741460">პერიფერიული მოწყობილობა მხარდაუჭერელია</translation>
 <translation id="6156960295318603523">ენის პარამეტრები</translation>
 <translation id="615957422585914272">ეკრანული კლავიატურის ჩვენება</translation>
+<translation id="616543563528926612">მარჯვენა დაწკაპუნების მალსახმობი განახლდა (იყო <ph name="LAUNCHER_KEY_NAME" /> კლავიში + დაწკაპუნება, გახდა аlt + დაწკაპუნება)</translation>
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
 <translation id="6166852626429024716">წამოიწყეთ ძიება თქვენს მოწყობილობაში, აპებში, პარამეტრებსა და ვებში...</translation>
 <translation id="6168318496333165060">დიაგნოსტიკის აპის გახსნა</translation>
@@ -1501,6 +1503,7 @@
 <translation id="7497767806359279797">აირჩიეთ ენა და კლავიატურა</translation>
 <translation id="7508690557411636492">თვის განმავლობაში გახსნილი</translation>
 <translation id="7509246181739783082">დაადასტურეთ ვინაობა</translation>
+<translation id="7512509370370076552">მარჯვენა დაწკაპუნების მალსახმობი განახლდა (იყო alt + დაწკაპუნება, გახდა <ph name="LAUNCHER_KEY_NAME" /> კლავიში + დაწკაპუნება)</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, არ არის არჩეული</translation>
 <translation id="7513622367902644023">არჩეულია ეკრანის ანაბეჭდის რეჟიმი</translation>
 <translation id="7513922695575567867">კალენდარი, <ph name="DATE" />-ის კვირა, ამჟამად არჩეულია <ph name="SELECTED_DATE" />.</translation>
@@ -1604,6 +1607,7 @@
 <translation id="7904094684485781019">ამ ანგარიშის ადმინისტრატორმა აკრძალა სისტემაში ერთდროული შესვლა.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">დაკავშირებულია <ph name="DEVICECOUNT" /> მოწყობილობა</translation>
+<translation id="7926080067315048321">ყველა ამოცანის ნახვა Google Tasks-ის ვებსაიტზე</translation>
 <translation id="7930731167419639574">მეტყველება ახლა მუშავდება ადგილობრივად, კარნახი კი მუშაობს ხაზგარეშე რეჟიმში</translation>
 <translation id="7932451802722951285">Google Calendar-ში გახსნა</translation>
 <translation id="7933084174919150729">Google ასისტენტი ხელმისაწვდომია მხოლოდ ძირითადი პროფილისთვის.</translation>

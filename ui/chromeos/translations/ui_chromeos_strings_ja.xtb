@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">モバイル ネットワークを検索しています</translation>
 <translation id="1293556467332435079">ファイル</translation>
 <translation id="1297922636971898492">Google ドライブは現在ご利用いただけません。Google ドライブが利用可能になったときに、自動的にアップロードを再開します。</translation>
+<translation id="1306130176943817227">削除できません。アイテムは使用中です。</translation>
 <translation id="1307931752636661898">[Linux ファイル] を表示できません</translation>
 <translation id="1313405956111467313">自動プロキシ設定</translation>
 <translation id="134645005685694099">デバイスに十分な空き容量がないため、ファイルの同期を継続できません。新しいファイルは自動的に同期されなくなります。</translation>
@@ -537,6 +538,7 @@
 <translation id="5218183485292899140">フランス語（スイス）</translation>
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="5253070652067921974">作成者</translation>
+<translation id="5254207638927440400">ファイルを移動できません。ファイルは使用中です。</translation>
 <translation id="5257456363153333584">トンボ</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />どこからでも、オフラインでもファイルにアクセス<ph name="MARKUP_2" />
         Google ドライブでは最新の状態のファイルをどのデバイスからでも利用できます。<ph name="MARKUP_3" />

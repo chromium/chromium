@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Faile kokku</translation>
 <translation id="1755345808328621801">See fail on mõeldud Windowsi tarkvara kasutavale arvutile. See ei ühildu Chrome OS-i käitava seadmega. Otsige sobivat asendusrakendust Chrome'i veebipoest.</translation>
 <translation id="1757915090001272240">Lai ladina</translation>
+<translation id="1761091787730831947">Jaga VM-iga <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Autentimissertifikaat lükati kohalikult tagasi</translation>
 <translation id="1775381402323441512">Video teave</translation>
 <translation id="180035236176489073">Failide juurde pääsemiseks on vaja võrguühendust.</translation>
@@ -210,6 +211,7 @@
 <translation id="2718540689505416944">Rakenduse installimine Linuxiga</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, üksikasjad</translation>
 <translation id="2724954091494693138">türgi, F-klaviatuuriga</translation>
+<translation id="2732288874651063549">Halda jagamist VM-iga <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">vietnami, VNI</translation>
 <translation id="2735623501230989521">Andke üksusele Parallels Desktop luba pääseda juurde kaustas <ph name="FOLDER_NAME" /> olevatele failidele</translation>
 <translation id="2764206540577097904">Olete kasutanud ära kogu oma individuaalse Google Workspace'i salvestusruumi.</translation>
@@ -304,6 +306,7 @@
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> üksuse sünkroonimise ettevalmistamine...</translation>
 <translation id="3522708245912499433">Portugali keel</translation>
+<translation id="3523225005467146490">1 kaust on jagatud VM-iga <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Hoiatus. Need on ajutised failid ja võidakse kettaruumi vabastamiseks automaatselt kustutada.  <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Kaust</translation>
 <translation id="3548125359243647069">Vale PIN-kood sisestati liiga mitu korda.</translation>
@@ -660,6 +663,7 @@
 <translation id="6164412158936057769">Liblikad</translation>
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6170470584681422115">Võileib</translation>
+<translation id="6181912134988520389">Andke VM-ile <ph name="VM_NAME" /> luba pääseda juurde teie Google Drive’is olevatele failidele. Muudatused sünkroonitakse muude seadmetega.</translation>
 <translation id="6187719147498869044">ungari</translation>
 <translation id="6198252989419008588">Muuda PIN-koodi</translation>
 <translation id="6199801702437275229">Talletusruumi teabe ootamine ...</translation>
@@ -763,6 +767,7 @@
 <translation id="6989942356279143254">rootsi</translation>
 <translation id="6990081529015358884">Ruum sai otsa</translation>
 <translation id="6993826899923627728">Need üksused on prügikastis</translation>
+<translation id="6996593023542748157">Kausta jagamine VM-iga <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Teie organisatsioon nõuab üleslaadimise lõpuleviimiseks rohkem salvestusruumi.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> faili teisaldamine on administraatori reegliga blokeeritud</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -852,6 +857,7 @@
 <translation id="76959938259365003">Prügikasti tühjendamine ebaõnnestus.</translation>
 <translation id="770015031906360009">kreeka keel</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> on kopeeritud.</translation>
+<translation id="7707941139430559579">Faili ei saa teisaldada. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Selle võrgu kasutamiseks sisestage operaatorilt saadud kaheksakohaline isiklik avamisvõti (PUK).</translation>
 <translation id="7711920809702896782">Pildi teave</translation>
 <translation id="7724603315864178912">Lõika</translation>
@@ -948,6 +954,7 @@
 <translation id="8335837413233998004">valgevene</translation>
 <translation id="8336153091935557858">Eile kell <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Sama nimega fail või kataloog on juba olemas.</translation>
+<translation id="83651606385705612">Andke VM-ile <ph name="VM_NAME" /> luba pääseda juurde kaustas <ph name="FOLDER_NAME" /> olevatele failidele</translation>
 <translation id="8372369524088641025">Halb WEP-võti</translation>
 <translation id="8372852072747894550">kreeka</translation>
 <translation id="8386903983509584791">Skannimine jõudis lõpule</translation>
@@ -957,6 +964,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-võrk, ühendamine</translation>
 <translation id="8425213833346101688">Muuda</translation>
 <translation id="8428213095426709021">Seaded</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> kausta on jagatud VM-iga <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Muuda SIM-kaardi PIN-koodi</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">SIM-kaart puudub</translation>

@@ -182,6 +182,7 @@
 <translation id="174102739345480129">標記功能已關閉。</translation>
 <translation id="1743570585616704562">無法識別</translation>
 <translation id="1746730358044914197">輸入法是由你的管理員所設定。</translation>
+<translation id="1747336645387973286">截止日為<ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">螢幕小鍵盤已啟用</translation>
 <translation id="1749109475624620922">「<ph name="WINDOW_TITLE" />」視窗已指派給所有桌面</translation>
 <translation id="1750088060796401187">只允許 <ph name="MAX_DESK_LIMIT" /> 個桌面。如要開啟新桌面，請先移除一個現有桌面。</translation>
@@ -474,6 +475,7 @@
 <translation id="3081696990447829002">展開選單</translation>
 <translation id="3087734570205094154">置底</translation>
 <translation id="3090989381251959936">切換<ph name="FEATURE_NAME" />功能。<ph name="STATE_TEXT" /></translation>
+<translation id="3093423061078042895">沒有截止日期</translation>
 <translation id="3095995014811312755">版本</translation>
 <translation id="309749186376891736">移動游標</translation>
 <translation id="3100274880412651815">關閉擷取模式</translation>
@@ -535,6 +537,7 @@
 <translation id="3364721542077212959">觸控筆工具</translation>
 <translation id="3365977133351922112">你的手機距離太遠，請拿近一點。</translation>
 <translation id="3368922792935385530">已連線</translation>
+<translation id="3369111525500416043">即將截止</translation>
 <translation id="3371140690572404006">USB-C 裝置 (右前方連接埠)</translation>
 <translation id="3375634426936648815">已連線</translation>
 <translation id="3378438761594387761">你可在這裡找到最近的下載內容和螢幕畫面擷取項目</translation>
@@ -986,6 +989,7 @@
 <translation id="5208059991603368177">開啟</translation>
 <translation id="5216991270656129561">關閉，直到<ph name="TIME" /></translation>
 <translation id="5217646019792206018">下一個桌面：<ph name="NEXT_DESK_NAME" />，使用搜尋鍵 + 空格鍵或鍵盤快速鍵 (Shift + 搜尋鍵 + <ph name="NEXT_DESK_INDEX" />) 即可啟用。</translation>
+<translation id="5218064144558110424">標示為未完成</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="5229343007215035173">開啟/關閉隱私保護功能</translation>
 <translation id="5234764350956374838">關閉</translation>
@@ -1045,6 +1049,7 @@
 <translation id="5465662442746197494">需要協助嗎？</translation>
 <translation id="547979256943495781">在右側顯示檔案櫃</translation>
 <translation id="5482205457807971887">按下 <ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> 或 <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> 鍵</translation>
+<translation id="5482873136202102190">和另外</translation>
 <translation id="5491186829646618080">有可用的韌體更新</translation>
 <translation id="5503884284981862082">開啟/關閉 Google 助理</translation>
 <translation id="550391772491508736">繼續投放</translation>
@@ -1171,6 +1176,7 @@
 <translation id="598882571027504733">如要更新，請連接鍵盤並重新啟動 Chromebook。</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 頁 (共 <ph name="TOTAL_PAGE_NUM" /> 頁)</translation>
 <translation id="601304062528754300">醒目顯示檔案櫃中的下一個項目</translation>
+<translation id="6015573907265691211">標示為完成</translation>
 <translation id="6018164090099858612">退出鏡像模式</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">向左捲動</translation>
@@ -1312,6 +1318,7 @@
 <translation id="6597278316891651699">攝影機已對齊左下角，與系統平台發生衝突。</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
 <translation id="6612802754306526077">已選取螢幕畫面錄製模式</translation>
+<translation id="6612889377159412215">子工作</translation>
 <translation id="6613765291890844037">已使用 <ph name="STORAGE_IN_USE_SIZE" /> 的儲存空間 | 共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">已啟用隱私保護畫面</translation>
 <translation id="6625718907317144388">檢視防護功能已開啟，因此系統隱藏了 <ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" /> 和其他應用程式的通知</translation>
@@ -1355,6 +1362,7 @@
 <translation id="6786750046913594791">關閉資料夾</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="679368458793552943">放大鏡開啟時放大畫面</translation>
+<translation id="6794287755901682422">這個項目有：<ph name="GLANCEABLES_TASK_ITEM_METADATA" />。</translation>
 <translation id="6801878137098616817">最近編輯過</translation>
 <translation id="6802196538183166658">選取時間即可開啟「快速設定」</translation>
 <translation id="6802687695197837794">這將允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」與具有攝影機和麥克風權限的所有應用程式和網站存取</translation>
@@ -1611,6 +1619,7 @@
 <translation id="793716872548410480">按下<ph name="SHORTCUT_KEY_NAME" /> + V 鍵即可查看剪貼簿。你最後複製的 5 個項目會儲存到剪貼簿中。</translation>
 <translation id="7942349550061667556">紅色</translation>
 <translation id="7944023924886109030">查看今天的所有活動</translation>
+<translation id="7945357288295809525">顯示無障礙設定，<ph name="ENABLED_FEATURES" />功能已啟用。</translation>
 <translation id="7947798320695032612">「<ph name="APP_NAME" />」想要使用「<ph name="DEVICE_NAME" />」</translation>
 <translation id="7951630946012935453">調暗鍵盤</translation>
 <translation id="7963689218131240420">零打擾模式已關閉。</translation>
@@ -1909,6 +1918,7 @@
 <translation id="953431725143473984">確定要關閉裝置嗎？</translation>
 <translation id="954052413789300507">可用空間不足，無法下載「<ph name="FILENAME" />」。請釋出空間。</translation>
 <translation id="974545358917229949">目前正顯示 <ph name="RESULT_COUNT" /> 項與「<ph name="QUERY" />」相符的搜尋結果</translation>
+<translation id="981011780479609956">無截止日期</translation>
 <translation id="98120814841227350">前往文件結尾</translation>
 <translation id="987589956647469042">行動數據已開啟</translation>
 <translation id="989374776391122812">攝影機和音訊控制選項</translation>

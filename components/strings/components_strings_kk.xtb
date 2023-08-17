@@ -347,6 +347,7 @@
 <translation id="1668071460721346172">Электрондық хат алу</translation>
 <translation id="1671391448414634642"><ph name="SOURCE_LANGUAGE" /> тіліндегі беттер <ph name="TARGET_LANGUAGE" /> тіліне аударылатын болады.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> тілінен <ph name="TARGET_LANGUAGE" /> тіліне</translation>
+<translation id="1674542638006317838"><ph name="BEGIN_LINK" />Бұрынғы технология оқиғалары<ph name="END_LINK" /> орын алатын сіз кіретін беттердің URL мекенжайларының шектеулі тізімі.</translation>
 <translation id="1682696192498422849">Алдымен қысқа беті</translation>
 <translation id="168693727862418163">Бұл саясат мәні осы схемаға қатысты тексерілмеді және ол еленбейді.</translation>
 <translation id="168841957122794586">Сервер сертификаты сенімсіз криптографиялық кілтті қамтиды.</translation>
@@ -605,6 +606,7 @@
 <translation id="2225927550500503913">Виртуалдық карта қосулы.</translation>
 <translation id="2226636330183131181">WiFi желісіне <ph name="BEGIN_LINK" />кіріп жатыр<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">Қазіргі уақытта бұл мекенжай Chrome браузерінде сақталған. Оны Google өнімдерінде пайдалану үшін оны Google аккаунтыңызда (<ph name="ACCOUNT" />) сақтаңыз.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> мекенжайы сіз <ph name="TOP_LEVEL_URL" /> бетіне кіргеніңізді біледі.</translation>
 <translation id="2233745931693710080">Компакт диск</translation>
 <translation id="2239100178324503013">Қазір жіберу</translation>
 <translation id="2241693394036365668">Файл жүктеп алынды</translation>
@@ -2030,6 +2032,7 @@
 <translation id="5296589789433599000">Ас әзірлеу және рецептілер</translation>
 <translation id="5299298092464848405">Саясатты талдау қатесі</translation>
 <translation id="5299638840995777423">Робот техникасы</translation>
+<translation id="5300062471671636390">Трансляциялауға арналған құрылғылар тізімін жасыру</translation>
 <translation id="5300589172476337783">Көрсету</translation>
 <translation id="5306593769196050043">Екі парақ та</translation>
 <translation id="5307166000025436103">Жарайды</translation>
@@ -2090,6 +2093,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> хабарландыру жіберуге рұқсат сұрады</translation>
 <translation id="5430298929874300616">Бетбелгіні жою</translation>
 <translation id="5443468954631487277">Кері ретпен беткі жағында</translation>
+<translation id="5447235695608032700"><ph name="SITE" /> сайтының олар сіз туралы сақтаған ақпаратты пайдалануына рұқсат етіңіз.</translation>
 <translation id="5447765697759493033">Бұл сайт аударылмайды</translation>
 <translation id="5452270690849572955">Бұл <ph name="HOST_NAME" /> бетін табу мүмкін емес</translation>
 <translation id="5455374756549232013">Саясат уақыт белгісі жарамсыз</translation>
@@ -3493,6 +3497,7 @@
 <translation id="8368027906805972958">Белгісіз немесе жарамсыз құрылғы (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play services</translation>
 <translation id="8369073279043109617">Жаңа код алу</translation>
+<translation id="8371841335382565017">Трансляциялауға арналған құрылғылар тізімін көрсету</translation>
 <translation id="8371889962595521444">Арнаулы түбірлік сертификаттар</translation>
 <translation id="8374636051559112948">Әртүрлі</translation>
 <translation id="8378714024927312812">Ұйым басқарады</translation>

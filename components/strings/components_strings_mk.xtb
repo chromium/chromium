@@ -347,6 +347,7 @@
 <translation id="1668071460721346172">Добијте е-порака</translation>
 <translation id="1671391448414634642">Отсега, страниците на <ph name="SOURCE_LANGUAGE" /> ќе се преведуваат на <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478">Од <ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Ограничен список со URL-адреси на страниците што ги отворате на кои се случуваат <ph name="BEGIN_LINK" />настани со застарена технологија<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Прво краткиот раб</translation>
 <translation id="168693727862418163">Вредноста на правилото не може да се потврди според неговата шема и ќе биде игнорирана.</translation>
 <translation id="168841957122794586">Сертификатот на серверот содржи слаб криптографски клуч.</translation>
@@ -2031,6 +2032,7 @@
 <translation id="5296589789433599000">Готвење и рецепти</translation>
 <translation id="5299298092464848405">Грешка при разложување на правилото</translation>
 <translation id="5299638840995777423">Роботика</translation>
+<translation id="5300062471671636390">Скриј го списокот со уреди за емитување</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5306593769196050043">Двата листа</translation>
 <translation id="5307166000025436103">Во ред</translation>
@@ -3494,6 +3496,7 @@
 <translation id="8368027906805972958">Непознат или неподдржан уред (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Услуги на Google Play</translation>
 <translation id="8369073279043109617">Преземете нов код</translation>
+<translation id="8371841335382565017">Прикажи го списокот со уреди за емитување</translation>
 <translation id="8371889962595521444">Приспособен сертификат за администраторски права</translation>
 <translation id="8374636051559112948">варира</translation>
 <translation id="8378714024927312812">Управувано од вашата организација</translation>

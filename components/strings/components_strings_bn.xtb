@@ -347,6 +347,7 @@
 <translation id="1668071460721346172">ইমেল রিসিভ করুন</translation>
 <translation id="1671391448414634642">এখন থেকে <ph name="SOURCE_LANGUAGE" /> ভাষার পৃষ্ঠা <ph name="TARGET_LANGUAGE" /> ভাষায় অনুবাদ করা হবে।</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> থেকে <ph name="TARGET_LANGUAGE" />-এ</translation>
+<translation id="1674542638006317838">আপনি দেখেন এমন পৃষ্ঠার সীমিত URL যেখানে <ph name="BEGIN_LINK" />পুরনো টেকনোলজি ইভেন্ট<ph name="END_LINK" /> চলছে।</translation>
 <translation id="1682696192498422849">আগে ছোট প্রান্ত</translation>
 <translation id="168693727862418163">এই নীতির মান সেটির স্কিমার সাথে যাচাই করা যায়নি, তাই সেটি উপেক্ষা করা হবে।</translation>
 <translation id="168841957122794586">সার্ভার সার্টিফিকেটে একটি দুর্বল ক্রিপ্টোগ্রাফিক কী আছে৷</translation>
@@ -2032,6 +2033,7 @@
 <translation id="5296589789433599000">রান্না ও রেসিপি</translation>
 <translation id="5299298092464848405">নীতি বিশ্লেষণ করার সময় ত্রুটি</translation>
 <translation id="5299638840995777423">রোবোটিকস</translation>
+<translation id="5300062471671636390">কাস্টিংয়ের জন্য ডিভাইসের তালিকা লুকান</translation>
 <translation id="5300589172476337783">দেখান</translation>
 <translation id="5306593769196050043">উভয় শিট</translation>
 <translation id="5307166000025436103">ওকে</translation>
@@ -3494,6 +3496,7 @@
 <translation id="8368027906805972958">অপরিচিত বা কাজ করে না এমন ডিভাইস (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play পরিষেবাদি</translation>
 <translation id="8369073279043109617">নতুন কোড পান</translation>
+<translation id="8371841335382565017">কাস্টিংয়ের জন্য ডিভাইসের তালিকা দেখুন</translation>
 <translation id="8371889962595521444">কাস্টম রুট সার্টিফিকেট</translation>
 <translation id="8374636051559112948">একই রকম হয় না</translation>
 <translation id="8378714024927312812">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা</translation>

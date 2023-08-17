@@ -99,6 +99,7 @@
 <translation id="1071917609930274619">数据加密</translation>
 <translation id="1072700771426194907">检测到了 USB 设备</translation>
 <translation id="107278043869924952">使用 PIN 码和密码</translation>
+<translation id="107450319332239199">出了点问题。请改为手动打开窗口。</translation>
 <translation id="1076176485976385390">使用文本光标浏览网页</translation>
 <translation id="1076382954055048850">显示其他投放会话</translation>
 <translation id="1076698951459398590">启用主题背景</translation>
@@ -9651,6 +9652,7 @@
 <translation id="8989359959810288806">刷新网络共享状态</translation>
 <translation id="8991520179165052608">该网站可能会使用您的麦克风</translation>
 <translation id="8991694323904646277">没有摄像头</translation>
+<translation id="8991766915726096402">本地数据恢复</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - 内存用量 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">如果您忘记了 <ph name="DEVICE_TYPE" /> 密码，您仍然可以恢复本地数据。您需要登录自己的 Google 账号或使用账号恢复功能。</translation>
 <translation id="8993737615451556423">提供用于加快语速、减慢语速和暂停朗读的控件</translation>

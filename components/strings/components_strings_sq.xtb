@@ -347,6 +347,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1668071460721346172">Merr një email</translation>
 <translation id="1671391448414634642">Faqet në <ph name="SOURCE_LANGUAGE" /> do të përkthehen në <ph name="TARGET_LANGUAGE" /> nga tani e në vazhdim.</translation>
 <translation id="1674504678466460478">Nga <ph name="SOURCE_LANGUAGE" /> në <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1674542638006317838">Një listë e kufizuar e URL-ve të faqeve që viziton ti ku ka <ph name="BEGIN_LINK" />ngjarje të teknologjisë së vjetër<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Ana e shkurtër në fillim</translation>
 <translation id="168693727862418163">Vërtetimi i kësaj vlere të politikës kundrejt skemës së saj dështoi dhe do të shpërfillet.</translation>
 <translation id="168841957122794586">Certifikata e serverit përmban një çelës të dobët kriptografik.</translation>
@@ -2031,6 +2032,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5296589789433599000">Gatimi dhe recetat</translation>
 <translation id="5299298092464848405">Gabim gjatë analizimit të politikës</translation>
 <translation id="5299638840995777423">Robotika</translation>
+<translation id="5300062471671636390">Fshih listën e pajisjeve për transmetim</translation>
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5306593769196050043">Të dyja fletët</translation>
 <translation id="5307166000025436103">Në rregull</translation>
@@ -3493,6 +3495,7 @@ Detaje shtesë:
 <translation id="8368027906805972958">Pajisje e panjohur ose e pambështetur (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Shërbimet e Google Play</translation>
 <translation id="8369073279043109617">Merr kod të ri</translation>
+<translation id="8371841335382565017">Shfaq listën e pajisjeve për transmetim</translation>
 <translation id="8371889962595521444">Certifikatat rrënjë të personalizuara</translation>
 <translation id="8374636051559112948">Ndryshon</translation>
 <translation id="8378714024927312812">Menaxhohet nga organizata jote</translation>

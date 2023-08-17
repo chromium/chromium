@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">Naghahanap ng mga mobile network</translation>
 <translation id="1293556467332435079">Mga File</translation>
 <translation id="1297922636971898492">Hindi available sa ngayon ang Google Drive. Awtomatikong magre-restart ang pag-a-upload sa sandaling bumalik na ang Google Drive.</translation>
+<translation id="1306130176943817227">Hindi ma-delete. Ginagamit ang item.</translation>
 <translation id="1307931752636661898">Hindi matingnan ang mga Linux file</translation>
 <translation id="1313405956111467313">Awtomatikong proxy configuration</translation>
 <translation id="134645005685694099">Walang sapat na storage space ang iyong device para mapanatiling naka-on ang pag-sync ng file. Hindi na awtomatikong masi-sync ang mga bagong file.</translation>
@@ -540,6 +541,7 @@
 <translation id="5218183485292899140">Swiss French</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="5253070652067921974">Ginawa ni</translation>
+<translation id="5254207638927440400">Hindi mailipat ang file. Ginagamit ang file.</translation>
 <translation id="5257456363153333584">Tutubi</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Mag-access ng mga file kahit saan, kahit offline.<ph name="MARKUP_2" />
     Napapanahon ang mga file sa Google Drive at available sa anumang device.<ph name="MARKUP_3" />

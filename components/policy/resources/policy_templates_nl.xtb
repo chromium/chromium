@@ -566,6 +566,11 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Externe extensies en de installatie daarvan worden beschreven op https://developer.chrome.com/apps/external_extensions.
       </translation>
 <translation id="1484190167468437592">Monogeluid uitzetten</translation>
+<translation id="1484580923123963615">Toelatingslijst die de rapportage van websitetelemetrie voor aangesloten gebruikers beheert. Telemetriegegevenstypen die worden gerapporteerd, worden beheerd door het beleid <ph name="REPORT_WEBSITE_TELEMETRY_POLICY_NAME" />.
+
+Als je het beleid instelt, wordt de rapportage van websitetelemetrie voor URL's op de toelatingslijst ingesteld.
+Als je dit beleid niet instelt, wordt er geen websitetelemetrie gerapporteerd.
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Alleen HTTP- en HTTPS-URL-schema's zijn toegestaan voor dit beleid.</translation>
 <translation id="1486021504508098388">Informatie over schermverlichting melden</translation>
 <translation id="1487722536912664411">Toestaan dat gebruikers <ph name="PRODUCT_NAME" /> gebruiken</translation>
 <translation id="1487916040416013623">Als je het beleid instelt, geef je aan welke servers op de toelatingslijst voor geïntegreerde verificatie moeten worden gezet. Geïntegreerde verificatie is alleen aangezet als <ph name="PRODUCT_NAME" /> een verificatie-uitdaging ontvangt van een proxy of een server die op deze toelatingslijst staat.
@@ -2463,6 +2468,11 @@ Als je het beleid niet toepast, wordt de promotie voor appstore-beoordelingen ni
       Als je het beleid niet toepast, kan deze software dergelijke code in de processen van <ph name="PRODUCT_NAME" /> injecteren.</translation>
 <translation id="3182503302060513467">De pagina Nieuw tabblad toont de aankondiging in de middelste ruimte als die beschikbaar is</translation>
 <translation id="3184161739683646075">Hiermee wordt de modus voor DNS-over-HTTPS bepaald</translation>
+<translation id="3184309751910415763">Toelatingslijst die de rapportage van website-activiteit voor aangesloten gebruikers beheert.
+
+Dit beleid beheert de rapportage van de gebeurtenissen voor website-URL geopend en gesloten voor URL's op de toelatingslijst.
+Als je dit beleid niet instelt, worden er geen websitegebeurtenissen gerapporteerd.
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Alleen HTTP- en HTTPS-URL-schema's zijn toegestaan voor dit beleid.</translation>
 <translation id="3184638144755436350">Chrome blokkeert navigatie naar externe protocollen in iframes in sandboxes. Zie https://chromestatus.com/features/5680742077038592.
 
       Als dit is ingesteld op True, kan Chrome die navigatie blokkeren.
@@ -3031,6 +3041,10 @@ Als je het beleid niet toepast of niet instelt, kunnen ingeschreven apparaten ge
 
       Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> een standaard bibliotheeknaam.</translation>
 <translation id="3650122925429054129">Cursormarkering op het inlogscherm uitzetten</translation>
+<translation id="365093517647222762">Rapporteert telemetriegegevens van websites voor toegestane URL's die zijn opgegeven in het beleid <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> voor aangesloten gebruikers.
+
+Dit beleid beheert de rapportage van websitetelemetrie voor bepaalde telemetriegegevenstypen.
+Als je het beleid niet instelt, worden er geen telemetriegegevens van websites gerapporteerd.</translation>
 <translation id="3652670852519271837">Sites toestaan om gebruikers schrijftoegang te vragen tot bestanden en directory's via de File System API</translation>
 <translation id="3653237928288822292">Icoon voor standaardzoekprovider</translation>
 <translation id="3654906736796256792">Toestaan dat de audiosandbox wordt uitgevoerd</translation>
@@ -4496,6 +4510,7 @@ Als je het beleid instelt op False, wordt het standaardgedrag gebruikt.</transla
 <translation id="4996068111491152684">De inloggegevens van <ph name="PRODUCT_OS_NAME" /> worden niet gebruikt voor netwerkverificatie.</translation>
 <translation id="4996086761250834365">Productanalyse van <ph name="PLUGIN_VM_NAME" /> toestaan</translation>
 <translation id="4996161752665479028">SSH aanzetten in Terminal System App</translation>
+<translation id="499654521603185442">Rapportage van websitetelemetrie</translation>
 <translation id="4997074784107449343">Als de optie Afdrukken als afbeelding beschikbaar is, wordt deze standaard niet ingesteld voor afdrukvoorbeelden van pdf-documenten.</translation>
 <translation id="500149597848135831">Alle varianten aanzetten</translation>
 <translation id="5017369989680827157">Als je het beleid instelt op 'True' of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor adressen in de UI.
@@ -6037,6 +6052,7 @@ Voor <ph name="PRODUCT_NAME" /> is dit beleid alleen van kracht als de machine i
 
 Meer informatie over verouderde technologieën vind je op https://chromestatus.com/features.</translation>
 <translation id="640827304541402854">Firewallpassage vanaf host voor externe toegang uitzetten</translation>
+<translation id="6410847321564585975">Toelatingslijst voor rapportage van website-activiteit</translation>
 <translation id="6412352702230183710">Alleen hosts voor native berichten op systeemniveau toestaan</translation>
 <translation id="6416506846917150119">Voorspellend schrijven voor fysiek toetsenbord als gebruikers typen uitzetten</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
@@ -6191,6 +6207,9 @@ De time-out voor inactiviteit waarna de screensaver wordt gestart en het interva
       Als je het beleid niet instelt, wordt er geen maximumlengte afgedwongen.</translation>
 <translation id="6546185795045702747">Toestaan dat websites checken of de gebruiker betaalmethoden heeft opgeslagen</translation>
 <translation id="6553143066970470539">Percentage voor helderheid van scherm</translation>
+<translation id="6554236101741861403">Snelheid waarmee telemetriegegevens van websites worden verzameld op ingeschreven apparaten voor aangesloten gebruikers. Het toegestane minimum is 5 minuten.
+
+Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepassing.</translation>
 <translation id="6555557921186817432">Plan automatisch opnieuw opstarten in nadat een <ph name="PRODUCT_OS_NAME" />-update is toegepast.
 
       Als je dit beleid instelt op True, wordt automatisch opnieuw opstarten ingepland als een <ph name="PRODUCT_OS_NAME" />-update is toegepast. Opnieuw opstarten is vereist om het updateproces af te ronden. Opnieuw opstarten wordt onmiddellijk ingepland, maar kan op het apparaat tot 24 uur worden vertraagd als een gebruiker het apparaat momenteel gebruikt.
@@ -7875,6 +7894,7 @@ Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PROD
 <translation id="8020222525161221827">Desk API aanzetten voor ChromeOS-beheer door derden</translation>
 <translation id="802147957407376460">Scherm 0 graden draaien</translation>
 <translation id="8021777486638359878">Gebruiker als inactief beschouwen tijdens afspelen van audio</translation>
+<translation id="8022597231371051452">Toelatingslijst voor rapportage van websitetelemetrie</translation>
 <translation id="8022909529579794519">Met deze instelling kun je instellen welke <ph name="LACROS_NAME" />-browser je wilt gebruiken.
 
 Als je het beleid instelt op <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />, kan de gebruiker bepalen welke <ph name="LACROS_NAME" />-browser moet worden geladen: binair bestand vanaf <ph name="LACROS_ROOTFS_NAME" />- of <ph name="LACROS_STATEFUL_NAME" />-partitie.
@@ -8648,6 +8668,7 @@ Als je het beleid niet instelt, worden er geen opgeslagen wachtwoorden geïmport
 <translation id="8728854710675158426">Onveilige hashes in TLS-handshakes aangezet</translation>
 <translation id="8734543507835977857">Vertragingen in energiebeheer en limieten voor de sessieduur starten na het begin van de sessie</translation>
 <translation id="8736538322216687231">Minimale 'Beperkte modus' op YouTube afdwingen</translation>
+<translation id="873800217865395140">Snelheid voor verzameling van websitetelemetrie in milliseconden.</translation>
 <translation id="874149307422233209">Met dit beleid kunnen beheerders bepalen hoe Google gebruikersgegevens verwerkt die via <ph name="PRODUCT_OS_NAME" />-functies naar Zoeken worden gestuurd.
 Als je het beleid aanzet, kunnen gebruikers het zoekvak van de<ph name="PRODUCT_OS_NAME" />-launcher en het adresvak van de <ph name="PRODUCT_NAME" />-browser in <ph name="PRODUCT_OS_NAME" /> gebruiken, zodat de zoekgeschiedenis van de gebruiker niet aan hun identiteit wordt gekoppeld.
 Als je het beleid niet instelt of niet toepast, worden de gegevens van deze zoekopdrachten van de gebruiker aan hun identiteit gekoppeld.</translation>
