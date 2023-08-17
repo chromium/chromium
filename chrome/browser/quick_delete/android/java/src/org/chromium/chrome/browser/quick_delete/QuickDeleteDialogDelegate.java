@@ -212,7 +212,7 @@ class QuickDeleteDialogDelegate {
                     QuickDeleteMetricsDelegate.QuickDeleteAction.MY_ACTIVITY_LINK_CLICKED);
         }
 
-        mTabModelSelector.openNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI,
+        mTabModelSelector.openNewTab(new LoadUrlParams(url), TabLaunchType.FROM_LINK,
                 mTabModelSelector.getCurrentTab(), false);
         mModalDialogManager.dismissDialog(
                 mModalDialogPropertyModel, DialogDismissalCause.ACTION_ON_CONTENT);
