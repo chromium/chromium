@@ -523,9 +523,7 @@ void StyleSheetContents::CheckLoaded() {
     if (loading_clients[i]->LoadCompleted()) {
       continue;
     }
-    if (loading_clients[i]->IsConstructed()) {
-      continue;
-    }
+    DCHECK(!loading_clients[i]->IsConstructed());
 
     // sheetLoaded might be invoked after its owner node is removed from
     // document.
@@ -700,7 +698,17 @@ void StyleSheetContents::RegisterClient(CSSStyleSheet* sheet) {
       has_single_owner_document_ = false;
     }
   }
-  loading_clients_.insert(sheet);
+
+  if (sheet->IsConstructed()) {
+    // Constructed stylesheets don't need loading. Note that @import is ignored
+    // in both CSSStyleSheet.replaceSync and CSSStyleSheet.replace.
+    //
+    // https://drafts.csswg.org/cssom/#dom-cssstylesheet-replacesync
+    // https://drafts.csswg.org/cssom/#dom-cssstylesheet-replace
+    completed_clients_.insert(sheet);
+  } else {
+    loading_clients_.insert(sheet);
+  }
 }
 
 void StyleSheetContents::UnregisterClient(CSSStyleSheet* sheet) {
