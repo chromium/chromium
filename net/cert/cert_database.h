@@ -7,14 +7,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "base/observer_list_threadsafe.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
-
-namespace base {
-
-template <class ObserverType>
-class ObserverListThreadSafe;
-}
 
 namespace net {
 

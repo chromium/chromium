@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_threadsafe.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "crypto/scoped_nss_types.h"
@@ -22,11 +23,6 @@
 #include "net/cert/cert_type.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
-
-namespace base {
-template <class ObserverType>
-class ObserverListThreadSafe;
-}
 
 namespace net {
 
