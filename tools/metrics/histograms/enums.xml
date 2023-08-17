@@ -2749,6 +2749,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Chrome Text"/>
   <int value="2" label="Text"/>
   <int value="3" label="Chrome Link"/>
+  <int value="4" label="Chrome Image"/>
 </enum>
 
 <enum name="AndroidUtilsMimeTypes">

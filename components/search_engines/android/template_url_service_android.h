@@ -125,6 +125,11 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
+  // Get the image search url and the post content.
+  base::android::ScopedJavaLocalRef<jobjectArray> GetImageUrlAndPostContent(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+
  private:
   bool IsDefaultSearchEngineGoogle();
 

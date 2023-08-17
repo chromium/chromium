@@ -464,3 +464,21 @@ TemplateUrlServiceAndroid::GetDefaultSearchEngine(
   }
   return CreateTemplateUrlAndroid(env, default_search_provider);
 }
+
+base::android::ScopedJavaLocalRef<jobjectArray>
+TemplateUrlServiceAndroid::GetImageUrlAndPostContent(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  const TemplateURL* template_url =
+      template_url_service_->GetDefaultSearchProvider();
+
+  TemplateURLRef::PostContent post_content;
+  GURL result(template_url->image_url_ref().ReplaceSearchTerms(
+      TemplateURLRef::SearchTermsArgs(u""),
+      template_url_service_->search_terms_data(), &post_content));
+
+  std::vector<std::string> output;
+  output.push_back(result.spec());
+  output.push_back(post_content.first);
+  return base::android::ToJavaArrayOfStrings(env, output);
+}

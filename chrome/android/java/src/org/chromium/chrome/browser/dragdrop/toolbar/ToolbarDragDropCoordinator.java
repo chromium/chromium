@@ -14,11 +14,14 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.Toast;
@@ -36,15 +39,16 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
      * be treated as append-only.
      */
     @IntDef({DropType.INVALID, DropType.TEXT, DropType.CHROME_TEXT, DropType.CHROME_LINK,
-            DropType.NUM_ENTRIES})
+            DropType.CHROME_IMAGE, DropType.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     @interface DropType {
         int INVALID = 0;
         int CHROME_TEXT = 1;
         int TEXT = 2;
         int CHROME_LINK = 3;
+        int CHROME_IMAGE = 4;
 
-        int NUM_ENTRIES = 4;
+        int NUM_ENTRIES = 5;
     }
 
     // TODO(crbug.com/1469224): Swap error message to a translated string.
@@ -55,6 +59,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
     private TargetViewDragListener mTargetViewDragListener;
     private PropertyModel mModel;
     private OmniboxStub mOmniboxStub;
+    private Supplier<TemplateUrlService> mTemplateUrlServiceSupplier;
 
     interface OnDropCallback {
         /**
@@ -69,9 +74,13 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
      * @param targetView is the view displayed during the drag and drop process.
      * @param autocompleteDelegate Used to navigate on a successful link drop.
      * @param omniboxStub Used to navigate a successful text drop.
+     * @param templateUrlServiceSupplier Used to obtain the TemplateUrlService needed on an image
+     * drop.
+     *
      */
     public ToolbarDragDropCoordinator(FrameLayout targetView,
-            AutocompleteDelegate autocompleteDelegate, OmniboxStub omniboxStub) {
+            AutocompleteDelegate autocompleteDelegate, OmniboxStub omniboxStub,
+            Supplier<TemplateUrlService> templateUrlServiceSupplier) {
         // TargetView is inflated in order to have the onDragListener attached before it is visible
         mTargetView = targetView;
         mModel = new PropertyModel.Builder(TargetViewProperties.ALL_KEYS)
@@ -83,6 +92,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(mModel, mTargetView, new TargetViewBinder());
         mOmniboxStub = omniboxStub;
+        mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
     }
 
     @Override
@@ -121,7 +131,25 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
      */
     @VisibleForTesting
     void parseDragEvent(DragEvent event) {
-        if (event.getClipDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TEXT)) {
+        if (event.getClipDescription().filterMimeTypes(MimeTypeUtils.IMAGE_MIME_TYPE) != null) {
+            // Try to get the byte array needed for image search from local state. If drag and drop
+            // is started from the same Chrome activity, then DropDataAndroid should be set as a
+            // local state.
+            //  TODO(crbug.com/1469084): Read the image bytes from localState using a util method
+            Object dropData = event.getLocalState();
+            TemplateUrlService urlService = mTemplateUrlServiceSupplier.get();
+            if (!urlService.isSearchByImageAvailable()
+                    || (!(dropData instanceof DropDataAndroid))) {
+                handleErrorToast();
+                return;
+            }
+            String[] postData = urlService.getImageUrlAndPostContent();
+            // TODO(crbug.com/1473127): Pass in correct imageByteArray to AutocompleteDelegate
+            byte[] imageByteArray = new byte[0];
+            mAutocompleteDelegate.loadUrlWithPostData(postData[0], PageTransition.GENERATED,
+                    SystemClock.uptimeMillis(), postData[1], imageByteArray);
+            recordDropType(DropType.CHROME_IMAGE);
+        } else if (event.getClipDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TEXT)) {
             mOmniboxStub.setUrlBarFocus(true,
                     event.getClipData()
                             .getItemAt(0)
@@ -144,9 +172,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
             // case where dragged object is not from Chrome
             event.getClipDescription().filterMimeTypes(MimeTypeUtils.TEXT_MIME_TYPE);
             if (event.getClipData() == null) {
-                Toast errorMessage =
-                        Toast.makeText(mTargetView.getContext(), ERROR_MESSAGE, Toast.LENGTH_SHORT);
-                errorMessage.show();
+                handleErrorToast();
                 recordDropType(DropType.INVALID);
             } else {
                 mOmniboxStub.setUrlBarFocus(true,
@@ -158,6 +184,12 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
                 recordDropType(DropType.TEXT);
             }
         }
+    }
+
+    private void handleErrorToast() {
+        Toast errorMessage =
+                Toast.makeText(mTargetView.getContext(), ERROR_MESSAGE, Toast.LENGTH_SHORT);
+        errorMessage.show();
     }
 
     private void recordDropType(@DropType int type) {

@@ -378,6 +378,17 @@ public class TemplateUrlService {
                 mNativeTemplateUrlServiceAndroid, TemplateUrlService.this, keyword, ageInDays);
     }
 
+    /**
+     * Finds the image search url for the search engine used and the post content type for the
+     * image.
+     * @return An array of size 2 with the first element being the image search url, the second
+     *         being the post content type.
+     */
+    public String[] getImageUrlAndPostContent() {
+        return TemplateUrlServiceJni.get().getImageUrlAndPostContent(
+                mNativeTemplateUrlServiceAndroid, TemplateUrlService.this);
+    }
+
     @NativeMethods
     public interface Natives {
         void load(long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
@@ -418,6 +429,8 @@ public class TemplateUrlService {
         void getTemplateUrls(long nativeTemplateUrlServiceAndroid, TemplateUrlService caller,
                 List<TemplateUrl> templateUrls);
         TemplateUrl getDefaultSearchEngine(
+                long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
+        String[] getImageUrlAndPostContent(
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
     }
 }

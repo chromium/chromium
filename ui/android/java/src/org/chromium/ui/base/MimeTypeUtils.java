@@ -33,6 +33,10 @@ public class MimeTypeUtils {
      * The MIME type for text.
      */
     public static final String TEXT_MIME_TYPE = "text/plain";
+    /**
+     * The MIME type for an image.
+     */
+    public static final String IMAGE_MIME_TYPE = "image/*";
 
     /**
      * A set of known mime types.
