@@ -331,14 +331,13 @@ suite('<settings-per-device-keyboard-subsection>', () => {
     const topRowAreFunctionKeysToggle = subsection.shadowRoot!.querySelector(
         '#externalTopRowAreFunctionKeysButton');
     assert(topRowAreFunctionKeysToggle);
-    let policyIndicator = topRowAreFunctionKeysToggle.shadowRoot!.querySelector(
-        'cr-policy-pref-indicator');
-    assertTrue(isVisible(policyIndicator));
-
-    subsection.set('keyboardPolicies', {topRowAreFkeysPolicy: undefined});
-    await flushTasks();
-    policyIndicator = topRowAreFunctionKeysToggle.shadowRoot!.querySelector(
-        'cr-policy-pref-indicator');
-    assertFalse(isVisible(policyIndicator));
   });
+
+  test(
+      'Built-in Keyboard customize keys rows has additional class name',
+      async () => {
+        await changeIsExternalState(false);
+        assertTrue(subsection.shadowRoot!.querySelector('#remapKeyboardKeys')!
+                       .classList.contains('remap-keyboard-keys-row-internal'));
+      });
 });

@@ -229,6 +229,11 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     return this.keyboard.metaKey === MetaKey.kLauncher ||
         this.keyboard.metaKey === MetaKey.kSearch;
   }
+
+  protected getRemapKeyboardKeysClass(): string {
+    return `hr bottom-divider ${
+        this.keyboard.isExternal ? '' : 'remap-keyboard-keys-row-internal'}`;
+  }
 }
 
 declare global {
