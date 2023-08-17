@@ -139,6 +139,8 @@ TEST_F(BluetoothUtilsTest,
        TestFilterBluetoothDeviceList_FilterKnown_AlwaysKeepBondedDevices) {
   auto* mock_bluetooth_device =
       AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_INVALID);
+  EXPECT_CALL(*mock_bluetooth_device, GetDeviceType)
+      .WillRepeatedly(testing::Return(BluetoothDeviceType::PHONE));
   EXPECT_CALL(*mock_bluetooth_device, IsPaired)
       .WillRepeatedly(testing::Return(true));
   VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
