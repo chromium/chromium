@@ -27,6 +27,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   MOCK_METHOD1(DoSetMutedState, void(bool muted_state));
   MOCK_METHOD0(OnEncodedSinkEnabled, void());
   MOCK_METHOD0(OnEncodedSinkDisabled, void());
+  MOCK_METHOD0(OnRequestKeyFrame, void());
   MOCK_METHOD0(OnRequestRefreshFrame, void());
   MOCK_METHOD1(OnCapturingLinkSecured, void(bool));
   MOCK_METHOD1(OnSourceCanDiscardAlpha, void(bool can_discard_alpha));
@@ -86,6 +87,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   bool is_suspended() { return is_suspended_; }
 
   // Implements blink::MediaStreamVideoSource.
+  void RequestKeyFrame() override;
   void RequestRefreshFrame() override;
   void OnHasConsumers(bool has_consumers) override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;

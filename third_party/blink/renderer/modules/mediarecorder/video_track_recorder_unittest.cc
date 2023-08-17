@@ -992,7 +992,7 @@ TEST_F(VideoTrackRecorderPassthroughTest, PausesAndResumes) {
   // Expect no callback registration, but expect a keyframe.
   EXPECT_CALL(*mock_source_, OnEncodedSinkEnabled).Times(0);
   EXPECT_CALL(*mock_source_, OnEncodedSinkDisabled).Times(0);
-  EXPECT_CALL(*mock_source_, OnRequestRefreshFrame);
+  EXPECT_CALL(*mock_source_, OnRequestKeyFrame);
   video_track_recorder_->Resume();
   Mock::VerifyAndClearExpectations(mock_source_);
 

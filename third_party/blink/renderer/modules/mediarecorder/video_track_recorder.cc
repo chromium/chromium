@@ -992,7 +992,7 @@ VideoTrackRecorderPassthrough::VideoTrackRecorderPassthrough(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // HandleEncodedVideoFrame() will be called on Render Main thread.
   // Note: Adding an encoded sink internally generates a new key frame
-  // request, no need to RequestRefreshFrame().
+  // request, no need to RequestKeyFrame().
   ConnectEncodedToTrack(
       WebMediaStreamTrack(track_),
       base::BindPostTask(
@@ -1016,7 +1016,7 @@ void VideoTrackRecorderPassthrough::Pause() {
 void VideoTrackRecorderPassthrough::Resume() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   state_ = KeyFrameState::kWaitingForKeyFrame;
-  RequestRefreshFrame();
+  RequestKeyFrame();
 }
 
 void VideoTrackRecorderPassthrough::OnEncodedVideoFrameForTesting(
@@ -1028,11 +1028,11 @@ void VideoTrackRecorderPassthrough::OnEncodedVideoFrameForTesting(
       capture_time);
 }
 
-void VideoTrackRecorderPassthrough::RequestRefreshFrame() {
+void VideoTrackRecorderPassthrough::RequestKeyFrame() {
   auto* video_track =
       static_cast<MediaStreamVideoTrack*>(track_->GetPlatformTrack());
   DCHECK(video_track->source());
-  video_track->source()->RequestRefreshFrame();
+  video_track->source()->RequestKeyFrame();
 }
 
 void VideoTrackRecorderPassthrough::DisconnectFromTrack() {
@@ -1051,7 +1051,7 @@ void VideoTrackRecorderPassthrough::HandleEncodedVideoFrame(
     return;
   if (state_ == KeyFrameState::kWaitingForKeyFrame &&
       !encoded_frame->IsKeyFrame()) {
-    // Don't RequestRefreshFrame() here - we already did this implicitly when
+    // Don't RequestKeyFrame() here - we already did this implicitly when
     // Creating/Starting or explicitly when Resuming this object.
     return;
   }
@@ -1062,7 +1062,7 @@ void VideoTrackRecorderPassthrough::HandleEncodedVideoFrame(
     key_frame_processor_.OnKeyFrame(now);
   }
   if (key_frame_processor_.OnFrameAndShouldRequestKeyFrame(now)) {
-    RequestRefreshFrame();
+    RequestKeyFrame();
   }
 
   absl::optional<gfx::ColorSpace> color_space;

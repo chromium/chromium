@@ -140,6 +140,10 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // an alpha channel, due to a change in an attached track.
   void UpdateCanDiscardAlpha();
 
+  // Request underlying source to request a key frame, if applicable (sources
+  // that can provide encoded video frames only).
+  virtual void RequestKeyFrame() {}
+
   // Request underlying source to capture a new frame.
   virtual void RequestRefreshFrame() {}
 

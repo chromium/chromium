@@ -47,6 +47,10 @@ void MockMediaStreamVideoSource::FailToStartMockedSource() {
       mojom::blink::MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO);
 }
 
+void MockMediaStreamVideoSource::RequestKeyFrame() {
+  OnRequestKeyFrame();
+}
+
 void MockMediaStreamVideoSource::RequestRefreshFrame() {
   DCHECK(!frame_callback_.is_null());
   if (respond_to_request_refresh_frame_) {

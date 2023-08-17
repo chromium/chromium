@@ -425,7 +425,7 @@ class MODULES_EXPORT VideoTrackRecorderPassthrough : public VideoTrackRecorder {
                                      base::TimeTicks capture_time) override;
 
  private:
-  void RequestRefreshFrame();
+  void RequestKeyFrame();
   void DisconnectFromTrack();
   void HandleEncodedVideoFrame(
       base::RepeatingCallback<base::TimeTicks()> time_now_callback,
