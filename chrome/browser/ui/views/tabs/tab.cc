@@ -103,6 +103,12 @@ namespace {
 // transitioning a tab from normal to pinned tab.
 constexpr int kPinnedTabExtraWidthToRenderAsNormal = 30;
 
+// Additional padding of close button to the right of the tab
+// indicator when `extra_alert_indicator_padding_` is true.
+constexpr int kTabAlertIndicatorCloseButtonPaddingAdjustmentTouchUI = 8;
+constexpr int kTabAlertIndicatorCloseButtonPaddingAdjustment = 6;
+constexpr int kTabAlertIndicatorCloseButtonPaddingAdjustmentRefresh = 4;
+
 bool g_show_hover_card_on_mouse_hover = true;
 
 // Helper functions ------------------------------------------------------------
@@ -366,8 +372,14 @@ void Tab::Layout() {
     int right = contents_rect.right();
     if (showing_close_button_) {
       right = close_x;
-      if (extra_alert_indicator_padding_)
-        right -= ui::TouchUiController::Get()->touch_ui() ? 8 : 6;
+      if (extra_alert_indicator_padding_) {
+        right -=
+            ui::TouchUiController::Get()->touch_ui()
+                ? kTabAlertIndicatorCloseButtonPaddingAdjustmentTouchUI
+                : (features::IsChromeRefresh2023()
+                       ? kTabAlertIndicatorCloseButtonPaddingAdjustmentRefresh
+                       : kTabAlertIndicatorCloseButtonPaddingAdjustment);
+      }
     }
     const gfx::Size image_size = alert_indicator_button_->GetPreferredSize();
     gfx::Rect bounds(
