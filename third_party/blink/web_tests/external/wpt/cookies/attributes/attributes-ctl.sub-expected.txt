@@ -1,18 +1,18 @@
 This is a testharness.js-based test.
-Found 429 tests; 391 PASS, 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 429 tests; 421 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Cookie with %x0 in Domain attribute value is handled correctly.
-FAIL Cookie with %x0 after Domain attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test0domain2=t"
+PASS Cookie with %x0 after Domain attribute value is handled correctly.
 PASS Cookie with %x0 in Path attribute value is handled correctly.
-FAIL Cookie with %x0 after Path attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test0path2=t"
-FAIL Cookie with %x0 in Max-Age attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test0maxage=t"
-FAIL Cookie with %x0 after Max-Age attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test0maxage2=t"
-FAIL Cookie with %x0 in Expires attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test0expires=t"
-FAIL Cookie with %x0 after Expires attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test0expires2=t"
-FAIL Cookie with %x0 in Secure attribute is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test0secure=t"
+PASS Cookie with %x0 after Path attribute value is handled correctly.
+PASS Cookie with %x0 in Max-Age attribute value is handled correctly.
+PASS Cookie with %x0 after Max-Age attribute value is handled correctly.
+PASS Cookie with %x0 in Expires attribute value is handled correctly.
+PASS Cookie with %x0 after Expires attribute value is handled correctly.
+PASS Cookie with %x0 in Secure attribute is handled correctly.
 PASS Cookie with %x0 after Secure attribute is handled correctly.
-FAIL Cookie with %x0 in HttpOnly attribute is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test0httponly=t"
-FAIL Cookie with %x0 in SameSite attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test0samesite=t"
-FAIL Cookie with %x0 after SameSite attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test0samesite2=t"
+PASS Cookie with %x0 in HttpOnly attribute is handled correctly.
+PASS Cookie with %x0 in SameSite attribute value is handled correctly.
+PASS Cookie with %x0 after SameSite attribute value is handled correctly.
 PASS Cookie with %x1 in Domain attribute value is handled correctly.
 PASS Cookie with %x1 after Domain attribute value is handled correctly.
 PASS Cookie with %x1 in Path attribute value is handled correctly.
@@ -131,18 +131,18 @@ FAIL Cookie with %x9 in HttpOnly attribute is handled correctly. assert_equals: 
 FAIL Cookie with %x9 in SameSite attribute value is handled correctly. assert_equals: The cookie was set as expected. expected "test9samesite=t" but got ""
 PASS Cookie with %x9 after SameSite attribute value is handled correctly.
 PASS Cookie with %xa in Domain attribute value is handled correctly.
-FAIL Cookie with %xa after Domain attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test10domain2=t"
+PASS Cookie with %xa after Domain attribute value is handled correctly.
 PASS Cookie with %xa in Path attribute value is handled correctly.
-FAIL Cookie with %xa after Path attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test10path2=t"
-FAIL Cookie with %xa in Max-Age attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test10maxage=t"
-FAIL Cookie with %xa after Max-Age attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test10maxage2=t"
-FAIL Cookie with %xa in Expires attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test10expires=t"
-FAIL Cookie with %xa after Expires attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test10expires2=t"
-FAIL Cookie with %xa in Secure attribute is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test10secure=t"
+PASS Cookie with %xa after Path attribute value is handled correctly.
+PASS Cookie with %xa in Max-Age attribute value is handled correctly.
+PASS Cookie with %xa after Max-Age attribute value is handled correctly.
+PASS Cookie with %xa in Expires attribute value is handled correctly.
+PASS Cookie with %xa after Expires attribute value is handled correctly.
+PASS Cookie with %xa in Secure attribute is handled correctly.
 PASS Cookie with %xa after Secure attribute is handled correctly.
-FAIL Cookie with %xa in HttpOnly attribute is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test10httponly=t"
-FAIL Cookie with %xa in SameSite attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test10samesite=t"
-FAIL Cookie with %xa after SameSite attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test10samesite2=t"
+PASS Cookie with %xa in HttpOnly attribute is handled correctly.
+PASS Cookie with %xa in SameSite attribute value is handled correctly.
+PASS Cookie with %xa after SameSite attribute value is handled correctly.
 PASS Cookie with %xb in Domain attribute value is handled correctly.
 PASS Cookie with %xb after Domain attribute value is handled correctly.
 PASS Cookie with %xb in Path attribute value is handled correctly.
@@ -170,18 +170,18 @@ PASS Cookie with %xc in HttpOnly attribute is handled correctly.
 PASS Cookie with %xc in SameSite attribute value is handled correctly.
 PASS Cookie with %xc after SameSite attribute value is handled correctly.
 PASS Cookie with %xd in Domain attribute value is handled correctly.
-FAIL Cookie with %xd after Domain attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test13domain2=t"
+PASS Cookie with %xd after Domain attribute value is handled correctly.
 PASS Cookie with %xd in Path attribute value is handled correctly.
-FAIL Cookie with %xd after Path attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test13path2=t"
-FAIL Cookie with %xd in Max-Age attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test13maxage=t"
-FAIL Cookie with %xd after Max-Age attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test13maxage2=t"
-FAIL Cookie with %xd in Expires attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test13expires=t"
-FAIL Cookie with %xd after Expires attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test13expires2=t"
-FAIL Cookie with %xd in Secure attribute is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test13secure=t"
+PASS Cookie with %xd after Path attribute value is handled correctly.
+PASS Cookie with %xd in Max-Age attribute value is handled correctly.
+PASS Cookie with %xd after Max-Age attribute value is handled correctly.
+PASS Cookie with %xd in Expires attribute value is handled correctly.
+PASS Cookie with %xd after Expires attribute value is handled correctly.
+PASS Cookie with %xd in Secure attribute is handled correctly.
 PASS Cookie with %xd after Secure attribute is handled correctly.
-FAIL Cookie with %xd in HttpOnly attribute is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test13httponly=t"
-FAIL Cookie with %xd in SameSite attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test13samesite=t"
-FAIL Cookie with %xd after SameSite attribute value is handled correctly. assert_equals: The cookie was rejected. expected "" but got "test13samesite2=t"
+PASS Cookie with %xd in HttpOnly attribute is handled correctly.
+PASS Cookie with %xd in SameSite attribute value is handled correctly.
+PASS Cookie with %xd after SameSite attribute value is handled correctly.
 PASS Cookie with %xe in Domain attribute value is handled correctly.
 PASS Cookie with %xe after Domain attribute value is handled correctly.
 PASS Cookie with %xe in Path attribute value is handled correctly.

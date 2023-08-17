@@ -261,7 +261,7 @@ BASE_FEATURE(kNoncedPartitionedCookies,
 
 BASE_FEATURE(kBlockTruncatedCookies,
              "BlockTruncatedCookies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStaticKeyPinningEnforcement,
              "StaticKeyPinningEnforcement",
