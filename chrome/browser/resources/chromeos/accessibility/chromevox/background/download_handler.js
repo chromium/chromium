@@ -6,7 +6,6 @@
  * @fileoverview Listens for download events and provides corresponding
  * notifications in ChromeVox.
  */
-import {LocalStorage} from '../../common/local_storage.js';
 import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {QueueMode} from '../common/tts_types.js';

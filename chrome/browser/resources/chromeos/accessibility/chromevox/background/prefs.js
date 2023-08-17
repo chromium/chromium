@@ -13,8 +13,6 @@ import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {Personality} from '../common/tts_types.js';
 
-import {ChromeVox} from './chromevox.js';
-import {ConsoleTts} from './console_tts.js';
 import {EventStreamLogger} from './logging/event_stream_logger.js';
 import {LogUrlWatcher} from './logging/log_url_watcher.js';
 import {Output} from './output/output.js';
