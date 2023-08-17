@@ -270,8 +270,8 @@ absl::optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
       return GoogleServiceAuthError(
           GoogleServiceAuthError::State::REQUEST_CANCELED);
     case cm::GoogleServiceAuthError::State::kScopeLimitedUnrecoverableError:
-      return GoogleServiceAuthError(
-          GoogleServiceAuthError::State::SCOPE_LIMITED_UNRECOVERABLE_ERROR);
+      return GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
+          mojo_error->error_message);
     case cm::GoogleServiceAuthError::State::kChallengeResponseRequired:
       return GoogleServiceAuthError::FromTokenBindingChallenge(
           mojo_error->token_binding_challenge.value_or(
