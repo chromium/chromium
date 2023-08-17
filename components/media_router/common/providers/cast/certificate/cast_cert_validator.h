@@ -30,8 +30,16 @@ enum class CastDeviceCertPolicy {
 };
 
 enum class CRLPolicy {
+  // Revocation is checked if a CRL is provided. If CRL is not provided,
+  // revocation is checked by fallback CRL.
+  CRL_OPTIONAL_WITH_FALLBACK,
+
   // Revocation is only checked if a CRL is provided.
   CRL_OPTIONAL,
+
+  // Revocation is always checked. If CRL is not provided, revocation is checked
+  // by fallback CRL.
+  CRL_REQUIRED_WITH_FALLBACK,
 
   // Revocation is always checked. A missing CRL results in failure.
   CRL_REQUIRED,
@@ -149,6 +157,7 @@ class CertVerificationContext {
     std::unique_ptr<CertVerificationContext>* context,
     CastDeviceCertPolicy* policy,
     const CastCRL* crl,
+    const CastCRL* fallback_crl,
     CRLPolicy crl_policy,
     net::TrustStore* trust_store);
 

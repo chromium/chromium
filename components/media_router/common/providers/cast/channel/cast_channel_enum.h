@@ -139,7 +139,7 @@ enum class WriteState {
 std::string ReadyStateToString(ReadyState ready_state);
 std::string ChannelErrorToString(ChannelError channel_error);
 
-constexpr int kNumCastChannelFlags = 6;
+constexpr int kNumCastChannelFlags = 8;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -154,7 +154,8 @@ enum class CastChannelFlag : uint16_t {
   kCertificateRevoked = 1 << 5,
   kInvalidFallbackCRL = 1 << 6,
   kCertificateRevokedByFallbackCRL = 1 << 7,
-  kMaxValue = kCertificateRevokedByFallbackCRL,
+  kCertificateAcceptedByFallbackCRL = 1 << 8,
+  kMaxValue = kCertificateAcceptedByFallbackCRL,
 };
 
 using CastChannelFlags = uint16_t;

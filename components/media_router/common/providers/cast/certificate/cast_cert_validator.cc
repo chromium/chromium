@@ -332,17 +332,20 @@ CastCertError VerifyDeviceCert(
     std::unique_ptr<CertVerificationContext>* context,
     CastDeviceCertPolicy* policy,
     const CastCRL* crl,
+    const CastCRL* fallback_crl,
     CRLPolicy crl_policy) {
   CastCertError verification_result;
   CastTrustStore::AccessInstance(base::BindOnce(
       [](const std::vector<std::string>& certs, const base::Time& time,
          std::unique_ptr<CertVerificationContext>* context,
-         CastDeviceCertPolicy* policy, const CastCRL* crl, CRLPolicy crl_policy,
+         CastDeviceCertPolicy* policy, const CastCRL* crl,
+         const CastCRL* fallback_crl, CRLPolicy crl_policy,
          CastCertError* result, net::TrustStore* store) {
         *result = VerifyDeviceCertUsingCustomTrustStore(
-            certs, time, context, policy, crl, crl_policy, store);
+            certs, time, context, policy, crl, fallback_crl, crl_policy, store);
       },
-      certs, time, context, policy, crl, crl_policy, &verification_result));
+      certs, time, context, policy, crl, fallback_crl, crl_policy,
+      &verification_result));
   return verification_result;
 }
 
@@ -352,10 +355,12 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
     std::unique_ptr<CertVerificationContext>* context,
     CastDeviceCertPolicy* policy,
     const CastCRL* crl,
+    const CastCRL* fallback_crl,
     CRLPolicy crl_policy,
     net::TrustStore* trust_store) {
   if (!trust_store)
-    return VerifyDeviceCert(certs, time, context, policy, crl, crl_policy);
+    return VerifyDeviceCert(certs, time, context, policy, crl, fallback_crl,
+                            crl_policy);
 
   if (certs.empty())
     return CastCertError::ERR_CERTS_MISSING;
@@ -408,6 +413,19 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
   // its public key.
   if (!CheckTargetCertificate(target_cert.get(), context))
     return CastCertError::ERR_CERTS_RESTRICTIONS;
+
+  if (!crl && (crl_policy == CRLPolicy::CRL_REQUIRED_WITH_FALLBACK ||
+               crl_policy == CRLPolicy::CRL_OPTIONAL_WITH_FALLBACK)) {
+    if (!fallback_crl) {
+      return CastCertError::ERR_FALLBACK_CRL_INVALID;
+    }
+
+    if (!fallback_crl->CheckRevocation(result.GetBestValidPath()->certs,
+                                       time)) {
+      return CastCertError::ERR_CERTS_REVOKED_BY_FALLBACK_CRL;
+    }
+    return CastCertError::OK_FALLBACK_CRL;
+  }
 
   // Check for revocation.
   if (crl && !crl->CheckRevocation(result.GetBestValidPath()->certs, time))

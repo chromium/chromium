@@ -24,6 +24,7 @@ source_set("certificate_reader") {
 
 source_set("certificate_roots") {
   sources = [
+    "cast_fallback_crl.h",
     "cast_root_ca_cert_der-inc.h",
     "eureka_root_ca_der-inc.h",
   ]

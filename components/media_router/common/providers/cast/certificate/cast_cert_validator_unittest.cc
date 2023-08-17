@@ -109,7 +109,7 @@ void RunTest(CastCertError expected_result,
   CastDeviceCertPolicy policy;
 
   CastCertError result = VerifyDeviceCertUsingCustomTrustStore(
-      certs, time, &context, &policy, nullptr, CRLPolicy::CRL_OPTIONAL,
+      certs, time, &context, &policy, nullptr, nullptr, CRLPolicy::CRL_OPTIONAL,
       trust_store.get());
 
   ASSERT_EQ(expected_result, result);
