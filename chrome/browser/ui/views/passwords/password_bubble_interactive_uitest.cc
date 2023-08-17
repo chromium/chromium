@@ -992,11 +992,23 @@ class SharedPasswordsNotificationBubbleInteractiveUiTest
     : public PasswordBubbleInteractiveUiTest {
  public:
   ~SharedPasswordsNotificationBubbleInteractiveUiTest() override = default;
+  auto ScreenshotSharedPasswordsNotificationRootView(const char* baseline);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       password_manager::features::kSharedPasswordNotificationUI};
 };
+
+auto SharedPasswordsNotificationBubbleInteractiveUiTest::
+    ScreenshotSharedPasswordsNotificationRootView(const char* baseline) {
+  constexpr char kRootViewName[] = "ScreenshotRootView";
+  return Steps(
+      NameViewRelative(
+          SharedPasswordsNotificationView::kTopView, kRootViewName,
+          [](views::View* view) { return view->GetWidget()->GetRootView(); }),
+      Screenshot(kRootViewName,
+                 /*screenshot_name=*/std::string(), baseline));
+}
 
 IN_PROC_BROWSER_TEST_F(SharedPasswordsNotificationBubbleInteractiveUiTest,
                        SharedPasswordNotificationUIShowsUpAndTakeScreenshot) {
@@ -1012,15 +1024,13 @@ IN_PROC_BROWSER_TEST_F(SharedPasswordsNotificationBubbleInteractiveUiTest,
                                           /*federated_matches=*/nullptr);
   };
 
-  RunTestSequence(
-      Do(setup_shared_passwords),
-      WaitForShow(SharedPasswordsNotificationView::kTopView),
-      // Screenshots are supposed only on Windows.
-      SetOnIncompatibleAction(
-          OnIncompatibleAction::kIgnoreAndContinue,
-          "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(SharedPasswordsNotificationView::kTopView,
-                 /*screenshot_name=*/std::string(), /*baseline=*/"4714696"));
+  RunTestSequence(Do(setup_shared_passwords),
+                  WaitForShow(SharedPasswordsNotificationView::kTopView),
+                  // Screenshots are supposed only on Windows.
+                  SetOnIncompatibleAction(
+                      OnIncompatibleAction::kIgnoreAndContinue,
+                      "Screenshot can only run in pixel_tests on Windows."),
+                  ScreenshotSharedPasswordsNotificationRootView("4783493"));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1043,15 +1053,13 @@ IN_PROC_BROWSER_TEST_F(
                                           /*federated_matches=*/nullptr);
   };
 
-  RunTestSequence(
-      Do(setup_shared_passwords),
-      WaitForShow(SharedPasswordsNotificationView::kTopView),
-      // Screenshots are supposed only on Windows.
-      SetOnIncompatibleAction(
-          OnIncompatibleAction::kIgnoreAndContinue,
-          "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(SharedPasswordsNotificationView::kTopView,
-                 /*screenshot_name=*/std::string(), /*baseline=*/"4727383"));
+  RunTestSequence(Do(setup_shared_passwords),
+                  WaitForShow(SharedPasswordsNotificationView::kTopView),
+                  // Screenshots are supposed only on Windows.
+                  SetOnIncompatibleAction(
+                      OnIncompatibleAction::kIgnoreAndContinue,
+                      "Screenshot can only run in pixel_tests on Windows."),
+                  ScreenshotSharedPasswordsNotificationRootView("4783493"));
 }
 
 // Tests the case when there are multiple shared passwords, but only one is not
@@ -1076,15 +1084,13 @@ IN_PROC_BROWSER_TEST_F(
                                           /*federated_matches=*/nullptr);
   };
 
-  RunTestSequence(
-      Do(setup_shared_passwords),
-      WaitForShow(SharedPasswordsNotificationView::kTopView),
-      // Screenshots are supposed only on Windows.
-      SetOnIncompatibleAction(
-          OnIncompatibleAction::kIgnoreAndContinue,
-          "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(SharedPasswordsNotificationView::kTopView,
-                 /*screenshot_name=*/std::string(), /*baseline=*/"4727383"));
+  RunTestSequence(Do(setup_shared_passwords),
+                  WaitForShow(SharedPasswordsNotificationView::kTopView),
+                  // Screenshots are supposed only on Windows.
+                  SetOnIncompatibleAction(
+                      OnIncompatibleAction::kIgnoreAndContinue,
+                      "Screenshot can only run in pixel_tests on Windows."),
+                  ScreenshotSharedPasswordsNotificationRootView("4783493"));
 }
 
 IN_PROC_BROWSER_TEST_F(
