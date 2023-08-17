@@ -306,6 +306,10 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kLinkRelPreloadAsFont,
           WebFeature::kURLPatternReliantOnImplicitURLComponentsInString,
           WebFeature::kURLPatternReliantOnLaterComponentFromBaseURL,
+          WebFeature::kWindowManagementPermissionDescriptorUsed,
+          WebFeature::kWindowManagementPermissionPolicyParsed,
+          WebFeature::kWindowPlacementPermissionDescriptorUsed,
+          WebFeature::kWindowPlacementPermissionPolicyParsed,
       }));
   return *opt_in_features;
 }
