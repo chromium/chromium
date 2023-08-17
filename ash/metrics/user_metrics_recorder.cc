@@ -136,11 +136,6 @@ void UserMetricsRecorder::RecordPeriodicMetrics() {
   if (IsUserInActiveDesktopEnvironment()) {
     RecordShelfItemCounts();
     RecordPeriodicAppListMetrics();
-
-    base::UmaHistogramBoolean(
-        "Ash.AppNotificationBadgingPref",
-        Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-            prefs::kAppNotificationBadgingEnabled));
   }
 }
 

@@ -546,18 +546,6 @@ chromium-metrics-reviews@google.com.
   <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
-<histogram name="Ash.AppNotificationBadgingPref" enum="Boolean"
-    expires_after="2022-04-10">
-  <owner>mmourgos@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    For each user, records whether they have the app notification badging user
-    preference enabled or disabled. This metric is only logged when an active
-    user session has been started. This metric is logged periodically every 30
-    minutes.
-  </summary>
-</histogram>
-
 <histogram name="Ash.ArcAppInitialAppsInstallDuration" units="ms"
     expires_after="2024-02-04">
   <owner>alemate@chromium.org</owner>
