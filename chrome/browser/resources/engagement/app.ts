@@ -64,7 +64,7 @@ export class SiteEngagementAppElement extends CustomElement {
     const engagementTableHeader =
         this.getRequiredElement<HTMLElement>('#engagement-table-header');
     this.engagementTableBody =
-        this.getRequiredElement<HTMLElement>('#engagement-table-body')!;
+        this.getRequiredElement<HTMLElement>('#engagement-table-body');
 
     const headers = engagementTableHeader.children;
     for (let i = 0; i < headers.length; i++) {

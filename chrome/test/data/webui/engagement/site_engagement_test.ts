@@ -5,36 +5,45 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://site-engagement/app.js';
 
+import {SiteEngagementAppElement} from 'chrome://site-engagement/app.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('SiteEngagement', function() {
   const EXAMPLE_URL_1 = 'http://example.com/';
   const EXAMPLE_URL_2 = 'http://shmlexample.com/';
 
-  let app;
-  let cells;
+  let app: SiteEngagementAppElement;
+  let cells: CellEntry[];
 
-  function getCells() {
-    const originCells =
-        Array.from(app.shadowRoot.querySelectorAll('.origin-cell'));
+  interface CellEntry {
+    origin: HTMLElement;
+    scoreInput: HTMLInputElement;
+    bonusScore: HTMLElement;
+    totalScore: HTMLElement;
+  }
+
+  function getCells(): CellEntry[] {
+    const originCells = Array.from(
+        app.shadowRoot!.querySelectorAll<HTMLElement>('.origin-cell'));
     const scoreInputs =
-        Array.from(app.shadowRoot.querySelectorAll('.base-score-input'));
-    const bonusScoreCells =
-        Array.from(app.shadowRoot.querySelectorAll('.bonus-score-cell'));
-    const totalScoreCells =
-        Array.from(app.shadowRoot.querySelectorAll('.total-score-cell'));
+        Array.from(app.shadowRoot!.querySelectorAll<HTMLInputElement>(
+            '.base-score-input'));
+    const bonusScoreCells = Array.from(
+        app.shadowRoot!.querySelectorAll<HTMLElement>('.bonus-score-cell'));
+    const totalScoreCells = Array.from(
+        app.shadowRoot!.querySelectorAll<HTMLElement>('.total-score-cell'));
     return originCells.map((c, i) => {
       return {
         origin: c,
-        scoreInput: scoreInputs[i],
-        bonusScore: bonusScoreCells[i],
-        totalScore: totalScoreCells[i],
+        scoreInput: scoreInputs[i]!,
+        bonusScore: bonusScoreCells[i]!,
+        totalScore: totalScoreCells[i]!,
       };
     });
   }
 
   setup(async function() {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('site-engagement-app');
     document.body.appendChild(app);
     await app.whenPopulatedForTest();
@@ -48,20 +57,20 @@ suite('SiteEngagement', function() {
   });
 
   test('scores rounded to 2 decimal places', function() {
-    assertDeepEquals(['10', '3.14'], cells.map((x) => x.scoreInput.value));
-    assertDeepEquals(['0', '0'], cells.map((x) => x.bonusScore.textContent));
+    assertDeepEquals(['10', '3.14'], cells.map(x => x.scoreInput.value));
+    assertDeepEquals(['0', '0'], cells.map(x => x.bonusScore.textContent));
     assertDeepEquals(
         ['10', '3.14'], cells.map((x) => x.totalScore.textContent));
   });
 
   test('change score', async function() {
-    const firstRow = cells[0];
-    firstRow.scoreInput.value = 50;
+    const firstRow = cells[0]!;
+    firstRow.scoreInput.value = '50';
     firstRow.scoreInput.dispatchEvent(new Event('change'));
 
     const {info} =
         await app.engagementDetailsProvider.getSiteEngagementDetails();
-    assertEquals(firstRow.origin.textContent, info[0].origin.url);
-    assertEquals(50, info[0].baseScore);
+    assertEquals(firstRow.origin.textContent, info[0]!.origin.url);
+    assertEquals(50, info[0]!.baseScore);
   });
 });
