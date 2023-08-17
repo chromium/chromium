@@ -29,8 +29,15 @@
 
 // Initializes the view controller with a `reauthenticationModule` for
 // triggering Local Authentication.
+// - reauthUponPresentation: Whether local authentication should be requested
+// when the view controller is presented. Expected to be YES when the view
+// controller is being presented to require authentication before giving access
+// to a surface that has just been opened. Expected to be NO when blocking an
+// already opened surface on device lock for later requiring authentication on
+// device unlock.
 - (instancetype)initWithReauthenticationModule:
-    (id<ReauthenticationProtocol>)reauthenticationModule
+                    (id<ReauthenticationProtocol>)reauthenticationModule
+                        reauthUponPresentation:(BOOL)reauthUponPresentation
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable initializers.
@@ -38,6 +45,10 @@
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
+
+// Triggers Local Authentication. If no authentication method is available,
+// displays an alert requesting the user to set a passcode.
+- (void)requestAuthentication;
 
 @end
 

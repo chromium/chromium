@@ -15,8 +15,11 @@ source_set("reauthentication") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/settings/password:features",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]
@@ -46,4 +49,27 @@ source_set("reauthentication_constants") {
     "reauthentication_constants.h",
     "reauthentication_constants.mm",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "reauthentication_coordinator_unittest.mm" ]
+
+  deps = [
+    ":reauthentication",
+    ":reauthentication_ui",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/ui/settings/password:features",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
 }

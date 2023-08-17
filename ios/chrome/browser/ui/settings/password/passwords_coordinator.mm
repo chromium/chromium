@@ -109,6 +109,10 @@ using password_manager::WarningType;
 // Modal alert for interactions with passwords list.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 
+// Indicates that a password manager visit metric has been recorded.
+// Used to only record the metric the first time authentication is passed.
+@property(nonatomic) BOOL recordedPasswordManagerVisit;
+
 @end
 
 @implementation PasswordsCoordinator
@@ -125,6 +129,7 @@ using password_manager::WarningType;
     _dispatcher = static_cast<
         id<BrowserCommands, ApplicationCommands, BrowsingDataCommands>>(
         browser->GetCommandDispatcher());
+    _recordedPasswordManagerVisit = NO;
   }
   return self;
 }
@@ -137,31 +142,6 @@ using password_manager::WarningType;
 
 - (UIViewController*)viewController {
   return self.passwordsViewController;
-}
-
-// Covers password manager with an empty view controller until successful
-// Local Authentication.
-- (void)blockForReauth {
-  DCHECK_EQ(_baseNavigationController.topViewController,
-            _passwordsViewController);
-  DCHECK(!_reauthCoordinator);
-
-  // TODO(crbug.com/1462419): Resign first responder and stop AlertCoordinator.
-  // Needed when blocking on device lock.
-
-  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
-      initWithBaseNavigationController:_baseNavigationController
-                               browser:self.browser
-                reauthenticationModule:_reauthModule];
-
-  _reauthCoordinator.delegate = self;
-
-  [_reauthCoordinator start];
-}
-
-// Records password manager visit metric.
-- (void)recordPasswordManagerVisit {
-  UMA_HISTOGRAM_BOOLEAN("PasswordManager.iOS.PasswordManagerVisit", true);
 }
 
 #pragma mark - ChromeCoordinator
@@ -205,9 +185,9 @@ using password_manager::WarningType;
                                            animated:!startBlockedForReauth];
 
   if (startBlockedForReauth) {
-    [self blockForReauth];
+    [self startReauthCoordinatorWithAuthOnStart:YES];
   } else {
-    [self recordPasswordManagerVisit];
+    [self recordPasswordManagerVisitIfNeeded];
   }
 
   // When kIOSPasswordCheckup is enabled, start a password check.
@@ -257,6 +237,9 @@ using password_manager::WarningType;
 
 - (void)showPasswordCheckup {
   DCHECK(!self.passwordCheckupCoordinator);
+
+  [self stopReauthCoordinatorBeforeStartingChildCoordinator];
+
   self.passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
@@ -270,6 +253,8 @@ using password_manager::WarningType;
 // TODO(crbug.com/1464966): Make sure there aren't mutiple active
 // `passwordIssuesCoordinator`s at once.
 - (void)showPasswordIssues {
+  [self stopReauthCoordinatorBeforeStartingChildCoordinator];
+
   self.passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
             initForWarningType:WarningType::kCompromisedPasswordsWarning
       baseNavigationController:self.baseNavigationController
@@ -282,6 +267,9 @@ using password_manager::WarningType;
 - (void)showDetailedViewForCredential:
     (const password_manager::CredentialUIEntry&)credential {
   DCHECK(!self.passwordDetailsCoordinator);
+
+  [self stopReauthCoordinatorBeforeStartingChildCoordinator];
+
   self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
@@ -295,6 +283,8 @@ using password_manager::WarningType;
 - (void)showDetailedViewForAffiliatedGroup:
     (const password_manager::AffiliatedGroup&)affiliatedGroup {
   DCHECK(!self.passwordDetailsCoordinator);
+
+  [self stopReauthCoordinatorBeforeStartingChildCoordinator];
   self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
@@ -307,6 +297,8 @@ using password_manager::WarningType;
 
 - (void)showAddPasswordSheet {
   DCHECK(!self.addPasswordCoordinator);
+
+  [self stopReauthCoordinatorBeforeStartingChildCoordinator];
   self.addPasswordCoordinator = [[AddPasswordCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
@@ -392,6 +384,9 @@ using password_manager::WarningType;
 
 - (void)showPasswordSettingsSubmenu {
   DCHECK(!self.passwordSettingsCoordinator);
+
+  [self stopReauthCoordinatorBeforeStartingChildCoordinator];
+
   self.passwordSettingsCoordinator = [[PasswordSettingsCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
@@ -411,6 +406,7 @@ using password_manager::WarningType;
   [self.passwordIssuesCoordinator stop];
   self.passwordIssuesCoordinator.delegate = nil;
   self.passwordIssuesCoordinator = nil;
+  [self restartReauthCoordinator];
 }
 
 #pragma mark - PasswordCheckupCoordinatorDelegate
@@ -421,6 +417,7 @@ using password_manager::WarningType;
   [self.passwordCheckupCoordinator stop];
   self.passwordCheckupCoordinator.delegate = nil;
   self.passwordCheckupCoordinator = nil;
+  [self restartReauthCoordinator];
 }
 
 #pragma mark PasswordDetailsCoordinatorDelegate
@@ -431,6 +428,7 @@ using password_manager::WarningType;
   [self.passwordDetailsCoordinator stop];
   self.passwordDetailsCoordinator.delegate = nil;
   self.passwordDetailsCoordinator = nil;
+  [self restartReauthCoordinator];
 }
 
 #pragma mark AddPasswordDetailsCoordinatorDelegate
@@ -441,6 +439,7 @@ using password_manager::WarningType;
   [self.addPasswordCoordinator stop];
   self.addPasswordCoordinator.delegate = nil;
   self.addPasswordCoordinator = nil;
+  [self restartReauthCoordinator];
 }
 
 - (void)setMostRecentlyUpdatedPasswordDetails:
@@ -469,6 +468,8 @@ using password_manager::WarningType;
   [self.passwordsInOtherAppsCoordinator stop];
   self.passwordsInOtherAppsCoordinator.delegate = nil;
   self.passwordsInOtherAppsCoordinator = nil;
+
+  [self restartReauthCoordinator];
 }
 
 #pragma mark - PasswordSettingsCoordinatorDelegate
@@ -479,6 +480,8 @@ using password_manager::WarningType;
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
+
+  [self restartReauthCoordinator];
 }
 
 #pragma mark - ReauthenticationCoordinatorDelegate
@@ -487,14 +490,88 @@ using password_manager::WarningType;
     (ReauthenticationCoordinator*)coordinator {
   DCHECK_EQ(_reauthCoordinator, coordinator);
 
-  [self recordPasswordManagerVisit];
+  [self recordPasswordManagerVisitIfNeeded];
 
-  [_reauthCoordinator stop];
+  // Cleanup reauthCoordinator if scene state monitoring is not enabled.
+  if (!password_manager::features::IsAuthOnEntryV2Enabled()) {
+    [_reauthCoordinator stop];
+    _reauthCoordinator.delegate = nil;
+    _reauthCoordinator = nil;
+  }
+}
+
+- (void)willPushReauthenticationViewController {
+  [self dismissAlertCoordinator];
+  [self dismissActionSheetCoordinator];
+}
+
+#pragma mark - Private
+
+// Starts reauthCoordinator.
+// - authOnStart: Pass `YES` to cover password manager with an empty view
+// controller until successful Local Authentication when reauthCoordinator
+// starts.
+//
+// Local authentication is required everytime the current
+// scene is backgrounded and foregrounded until reauthCoordinator is stopped.
+- (void)startReauthCoordinatorWithAuthOnStart:(BOOL)authOnStart {
+  // At this point we are either starting the PasswordsCoordinator or we have
+  // just dismissed a child coordinator. If the previous reauth coordinator was
+  // not stopped and deallocated when the child coordinator was started, we
+  // would have multiple reauth coordinators listening for scene states and
+  // triggering reauth at the same time with undefined behavior.
+  DCHECK(!_reauthCoordinator);
+
+  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+      initWithBaseNavigationController:_baseNavigationController
+                               browser:self.browser
+                reauthenticationModule:_reauthModule
+                           authOnStart:authOnStart];
+
+  _reauthCoordinator.delegate = self;
+
+  [_reauthCoordinator start];
+}
+
+// Stop reauth coordinator when a child coordinator will be started.
+//
+// Needed so reauth coordinator doesn't block for reauth if the scene state
+// changes while the child coordinator is presenting its content. The child
+// coordinator will add its own reauth coordinator to block its content for
+// reauth.
+- (void)stopReauthCoordinatorBeforeStartingChildCoordinator {
+  // Popping the view controller in case Local Authentication was triggered
+  // outside reauthCoordinator before starting the child coordinator. Local
+  // Authentication changes the scene state which triggers the presentation of
+  // the ReauthenticationViewController by reauthCoordinator. Ideally
+  // reauthCoordinator would be stopped when Local Authentication is triggered
+  // outside of it but still defending against that scenario to avoid leaving an
+  // unintended view controller in the navigation stack.
+  [_reauthCoordinator stopAndPopViewController];
   _reauthCoordinator.delegate = nil;
   _reauthCoordinator = nil;
 }
 
-#pragma mark - Private
+// Starts reauthCoordinator after a child coordinator content was dismissed.
+- (void)restartReauthCoordinator {
+  // Restart reauth coordinator so it monitors scene state changes and requests
+  // local authentication after the scene goes to the background.
+  if (password_manager::features::IsAuthOnEntryV2Enabled()) {
+    [self startReauthCoordinatorWithAuthOnStart:NO];
+  }
+}
+
+// Records password manager visit metric.
+// Only records the first time it is called during the lifetime of self, no-op
+// after that.
+- (void)recordPasswordManagerVisitIfNeeded {
+  if (_recordedPasswordManagerVisit) {
+    return;
+  }
+  // Record only once during the lifetime of self.
+  _recordedPasswordManagerVisit = YES;
+  UMA_HISTOGRAM_BOOLEAN("PasswordManager.iOS.PasswordManagerVisit", true);
+}
 
 - (void)dismissActionSheetCoordinator {
   [self.actionSheetCoordinator stop];

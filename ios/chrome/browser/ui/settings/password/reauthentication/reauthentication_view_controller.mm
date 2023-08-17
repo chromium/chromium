@@ -16,14 +16,17 @@
 
 @implementation ReauthenticationViewController {
   id<ReauthenticationProtocol> _reauthModule;
+  BOOL _reauthUponPresentation;
 }
 
 - (instancetype)initWithReauthenticationModule:
-    (id<ReauthenticationProtocol>)reauthenticationModule {
+                    (id<ReauthenticationProtocol>)reauthenticationModule
+                        reauthUponPresentation:(BOOL)reauthUponPresentation {
   self = [super initWithNibName:nil bundle:nil];
 
   if (self) {
     _reauthModule = reauthenticationModule;
+    _reauthUponPresentation = reauthUponPresentation;
     self.navigationItem.hidesBackButton = YES;
   }
 
@@ -38,14 +41,13 @@
   [self setUpTitle];
 }
 
-#pragma mark - Private
-
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  CHECK(self.delegate);
-
-  [self requestAuthentication];
+  if (_reauthUponPresentation) {
+    [self recordAuthenticationEvent:ReauthenticationEvent::kAttempt];
+    [self triggerLocalAuthentication];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -53,7 +55,22 @@
 
   // Wait until the view is in the hierarchy to present the alert, otherwise it
   // won't be shown.
-  [self showSetUpPasscodeDialogIfNeeded];
+  if (_reauthUponPresentation) {
+    _reauthUponPresentation = NO;
+    [self showSetUpPasscodeDialogIfNeeded];
+  }
+}
+
+#pragma mark - ReauthenticationViewController
+
+- (void)requestAuthentication {
+  [self recordAuthenticationEvent:ReauthenticationEvent::kAttempt];
+
+  if ([_reauthModule canAttemptReauth]) {
+    [self triggerLocalAuthentication];
+  } else {
+    [self showSetUpPasscodeDialogIfNeeded];
+  }
 }
 
 #pragma mark - Private
@@ -82,33 +99,34 @@
 // Requests the delegate to show passcode request alert if no Local
 // Authentication is available.
 - (void)showSetUpPasscodeDialogIfNeeded {
-  if (![_reauthModule canAttemptReauth]) {
-    [self recordAuthenticationEvent:ReauthenticationEvent::kMissingPasscode];
-    [self.delegate showSetUpPasscodeDialog];
-  }
-}
-
-// Triggers Local Authentication.
-- (void)requestAuthentication {
-  [self recordAuthenticationEvent:ReauthenticationEvent::kAttempt];
-
   if ([_reauthModule canAttemptReauth]) {
-    __weak __typeof(self) weakSelf = self;
-    [_reauthModule
-        attemptReauthWithLocalizedReason:
-            l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_REAUTH_REASON_SHOW)
-                    canReusePreviousAuth:NO
-                                 handler:^(ReauthenticationResult result) {
-                                   [weakSelf
-                                       handleReauthenticationResult:result];
-                                 }];
+    return;
   }
+
+  [self recordAuthenticationEvent:ReauthenticationEvent::kMissingPasscode];
+  [self.delegate showSetUpPasscodeDialog];
 }
 
 // Records reauthentication event metrics.
 - (void)recordAuthenticationEvent:(ReauthenticationEvent)event {
   UMA_HISTOGRAM_ENUMERATION(password_manager::kReauthenticationUIEventHistogram,
                             event);
+}
+
+// Starts the native UI for Local Authentication.
+- (void)triggerLocalAuthentication {
+  if (![_reauthModule canAttemptReauth]) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  [_reauthModule
+      attemptReauthWithLocalizedReason:
+          l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_REAUTH_REASON_SHOW)
+                  canReusePreviousAuth:NO
+                               handler:^(ReauthenticationResult result) {
+                                 [weakSelf handleReauthenticationResult:result];
+                               }];
 }
 
 @end

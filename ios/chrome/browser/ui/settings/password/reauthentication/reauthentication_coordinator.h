@@ -19,14 +19,34 @@
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator;
 
+// Invoked when the coordinator is about to push its view controller.
+// Parent coordinators can prepare for reauthentication here, by stopping any
+// presented alerts or unregistering observers not needed while reauth is
+// ongoing.
+- (void)willPushReauthenticationViewController;
+
 @end
 
-// Coordinator that pushes a ReauthenticationViewController in a navigation
-// controller. Blocks the content in the navigation controller until until Local
-// Authentication (Face Id, Touch Id or Passcode) is passed. Start this
-// coordinator from the `start` implementation of the coordinator of the view
-// controller that must be blocked, right after pushing the blocked view
-// controller in the navigation controller.
+// Coordinator for protecting sensitive content with Local
+// Authentication (Face Id, Touch Id or Passcode).
+//
+// When started and until it is stopped, this coordinator detects when the scene
+// is backgrounded and requires Local Authentication the next time it is
+// foregrounded. When authentication is required, it pushes a view controller in
+// its navigation controller so the previous topViewController is hidden until
+// successful authentication.
+//
+// Additionally, this coordinator can also be
+// configured to require authentication when it is started. This is intended for
+// surfaces that require authentication before revealing their contents. Make
+// sure to start it right after pushing the blocked view controller in the
+// navigation controller.
+//
+// In most cases, this coordinator will be started when its parent is started
+// and it will have more or less the same lifecycle. Stop it when
+// the parent coordinator is stopped or when it presents another child
+// coordinator that pushes a view controller in the navigation controller, in
+// order to avoid covering content not owned by the parent.
 @interface ReauthenticationCoordinator : ChromeCoordinator
 
 @property(nonatomic, weak) id<ReauthenticationCoordinatorDelegate> delegate;
@@ -35,15 +55,23 @@
 // `navigationController`.
 //
 // - reauthenticationModule: Used for triggering Local Authentication.
+// - authOnStart: Whether authentication should be required when this
+// coordinator is started.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
                           reauthenticationModule:(id<ReauthenticationProtocol>)
                                                      reauthenticationModule
+                                     authOnStart:(BOOL)authOnStart
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Stops the coordinator and pops its view controller if it is in the navigation
+// stack. Leaves the navigation stack intact if the view controller is not in
+// it.
+- (void)stopAndPopViewController;
 
 @end
 
