@@ -770,10 +770,8 @@ std::u16string Browser::GetWindowTitleFromWebContents(
   // |contents| can be NULL because GetWindowTitleForCurrentTab is called by the
   // window during the window's creation (before tabs have been added).
   if (title.empty() && contents) {
-    title = FormatTitleForDisplay(app_controller_ &&
-                                          !app_controller_->has_tab_strip()
-                                      ? app_controller_->GetTitle()
-                                      : contents->GetTitle());
+    title = FormatTitleForDisplay(app_controller_ ? app_controller_->GetTitle()
+                                                  : contents->GetTitle());
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
     // If the app name is requested and this is a captive portal window, the
     // title should indicate that this is a captive portal window. Captive
