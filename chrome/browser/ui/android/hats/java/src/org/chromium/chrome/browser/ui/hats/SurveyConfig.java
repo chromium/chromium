@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.hats;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -63,7 +64,8 @@ public class SurveyConfig {
     }
 
     /** Not generated from java. */
-    private SurveyConfig(String trigger, String triggerId, double probability, boolean userPrompted,
+    @VisibleForTesting
+    SurveyConfig(String trigger, String triggerId, double probability, boolean userPrompted,
             String[] psdBitDataFields, String[] psdStringDataFields) {
         mTrigger = trigger;
         mTriggerId = triggerId;

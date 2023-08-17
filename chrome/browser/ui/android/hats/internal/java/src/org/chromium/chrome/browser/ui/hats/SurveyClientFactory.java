@@ -34,6 +34,6 @@ public class SurveyClientFactory {
      */
     public SurveyClient createClient(
             @NonNull SurveyConfig config, @NonNull SurveyUiDelegate uiDelegate) {
-        return new SurveyClientImpl(config, uiDelegate);
+        return new SurveyClientImpl(config, uiDelegate, SurveyControllerProvider.create());
     }
 }

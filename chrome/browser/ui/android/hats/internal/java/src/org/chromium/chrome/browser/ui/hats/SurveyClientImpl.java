@@ -13,7 +13,16 @@ import java.util.List;
  */
 // TODO(crbug/1400731): Fill in more implementations.
 class SurveyClientImpl implements SurveyClient {
-    SurveyClientImpl(SurveyConfig config, SurveyUiDelegate uiDelegate) {}
+    private final SurveyConfig mConfig;
+    private final SurveyUiDelegate mUiDelegate;
+    private final SurveyController mController;
+
+    SurveyClientImpl(
+            SurveyConfig config, SurveyUiDelegate uiDelegate, SurveyController controller) {
+        mConfig = config;
+        mUiDelegate = uiDelegate;
+        mController = controller;
+    }
 
     @Override
     public void showSurvey(Context context) {
@@ -24,5 +33,9 @@ class SurveyClientImpl implements SurveyClient {
     public void showSurvey(
             Context context, List<String> surveyPsdStringValues, List<Boolean> surveyPsdBitValues) {
         throw new UnsupportedOperationException("Not implemented");
+    }
+
+    SurveyController getControllerForTesting() {
+        return mController;
     }
 }
