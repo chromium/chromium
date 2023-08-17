@@ -3,10 +3,27 @@
 <head>
     <script defer type="module" type="text/javascript">
 
-        let directory
-        let file
+        let directory;
+        let file;
         let worker = new Worker("dlp_files_test_worker.js");
         let shared = new SharedWorker("dlp_files_test_worker.js");
+
+        let db;
+
+        const request = indexedDB.open("db", 1);
+        request.onerror = (ev) => {
+            console.log(ev);
+        };
+        request.onupgradeneeded = (ev) => {
+            console.log('db schema create');
+            const db = ev.target.result;
+            const objectStore = db.createObjectStore("files", { keyPath: "name" });
+        };
+        request.onsuccess = function (e) {
+            db = e.target.result;
+            console.log('db opened');
+        };
+
         shared.port.onmessage = (e) => {
             console.log(e.data);
         };
@@ -35,12 +52,20 @@
             file = await window.showSaveFilePicker({});
         })
         document.getElementById('read').addEventListener('click', async () => {
-            if (!file) {
-                [file] = await window.showOpenFilePicker({});
+            if (!directory) {
+                directory = await window.showDirectoryPicker();
             }
-            let r = await file.getFile();
-            let content = await r.text();
-            console.log(content);
+            if ((await directory.queryPermission()) === 'granted') {
+                try {
+                    const dirFile = await directory.getFileHandle('input.txt');
+                    const r = await dirFile.getFile();
+                    const content = await r.text();
+                    console.log(content);
+                } catch (err) {
+                    console.log("Could not read file.");
+                    console.log(err.name + ": " + err.message);
+                }
+            }
         })
         document.getElementById('reset').addEventListener('click', async () => {
             file = null;
@@ -61,10 +86,12 @@
             worker.postMessage({ 'action': 1, 'file': file });
         })
         document.getElementById('ded_read').addEventListener('click', async () => {
-            if (!file) {
-                [file] = await window.showOpenFilePicker({});
+            if (!directory) {
+                directory = await window.showDirectoryPicker();
             }
-            worker.postMessage({ 'action': 2, 'file': file });
+            if ((await directory.queryPermission()) === 'granted') {
+                worker.postMessage({ 'action': 4, 'directory': directory });
+            }
         })
         document.getElementById('file').addEventListener('change', async (e) => {
             try {
@@ -96,6 +123,51 @@
             url.pathname = "/public";
             window.history.pushState({}, "", url);
         })
+        document.getElementById('idb_save').addEventListener('change', (e) => {
+            const save = db.transaction(["files"], 'readwrite')
+                .objectStore("files")
+                .put({ 'name': 'input.txt', 'file': e.target.files[0] });
+            save.onsuccess = (ev) => {
+                // Force history update for restore test.
+                window.history.pushState({}, "", new URL(window.location));
+                console.log("saved");
+            };
+            save.onerror = (err) => {
+                console.log("Could not read file.");
+                console.log(err.name + ": " + err.message);
+            };
+        });
+        document.getElementById('idb_open').addEventListener('click', async (e) => {
+            db.transaction("files")
+                .objectStore("files")
+                .get("input.txt").onsuccess = async (ev) => {
+                    try {
+                        const file = ev.target.result.file;
+                        const content = await file.text();
+                        console.log(content);
+                    } catch (err) {
+                        console.log("Could not read file.");
+                        console.log(err.name + ": " + err.message);
+                    }
+                };
+        });
+        document.getElementById('idb_clear').addEventListener('click', async (e) => {
+            db.transaction(["files"], 'readwrite')
+                .objectStore("files")
+                .delete("input.txt").onsuccess = async (ev) => {
+                    console.log("cleared");
+                }
+        });
+        document.getElementById('idb_cached').addEventListener('click', async (e) => {
+            try {
+                const file = document.getElementById("idb_save").files[0];
+                const content = await file.text();
+                console.log(content);
+            } catch (err) {
+                console.log("Could not read file.");
+                console.log(err.name + ": " + err.message);
+            }
+        });
         const registerServiceWorker = async () => {
             const registration = await navigator.serviceWorker.register("dlp_files_test_worker.js", { scope: "/" });
             if (registration.installing) {
@@ -154,6 +226,13 @@
         <dev>
             <h3>Download Link</h3>
             <a href="index.html" download> download </a>
+        </dev>
+        <dev>
+            <h3>Indexed db</h3>
+            <input type="file" id="idb_save" value="idb_save" />
+            <input type="button" id="idb_open" value="open" />
+            <input type="button" id="idb_clear" value="clear" />
+            <input type="button" id="idb_cached" value="cached" />
         </dev>
     </form>
 </body>

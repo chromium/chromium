@@ -14,10 +14,12 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/file_access/scoped_file_access.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/blob_data_snapshot.h"
@@ -34,6 +36,8 @@ using DelegateNoProgressWriteCallback = base::OnceCallback<void(
     base::File::Error result,
     int64_t bytes,
     FileWriterDelegate::WriteProgressStatus write_status)>;
+using CopyCallback = base::OnceCallback<mojom::WriteBlobToFileResult(
+    file_access::ScopedFileAccess)>;
 
 struct WriteState {
   std::unique_ptr<FileWriterDelegate> delegate;
@@ -132,7 +136,9 @@ bool CopyFileContentsWithOffsetAndSize(base::File* infile,
 // modified time of the |copy_from| file. Afterwards, the |last_modified| date
 // is optionally saved as the last modified & last accessed time of |copy_to|.
 // If |flush_on_close| is true, then Flush is called on the |copy_to| file
-// before it is closed.
+// before it is closed. The `file_access::ScopedFileAccess` parameter is
+// expected to allow access to the source file. It has to be kept in scope of
+// this function because it must be alive while the copy operation is happening.
 mojom::WriteBlobToFileResult CopyFileAndMaybeWriteTimeModified(
     const base::FilePath& copy_from,
     base::Time expected_last_modified_copy_from,
@@ -140,7 +146,8 @@ mojom::WriteBlobToFileResult CopyFileAndMaybeWriteTimeModified(
     int64_t offset,
     absl::optional<int64_t> size,
     absl::optional<base::Time> last_modified,
-    bool flush_on_close) {
+    bool flush_on_close,
+    file_access::ScopedFileAccess) {
   // Do a full file copy if the sizes match and there is no offset.
   if (offset == 0) {
     base::File::Info info;
@@ -268,6 +275,20 @@ void HandleModifiedTimeOnBlobFileWriteComplete(
   std::move(callback).Run(mojom::WriteBlobToFileResult::kSuccess);
 }
 
+void PostCopyTaskToFileThreadIfAllowed(
+    CopyCallback copy_cb,
+    mojom::BlobStorageContext::WriteBlobToFileCallback callback,
+    file_access::ScopedFileAccess scoped_file_access) {
+  if (!scoped_file_access.is_allowed()) {
+    std::move(callback).Run(mojom::WriteBlobToFileResult::kIOError);
+    return;
+  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(std::move(copy_cb), std::move(scoped_file_access)),
+      std::move(callback));
+}
+
 void WriteConstructedBlobToFile(
     std::unique_ptr<BlobDataHandle> blob_handle,
     const base::FilePath& file_path,
@@ -304,13 +325,19 @@ void WriteConstructedBlobToFile(
         return;
       }
 
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-          base::BindOnce(CopyFileAndMaybeWriteTimeModified, item.path(),
-                         item.expected_modification_time(), file_path,
-                         item.offset(), optional_size, last_modified,
-                         flush_on_write),
-          std::move(callback));
+      base::OnceCallback<void(file_access::ScopedFileAccess)> post_copy_task =
+          base::BindOnce(
+              PostCopyTaskToFileThreadIfAllowed,
+              base::BindOnce(CopyFileAndMaybeWriteTimeModified, item.path(),
+                             item.expected_modification_time(), file_path,
+                             item.offset(), std::move(optional_size),
+                             std::move(last_modified), flush_on_write),
+              std::move(callback));
+      if (item.file_access()) {
+        item.file_access().Run({item.path()}, std::move(post_copy_task));
+      } else {
+        std::move(post_copy_task).Run(file_access::ScopedFileAccess::Allowed());
+      }
       return;
     }
   }

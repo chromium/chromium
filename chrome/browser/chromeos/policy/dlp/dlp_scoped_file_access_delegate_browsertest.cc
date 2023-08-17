@@ -12,6 +12,8 @@
 #include "base/path_service.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/fake_dlp_client.h"
@@ -63,21 +65,27 @@ class DlpScopedFileAccessDelegateBrowserTest : public InProcessBrowserTest {
     delegate_ = std::make_unique<DlpScopedFileAccessDelegate>(
         chromeos::DlpClient::Get());
     EXPECT_TRUE(tmp_.CreateUniqueTempDir());
+
+    content::WebContents* const web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    GURL test_url =
+        embedded_test_server()->GetURL("localhost", "/dlp_files_test.html");
+    EXPECT_TRUE(content::NavigateToURL(web_contents, test_url));
+    content::WebContentsConsoleObserver con_observer(web_contents);
+    con_observer.SetPattern("db opened");
+    EXPECT_TRUE(con_observer.Wait());
+
     fake_dlp_client_ =
         static_cast<chromeos::FakeDlpClient*>(chromeos::DlpClient::Get());
   }
 
   void TearDownOnMainThread() override { fake_dlp_client_ = nullptr; }
 
-  // Loads the test website and executes `action` as JavaScript in the context
-  // of this website. The actios is expected to trigger printing
-  // `expectedConsole` on the console.
+  // Executes `action` as JavaScript in the context of the opened website. The
+  // actions is expected to trigger printing `expectedConsole` on the console.
   void TestJSAction(std::string action, std::string expectedConsole) {
     content::WebContents* const web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    GURL test_url =
-        embedded_test_server()->GetURL("localhost", "/dlp_files_test.html");
-    EXPECT_TRUE(content::NavigateToURL(web_contents, test_url));
 
     content::WebContentsConsoleObserver console_observer(web_contents);
     console_observer.SetPattern(expectedConsole);
@@ -170,4 +178,75 @@ IN_PROC_BROWSER_TEST_F(DlpScopedFileAccessDelegateBrowserTest,
   TestJSAction("document.getElementById('file_service').click()",
                kErrorMessage);
 }
+
+IN_PROC_BROWSER_TEST_F(DlpScopedFileAccessDelegateBrowserTest,
+                       UploadFrameIDBProtectedAllow) {
+  fake_dlp_client_->SetFileAccessAllowed(true);
+  auto delegate = PrepareChooser();
+  TestJSAction("document.getElementById('idb_clear').click()", "cleared");
+  TestJSAction("document.getElementById('idb_save').click()", "saved");
+  TestJSAction("document.getElementById('idb_open').click()", kTestContent);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpScopedFileAccessDelegateBrowserTest,
+                       UploadFrameIDBProtectedDeny) {
+  fake_dlp_client_->SetFileAccessAllowed(false);
+  auto delegate = PrepareChooser();
+  TestJSAction("document.getElementById('idb_clear').click()", "cleared");
+  TestJSAction("document.getElementById('idb_save').click()", "saved");
+  TestJSAction("document.getElementById('idb_open').click()", kErrorMessage);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpScopedFileAccessDelegateBrowserTest,
+                       UploadFrameRestoreProtectedAllow) {
+  fake_dlp_client_->SetFileAccessAllowed(true);
+  auto delegate = PrepareChooser();
+  TestJSAction("document.getElementById('idb_save').click()", "saved");
+
+  NavigateParams params(browser(), GURL("about:blank"),
+                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  Navigate(&params);
+
+  TestJSAction("document.getElementById('idb_cached').click()", kTestContent);
+
+  chrome::CloseTab(browser());
+
+  chrome::RestoreTab(browser());
+
+  content::WebContentsConsoleObserver console_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  console_observer.SetPattern("db opened");
+  EXPECT_TRUE(console_observer.Wait());
+
+  TestJSAction("document.getElementById('idb_cached').click()", kTestContent);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpScopedFileAccessDelegateBrowserTest,
+                       UploadFrameRestoreProtectedDenyRestore) {
+  fake_dlp_client_->SetFileAccessAllowed(true);
+  auto delegate = PrepareChooser();
+  TestJSAction("document.getElementById('idb_save').click()", "saved");
+
+  NavigateParams params(browser(), GURL("about:blank"),
+                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  Navigate(&params);
+
+  TestJSAction("document.getElementById('idb_cached').click()", kTestContent);
+
+  chrome::CloseTab(browser());
+
+  fake_dlp_client_->SetFileAccessAllowed(false);
+
+  chrome::RestoreTab(browser());
+
+  content::WebContentsConsoleObserver console_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  console_observer.SetPattern("db opened");
+  EXPECT_TRUE(console_observer.Wait());
+
+  TestJSAction("document.getElementById('idb_cached').click()", kErrorMessage);
+}
+
 }  // namespace policy
