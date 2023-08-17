@@ -81,6 +81,7 @@
 #import "ios/chrome/browser/follow/follow_features.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/features.h"
 #import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/promos_manager/features.h"
@@ -1657,6 +1658,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-save-to-photos", flag_descriptions::kIOSSaveToPhotosName,
      flag_descriptions::kIOSSaveToPhotosDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSSaveToPhotos)},
+    {"ios-parcel-tracking", flag_descriptions::kIOSParcelTrackingName,
+     flag_descriptions::kIOSParcelTrackingDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSParcelTracking)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

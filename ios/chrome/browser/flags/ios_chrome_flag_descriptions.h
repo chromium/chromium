@@ -500,6 +500,10 @@ extern const char kIOSForceTranslateEnabledDescription[];
 extern const char kIOSNewPostRestoreExperienceName[];
 extern const char kIOSNewPostRestoreExperienceDescription[];
 
+// Title and description for the flag to enable parcel tracking.
+extern const char kIOSParcelTrackingName[];
+extern const char kIOSParcelTrackingDescription[];
+
 // Title and description for the flag to require Local Authentication before
 // accessing the Password Manager Main Page.
 extern const char kIOSPasswordAuthOnEntryName[];

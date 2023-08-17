@@ -587,6 +587,10 @@ const char kIOSNewPostRestoreExperienceDescription[] =
     "When enabled, a prompt will be presented after a device restore to "
     "allow the user to sign in again.";
 
+const char kIOSParcelTrackingName[] = "Parcel Tracking";
+const char kIOSParcelTrackingDescription[] =
+    "When enabled, the user will be able to track their packages.";
+
 const char kIOSPasswordAuthOnEntryName[] = "Password Manager Auth on Entry";
 const char kIOSPasswordAuthOnEntryDescription[] =
     "Requires Local Authentication before showing saved credentials in "
