@@ -99,7 +99,8 @@ struct PolicyError {
 using IOTaskId = uint64_t;
 
 // I/O task state::PAUSED parameters when paused to resolve a file name
-// conflict. Currently, only supported by CopyOrMoveIOTask.
+// conflict. Currently, only supported by CopyOrMoveIOTask and
+// RestoreToDestinationIOTask.
 struct ConflictPauseParams {
   // The conflict file name.
   std::string conflict_name;
@@ -117,7 +118,8 @@ struct ConflictPauseParams {
 };
 
 // I/O task state::PAUSED parameters when paused to show a policy warning.
-// Currently, only supported by CopyOrMovePolicyIOTask.
+// Currently, only supported by CopyOrMovePolicyIOTask and
+// RestoreToDestinationIOTask.
 struct PolicyPauseParams {
   // One of kDlp, kEnterpriseConnectors.
   policy::Policy type;

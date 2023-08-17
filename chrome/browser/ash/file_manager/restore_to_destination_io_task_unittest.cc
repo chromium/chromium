@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ash/file_manager/restore_to_destination_io_task.h"
 
+#include <memory>
+
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -12,8 +16,10 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/trash_service/public/cpp/trash_service.h"
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom-forward.h"
 #include "chromeos/ash/components/trash_service/trash_service_impl.h"
@@ -65,7 +71,7 @@ class RestoreToDestinationIOTaskTest : public TrashBaseTest {
   }
 
  private:
-  // Maintains ownership fo the in-process parsing service.
+  // Maintains ownership of the in-process parsing service.
   std::unique_ptr<ash::trash_service::TrashServiceImpl> trash_service_impl_;
 };
 
@@ -114,6 +120,11 @@ TEST_F(RestoreToDestinationIOTaskTest,
                                   /*show_notification=*/true);
   task.Execute(progress_callback.Get(), complete_callback.Get());
   run_loop.Run();
+
+  // The underlying move task should have the same ID.
+  ASSERT_TRUE(task.GetMoveTaskForTesting());
+  EXPECT_EQ(task.progress().task_id,
+            task.GetMoveTaskForTesting()->progress().task_id);
 
   EXPECT_TRUE(base::PathExists(destination_path.Append("baz.txt")));
   std::string contents;
