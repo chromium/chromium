@@ -34,6 +34,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/lens/buildflags.h"
+#include "components/lens/lens_metrics.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/unified_consent/pref_names.h"
@@ -368,7 +369,9 @@ void CompanionPageHandler::OnPromoAction(
 void CompanionPageHandler::OnRegionSearchClicked() {
   auto* helper = companion::CompanionTabHelper::FromWebContents(web_contents());
   CHECK(helper);
-  helper->StartRegionSearch(web_contents(), /*use_fullscreen_capture=*/false);
+  helper->StartRegionSearch(
+      web_contents(), /*use_fullscreen_capture=*/false,
+      lens::AmbientSearchEntryPoint::COMPANION_REGION_SEARCH);
   feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile())
       ->NotifyEvent("companion_side_panel_region_search_button_clicked");
 }

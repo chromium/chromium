@@ -66,7 +66,8 @@ class CoreTabHelper : public content::WebContentsObserver,
   // will open in the side panel instead of a new tab.
   void RegionSearchWithLens(gfx::Image image,
                             const gfx::Size& image_original_size,
-                            std::vector<lens::mojom::LatencyLogPtr> log_data);
+                            std::vector<lens::mojom::LatencyLogPtr> log_data,
+                            lens::EntryPoint entry_point);
 
   // Perform an image search for the image that triggered the context menu.  The
   // |src_url| is passed to the search request and is not used directly to fetch

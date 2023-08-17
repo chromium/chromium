@@ -8,6 +8,7 @@
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
+#include "components/lens/lens_metrics.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -83,7 +84,10 @@ class CompanionTabHelper
   std::string GetTextQuery();
   // Starts the region search controller with the specified parameters.
   void StartRegionSearch(content::WebContents* web_contents,
-                         bool use_fullscreen_capture);
+                         bool use_fullscreen_capture,
+                         lens::AmbientSearchEntryPoint entry_point =
+                             lens::AmbientSearchEntryPoint::
+                                 CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS);
 
   // Returns the latest image data saved to the helper and not passed to the
   // handler or an empty pointer if none.

@@ -83,6 +83,17 @@ TEST(LensUrlUtilsTest, GetRegionSearchCompanionQueryParameterTest) {
               MatchesRegex("ep=crs&re=csc&s=4&source=chrome.gsc&st=\\d+"));
 }
 
+TEST(LensUrlUtilsTest, GetCompanionRegionSearchQueryParameterTest) {
+  lens::EntryPoint csc_region_search_ep =
+      lens::EntryPoint::COMPANION_REGION_SEARCH;
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      csc_region_search_ep, /*is_lens_side_panel_request=*/true,
+      /*is_full_screen_region_search_request=*/false,
+      /*is_companion_request=*/true);
+  EXPECT_THAT(query_param,
+              MatchesRegex("ep=cscidr&re=csc&s=4&source=chrome.gsc&st=\\d+"));
+}
+
 TEST(LensUrlUtilsTest, GetImageSearchSidePanelQueryParameterTest) {
   lens::EntryPoint lens_image_search_ep =
       lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
