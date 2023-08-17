@@ -149,6 +149,15 @@ interface KeyMintServer {
   // Aborts this cryptographic operation.
   // |op_handle| is the handle of the operation to abort.
   Abort@20(uint64 op_handle) => (int32 error);
+
+  // Gets the secret parameters which are used in the process of agreeing on a
+  // shared key. Called by Android during startup.
+  GetSharedSecretParameters@21() => (SharedSecretParametersOrError response);
+
+  // Final step in the process of agreeing on a shared key. Called by Android
+  // during startup.
+  ComputeSharedSecret@22(array<SharedSecretParameters> secret_params) =>
+      (ByteArrayOrError response);
 };
 
 struct AttestationKey {
@@ -193,6 +202,13 @@ union KeyParameterValue {
   // In milliseconds from epoch.
   uint64 date_time;
   array<uint8> blob;
+};
+
+// Enables agreement on a shared key.
+struct SharedSecretParameters {
+  // |seed| and |nonce| are used in the generation of Shared Secret Parameters.
+  array<uint8> seed;
+  array<uint8> nonce;
 };
 
 // This structure is returned when a new key is created with generateKey(),
@@ -364,6 +380,24 @@ struct FinishRequest {
   // Tag.TRUSTED_CONFIRMATION_REQUIRED.
   array<uint8>? confirmation_token;
 };
+
+// Result used for Array outputs.
+union ByteArrayOrError {
+  int32 error;
+  array<uint8> output;
+};
+
+// Result used for GetSharedSecretParameters.
+union SharedSecretParametersOrError {
+  int32 error;
+  SharedSecretParameters secret_parameters;
+};
+
+// String used as label in the shared key derivation.
+const string shared_secret_key_agreement_label = "KeymasterSharedMac";
+
+// String used as context in the computation of the sharingCheck.
+const string shared_secret_key_check_label = "Keymaster HMAC Verification";
 
 [Extensible]
 enum Algorithm {
