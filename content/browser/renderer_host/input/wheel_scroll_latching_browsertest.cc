@@ -15,6 +15,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/shell/browser/shell.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
@@ -375,8 +376,11 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
                                     ui::LatencyInfo());
 
   // Run until we get the callback, then check the target.
-  EXPECT_EQ(blink::mojom::InputEventResultState::kNotConsumed,
-            wheel_msg_watcher->WaitForAck());
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(blink::features::kFixGestureScrollQueuingBug)
+          ? blink::mojom::InputEventResultState::kNotConsumedBlocking
+          : blink::mojom::InputEventResultState::kNotConsumed,
+      wheel_msg_watcher->WaitForAck());
   EXPECT_EQ("redDiv", EvalJs(shell(), "domTarget"));
 }
 

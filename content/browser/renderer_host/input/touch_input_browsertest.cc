@@ -23,6 +23,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/shell/browser/shell.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/latency/latency_info.h"
@@ -70,6 +71,13 @@ const char kTouchEventDataURL[] =
     "    third.ontouchstart = e => e.preventDefault();"
     "  }"
     "</script>";
+
+blink::mojom::InputEventResultState ExpectedNotConsumedOrNotConsumedBlocking() {
+  return base::FeatureList::IsEnabled(
+             blink::features::kFixGestureScrollQueuingBug)
+             ? blink::mojom::InputEventResultState::kNotConsumedBlocking
+             : blink::mojom::InputEventResultState::kNotConsumed;
+}
 
 }  // namespace
 
@@ -154,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(TouchInputBrowserTest, TouchNoHandler) {
       base::FeatureList::IsEnabled(
           blink::features::kDroppedTouchSequenceIncludesTouchEnd)
           ? blink::mojom::InputEventResultState::kNoConsumerExists
-          : blink::mojom::InputEventResultState::kNotConsumed;
+          : ExpectedNotConsumedOrNotConsumedBlocking();
   EXPECT_EQ(expected_touchend_result, filter->WaitForAck());
 }
 
@@ -167,8 +175,7 @@ IN_PROC_BROWSER_TEST_F(TouchInputBrowserTest, TouchStartNoConsume) {
   touch.PressPoint(125, 25);
   auto filter = AddFilter(WebInputEvent::Type::kTouchStart);
   SendTouchEvent(&touch);
-  EXPECT_EQ(blink::mojom::InputEventResultState::kNotConsumed,
-            filter->WaitForAck());
+  EXPECT_EQ(ExpectedNotConsumedOrNotConsumedBlocking(), filter->WaitForAck());
 
   // Even though there is no touch-end handler there, the touch-end is still
   // dispatched for state consistency in downstream event-path.  That event
@@ -176,8 +183,7 @@ IN_PROC_BROWSER_TEST_F(TouchInputBrowserTest, TouchStartNoConsume) {
   filter = AddFilter(WebInputEvent::Type::kTouchEnd);
   touch.ReleasePoint(0);
   SendTouchEvent(&touch);
-  EXPECT_EQ(blink::mojom::InputEventResultState::kNotConsumed,
-            filter->WaitForAck());
+  EXPECT_EQ(ExpectedNotConsumedOrNotConsumedBlocking(), filter->WaitForAck());
 }
 
 IN_PROC_BROWSER_TEST_F(TouchInputBrowserTest, TouchStartConsume) {
@@ -198,8 +204,7 @@ IN_PROC_BROWSER_TEST_F(TouchInputBrowserTest, TouchStartConsume) {
   touch.ReleasePoint(0);
   filter = AddFilter(WebInputEvent::Type::kTouchEnd);
   SendTouchEvent(&touch);
-  EXPECT_EQ(blink::mojom::InputEventResultState::kNotConsumed,
-            filter->WaitForAck());
+  EXPECT_EQ(ExpectedNotConsumedOrNotConsumedBlocking(), filter->WaitForAck());
 }
 
 IN_PROC_BROWSER_TEST_F(TouchInputBrowserTest, MultiPointTouchPress) {
