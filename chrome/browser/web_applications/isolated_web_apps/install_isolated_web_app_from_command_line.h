@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO: Rename this file since it's used for more than command-line
+// installations now.
+
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_FROM_COMMAND_LINE_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_FROM_COMMAND_LINE_H_
 
@@ -28,6 +31,8 @@ namespace web_app {
 class IsolatedWebAppUrlInfo;
 class WebAppProvider;
 
+using MaybeInstallIsolatedWebAppCommandSuccess =
+    base::expected<InstallIsolatedWebAppCommandSuccess, std::string>;
 using MaybeIwaLocation =
     base::expected<absl::optional<IsolatedWebAppLocation>, std::string>;
 
@@ -69,22 +74,25 @@ class IsolatedWebAppCommandLineInstallManager {
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       base::TaskPriority task_priority);
 
-  void InstallIsolatedWebAppFromLocation(
-      std::unique_ptr<ScopedKeepAlive> keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      MaybeIwaLocation location,
-      base::OnceCallback<void(
-          base::expected<InstallIsolatedWebAppCommandSuccess, std::string>)>
+  void InstallIsolatedWebAppFromDevModeProxy(
+      const GURL& gurl,
+      base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback);
 
   void OnReportInstallationResultForTesting(
-      base::RepeatingCallback<void(
-          base::expected<InstallIsolatedWebAppCommandSuccess, std::string>)>
+      base::RepeatingCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           on_report_installation_result) {
     on_report_installation_result_ = std::move(on_report_installation_result);
   }
 
  private:
+  void InstallIsolatedWebAppFromLocation(
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+      MaybeIwaLocation location,
+      base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
+          callback);
+
   void OnGetIsolatedWebAppLocationFromCommandLine(
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
@@ -95,20 +103,18 @@ class IsolatedWebAppCommandLineInstallManager {
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       const IsolatedWebAppLocation& location,
-      base::OnceCallback<void(
-          base::expected<InstallIsolatedWebAppCommandSuccess, std::string>)>
+      base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback,
       base::expected<IsolatedWebAppUrlInfo, std::string> url_info);
 
   void OnInstallIsolatedWebApp(
-      base::OnceCallback<void(
-          base::expected<InstallIsolatedWebAppCommandSuccess, std::string>)>
+      base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback,
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError> result);
 
   void ReportInstallationResult(
-      base::expected<InstallIsolatedWebAppCommandSuccess, std::string> result);
+      MaybeInstallIsolatedWebAppCommandSuccess result);
 
   raw_ref<Profile> profile_;
 

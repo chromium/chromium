@@ -414,6 +414,46 @@ void WebAppInternalsHandler::GetDebugInfoAsJsonString(
                      std::move(value_to_string).Then(std::move(callback))));
 }
 
+void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
+    const GURL& url,
+    InstallIsolatedWebAppFromDevProxyCallback callback) {
+  if (!web_app::AreWebAppsEnabled(profile_)) {
+    ::mojom::InstallIsolatedWebAppFromDevProxyResult mojo_result;
+    mojo_result.success = false;
+    mojo_result.error = std::string("web apps not enabled");
+    std::move(callback).Run(mojo_result.Clone());
+    return;
+  }
+
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  if (!provider) {
+    ::mojom::InstallIsolatedWebAppFromDevProxyResult mojo_result;
+    mojo_result.success = false;
+    mojo_result.error = std::string("could not get web app provider");
+    std::move(callback).Run(mojo_result.Clone());
+    return;
+  }
+
+  auto& manager = provider->iwa_command_line_install_manager();
+  manager.InstallIsolatedWebAppFromDevModeProxy(
+      url, base::BindOnce(
+               &WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy,
+               weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy(
+    WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxyCallback callback,
+    web_app::MaybeInstallIsolatedWebAppCommandSuccess result) {
+  ::mojom::InstallIsolatedWebAppFromDevProxyResult mojo_result;
+  if (result.has_value()) {
+    mojo_result.success = true;
+  } else {
+    mojo_result.success = false;
+    mojo_result.error = result.error();
+  }
+  std::move(callback).Run(mojo_result.Clone());
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void WebAppInternalsHandler::ClearExperimentalWebAppIsolationData(
     ClearExperimentalWebAppIsolationDataCallback callback) {
