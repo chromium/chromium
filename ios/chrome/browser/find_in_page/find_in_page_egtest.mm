@@ -208,12 +208,24 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 // the web page contains the same text without spanish accents e.g. 'a'. This
 // test assumes removing accents from `kFindInPageTestWithSpanishAccentText`
 // yields `kFindInPageTestWithoutSpanishAccentText`.
-- (void)testFindInPageDifferentAccent {
+// TODO(crbug.com/1473338): Test is flaky on device. Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testFindInPageDifferentAccent FLAKY_testFindInPageDifferentAccent
+#else
+#define MAYBE_testFindInPageDifferentAccent testFindInPageDifferentAccent
+#endif
+- (void)MAYBE_testFindInPageDifferentAccent {
   [_helper helperTestFindInPageDifferentAccent];
 }
 
 // Test that there is no query persistence with this variant of Native Find in
 // Page i.e. with Find interaction.
+// TODO(crbug.com/1473338): Test is flaky on device. Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testFindInPageHistory FLAKY_testFindInPageHistory
+#else
+#define MAYBE_testFindInPageHistory testFindInPageHistory
+#endif
 - (void)testFindInPageHistory {
   [_helper helperTestFindInPageHistoryWithQueryPersistence:NO];
 }
