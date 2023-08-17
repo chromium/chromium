@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.T
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.commerce.PriceTracking.BuyableProduct;
 import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
@@ -663,7 +664,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testCloseButtonDescription() {
         ImageView listActionButton = mTabListView.findViewById(R.id.end_button);
         ImageView gridActionButton = mTabGridView.findViewById(R.id.action_button);
@@ -681,7 +682,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testCloseButtonColor() {
         ImageView listActionButton = mTabListView.findViewById(R.id.end_button);
         ImageView gridActionButton = mTabGridView.findViewById(R.id.action_button);
@@ -953,7 +954,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testFaviconFetcherAllViewsAndModels() {
         final TabFavicon tabFavicon =
                 new ResourceTabFavicon(newDrawable(), StaticTabFaviconType.ROUNDED_GLOBE);

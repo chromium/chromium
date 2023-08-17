@@ -54,7 +54,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.IdentifierType;
@@ -70,7 +70,7 @@ import org.chromium.components.commerce.core.ShoppingService;
         "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:user_managed_notification_max_number/2"})
-@Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
+@DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class PriceDropNotificationManagerTest {
     // clang-format on
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =

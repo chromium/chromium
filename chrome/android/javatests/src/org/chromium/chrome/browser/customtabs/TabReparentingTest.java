@@ -53,7 +53,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -198,7 +198,7 @@ public class TabReparentingTest {
      */
     @Test
     @SmallTest
-    @Features.DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE})
+    @DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE})
     public void testTabReparentingInfoBar() {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(

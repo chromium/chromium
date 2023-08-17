@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -125,7 +126,7 @@ import java.util.function.Consumer;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH, ChromeFeatureList.SHOPPING_LIST,
+@EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH, ChromeFeatureList.SHOPPING_LIST,
         ChromeFeatureList.EMPTY_STATES})
 public class BookmarkManagerMediatorTest {
     @Rule
@@ -448,7 +449,7 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.EMPTY_STATES})
+    @DisableFeatures({ChromeFeatureList.EMPTY_STATES})
     public void testEmptyView_Bookmark() {
         // Setup and open Bookmark folder.
         finishLoading();
@@ -460,7 +461,7 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.EMPTY_STATES})
+    @DisableFeatures({ChromeFeatureList.EMPTY_STATES})
     public void testEmptyView_ReadingList() {
         // Setup and open Reading list folder.
         finishLoading();

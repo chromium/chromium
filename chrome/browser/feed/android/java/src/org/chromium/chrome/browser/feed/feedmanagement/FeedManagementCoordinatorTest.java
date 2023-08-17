@@ -23,13 +23,14 @@ import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.base.TestActivity;
 
 /**
  * Tests {@link FeedManagementCoordinator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)
+@EnableFeatures(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)
 public class FeedManagementCoordinatorTest {
     private TestActivity mActivity;
     private FeedManagementCoordinator mFeedManagementCoordinator;

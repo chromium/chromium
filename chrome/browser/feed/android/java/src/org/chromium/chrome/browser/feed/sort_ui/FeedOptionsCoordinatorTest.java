@@ -30,7 +30,8 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -43,7 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ChromeFeatureList.FEED_HEADER_STICK_TO_TOP})
+@EnableFeatures({ChromeFeatureList.FEED_HEADER_STICK_TO_TOP})
 public class FeedOptionsCoordinatorTest {
     @Mock
     private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
@@ -152,7 +153,7 @@ public class FeedOptionsCoordinatorTest {
         assertTrue(listenerCalled.get());
     }
 
-    @Features.DisableFeatures({FEED_HEADER_STICK_TO_TOP})
+    @DisableFeatures({FEED_HEADER_STICK_TO_TOP})
     @Test
     public void testStickyHeaderReturnsNullWhenFlagIsOff() {
         mCoordinator = new FeedOptionsCoordinator(mContext, mView, null);

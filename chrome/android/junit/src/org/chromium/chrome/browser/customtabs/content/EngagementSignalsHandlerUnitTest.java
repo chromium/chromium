@@ -35,12 +35,13 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager.Observer;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /**
  * Unit tests for {@link EngagementSignalsHandler}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+@EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
 public class EngagementSignalsHandlerUnitTest {
     @Rule
     public Features.JUnitProcessor processor = new Features.JUnitProcessor();

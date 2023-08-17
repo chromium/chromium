@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -70,8 +71,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 // TODO(crbug.com/1353777): Disabling the feature explicitly, because native is not
 // available to provide a default value. This should be enabled if the feature is enabled by
 // default or removed if the flag is removed.
-@Features.DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
-@Features.EnableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.INTEREST_FEED_V2_HEARTS,
+@DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
+@EnableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.INTEREST_FEED_V2_HEARTS,
         ChromeFeatureList.WEB_FEED_SORT, ChromeFeatureList.FEED_HEADER_STICK_TO_TOP})
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;

@@ -35,7 +35,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -75,7 +76,7 @@ public class CustomTabActivitySecurityIndicatorTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS})
+    @DisableFeatures({ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS})
     public void testCustomTabSecurityIndicators() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation()
                                   .getTargetContext()
@@ -113,7 +114,7 @@ public class CustomTabActivitySecurityIndicatorTest {
     // Regression test for crbug.com/1245733.
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS})
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS})
     public void testCustomTabSecurityIndicator_UpdateEnabled() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation()
                                   .getTargetContext()

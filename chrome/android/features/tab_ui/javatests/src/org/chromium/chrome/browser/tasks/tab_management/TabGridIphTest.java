@@ -64,7 +64,8 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -88,10 +89,10 @@ import java.io.IOException;
         "session_rate/<1"
 })
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+@EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
 // TODO(https://crbug.com/1362059): The message cards aren't shown the first time when entering GTS
 // with Start surface enabled.
-@Features.DisableFeatures({
+@DisableFeatures({
     ChromeFeatureList.CLOSE_TAB_SUGGESTIONS, ChromeFeatureList.START_SURFACE_ANDROID})
 public class TabGridIphTest {
     // clang-format on

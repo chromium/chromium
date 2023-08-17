@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -286,7 +285,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @Features.EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)
+    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)
     public void testIsSuppressedOnViewHeight_ridiculouslyShort() {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFieldTrialParamOverride(
@@ -300,7 +299,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @Features.EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)
+    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)
     public void testIsSuppressedOnViewHeight_ridiculouslyTall() {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFieldTrialParamOverride(

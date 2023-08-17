@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -981,7 +982,7 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testOmniboxFocusChange() {
         initAndAssertProperties(mTab2);
 

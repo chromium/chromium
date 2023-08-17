@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -38,7 +39,7 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
  * Tests for {@link SyncPromoController}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.DisableFeatures({
+@DisableFeatures({
         ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS,
         ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
 })

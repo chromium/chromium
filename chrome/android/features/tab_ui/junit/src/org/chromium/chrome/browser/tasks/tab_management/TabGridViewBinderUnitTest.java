@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.T
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
@@ -272,7 +273,7 @@ public final class TabGridViewBinderUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testBindFaviconFetcher() {
         doReturn(mDrawable).when(mTabFavicon).getSelectedDrawable();
 
@@ -289,7 +290,7 @@ public final class TabGridViewBinderUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testBindNullFaviconFetcher() {
         mModel.set(TabProperties.FAVICON_FETCHER, null);
         TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
@@ -298,7 +299,7 @@ public final class TabGridViewBinderUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testUpdateThumbnailMatrix_notOnAutomotiveDevice_thumbnailImageHasOriginalDensity() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(false);
         int mockImageSize = 100;
@@ -317,7 +318,7 @@ public final class TabGridViewBinderUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testUpdateThumbnailMatrix_onAutomotiveDevice_thumbnailImageHasScaledUpDensity() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
         int mockImageSize = 100;

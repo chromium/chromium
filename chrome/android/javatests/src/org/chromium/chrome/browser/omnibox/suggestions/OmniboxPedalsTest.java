@@ -65,6 +65,8 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -187,7 +189,7 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
+    @DisableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testClearBrowsingData() throws InterruptedException {
         setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.CLEAR_BROWSING_DATA));
         clickOnPedalToSettings(
@@ -200,7 +202,7 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
+    @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testClearBrowsingData_withQuickDeleteEnabled() throws InterruptedException {
         setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.CLEAR_BROWSING_DATA));
         mOmniboxUtils.clickOnAction(0, 0);

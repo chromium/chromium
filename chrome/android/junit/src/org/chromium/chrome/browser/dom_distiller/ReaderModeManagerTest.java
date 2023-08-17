@@ -227,7 +227,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @Features.EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+    @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
             ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
     public void
     testUI_notTriggered_contextualPageActionUiEnabled() {

@@ -85,7 +85,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -301,7 +300,7 @@ public class TabSelectionEditorTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures({
+    @EnableFeatures({
         ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})

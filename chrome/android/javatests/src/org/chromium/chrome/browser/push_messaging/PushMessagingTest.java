@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.notifications.NotificationTestRule;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -51,7 +51,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ChromeFeatureList.PUSH_MESSAGING_DISALLOW_SENDER_IDS})
+@DisableFeatures({ChromeFeatureList.PUSH_MESSAGING_DISALLOW_SENDER_IDS})
 public class PushMessagingTest implements PushMessagingServiceObserver.Listener {
     @Rule
     public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();

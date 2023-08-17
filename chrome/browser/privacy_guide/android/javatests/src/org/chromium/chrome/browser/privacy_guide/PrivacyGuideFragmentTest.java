@@ -67,7 +67,8 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -349,7 +350,7 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testForwardNavAllActions() {
         setMSBBState(false);
         setHistorySyncState(false);
@@ -386,7 +387,7 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     @SuppressWarnings("CheckReturnValue")
     public void testBackwardNavAllActions() {
         setMSBBState(false);
@@ -501,8 +502,8 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testCompletionCard_PrivacySandboxLinkNavigation() {
         launchPrivacyGuide();
         goToCompletionCard();
@@ -515,8 +516,8 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
     public void testCompletionCard_AdPrivacyLinkNavigation() {
         launchPrivacyGuide();
         goToCompletionCard();
@@ -1024,7 +1025,7 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testSafeBrowsingCard_enhancedBottomSheetBackButtonBehaviour() {
         launchPrivacyGuide();
         goToSafeBrowsingCard();
@@ -1040,7 +1041,7 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testSafeBrowsingCard_standardBottomSheetBackButtonBehaviour() {
         launchPrivacyGuide();
         goToSafeBrowsingCard();
@@ -1234,8 +1235,8 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testExitOnBackInWelcomeCard() {
         launchPrivacySettingsAndOpenPrivacyGuide();
 
@@ -1246,8 +1247,8 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testExitOnBackInMSBBCard() {
         launchPrivacySettingsAndOpenPrivacyGuide();
         navigateFromWelcomeToMSBBCard();
@@ -1259,8 +1260,8 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testExitOnBackInHistorySyncCard() {
         launchPrivacySettingsAndOpenPrivacyGuide();
         goToHistorySyncCard();
@@ -1272,8 +1273,8 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testExitOnBackInSBCard() {
         launchPrivacySettingsAndOpenPrivacyGuide();
         goToSafeBrowsingCard();
@@ -1285,8 +1286,8 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testExitOnBackInCookiesCard() {
         launchPrivacySettingsAndOpenPrivacyGuide();
         goToCookiesCard();
@@ -1298,8 +1299,8 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testExitOnBackInCompletionCard() {
         launchPrivacySettingsAndOpenPrivacyGuide();
         goToCompletionCard();

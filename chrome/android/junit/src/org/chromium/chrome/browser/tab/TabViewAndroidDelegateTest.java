@@ -27,6 +27,8 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
@@ -38,8 +40,8 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
 /** Unit tests for the TabViewAndroidDelegate. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
-@Features.EnableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
-@Features.DisableFeatures(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW)
+@EnableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
+@DisableFeatures(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW)
 public class TabViewAndroidDelegateTest {
     private final ArgumentCaptor<TabObserver> mTabObserverCaptor =
             ArgumentCaptor.forClass(TabObserver.class);

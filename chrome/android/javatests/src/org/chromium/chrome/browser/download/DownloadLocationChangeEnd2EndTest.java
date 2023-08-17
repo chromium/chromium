@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -153,7 +153,7 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @Features.DisableFeatures(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS)
+    @DisableFeatures(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS)
     public void testNoDialogWithoutSDCard() {
         int currentCallCount = mDownloadTestRule.getChromeDownloadCallCount();
         startDownload(/*hasSDCard=*/false);

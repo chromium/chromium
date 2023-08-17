@@ -78,6 +78,8 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
@@ -89,7 +91,7 @@ import java.util.List;
 /** Tests for {@link StripLayoutHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 // clang-format off
-@Features.EnableFeatures({
+@EnableFeatures({
         ChromeFeatureList.TAB_STRIP_REDESIGN,
         ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
 @Config(manifest = Config.NONE, qualifiers = "sw600dp", shadows = {ShadowAppCompatResources.class})
@@ -586,7 +588,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testNewTabButtonXPosition() {
         when(mModelSelectorBtn.getWidth()).thenReturn(24.f);
 
@@ -607,7 +609,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testNewTabButtonXPosition_Rtl() {
         when(mModelSelectorBtn.getWidth()).thenReturn(24.f);
 
@@ -1157,13 +1159,13 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testOnLongPress_OnTab() {
         onLongPress_OnTab();
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testOnLongPress_WithDragDrop_OnTab() {
         // Extra setup for DragDrop
         setTabDragSourceMock();
@@ -1215,13 +1217,13 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testOnLongPress_OffTab() {
         onLongPress_OffTab();
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testOnLongPress_WithDragDrop_OffTab() {
         // Extra setup for DragDrop
         setTabDragSourceMock();
@@ -1500,7 +1502,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
-    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testReorder_SetBackgroundTabsDimmed() {
         // Mock 5 tabs.
         initializeTest(false, false, true, 0, 5);
@@ -1527,7 +1529,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
-    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testReorder_SetSelectedTabGroupNotDimmed() {
         // Mock 5 tabs. Group the first two tabs.
         initializeTest(false, false, true, 0, 5);
@@ -1772,7 +1774,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
-    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testReorder_ExtraMinScroll() {
         // Mock 3 tabs. Group the first two tabs.
         initializeTest(false, false, true, 0, 3);
@@ -1982,7 +1984,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
     public void testPlaceholderStripLayout_NoTabModel() {
         // Create StripLayoutHelper and mark that after tabs finish restoring, there will be five
         // tabs, where the third tab will be the active tab.
@@ -1999,7 +2001,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
     public void testPlaceholderStripLayout_PrepareOnSetTabModel() {
         // Create StripLayoutHelper and mark that after tabs finish restoring, there will be five
         // tabs, where the third tab will be the active tab.
@@ -2027,7 +2029,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
     public void testPlaceholderStripLayout_PrepareOnSetTabModelInfo() {
         // Create StripLayoutHelper and mock a tab model and set it in the StripLayoutHelper.
         int expectedActiveTabId = 0;
@@ -2059,7 +2061,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
     public void testPlaceholderStripLayout_TabCreated() {
         // Create StripLayoutHelper and mark that after tabs finish restoring, there will be five
         // tabs, where the third tab will be the active tab.
@@ -2097,7 +2099,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
     public void testPlaceholderStripLayout_OnTabStateInitialized() {
         // Create StripLayoutHelper and mark that after tabs finish restoring, there will be five
         // tabs, where the third tab will be the active tab.
@@ -2141,7 +2143,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
     public void testPlaceholderStripLayout_ScrollOnStartup() {
         // Create StripLayoutHelper and mark that after tabs finish restoring, there will be 20
         // tabs, where the last tab will be the active tab.
@@ -2161,7 +2163,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
     public void testPlaceholderStripLayout_CreatedTabOnStartup() {
         // Create StripLayoutHelper and mark that after tabs finish restoring, there will be five
         // tabs, where the third tab will be the active tab.

@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /**
  * Tests for the Incognito reauth lock settings in Privacy and security.
@@ -47,7 +47,7 @@ import org.chromium.chrome.test.util.browser.Features;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures(ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID)
+@EnableFeatures(ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID)
 public class IncognitoReauthSettingTest {
     private final SettingsActivityTestRule<PrivacySettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PrivacySettings.class);

@@ -55,7 +55,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.lang.annotation.Retention;
@@ -70,7 +70,7 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 // START_SURFACE_REFACTOR is required to have stable parent id logic.
-@Features.EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR,
+@EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR,
                           ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
 @Batch(Batch.PER_CLASS)
 public class TabGridAccessibilityHelperTest {

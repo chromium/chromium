@@ -57,6 +57,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -212,7 +214,7 @@ public class IntentHandlerUnitTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
+    @EnableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
     public void testNewIntentInitiator() throws Exception {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
@@ -233,7 +235,7 @@ public class IntentHandlerUnitTest {
 
     @Test
     @SmallTest
-    @Features.DisableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
+    @DisableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
     public void testNewIntentInitiatorFromRenderer() throws Exception {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));

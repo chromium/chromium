@@ -69,7 +69,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -88,7 +88,7 @@ import java.util.concurrent.atomic.AtomicReference;
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@Features.EnableFeatures({TAB_GROUPS_CONTINUATION_ANDROID})
+@EnableFeatures({TAB_GROUPS_CONTINUATION_ANDROID})
 @Batch(Batch.PER_CLASS)
 public class TabGroupUiTest {
     // clang-format on
@@ -217,7 +217,7 @@ public class TabGroupUiTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testVisibilityChangeWithOmnibox() throws Exception {
         // clang-format on
 
@@ -256,7 +256,7 @@ public class TabGroupUiTest {
                     "event_used/" +
                     "name%3Aiph_tabgroups_strip;comparator%3A==0;window%3A365;storage%3A365/" +
                     "session_rate/<1"})
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testIphBottomSheetSuppression() throws Exception {
         // clang-format on
 

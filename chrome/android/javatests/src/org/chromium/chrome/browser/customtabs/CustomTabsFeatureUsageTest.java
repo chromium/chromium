@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CustomTabsF
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -89,7 +89,7 @@ public class CustomTabsFeatureUsageTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_FEATURE_USAGE})
+    @EnableFeatures({ChromeFeatureList.CCT_FEATURE_USAGE})
     public void testNormalFeatureUsage() throws Exception {
         Activity emptyActivity = startBlankUiTestActivity();
         Intent intent = CustomTabsIntentTestUtils.createCustomTabIntent(
@@ -111,7 +111,7 @@ public class CustomTabsFeatureUsageTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_FEATURE_USAGE})
+    @EnableFeatures({ChromeFeatureList.CCT_FEATURE_USAGE})
     public void testNormalFeatureUsageIncognito() throws Exception {
         startBlankUiTestActivity();
         Intent intent = CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(

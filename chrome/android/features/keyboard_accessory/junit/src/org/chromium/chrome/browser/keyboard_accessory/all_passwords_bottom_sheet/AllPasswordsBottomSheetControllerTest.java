@@ -31,6 +31,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ItemType;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
@@ -42,7 +43,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Controller tests for the all passwords bottom sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures(ChromeFeatureList.FILLING_PASSWORDS_FROM_ANY_ORIGIN)
+@EnableFeatures(ChromeFeatureList.FILLING_PASSWORDS_FROM_ANY_ORIGIN)
 public class AllPasswordsBottomSheetControllerTest {
     private static final Credential ANA =
             new Credential("Ana", "S3cr3t", "Ana", "https://m.domain.xyz/", false, "");

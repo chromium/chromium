@@ -71,6 +71,8 @@ import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger.Sur
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScopeDependencyProvider;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
@@ -87,7 +89,7 @@ import java.util.ArrayList;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.DisableFeatures({
+@DisableFeatures({
         ChromeFeatureList.WEB_FEED,
         ChromeFeatureList.WEB_FEED_SORT,
         ChromeFeatureList.WEB_FEED_ONBOARDING,
@@ -99,7 +101,7 @@ import java.util.ArrayList;
         // default or removed if the flag is removed.
         ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
 })
-@Features.EnableFeatures({ChromeFeatureList.FEED_HEADER_STICK_TO_TOP})
+@EnableFeatures({ChromeFeatureList.FEED_HEADER_STICK_TO_TOP})
 public class FeedSurfaceCoordinatorTest {
     private static final @SurfaceType int SURFACE_TYPE = SurfaceType.NEW_TAB_PAGE;
     private static final long SURFACE_CREATION_TIME_NS = 1234L;

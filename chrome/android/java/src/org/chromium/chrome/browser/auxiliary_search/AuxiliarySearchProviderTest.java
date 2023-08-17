@@ -38,6 +38,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.url.GURL;
 
@@ -49,8 +51,8 @@ import java.util.HashSet;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION})
-@Features.DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_SAFE_SEARCH})
+@EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION})
+@DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_SAFE_SEARCH})
 public class AuxiliarySearchProviderTest {
     private static final String TAB_TITLE = "tab";
     private static final String TAB_URL = "https://tab.google.com/";

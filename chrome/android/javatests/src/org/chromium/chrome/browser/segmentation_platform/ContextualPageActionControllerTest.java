@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 @RunWith(BaseJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -36,7 +37,7 @@ public class ContextualPageActionControllerTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+    @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
             ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
     public void
     testContextualPageModelExecution() {

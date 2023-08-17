@@ -99,7 +99,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -142,7 +141,7 @@ import java.util.concurrent.TimeUnit;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "disable-features=IPH_FeedHeaderMenu"})
-@Features.DisableFeatures({ChromeFeatureList.QUERY_TILES})
+@DisableFeatures({ChromeFeatureList.QUERY_TILES})
 public class NewTabPageTest {
     /**
      * Parameter set controlling whether scrollable mvt is enabled.

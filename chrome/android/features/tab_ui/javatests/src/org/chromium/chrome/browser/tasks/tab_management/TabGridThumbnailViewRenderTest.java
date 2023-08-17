@@ -40,6 +40,8 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -159,7 +161,7 @@ public class TabGridThumbnailViewRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @Features.EnableFeatures({ChromeFeatureList.THUMBNAIL_PLACEHOLDER})
+    @EnableFeatures({ChromeFeatureList.THUMBNAIL_PLACEHOLDER})
     public void testPlaceholderDrawable() throws IOException, InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             updateColor(/*isIncognito=*/true, /*isSelected=*/false);
@@ -201,7 +203,7 @@ public class TabGridThumbnailViewRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @Features.DisableFeatures({ChromeFeatureList.THUMBNAIL_PLACEHOLDER})
+    @DisableFeatures({ChromeFeatureList.THUMBNAIL_PLACEHOLDER})
     public void testNoPlaceholderDrawable() throws IOException, InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             updateColor(/*isIncognito=*/true, /*isSelected=*/false);

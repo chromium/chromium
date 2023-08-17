@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -161,7 +162,7 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testShowWithAnimation() {
         // clang-format on
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -185,7 +186,7 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @Test
     @MediumTest
     @UiThreadTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testShowWithoutAnimation() {
         mContainerModel.set(
                 TabListContainerProperties.VISIBILITY_LISTENER, mMockVisibilityListener);
@@ -203,7 +204,7 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testShowWithAnimation_showShadow() {
         // clang-format on
         mShouldShowShadow = true;
@@ -232,7 +233,7 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testHidesWithAnimation() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mContainerModel.set(
@@ -266,7 +267,7 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @Test
     @MediumTest
     @UiThreadTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testHidesWithoutAnimation() {
         mContainerModel.set(
                 TabListContainerProperties.VISIBILITY_LISTENER, mMockVisibilityListener);

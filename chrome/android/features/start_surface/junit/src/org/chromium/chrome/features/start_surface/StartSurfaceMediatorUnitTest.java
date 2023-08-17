@@ -1414,7 +1414,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(INSTANT_START)
+    @EnableFeatures(INSTANT_START)
     public void feedPlaceholderFromWarmStart() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();

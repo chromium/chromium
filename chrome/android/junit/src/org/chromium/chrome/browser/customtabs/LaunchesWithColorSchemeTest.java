@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 /**
@@ -40,7 +41,7 @@ import org.chromium.ui.display.DisplayAndroidManager;
 // clang-format off
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.DisableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+@DisableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION

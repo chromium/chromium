@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -164,7 +165,7 @@ public class ChromeMessageQueueMediatorTest {
      * Test the runnable by #onStartShow is reset correctly.
      */
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES})
+    @EnableFeatures({ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES})
     public void testResetOnStartShowRunnable() {
         when(mBrowserControlsManager.getBrowserControlHiddenRatio()).thenReturn(0.5f);
         OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneShotSupplier =
@@ -214,7 +215,7 @@ public class ChromeMessageQueueMediatorTest {
      * Test whether #IsReadyForShowing returns correct value.
      */
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES})
+    @EnableFeatures({ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES})
     public void testIsReadyForShowing() {
         final ArgumentCaptor<ChromeMessageQueueMediator.BrowserControlsObserver>
                 observerArgumentCaptor = ArgumentCaptor.forClass(

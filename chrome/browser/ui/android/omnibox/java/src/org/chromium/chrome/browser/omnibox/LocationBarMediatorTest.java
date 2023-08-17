@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -105,7 +106,7 @@ import java.util.List;
 @Config(shadows = {LocationBarMediatorTest.ShadowUrlUtilities.class,
                 LocationBarMediatorTest.ShadowGeolocationHeader.class,
                 LocationBarMediatorTest.ObjectAnimatorShadow.class})
-@Features.DisableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
+@DisableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
         ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public class LocationBarMediatorTest {
     @Implements(UrlUtilities.class)

@@ -35,6 +35,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.AccountInfo;
@@ -51,7 +53,7 @@ import java.util.Set;
 
 /** Tests for {@link FullScreenSyncPromoUtil}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.DisableFeatures({ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS,
+@DisableFeatures({ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS,
         ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO})
 public class FullScreenSyncPromoTest {
     private static final int CURRENT_MAJOR_VERSION = 42;
@@ -125,7 +127,7 @@ public class FullScreenSyncPromoTest {
         verify(mFakeAccountManagerFacade, never()).getAccounts();
     }
 
-    @Features.EnableFeatures({ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO})
+    @EnableFeatures({ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO})
     @Test
     public void promoVisibleWhenForcingSigninPromoAtStartup() {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);

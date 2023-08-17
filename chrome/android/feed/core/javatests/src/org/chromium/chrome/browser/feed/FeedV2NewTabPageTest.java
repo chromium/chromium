@@ -87,7 +87,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -274,7 +275,7 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
-    @Features.DisableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
+    @DisableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
     @DisabledTest(message = "Flaky -- crbug.com/1136923")
     public void testSignInPromo() {
         openNewTabPage();
@@ -465,7 +466,7 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @Features.EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
+    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @DisabledTest(message = "crbug.com/1467377")
     // clang-format off

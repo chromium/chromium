@@ -126,7 +126,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -149,7 +149,7 @@ import java.util.concurrent.ExecutionException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@Features.EnableFeatures({START_SURFACE_REFACTOR})
+@EnableFeatures({START_SURFACE_REFACTOR})
 @Batch(Batch.PER_CLASS)
 public class TabGridDialogTest {
     // clang-format on
@@ -339,7 +339,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @DisableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testDisableTabGroupsContinuation() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -359,7 +359,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testEnableTabGroupsContinuation() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -882,7 +882,7 @@ public class TabGridDialogTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     // TODO(crbug.com/1380489): Re-enable once test is no longer flaky locally.
-    @Features.DisableFeatures({ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH})
+    @DisableFeatures({ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH})
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
@@ -947,7 +947,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testTabGroupNaming() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -986,7 +986,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testTabGroupNaming_KeyboardVisibility() throws ExecutionException {
         // clang-format on
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -1018,7 +1018,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testTabGroupNaming_afterFocusNoTitleSaved() throws ExecutionException {
         // clang-format on
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -1072,7 +1072,7 @@ public class TabGridDialogTest {
     // Regression test for https://crbug.com/1378226.
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testTabGroupNaming_afterMergeWithSelectionEditor() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 4);
@@ -1176,7 +1176,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_LANDSCAPE_ASPECT_RATIO_PHONES})
+    @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_LANDSCAPE_ASPECT_RATIO_PHONES})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderDialog_3Tabs_Landscape_NewAspectRatio(boolean nightModeEnabled)
             throws Exception {
@@ -1252,7 +1252,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.INSTANT_START})
+    @EnableFeatures({ChromeFeatureList.INSTANT_START})
     public void testSetup_WithInstantStart() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareTabsWithThumbnail(sActivityTestRule, 2, 0, "about:blank");
@@ -1302,7 +1302,7 @@ public class TabGridDialogTest {
     @MediumTest
     @DisabledTest(message = "TODO(crbug.com/1128345): Fix flakiness.")
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testAccessibilityString() throws ExecutionException {
         // clang-format on
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();

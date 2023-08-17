@@ -28,13 +28,14 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.Au
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /**
  * Unit tests for {@link AuxiliarySearchBridge}
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION})
+@EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION})
 public final class AuxiliarySearchBridgeTest {
     private static final String BOOKMARK_TITLE = "bookmark";
     private static final String BOOKMARK_URL = "https://bookmark.google.com";

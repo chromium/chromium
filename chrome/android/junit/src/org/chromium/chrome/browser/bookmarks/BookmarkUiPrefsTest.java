@@ -29,12 +29,14 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /** Unit tests for {@link BookmarkUiPrefs}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+@EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
 public class BookmarkUiPrefsTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -59,8 +61,8 @@ public class BookmarkUiPrefsTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
-    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
+    @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
     public void legacyVisualFlags() {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
 
@@ -71,8 +73,8 @@ public class BookmarkUiPrefsTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
-    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
+    @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
     public void legacyVisualFlags_noShopping() {
         ShoppingFeatures.setShoppingListEligibleForTesting(false);
 
@@ -89,7 +91,7 @@ public class BookmarkUiPrefsTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void returnsStoredPref() {
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
         Assert.assertEquals(

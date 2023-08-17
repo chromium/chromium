@@ -54,7 +54,8 @@ import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -188,7 +189,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     public void testRenderWhenPrivacyGuideViewed() throws IOException {
         setPrivacyGuideViewed(true);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -202,7 +203,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     public void testRenderWhenPrivacyGuideNotViewed() throws IOException {
         setPrivacyGuideViewed(false);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -215,7 +216,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testPrivacySandboxV3View() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         // Scroll down and open Privacy Sandbox page.
@@ -228,7 +229,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testPrivacySandboxV4View() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         // Scroll down and open Privacy Sandbox page.
@@ -240,7 +241,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testPrivacySandboxV4ViewRestrictedNoticeEnabled() throws IOException {
         mFakePrivacySandboxBridge.setRestrictedNoticeEnabled(true);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -256,7 +257,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testPrivacySandboxV3ViewRestricted() throws IOException {
         mFakePrivacySandboxBridge.setPrivacySandboxRestricted(true);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -271,7 +272,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testPrivacySandboxV4ViewRestricted() throws IOException {
         mFakePrivacySandboxBridge.setPrivacySandboxRestricted(true);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -315,7 +316,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     public void testPrivacyGuideLinkRowEntryPointUserAction() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         mActionTester = new UserActionTester();
@@ -329,7 +330,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     public void testPrivacyGuideLinkRowEntryExitHistogram() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -345,7 +346,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     public void testPrivacyGuideNewLabelVisibility() throws ExecutionException {
         setPrivacyGuideViewed(false);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -359,7 +360,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     // A random policy is required to make the device managed
     @Policies.Add({ @Policies.Item(key = "RandomPolicy", string = "true") })
     public void testPrivacyGuideNotDisplayedWhenDeviceIsManaged() {
@@ -369,7 +370,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     @DisabledTest(message = "crbug.com/1437093")
     public void testPrivacyGuideNotDisplayedWhenUserIsChild() {
         // TODO(crbug.com/1433652): Remove once SigninChecker is automatically created.

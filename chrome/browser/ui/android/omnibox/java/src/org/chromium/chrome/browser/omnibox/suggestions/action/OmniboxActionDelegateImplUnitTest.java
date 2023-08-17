@@ -34,6 +34,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -149,7 +151,7 @@ public class OmniboxActionDelegateImplUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
+    @DisableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void openClearBrowsingData() {
         mDelegate.handleClearBrowsingData();
         verify(mMockSettingsLauncher)
@@ -158,7 +160,7 @@ public class OmniboxActionDelegateImplUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
+    @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void openQuickDeleteDialog() {
         mDelegate.handleClearBrowsingData();
         verify(mMockOpenQuickDeleteDialog).run();

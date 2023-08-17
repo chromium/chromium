@@ -66,7 +66,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
@@ -87,7 +87,7 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+@DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
 @DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
 public class ReadingListTest {
     @Rule
@@ -307,7 +307,7 @@ public class ReadingListTest {
     @Test
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @Features.DisableFeatures({ChromeFeatureList.EMPTY_STATES})
+    @DisableFeatures({ChromeFeatureList.EMPTY_STATES})
     //@TODO(crbug.com/1468380): clean up after Empty States is fully launched.
     public void testReadingListEmptyView() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);

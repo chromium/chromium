@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.omnibox.AnswerTextStyle;
 import org.chromium.components.omnibox.AnswerTextType;
@@ -322,7 +323,7 @@ public class AnswerSuggestionProcessorUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE)
+    @DisableFeatures(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE)
     public void checkColorReversalRequired_ReturnsFalseIfOmniBoxAnswerColorReversalDisabled() {
         mProcessor.onNativeInitialized();
         for (@AnswerType int type : ANSWER_TYPES) {

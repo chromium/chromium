@@ -26,6 +26,8 @@ import org.chromium.chrome.browser.flags.CachedFlag;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
@@ -68,7 +70,7 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Test
     // clang-format off
-    @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
     public void testCacheGridTabSwitcher_HighEnd() {
         // clang-format on
@@ -103,7 +105,7 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Test
     // clang-format off
-    @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testCacheGridTabSwitcher_LowEnd() {
         // clang-format on
@@ -137,7 +139,7 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Test
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
     public void testCacheGridTabSwitcher_HighEnd_Continuation() {
         // clang-format on
@@ -175,7 +177,7 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Test
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
     public void testCacheGridTabSwitcher_HighEnd_Continuation_AccessibilityListMode() {
         // clang-format on
@@ -213,7 +215,7 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Test
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testCacheGridTabSwitcher_LowEnd_Continuation() {
         // clang-format on

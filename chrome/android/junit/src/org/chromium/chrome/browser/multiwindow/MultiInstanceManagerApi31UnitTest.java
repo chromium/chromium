@@ -68,6 +68,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -861,7 +863,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToNewWindow_calledWithDesiredParameters() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         // Allocate and create two instances.
@@ -886,7 +888,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @Features.DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToNewWindow_notCalled() {
         MultiInstanceManagerApi31 multiInstanceManager1 = Mockito.spy(
                 createChromeInstance(INSTANCE_ID_1, TASK_ID_62, List.of(mTab1, mTab2, mTab3)));
@@ -909,7 +911,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToNewWindow_BeyondMaxWindows_CallsOnly_OpenNewWindow() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         // Create max instances first before asking to move a tab from one to another.
@@ -936,7 +938,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @UiThreadTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToCurrentWindow_calledWithDesiredParameters() {
         int tabAtIndex = 0;
         mMultiInstanceManager.mTestBuildInstancesList = true;
@@ -959,7 +961,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @UiThreadTest
-    @Features.DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToWindow_notCalled() {
         int tabAtIndex = 0;
         MultiInstanceManagerApi31 multiInstanceManager = Mockito.spy(
@@ -977,7 +979,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @UiThreadTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabAction_WithTabIndex_success() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         // Create two instances first before asking to move a tab from one to current.
@@ -1000,7 +1002,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     @UiThreadTest
     @Config(sdk = 31)
-    @Features.EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabAction_WithNonExistantInstance_success() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         // Create two instances first before asking to move a tab from one to current.

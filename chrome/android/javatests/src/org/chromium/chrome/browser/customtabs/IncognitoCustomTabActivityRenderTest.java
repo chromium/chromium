@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -44,7 +44,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+@EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
 public class IncognitoCustomTabActivityRenderTest {
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParameter =
@@ -118,3 +118,4 @@ public class IncognitoCustomTabActivityRenderTest {
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 }
+ 

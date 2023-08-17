@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 
 import java.util.List;
@@ -313,7 +314,7 @@ public class AppLaunchDrawBlockerUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
+    @EnableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLastTabNtp_phone_searchEngineHasLogo_withIntent_incognito() {
         SharedPreferencesManager.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);

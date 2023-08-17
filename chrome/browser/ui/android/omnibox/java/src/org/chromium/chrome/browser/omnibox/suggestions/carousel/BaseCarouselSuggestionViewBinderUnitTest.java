@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.content.res.Resources;
 
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -103,7 +102,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
     public void padding_smallBottomPadding() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(true);
@@ -117,7 +116,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
     public void padding_smallerMargins() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.setForTesting(true);
@@ -131,7 +130,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
     public void padding_smallestMargins() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);

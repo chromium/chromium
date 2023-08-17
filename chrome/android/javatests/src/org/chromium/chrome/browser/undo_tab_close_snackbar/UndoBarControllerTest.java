@@ -27,7 +27,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -173,7 +172,7 @@ public class UndoBarControllerTest {
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
     // clang-format off
     @CommandLineFlags.Add({
             "enable-features=" + ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study",

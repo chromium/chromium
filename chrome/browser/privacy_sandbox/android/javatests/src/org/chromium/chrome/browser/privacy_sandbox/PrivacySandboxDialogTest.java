@@ -56,7 +56,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -320,7 +321,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testControllerShowsBottomSheet() {
         PrivacySandboxDialogController.setShowNewNoticeForTesting(true);
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.NOTICE);
@@ -448,7 +449,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testControllerShowsEEANotice() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
         launchDialog();
@@ -488,7 +489,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testControllerShowsROWNotice() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
         launchDialog();
@@ -527,7 +528,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testControllerShowsRestrictedNotice() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_RESTRICTED);
         launchDialog();

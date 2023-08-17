@@ -39,7 +39,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -58,7 +58,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(value = VERSION_CODES.O)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@Features.EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
+@EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
                           ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES})
 @Batch(Batch.PER_CLASS)
 public class ContextMenuDragTest {

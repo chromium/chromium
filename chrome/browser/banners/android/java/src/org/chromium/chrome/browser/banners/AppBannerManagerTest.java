@@ -86,7 +86,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.InfoBarUtil;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
@@ -130,7 +131,7 @@ import java.util.List;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ChromeFeatureList.WEB_APP_AMBIENT_BADGE_SUPRESS_FIRST_VISIT})
+@DisableFeatures({ChromeFeatureList.WEB_APP_AMBIENT_BADGE_SUPRESS_FIRST_VISIT})
 public class AppBannerManagerTest {
     @Rule
     public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
@@ -1300,7 +1301,7 @@ public class AppBannerManagerTest {
     @Test
     @SmallTest
     @Feature({"AppBanners"})
-    @Features.EnableFeatures({ChromeFeatureList.WEB_APP_AMBIENT_BADGE_SUPRESS_FIRST_VISIT})
+    @EnableFeatures({ChromeFeatureList.WEB_APP_AMBIENT_BADGE_SUPRESS_FIRST_VISIT})
     public void testAmbientBadgeSuppressedOnFirstVisit() throws Exception {
         String url = WebappTestPage.getServiceWorkerUrlWithAction(
                 mTestServer, "call_stashed_prompt_on_click");

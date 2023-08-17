@@ -48,7 +48,7 @@ import org.chromium.ui.resources.ResourceManager;
 
 /** Tests for {@link TabStripSceneLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
+@EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
 public class TabStripSceneLayerTest {
     @Rule

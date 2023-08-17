@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -70,7 +71,7 @@ import java.util.ArrayList;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
 @LooperMode(LooperMode.Mode.LEGACY)
-@Features.EnableFeatures({ChromeFeatureList.CORMORANT})
+@EnableFeatures({ChromeFeatureList.CORMORANT})
 @SmallTest
 public final class WebFeedMainMenuItemTest {
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);

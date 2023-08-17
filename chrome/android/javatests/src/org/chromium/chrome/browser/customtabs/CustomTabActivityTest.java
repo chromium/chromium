@@ -157,7 +157,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -1778,8 +1779,8 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
-    @Features.DisableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
+    @DisableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void testLaunchPartialCustomTabActivity_BottomSheet() throws Exception {
         WindowManager wm = (WindowManager) ContextUtils.getApplicationContext().getSystemService(
                 Context.WINDOW_SERVICE);
@@ -1793,7 +1794,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
             ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
             ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
     public void
@@ -1855,7 +1856,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
             ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
             ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
 
@@ -1915,7 +1916,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
             ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
             ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
     // Screen rotation is not relevant on automotive.
@@ -1963,7 +1964,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
             ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
             ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
     public void
@@ -1997,7 +1998,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
             ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
             ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
     public void
@@ -2067,28 +2068,28 @@ public class CustomTabActivityTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
+    @EnableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
     public void testOpaqueOriginFromPrefetch_Enabled() throws Exception {
         doOpaqueOriginTest(true, true);
     }
 
     @Test
     @LargeTest
-    @Features.DisableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
+    @DisableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
     public void testOpaqueOriginFromPrefetch_Disabled() throws Exception {
         doOpaqueOriginTest(false, true);
     }
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
+    @EnableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
     public void testOpaqueOriginFromIntent_Enabled() throws Exception {
         doOpaqueOriginTest(true, false);
     }
 
     @Test
     @LargeTest
-    @Features.DisableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
+    @DisableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
     public void testOpaqueOriginFromIntent_Disabled() throws Exception {
         doOpaqueOriginTest(false, false);
     }
@@ -2484,7 +2485,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @Features.DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressDismissTabModalDialog() {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
@@ -2539,7 +2540,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressDismissTabModalDialog_BackGestureRefactor() {
         testBackPressDismissTabModalDialog();
     }

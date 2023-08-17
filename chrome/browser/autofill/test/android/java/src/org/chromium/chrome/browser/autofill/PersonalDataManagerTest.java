@@ -35,6 +35,8 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.VerificationStatus;
 import org.chromium.components.image_fetcher.test.TestImageFetcher;
@@ -278,7 +280,7 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)
     public void testCreditCardArtUrlIsFormattedWithImageSpecs_serverSideStretchingDisabled()
             throws TimeoutException {
         GURL capitalOneIconUrl = new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL);
@@ -308,7 +310,7 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)
     public void testCreditCardArtUrlIsFormattedWithImageSpecs_serverSideStretchingEnabled()
             throws TimeoutException {
         GURL capitalOneIconUrl = new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL);
@@ -556,7 +558,7 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES)
     public void testProfilesFrecency() throws TimeoutException {
         // Create 3 profiles.
         AutofillProfile profile1 = AutofillProfile.builder()
@@ -620,7 +622,7 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS)
     public void testCreditCardsFrecency() throws TimeoutException {
         // Create 3 credit cards.
         CreditCard card1 = createLocalCreditCard("Visa", "1234123412341234", "5", "2020");
@@ -656,7 +658,7 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES)
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES)
     public void testProfileRanking() throws TimeoutException {
         // Create 3 profiles.
         AutofillProfile profile1 = AutofillProfile.builder().setFullName("John Major").build();
@@ -691,7 +693,7 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS)
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS)
     public void testCreditCardRanking() throws TimeoutException {
         // Create 3 credit cards.
         CreditCard card1 = createLocalCreditCard("Visa", "1234123412341234", "5", "2020");
@@ -897,7 +899,7 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
     public void
     testGetCardIcon_customIconUrlAvailable_customIconCachedOnFirstCallAndReturnedOnSecondCall()
             throws TimeoutException {

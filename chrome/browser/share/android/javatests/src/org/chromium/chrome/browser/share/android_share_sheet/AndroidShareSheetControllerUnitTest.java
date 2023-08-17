@@ -85,6 +85,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -107,7 +108,7 @@ import org.chromium.url.ShadowGURL;
  * Test for {@link AndroidShareSheetController} and {@link AndroidCustomActionProvider}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.DisableFeatures(
+@DisableFeatures(
         {ChromeFeatureList.WEBNOTES_STYLIZE, ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO})
 @Config(shadows = {ShadowShareImageFileUtils.class, ShadowGURL.class, ShadowPostTask.class})
 public class AndroidShareSheetControllerUnitTest {
@@ -543,7 +544,7 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH)
+    @DisableFeatures(ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH)
     @Config(shadows = {ShadowBuildCompatForU.class, ShadowChooserActionHelper.class})
     public void ensureNonPolishActionInOrder() {
         Uri testImageUri = Uri.parse("content://test.image.uri");

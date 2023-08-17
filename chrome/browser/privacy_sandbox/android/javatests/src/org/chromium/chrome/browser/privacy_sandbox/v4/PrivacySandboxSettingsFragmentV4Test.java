@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -56,7 +56,7 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+@EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
 public final class PrivacySandboxSettingsFragmentV4Test {
     @Rule
     public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();

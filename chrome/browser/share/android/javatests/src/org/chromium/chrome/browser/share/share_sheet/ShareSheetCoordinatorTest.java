@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinatorTest.S
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -70,7 +71,7 @@ import java.util.Set;
  * Tests {@link ShareSheetCoordinator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
+@EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
 @LooperMode(LooperMode.Mode.LEGACY)
 @Config(shadows = ShadowPropertyModelBuilder.class)
 public final class ShareSheetCoordinatorTest {

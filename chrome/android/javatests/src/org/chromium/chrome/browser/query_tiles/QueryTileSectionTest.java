@@ -42,7 +42,8 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.components.query_tiles.TestTileProvider;
@@ -54,8 +55,8 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP})
-@Features.DisableFeatures({ChromeFeatureList.QUERY_TILES_SEGMENTATION})
+@EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP})
+@DisableFeatures({ChromeFeatureList.QUERY_TILES_SEGMENTATION})
 public class QueryTileSectionTest {
     private static final String SEARCH_URL_PATTERN = "https://www.google.com/search?q=";
 

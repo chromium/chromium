@@ -66,7 +66,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2ApiCallHelper;
@@ -1530,7 +1531,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ContentFeatures.WEB_AUTHN_TOUCH_TO_FILL_CREDENTIAL_SELECTION})
+    @EnableFeatures({ContentFeatures.WEB_AUTHN_TOUCH_TO_FILL_CREDENTIAL_SELECTION})
     public void testGetAssertion_emptyAllowCredentials_success() {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
         mMockBrowserBridge.setExpectedCredentialDetailsList(Arrays.asList(
@@ -1551,7 +1552,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    @Features.DisableFeatures({ContentFeatures.WEB_AUTHN_TOUCH_TO_FILL_CREDENTIAL_SELECTION})
+    @DisableFeatures({ContentFeatures.WEB_AUTHN_TOUCH_TO_FILL_CREDENTIAL_SELECTION})
     public void testGetAssertion_emptyAllowCredentialsTouchToFillDisabled_success() {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
 

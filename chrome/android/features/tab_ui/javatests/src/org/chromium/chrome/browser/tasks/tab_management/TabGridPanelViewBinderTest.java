@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -464,7 +465,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testSetIsTitleTextFocused() {
         Assert.assertFalse(mTitleTextView.isFocused());
 

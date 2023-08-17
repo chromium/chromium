@@ -45,6 +45,8 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -60,7 +62,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+@EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
 public class AutofillPaymentMethodsFragmentTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -199,7 +201,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA})
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA})
     public void testCreditCardSummary_displaysVirtualCardEnrolledStatus() throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_VIRTUAL_CARD_ENROLLED);
 
@@ -213,7 +215,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA})
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA})
     public void testCreditCardSummary_displaysExpirationDateForUnenrolledCards() throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_VIRTUAL_CARD_UNENROLLED);
 
@@ -228,7 +230,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA})
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA})
     public void testCreditCardSummary_displaysExpirationDateForNonVirtualCards() throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_VISA);
 
@@ -241,7 +243,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA})
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA})
     public void testCreditCardSummary_displaysExpirationDateForVirtualCardsWhenMetadataFlagOff()
             throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_VIRTUAL_CARD_ENROLLED);
@@ -287,7 +289,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
     public void testMandatoryReauthToggle_notShownWhenFeatureDisabled() throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -526,7 +528,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
     public void testLocalCardEditWithReauth_noReauthWhenFeatureDisabled() throws Exception {
         mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
         // Simulate Reauth pref is enabled when feature is disabled though this unlikely occurs in

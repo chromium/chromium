@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
@@ -90,7 +91,7 @@ import java.util.List;
 @Config(manifest = Config.NONE,
         shadows = {AutocompleteMediatorUnitTest.ShadowTemplateUrlServiceFactory.class,
                 ShadowLooper.class})
-@Features.EnableFeatures({ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION})
+@EnableFeatures({ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION})
 public class AutocompleteMediatorUnitTest {
     private static final int SUGGESTION_MIN_HEIGHT = 20;
     private static final int HEADER_MIN_HEIGHT = 15;

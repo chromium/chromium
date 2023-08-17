@@ -55,12 +55,13 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.base.LocalizationUtils;
 
 /** Tests for {@link TabDragSource}. */
 @RunWith(BaseRobolectricTestRunner.class)
 // clang-format off
-@Features.EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
+@EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
 public class TabDragSourceTest {
     // clang-format on
     @Rule

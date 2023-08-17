@@ -33,6 +33,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
@@ -48,7 +49,7 @@ import java.util.List;
 
 /** Unit tests for {@link AutofillVirtualCardEnrollmentDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES,
+@EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES,
         AutofillFeatures.AUTOFILL_ENABLE_CARD_ART_IMAGE})
 public class AutofillVirtualCardEnrollmentDialogTest {
     private static final String LEGAL_MESSAGE_URL = "http://www.google.com";

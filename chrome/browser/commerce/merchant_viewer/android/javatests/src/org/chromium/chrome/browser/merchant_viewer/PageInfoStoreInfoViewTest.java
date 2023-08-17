@@ -51,7 +51,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfoCallback;
@@ -67,7 +67,7 @@ import java.io.IOException;
  * Tests for PageInfoStoreInfo view.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures(
+@EnableFeatures(
         {PageInfoFeatures.PAGE_INFO_STORE_INFO_NAME, ChromeFeatureList.COMMERCE_MERCHANT_VIEWER})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})

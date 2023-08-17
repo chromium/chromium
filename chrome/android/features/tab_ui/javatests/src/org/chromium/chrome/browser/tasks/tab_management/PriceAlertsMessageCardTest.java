@@ -69,7 +69,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -82,7 +82,7 @@ import java.io.IOException;
         "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group"})
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@Features.DisableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS})
+@DisableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS})
 public class PriceAlertsMessageCardTest {
     // clang-format on
     private static final String BASE_PARAMS =

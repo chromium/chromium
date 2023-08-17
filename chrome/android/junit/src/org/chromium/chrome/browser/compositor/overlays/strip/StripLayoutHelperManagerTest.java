@@ -52,12 +52,14 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.LocalizationUtils;
 
 /** Tests for {@link StripLayoutHelperManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
+@EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
 public class StripLayoutHelperManagerTest {
     @Rule
@@ -156,7 +158,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testModelSelectorButtonXPosition() {
         // Set model selector button position.
         mStripLayoutHelperManager.onSizeChanged(
@@ -169,7 +171,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testModelSelectorButtonXPosition_Rtl() {
         // Set model selector button position.
         LocalizationUtils.setRtlForTesting(true);
@@ -239,7 +241,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testFadeDrawable_Left() {
         // Verify fade drawable.
         assertEquals("Fade drawable resource is not as expected", R.drawable.tab_strip_fade_short,
@@ -247,7 +249,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testFadeDrawable_Right() {
         // Verify fade drawable.
         assertEquals("Fade drawable resource is not as expected", R.drawable.tab_strip_fade_short,
@@ -255,7 +257,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testFadeDrawable_Right_ModelSelectorButtonVisible() {
         // setup
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
@@ -362,7 +364,7 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     @Feature("TabStripPerformance")
-    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
     public void testSetTabModelStartupInfo() {
         // Setup
         int expectedStandardCount = 5;

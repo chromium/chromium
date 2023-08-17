@@ -34,6 +34,7 @@ import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.TranslateUtil;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -198,7 +199,7 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
-    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI})
+    @DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI})
     public void testStartTranslateOnManualInitiation() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         // Load a page that won't trigger the translate recommendation.

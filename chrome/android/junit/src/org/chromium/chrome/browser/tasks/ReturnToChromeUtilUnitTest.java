@@ -91,7 +91,7 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(manifest = Config.NONE,
         shadows = {ShadowHomepageManager.class, ShadowHomepagePolicyManager.class,
                 ShadowSysUtils.class})
-@Features.EnableFeatures({ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
+@EnableFeatures({ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
 public class ReturnToChromeUtilUnitTest {
     /** Shadow for {@link HomepageManager}. */
     @Implements(HomepageManager.class)
@@ -255,7 +255,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
     public void testShouldShowTabSwitcherWithStartReturnTimeWithoutUseModel() {
         Assert.assertTrue(ChromeFeatureList.sStartSurfaceReturnTime.isEnabled());
         Assert.assertTrue(ChromeFeatureList.sStartSurfaceAndroid.isEnabled());
@@ -291,7 +291,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
     public void testShouldShowTabSwitcherWithSegmentationReturnTime() {
         final SegmentId showStartId =
                 SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2;

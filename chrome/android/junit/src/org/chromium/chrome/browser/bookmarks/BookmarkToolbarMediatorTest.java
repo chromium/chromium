@@ -196,7 +196,7 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void selectionStateChangeHidesKeyboard() {
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
         assertEquals(true, mModel.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE));
@@ -206,7 +206,7 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void selectionStateChangeHidesKeyboard_improvedBookmarks() {
         mModel.addObserver(mPropertyObserver);
 
@@ -274,7 +274,7 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void testOnMenuItemClick_editMenu() {
         mMediator.onFolderStateSet(mBookmarkId);
         assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
@@ -283,7 +283,7 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void testOnMenuItemClick_editMenu_improvedBookmarks() {
         mMediator.onFolderStateSet(mBookmarkId);
         assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)

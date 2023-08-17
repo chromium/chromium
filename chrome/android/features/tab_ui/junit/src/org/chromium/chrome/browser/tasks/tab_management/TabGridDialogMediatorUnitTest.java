@@ -67,6 +67,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -85,7 +87,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 // clang-format off
-@Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+@DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
 public class TabGridDialogMediatorUnitTest {
     // clang-format on
 
@@ -209,7 +211,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void setupTabGroupsContinuation_flagEnabled() {
         assertThat(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                            ContextUtils.getApplicationContext()),
@@ -333,7 +335,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void onTitleTextChange_WithoutFocus() {
         TextWatcher textWatcher = mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER);
         // Mock tab1 is the current tab for the dialog.
@@ -351,7 +353,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void onTitleTextChange_WithFocus() {
         TextWatcher textWatcher = mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER);
         // Mock tab1 is the current tab for the dialog.
@@ -371,7 +373,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void onTitleTextFocusChange() {
         View.OnFocusChangeListener listener =
                 mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
@@ -383,7 +385,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void onKeyBoardVisibilityChanged_updateTextAndKeyboard() {
         KeyboardVisibilityDelegate.KeyboardVisibilityListener listener =
                 mMediator.getKeyboardVisibilityListenerForTesting();
@@ -402,7 +404,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void onKeyBoardVisibilityChanged_StoreGroupTitle() {
         KeyboardVisibilityDelegate.KeyboardVisibilityListener keyboardVisibilityListener =
                 mMediator.getKeyboardVisibilityListenerForTesting();
@@ -431,7 +433,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void onKeyBoardVisibilityChanged_NoFocus_NotStoreGroupTitle() {
         KeyboardVisibilityDelegate.KeyboardVisibilityListener keyboardVisibilityListener =
                 mMediator.getKeyboardVisibilityListenerForTesting();
@@ -842,7 +844,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void hideDialog_StoreModifiedGroupTitle() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
@@ -869,7 +871,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void hideDialog_ModifiedGroupTitleEmpty() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
@@ -897,7 +899,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void hideDialog_NoModifiedGroupTitle() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
@@ -914,7 +916,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void hideDialog_ClosingLastTab_SkipStoreGroupTitle() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
@@ -940,7 +942,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void hideDialog_SingleTab_SkipStoreGroupTitle() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
@@ -966,7 +968,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void hideDialog_withTabGroupContinuation() {
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
 
@@ -1153,7 +1155,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testDialogToolbarMenu_SelectionModeV2() {
         Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
         // Mock that currently the title text is focused and the keyboard is showing. The current

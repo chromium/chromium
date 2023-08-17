@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** End-to-end tests for adaptive toolbar. */
@@ -40,7 +40,7 @@ import org.chromium.ui.test.util.UiRestriction;
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
+@DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class AdaptiveToolbarTest {
     // clang-format on
     @Rule

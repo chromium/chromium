@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -113,7 +113,7 @@ public class CustomTabBrandingTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO,
+    @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO,
             ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY})
     // clang-format off
     public void doesntStoreBrandingInfoForIncognito() {

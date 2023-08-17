@@ -66,7 +66,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -281,8 +282,8 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
-    @Features.DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
+    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     public void testLensTranslateChipNotShowingIfNotEnabled() throws Throwable {
         // Required to avoid runtime error.
         Looper.prepare();
@@ -301,7 +302,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @Features.DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     public void testSelectLensTranslateChip() throws Throwable {
         // Required to avoid runtime error.
         Looper.prepare();
@@ -325,8 +326,8 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
-    @Features.DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
+    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     public void testLensChipNotShowingAfterMenuDismissed() throws Throwable {
         // Required to avoid runtime error.
         Looper.prepare();
@@ -354,8 +355,8 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     // context menu.
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
-    @Features.DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
+    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     public void testDismissContextMenuOnClickLensTranslateChipEnabled() throws TimeoutException {
         // Required to avoid runtime error.
         Looper.prepare();
@@ -381,8 +382,8 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
-    @Features.DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
+    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     public void testLensShoppingChipNotShowingIfNotEnabled() throws Throwable {
         // Required to avoid runtime error.
         Looper.prepare();
@@ -401,7 +402,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @Features.DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     public void testSelectLensShoppingChip() throws Throwable {
         // Required to avoid runtime error.
         Looper.prepare();
@@ -426,7 +427,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     // context menu.
     @Test
     @MediumTest
-    @Features.DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     public void testDismissContextMenuOnClickShoppingLensChipEnabled() throws TimeoutException {
         // Required to avoid runtime error.
         Looper.prepare();
@@ -595,7 +596,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @Features.DisableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
+    @DisableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
     public void testContextMenuRetrievesImageOptions() throws TimeoutException {
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImage");
@@ -612,8 +613,8 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @Features.DisableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
-    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST})
+    @DisableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST})
     public void testContextMenuRetrievesImageOptionsWithLensShoppingAllowlist()
             throws TimeoutException {
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
@@ -689,7 +690,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @Features.DisableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
+    @DisableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
     public void testContextMenuRetrievesImageLinkOptions() throws TimeoutException {
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImageLink");
@@ -775,7 +776,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testSearchImageWithGoogleLensMenuItemName() throws Throwable {
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();

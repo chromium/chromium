@@ -54,7 +54,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.Hyperlink;
@@ -75,7 +75,7 @@ import java.util.concurrent.TimeoutException;
  * Tests for PageInfoAboutThisSite.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_LANGS})
+@EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_LANGS})
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP_PROMOS,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1", "ignore-certificate-errors"})

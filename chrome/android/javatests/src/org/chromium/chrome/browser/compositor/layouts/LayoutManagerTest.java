@@ -85,7 +85,8 @@ import org.chromium.chrome.features.start_surface.StartSurface.TabSwitcherViewOb
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel.MockTabModelDelegate;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
@@ -418,7 +419,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Feature({"Android-TabSwitcher"})
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-    @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testStartSurfaceLayout_Disabled_LowEndPhone() throws Exception {
         // clang-format on
         launchAndVerifyOverviewListLayout();
@@ -437,7 +438,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Feature({"Android-TabSwitcher"})
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-    @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testStartSurfaceLayout_Disabled_AllPhone_Accessibility_WithoutContinuationFlag() {
         // clang-format on
         final List<LayoutStateLayoutType> observationSequence = new ArrayList<>();
@@ -460,7 +461,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Feature({"Android-TabSwitcher"})
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testTabSwitcherLayout_Enabled_HighEndPhone() throws Exception {
         // clang-format on
         verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.GRID);
@@ -472,8 +473,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Feature({"Android-TabSwitcher"})
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
-    @Features.DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testTabSwitcherLayout_Enabled_LowEndPhone() throws Exception {
         // clang-format on
         DeviceClassManager.GTS_LOW_END_SUPPORT.setForTesting(true);

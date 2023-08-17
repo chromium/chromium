@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
@@ -51,7 +52,7 @@ import org.chromium.ui.base.TestActivity;
 @Config(manifest = Config.NONE)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
-@Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH, ChromeFeatureList.EMPTY_STATES})
+@EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH, ChromeFeatureList.EMPTY_STATES})
 public class BookmarkManagerCoordinatorTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();

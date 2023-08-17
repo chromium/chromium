@@ -67,13 +67,14 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link PartialCustomTabHandleStrategy}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {PartialCustomTabTestRule.ShadowSemanticColorUtils.class})
-@Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+@EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
         ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE})
 @LooperMode(Mode.PAUSED)
 public class PartialCustomTabBottomSheetStrategyTest {
@@ -632,7 +633,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void expandToFullHeightOnShowingKeyboard() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
@@ -875,7 +876,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void callbackWhenHeightResized() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
         assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
@@ -941,7 +942,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
     @Config(sdk = Build.VERSION_CODES.Q)
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void enterAndExitHtmlFullscreen() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
         strategy.createHandleStrategyForTesting();
@@ -1079,7 +1080,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
     @Config(sdk = Build.VERSION_CODES.Q)
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void sideShadowsWith900dpBottomSheet() {
         doReturn(8)
                 .when(mPCCTTestRule.mResources)
@@ -1114,7 +1115,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void noTopShadowFullHeightBottomSheet() {
         doReturn(8)
                 .when(mPCCTTestRule.mResources)
@@ -1134,7 +1135,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void largeDeviceInPortrait_screenWidth() {
         doReturn(8)
                 .when(mPCCTTestRule.mResources)
@@ -1155,7 +1156,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
     @Config(sdk = Build.VERSION_CODES.Q)
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void largeDeviceInLandscape_900dpWidth() {
         doReturn(8)
                 .when(mPCCTTestRule.mResources)
@@ -1217,7 +1218,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void expandToFullHeightOnFindInPage() {
         mPCCTTestRule.configPortraitMode();
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(800);

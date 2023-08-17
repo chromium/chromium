@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsTestUtils.HomepageCharacterizationHelperStub;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.PartnerCustomizationsHomepageEnum;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.ShadowGURL;
 
@@ -45,7 +46,7 @@ import org.chromium.url.ShadowGURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class, ShadowGURL.class,
                 ShadowCustomizationProviderDelegate.class})
-@Features.EnableFeatures(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA)
+@EnableFeatures(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA)
 public class PartnerBrowserCustomizationsRoboUnitTest {
     @Rule
     public Features.JUnitProcessor processor = new Features.JUnitProcessor();

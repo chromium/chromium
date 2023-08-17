@@ -89,7 +89,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalIntentsFeatures;
@@ -1149,8 +1150,8 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({"BackForwardCache<Study", "BackForwardCacheNoTimeEviction"})
-    @Features.DisableFeatures({"BackForwardCacheMemoryControls"})
+    @EnableFeatures({"BackForwardCache<Study", "BackForwardCacheNoTimeEviction"})
+    @DisableFeatures({"BackForwardCacheMemoryControls"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group"})
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testNoRedirectWithBFCache() throws Exception {
@@ -1225,8 +1226,8 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({BlinkFeatures.PRERENDER2})
-    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @EnableFeatures({BlinkFeatures.PRERENDER2})
+    @DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testClearRedirectHandlerOnPageActivation() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
@@ -1286,7 +1287,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(
+    @EnableFeatures(
             {"FencedFrames<Study,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:implementation_type/mparch"})
@@ -1437,7 +1438,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_PREFETCH_DELAY_SHOW_ON_START})
+    @EnableFeatures({ChromeFeatureList.CCT_PREFETCH_DELAY_SHOW_ON_START})
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testRedirectFromCCTSpeculation() throws Exception {
         final String url = mTestServer.getURL(NAVIGATION_FROM_PAGE_SHOW);
@@ -1461,7 +1462,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.TRUSTED_CLIENT_GESTURE_BYPASS_NAME})
+    @EnableFeatures({ExternalIntentsFeatures.TRUSTED_CLIENT_GESTURE_BYPASS_NAME})
     public void testRedirectToTrustedCaller() throws Exception {
         final String url = mTestServer.getURL(HELLO_PAGE);
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
@@ -1634,7 +1635,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
+    @EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
     public void testWindowRenavigation() throws Exception {
         String finalUrl = mTestServer.getURL(HELLO_PAGE);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -1647,7 +1648,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
+    @EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
     public void testWindowRenavigationServerRedirect() throws Exception {
         String finalUrl = mTestServer.getURL(HELLO_PAGE);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -1660,7 +1661,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
+    @EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
     public void testWindowServerRedirect() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndWaitForIntentUrl(
@@ -1680,9 +1681,8 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
-    public void
-    testIntentToSelf() {
+    @EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    public void testIntentToSelf() {
         String targetUrl = mTestServer.getURL(HELLO_PAGE);
         // Strip off the https: from the URL.
         String strippedTargetUrl = targetUrl.substring(6);
@@ -1702,9 +1702,8 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
-    public void
-    testIntentToSelfWithFallback() throws Exception {
+    @EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    public void testIntentToSelfWithFallback() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String targetUrl = mTestServer.getURL(HELLO_PAGE);
@@ -1749,9 +1748,8 @@ public class UrlOverridingTest {
     // that would escape the sandbox by clobbering the main frame.
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
-    public void
-    testIntentToSelfWithFallback_Sandboxed() throws Exception {
+    @EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    public void testIntentToSelfWithFallback_Sandboxed() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String targetUrl = mTestServer.getURL(HELLO_PAGE);

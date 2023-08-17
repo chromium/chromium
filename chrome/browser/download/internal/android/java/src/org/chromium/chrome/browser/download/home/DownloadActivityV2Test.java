@@ -68,7 +68,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.util.date.StringUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -652,7 +653,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
+    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
     @DisabledTest(message = "https://crbug.com/1416712")
     public void testDismissSearchViewByBackPress() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
@@ -690,7 +691,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
+    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
     public void testDismissSearchViewByBackPress_BackPressRefactor() {
         testDismissSearchViewByBackPress();
     }
