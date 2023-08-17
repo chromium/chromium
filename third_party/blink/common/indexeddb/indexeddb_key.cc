@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
+
 namespace blink {
 
 namespace {
@@ -60,17 +62,16 @@ IndexedDBKey::IndexedDBKey(double number, mojom::IDBKeyType type)
     : type_(type),
       number_(number),
       size_estimate_(kOverheadSize + sizeof(number)) {
-  DCHECK(type == blink::mojom::IDBKeyType::Number ||
-         type == blink::mojom::IDBKeyType::Date);
+  DCHECK(type == mojom::IDBKeyType::Number || type == mojom::IDBKeyType::Date);
 }
 
 IndexedDBKey::IndexedDBKey(KeyArray array)
-    : type_(blink::mojom::IDBKeyType::Array),
+    : type_(mojom::IDBKeyType::Array),
       array_(std::move(array)),
       size_estimate_(kOverheadSize + CalculateArraySize(array_)) {}
 
 IndexedDBKey::IndexedDBKey(std::string binary)
-    : type_(blink::mojom::IDBKeyType::Binary),
+    : type_(mojom::IDBKeyType::Binary),
       binary_(std::move(binary)),
       size_estimate_(kOverheadSize +
                      (binary_.length() * sizeof(std::string::value_type))) {}
@@ -86,17 +87,19 @@ IndexedDBKey::~IndexedDBKey() = default;
 IndexedDBKey& IndexedDBKey::operator=(const IndexedDBKey& other) = default;
 
 bool IndexedDBKey::IsValid() const {
-  if (type_ == mojom::IDBKeyType::Invalid || type_ == mojom::IDBKeyType::None)
-    return false;
-
-  if (type_ == blink::mojom::IDBKeyType::Array) {
-    for (size_t i = 0; i < array_.size(); i++) {
-      if (!array_[i].IsValid())
-        return false;
-    }
+  switch (type_) {
+    case mojom::IDBKeyType::Array:
+      return base::ranges::all_of(array_, &IndexedDBKey::IsValid);
+    case mojom::IDBKeyType::Binary:
+    case mojom::IDBKeyType::String:
+    case mojom::IDBKeyType::Date:
+    case mojom::IDBKeyType::Number:
+      return true;
+    case mojom::IDBKeyType::Invalid:
+    case mojom::IDBKeyType::None:
+    case mojom::IDBKeyType::Min:
+      return false;
   }
-
-  return true;
 }
 
 bool IndexedDBKey::IsLessThan(const IndexedDBKey& other) const {

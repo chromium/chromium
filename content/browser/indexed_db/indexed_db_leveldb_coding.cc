@@ -238,7 +238,6 @@ void EncodeDouble(double value, std::string* into) {
 
 void EncodeIDBKey(const IndexedDBKey& value, std::string* into) {
   size_t previous_size = into->size();
-  CHECK(value.IsValid());
   switch (value.type()) {
     case blink::mojom::IDBKeyType::Array: {
       EncodeByte(kIndexedDBKeyArrayTypeByte, into);
@@ -273,15 +272,12 @@ void EncodeIDBKey(const IndexedDBKey& value, std::string* into) {
     case blink::mojom::IDBKeyType::Invalid:
     case blink::mojom::IDBKeyType::Min:
     default:
-      NOTREACHED();
-      EncodeByte(kIndexedDBKeyNullTypeByte, into);
-      return;
+      NOTREACHED_NORETURN();
   }
 }
 
 void EncodeSortableIDBKey(const IndexedDBKey& value, std::string* into) {
   size_t previous_size = into->size();
-  CHECK(value.IsValid());
   switch (value.type()) {
     case blink::mojom::IDBKeyType::Array: {
       EncodeByte(kOrderedArrayTypeByte, into);
@@ -312,9 +308,7 @@ void EncodeSortableIDBKey(const IndexedDBKey& value, std::string* into) {
     case blink::mojom::IDBKeyType::Invalid:
     case blink::mojom::IDBKeyType::Min:
     default:
-      NOTREACHED();
-      EncodeByte(kSentinel, into);
-      return;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -483,8 +477,7 @@ bool DecodeIDBKeyRecursive(StringPiece* slice,
 
   switch (type) {
     case kIndexedDBKeyNullTypeByte:
-      *value = std::make_unique<IndexedDBKey>();
-      return true;
+      return false;
 
     case kIndexedDBKeyArrayTypeByte: {
       int64_t length = 0;
@@ -531,8 +524,7 @@ bool DecodeIDBKeyRecursive(StringPiece* slice,
       return true;
     }
     case kIndexedDBKeyMinKeyTypeByte: {
-      *value = std::make_unique<IndexedDBKey>(blink::mojom::IDBKeyType::Min);
-      return true;
+      return false;
     }
   }
 
