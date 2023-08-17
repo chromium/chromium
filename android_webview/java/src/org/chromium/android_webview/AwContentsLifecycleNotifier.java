@@ -4,7 +4,10 @@
 
 package org.chromium.android_webview;
 
+import android.os.Build;
+
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -27,12 +30,22 @@ public class AwContentsLifecycleNotifier {
         public void onLastWebViewDestroyed();
     }
 
-    private static final ObserverList<Observer> sLifecycleObservers =
-            new ObserverList<Observer>();
+    private static ObserverList<Observer> sLifecycleObservers;
     private static boolean sHasWebViewInstances;
-    private static @AppState int sAppState = AppState.DESTROYED;
+    private static volatile @AppState int sAppState = AppState.DESTROYED;
 
     private AwContentsLifecycleNotifier() {}
+
+    /**
+     * This initializes the ObserverList. It must be called on the UIThread
+     * since calls to #addObserver and #removeObserver must be called from the same thread as the
+     * ObserverList was created.
+     */
+    @CalledByNative
+    public static void init() {
+        ThreadUtils.assertOnUiThread();
+        sLifecycleObservers = new ObserverList<Observer>();
+    }
 
     public static void addObserver(Observer observer) {
         sLifecycleObservers.addObserver(observer);
@@ -46,6 +59,7 @@ public class AwContentsLifecycleNotifier {
         return sHasWebViewInstances;
     }
 
+    // Calls to this are thread safe
     public static @AppState int getAppState() {
         return sAppState;
     }
@@ -77,5 +91,9 @@ public class AwContentsLifecycleNotifier {
     private static void onAppStateChanged(@AppState int appState) {
         ThreadUtils.assertOnUiThread();
         sAppState = appState;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            TrackExitReasonsOfInterest.writeLastWebViewState();
+        }
     }
 }

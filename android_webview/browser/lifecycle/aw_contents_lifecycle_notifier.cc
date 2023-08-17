@@ -150,6 +150,10 @@ std::vector<const AwContents*> AwContentsLifecycleNotifier::GetAllAwContents()
   return result;
 }
 
+void AwContentsLifecycleNotifier::InitObserverListForTest() {
+  Java_AwContentsLifecycleNotifier_init(AttachCurrentThread());
+}
+
 size_t AwContentsLifecycleNotifier::ToIndex(AwContentsState state) const {
   size_t index = static_cast<size_t>(state);
   DCHECK(index < std::size(state_count_));
