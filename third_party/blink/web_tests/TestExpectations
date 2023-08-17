@@ -2733,6 +2733,7 @@ crbug.com/626703 external/wpt/css/css-backgrounds/border-image-repeat-round-stre
 crbug.com/626703 external/wpt/css/css-backgrounds/border-image-repeat-stretch-round-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-nesting/nest-containing-forgiving.html [ Failure ]
 crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Timeout ]
+crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Timeout ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-repeat-round-003.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-repeat-round-stretch-001.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-repeat-stretch-round-001.html [ Failure ]
