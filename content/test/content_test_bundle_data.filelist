@@ -5510,6 +5510,8 @@ data/fedcm/client_metadata_endpoint.json
 data/fedcm/id_assertion_endpoint.json
 data/fenced_frames/ad_that_leaves_interest_group.html
 data/fenced_frames/ad_that_leaves_interest_group.html.mock-http-headers
+data/fenced_frames/ad_with_3pat_macro_reporting.html
+data/fenced_frames/ad_with_3pat_macro_reporting.html.mock-http-headers
 data/fenced_frames/ad_with_components.html
 data/fenced_frames/ad_with_fenced_frame_private_aggregation_reporting.html
 data/fenced_frames/ad_with_fenced_frame_private_aggregation_reporting.html.mock-http-headers
@@ -6143,6 +6145,8 @@ data/interest_group/bidding_logic_loop_forever.js
 data/interest_group/bidding_logic_loop_forever.js.mock-http-headers
 data/interest_group/bidding_logic_register_ad_beacon.js
 data/interest_group/bidding_logic_register_ad_beacon.js.mock-http-headers
+data/interest_group/bidding_logic_register_ad_macro.js
+data/interest_group/bidding_logic_register_ad_macro.js.mock-http-headers
 data/interest_group/bidding_logic_report_to_name.js
 data/interest_group/bidding_logic_report_to_name.js.mock-http-headers
 data/interest_group/bidding_logic_stop_bidding_after_win.js

@@ -13871,6 +13871,60 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   EXPECT_TRUE(network_responder_->HasReceivedRequest());
 }
 
+// Runs an ad auction similar to the one in
+// InterestGroupFencedFrameBrowserTest.RunAdAuctionWithWinner but also registers
+// ad macros. The destination URL's ${} template is substituted with the ad
+// macro's value if there is one, otherwise unsubstituted. A report is sent to
+// the new destination URL.
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       RunAdAuctionWithWinnerRegisterAdMacro) {
+  URLLoaderMonitor url_loader_monitor;
+
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  GURL ad_url = https_server_->GetURL(
+      "c.test", "/fenced_frames/ad_with_3pat_macro_reporting.html");
+  url::Origin allowed_origin = url::Origin::Create(GURL("https://b.test"));
+  content_browser_client_->AddToAllowList({allowed_origin});
+  std::vector<url::Origin> allowed_reporting_origins = {allowed_origin};
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        "a.test",
+                        "/interest_group/bidding_logic_register_ad_macro.js"))
+                    .SetAds({{{ad_url,
+                               /*metadata=*/absl::nullopt,
+                               /*size_group=*/absl::nullopt,
+                               /*buyer_reporting_id=*/absl::nullopt,
+                               /*buyer_and_seller_reporting_id=*/absl::nullopt,
+                               /*ad_render_id=*/absl::nullopt,
+                               /*allowed_reporting_origins=*/
+                               std::move(allowed_reporting_origins)}}})
+                    .Build()));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
+      ad_url, JsReplace(
+                  R"({
+seller: $1,
+decisionLogicUrl: $2,
+interestGroupBuyers: [$1],
+                  })",
+                  test_origin,
+                  https_server_->GetURL("a.test",
+                                        "/interest_group/decision_logic.js"))));
+
+  absl::optional<network::ResourceRequest> request =
+      url_loader_monitor.WaitForUrl(
+          GURL("https://b.test/echo?a=value_a&b=value_b&c=${NOT_REGISTERED}"));
+  ASSERT_TRUE(request);
+  EXPECT_EQ(net::HttpRequestHeaders::kGetMethod, request->method);
+}
+
 // Runs an auction similar to
 // InterestGroupFencedFrameBrowserTest.RunAdAuctionWithWinner, but also triggers
 // sending a *private aggregation* event using `window.fence.reportEvent`.

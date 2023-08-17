@@ -737,7 +737,8 @@ FencedFrameReporter::GetAdMacroMapForTesting() {
   return out;
 }
 
-std::set<std::string> FencedFrameReporter::GetReceivedPaEventsForTesting() {
+std::set<std::string> FencedFrameReporter::GetReceivedPaEventsForTesting()
+    const {
   return received_pa_events_;
 }
 

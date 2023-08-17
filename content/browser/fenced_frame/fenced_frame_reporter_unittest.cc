@@ -630,40 +630,47 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsBeforeMapsReceivedWithErrors) {
                   report_destination_, absl::nullopt);
 }
 
-// Test that absence of an allowlist disables custom destination URL reports.
-TEST_F(FencedFrameReporterTest, CustomDestinationURLNoAllowlist) {
-  scoped_refptr<FencedFrameReporter> reporter =
-      FencedFrameReporter::CreateForFledge(
-          shared_url_loader_factory(), browser_context(),
-          /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
-          main_frame_origin_,
-          /*winner_origin=*/report_destination_origin_,
-          /*allowed_reporting_origins=*/absl::nullopt);
+// Test that both absence of an allowlist and empty allowlist disable custom
+// destination URL reports.
+TEST_F(FencedFrameReporterTest, CustomDestinationURLNoOrEmptyAllowlist) {
+  static const absl::optional<std::vector<url::Origin>> test_cases[] = {
+      absl::nullopt, {{}}};
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.has_value());
+    scoped_refptr<FencedFrameReporter> reporter =
+        FencedFrameReporter::CreateForFledge(
+            shared_url_loader_factory(), browser_context(),
+            /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
+            main_frame_origin_,
+            /*winner_origin=*/report_destination_origin_,
+            /*allowed_reporting_origins=*/test_case);
 
-  // Receive buyer mapping.
-  reporter->OnUrlMappingReady(
-      blink::FencedFrame::ReportingDestination::kBuyer,
-      /*reporting_url_map=*/{{}},
-      /*reporting_ad_macro_map=*/FencedFrameReporter::ReportingMacroMap());
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+    // Receive buyer mapping.
+    reporter->OnUrlMappingReady(
+        blink::FencedFrame::ReportingDestination::kBuyer,
+        /*reporting_url_map=*/{{}},
+        /*reporting_ad_macro_map=*/FencedFrameReporter::ReportingMacroMap());
+    EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 
-  std::string error_message;
-  blink::mojom::ConsoleMessageLevel console_message_level =
-      blink::mojom::ConsoleMessageLevel::kError;
-  EXPECT_FALSE(reporter->SendReport(
-      DestinationURLEvent(report_destination_),
-      blink::FencedFrame::ReportingDestination::kBuyer, main_rfh_impl(),
-      network::AttributionReportingRuntimeFeatures(), error_message,
-      console_message_level));
-  EXPECT_EQ(error_message,
-            "This frame attempted to send a report to a custom destination URL "
-            "with macro substitution, but no origins are allowed by its "
-            "allowlist.");
-  EXPECT_EQ(console_message_level, blink::mojom::ConsoleMessageLevel::kError);
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+    std::string error_message;
+    blink::mojom::ConsoleMessageLevel console_message_level =
+        blink::mojom::ConsoleMessageLevel::kError;
+    EXPECT_FALSE(reporter->SendReport(
+        DestinationURLEvent(report_destination_),
+        blink::FencedFrame::ReportingDestination::kBuyer, main_rfh_impl(),
+        network::AttributionReportingRuntimeFeatures(), error_message,
+        console_message_level));
+    EXPECT_EQ(error_message,
+              "This frame attempted to send a report to a custom destination "
+              "URL with macro substitution, but no origins are allowed by its "
+              "allowlist.");
+    EXPECT_EQ(console_message_level, blink::mojom::ConsoleMessageLevel::kError);
+    EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  }
 }
 
-// Test that absence of an ad macro map disables custom destination URL reports.
+// Test that absence of an ad macro map (i.e., being absl::nullopt) disables
+// custom destination URL reports.
 TEST_F(FencedFrameReporterTest, CustomDestinationURLNoAdMacroMap) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(
@@ -673,7 +680,7 @@ TEST_F(FencedFrameReporterTest, CustomDestinationURLNoAdMacroMap) {
           /*winner_origin=*/report_destination_origin_,
           /*allowed_reporting_origins=*/{});
 
-  // Receive buyer mapping.
+  // Receive a buyer mapping whose `reporting_ad_macro_map` is absl::nullopt.
   reporter->OnUrlMappingReady(blink::FencedFrame::ReportingDestination::kBuyer,
                               /*reporting_url_map=*/{{}},
                               /*reporting_ad_macro_map=*/absl::nullopt);
@@ -693,6 +700,43 @@ TEST_F(FencedFrameReporterTest, CustomDestinationURLNoAdMacroMap) {
             "created this frame's fenced frame config.");
   EXPECT_EQ(console_message_level, blink::mojom::ConsoleMessageLevel::kError);
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+// Test macro substitution for reports to custom destination URLs, where macro
+// map is empty. The reports can still be sent, with macros not substituted.
+TEST_F(FencedFrameReporterTest, CustomDestinationURLEmptyAdMacroMap) {
+  scoped_refptr<FencedFrameReporter> reporter =
+      FencedFrameReporter::CreateForFledge(
+          shared_url_loader_factory(), browser_context(),
+          /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
+          main_frame_origin_,
+          /*winner_origin=*/report_destination_origin_,
+          /*allowed_reporting_origins=*/
+          {{report_destination_origin_}});
+
+  // Receive buyer mapping.
+  reporter->OnUrlMappingReady(blink::FencedFrame::ReportingDestination::kBuyer,
+                              /*reporting_url_map=*/{{}},
+                              /*reporting_ad_macro_map=*/{{}});
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  GURL report_destination_template{
+      "https://report_destination.test?foo=${FOO}&bar=${BAR}&foo2=${FOO}"};
+  GURL report_destination_substituted{
+      "https://report_destination.test?foo=${FOO}&bar=${BAR}&foo2=${FOO}"};
+
+  // Send a request from an allowed origin. (It should succeed.)
+  std::string error_message;
+  blink::mojom::ConsoleMessageLevel console_message_level =
+      blink::mojom::ConsoleMessageLevel::kError;
+  EXPECT_TRUE(reporter->SendReport(
+      DestinationURLEvent(report_destination_template),
+      blink::FencedFrame::ReportingDestination::kBuyer, main_rfh_impl(),
+      network::AttributionReportingRuntimeFeatures(), error_message,
+      console_message_level));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+  ValidateRequest((*test_url_loader_factory_.pending_requests())[0].request,
+                  report_destination_substituted, absl::nullopt);
 }
 
 // Test macro substitution for reports to custom destination URLs, where all

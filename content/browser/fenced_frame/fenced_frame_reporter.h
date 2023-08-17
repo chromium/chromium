@@ -241,7 +241,7 @@ class CONTENT_EXPORT FencedFrameReporter
 
   // Returns `received_pa_events_`, so that it can be validated in tests. Should
   // only be called from tests.
-  std::set<std::string> GetReceivedPaEventsForTesting();
+  std::set<std::string> GetReceivedPaEventsForTesting() const;
 
   // Returns a copy of `private_aggregation_event_map_`, so that it can be
   // validated in tests. Should only be called from tests.
