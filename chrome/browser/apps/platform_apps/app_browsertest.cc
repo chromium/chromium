@@ -549,8 +549,6 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_Iframes) {
 
 // Tests that platform apps can perform filesystem: URL navigations.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AllowFileSystemURLNavigation) {
-  // TODO(https://crbug.com/1332598): Remove this test when removing filesystem:
-  // navigation for good.
   if (!base::FeatureList::IsEnabled(
           blink::features::kFileSystemUrlNavigationForChromeAppsOnly)) {
     GTEST_SKIP();
