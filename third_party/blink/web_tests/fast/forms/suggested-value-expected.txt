@@ -60,6 +60,7 @@ instead of "initial value".
 |       <div>
 |         id="picker"
 |         pseudo="-webkit-calendar-picker-indicator"
+|         title="Show month picker"
 |         shadow:pseudoId="-webkit-calendar-picker-indicator"
 | <textarea>
 |   id="textarea"

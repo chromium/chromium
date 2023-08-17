@@ -12,7 +12,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Milliseconds' value='922' UNAVAILABLE
 ++++++++++ROLE_SYSTEM_STATICTEXT name=' ' ia2_hypertext=' '
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='AM/PM' value='PM' FOCUSABLE
-++++++ROLE_SYSTEM_BUTTONMENU name='Show time picker' FOCUSABLE HASPOPUP
+++++++ROLE_SYSTEM_BUTTONMENU name='Show time picker' FOCUSABLE HASPOPUP description-from:tooltip description='Show time picker'
 ++++++ROLE_SYSTEM_GROUPING ia2_hypertext='<obj0>'
 ++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
 ++++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0><obj1><obj2><obj3><obj4>'

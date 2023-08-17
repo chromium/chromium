@@ -17,7 +17,7 @@ rootWebArea
 ++++++++++++spinButton name='Year' placeholder='yyyy' value='2008' valueForRange=2008.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++staticText name='2008'
 ++++++++++++++++inlineTextBox name='2008'
-++++++++popUpButton name='Show date picker'
+++++++++popUpButton description='Show date picker' name='Show date picker' descriptionFrom=title
 ++++++date inputType='date' name='When' value='2008-09-01'
 ++++++++genericContainer
 ++++++++++genericContainer
@@ -34,4 +34,4 @@ rootWebArea
 ++++++++++++spinButton name='Year When' placeholder='yyyy' value='2008' valueForRange=2008.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++staticText name='2008'
 ++++++++++++++++inlineTextBox name='2008'
-++++++++popUpButton name='Show date picker'
+++++++++popUpButton description='Show date picker' name='Show date picker' descriptionFrom=title

@@ -100,7 +100,7 @@ rootWebArea
 ++++++++++++spinButton name='AM/PM aria label' placeholder='--' value='PM' valueForRange=2.00 minValueForRange=1.00 maxValueForRange=2.00
 ++++++++++++++staticText name='PM'
 ++++++++++++++++inlineTextBox name='PM'
-++++++++popUpButton name='Show time picker'
+++++++++popUpButton description='Show time picker' name='Show time picker' descriptionFrom=title
 ++++++inputTime name='Test label' value='12:05'
 ++++++++genericContainer
 ++++++++++genericContainer
@@ -117,7 +117,7 @@ rootWebArea
 ++++++++++++spinButton name='AM/PM Test label' placeholder='--' value='PM' valueForRange=2.00 minValueForRange=1.00 maxValueForRange=2.00
 ++++++++++++++staticText name='PM'
 ++++++++++++++++inlineTextBox name='PM'
-++++++++popUpButton name='Show time picker'
+++++++++popUpButton description='Show time picker' name='Show time picker' descriptionFrom=title
 ++++++colorWell name='aria label' value='#e4e4e4'
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
