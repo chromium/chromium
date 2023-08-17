@@ -135,7 +135,8 @@ class CookieControlsController
   CookieControlsBreakageConfidenceLevel GetConfidenceLevel(
       CookieControlsStatus status,
       int allowed_sites,
-      int blocked_sites);
+      int blocked_sites,
+      int bounce_count);
 
   // Updates the blocked cookie count of |icon_|.
   void PresentBlockedCookieCounter();

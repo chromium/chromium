@@ -139,14 +139,16 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
   if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
     int third_party_allowed_sites = GetAllowedThirdPartyCookiesSitesCount();
     int third_party_blocked_sites = GetBlockedThirdPartyCookiesSitesCount();
+    int bounce_count = GetStatefulBounceCount();
 
     for (auto& observer : observers_) {
       observer.OnStatusChanged(status.status, status.enforcement,
                                status.expiration);
       observer.OnSitesCountChanged(third_party_allowed_sites,
                                    third_party_blocked_sites);
-      observer.OnBreakageConfidenceLevelChanged(GetConfidenceLevel(
-          status.status, third_party_allowed_sites, third_party_blocked_sites));
+      observer.OnBreakageConfidenceLevelChanged(
+          GetConfidenceLevel(status.status, third_party_allowed_sites,
+                             third_party_blocked_sites, bounce_count));
     }
   } else {
     int allowed_cookies = GetAllowedCookieCount();
@@ -215,7 +217,8 @@ CookieControlsController::Status CookieControlsController::GetStatus(
 CookieControlsBreakageConfidenceLevel
 CookieControlsController::GetConfidenceLevel(CookieControlsStatus status,
                                              int allowed_sites,
-                                             int blocked_sites) {
+                                             int blocked_sites,
+                                             int bounce_count) {
   // If 3PC cookies are not blocked by default:
   switch (status) {
     case CookieControlsStatus::kDisabled:
@@ -228,11 +231,12 @@ CookieControlsController::GetConfidenceLevel(CookieControlsStatus status,
       break;
   }
 
-  // If no 3P sites have attempted to access site data:
-  // (taking into account both allow and blocked counts, since the breakage
-  // might be related to storage partitioning. Partitioned site will be allowed
-  // to access partitioned storage)
-  if (allowed_sites + blocked_sites == 0) {
+  // If no 3P sites have attempted to access site data, nor were any stateful
+  // bounces recorded, return low confidence. Take into account both allow and
+  // blocked counts, since the breakage might be related to storage
+  // partitioning. Partitioned site will be allowed to access partitioned
+  // storage.
+  if (allowed_sites + blocked_sites + bounce_count == 0) {
     return CookieControlsBreakageConfidenceLevel::kLow;
   }
 
@@ -336,7 +340,9 @@ CookieControlsController::GetBreakageConfidenceLevel() {
     auto status = GetStatus(GetWebContents());
     int allowed_sites = GetAllowedSitesCount();
     int blocked_sites = GetBlockedSitesCount();
-    return GetConfidenceLevel(status.status, allowed_sites, blocked_sites);
+    int bounce_count = GetStatefulBounceCount();
+    return GetConfidenceLevel(status.status, allowed_sites, blocked_sites,
+                              bounce_count);
   } else {
     return CookieControlsBreakageConfidenceLevel::kUninitialized;
   }
@@ -435,12 +441,14 @@ void CookieControlsController::PresentBlockedCookieCounter() {
     auto status = GetStatus(GetWebContents());
     int third_party_allowed_sites = GetAllowedThirdPartyCookiesSitesCount();
     int third_party_blocked_sites = GetBlockedThirdPartyCookiesSitesCount();
+    int bounce_count = GetStatefulBounceCount();
 
     for (auto& observer : observers_) {
       observer.OnSitesCountChanged(third_party_allowed_sites,
                                    third_party_blocked_sites);
-      observer.OnBreakageConfidenceLevelChanged(GetConfidenceLevel(
-          status.status, third_party_allowed_sites, third_party_blocked_sites));
+      observer.OnBreakageConfidenceLevelChanged(
+          GetConfidenceLevel(status.status, third_party_allowed_sites,
+                             third_party_blocked_sites, bounce_count));
     }
   } else {
     int allowed_cookies = GetAllowedCookieCount();
@@ -493,10 +501,11 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
 
   int allowed_sites = GetAllowedSitesCount();
   int blocked_sites = GetBlockedSitesCount();
+  int bounce_count = GetStatefulBounceCount();
 
   for (auto& observer : observers_) {
-    observer.OnBreakageConfidenceLevelChanged(
-        GetConfidenceLevel(status.status, allowed_sites, blocked_sites));
+    observer.OnBreakageConfidenceLevelChanged(GetConfidenceLevel(
+        status.status, allowed_sites, blocked_sites, bounce_count));
   }
 }
 
