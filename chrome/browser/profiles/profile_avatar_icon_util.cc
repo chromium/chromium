@@ -701,7 +701,6 @@ void SetDefaultProfileAvatarIndex(Profile* profile, size_t avatar_icon_index) {
   pref_service->SetBoolean(prefs::kProfileUsingGAIAAvatar, false);
 
   ProfileMetrics::LogProfileAvatarSelection(avatar_icon_index);
-  ProfileMetrics::LogProfileUpdate(profile->GetPath());
 }
 
 #if BUILDFLAG(IS_WIN)

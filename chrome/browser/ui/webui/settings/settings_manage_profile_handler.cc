@@ -156,8 +156,6 @@ void ManageProfileHandler::HandleSetProfileIconToGaiaAvatar(
     // below.
     ProfileMetrics::LogProfileAvatarSelection(SIZE_MAX);
   }
-
-  ProfileMetrics::LogProfileUpdate(profile_->GetPath());
 }
 
 void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
@@ -179,8 +177,6 @@ void ManageProfileHandler::HandleSetProfileName(const base::Value::List& args) {
   base::TrimWhitespace(new_profile_name, base::TRIM_ALL, &new_profile_name);
   CHECK(!new_profile_name.empty());
   profiles::UpdateProfileName(profile_, new_profile_name);
-
-  ProfileMetrics::LogProfileUpdate(profile_->GetPath());
 }
 
 void ManageProfileHandler::HandleRequestProfileShortcutStatus(

@@ -89320,11 +89320,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Unknown syncing status"/>
 </enum>
 
-<enum name="ProfileType">
-  <int value="0" label="Original (default) profile"/>
-  <int value="1" label="Secondary (user-created) profile"/>
-</enum>
-
 <enum name="ProfileUnconsentedPrimaryAccountType">
   <int value="0" label="Consumer account"/>
   <int value="1" label="Enterprise account"/>
