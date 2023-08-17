@@ -834,6 +834,9 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   CHECK(!client().IsOffTheRecord() || !submitted_form);
   if (!submitted_form) {
     // We always give Autocomplete a chance to save the data.
+    // TODO(crbug.com/1467623): Verify frequency of plus address (or the other
+    // type(s) checked for below, for that matter) slipping through in this code
+    // path.
     single_field_form_fill_router_->OnWillSubmitForm(
         form, submitted_form.get(), client().IsAutocompleteEnabled());
     return;
@@ -861,6 +864,9 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     }
   }
 
+  plus_addresses::PlusAddressService* plus_address_service =
+      client().GetPlusAddressService();
+
   FormData form_for_autocomplete = submitted_form->ToFormData();
   int num_fields_where_context_menu_was_shown = 0;
   for (size_t i = 0; i < submitted_form->field_count(); ++i) {
@@ -868,6 +874,14 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
         CREDIT_CARD_VERIFICATION_CODE) {
       // However, if Autofill has recognized a field as CVC, that shouldn't be
       // saved.
+      form_for_autocomplete.fields[i].should_autocomplete = false;
+    }
+    if (plus_address_service &&
+        plus_address_service->IsPlusAddress(
+            base::UTF16ToUTF8(submitted_form->field(i)->value))) {
+      // Similarly to CVC, any plus addresses needn't be saved to autocomplete.
+      // Note that the feature is experimental, and `plus_address_service` will
+      // be null if the feature is not enabled (it's disabled by default).
       form_for_autocomplete.fields[i].should_autocomplete = false;
     }
 

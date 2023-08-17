@@ -11178,4 +11178,38 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
           "", "", PopupItemId::kCreateNewPlusAddress));
 }
 
+// Test that plus address inputs are forced to !should_autocomplete
+// for `SingleFieldFormFillRouter::OnWillSubmitForm()`.
+TEST_F(BrowserAutofillManagerPlusAddressTest,
+       DontSavePlusAddressInAutocompleteHistory) {
+  const std::string kDummyPlusAddress = "plus+plus@plus.plus";
+  // Save a dummy plus address so that the service is aware of it.
+  plus_addresses::PlusAddressService* plus_address_service =
+      autofill_client_.GetPlusAddressService();
+  plus_address_service->SavePlusAddress(
+      autofill_client_.GetLastCommittedPrimaryMainFrameOrigin(),
+      kDummyPlusAddress);
+  FormData form_seen_by_autocomplete;
+  EXPECT_CALL(*single_field_form_fill_router(),
+              OnWillSubmitForm(_, _, /*is_autocomplete_enabled=*/true))
+      .WillOnce(SaveArg<0>(&form_seen_by_autocomplete));
+
+  FormData form = test::GetFormData(
+      {.fields = {{.role = EMAIL_ADDRESS, .name = u"email"},
+                  {.role = EMAIL_ADDRESS, .name = u"unfilled-email"}}});
+
+  // First, note the field with the empty value.
+  FormsSeen({form});
+  // Then fill in the dummy plus address.
+  form.fields[0].value = base::UTF8ToUTF16(kDummyPlusAddress);
+
+  // Submit the form, capturing it as it is passed to the autocomplete history
+  // manager. The first field should not be autocomplete eligible.
+  FormSubmitted(form);
+
+  EXPECT_EQ(form.fields.size(), form_seen_by_autocomplete.fields.size());
+  EXPECT_FALSE(form_seen_by_autocomplete.fields[0].should_autocomplete);
+  EXPECT_TRUE(form_seen_by_autocomplete.fields[1].should_autocomplete);
+}
+
 }  // namespace autofill
