@@ -4208,6 +4208,14 @@ data/accessibility/html/scrollable-textarea-expected-fuchsia.txt
 data/accessibility/html/scrollable-textarea-expected-uia-win.txt
 data/accessibility/html/scrollable-textarea.html
 data/accessibility/html/scrollable.html
+data/accessibility/html/search-expected-android-external.txt
+data/accessibility/html/search-expected-android.txt
+data/accessibility/html/search-expected-auralinux.txt
+data/accessibility/html/search-expected-blink.txt
+data/accessibility/html/search-expected-fuchsia.txt
+data/accessibility/html/search-expected-mac.txt
+data/accessibility/html/search-expected-win.txt
+data/accessibility/html/search.html
 data/accessibility/html/section-expected-android-external.txt
 data/accessibility/html/section-expected-android.txt
 data/accessibility/html/section-expected-auralinux.txt

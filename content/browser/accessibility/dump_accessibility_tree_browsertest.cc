@@ -2967,6 +2967,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityScript) {
   RunHtmlTest(FILE_PATH_LITERAL("script.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySearch) {
+  RunHtmlTest(FILE_PATH_LITERAL("search.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySection) {
   RunHtmlTest(FILE_PATH_LITERAL("section.html"));
 }
