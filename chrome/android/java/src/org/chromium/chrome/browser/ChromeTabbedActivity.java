@@ -1694,7 +1694,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             if (tabModel.getCount() > 0 && isInOverviewMode() && !isTablet()
                     && !shouldShowOverviewPageOnStart()) {
+                boolean wasStartSurfaceHomepageShowing = mStartSurfaceSupplier.hasValue()
+                        && mStartSurfaceSupplier.get().isHomepageShown();
+
                 mLayoutManager.showLayout(LayoutType.BROWSING, true);
+
+                // If the Start Surface was showing, the ContentView for the currently selected Tab
+                // behind the Start Surface may not yet be attached and therefore the Tab may not
+                // be interactive. Notify CompositorViewHolder that content has changed, which
+                // will cause the Tab's ContentView to be attached. See https://crbug.com/1457603.
+                if (wasStartSurfaceHomepageShowing) mCompositorViewHolder.onContentChanged();
             }
         }
 
