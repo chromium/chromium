@@ -100,25 +100,25 @@
     <div class="start">
       $i18n{googleDriveOfflineStorageTitle}
       <div class="secondary">
-        [[getPinnedSizeLabel_(totalPinnedSize_)]]
+        [[getContentCacheSizeLabel_(contentCacheSize_)]]
       </div>
     </div>
     <div id="cleanUpStorageButtonWrapper">
       <cr-button role="button"
           on-click="onCleanUpStorage_"
-          disabled="[[!shouldEnableCleanUpStorageButton_(bulkPinningStatus_, totalPinnedSize_)]]"
+          disabled="[[!shouldEnableCleanUpStorageButton_(bulkPinningStatus_, contentCacheSize_)]]"
           on-focus="onShowTooltip_"
           on-mouseenter="onShowTooltip_">
         $i18n{googleDriveCleanUpStorageAction}
       </cr-button>
     </div>
     <template is="dom-if"
-        if="[[!shouldEnableCleanUpStorageButton_(bulkPinningStatus_, totalPinnedSize_)]]"
+        if="[[!shouldEnableCleanUpStorageButton_(bulkPinningStatus_, contentCacheSize_)]]"
         restamp>
       <paper-tooltip id="cleanUpStorageTooltip"
           for="cleanUpStorageButtonWrapper"
           fit-to-visible-bounds part="tooltip">
-        [[getCleanUpStorageDisabledTooltipText_(totalPinnedSize_)]]
+        [[getCleanUpStorageDisabledTooltipText_(contentCacheSize_)]]
       </paper-tooltip>
     </template>
   </div>

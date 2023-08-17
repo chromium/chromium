@@ -333,7 +333,7 @@ export class GoogleDriveSettings implements GoogleDriveSettingsInterface {
 
   async assertBulkPinningPinnedSize(expectedPinnedSize: string): Promise<void> {
     assertTrue(
-        this.googleDriveSubpage_?.totalPinnedSize === expectedPinnedSize);
+        this.googleDriveSubpage_?.contentCacheSize === expectedPinnedSize);
   }
 
   async clickClearOfflineFilesAndAssertNewSize(newSize: string): Promise<void> {
@@ -355,8 +355,9 @@ export class GoogleDriveSettings implements GoogleDriveSettingsInterface {
     getConfirmationButton()!.click();
 
     // Wait for the total pinned size to be updated.
-    await assertAsync(
-        () => this.googleDriveSubpage_?.totalPinnedSize === newSize);
+    await assertAsync(() => {
+      return this.googleDriveSubpage_?.contentCacheSize === newSize;
+    });
   }
 }
 

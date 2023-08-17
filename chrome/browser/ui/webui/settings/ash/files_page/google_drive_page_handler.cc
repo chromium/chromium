@@ -95,8 +95,8 @@ void GoogleDrivePageHandler::OnBulkPinProgress(const Progress& progress) {
   NotifyProgress(progress);
 }
 
-void GoogleDrivePageHandler::GetTotalPinnedSize(
-    GetTotalPinnedSizeCallback callback) {
+void GoogleDrivePageHandler::GetContentCacheSize(
+    GetContentCacheSizeCallback callback) {
   if (!GetDriveService()) {
     page_->OnServiceUnavailable();
     std::move(callback).Run(absl::nullopt);
@@ -110,12 +110,12 @@ void GoogleDrivePageHandler::GetTotalPinnedSize(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&drive::util::ComputeDriveFsContentCacheSize,
                      content_cache_path),
-      base::BindOnce(&GoogleDrivePageHandler::OnGetTotalPinnedSize,
+      base::BindOnce(&GoogleDrivePageHandler::OnGetContentCacheSize,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void GoogleDrivePageHandler::OnGetTotalPinnedSize(
-    GetTotalPinnedSizeCallback callback,
+void GoogleDrivePageHandler::OnGetContentCacheSize(
+    GetContentCacheSizeCallback callback,
     int64_t size) {
   if (size < 0) {
     std::move(callback).Run(absl::nullopt);

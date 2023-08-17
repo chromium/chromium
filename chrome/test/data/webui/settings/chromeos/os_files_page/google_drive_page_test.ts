@@ -26,7 +26,8 @@ class GoogleDriveTestBrowserProxy extends TestBrowserProxy implements
   observerRemote: GoogleDrivePageRemote;
 
   constructor() {
-    super(['calculateRequiredSpace', 'getTotalPinnedSize', 'clearPinnedFiles']);
+    super(
+        ['calculateRequiredSpace', 'getContentCacheSize', 'clearPinnedFiles']);
     this.handler = TestMock.fromClass(GoogleDrivePageHandlerRemote);
     this.observer = new GoogleDrivePageCallbackRouter();
     this.observerRemote = this.observer.$.bindNewPipeAndPassRemote();
@@ -175,13 +176,13 @@ suite('<settings-google-drive-subpage>', function() {
     test('free space shows the offline value returned', async function() {
       // Send back a normal pinned size result.
       testBrowserProxy.handler.setResultFor(
-          'getTotalPinnedSize', {size: '100 MB'});
+          'getContentCacheSize', {size: '100 MB'});
       page.onNavigated();
       await assertAsync(
           () => offlineStorageSubtitle.innerText === 'Using 100 MB');
 
       // Mock an empty pinned size (size is there but an empty string).
-      testBrowserProxy.handler.setResultFor('getTotalPinnedSize', {size: ''});
+      testBrowserProxy.handler.setResultFor('getContentCacheSize', {size: ''});
       page.onNavigated();
       await assertAsync(() => offlineStorageSubtitle.innerText === 'Unknown');
     });
@@ -190,7 +191,7 @@ suite('<settings-google-drive-subpage>', function() {
     test('when clear offline files clicked show dialog', async function() {
       page.setPrefValue('drivefs.bulk_pinning_enabled', false);
       testBrowserProxy.handler.setResultFor(
-          'getTotalPinnedSize', {size: '100 MB'});
+          'getContentCacheSize', {size: '100 MB'});
       page.onNavigated();
       await assertAsync(() => !clearOfflineStorageButton.disabled);
 
@@ -435,7 +436,7 @@ suite('<settings-google-drive-subpage>', function() {
         async function() {
           page.setPrefValue('drivefs.bulk_pinning_enabled', false);
           testBrowserProxy.handler.setResultFor(
-              'getTotalPinnedSize', {size: '100 MB'});
+              'getContentCacheSize', {size: '100 MB'});
           page.onNavigated();
           testBrowserProxy.observerRemote.onProgress({
             freeSpace: 'x',
@@ -448,7 +449,7 @@ suite('<settings-google-drive-subpage>', function() {
 
           page.setPrefValue('drivefs.bulk_pinning_enabled', true);
           testBrowserProxy.handler.setResultFor(
-              'getTotalPinnedSize', {size: '100 MB'});
+              'getContentCacheSize', {size: '100 MB'});
           page.onNavigated();
           testBrowserProxy.observerRemote.onProgress({
             freeSpace: 'x',
