@@ -92,8 +92,16 @@ export class ThemeHueSliderDialogElement extends
   }
 
   showAt(anchor: HTMLElement) {
+    // By default, align the dialog below the anchor. If the window is too
+    // small (140px is about the dialog's height with some margin), show it
+    // above the anchor.
+    let anchorAlignmentY = AnchorAlignment.AFTER_END;
+    if (this.getBoundingClientRect().top + 140 >= window.innerHeight) {
+      anchorAlignmentY = AnchorAlignment.BEFORE_START;
+    }
+
     this.$.crActionMenu.showAt(anchor, {
-      anchorAlignmentY: AnchorAlignment.AFTER_END,
+      anchorAlignmentY,
       noOffset: true,
     });
   }
