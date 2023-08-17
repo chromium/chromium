@@ -19,6 +19,7 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -505,6 +506,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "isDiscardExceptionsImprovementsEnabled",
       base::FeatureList::IsEnabled(
           performance_manager::features::kDiscardExceptionsImprovements));
+  html_source->AddBoolean("isPerformanceSettingsPreloadingSubpageEnabled",
+                          base::FeatureList::IsEnabled(
+                              features::kPerformanceSettingsPreloadingSubpage));
 
   html_source->AddBoolean(
       "enablePermissionStorageAccessApi",

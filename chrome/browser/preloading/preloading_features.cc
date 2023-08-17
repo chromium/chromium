@@ -6,7 +6,8 @@
 
 namespace features {
 
-// TODO(1446230): Add feature for moving preloading subpage to
-// performance settings.
+BASE_FEATURE(kPerformanceSettingsPreloadingSubpage,
+             "PerformanceSettingsPreloadingSubpage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
