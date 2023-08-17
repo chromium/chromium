@@ -1,11 +1,6 @@
 # cr23_interactive_ui_tests that are expected to fail on linux bots:
 -All/ExtensionsMenuModelPresenceTest.MenuPresence/0
 -AppMenuFullscreenInteractiveTest.ClosingTab
--FocusRingBrowserTest.Anchor
--FocusRingBrowserTest.Button
--FocusRingBrowserTest.Checkbox
--FocusRingBrowserTest.DarkModeButton
--FocusRingBrowserTest.Radio
 -PermissionIndicatorsInteractiveUITest.CameraAccessAndStopTest
 -PermissionIndicatorsInteractiveUITest.CameraAndMicAccessAndStopTest
 -PermissionsFlowInteractiveUITest.CameraActivityIndicatorTest
