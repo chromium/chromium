@@ -2482,7 +2482,7 @@ BASE_FEATURE(kUseAuthFactors,
 // QuickUnlockStorage to store authenticated UserContext.
 BASE_FEATURE(kUseAuthSessionStorage,
              "UseAuthSessionStorage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the login shelf view is placed in its own widget instead of
 // sharing the shelf widget with other components.
