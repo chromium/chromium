@@ -7543,6 +7543,28 @@
             ]
         }
     ],
+    "IOSAcquisitionOnDesktopPasswordPromo": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledDirectVariant_2023_08_16",
+                    "params": {
+                        "activation": "contextual-direct"
+                    },
+                    "enable_features": [
+                        "IOSPromoPasswordBubble"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAppStoreRatingLoosenedTriggers": [
         {
             "platforms": [
