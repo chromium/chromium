@@ -30,7 +30,7 @@ const char kAdminObjectFormat[] = "/org/chromium/bluetooth/hci%d/admin";
 const char kBatteryManagerObjectFormat[] =
     "/org/chromium/bluetooth/hci%d/battery_manager";
 const char kBluetoothTelephonyObjectFormat[] =
-    "/org/chromium/bluetooth/hci%d/bluetooth_telephony";
+    "/org/chromium/bluetooth/hci%d/telephony";
 const char kGattObjectFormat[] = "/org/chromium/bluetooth/hci%d/gatt";
 const char kManagerObject[] = "/org/chromium/bluetooth/Manager";
 const char kMediaObjectFormat[] = "/org/chromium/bluetooth/hci%d/media";
