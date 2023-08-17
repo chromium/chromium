@@ -27,6 +27,7 @@ namespace drivefs::pinning {
 namespace {
 
 using ash::SpacedClient;
+using base::Seconds;
 using base::SequencedTaskRunner;
 using base::StringPiece;
 using base::TimeDelta;
@@ -896,6 +897,17 @@ void PinManager::OnSearchResult(const Id dir_id,
 
   progress_.time_spent_listing_items = timer_.Elapsed();
 
+  // Output a warning if the time spent listing files is taking longer than 30s
+  // but only log this every 30s after that.
+  if (progress_.time_spent_listing_items > Seconds(30) &&
+      (base::Time::Now() - Seconds(30) >
+       last_long_listing_files_warning_time_)) {
+    LOG(WARNING) << NiceNum << "Listing files is taking a long time, found "
+                 << progress_.listed_items << " items in "
+                 << Quote(progress_.time_spent_listing_items);
+    last_long_listing_files_warning_time_ = base::Time::Now();
+  }
+
   if (items.empty() && error != drive::FILE_ERROR_OK_WITH_MORE_RESULTS) {
     VLOG(1) << "Visited " << dir_id << " " << Quote(dir_path);
 
@@ -906,6 +918,9 @@ void PinManager::OnSearchResult(const Id dir_id,
       return;
     }
 
+    LOG_IF(WARNING, progress_.time_spent_listing_items > Seconds(30))
+        << "Listing files took a long time, found" << progress_.listed_items
+        << " items in " << Quote(progress_.time_spent_listing_items);
     VLOG(1) << "Finished listing files in "
             << Quote(progress_.time_spent_listing_items);
     VLOG(1) << NiceNum << "Total queries: " << progress_.total_queries;

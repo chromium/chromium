@@ -512,6 +512,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Tracks the remaining seconds for the current syncing operation to complete.
   file_manager::Speedometer speedometer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Tracks the last time a LOG was output indicating the listing files stage is
+  // taking a long time. Used to avoid emitting the WARNING log too frequently.
+  base::Time last_long_listing_files_warning_time_;
+
   base::WeakPtrFactory<PinManager> weak_ptr_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Add);
