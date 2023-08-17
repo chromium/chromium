@@ -3442,7 +3442,8 @@ bool IsEducationEnrollmentOobeFlowEnabled() {
 }
 
 bool IsGameDashboardEnabled() {
-  return base::FeatureList::IsEnabled(kGameDashboard);
+  return base::FeatureList::IsEnabled(kGameDashboard) ||
+         base::FeatureList::IsEnabled(kDropdownPanel);
 }
 
 bool IsLockScreenInlineReplyEnabled() {
