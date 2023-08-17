@@ -626,6 +626,10 @@ void PasswordManager::OnUserModifiedNonPasswordField(
   if (base::FeatureList::IsEnabled(
           password_manager::features::kForgotPasswordFormSupport)) {
     FieldInfoManager* field_info_manager = client_->GetFieldInfoManager();
+    // The manager might not exist in incognito.
+    if (!field_info_manager) {
+      return;
+    }
     field_info_manager->AddFieldInfo(
         {driver_id, renderer_id, GetSignonRealm(driver->GetLastCommittedURL()),
          value});
