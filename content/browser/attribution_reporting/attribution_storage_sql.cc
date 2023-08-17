@@ -231,20 +231,6 @@ absl::optional<attribution_reporting::FilterData> DeserializeFilterData(
   return attribution_reporting::FilterData::Create(std::move(filter_values));
 }
 
-absl::optional<proto::AttributionReadOnlySourceData>
-DeserializeReadOnlySourceDataAsProto(sql::Statement& stmt, int col) {
-  std::string str;
-  if (!stmt.ColumnBlobAsString(col, &str)) {
-    return absl::nullopt;
-  }
-
-  proto::AttributionReadOnlySourceData msg;
-  if (!msg.ParseFromString(str)) {
-    return absl::nullopt;
-  }
-  return msg;
-}
-
 std::string SerializeAggregationKeys(
     const attribution_reporting::AggregationKeys& keys) {
   proto::AttributionAggregatableSource msg;
@@ -517,18 +503,20 @@ absl::optional<EventReportWindows> ValidateEventReportWindows(
   return registered_windows;
 }
 
-struct StoredSourceData {
+constexpr int kSourceColumnCount = 19;
+
+}  // namespace
+
+struct AttributionStorageSql::StoredSourceData {
   StoredSource source;
   int num_conversions;
   int num_aggregatable_reports;
 };
 
-constexpr int kSourceColumnCount = 19;
 // Helper to deserialize source rows. See `GetActiveSources()` for the
 // expected ordering of columns used for the input to this function.
-absl::optional<StoredSourceData> ReadSourceFromStatement(
-    sql::Statement& statement,
-    sql::Database& db) {
+absl::optional<AttributionStorageSql::StoredSourceData>
+AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   DCHECK_GE(statement.ColumnCount(), kSourceColumnCount);
 
   int col = 0;
@@ -611,12 +599,21 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
     return absl::nullopt;
   }
 
+  double randomized_response_rate =
+      read_only_source_data_msg->has_randomized_response_rate()
+          ? read_only_source_data_msg->randomized_response_rate()
+          : delegate_->GetRandomizedResponseRate(
+                *event_report_windows, *source_type, max_event_level_reports);
+  if (randomized_response_rate < 0 || randomized_response_rate > 1) {
+    return absl::nullopt;
+  }
+
   static constexpr char kDestinationSitesSql[] =
       "SELECT destination_site "
       "FROM source_destinations "
       "WHERE source_id=?";
   sql::Statement destination_sites_statement(
-      db.GetCachedStatement(SQL_FROM_HERE, kDestinationSitesSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDestinationSitesSql));
   destination_sites_statement.BindInt64(0, *source_id);
 
   std::vector<net::SchemefulSite> destination_sites;
@@ -644,23 +641,24 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
           aggregatable_report_window_time, max_event_level_reports, priority,
           std::move(*filter_data), debug_key, std::move(*aggregation_keys),
           *attribution_logic, *active_state, source_id,
-          aggregatable_budget_consumed),
+          aggregatable_budget_consumed, randomized_response_rate),
       .num_conversions = num_conversions,
       .num_aggregatable_reports = num_aggregatable_reports};
 }
 
-absl::optional<StoredSourceData> ReadSourceToAttribute(
-    sql::Database* db,
-    StoredSource::Id source_id) {
-  sql::Statement statement(db->GetCachedStatement(
+absl::optional<AttributionStorageSql::StoredSourceData>
+AttributionStorageSql::ReadSourceToAttribute(StoredSource::Id source_id) {
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kReadSourceToAttributeSql));
   statement.BindInt64(0, *source_id);
   if (!statement.Step()) {
     return absl::nullopt;
   }
 
-  return ReadSourceFromStatement(statement, *db);
+  return ReadSourceFromStatement(statement);
 }
+
+namespace {
 
 base::FilePath DatabasePath(const base::FilePath& user_data_directory) {
   return user_data_directory.Append(kDatabasePath);
@@ -840,8 +838,13 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   int max_event_level_reports = reg.max_event_level_reports.value_or(
       delegate_->GetDefaultAttributionsPerSource(common_info.source_type()));
 
+  const double randomized_response_rate = delegate_->GetRandomizedResponseRate(
+      *event_report_windows, common_info.source_type(),
+      max_event_level_reports);
+
   double channel_capacity = delegate_->ComputeChannelCapacity(
-      common_info, *event_report_windows, source_time, max_event_level_reports);
+      common_info, *event_report_windows, source_time, max_event_level_reports,
+      randomized_response_rate);
   if (channel_capacity >
       delegate_->GetMaxChannelCapacity(common_info.source_type())) {
     return StoreSourceResult(
@@ -850,7 +853,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   AttributionStorageDelegate::RandomizedResponse randomized_response =
       delegate_->GetRandomizedResponse(common_info, *event_report_windows,
-                                       source_time, max_event_level_reports);
+                                       source_time, max_event_level_reports,
+                                       randomized_response_rate);
   int num_conversions = 0;
   auto attribution_logic = StoredSource::AttributionLogic::kTruthfully;
   bool event_level_active = true;
@@ -899,7 +903,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   statement.BindBlob(14, SerializeAggregationKeys(reg.aggregation_keys));
   statement.BindBlob(15, SerializeFilterData(reg.filter_data));
   statement.BindBlob(16, SerializeReadOnlySourceData(*event_report_windows,
-                                                     max_event_level_reports));
+                                                     max_event_level_reports,
+                                                     randomized_response_rate));
 
   if (!statement.Run()) {
     return StoreSourceResult(StorableSource::Result::kInternalError);
@@ -927,7 +932,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       aggregatable_report_window_time, max_event_level_reports, reg.priority,
       reg.filter_data, reg.debug_key, reg.aggregation_keys, attribution_logic,
       *active_state, source_id,
-      /*aggregatable_budget_consumed=*/0);
+      /*aggregatable_budget_consumed=*/0, randomized_response_rate);
 
   if (!rate_limit_table_.AddRateLimitForSource(&db_, stored_source)) {
     return StoreSourceResult(StorableSource::Result::kInternalError);
@@ -957,7 +962,6 @@ StoreSourceResult AttributionStorageSql::StoreSource(
           delegate_->NewReportID(), /*failed_send_attempts=*/0,
           AttributionReport::EventLevelData(fake_report.trigger_data,
                                             /*priority=*/0,
-                                            /*randomized_trigger_rate=*/0,
                                             stored_source));
       if (!StoreAttributionReport(fake_attribution_report)) {
         return StoreSourceResult(StorableSource::Result::kInternalError);
@@ -1254,7 +1258,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         AggregatableResult::kNoMatchingImpressions);
   }
 
-  source_to_attribute = ReadSourceToAttribute(&db_, *source_id_to_attribute);
+  source_to_attribute = ReadSourceToAttribute(*source_id_to_attribute);
   // This is only possible if there is a corrupt DB.
   if (!source_to_attribute.has_value()) {
     return assemble_report_result(EventLevelResult::kInternalError,
@@ -1580,19 +1584,6 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   const base::Time report_time = delegate_->GetEventLevelReportTime(
       event_report_windows, source.source_time(), attribution_info.time);
 
-  // TODO(apaseltiner): When the real values returned by
-  // `GetRandomizedResponseRate()` are changed for the first time, we must
-  // remove the call to that function here and instead associate each newly
-  // stored source and report with the current configuration. One way to do that
-  // is to permanently store the configuration history in the binary with each
-  // version having a unique ID, and storing that ID in a new column in the
-  // sources and event_level_reports DB tables. This code would then look up the
-  // values for the particular IDs. Because such an approach would entail
-  // complicating the DB schema, we hardcode the values for now and will wait
-  // for the first time the values are changed before complicating the codebase.
-  const double randomized_response_rate = delegate_->GetRandomizedResponseRate(
-      event_report_windows, source_type, source.max_event_level_reports());
-
   // TODO(apaseltiner): Consider informing the manager if the trigger
   // data was out of range for DevTools issue reporting.
   report = AttributionReport(
@@ -1601,7 +1592,7 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       /*failed_send_attempts=*/0,
       AttributionReport::EventLevelData(
           delegate_->SanitizeTriggerData(event_trigger->data, source_type),
-          event_trigger->priority, randomized_response_rate, source));
+          event_trigger->priority, source));
 
   dedup_key = event_trigger->dedup_key;
 
@@ -1717,7 +1708,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 11);
 
   absl::optional<StoredSourceData> source_data =
-      ReadSourceFromStatement(statement, db_);
+      ReadSourceFromStatement(statement);
 
   int col = kSourceColumnCount;
   int64_t report_id = statement.ColumnInt64(col++);
@@ -1770,13 +1761,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
         return absl::nullopt;
       }
 
-      double randomized_response_rate = delegate_->GetRandomizedResponseRate(
-          source_data->source.event_report_windows(),
-          source_data->source.common_info().source_type(),
-          source_data->source.max_event_level_reports());
-
       data = AttributionReport::EventLevelData(trigger_data, priority,
-                                               randomized_response_rate,
                                                std::move(source_data->source));
       break;
     }
@@ -2259,7 +2244,7 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
   std::vector<StoredSource> sources;
   while (statement.Step()) {
     absl::optional<StoredSourceData> source_data =
-        ReadSourceFromStatement(statement, db_);
+        ReadSourceFromStatement(statement);
     if (source_data.has_value()) {
       sources.push_back(std::move(source_data->source));
     }

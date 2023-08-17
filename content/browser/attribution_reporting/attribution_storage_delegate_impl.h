@@ -98,12 +98,14 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       const CommonSourceInfo& source,
       const attribution_reporting::EventReportWindows& event_report_windows,
       base::Time source_time,
-      int max_event_level_reports) override;
+      int max_event_level_reports,
+      double randomized_response_rate) override;
   double ComputeChannelCapacity(
       const CommonSourceInfo& source,
       const attribution_reporting::EventReportWindows& event_report_windows,
       base::Time source_time,
-      int max_event_level_reports) override;
+      int max_event_level_reports,
+      double randomized_response_rate) override;
   base::Time GetExpiryTime(absl::optional<base::TimeDelta> declared_expiry,
                            base::Time source_time,
                            attribution_reporting::mojom::SourceType) override;

@@ -223,7 +223,8 @@ TEST(AttributionStorageDelegateImplTest,
     EXPECT_EQ(AttributionStorageDelegateImpl(AttributionNoiseMode::kNone)
                   .GetRandomizedResponse(
                       source.common_info(), source.event_report_windows(),
-                      source.source_time(), source.max_event_level_reports()),
+                      source.source_time(), source.max_event_level_reports(),
+                      source.randomized_response_rate()),
               absl::nullopt);
   }
 }
@@ -417,10 +418,14 @@ TEST(AttributionStorageDelegateImplTest,
                     /*last_report_window=*/base::Days(30)))
             .BuildStored();
     double value =
-        std::round(AttributionStorageDelegateImpl().ComputeChannelCapacity(
-                       source.common_info(), source.event_report_windows(),
-                       source.source_time(), source.max_event_level_reports()) *
-                   100000.0) /
+        std::round(
+            AttributionStorageDelegateImpl().ComputeChannelCapacity(
+                source.common_info(), source.event_report_windows(),
+                source.source_time(), source.max_event_level_reports(),
+                AttributionStorageDelegateImpl().GetRandomizedResponseRate(
+                    source.event_report_windows(), test_case.source_type,
+                    source.max_event_level_reports())) *
+            100000.0) /
         100000.0;
     EXPECT_EQ(test_case.expected, value);
   }

@@ -170,14 +170,16 @@ class CONTENT_EXPORT AttributionStorageDelegate {
       const CommonSourceInfo& source,
       const attribution_reporting::EventReportWindows& event_report_windows,
       base::Time source_time,
-      int max_event_level_reports) = 0;
+      int max_event_level_reports,
+      double randomized_response_rate) = 0;
 
   // Computes the capacity of the q-ary symmetric channel.
   virtual double ComputeChannelCapacity(
       const CommonSourceInfo& source,
       const attribution_reporting::EventReportWindows& event_report_windows,
       base::Time source_time,
-      int max_event_level_reports) = 0;
+      int max_event_level_reports,
+      double randomized_response_rate) = 0;
 
   virtual base::Time GetExpiryTime(
       absl::optional<base::TimeDelta> declared_expiry,

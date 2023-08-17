@@ -3128,10 +3128,21 @@ TEST_F(AttributionStorageTest,
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               UnorderedElementsAre(
-                  AllOf(ReportSourceIs(SourceTypeIs(SourceType::kNavigation)),
-                        EventLevelDataIs(RandomizedTriggerRateIs(0.1))),
-                  AllOf(ReportSourceIs(SourceTypeIs(SourceType::kEvent)),
-                        EventLevelDataIs(RandomizedTriggerRateIs(0.1)))));
+                  ReportSourceIs(AllOf(SourceTypeIs(SourceType::kNavigation),
+                                       RandomizedResponseRateIs(0.1))),
+                  ReportSourceIs(AllOf(SourceTypeIs(SourceType::kEvent),
+                                       RandomizedResponseRateIs(0.1)))));
+}
+
+TEST_F(AttributionStorageTest, RandomizedResponseRatePerSourceUsed) {
+  delegate()->set_randomized_response_rate(0.1);
+  storage()->StoreSource(SourceBuilder().Build());
+  delegate()->set_randomized_response_rate(0.2);
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      UnorderedElementsAre(ReportSourceIs(RandomizedResponseRateIs(0.1))));
 }
 
 // Will return minimum of next event-level report and next aggregatable report

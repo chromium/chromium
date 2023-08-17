@@ -229,6 +229,12 @@ SourceBuilder& SourceBuilder::SetAggregatableBudgetConsumed(
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetRandomizedResponseRate(
+    double randomized_response_rate) {
+  randomized_response_rate_ = randomized_response_rate;
+  return *this;
+}
+
 SourceBuilder& SourceBuilder::SetAggregatableDedupKeys(
     std::vector<uint64_t> dedup_keys) {
   aggregatable_dedup_keys_ = std::move(dedup_keys);
@@ -294,7 +300,7 @@ StoredSource SourceBuilder::BuildStored() const {
           source_type_ == SourceType::kNavigation ? 3 : 1),
       priority_, filter_data_, debug_key_, aggregation_keys_,
       attribution_logic_, active_state_, source_id_,
-      aggregatable_budget_consumed_);
+      aggregatable_budget_consumed_, randomized_response_rate_);
   source.SetDedupKeys(dedup_keys_);
   source.SetAggregatableDedupKeys(aggregatable_dedup_keys_);
   return source;
@@ -487,11 +493,6 @@ ReportBuilder& ReportBuilder::SetExternalReportId(
   return *this;
 }
 
-ReportBuilder& ReportBuilder::SetRandomizedTriggerRate(double rate) {
-  randomized_trigger_rate_ = rate;
-  return *this;
-}
-
 ReportBuilder& ReportBuilder::SetReportId(AttributionReport::Id id) {
   report_id_ = id;
   return *this;
@@ -528,8 +529,7 @@ AttributionReport ReportBuilder::Build() const {
       attribution_info_, report_id_, report_time_,
       /*initial_report_time=*/report_time_, external_report_id_,
       /*failed_send_attempts=*/0,
-      AttributionReport::EventLevelData(trigger_data_, priority_,
-                                        randomized_trigger_rate_, source_));
+      AttributionReport::EventLevelData(trigger_data_, priority_, source_));
 }
 
 AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
@@ -615,8 +615,8 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
         source.max_event_level_reports(), source.priority(),
         source.filter_data(), source.debug_key(), source.aggregation_keys(),
         source.attribution_logic(), source.active_state(), source.dedup_keys(),
-        source.aggregatable_budget_consumed(),
-        source.aggregatable_dedup_keys());
+        source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
+        source.randomized_response_rate());
   };
   return tie(a) == tie(b);
 }
@@ -632,8 +632,7 @@ bool operator==(const AggregatableHistogramContribution& a,
 bool operator==(const AttributionReport::EventLevelData& a,
                 const AttributionReport::EventLevelData& b) {
   const auto tie = [](const AttributionReport::EventLevelData& data) {
-    return std::make_tuple(data.trigger_data, data.priority,
-                           data.randomized_trigger_rate, data.source);
+    return std::make_tuple(data.trigger_data, data.priority, data.source);
   };
   return tie(a) == tie(b);
 }
@@ -866,7 +865,9 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
       << ",active_state=" << source.active_state()
       << ",source_id=" << *source.source_id()
       << ",aggregatable_budget_consumed="
-      << source.aggregatable_budget_consumed() << ",dedup_keys=[";
+      << source.aggregatable_budget_consumed()
+      << ",randomized_response_rate=" << source.randomized_response_rate()
+      << ",dedup_keys=[";
 
   const char* separator = "";
   for (int64_t dedup_key : source.dedup_keys()) {
@@ -896,7 +897,6 @@ std::ostream& operator<<(std::ostream& out,
                          const AttributionReport::EventLevelData& data) {
   return out << "{trigger_data=" << data.trigger_data
              << ",priority=" << data.priority
-             << ",randomized_trigger_rate=" << data.randomized_trigger_rate
              << ",source=" << data.source << "}";
 }
 

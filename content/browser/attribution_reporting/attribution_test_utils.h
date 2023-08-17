@@ -132,6 +132,8 @@ class SourceBuilder {
   SourceBuilder& SetAggregatableBudgetConsumed(
       int64_t aggregatable_budget_consumed);
 
+  SourceBuilder& SetRandomizedResponseRate(double randomized_response_rate);
+
   SourceBuilder& SetAggregatableDedupKeys(
       std::vector<uint64_t> aggregatable_dedup_keys);
 
@@ -173,6 +175,7 @@ class SourceBuilder {
   std::vector<uint64_t> dedup_keys_;
   attribution_reporting::AggregationKeys aggregation_keys_;
   int64_t aggregatable_budget_consumed_ = 0;
+  double randomized_response_rate_ = 0;
   std::vector<uint64_t> aggregatable_dedup_keys_;
   absl::optional<attribution_reporting::EventReportWindows>
       event_report_windows_ = absl::nullopt;
@@ -296,8 +299,6 @@ class ReportBuilder {
 
   ReportBuilder& SetExternalReportId(base::Uuid external_report_id);
 
-  ReportBuilder& SetRandomizedTriggerRate(double rate);
-
   ReportBuilder& SetReportId(AttributionReport::Id id);
 
   ReportBuilder& SetAggregatableHistogramContributions(
@@ -325,7 +326,6 @@ class ReportBuilder {
   base::Time report_time_;
   int64_t priority_ = 0;
   base::Uuid external_report_id_;
-  double randomized_trigger_rate_ = 0;
   AttributionReport::Id report_id_{0};
   std::vector<AggregatableHistogramContribution> contributions_;
   absl::optional<attribution_reporting::SuitableOrigin>
@@ -486,6 +486,11 @@ MATCHER_P(AggregatableBudgetConsumedIs, matcher, "") {
                             result_listener);
 }
 
+MATCHER_P(RandomizedResponseRateIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.randomized_response_rate(),
+                            result_listener);
+}
+
 MATCHER_P(SourceActiveStateIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.active_state(), result_listener);
 }
@@ -538,11 +543,6 @@ MATCHER_P(TriggerDataIs, matcher, "") {
 
 MATCHER_P(TriggerPriorityIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.priority, result_listener);
-}
-
-MATCHER_P(RandomizedTriggerRateIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.randomized_trigger_rate,
-                            result_listener);
 }
 
 MATCHER_P(ReportURLIs, matcher, "") {

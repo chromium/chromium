@@ -63,7 +63,8 @@ class CONTENT_EXPORT StoredSource {
                AttributionLogic,
                ActiveState,
                Id source_id,
-               int64_t aggregatable_budget_consumed);
+               int64_t aggregatable_budget_consumed,
+               double randomized_response_rate);
 
   ~StoredSource();
 
@@ -124,6 +125,8 @@ class CONTENT_EXPORT StoredSource {
     return aggregatable_dedup_keys_;
   }
 
+  double randomized_response_rate() const { return randomized_response_rate_; }
+
   void SetDedupKeys(std::vector<uint64_t> dedup_keys) {
     dedup_keys_ = std::move(dedup_keys);
   }
@@ -160,6 +163,8 @@ class CONTENT_EXPORT StoredSource {
   std::vector<uint64_t> dedup_keys_;
 
   std::vector<uint64_t> aggregatable_dedup_keys_;
+
+  double randomized_response_rate_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

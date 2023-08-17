@@ -91,9 +91,9 @@ TEST(AttributionReportTest, ReportBody) {
                       SourceBuilder(base::Time::UnixEpoch())
                           .SetSourceEventId(100)
                           .SetSourceType(test_case.source_type)
+                          .SetRandomizedResponseRate(0.2)
                           .BuildStored())
             .SetTriggerData(5)
-            .SetRandomizedTriggerRate(0.2)
             .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
             .Build();
 
@@ -209,9 +209,9 @@ TEST(AttributionReportTest, ReportBody_DebugKeys) {
                       SourceBuilder(base::Time::UnixEpoch())
                           .SetSourceEventId(100)
                           .SetDebugKey(test_case.source_debug_key)
+                          .SetRandomizedResponseRate(0.2)
                           .BuildStored())
             .SetTriggerData(5)
-            .SetRandomizedTriggerRate(0.2)
             .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
             .Build();
 

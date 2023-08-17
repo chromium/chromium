@@ -12,6 +12,7 @@
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
+#include "sql/statement.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -39,7 +40,8 @@ absl::optional<SourceType> DeserializeSourceType(int val) {
 
 std::string SerializeReadOnlySourceData(
     const attribution_reporting::EventReportWindows& event_report_windows,
-    int max_event_level_reports) {
+    int max_event_level_reports,
+    double randomized_response_rate) {
   DCHECK_GE(max_event_level_reports, 0);
   proto::AttributionReadOnlySourceData msg;
 
@@ -51,10 +53,28 @@ std::string SerializeReadOnlySourceData(
     msg.add_event_level_report_window_end_times(time.InMicroseconds());
   }
 
+  if (randomized_response_rate >= 0 && randomized_response_rate <= 1) {
+    msg.set_randomized_response_rate(randomized_response_rate);
+  }
+
   std::string str;
   bool success = msg.SerializeToString(&str);
   DCHECK(success);
   return str;
+}
+
+absl::optional<proto::AttributionReadOnlySourceData>
+DeserializeReadOnlySourceDataAsProto(sql::Statement& stmt, int col) {
+  std::string str;
+  if (!stmt.ColumnBlobAsString(col, &str)) {
+    return absl::nullopt;
+  }
+
+  proto::AttributionReadOnlySourceData msg;
+  if (!msg.ParseFromString(str)) {
+    return absl::nullopt;
+  }
+  return msg;
 }
 
 }  // namespace content

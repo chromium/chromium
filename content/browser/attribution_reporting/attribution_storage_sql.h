@@ -85,6 +85,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   };
 
  private:
+  struct StoredSourceData;
+
   enum class DbStatus {
     // The database has never been created, i.e. there is no database file at
     // all.
@@ -205,6 +207,12 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   absl::optional<AttributionReport> ReadReportFromStatement(sql::Statement&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  absl::optional<StoredSourceData> ReadSourceFromStatement(sql::Statement&)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  absl::optional<StoredSourceData> ReadSourceToAttribute(
+      StoredSource::Id source_id) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   std::vector<AttributionReport> GetReportsInternal(base::Time max_report_time,
                                                     int limit)

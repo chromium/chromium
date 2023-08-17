@@ -47,7 +47,8 @@ StoredSource::StoredSource(
     AttributionLogic attribution_logic,
     ActiveState active_state,
     Id source_id,
-    int64_t aggregatable_budget_consumed)
+    int64_t aggregatable_budget_consumed,
+    double randomized_response_rate)
     : common_info_(std::move(common_info)),
       source_event_id_(source_event_id),
       destination_sites_(std::move(destination_sites)),
@@ -63,9 +64,13 @@ StoredSource::StoredSource(
       attribution_logic_(attribution_logic),
       active_state_(active_state),
       source_id_(source_id),
-      aggregatable_budget_consumed_(aggregatable_budget_consumed) {
+      aggregatable_budget_consumed_(aggregatable_budget_consumed),
+      randomized_response_rate_(randomized_response_rate) {
   DCHECK_GE(aggregatable_budget_consumed_, 0);
   DCHECK_GE(max_event_level_reports_, 0);
+
+  DCHECK_GE(randomized_response_rate_, 0);
+  DCHECK_LE(randomized_response_rate_, 1);
 
   DCHECK(IsExpiryOrReportWindowTimeValid(expiry_time_, source_time_));
   DCHECK(IsExpiryOrReportWindowTimeValid(aggregatable_report_window_time_,

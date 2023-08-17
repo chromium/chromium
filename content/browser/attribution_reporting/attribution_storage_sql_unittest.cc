@@ -30,6 +30,7 @@
 #include "base/uuid.h"
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -42,6 +43,7 @@
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -1735,6 +1737,37 @@ TEST_P(AttributionStorageSqlTest,
       CloseDatabase();
     }
   }
+}
+
+TEST_P(AttributionStorageSqlTest,
+       RandomizedResponseRateNotStored_RecalculatedWhenHandled) {
+  {
+    OpenDatabase();
+    storage()->StoreSource(SourceBuilder().Build());
+    CloseDatabase();
+  }
+
+  {
+    sql::Database raw_db;
+    ASSERT_TRUE(raw_db.Open(db_path()));
+
+    static constexpr char kUpdateSql[] =
+        "UPDATE sources SET read_only_source_data=?";
+    sql::Statement statement(raw_db.GetUniqueStatement(kUpdateSql));
+    // `randomized_response_rate` field will not be set in the serialized proto.
+    statement.BindBlob(
+        0, SerializeReadOnlySourceData(
+               *attribution_reporting::EventReportWindows::Create(
+                   base::Seconds(0), {base::Days(1)}),
+               /*max_event_level_reports=*/3, /*randomized_response_rate=*/-1));
+    ASSERT_TRUE(statement.Run());
+  }
+
+  OpenDatabase();
+
+  delegate()->set_randomized_response_rate(0.2);
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(RandomizedResponseRateIs(0.2)));
 }
 
 TEST_P(AttributionStorageSqlTest, InvalidReportingOrigin_FailsDeserializaiton) {

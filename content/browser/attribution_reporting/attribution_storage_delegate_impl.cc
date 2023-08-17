@@ -237,14 +237,13 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
     const CommonSourceInfo& source,
     const EventReportWindows& event_report_windows,
     base::Time source_time,
-    int max_event_level_reports) {
+    int max_event_level_reports,
+    double randomized_response_rate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault: {
-      double randomized_trigger_rate = GetRandomizedResponseRate(
-          event_report_windows, source.source_type(), max_event_level_reports);
-      return GenerateWithRate(randomized_trigger_rate)
+      return GenerateWithRate(randomized_response_rate)
                  ? absl::make_optional(GetRandomFakeReports(
                        source, event_report_windows, source_time,
                        max_event_level_reports))
@@ -340,9 +339,8 @@ double AttributionStorageDelegateImpl::ComputeChannelCapacity(
     const CommonSourceInfo& source,
     const attribution_reporting::EventReportWindows& event_report_windows,
     base::Time source_time,
-    int max_event_level_reports) {
-  double randomized_trigger_rate = GetRandomizedResponseRate(
-      event_report_windows, source.source_type(), max_event_level_reports);
+    int max_event_level_reports,
+    double randomized_response_rate) {
   const int64_t num_states = GetNumberOfStarsAndBarsSequences(
       /*num_stars=*/max_event_level_reports,
       /*num_bars=*/TriggerDataCardinality(source.source_type()) *
@@ -351,7 +349,7 @@ double AttributionStorageDelegateImpl::ComputeChannelCapacity(
   // This computes the channel capacity of a qary-symmetric channel with error
   // probability p. See more info at
   // https://wicg.github.io/attribution-reporting-api/#computing-channel-capacity
-  double p = randomized_trigger_rate * (num_states - 1) / num_states;
+  double p = randomized_response_rate * (num_states - 1) / num_states;
   return log2(num_states) - binary_entropy(p) - p * log2(num_states - 1);
 }
 
