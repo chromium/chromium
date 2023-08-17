@@ -128,6 +128,9 @@ export {AddSmbShareDialogElement} from 'chrome://resources/ash/common/smb_shares
 export {SmbBrowserProxy, SmbBrowserProxyImpl, SmbMountResult} from 'chrome://resources/ash/common/smb_shares/smb_browser_proxy.js';
 export {AppManagementSupportedLinksItemElement} from 'chrome://resources/cr_components/app_management/supported_links_item.js';
 export {AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://resources/cr_components/app_management/supported_links_overlapping_apps_dialog.js';
+// Tests should use this export of `sanitizerInnerHtml` to prevent repeated
+// TrustedTypes policies from being created.
+export {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.js';
 export {SettingsDateTimeCardElement} from './date_time_page/date_time_card.js';
 export {SettingsDateTimePageElement} from './date_time_page/date_time_page.js';

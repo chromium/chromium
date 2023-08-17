@@ -196,11 +196,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private spellCheckLanguages_: SpellCheckLanguageState[]|undefined;
   private showLastUsedImeShortcutReminder_: boolean;
   private showNextImeShortcutReminder_: boolean;
-  // This is passed into a <keyboard-shortcut-banner> as a `body`, but that
-  // takes in a `string[]`, not `TrustedHTML[]`.
-  // TODO(b/238031866): Update <keyboard-shortcut-banner> to take in
-  // `TrustedHTML[]`, or update this and `getShortcutReminderBody` to be a a
-  // `string[]`.
   private shortcutReminderBody_: TrustedHTML[];
 
   constructor() {

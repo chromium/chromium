@@ -17,7 +17,6 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './keyboard_shortcut_banner.html.js';
@@ -46,7 +45,7 @@ export class KeyboardShortcutBanner extends KeyboardShortcutBannerBase {
   }
 
   header: string;
-  body: string[];
+  body: TrustedHTML[];
 
   private onDismissClick_(): void {
     getAnnouncerInstance().announce(this.i18n('shortcutBannerDismissed'));
@@ -64,10 +63,6 @@ export class KeyboardShortcutBanner extends KeyboardShortcutBannerBase {
       ids.push(this.getIdForIndex_(i));
     }
     return ids.join(' ');
-  }
-
-  private sanitizeInnerHtml_(message: string): TrustedHTML {
-    return sanitizeInnerHtml(message);
   }
 }
 

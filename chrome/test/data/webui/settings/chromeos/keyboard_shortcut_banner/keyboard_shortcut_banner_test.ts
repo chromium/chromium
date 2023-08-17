@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {KeyboardShortcutBanner} from 'chrome://os-settings/lazy_load.js';
+import {KeyboardShortcutBanner, sanitizeInnerHtml} from 'chrome://os-settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -19,19 +19,20 @@ suite('<keyboard-shortcut-banner>', () => {
         'last used input method',
     'Press <kbd><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Space</kbd></kbd> to ' +
         'switch to the next input method',
-  ];
+  ].map((html) => sanitizeInnerHtml(html));
 
   /**
    * Setup the document with a single keyboard-shortcut-banner element with
    * the specified body. The `banner` variable is updated to be the new
    * element.
    */
-  function setupBannerAndDocument(title: string, body: string[]): void {
+  function setupBannerAndDocument(title: string, body: TrustedHTML[]): void {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     banner = document.createElement('keyboard-shortcut-banner');
     banner.setAttribute('header', title);
     banner.setAttribute('body', JSON.stringify(body));
+    banner.body = body;
 
     document.body.appendChild(banner);
     flush();
@@ -97,10 +98,10 @@ suite('<keyboard-shortcut-banner>', () => {
     assertDeepEquals([3], testDescKbds(secondDesc!));
 
     // Test multiple top-level <kbd> elements.
-    const altTabMessage =
+    const altTabMessage = sanitizeInnerHtml(
         'Press and hold <kbd><kbd>Alt</kbd>+<kbd>Shift</kbd></kbd>, tap ' +
         '<kbd><kbd>Tab</kbd></kbd> until you get to the window you want to ' +
-        'open, then release.';
+        'open, then release.');
     setupBannerAndDocument(TITLE, [altTabMessage]);
     const altTabDesc = banner.shadowRoot!.querySelector('#id0');
     assertDeepEquals([2, 1], testDescKbds(altTabDesc!));

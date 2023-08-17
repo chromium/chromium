@@ -112,7 +112,7 @@
   <template is="dom-repeat" items="[[body]]" as="message">
     <div id="[[getIdForIndex_(index)]]" aria-hidden="true"
         class="reminder-message"
-        inner-h-t-m-l="[[sanitizeInnerHtml_(message)]]">
+        inner-h-t-m-l="[[message]]">
     </div>
   </template>
 </div>
