@@ -334,8 +334,12 @@ void DiscardableSharedMemory::Unlock(size_t offset, size_t length) {
   DCHECK_EQ(AlignToPageSize(offset), offset);
   DCHECK_EQ(AlignToPageSize(length), length);
 
+  recordreplay::Assert("[RUN-1877-2481] DiscardableSharedMemory::Unlock A");
+
   // Calls to this function must be synchronized properly.
   DFAKE_SCOPED_LOCK(thread_collision_warner_);
+
+  recordreplay::Assert("[RUN-1877-2481] DiscardableSharedMemory::Unlock B");
 
   // Passing zero for |length| means "everything onward". Note that |length| may
   // still be zero after this calculation, e.g. if |mapped_size_| is zero.
@@ -365,6 +369,9 @@ void DiscardableSharedMemory::Unlock(size_t offset, size_t length) {
   }
   DCHECK_EQ(locked_pages_.size(), locked_page_count_);
 #endif
+
+  recordreplay::Assert("[RUN-1877-2481] DiscardableSharedMemory::Unlock C %zu",
+                       locked_page_count_);
 
   // Early out and avoid releasing the platform independent lock if some pages
   // are still locked.
@@ -487,6 +494,8 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
       0);
   ZX_DCHECK(status == ZX_OK, status) << "zx_vmo_op_range(ZX_VMO_OP_DECOMMIT)";
 #endif  // BUILDFLAG(IS_FUCHSIA)
+
+  recordreplay::Assert("[RUN-1877-2481] DiscardableSharedMemory::Purge C");
 
   last_known_usage_ = Time();
   return true;

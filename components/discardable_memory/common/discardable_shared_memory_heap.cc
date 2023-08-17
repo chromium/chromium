@@ -224,9 +224,15 @@ void DiscardableSharedMemoryHeap::MergeIntoFreeListsClean(
   // First add length of |span| to |num_free_blocks_|.
   num_free_blocks_ += span->length_;
 
+  recordreplay::Assert(
+      "[RUN-1877-2481] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean A");
+
   // Merge with previous span if possible.
   auto prev_it = spans_.find(span->start_ - 1);
   if (prev_it != spans_.end() && IsInFreeList(prev_it->second)) {
+    recordreplay::Assert(
+        "[RUN-1877-2481] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean "
+        "B");
     std::unique_ptr<Span> prev = RemoveFromFreeList(prev_it->second);
     DCHECK_EQ(prev->start_ + prev->length_, span->start_);
     UnregisterSpan(prev.get());
@@ -240,6 +246,9 @@ void DiscardableSharedMemoryHeap::MergeIntoFreeListsClean(
   // Merge with next span if possible.
   auto next_it = spans_.find(span->start_ + span->length_);
   if (next_it != spans_.end() && IsInFreeList(next_it->second)) {
+    recordreplay::Assert(
+        "[RUN-1877-2481] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean "
+        "C");
     std::unique_ptr<Span> next = RemoveFromFreeList(next_it->second);
     DCHECK_EQ(next->start_, span->start_ + span->length_);
     UnregisterSpan(next.get());
@@ -248,6 +257,9 @@ void DiscardableSharedMemoryHeap::MergeIntoFreeListsClean(
     span->length_ += next->length_;
     spans_[span->start_ + span->length_ - 1] = span.get();
   }
+
+  recordreplay::Assert(
+      "[RUN-1877-2481] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean D");
 
   InsertIntoFreeList(std::move(span));
 }
@@ -467,6 +479,11 @@ void DiscardableSharedMemoryHeap::RegisterSpan(Span* span) {
 void DiscardableSharedMemoryHeap::UnregisterSpan(Span* span) {
   DCHECK(spans_.find(span->start_) != spans_.end());
   DCHECK_EQ(spans_[span->start_], span);
+
+  recordreplay::Assert(
+      "[RUN-1877-2481] DiscardableSharedMemoryHeap::UnregisterSpan %d %zu",
+      recordreplay::PointerId(span->shared_memory()), span->length_);
+
   spans_.erase(span->start_);
   if (span->length_ > 1) {
     DCHECK(spans_.find(span->start_ + span->length_ - 1) != spans_.end());
