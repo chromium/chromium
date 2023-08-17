@@ -164,10 +164,13 @@ suite('NewTabPageAppTest', () => {
     });
 
     test('Webstore toast works correctly', async () => {
+      const webstoreToast = $$<CrToastElement>(app, '#webstoreToast')!;
+      assertTrue(webstoreToast.hidden);
+
       callbackRouterRemote.showWebstoreToast();
       await callbackRouterRemote.$.flushForTesting();
 
-      const webstoreToast = $$<CrToastElement>(app, '#webstoreToast')!;
+      assertFalse(webstoreToast.hidden);
       assertTrue(webstoreToast.open);
       assertTrue(!!webstoreToast.firstChild!.textContent);
     });
