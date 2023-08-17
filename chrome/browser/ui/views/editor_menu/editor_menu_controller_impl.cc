@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 
+#include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chromeos::editor_menu {
@@ -35,8 +36,9 @@ void EditorMenuControllerImpl::MaybeShowEditorMenu(
     return;
   }
 
-  // TODO(b/295060733): Create the main view.
   // TODO(b/295059934): Call EditorMediator API to get the parameters.
+  editor_menu_widget_ = EditorMenuView::CreateWidget(anchor_bounds);
+  editor_menu_widget_->ShowInactive();
 }
 
 void EditorMenuControllerImpl::DismissEditorMenu() {

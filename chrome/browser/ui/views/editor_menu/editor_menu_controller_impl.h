@@ -31,6 +31,10 @@ class EditorMenuControllerImpl : public EditorMenuController {
   void DismissEditorMenu() override;
   void UpdateAnchorBounds(const gfx::Rect& anchor_bounds) override;
 
+  views::Widget* editor_menu_widget_for_testing() {
+    return editor_menu_widget_.get();
+  }
+
  private:
   views::UniqueWidgetPtr editor_menu_widget_;
 

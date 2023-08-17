@@ -11,8 +11,24 @@ source_set("editor_menu") {
   ]
 
   deps = [
+    ":views",
     "//base",
     "//chromeos/components/editor_menu/public/cpp",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("views") {
+  sources = [
+    "editor_menu_view.cc",
+    "editor_menu_view.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/aura",
+    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/gfx",
     "//ui/views",
   ]
