@@ -93,6 +93,11 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
       if (chroma_sampling == VideoChromaSampling::k420) {
         decoder_guid = DXVA_ModeHEVC_VLD_Main_Intel;
         decoder_dxgi_format = DXGI_FORMAT_NV12;
+      } else if (chroma_sampling == VideoChromaSampling::k422) {
+        // For D3D11/D3D12, 8b/10b-422 HEVC will share 10b-422 GUID no matter
+        // it is defined by Intel or DXVA spec(as part of Windows SDK).
+        decoder_guid = DXVA_ModeHEVC_VLD_Main422_10_Intel;
+        decoder_dxgi_format = DXGI_FORMAT_Y210;
       } else if (chroma_sampling == VideoChromaSampling::k444) {
         decoder_guid = DXVA_ModeHEVC_VLD_Main444_Intel;
         decoder_dxgi_format = DXGI_FORMAT_AYUV;

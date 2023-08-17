@@ -70,6 +70,7 @@ data/bear-1280x720-hevc-10bit.mp4
 data/bear-1280x720-hevc-12bit-420.mp4
 data/bear-1280x720-hevc-12bit-422.mp4
 data/bear-1280x720-hevc-12bit-444.mp4
+data/bear-1280x720-hevc-8bit-422.mp4
 data/bear-1280x720-hevc-no-audio.mp4
 data/bear-1280x720-hevc.mp4
 data/bear-1280x720-hls-sample-aes.ts

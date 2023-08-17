@@ -1398,6 +1398,12 @@ HEVC video stream with 10-bit main10 profile, generated with
 ffmpeg -i bear-1280x720.mp4 -vcodec hevc -pix_fmt yuv420p10le bear-1280x720-hevc-10bit.mp4
 ```
 
+#### bear-1280x720-hevc-8bit-422.mp4
+HEVC video stream with 8-bit 422 range extension profile, generated with
+```
+ffmpeg -i bear-1280x720.mp4 -vcodec hevc -pix_fmt yuv422p bear-1280x720-hevc-8bit-422.mp4
+```
+
 #### bear-1280x720-hevc-10bit-no-audio.mp4
 HEVC video stream with 10-bit main10 profile, generated with
 ```
