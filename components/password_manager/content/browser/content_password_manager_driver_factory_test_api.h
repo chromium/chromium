@@ -21,8 +21,6 @@ class ContentPasswordManagerDriverFactoryTestApi {
   explicit ContentPasswordManagerDriverFactoryTestApi(
       ContentPasswordManagerDriverFactory* factory);
 
-  void SetAutofillClient(autofill::AutofillClient* autofill_client);
-
  private:
   raw_ptr<ContentPasswordManagerDriverFactory> factory_;
 };

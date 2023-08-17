@@ -20,6 +20,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -155,6 +156,20 @@ class PasswordGenerationInteractiveTest
   TestGenerationPopupObserver observer_;
 };
 
+// A test fixture that injects an `ObservingAutofillClient` into newly created
+// tabs to allow waiting for an Autofill popup to open.
+class PasswordGenerationAutofillPopupInteractiveTest
+    : public PasswordGenerationInteractiveTest {
+ protected:
+  ObservingAutofillClient& autofill_client() {
+    return *autofill_client_injector_[WebContents()];
+  }
+
+ private:
+  autofill::TestAutofillClientInjector<ObservingAutofillClient>
+      autofill_client_injector_;
+};
+
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
                        PopupShownAndPasswordSelected) {
   FocusPasswordField();
@@ -243,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
 // Verify that password generation popup is hidden when popup
 // with generation and password suggestions is visible.
 IN_PROC_BROWSER_TEST_F(
-    PasswordGenerationInteractiveTest,
+    PasswordGenerationAutofillPopupInteractiveTest,
     HidesGenerationPopupWhenShowingPasswordSuggestionsWithGeneration) {
   // Save the credentials since the autofill popup with generation and
   // password suggestion would not appear without stored passwords.
@@ -267,22 +282,11 @@ IN_PROC_BROWSER_TEST_F(
   WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
   EXPECT_TRUE(GenerationPopupShowing());
 
-  password_manager::ContentPasswordManagerDriverFactory* driver_factory =
-      password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
-          WebContents());
-  ObservingAutofillClient::CreateForWebContents(WebContents());
-  ObservingAutofillClient* observing_autofill_client =
-      ObservingAutofillClient::FromWebContents(WebContents());
-  password_manager::ContentPasswordManagerDriver* driver =
-      driver_factory->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
-  driver->GetPasswordAutofillManager()->set_autofill_client_for_test(
-      observing_autofill_client);
-
   // Click on the password field to display the autofill popup.
   content::SimulateMouseClickOrTapElementWithId(WebContents(),
                                                 "password_field");
-  // Make sure the autofill popup would be shown.
-  observing_autofill_client->WaitForAutofillPopup();
+  // Make sure that the autofill popup is showing.
+  autofill_client().WaitForAutofillPopup();
   // Make sure the generation popup is dismissed.
   WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kHidden);
 }

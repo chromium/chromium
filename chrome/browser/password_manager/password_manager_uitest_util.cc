@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
 
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 void TestGenerationPopupObserver::OnPopupShown(
@@ -52,6 +53,10 @@ void TestGenerationPopupObserver::MaybeQuitRunLoop() {
   }
 }
 
+ObservingAutofillClient::ObservingAutofillClient(
+    content::WebContents* web_contents)
+    : autofill::ChromeAutofillClient(web_contents) {}
+
 void ObservingAutofillClient::WaitForAutofillPopup() {
   base::RunLoop run_loop;
   run_loop_ = &run_loop;
@@ -66,5 +71,3 @@ void ObservingAutofillClient::ShowAutofillPopup(
     run_loop_->Quit();
   run_loop_ = nullptr;
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ObservingAutofillClient);

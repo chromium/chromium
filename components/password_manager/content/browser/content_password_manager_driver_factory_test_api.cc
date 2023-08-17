@@ -23,13 +23,4 @@ ContentPasswordManagerDriverFactoryTestApi::
         ContentPasswordManagerDriverFactory* factory)
     : factory_(factory) {}
 
-void ContentPasswordManagerDriverFactoryTestApi::SetAutofillClient(
-    autofill::AutofillClient* autofill_client) {
-  factory_->autofill_client_ = autofill_client;
-  for (auto& [rfh, driver] : factory_->frame_driver_map_) {
-    driver.GetPasswordAutofillManager()->set_autofill_client_for_test(
-        autofill_client);
-  }
-}
-
 }  // namespace password_manager

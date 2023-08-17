@@ -44,6 +44,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom-test-utils.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -139,6 +140,20 @@ class PasswordManagerBrowserTest : public PasswordManagerBrowserTestBase {
   }
 
   ~PasswordManagerBrowserTest() override = default;
+};
+
+// A test fixture that injects an `ObservingAutofillClient` into newly created
+// tabs to allow waiting for an Autofill popup to open.
+class PasswordManagerAutofillPopupBrowserTest
+    : public PasswordManagerBrowserTest {
+ protected:
+  ObservingAutofillClient& autofill_client() {
+    return *autofill_client_injector_[WebContents()];
+  }
+
+ private:
+  autofill::TestAutofillClientInjector<ObservingAutofillClient>
+      autofill_client_injector_;
 };
 
 // This fixture enables communication to the Autofill crowdsourcing server, but
@@ -2017,7 +2032,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PasswordManagerAutofillPopupBrowserTest,
                        InFrameNavigationDoesNotClearPopupState) {
   password_manager::PasswordStoreInterface* password_store =
       PasswordStoreFactory::GetForProfile(browser()->profile(),
@@ -2030,21 +2045,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   password_store->AddLogin(signin_form);
 
   NavigateToFile("/password/password_form.html");
-
-  // Mock out the AutofillClient so we know how long to wait. Unfortunately
-  // there isn't otherwise a good event to wait on to verify that the popup
-  // would have been shown.
-  password_manager::ContentPasswordManagerDriverFactory* driver_factory =
-      password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
-          WebContents());
-  ObservingAutofillClient::CreateForWebContents(WebContents());
-  ObservingAutofillClient* observing_autofill_client =
-      ObservingAutofillClient::FromWebContents(WebContents());
-  password_manager::ContentPasswordManagerDriver* driver =
-      driver_factory->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
-  driver->GetPasswordAutofillManager()->set_autofill_client_for_test(
-      observing_autofill_client);
-
   // Trigger in page navigation.
   std::string in_page_navigate = "location.hash = '#blah';";
   ASSERT_TRUE(content::ExecJs(RenderFrameHost(), in_page_navigate,
@@ -2053,8 +2053,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Click on the username field to display the popup.
   content::SimulateMouseClickOrTapElementWithId(WebContents(),
                                                 "username_field");
-  // Make sure the popup would be shown.
-  observing_autofill_client->WaitForAutofillPopup();
+  // Make sure that the popup is showing.
+  autofill_client().WaitForAutofillPopup();
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ChangePwdFormBubbleShown) {
