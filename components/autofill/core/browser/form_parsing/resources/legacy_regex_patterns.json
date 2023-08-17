@@ -589,7 +589,7 @@
     ],
     "pt": [
       {
-        "positive_pattern": "complemento|addrcomplement",
+        "positive_pattern": "addrcomplement",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -1230,6 +1230,17 @@
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
         "match_field_input_types": ["TEXT", "SELECT", "SEARCH"]
+      }
+    ]
+  },
+  "OVERFLOW": {
+    "pt": [
+      {
+        "positive_pattern": "complemento",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
       }
     ]
   },
