@@ -68,6 +68,14 @@ class ImeService : public mojom::ImeService,
                                                const char* param_name) override;
 
  private:
+  // ImeService only allows at most one Mojo connection, to either the "decoder"
+  // engine or the "system" engine.
+  enum class Mode {
+    kNotConnected,
+    kConnectedToDecoderEngine,
+    kConnectedToSystemEngine,
+  };
+
   // mojom::ImeService overrides:
   void SetPlatformAccessProvider(
       mojo::PendingRemote<mojom::PlatformAccessProvider> provider) override;
@@ -108,6 +116,7 @@ class ImeService : public mojom::ImeService,
   // To be called before attempting to initialise a new backend connection, to
   // ensure there is one and only one such connection at any point in time.
   void ResetAllBackendConnections();
+  void OnDisconnect();
 
   mojo::Receiver<mojom::ImeService> receiver_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
@@ -120,6 +129,7 @@ class ImeService : public mojom::ImeService,
   //     system_engine_      --> mojo_mode_shared_lib_engine_
   std::unique_ptr<DecoderEngine> decoder_engine_;
   std::unique_ptr<SystemEngine> system_engine_;
+  Mode mode_ = Mode::kNotConnected;
 
   // Platform delegate for access to privilege resources.
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;

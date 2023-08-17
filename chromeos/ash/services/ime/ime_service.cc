@@ -56,7 +56,10 @@ ImeService::ImeService(
     : receiver_(this, std::move(receiver)),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       ime_shared_library_(ime_shared_library_wrapper),
-      field_trial_params_retriever_(std::move(field_trial_params_retriever)) {}
+      field_trial_params_retriever_(std::move(field_trial_params_retriever)) {
+  manager_receivers_.set_disconnect_handler(
+      base::BindRepeating(&ImeService::OnDisconnect, base::Unretained(this)));
+}
 
 ImeService::~ImeService() = default;
 
@@ -90,12 +93,13 @@ void ImeService::ConnectToImeEngine(
   //
   // The extension will only use ConnectToImeEngine, and NativeInputMethodEngine
   // will only use ConnectToInputMethod.
-  if (system_engine_ && system_engine_->IsConnected()) {
+  if (mode_ == Mode::kConnectedToSystemEngine) {
     std::move(callback).Run(/*bound=*/false);
     return;
   }
 
   ResetAllBackendConnections();
+  mode_ = Mode::kConnectedToDecoderEngine;
 
   decoder_engine_ = std::make_unique<DecoderEngine>(
       this, ime_shared_library_->MaybeLoadThenReturnEntryPoints());
@@ -108,6 +112,7 @@ void ImeService::InitializeConnectionFactory(
     mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
     InitializeConnectionFactoryCallback callback) {
   ResetAllBackendConnections();
+  mode_ = Mode::kConnectedToSystemEngine;
 
   system_engine_ = std::make_unique<SystemEngine>(
       this, ime_shared_library_->MaybeLoadThenReturnEntryPoints());
@@ -221,6 +226,10 @@ void ImeService::SimpleDownloadFinishedV2(SimpleDownloadCallbackV2 callback,
     callback(SIMPLE_DOWNLOAD_STATUS_OK, url_str.c_str(),
              ResolveDownloadPath(file).c_str());
   }
+}
+
+void ImeService::OnDisconnect() {
+  mode_ = Mode::kNotConnected;
 }
 
 const MojoSystemThunks* ImeService::GetMojoSystemThunks() {
