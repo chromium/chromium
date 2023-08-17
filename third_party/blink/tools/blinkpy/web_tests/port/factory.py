@@ -676,6 +676,11 @@ def add_android_options_group(parser: argparse.ArgumentParser):
         help=
         ('Specify path under src/out/ of the WebView provider APK to install. '
          'The default value is apks/SystemWebView.apk.'))
+    group.add_argument('--additional-apk',
+                       type=os.path.abspath,
+                       action='append',
+                       default=[],
+                       help='Path to additional APKs to install')
     group.add_argument('--no-install',
                        action='store_true',
                        help=('Do not install packages to devices. '

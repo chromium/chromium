@@ -313,6 +313,8 @@ class ChromeAndroidBase(Product):
         it is crucial that it is thread safe.
         """
         with contextlib.ExitStack() as exit_stack:
+            for apk in self._options.additional_apk:
+                exit_stack.enter_context(self._install_apk(device, apk))
             exit_stack.enter_context(
                 self._install_apk(device, self.browser_apk))
             logging.info('Provisioned device (serial: %s)', device.serial)
@@ -357,7 +359,9 @@ class WebView(ChromeAndroidBase):
 
     @contextlib.contextmanager
     def _provision_device(self, device):
-        with self._install_webview(device), super()._provision_device(device):
+        # WebView installation must execute after device provisioning
+        # as the installation might depends on additional packages.
+        with super()._provision_device(device), self._install_webview(device):
             yield
 
 
