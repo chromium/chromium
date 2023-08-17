@@ -67,7 +67,6 @@ missing_new_fields,ash/ambient/ambient_weather_controller.cc
 missing_new_fields,ash/assistant/assistant_controller_impl.cc
 missing_new_fields,ash/quick_pair/repository/fast_pair/device_metadata_fetcher.cc
 missing_new_fields,ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.cc
-missing_new_fields,ash/webui/os_feedback_ui/backend/help_content_provider.cc
 missing_new_fields,ash/webui/projector_app/projector_xhr_sender.cc
 missing_new_fields,chrome/browser/apps/app_preload_service/app_preload_server_connector.cc
 missing_new_fields,chrome/browser/ash/app_list/search/files/item_suggest_cache.cc
@@ -189,7 +188,6 @@ missing_new_fields,components/download/internal/common/parallel_download_job.cc
 missing_new_fields,components/favicon/core/history_ui_favicon_request_handler_impl.cc
 missing_new_fields,components/feed/core/v2/feed_network_impl.cc
 missing_new_fields,components/feed/core/v2/image_fetcher.cc
-missing_new_fields,components/feedback/feedback_uploader.cc
 missing_new_fields,components/invalidation/impl/per_user_topic_subscription_request.cc
 missing_new_fields,components/media_router/common/providers/cast/channel/cast_socket.cc
 missing_new_fields,components/metrics/net/net_metrics_log_uploader.cc

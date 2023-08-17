@@ -73,6 +73,15 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           data:
             "The free-form text that user has entered."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "cros-feedback-app@google.com"
+            }
+          }
+          user_data {
+            type: ARBITRARY_DATA
+          }
+          last_reviewed: "2023-08-14"
         }
         policy {
           cookies_allowed: NO
