@@ -217,10 +217,37 @@ void OsDiagnosticsRunBluetoothDiscoveryRoutineFunction::RunIfAllowed() {
   GetRemoteService()->RunBluetoothDiscoveryRoutine(GetOnResult());
 }
 
+// OsDiagnosticsRunBluetoothPairingRoutineFunction -----------------------------
+
+void OsDiagnosticsRunBluetoothPairingRoutineFunction::RunIfAllowed() {
+  // TODO(b/294790547): Add permission check here.
+
+  const auto params = GetParams<cx_diag::RunBluetoothPairingRoutine::Params>();
+  if (!params) {
+    return;
+  }
+  GetRemoteService()->RunBluetoothPairingRoutine(params->request.peripheral_id,
+                                                 GetOnResult());
+}
+
 // OsDiagnosticsRunBluetoothPowerRoutineFunction -------------------------------
 
 void OsDiagnosticsRunBluetoothPowerRoutineFunction::RunIfAllowed() {
   GetRemoteService()->RunBluetoothPowerRoutine(GetOnResult());
+}
+
+// OsDiagnosticsRunBluetoothScanningRoutineFunction ----------------------------
+
+void OsDiagnosticsRunBluetoothScanningRoutineFunction::RunIfAllowed() {
+  // TODO(b/294790547): Add permission check here.
+
+  const auto params = GetParams<cx_diag::RunBluetoothScanningRoutine::Params>();
+  if (!params) {
+    return;
+  }
+
+  GetRemoteService()->RunBluetoothScanningRoutine(
+      params->request.length_seconds, GetOnResult());
 }
 
 // OsDiagnosticsRunCpuCacheRoutineFunction -------------------------------------

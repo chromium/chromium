@@ -37177,6 +37177,8 @@ Called by update_extension_histograms.py.-->
   <int value="1815" label="IMAGELOADERPRIVATE_GETPDFTHUMBNAIL"/>
   <int value="1816" label="ACCESSIBILITYSERVICEPRIVATE_SPEAKSELECTEDTEXT"/>
   <int value="1817" label="USERSCRIPTS_REGISTER"/>
+  <int value="1818" label="OS_DIAGNOSTICS_RUNBLUETOOTHSCANNINGROUTINE"/>
+  <int value="1819" label="OS_DIAGNOSTICS_RUNBLUETOOTHPAIRINGROUTINE"/>
 </enum>
 
 <enum name="ExtensionIconState">

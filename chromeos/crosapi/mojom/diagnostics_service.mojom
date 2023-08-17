@@ -18,8 +18,8 @@ import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 
 // Interface for exposing diagnostics service. Implemented in ash-chrome.
 //
-// Next version: 7
-// Next ID: 29
+// Next version: 8
+// Next ID: 31
 [Stable, Uuid="14bc6194-c059-4048-9bea-ca6823eeda82",
 RenamedFrom="ash.health.mojom.DiagnosticsService"]
 interface DiagnosticsService {
@@ -451,12 +451,45 @@ interface DiagnosticsService {
   //                routine.
   [MinVersion=6] RunBluetoothDiscoveryRoutine@28()
       => (DiagnosticsRunRoutineResponse response);
+
+  // Requests that the BluetoothScanning routine is created and started on the
+  // platform. This routine checks whether the Bluetooth adapter can scan nearby
+  // Bluetooth peripherals and collect peripherals' information.
+  // The availability of this routine can be determined by checking that
+  // kBluetoothScanning is returned by GetAvailableRoutines.
+  //
+  // The request:
+  // * |length_seconds| - length of time, in seconds, to run the Bluetooth
+  //                      scanning routine for. This parameter needs to be
+  //                      strictly greater than zero.
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=7] RunBluetoothScanningRoutine@29(uint32 length_seconds)
+      => (DiagnosticsRunRoutineResponse response);
+
+  // Requests that the BluetoothPairing routine is created and started on the
+  // platform. This routine checks whether the adapter can find and pair with a
+  // device with a specific peripheral id.
+  // The availability of this routine can be determined by checking that
+  // kBluetoothPairing is returned by GetAvailableRoutines.
+  //
+  // The request:
+  // * |peripheral_id| - the unique id of the target peripheral device to test.
+  //                     This id can be obtained from the output of the
+  //                     Bluetooth scanning routine.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=7] RunBluetoothPairingRoutine@30(string peripheral_id)
+      => (DiagnosticsRunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// Next version: 6
-// Next ID: 29
+// Next version: 7
+// Next ID: 31
 [Stable, Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineEnum"]
 enum DiagnosticsRoutineEnum {
   [Default] kUnknown = 15,
@@ -488,6 +521,8 @@ enum DiagnosticsRoutineEnum {
   [MinVersion=3] kPowerButton = 26,
   [MinVersion=4] kAudioDriver = 27,
   [MinVersion=5] kBluetoothDiscovery = 28,
+  [MinVersion=6] kBluetoothScanning = 29,
+  [MinVersion=6] kBluetoothPairing = 30,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.

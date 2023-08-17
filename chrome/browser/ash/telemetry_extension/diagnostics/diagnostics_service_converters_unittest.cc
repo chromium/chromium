@@ -88,6 +88,10 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineEnum) {
             crosapi::DiagnosticsRoutineEnum::kAudioDriver);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kBluetoothDiscovery),
             crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kBluetoothScanning),
+            crosapi::DiagnosticsRoutineEnum::kBluetoothScanning);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kBluetoothPairing),
+            crosapi::DiagnosticsRoutineEnum::kBluetoothPairing);
 
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kArcHttp),
             absl::nullopt);

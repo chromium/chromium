@@ -149,12 +149,34 @@ class OsDiagnosticsRunBluetoothDiscoveryRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunBluetoothPairingRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runBluetoothPairingRoutine",
+                             OS_DIAGNOSTICS_RUNBLUETOOTHPAIRINGROUTINE)
+ private:
+  ~OsDiagnosticsRunBluetoothPairingRoutineFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunBluetoothPowerRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runBluetoothPowerRoutine",
                              OS_DIAGNOSTICS_RUNBLUETOOTHPOWERROUTINE)
  private:
   ~OsDiagnosticsRunBluetoothPowerRoutineFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
+class OsDiagnosticsRunBluetoothScanningRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runBluetoothScanningRoutine",
+                             OS_DIAGNOSTICS_RUNBLUETOOTHSCANNINGROUTINE)
+ private:
+  ~OsDiagnosticsRunBluetoothScanningRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;

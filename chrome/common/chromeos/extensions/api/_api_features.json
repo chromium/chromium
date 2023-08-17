@@ -37,6 +37,23 @@
     "channel": "stable",
     "feature_flag": "TelemetryExtensionPendingApprovalApi"
   },
+  "os.diagnostics.runBluetoothPairingRoutine": {
+    "blocklist": [
+      "E3303523BFFD1014D4A9D480D692C8B22BE6176B" // http://crbug.com/1255653
+    ],
+    "dependencies": [
+      "permission:os.diagnostics.runBluetoothPairingRoutine"
+    ],
+    "contexts": [
+      "blessed_extension"
+    ],
+    "platforms": [
+      "chromeos",
+      "lacros"
+    ],
+    "channel": "stable",
+    "feature_flag": "TelemetryExtensionPendingApprovalApi" // TODO(b/294790547): Don't remove it before adding permission check.
+  },
   "os.diagnostics.runBluetoothPowerRoutine": {
     "blocklist": [
       "E3303523BFFD1014D4A9D480D692C8B22BE6176B" // http://crbug.com/1255653
@@ -52,6 +69,23 @@
       "lacros"
     ],
     "channel": "stable"
+  },
+  "os.diagnostics.runBluetoothScanningRoutine": {
+    "blocklist": [
+      "E3303523BFFD1014D4A9D480D692C8B22BE6176B" // http://crbug.com/1255653
+    ],
+    "dependencies": [
+      "permission:os.diagnostics.runBluetoothScanningRoutine"
+    ],
+    "contexts": [
+      "blessed_extension"
+    ],
+    "platforms": [
+      "chromeos",
+      "lacros"
+    ],
+    "channel": "stable",
+    "feature_flag": "TelemetryExtensionPendingApprovalApi" // TODO(b/294790547): Don't remove it before adding permission check.
   },
   "os.events": {
     "dependencies": [

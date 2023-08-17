@@ -135,6 +135,10 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
       return crosapi::mojom::DiagnosticsRoutineEnum::kAudioDriver;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothDiscovery:
       return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothDiscovery;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothScanning:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothScanning;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPairing:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothPairing;
     default:
       return absl::nullopt;
   }

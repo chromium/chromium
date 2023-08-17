@@ -263,11 +263,37 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function runBluetoothPairingRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runBluetoothPairingRoutine(
+              {
+                peripheral_id: "HEALTHD_TEST_ID"
+              }
+            ),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runBluetoothPairingRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function runBluetoothPowerRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runBluetoothPowerRoutine(),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.runBluetoothPowerRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function runBluetoothScanningRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runBluetoothScanningRoutine(
+              {
+                length_seconds: 10
+              }
+            ),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runBluetoothScanningRoutine. ' +
             '%s'
         );
         chrome.test.succeed();

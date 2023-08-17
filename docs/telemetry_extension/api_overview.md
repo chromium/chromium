@@ -41,6 +41,8 @@ and **events**.
 | power_button |
 | audio_driver |
 | bluetooth_discovery |
+| bluetooth_scanning |
+| bluetooth_pairing |
 
 ### Enum RoutineStatus
 | Property Name |
@@ -171,7 +173,9 @@ and **events**.
 | runBatteryDischargeRoutine | (params: RunBatteryDischargeRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M96 |
 | runBatteryChargeRoutine | (params: RunBatteryChargeRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M96 |
 | runBluetoothDiscoveryRoutine | () => Promise<Routine\> | `os.diagnostics` | M118 |
+| runBluetoothPairingRoutine | () => Promise<Routine\> | `os.diagnostics` | M118 |
 | runBluetoothPowerRoutine | () => Promise<Routine\> | `os.diagnostics` | M117 |
+| runBluetoothScanningRoutine | () => Promise<Routine\> | `os.diagnostics` | M118 |
 | runCpuCacheRoutine | (params: RunCpuRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M96 |
 | runCpuFloatingPointAccuracyRoutine | (params: RunCpuRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M99 |
 | runCpuPrimeSearchRoutine | (params: RunCpuRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M99 |

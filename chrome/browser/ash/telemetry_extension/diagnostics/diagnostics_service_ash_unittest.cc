@@ -309,6 +309,26 @@ TEST_F(DiagnosticsServiceAshTest, RunBluetoothDiscoveryRoutine) {
       result, cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothDiscovery);
 }
 
+TEST_F(DiagnosticsServiceAshTest, RunBluetoothPairingRoutine) {
+  // Configure FakeCrosHealthd.
+  SetSuccessfulRoutineResponse();
+  base::Value::Dict expected_passed_parameters;
+  expected_passed_parameters.Set("peripheral_id", "HEALTHD_TEST_ID");
+  cros_healthd::FakeCrosHealthd::Get()
+      ->SetExpectedLastPassedDiagnosticsParametersForTesting(
+          std::move(expected_passed_parameters));
+
+  base::test::TestFuture<crosapi::mojom::DiagnosticsRunRoutineResponsePtr>
+      future;
+  diagnostics_service()->RunBluetoothPairingRoutine("HEALTHD_TEST_ID",
+                                                    future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  ValidateResponse(
+      result, cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPairing);
+}
+
 TEST_F(DiagnosticsServiceAshTest, RunBluetoothPowerRoutine) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();
@@ -321,6 +341,25 @@ TEST_F(DiagnosticsServiceAshTest, RunBluetoothPowerRoutine) {
   const auto& result = future.Get();
   ValidateResponse(result,
                    cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPower);
+}
+
+TEST_F(DiagnosticsServiceAshTest, RunBluetoothScanningRoutine) {
+  // Configure FakeCrosHealthd.
+  SetSuccessfulRoutineResponse();
+  base::Value::Dict expected_passed_parameters;
+  expected_passed_parameters.Set("length_seconds", 100);
+  cros_healthd::FakeCrosHealthd::Get()
+      ->SetExpectedLastPassedDiagnosticsParametersForTesting(
+          std::move(expected_passed_parameters));
+
+  base::test::TestFuture<crosapi::mojom::DiagnosticsRunRoutineResponsePtr>
+      future;
+  diagnostics_service()->RunBluetoothScanningRoutine(100, future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  ValidateResponse(
+      result, cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothScanning);
 }
 
 TEST_F(DiagnosticsServiceAshTest, RunCpuCacheRoutineSuccess) {

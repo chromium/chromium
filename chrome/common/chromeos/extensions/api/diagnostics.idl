@@ -40,7 +40,9 @@ namespace os.diagnostics {
     ufs_lifetime,
     power_button,
     audio_driver,
-    bluetooth_discovery
+    bluetooth_discovery,
+    bluetooth_scanning,
+    bluetooth_pairing
   };
 
   enum RoutineStatus {
@@ -120,6 +122,14 @@ namespace os.diagnostics {
     long maximum_discharge_percent_allowed;
   };
 
+  dictionary RunBluetoothPairingRoutineRequest {
+    DOMString peripheral_id;
+  };
+
+  dictionary RunBluetoothScanningRoutineRequest {
+    long length_seconds;
+  };
+
   dictionary RunCpuRoutineRequest {
     long length_seconds;
   };
@@ -184,7 +194,13 @@ namespace os.diagnostics {
 
     [supportsPromises] static void runBluetoothDiscoveryRoutine(RunRoutineCallback callback);
 
+    [supportsPromises] static void runBluetoothPairingRoutine(RunBluetoothPairingRoutineRequest request,
+                                                              RunRoutineCallback callback);
+
     [supportsPromises] static void runBluetoothPowerRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runBluetoothScanningRoutine(RunBluetoothScanningRoutineRequest request,
+                                                               RunRoutineCallback callback);
 
     [supportsPromises] static void runCpuCacheRoutine(RunCpuRoutineRequest request,
                                                       RunRoutineCallback callback);
