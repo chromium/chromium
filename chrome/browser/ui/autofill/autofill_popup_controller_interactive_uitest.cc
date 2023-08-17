@@ -188,15 +188,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 
 // This test checks that the browser doesn't crash if the delegate is deleted
 // before the popup is hidden.
-#if BUILDFLAG(IS_MAC)
-// Flaky on Mac 10.9 in debug mode. http://crbug.com/710439
-#define MAYBE_DeleteDelegateBeforePopupHidden \
-  DISABLED_DeleteDelegateBeforePopupHidden
-#else
-#define MAYBE_DeleteDelegateBeforePopupHidden DeleteDelegateBeforePopupHidden
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
-                       MAYBE_DeleteDelegateBeforePopupHidden) {
+                       DeleteDelegateBeforePopupHidden) {
   GenerateTestAutofillPopup(&autofill_external_delegate());
 
   // Delete the external delegate here so that is gets deleted before popup is
