@@ -4,7 +4,6 @@
 
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -22,7 +21,7 @@ class KeyboardReplacingSurfaceVisibilityControllerImplTest
     content::RenderViewHostTestHarness::SetUp();
     password_mananger_driver_ =
         std::make_unique<password_manager::ContentPasswordManagerDriver>(
-            main_rfh(), &client_, &test_autofill_client_);
+            main_rfh(), &client_);
   }
 
   base::WeakPtr<password_manager::ContentPasswordManagerDriver>
@@ -50,7 +49,6 @@ class KeyboardReplacingSurfaceVisibilityControllerImplTest
   std::unique_ptr<password_manager::ContentPasswordManagerDriver>
       password_mananger_driver_;
   password_manager::StubPasswordManagerClient client_;
-  autofill::TestAutofillClient test_autofill_client_;
 };
 
 TEST_F(KeyboardReplacingSurfaceVisibilityControllerImplTest, Visibility) {

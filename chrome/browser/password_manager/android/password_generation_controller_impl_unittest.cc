@@ -156,10 +156,10 @@ class PasswordGenerationControllerTest
         .WillByDefault(Return(password_manager_.get()));
 
     password_manager_driver_ = std::make_unique<ContentPasswordManagerDriver>(
-        main_rfh(), test_pwd_manager_client_.get(), &test_autofill_client_);
+        main_rfh(), test_pwd_manager_client_.get());
     another_password_manager_driver_ =
         std::make_unique<ContentPasswordManagerDriver>(
-            main_rfh(), test_pwd_manager_client_.get(), &test_autofill_client_);
+            main_rfh(), test_pwd_manager_client_.get());
 
     // TODO(crbug.com/969051): Remove once kAutofillKeyboardAccessory is
     // enabled.

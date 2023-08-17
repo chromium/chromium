@@ -73,7 +73,6 @@ class ContentPasswordManagerDriverFactory
       frame_driver_map_;
 
   const raw_ptr<PasswordManagerClient> password_client_;
-  raw_ptr<autofill::AutofillClient> autofill_client_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

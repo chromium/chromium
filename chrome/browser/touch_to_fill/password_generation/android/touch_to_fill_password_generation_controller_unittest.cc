@@ -11,7 +11,6 @@
 #include "chrome/browser/touch_to_fill/password_generation/android/mock_touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "content/public/test/text_input_test_utils.h"
@@ -26,14 +25,14 @@ class TouchToFillPasswordGenerationControllerTest
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    password_mananger_driver_ =
+    password_manager_driver_ =
         std::make_unique<password_manager::ContentPasswordManagerDriver>(
-            main_rfh(), &client_, &test_autofill_client_);
+            main_rfh(), &client_);
   }
 
   base::WeakPtr<password_manager::ContentPasswordManagerDriver>
   password_mananger_driver() {
-    return base::AsWeakPtr(password_mananger_driver_.get());
+    return base::AsWeakPtr(password_manager_driver_.get());
   }
 
   base::MockCallback<base::OnceCallback<void()>> on_dismissed_callback_;
@@ -41,9 +40,8 @@ class TouchToFillPasswordGenerationControllerTest
 
  private:
   std::unique_ptr<password_manager::ContentPasswordManagerDriver>
-      password_mananger_driver_;
+      password_manager_driver_;
   password_manager::StubPasswordManagerClient client_;
-  autofill::TestAutofillClient test_autofill_client_;
 };
 
 TEST_F(TouchToFillPasswordGenerationControllerTest,

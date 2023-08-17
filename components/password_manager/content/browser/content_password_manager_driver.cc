@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/form_data.h"
@@ -70,12 +71,15 @@ bool HasValidURL(content::RenderFrameHost* render_frame_host) {
 
 ContentPasswordManagerDriver::ContentPasswordManagerDriver(
     content::RenderFrameHost* render_frame_host,
-    PasswordManagerClient* client,
-    autofill::AutofillClient* autofill_client)
+    PasswordManagerClient* client)
     : render_frame_host_(render_frame_host),
       client_(client),
       password_generation_helper_(client, this),
-      password_autofill_manager_(this, autofill_client, client),
+      password_autofill_manager_(
+          this,
+          autofill::ContentAutofillClient::FromWebContents(
+              content::WebContents::FromRenderFrameHost(render_frame_host)),
+          client),
       password_manager_receiver_(this) {
   static unsigned next_free_id = 0;
   id_ = next_free_id++;

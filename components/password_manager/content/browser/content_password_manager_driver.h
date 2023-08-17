@@ -37,8 +37,7 @@ class ContentPasswordManagerDriver
       public autofill::mojom::PasswordManagerDriver {
  public:
   ContentPasswordManagerDriver(content::RenderFrameHost* render_frame_host,
-                               PasswordManagerClient* client,
-                               autofill::AutofillClient* autofill_client);
+                               PasswordManagerClient* client);
 
   ContentPasswordManagerDriver(const ContentPasswordManagerDriver&) = delete;
   ContentPasswordManagerDriver& operator=(const ContentPasswordManagerDriver&) =

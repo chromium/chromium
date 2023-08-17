@@ -27,28 +27,27 @@ class PasswordManagerUIUtilAndroidTest
 
     ASSERT_TRUE(web_contents()->GetFocusedFrame());
 
-    password_mananger_driver_ = CreatePasswordManagerDriver(main_rfh());
+    password_manager_driver_ = CreatePasswordManagerDriver(main_rfh());
   }
 
-  password_manager::ContentPasswordManagerDriver* password_mananger_driver() {
-    return password_mananger_driver_.get();
+  password_manager::ContentPasswordManagerDriver* password_manager_driver() {
+    return password_manager_driver_.get();
   }
 
   std::unique_ptr<password_manager::ContentPasswordManagerDriver>
   CreatePasswordManagerDriver(content::RenderFrameHost* rfh) {
     return std::make_unique<password_manager::ContentPasswordManagerDriver>(
-        rfh, &client_, &test_autofill_client_);
+        rfh, &client_);
   }
 
  private:
   std::unique_ptr<password_manager::ContentPasswordManagerDriver>
-      password_mananger_driver_;
+      password_manager_driver_;
   password_manager::StubPasswordManagerClient client_;
-  autofill::TestAutofillClient test_autofill_client_;
 };
 
 TEST_F(PasswordManagerUIUtilAndroidTest, ShouldAcceptFocusEvent) {
-  EXPECT_TRUE(ShouldAcceptFocusEvent(web_contents(), password_mananger_driver(),
+  EXPECT_TRUE(ShouldAcceptFocusEvent(web_contents(), password_manager_driver(),
                                      FocusedFieldType::kFillablePasswordField));
 }
 
@@ -70,6 +69,6 @@ TEST_F(PasswordManagerUIUtilAndroidTest,
   // Reset contents, so that no frame was focused.
   SetContents(CreateTestWebContents());
 
-  EXPECT_TRUE(ShouldAcceptFocusEvent(web_contents(), password_mananger_driver(),
+  EXPECT_TRUE(ShouldAcceptFocusEvent(web_contents(), password_manager_driver(),
                                      FocusedFieldType::kUnknown));
 }

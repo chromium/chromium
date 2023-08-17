@@ -26,8 +26,7 @@ ContentPasswordManagerDriverFactory::ContentPasswordManagerDriverFactory(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<ContentPasswordManagerDriverFactory>(
           *web_contents),
-      password_client_(password_client),
-      autofill_client_(autofill_client) {}
+      password_client_(password_client) {}
 
 ContentPasswordManagerDriverFactory::~ContentPasswordManagerDriverFactory() =
     default;
@@ -91,7 +90,7 @@ ContentPasswordManagerDriverFactory::GetDriverForFrame(
       // Args passed to the ContentPasswordManagerDriver
       // constructor if none exists for `render_frame_host`
       // yet.
-      render_frame_host, password_client_, autofill_client_);
+      render_frame_host, password_client_);
   return &it->second;
 }
 
