@@ -75,6 +75,7 @@ include_rules = [
   "+components/services/storage/shared_storage",
   "+components/sessions",
   "+components/signin/public",
+  "+components/site_engagement/content",
   "+components/spellcheck",
   "+components/startup_metric_utils/common",
   "+components/storage_monitor",

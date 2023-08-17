@@ -34,6 +34,7 @@ source_set("browser_tests") {
     "cr_elements/cr_elements_browsertest.cc",
     "css/css_browsertest.cc",
     "downloads/downloads_browsertest.cc",
+    "engagement/site_engagement_browsertest.cc",
     "history/history_supervised_user_browsertest.cc",
     "history/history_ui_browsertest.cc",
     "js/js_browsertest.cc",
@@ -115,6 +116,7 @@ source_set("browser_tests") {
     "//components/privacy_sandbox:features",
     "//components/safe_browsing/core/common:common",
     "//components/search:search",
+    "//components/site_engagement/content:content",
     "//components/user_notes:features",
   ]
 }
@@ -284,7 +286,6 @@ if (include_js2gtest_tests) {
     test_type = "mojo_webui"
     sources = [
       "downloads/downloads_browsertest.js",
-      "engagement/site_engagement_browsertest.js",
       "location_internals/location_internals_browsertest.js",
       "media/media_engagement_browsertest.js",
       "media/media_history_webui_browsertest.js",
