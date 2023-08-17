@@ -5,7 +5,6 @@
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 
 #include <cmath>
-#include <ostream>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -15,37 +14,17 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
-#include "base/time/time_override.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
-#include "content/browser/attribution_reporting/storable_source.h"
-#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
-
-bool operator==(const AttributionSimulationEvent& a,
-                const AttributionSimulationEvent& b) {
-  return a.event == b.event && a.debug_permission == b.debug_permission;
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionSimulationEvent& e) {
-  out << "{event=";
-  absl::visit([&](const auto& event) { out << event; }, e.event);
-  return out << ",debug_permission=" << e.debug_permission << "}";
-}
 
 bool operator==(const AttributionConfig::RateLimitConfig& a,
                 const AttributionConfig::RateLimitConfig& b) {
@@ -146,9 +125,7 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
         "url": "https://a.r.test",
         "debug_permission": true,
         "response": {
-          "Attribution-Reporting-Register-Source": {
-            "destination": "https://a.d.test"
-          }
+          "Attribution-Reporting-Register-Source": 123
         }
       }]
     },
@@ -162,9 +139,7 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
       "responses": [{
         "url": "https://b.r.test",
         "response": {
-          "Attribution-Reporting-Register-Source": {
-            "destination": "https://b.d.test"
-          }
+          "Attribution-Reporting-Register-Source": 456
         }
       }]
     }
@@ -176,36 +151,26 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
       auto result, ParseAttributionInteropInput(std::move(value), kOffsetTime));
   ASSERT_EQ(result.size(), 2u);
 
-  const auto* source1 = absl::get_if<StorableSource>(&result.front().event);
-  ASSERT_TRUE(source1);
-
-  const auto* source2 = absl::get_if<StorableSource>(&result.back().event);
-  ASSERT_TRUE(source2);
-
   EXPECT_EQ(result.front().time,
             kOffsetTime + base::Milliseconds(1643235573123));
-  EXPECT_EQ(source1->common_info().source_type(),
+  EXPECT_EQ(result.front().source_type,
             attribution_reporting::mojom::SourceType::kNavigation);
-  EXPECT_EQ(source1->common_info().reporting_origin(),
+  EXPECT_EQ(result.front().reporting_origin,
             *SuitableOrigin::Deserialize("https://a.r.test"));
-  EXPECT_EQ(source1->common_info().source_origin(),
+  EXPECT_EQ(result.front().context_origin,
             *SuitableOrigin::Deserialize("https://a.s.test"));
-  EXPECT_THAT(source1->registration().destination_set.destinations(),
-              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
-  EXPECT_FALSE(source1->is_within_fenced_frame());
+  EXPECT_EQ(result.front().registration, base::Value(123));
   EXPECT_TRUE(result.front().debug_permission);
 
   EXPECT_EQ(result.back().time,
             kOffsetTime + base::Milliseconds(1643235574123));
-  EXPECT_EQ(source2->common_info().source_type(),
+  EXPECT_EQ(result.back().source_type,
             attribution_reporting::mojom::SourceType::kEvent);
-  EXPECT_EQ(source2->common_info().reporting_origin(),
+  EXPECT_EQ(result.back().reporting_origin,
             *SuitableOrigin::Deserialize("https://b.r.test"));
-  EXPECT_EQ(source2->common_info().source_origin(),
+  EXPECT_EQ(result.back().context_origin,
             *SuitableOrigin::Deserialize("https://b.s.test"));
-  EXPECT_THAT(source2->registration().destination_set.destinations(),
-              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
-  EXPECT_FALSE(source2->is_within_fenced_frame());
+  EXPECT_EQ(result.back().registration, base::Value(456));
   EXPECT_FALSE(result.back().debug_permission);
 }
 
@@ -221,7 +186,7 @@ TEST(AttributionInteropParserTest, ValidTriggerParses) {
         "url": "https://a.r.test",
         "debug_permission": true,
         "response": {
-          "Attribution-Reporting-Register-Trigger": {}
+          "Attribution-Reporting-Register-Trigger": 789
         }
       }]
     }
@@ -233,17 +198,14 @@ TEST(AttributionInteropParserTest, ValidTriggerParses) {
       auto result, ParseAttributionInteropInput(std::move(value), kOffsetTime));
   ASSERT_EQ(result.size(), 1u);
 
-  const auto* trigger = absl::get_if<AttributionTrigger>(&result.front().event);
-  ASSERT_TRUE(trigger);
-
   EXPECT_EQ(result.front().time,
             kOffsetTime + base::Milliseconds(1643235575123));
-  EXPECT_EQ(trigger->reporting_origin(),
+  EXPECT_EQ(result.front().reporting_origin,
             *SuitableOrigin::Deserialize("https://a.r.test"));
-  EXPECT_EQ(trigger->destination_origin(),
+  EXPECT_EQ(result.front().context_origin,
             *SuitableOrigin::Deserialize("https://b.d.test"));
-  EXPECT_THAT(trigger->verifications(), IsEmpty());
-  EXPECT_FALSE(trigger->is_within_fenced_frame());
+  EXPECT_EQ(result.front().source_type, absl::nullopt);
+  EXPECT_EQ(result.front().registration, base::Value(789));
   EXPECT_TRUE(result.front().debug_permission);
 }
 
@@ -439,23 +401,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["responses"][0]["response"]["Attribution-Reporting-Register-Source"]: must be a dictionary)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "registration_request": {
-            "source_type": "navigation",
-            "attribution_src_url": "https://a.r.test",
-            "source_origin": "https://a.s.test"
-          },
-          "responses": [{
-            "url": "https://a.r.test",
-            "response": {
-              "Attribution-Reporting-Register-Source": ""
-            }
-          }]
-        }]})json",
-    },
-    {
         R"(["sources"][0]["registration_request"]["source_type"]: must be either)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
@@ -495,22 +440,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
           "responses": [{
             "url": "https://a.r.test",
             "response": {}
-          }]
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["responses"][0]["response"]["Attribution-Reporting-Register-Trigger"]: must be a dictionary)",
-        R"json({"triggers": [{
-          "timestamp": "1643235576000",
-          "registration_request": {
-            "destination_origin": "https://a.d1.test",
-            "attribution_src_url": "https://a.r.test"
-          },
-          "responses": [{
-            "url": "https://a.r.test",
-            "response": {
-              "Attribution-Reporting-Register-Trigger": ""
-            }
           }]
         }]})json",
     },
