@@ -146,6 +146,10 @@ void JourneyLogger::SetOptOutOffered() {
   SetEvent2Occurred(Event2::kOptOutOffered);
 }
 
+void JourneyLogger::SetActivationlessShow() {
+  SetEvent2Occurred(Event2::kActivationlessShow);
+}
+
 void JourneyLogger::SetSkippedShow() {
   SetEventOccurred(EVENT_SKIPPED_SHOW);
   SetEvent2Occurred(Event2::kSkippedShow);
@@ -496,6 +500,13 @@ void JourneyLogger::ValidateEventBits() const {
     // Internal secure payment confirmation payment handler should not skip UI
     // show.
     DCHECK(!(events_ & EVENT_SELECTED_SECURE_PAYMENT_CONFIRMATION));
+  }
+
+  // Validate activationless show.
+  if (WasOccurred(Event2::kActivationlessShow)) {
+    // Should not be able to record an activationless show without show itself
+    // being recorded.
+    DCHECK(WasOccurred(Event2::kShown) || WasOccurred(Event2::kSkippedShow));
   }
 
   // Check that the two bits are not set at the same time.

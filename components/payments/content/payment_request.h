@@ -288,6 +288,11 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   // PaymentRequest.show().
   std::string reject_show_error_message_;
 
+  // Whether the PaymentRequest.show() was successfully invoked without a user
+  // activation. Used to record the activationless show JourneyLogger event only
+  // if UI was shown.
+  bool is_activationless_show_ = false;
+
   base::WeakPtrFactory<PaymentRequest> weak_ptr_factory_{this};
 };
 

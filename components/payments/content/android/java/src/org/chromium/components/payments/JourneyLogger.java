@@ -87,6 +87,13 @@ public class JourneyLogger {
     }
 
     /**
+     * Records that a PaymentRequest.show() was allowed without a user activation.
+     */
+    public void setActivationlessShow() {
+        JourneyLoggerJni.get().setActivationlessShow(mJourneyLoggerAndroid, JourneyLogger.this);
+    }
+
+    /**
      * Records that a payment app has been invoked without any payment UI being shown before that.
      */
     public void setSkippedShow() {
@@ -240,6 +247,7 @@ public class JourneyLogger {
         void setHasEnrolledInstrumentValue(
                 long nativeJourneyLoggerAndroid, JourneyLogger caller, boolean value);
         void setOptOutOffered(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setActivationlessShow(long nativeJourneyLoggerAndroid, JourneyLogger caller);
         void setSkippedShow(long nativeJourneyLoggerAndroid, JourneyLogger caller);
         void setShown(long nativeJourneyLoggerAndroid, JourneyLogger caller);
         void setReceivedInstrumentDetails(long nativeJourneyLoggerAndroid, JourneyLogger caller);

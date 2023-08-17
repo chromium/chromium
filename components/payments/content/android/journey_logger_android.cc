@@ -62,6 +62,12 @@ void JourneyLoggerAndroid::SetOptOutOffered(
   journey_logger_.SetOptOutOffered();
 }
 
+void JourneyLoggerAndroid::SetActivationlessShow(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  journey_logger_.SetActivationlessShow();
+}
+
 void JourneyLoggerAndroid::SetSkippedShow(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {

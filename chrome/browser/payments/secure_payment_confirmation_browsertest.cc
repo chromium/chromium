@@ -402,6 +402,15 @@ class SecurePaymentConfirmationActivationlessShowTest
         switches::kEnableBlinkFeatures,
         "SecurePaymentConfirmationAllowOneActivationlessShow");
   }
+
+  void ExpectEvent2(JourneyLogger::Event2 event, bool expected) {
+    std::vector<base::Bucket> buckets =
+        histogram_tester_.GetAllSamples("PaymentRequest.Events2");
+    EXPECT_EQ(expected, (buckets[0].min & static_cast<int>(event)) != 0);
+  }
+
+ private:
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationActivationlessShowTest,
@@ -434,6 +443,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationActivationlessShowTest,
                       content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE)
           .ExtractString(),
       ::testing::HasSubstr(errors::kCannotShowWithoutUserActivation));
+  ExpectEvent2(Event2::kActivationlessShow, true);
 }
 
 // TODO(crbug.com/1440453): This test does not work on Android as it is

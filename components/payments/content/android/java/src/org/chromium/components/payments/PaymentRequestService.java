@@ -1264,6 +1264,7 @@ public class PaymentRequestService
                         PaymentErrorReason.NOT_ALLOWED_ERROR);
                 return;
             }
+            mJourneyLogger.setActivationlessShow();
             paymentRequestWebContentsData.recordActivationlessShow();
         }
         sShowingPaymentRequest = this;
