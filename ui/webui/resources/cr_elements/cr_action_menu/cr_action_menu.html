@@ -86,6 +86,10 @@
         outline: none;
         padding: 8px 0;
       }
+
+      :host-context([chrome-refresh-2023]) .item-wrapper {
+        background: none;
+      }
     </style>
     <dialog id="dialog" part="dialog" on-close="onNativeDialogClose_"
         role="application" aria-roledescription$="[[roleDescription]]">
