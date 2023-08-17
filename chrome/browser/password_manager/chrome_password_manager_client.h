@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/autofill/content/common/mojom/autofill_driver.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/content_credential_manager.h"
@@ -102,9 +101,7 @@ class ChromePasswordManagerClient
       public content::WebContentsUserData<ChromePasswordManagerClient>,
       public autofill::mojom::PasswordGenerationDriver {
  public:
-  static void CreateForWebContentsWithAutofillClient(
-      content::WebContents* contents,
-      autofill::AutofillClient* autofill_client);
+  static void CreateForWebContents(content::WebContents* contents);
   static void BindPasswordGenerationDriver(
       mojo::PendingAssociatedReceiver<autofill::mojom::PasswordGenerationDriver>
           receiver,
@@ -335,8 +332,7 @@ class ChromePasswordManagerClient
 
  protected:
   // Callable for tests.
-  ChromePasswordManagerClient(content::WebContents* web_contents,
-                              autofill::AutofillClient* autofill_client);
+  explicit ChromePasswordManagerClient(content::WebContents* web_contents);
 
  private:
   friend class content::WebContentsUserData<ChromePasswordManagerClient>;

@@ -224,7 +224,7 @@ class MockPasswordManagerClient : public ChromePasswordManagerClient {
 
  private:
   explicit MockPasswordManagerClient(content::WebContents* web_contents)
-      : ChromePasswordManagerClient(web_contents, nullptr) {}
+      : ChromePasswordManagerClient(web_contents) {}
 
   password_manager::MockPasswordFeatureManager mock_password_feature_manager_;
   scoped_refptr<device_reauth::MockDeviceAuthenticator>

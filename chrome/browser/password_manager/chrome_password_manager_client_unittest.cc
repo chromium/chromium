@@ -177,7 +177,7 @@ class MockChromePasswordManagerClient : public ChromePasswordManagerClient {
 
  private:
   explicit MockChromePasswordManagerClient(content::WebContents* web_contents)
-      : ChromePasswordManagerClient(web_contents, nullptr) {
+      : ChromePasswordManagerClient(web_contents) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     password_protection_service_ =
         std::make_unique<safe_browsing::MockPasswordProtectionService>();
@@ -361,8 +361,7 @@ void ChromePasswordManagerClientTest::SetUp() {
   // In order for the |PasswordFeatureManager| to be initialized correctly
   // the testing sync service must be set up before the client.
   SetupBasicTestSync();
-  ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
-      web_contents(), nullptr);
+  ChromePasswordManagerClient::CreateForWebContents(web_contents());
 
   SetupSettingsServiceFactory();
 

@@ -216,8 +216,7 @@ content::WebContents* PasswordDialogViewTest::SetupTabWithTestController(
   EXPECT_TRUE(raw_new_tab);
 
   // ManagePasswordsUIController needs ChromePasswordManagerClient for logging.
-  ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
-      raw_new_tab, nullptr);
+  ChromePasswordManagerClient::CreateForWebContents(raw_new_tab);
   EXPECT_TRUE(ChromePasswordManagerClient::FromWebContents(raw_new_tab));
   controller_ = new TestManagePasswordsUIController(raw_new_tab);
   browser->tab_strip_model()->AppendWebContents(std::move(new_tab), true);

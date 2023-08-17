@@ -23,8 +23,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
@@ -1629,44 +1627,7 @@ class SitePerProcessAutofillTest : public SitePerProcessInteractiveBrowserTest {
   SitePerProcessAutofillTest& operator=(const SitePerProcessAutofillTest&) =
       delete;
 
-  ~SitePerProcessAutofillTest() override {}
-
- protected:
-  class TestAutofillClient : public autofill::TestAutofillClient {
-   public:
-    TestAutofillClient() : popup_shown_(false) {}
-
-    TestAutofillClient(const TestAutofillClient&) = delete;
-    TestAutofillClient& operator=(const TestAutofillClient&) = delete;
-
-    ~TestAutofillClient() override {}
-
-    void WaitForNextPopup() {
-      if (popup_shown_)
-        return;
-      loop_runner_ = new content::MessageLoopRunner();
-      loop_runner_->Run();
-    }
-
-    void ShowAutofillPopup(
-        const autofill::AutofillClient::PopupOpenArgs& open_args,
-        base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override {
-      element_bounds_ = open_args.element_bounds;
-      popup_shown_ = true;
-      if (loop_runner_)
-        loop_runner_->Quit();
-    }
-
-    const gfx::RectF& last_element_bounds() const { return element_bounds_; }
-
-   private:
-    gfx::RectF element_bounds_;
-    bool popup_shown_;
-    scoped_refptr<content::MessageLoopRunner> loop_runner_;
-  };
-
-  const int kIframeTopDisplacement = 150;
-  const int kIframeLeftDisplacement = 200;
+  ~SitePerProcessAutofillTest() override = default;
 
   void SetupMainTab() {
     // Add a fresh new WebContents for which we add our own version of the
@@ -1683,8 +1644,7 @@ class SitePerProcessAutofillTest : public SitePerProcessInteractiveBrowserTest {
 
     // Create ChromePasswordManagerClient and verify it exists for the new
     // WebContents.
-    ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
-        new_contents.get(), &test_autofill_client_);
+    ChromePasswordManagerClient::CreateForWebContents(new_contents.get());
     ASSERT_TRUE(
         ChromePasswordManagerClient::FromWebContents(new_contents.get()));
 
@@ -1692,11 +1652,8 @@ class SitePerProcessAutofillTest : public SitePerProcessInteractiveBrowserTest {
                                                     true);
   }
 
-  TestAutofillClient& autofill_client() { return test_autofill_client_; }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestAutofillClient test_autofill_client_;
 };
 
 // Waits until transforming |sample_point| from |render_frame_host| coordinates

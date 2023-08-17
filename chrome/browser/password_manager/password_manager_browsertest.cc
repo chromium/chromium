@@ -3975,8 +3975,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_FALSE(chrome::FindBrowserWithWebContents(new_web_contents.get()));
 
   // Create ChromePasswordManagerClient for newly created web_contents.
-  ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
-      new_web_contents.get(), /*autofill_client=*/nullptr);
+  ChromePasswordManagerClient::CreateForWebContents(new_web_contents.get());
 
   ChromePasswordManagerClient* client =
       ChromePasswordManagerClient::FromWebContents(new_web_contents.get());
@@ -4460,10 +4459,7 @@ class PasswordManagerPrerenderBrowserTest : public PasswordManagerBrowserTest {
     // logging.
     autofill::ChromeAutofillClient::CreateForWebContents(
         owned_web_contents.get());
-    ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
-        owned_web_contents.get(),
-        autofill::ContentAutofillClient::FromWebContents(
-            owned_web_contents.get()));
+    ChromePasswordManagerClient::CreateForWebContents(owned_web_contents.get());
     ASSERT_TRUE(
         ChromePasswordManagerClient::FromWebContents(owned_web_contents.get()));
     ManagePasswordsUIController::CreateForWebContents(owned_web_contents.get());

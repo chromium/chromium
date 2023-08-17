@@ -21,8 +21,7 @@ namespace password_manager {
 
 ContentPasswordManagerDriverFactory::ContentPasswordManagerDriverFactory(
     content::WebContents* web_contents,
-    PasswordManagerClient* password_client,
-    autofill::AutofillClient* autofill_client)
+    PasswordManagerClient* password_client)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<ContentPasswordManagerDriverFactory>(
           *web_contents),

@@ -158,9 +158,7 @@ void TabWebContentsDelegateAndroid::PortalWebContentsCreated(
   // helpers that are unprepared for portal activation to transition them.
   // See https://crbug.com/1042323
   autofill::ChromeAutofillClient::CreateForWebContents(portal_contents);
-  ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
-      portal_contents,
-      autofill::ContentAutofillClient::FromWebContents(portal_contents));
+  ChromePasswordManagerClient::CreateForWebContents(portal_contents);
   HistoryTabHelper::CreateForWebContents(portal_contents);
   ChromePasswordReuseDetectionManagerClient::CreateForWebContents(
       portal_contents);

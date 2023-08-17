@@ -470,9 +470,7 @@ void PasswordManagerBrowserTestBase::GetNewTab(
 
   // ManagePasswordsUIController needs ChromePasswordManagerClient for logging.
   autofill::ChromeAutofillClient::CreateForWebContents(*web_contents);
-  ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
-      *web_contents,
-      autofill::ContentAutofillClient::FromWebContents(*web_contents));
+  ChromePasswordManagerClient::CreateForWebContents(*web_contents);
   ASSERT_TRUE(ChromePasswordManagerClient::FromWebContents(*web_contents));
   CustomManagePasswordsUIController* controller =
       new CustomManagePasswordsUIController(*web_contents);

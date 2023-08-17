@@ -39,7 +39,7 @@ class ContentPasswordManagerDriverFactoryFencedFramesTest
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     factory_ = ContentPasswordManagerDriverFactoryTestApi::Create(
-        web_contents(), &password_manager_client_, &autofill_client_);
+        web_contents(), &password_manager_client_);
   }
 
   void NavigateAndCommitInFrame(const std::string& url,
@@ -56,7 +56,6 @@ class ContentPasswordManagerDriverFactoryFencedFramesTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  autofill::TestAutofillClient autofill_client_;
   StubPasswordManagerClient password_manager_client_;
   std::unique_ptr<ContentPasswordManagerDriverFactory> factory_;
 };
