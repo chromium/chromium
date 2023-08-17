@@ -30,6 +30,7 @@
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/switches.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/companion/core/features.h"
@@ -10800,6 +10801,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"floating-workspace-v2", flag_descriptions::kFloatingWorkspaceV2Name,
      flag_descriptions::kFloatingWorkspaceV2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFloatingWorkspaceV2)},
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"almanac-game-migration", flag_descriptions::kAlmanacGameMigrationName,
+     flag_descriptions::kAlmanacGameMigrationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(apps::kAlmanacGameMigration)},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

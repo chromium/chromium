@@ -11,6 +11,10 @@
 
 namespace apps {
 
+BASE_FEATURE(kAlmanacGameMigration,
+             "AlmanacGameMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 AppDiscoveryService::AppDiscoveryService(Profile* profile)
     : app_fetcher_manager_(std::make_unique<AppFetcherManager>(profile)) {}
 

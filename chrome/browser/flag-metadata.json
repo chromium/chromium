@@ -155,6 +155,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "almanac-game-migration",
+    "owners": [ "elitsa@google.com", "cros-apps-foundation-system@google.com" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "alt-click-and-six-pack-customization",
     "owners": [ "michaelcheco", "cros-peripherals@google.com" ],
     "expiry_milestone": 130

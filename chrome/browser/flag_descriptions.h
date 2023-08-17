@@ -3012,6 +3012,10 @@ extern const char kAllowScrollSettingsName[];
 extern const char kAllowScrollSettingsDescription[];
 extern const char kAllowTouchpadScrollSettingsName[];
 extern const char kAllowTouchpadScrollSettingsDescription[];
+
+extern const char kAlmanacGameMigrationName[];
+extern const char kAlmanacGameMigrationDescription[];
+
 extern const char kAltClickAndSixPackCustomizationName[];
 extern const char kAltClickAndSixPackCustomizationDescription[];
 extern const char kAlwaysEnableHdcpName[];
