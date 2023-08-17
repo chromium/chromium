@@ -1,6 +1,5 @@
 <!--
 @BLINK-ALLOW:scrollable=*
-@WAIT-FOR:done
 -->
 <!DOCTYPE html>
 <html style="width:100px; height:100px;">
@@ -11,10 +10,6 @@
     window.onload = () => {
       const url = new URL("frame/visible_text.html", location.href);
       document.querySelector("fencedframe").config = new FencedFrameConfig(url);
-      // Using @WAIT-FOR to check a value inside the fenced frame after it loads
-      // causes the test to flake. Instead, we wait for 500ms to give the fenced
-      // frame enough time to navigate.
-      setTimeout(() => {document.title = "done";}, 500);
     }
   </script>
 </body>
