@@ -429,6 +429,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
+  updateFontSize(increase: boolean) {
+    chrome.readingMode.onFontSizeChanged(increase);
+    this.updateStyles({
+      '--font-size': chrome.readingMode.fontSize + 'em',
+    });
+  }
+
   // TODO(crbug.com/1465029): This method should be renamed to updateTheme()
   // and replace the one below once we've removed the Views toolbar.
   updateThemeFromWebUi(colorSuffix: string) {

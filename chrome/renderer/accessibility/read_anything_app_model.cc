@@ -707,3 +707,17 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
     }
   }
 }
+
+void ReadAnythingAppModel::IncreaseTextSize() {
+  font_size_ += kReadAnythingFontScaleIncrement;
+  if (font_size_ > kReadAnythingMaximumFontScale) {
+    font_size_ = kReadAnythingMaximumFontScale;
+  }
+}
+
+void ReadAnythingAppModel::DecreaseTextSize() {
+  font_size_ -= kReadAnythingFontScaleIncrement;
+  if (font_size_ < kReadAnythingMinimumFontScale) {
+    font_size_ = kReadAnythingMinimumFontScale;
+  }
+}

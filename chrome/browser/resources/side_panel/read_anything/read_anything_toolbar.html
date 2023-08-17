@@ -62,9 +62,15 @@
       </iron-icon>
       $i18n{fontSizeTitle}
       <span class="end-image">
-        <cr-icon-button class="floating-button button-image" iron-icon="read-anything:font-size-increase">
+        <cr-icon-button
+          class="floating-button button-image"
+          on-click="onFontSizeIncreaseClick_"
+          iron-icon="read-anything:font-size-increase">
         </cr-icon-button>
-        <cr-icon-button class="floating-button button-image" iron-icon="read-anything:font-size-decrease">
+        <cr-icon-button
+          class="floating-button button-image"
+          on-click="onFontSizeDecreaseClick_"
+          iron-icon="read-anything:font-size-decrease">
         </cr-icon-button>
       </span>
     </span>

@@ -615,6 +615,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("isOverline", &ReadAnythingAppController::IsOverline)
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
       .SetMethod("onCopy", &ReadAnythingAppController::OnCopy)
+      .SetMethod("onFontSizeChanged",
+                 &ReadAnythingAppController::OnFontSizeChanged)
       .SetMethod("onScroll", &ReadAnythingAppController::OnScroll)
       .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
       .SetMethod("onStandardLineSpacing",
@@ -843,6 +845,16 @@ void ReadAnythingAppController::OnConnected() {
 
 void ReadAnythingAppController::OnCopy() const {
   page_handler_->OnCopy();
+}
+
+void ReadAnythingAppController::OnFontSizeChanged(bool increase) {
+  if (increase) {
+    model_.IncreaseTextSize();
+  } else {
+    model_.DecreaseTextSize();
+  }
+
+  // TODO(crbug.com/1465029) save font size prefs
 }
 
 void ReadAnythingAppController::OnScroll(bool on_selection) const {

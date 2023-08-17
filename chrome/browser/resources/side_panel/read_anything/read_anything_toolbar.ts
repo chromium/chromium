@@ -255,6 +255,20 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
     this.closeMenus_();
   }
+
+  private onFontSizeIncreaseClick_() {
+    this.updateFontSize_(true);
+  }
+
+  private onFontSizeDecreaseClick_() {
+    this.updateFontSize_(false);
+  }
+  private updateFontSize_(increase: boolean) {
+    if (this.contentPage) {
+      this.contentPage.updateFontSize(increase);
+    }
+    // Don't close the menu
+  }
 }
 
 customElements.define('read-anything-toolbar', ReadAnythingToolbar);

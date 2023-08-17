@@ -105,6 +105,7 @@ class ReadAnythingAppController
   SkColor BackgroundColor() const;
   std::string FontName() const;
   float FontSize() const;
+  void OnFontSizeChanged(bool increase);
   SkColor ForegroundColor() const;
   float LetterSpacing() const;
   float LineSpacing() const;

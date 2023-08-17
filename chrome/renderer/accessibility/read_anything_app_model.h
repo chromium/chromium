@@ -141,6 +141,9 @@ class ReadAnythingAppModel {
   double GetLetterSpacingValue(
       read_anything::mojom::LetterSpacing letter_spacing) const;
 
+  void IncreaseTextSize();
+  void DecreaseTextSize();
+
  private:
   void EraseTree(ui::AXTreeID tree_id);
 
