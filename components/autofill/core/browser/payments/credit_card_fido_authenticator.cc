@@ -70,23 +70,23 @@ CreditCardFidoAuthenticator::~CreditCardFidoAuthenticator() {
 }
 
 void CreditCardFidoAuthenticator::Authenticate(
-    const CreditCard* card,
+    CreditCard card,
     base::WeakPtr<Requester> requester,
     base::Value::Dict request_options,
     absl::optional<std::string> context_token) {
-  card_ = card;
+  card_ = std::move(card);
   requester_ = requester;
   context_token_ = context_token;
 
   // Cancel any previous pending WebAuthn requests.
   authenticator()->Cancel();
 
-  if (card_ && IsValidRequestOptions(request_options.Clone())) {
+  if (IsValidRequestOptions(request_options)) {
     current_flow_ = AUTHENTICATION_FLOW;
     GetAssertion(ParseRequestOptions(std::move(request_options)));
   } else if (requester_) {
-    FidoAuthenticationResponse response{.did_succeed = false};
-    requester_->OnFIDOAuthenticationComplete(response);
+    requester_->OnFIDOAuthenticationComplete(
+        FidoAuthenticationResponse{.did_succeed = false});
   }
 }
 
@@ -483,9 +483,8 @@ void CreditCardFidoAuthenticator::OnFullCardRequestSucceeded(
   if (!requester_)
     return;
 
-  FidoAuthenticationResponse response{
-      .did_succeed = true, .card = &card, .cvc = cvc};
-  requester_->OnFIDOAuthenticationComplete(response);
+  requester_->OnFIDOAuthenticationComplete(FidoAuthenticationResponse{
+      .did_succeed = true, .card = &card, .cvc = cvc});
 }
 
 void CreditCardFidoAuthenticator::OnFullCardRequestFailed(
@@ -497,9 +496,8 @@ void CreditCardFidoAuthenticator::OnFullCardRequestFailed(
   if (!requester_)
     return;
 
-  FidoAuthenticationResponse response{.did_succeed = false,
-                                      .failure_type = failure_type};
-  requester_->OnFIDOAuthenticationComplete(response);
+  requester_->OnFIDOAuthenticationComplete(FidoAuthenticationResponse{
+      .did_succeed = false, .failure_type = failure_type});
 }
 
 blink::mojom::PublicKeyCredentialRequestOptionsPtr

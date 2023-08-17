@@ -515,7 +515,7 @@ void CreditCardAccessManager::Authenticate(
             std::move(unmask_details_.fido_request_options.value());
       }
       GetOrCreateFidoAuthenticator()->Authenticate(
-          card_.get(), weak_ptr_factory_.GetWeakPtr(),
+          *card_, weak_ptr_factory_.GetWeakPtr(),
           std::move(fido_request_options), context_token);
 #endif
       break;
@@ -1392,7 +1392,7 @@ void CreditCardAccessManager::Reset() {
       payments::PaymentsClient::UnmaskResponseDetails();
   ready_to_start_authentication_.Reset();
   can_fetch_unmask_details_ = true;
-  card_ = nullptr;
+  card_.reset();
   cvc_ = std::u16string();
   unmask_details_request_in_progress_ = false;
 }

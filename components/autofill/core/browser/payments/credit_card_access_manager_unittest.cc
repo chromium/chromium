@@ -218,15 +218,6 @@ class CreditCardAccessManagerTest : public testing::Test {
     autofill_client_.set_otp_authenticator(std::move(otp_authenticator));
   }
 
-  void TearDown() override {
-    // Order of destruction is important as AutofillDriver relies on
-    // PersonalDataManager to be around when it gets destroyed.
-    autofill_driver_.reset();
-
-    personal_data().SetPrefService(nullptr);
-    personal_data().ClearCreditCards();
-  }
-
   bool IsAuthenticationInProgress() {
     return credit_card_access_manager().is_authentication_in_progress();
   }

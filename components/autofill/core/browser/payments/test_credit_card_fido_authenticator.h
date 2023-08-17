@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_fido_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -31,7 +32,7 @@ class TestCreditCardFidoAuthenticator : public CreditCardFidoAuthenticator {
   ~TestCreditCardFidoAuthenticator() override;
 
   // CreditCardFidoAuthenticator:
-  void Authenticate(const CreditCard* card,
+  void Authenticate(CreditCard card,
                     base::WeakPtr<Requester> requester,
                     base::Value::Dict request_options,
                     absl::optional<std::string> context_token) override;
@@ -66,7 +67,7 @@ class TestCreditCardFidoAuthenticator : public CreditCardFidoAuthenticator {
 
   bool IsOptOutCalled() { return opt_out_called_; }
   bool authenticate_invoked() { return authenticate_invoked_; }
-  const CreditCard& card() { return card_; }
+  const CreditCard& card() { return *card_; }
   const absl::optional<std::string>& context_token() { return context_token_; }
 
   // Resets all the testing related states.
@@ -82,7 +83,7 @@ class TestCreditCardFidoAuthenticator : public CreditCardFidoAuthenticator {
   absl::optional<bool> is_user_opted_in_;
   bool opt_out_called_ = false;
   bool authenticate_invoked_ = false;
-  CreditCard card_;
+  absl::optional<CreditCard> card_;
   absl::optional<std::string> context_token_;
 };
 

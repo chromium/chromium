@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/strike_databases/payments/fido_authentication_strike_database.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "device/fido/fido_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
 namespace autofill {
@@ -94,7 +95,7 @@ class CreditCardFidoAuthenticator
   // |context_token| is used to share context between different requests. It
   // will be populated only for virtual card unmasking.
   virtual void Authenticate(
-      const CreditCard* card,
+      CreditCard card,
       base::WeakPtr<Requester> requester,
       base::Value::Dict request_options,
       absl::optional<std::string> context_token = absl::nullopt);
@@ -251,7 +252,7 @@ class CreditCardFidoAuthenticator
   webauthn::InternalAuthenticator* authenticator();
 
   // Card being unmasked.
-  raw_ptr<const CreditCard, DanglingUntriaged> card_;
+  absl::optional<CreditCard> card_;
 
   // The current flow in progress.
   Flow current_flow_ = NONE_FLOW;
@@ -261,7 +262,7 @@ class CreditCardFidoAuthenticator
   std::string card_authorization_token_;
 
   // The associated autofill driver. Weak reference.
-  const raw_ptr<AutofillDriver, DanglingUntriaged> autofill_driver_;
+  const raw_ptr<AutofillDriver> autofill_driver_;
 
   // The associated autofill client. Weak reference.
   const raw_ptr<AutofillClient> autofill_client_;

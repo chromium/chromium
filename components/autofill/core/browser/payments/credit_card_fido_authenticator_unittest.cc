@@ -370,7 +370,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, ParseAttestationResponse) {
 TEST_F(CreditCardFidoAuthenticatorTest, AuthenticateCard_BadRequestOptions) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
-  fido_authenticator().Authenticate(&card, requester().GetWeakPtr(),
+  fido_authenticator().Authenticate(card, requester().GetWeakPtr(),
                                     base::Value::Dict());
   EXPECT_FALSE((*requester().did_succeed()));
 }
@@ -380,7 +380,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   fido_authenticator().Authenticate(
-      &card, requester().GetWeakPtr(),
+      card, requester().GetWeakPtr(),
       GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
                             kTestCredentialId));
 
@@ -394,7 +394,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   fido_authenticator().Authenticate(
-      &card, requester().GetWeakPtr(),
+      card, requester().GetWeakPtr(),
       GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
                             kTestCredentialId));
   EXPECT_EQ(CreditCardFidoAuthenticator::Flow::AUTHENTICATION_FLOW,
@@ -413,7 +413,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   fido_authenticator().Authenticate(
-      &card, requester().GetWeakPtr(),
+      card, requester().GetWeakPtr(),
       GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
                             kTestCredentialId));
   EXPECT_EQ(CreditCardFidoAuthenticator::Flow::AUTHENTICATION_FLOW,
@@ -435,7 +435,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, AuthenticateCard_Success) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   fido_authenticator().Authenticate(
-      &card, requester().GetWeakPtr(),
+      card, requester().GetWeakPtr(),
       GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
                             kTestCredentialId));
   EXPECT_EQ(CreditCardFidoAuthenticator::Flow::AUTHENTICATION_FLOW,
