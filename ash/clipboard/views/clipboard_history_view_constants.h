@@ -34,8 +34,17 @@ constexpr auto kFooterContentV2Insets = gfx::Insets(8);
 // The margins for footer content v2.
 constexpr auto kFooterContentV2Margins = gfx::Insets::TLBR(8, 12, 12, 12);
 
-// The size of the `DeleteButton` icon.
-constexpr int kDeleteButtonIconSize = 20;
+// The size of the delete button.
+constexpr gfx::Size kDeleteButtonSize(16, 16);
+
+// The size of the delete button v2.
+constexpr gfx::Size kDeleteButtonV2Size(20, 20);
+
+// The size of the delete button icon.
+constexpr int kDeleteButtonIconSize = 8;
+
+// The size of the delete button v2 icon.
+constexpr int kDeleteButtonV2IconSize = 20;
 
 // The maximum number of lines allotted to a text item's label when the
 // clipboard history refresh is enabled.
