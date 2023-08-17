@@ -119,6 +119,10 @@ class TestPrintingContext : public PrintingContext {
 #endif
 
  private:
+  mojom::ResultCode AskUserForSettingsImpl(int max_pages,
+                                           bool has_selection,
+                                           bool is_scripted);
+
   // Simulation of platform drivers' default settings.
   base::flat_map<std::string, std::unique_ptr<PrintSettings>> device_settings_;
 
