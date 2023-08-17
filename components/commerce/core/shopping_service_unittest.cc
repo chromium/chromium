@@ -13,6 +13,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/proto/shopping_page_types.pb.h"
 #include "components/commerce/core/shopping_service_test_base.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
@@ -1012,6 +1013,69 @@ TEST_F(ShoppingServiceTest, TestPriceInsightsInfoResponse_EmptyRange) {
           },
           &run_loop));
   run_loop.Run();
+}
+
+TEST_F(ShoppingServiceTest, TestIsShoppingPage) {
+  test_features_.InitAndEnableFeature(kShoppingPageTypes);
+  base::RunLoop run_loop[3];
+  OptimizationMetadata meta;
+  ShoppingPageTypes data;
+
+  data.add_shopping_page_types(commerce::ShoppingPageTypes::SHOPPING_PAGE);
+  data.add_shopping_page_types(
+      commerce::ShoppingPageTypes::MERCHANT_DOMAIN_PAGE);
+  Any any;
+  any.set_type_url(data.GetTypeName());
+  data.SerializeToString(any.mutable_value());
+  meta.set_any_metadata(any);
+  opt_guide_->SetResponse(GURL(kProductUrl),
+                          OptimizationType::SHOPPING_PAGE_TYPES,
+                          OptimizationGuideDecision::kTrue, meta);
+
+  shopping_service_->IsShoppingPage(
+      GURL(kProductUrl), base::BindOnce(
+                             [](base::RunLoop* run_loop, const GURL& url,
+                                absl::optional<bool> info) {
+                               ASSERT_TRUE(info.has_value());
+                               ASSERT_TRUE(info.value());
+                               run_loop->Quit();
+                             },
+                             &run_loop[0]));
+  run_loop[0].Run();
+
+  opt_guide_->SetResponse(GURL(kProductUrl),
+                          OptimizationType::SHOPPING_PAGE_TYPES,
+                          OptimizationGuideDecision::kFalse, meta);
+
+  shopping_service_->IsShoppingPage(
+      GURL(kProductUrl), base::BindOnce(
+                             [](base::RunLoop* run_loop, const GURL& url,
+                                absl::optional<bool> info) {
+                               ASSERT_FALSE(info.has_value());
+                               run_loop->Quit();
+                             },
+                             &run_loop[1]));
+  run_loop[1].Run();
+
+  data.clear_shopping_page_types();
+  data.add_shopping_page_types(
+      commerce::ShoppingPageTypes::MERCHANT_DOMAIN_PAGE);
+  data.SerializeToString(any.mutable_value());
+  meta.set_any_metadata(any);
+  opt_guide_->SetResponse(GURL(kProductUrl),
+                          OptimizationType::SHOPPING_PAGE_TYPES,
+                          OptimizationGuideDecision::kTrue, meta);
+
+  shopping_service_->IsShoppingPage(
+      GURL(kProductUrl), base::BindOnce(
+                             [](base::RunLoop* run_loop, const GURL& url,
+                                absl::optional<bool> info) {
+                               ASSERT_TRUE(info.has_value());
+                               ASSERT_FALSE(info.value());
+                               run_loop->Quit();
+                             },
+                             &run_loop[2]));
+  run_loop[2].Run();
 }
 
 }  // namespace commerce

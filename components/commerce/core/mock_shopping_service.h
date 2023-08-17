@@ -48,6 +48,10 @@ class MockShoppingService : public commerce::ShoppingService {
               GetMerchantInfoForUrl,
               (const GURL& url, MerchantInfoCallback callback),
               (override));
+  MOCK_METHOD(void,
+              IsShoppingPage,
+              (const GURL& url, IsShoppingPageCallback callback),
+              (override));
   MOCK_METHOD(absl::optional<ProductInfo>,
               GetAvailableProductInfoForUrl,
               (const GURL& url),
@@ -111,6 +115,7 @@ class MockShoppingService : public commerce::ShoppingService {
       std::map<base::Uuid, ProductInfo> bookmark_updates);
   void SetResponseForGetMerchantInfoForUrl(
       absl::optional<commerce::MerchantInfo> merchant_info);
+  void SetResponseForIsShoppingPage(absl::optional<bool> is_shopping_page);
   void SetSubscribeCallbackValue(bool subscribe_should_succeed);
   void SetUnsubscribeCallbackValue(bool unsubscribe_should_succeed);
   void SetIsSubscribedCallbackValue(bool is_subscribed);

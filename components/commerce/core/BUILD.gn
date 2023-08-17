@@ -76,6 +76,7 @@ proto_library("proto") {
     "proto/merchant_trust.proto",
     "proto/price_insights.proto",
     "proto/price_tracking.proto",
+    "proto/shopping_page_types.proto",
   ]
 }
 

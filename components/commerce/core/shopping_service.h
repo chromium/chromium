@@ -235,6 +235,21 @@ struct DiscountInfo {
   double expiry_time_sec;
 };
 
+// Types of shopping pages from backend.
+enum class ShoppingPageType {
+  kUnknown = 0,
+  kShoppingPage = 1,
+  kMerchantDomainPage = 2,
+  kMultiProductPage = 3,
+  kSingleProductPage = 4,
+  kProductReviewPage = 5,
+  kProductComparisonPage = 6,
+  kProductTopNPage = 7,
+  kSoldOutPage = 8,
+  kBuyingGuidePage = 9,
+  kMaxValue = kBuyingGuidePage,
+};
+
 // Callbacks for querying a single URL or observing information from all
 // navigated urls.
 using ProductInfoCallback =
@@ -244,6 +259,8 @@ using MerchantInfoCallback =
 using PriceInsightsInfoCallback =
     base::OnceCallback<void(const GURL&,
                             const absl::optional<PriceInsightsInfo>&)>;
+using IsShoppingPageCallback =
+    base::OnceCallback<void(const GURL&, absl::optional<bool>)>;
 
 using DiscountsMap = std::map<GURL, std::vector<DiscountInfo>>;
 using DiscountInfoCallback = base::OnceCallback<void(const DiscountsMap&)>;
@@ -319,6 +336,11 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // the fetch is completed.
   virtual void GetDiscountInfoForUrls(const std::vector<GURL>& urls,
                                       DiscountInfoCallback callback);
+
+  // This API fetches whether the provided |url| is a shopping-related page and
+  // passes the result back to the caller via |callback|. Call will run after
+  // the fetch is completed.
+  virtual void IsShoppingPage(const GURL& url, IsShoppingPageCallback callback);
 
   // Create new subscriptions in batch if needed, and will notify |callback| if
   // the operation completes successfully.
@@ -561,9 +583,18 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // be used.
   bool IsPriceInsightsInfoApiEnabled();
 
+  // Whether APIs like |IsShoppingPage| are enabled and allowed to be used.
+  bool IsShoppingPageTypesApiEnabled();
+
   void HandleOptGuidePriceInsightsInfoResponse(
       const GURL& url,
       PriceInsightsInfoCallback callback,
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
+
+  void HandleOptGuideShoppingPageTypesResponse(
+      const GURL& url,
+      IsShoppingPageCallback callback,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 

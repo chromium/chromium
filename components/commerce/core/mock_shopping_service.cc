@@ -34,6 +34,7 @@ MockShoppingService::MockShoppingService()
   ON_CALL(*this, GetMaxProductBookmarkUpdatesPerBatch)
       .WillByDefault(testing::Return(30));
   SetResponseForGetMerchantInfoForUrl(absl::nullopt);
+  SetResponseForIsShoppingPage(absl::nullopt);
   SetSubscribeCallbackValue(true);
   SetUnsubscribeCallbackValue(true);
   SetIsSubscribedCallbackValue(true);
@@ -105,6 +106,17 @@ void MockShoppingService::SetResponseForGetMerchantInfoForUrl(
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), url, merchant_info));
       });
+}
+
+void MockShoppingService::SetResponseForIsShoppingPage(
+    absl::optional<bool> is_shopping_page) {
+  ON_CALL(*this, IsShoppingPage)
+      .WillByDefault(
+          [is_shopping_page](const GURL& url, IsShoppingPageCallback callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(callback), url, is_shopping_page));
+          });
 }
 
 void MockShoppingService::SetSubscribeCallbackValue(
