@@ -1886,7 +1886,14 @@ config("chromium_code") {
       # Non-chromium code is not guaranteed to compile cleanly with
       # _FORTIFY_SOURCE. Also, fortified build may fail when optimizations are
       # disabled, so only do that for Release build.
-      defines += [ "_FORTIFY_SOURCE=2" ]
+      fortify_level = "2"
+
+      # ChromeOS supports a high-quality _FORTIFY_SOURCE=3 implementation
+      # with a few custom glibc patches. Use that if it's available.
+      if (is_chromeos_ash) {
+        fortify_level = "3"
+      }
+      defines += [ "_FORTIFY_SOURCE=" + fortify_level ]
     }
 
     if (is_apple) {
