@@ -42,6 +42,10 @@ _CONFIG = [
             # absl
             'absl::MakeInt128',
             'absl::MakeUint128',
+            'absl::Int128High64',
+            'absl::Int128Low64',
+            'absl::Uint128High64',
+            'absl::Uint128Low64',
             'absl::get',
             'absl::get_if',
             'absl::holds_alternative',
