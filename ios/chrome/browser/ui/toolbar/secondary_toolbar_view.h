@@ -17,6 +17,8 @@
 
 // StackView containing the navigation buttons from `ToolbarButtons`.
 @property(nonatomic, strong, readonly) UIStackView* buttonStackView;
+// Separator below the location bar. Used when collapsed above the keyboard.
+@property(nonatomic, strong, readonly) UIView* bottomSeparator;
 
 // Constraint for the top of the location bar.
 @property(nonatomic, strong) NSLayoutConstraint* locationBarTopConstraint;

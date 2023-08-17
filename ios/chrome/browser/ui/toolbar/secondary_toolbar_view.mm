@@ -69,6 +69,9 @@ UIView* SecondaryToolbarLocationBarContainerView(
 @property(nonatomic, strong, readwrite) ToolbarTabGridButton* tabGridButton;
 // Button to create a new tab, redefined as readwrite.
 @property(nonatomic, strong, readwrite) ToolbarButton* openNewTabButton;
+// Separator below the location bar. Used when collapsed above the keyboard,
+// redefined as readwrite.
+@property(nonatomic, strong, readwrite) UIView* bottomSeparator;
 
 #pragma mark** Location bar. **
 // Location bar containing the omnibox.
@@ -227,6 +230,16 @@ UIView* SecondaryToolbarLocationBarContainerView(
                        constant:kBottomButtonsTopMargin];
     [self updateButtonStackViewConstraint];
 
+    // Bottom separator used when collapsed above the keyboard.
+    self.bottomSeparator = [[UIView alloc] init];
+    self.bottomSeparator.backgroundColor =
+        [UIColor colorNamed:kToolbarShadowColor];
+    self.bottomSeparator.translatesAutoresizingMaskIntoConstraints = NO;
+    self.bottomSeparator.alpha = 0.0;
+    [self addSubview:self.bottomSeparator];
+    AddSameConstraintsToSides(self, self.bottomSeparator,
+                              LayoutSides::kLeading | LayoutSides::kTrailing);
+
     [NSLayoutConstraint activateConstraints:@[
       self.locationBarTopConstraint,
       self.locationBarContainerHeight,
@@ -239,6 +252,11 @@ UIView* SecondaryToolbarLocationBarContainerView(
       [self.buttonStackView.topAnchor
           constraintGreaterThanOrEqualToAnchor:self.topAnchor
                                       constant:kBottomButtonsTopMargin],
+      [self.bottomSeparator.heightAnchor
+          constraintEqualToConstant:ui::AlignValueToUpperPixel(
+                                        kToolbarSeparatorHeight)],
+      [self.bottomSeparator.bottomAnchor
+          constraintEqualToAnchor:self.locationBarContainer.bottomAnchor],
     ]];
 
   } else {  // Bottom omnibox flag disabled.

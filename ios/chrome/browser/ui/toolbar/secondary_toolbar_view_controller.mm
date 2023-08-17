@@ -134,6 +134,7 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
     _fullscreenController->ForceEnterFullscreen();
   }
   self.view.locationBarTopConstraint.constant = 0;
+  self.view.bottomSeparator.alpha = 1.0;
 }
 
 /// Resets secondary toolbar when it's detached from the keyboard.
@@ -142,6 +143,7 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
     _fullscreenController->ExitFullscreenWithoutAnimation();
     _keyboardDisabler = nullptr;
   }
+  self.view.bottomSeparator.alpha = 0.0;
 }
 
 /// Updates keyboard constraints with `notification`. When
