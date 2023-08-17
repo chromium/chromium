@@ -6,9 +6,30 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_
 
 #include "base/files/file_path.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace supervised_user {
+
+// These values corresponds to SupervisedUserSafetyFilterResult in
+// tools/metrics/histograms/enums.xml. If you change anything here, make
+// sure to also update enums.xml accordingly.
+enum SupervisedUserSafetyFilterResult {
+  FILTERING_BEHAVIOR_ALLOW = 1,
+  FILTERING_BEHAVIOR_ALLOW_UNCERTAIN = 2,
+  FILTERING_BEHAVIOR_BLOCK_DENYLIST = 3,  // deprecated
+  FILTERING_BEHAVIOR_BLOCK_SAFESITES = 4,
+  FILTERING_BEHAVIOR_BLOCK_MANUAL = 5,
+  FILTERING_BEHAVIOR_BLOCK_DEFAULT = 6,
+  FILTERING_BEHAVIOR_ALLOW_ALLOWLIST = 7,
+  FILTERING_BEHAVIOR_MAX = FILTERING_BEHAVIOR_ALLOW_ALLOWLIST
+};
+
+// Constants used by SupervisedUserURLFilter::RecordFilterResultEvent.
+extern const int kHistogramFilteringBehaviorSpacing;
+extern const int kSupervisedUserURLFilteringResultHistogramMax;
+
+int GetHistogramValueForTransitionType(ui::PageTransition transition_type);
 
 // Keys for supervised user settings. These are configured remotely and mapped
 // to preferences by the SupervisedUserPrefStore.
@@ -48,6 +69,9 @@ GURL KidsManagementClassifyURLRequestURL();
 
 // Histogram name to log FamilyLink user type segmentation.
 extern const char kFamilyLinkUserLogSegmentHistogramName[];
+
+// Histogram name to log URL filtering results.
+extern const char kSupervisedUserURLFilteringResultHistogramName[];
 
 }  // namespace supervised_user
 

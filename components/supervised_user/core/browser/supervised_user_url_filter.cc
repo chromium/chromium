@@ -144,6 +144,7 @@ constexpr char kApprovedSitesCountHistogramName[] =
 // Reports the number of blocked urls and domains for current Family Link user.
 constexpr char kBlockedSitesCountHistogramName[] =
     "FamilyUser.ManagedSiteListCount.Blocked";
+
 }  // namespace
 
 SupervisedUserURLFilter::SupervisedUserURLFilter(
@@ -261,7 +262,7 @@ bool SupervisedUserURLFilter::HostMatchesPattern(
   return trimmed_host == trimmed_pattern;
 }
 
-// Static.
+// static
 std::string SupervisedUserURLFilter::WebFilterTypeToDisplayString(
     WebFilterType web_filter_type) {
   switch (web_filter_type) {
@@ -272,6 +273,61 @@ std::string SupervisedUserURLFilter::WebFilterTypeToDisplayString(
     case WebFilterType::kTryToBlockMatureSites:
       return "block_mature_sites";
   }
+}
+
+// static
+int SupervisedUserURLFilter::GetHistogramValueForFilteringBehavior(
+    FilteringBehavior behavior,
+    FilteringBehaviorReason reason,
+    bool is_filtering_behavior_known) {
+  switch (behavior) {
+    case ALLOW:
+      if (reason == FilteringBehaviorReason::ALLOWLIST) {
+        return SupervisedUserSafetyFilterResult::
+            FILTERING_BEHAVIOR_ALLOW_ALLOWLIST;
+      }
+      return is_filtering_behavior_known
+                 ? SupervisedUserSafetyFilterResult::FILTERING_BEHAVIOR_ALLOW
+                 : SupervisedUserSafetyFilterResult::
+                       FILTERING_BEHAVIOR_ALLOW_UNCERTAIN;
+    case BLOCK:
+      switch (reason) {
+        case FilteringBehaviorReason::ASYNC_CHECKER:
+          return SupervisedUserSafetyFilterResult::
+              FILTERING_BEHAVIOR_BLOCK_SAFESITES;
+        case FilteringBehaviorReason::ALLOWLIST:
+          NOTREACHED();
+          break;
+        case FilteringBehaviorReason::MANUAL:
+          return SupervisedUserSafetyFilterResult::
+              FILTERING_BEHAVIOR_BLOCK_MANUAL;
+        case FilteringBehaviorReason::DEFAULT:
+          return SupervisedUserSafetyFilterResult::
+              FILTERING_BEHAVIOR_BLOCK_DEFAULT;
+        case FilteringBehaviorReason::NOT_SIGNED_IN:
+          // Should never happen, only used for requests from Webview
+          NOTREACHED();
+      }
+      [[fallthrough]];
+    case INVALID:
+      NOTREACHED();
+  }
+  return 0;
+}
+
+// static
+void SupervisedUserURLFilter::RecordFilterResultEvent(
+    FilteringBehavior behavior,
+    FilteringBehaviorReason reason,
+    bool is_filtering_behavior_known,
+    ui::PageTransition transition_type) {
+  int value = GetHistogramValueForFilteringBehavior(
+                  behavior, reason, is_filtering_behavior_known) *
+                  kHistogramFilteringBehaviorSpacing +
+              GetHistogramValueForTransitionType(transition_type);
+  DCHECK_LT(value, kSupervisedUserURLFilteringResultHistogramMax);
+  base::UmaHistogramSparse(kSupervisedUserURLFilteringResultHistogramName,
+                           value);
 }
 
 SupervisedUserURLFilter::FilteringBehavior

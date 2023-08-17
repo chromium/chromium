@@ -6,6 +6,7 @@
 
 #import "base/memory/scoped_refptr.h"
 #import "base/task/single_thread_task_runner.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -13,6 +14,7 @@
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/common/features.h"
+#import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -154,22 +156,33 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
 
 TEST_F(SupervisedUserURLFilterTabHelperTest,
        BlockCertainSitesForSupervisedUser) {
+  base::HistogramTester histogram_tester;
   SignIn(kTestEmail,
          /*is_subject_to_parental_controls=*/true);
   RestrictAllSitesForSupervisedUser();
   EXPECT_TRUE(IsURLBlocked(kExampleURL));
+  histogram_tester.ExpectTotalCount(
+      supervised_user::kSupervisedUserURLFilteringResultHistogramName, 1);
+
   AllowExampleSiteForSupervisedUser();
   EXPECT_FALSE(IsURLBlocked(kExampleURL));
+  histogram_tester.ExpectTotalCount(
+      supervised_user::kSupervisedUserURLFilteringResultHistogramName, 2);
 }
 
 TEST_F(SupervisedUserURLFilterTabHelperTest,
        AllowsAllSitesForNonSupervisedUser) {
+  base::HistogramTester histogram_tester;
   SignIn(kTestEmail,
          /*is_subject_to_parental_controls=*/false);
   RestrictAllSitesForSupervisedUser();
   EXPECT_FALSE(IsURLBlocked(kExampleURL));
   AllowExampleSiteForSupervisedUser();
   EXPECT_FALSE(IsURLBlocked(kExampleURL));
+
+  // This histogram is only relevant for supervised users.
+  histogram_tester.ExpectTotalCount(
+      supervised_user::kSupervisedUserURLFilteringResultHistogramName, 0);
 }
 
 TEST_F(SupervisedUserURLFilterTabHelperTest, AllowsAllSitesWhenLoggedOut) {
