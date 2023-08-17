@@ -366,9 +366,6 @@ void OverlayProcessorOzone::MaybeObserveHardwareCapabilities() {
 
 void OverlayProcessorOzone::ReceiveHardwareCapabilities(
     ui::HardwareCapabilities hardware_capabilities) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "Compositing.Display.OverlayProcessorOzone.HardwareCapabilitiesIsValid",
-      hardware_capabilities.is_valid);
   if (hardware_capabilities.is_valid) {
     // Subtract 1 because one of these overlay capable planes will be needed for
     // the primary plane.
