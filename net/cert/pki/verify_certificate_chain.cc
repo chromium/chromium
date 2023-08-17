@@ -17,6 +17,7 @@
 #include "net/cert/pki/trust_store.h"
 #include "net/cert/pki/verify_signed_data.h"
 #include "net/der/input.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace net {
 
@@ -1016,7 +1017,7 @@ void PathVerifier::BasicCertificateProcessing(
   // match. This isn't part of RFC 5280 section 6.1.3, but is mandated by
   // sections 4.1.1.2 and 4.1.2.3.
   if (!VerifySignatureAlgorithmsMatch(cert, errors)) {
-    CHECK(errors->ContainsAnyErrorWithSeverity(CertError::SEVERITY_HIGH));
+    BSSL_CHECK(errors->ContainsAnyErrorWithSeverity(CertError::SEVERITY_HIGH));
     *shortcircuit_chain_validation = true;
   }
 
@@ -1472,8 +1473,8 @@ void PathVerifier::Run(
     CertPathErrors* errors) {
   // This implementation is structured to mimic the description of certificate
   // path verification given by RFC 5280 section 6.1.
-  DCHECK(delegate);
-  DCHECK(errors);
+  BSSL_CHECK(delegate);
+  BSSL_CHECK(errors);
 
   delegate_ = delegate;
 
@@ -1557,7 +1558,7 @@ void PathVerifier::Run(
         // Chains that don't start from a trusted root should short-circuit the
         // rest of the verification, as accumulating more errors from untrusted
         // certificates would not be meaningful.
-        CHECK(cert_errors->ContainsAnyErrorWithSeverity(
+        BSSL_CHECK(cert_errors->ContainsAnyErrorWithSeverity(
             CertError::SEVERITY_HIGH));
         return;
       }
@@ -1579,7 +1580,7 @@ void PathVerifier::Run(
       // Signature errors should short-circuit the rest of the verification, as
       // accumulating more errors from untrusted certificates would not be
       // meaningful.
-      CHECK(
+      BSSL_CHECK(
           cert_errors->ContainsAnyErrorWithSeverity(CertError::SEVERITY_HIGH));
       return;
     }
