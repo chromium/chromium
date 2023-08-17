@@ -8571,6 +8571,22 @@
             ]
         }
     ],
+    "InputDeviceSettingsSplit": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_InputDeviceSettingsSplit",
+                    "enable_features": [
+                        "InputDeviceSettingsSplit"
+                    ]
+                }
+            ]
+        }
+    ],
     "InstallAmbientBadgeEngagement": [
         {
             "platforms": [
