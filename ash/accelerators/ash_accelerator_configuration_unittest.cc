@@ -579,10 +579,10 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAccelerator) {
   AcceleratorModificationData override_data =
       ValueToAcceleratorModificationData(
           accelerator_overrides->front().GetDict());
-  CompareAccelerators(
+  EXPECT_TRUE(CompareAccelerators(
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
-      override_data.accelerator);
+      override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kRemove, override_data.action);
 
   // Compare expected accelerators and that the observer was fired after
@@ -1482,10 +1482,10 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorPref) {
   AcceleratorModificationData override_data =
       ValueToAcceleratorModificationData(
           accelerator_overrides->front().GetDict());
-  CompareAccelerators(
+  EXPECT_TRUE(CompareAccelerators(
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
-      override_data.accelerator);
+      override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kRemove, override_data.action);
 
   // Simulate login on another account, expect the pref to not be present.
@@ -1554,10 +1554,10 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetAllPref) {
   AcceleratorModificationData override_data =
       ValueToAcceleratorModificationData(
           accelerator_overrides->front().GetDict());
-  CompareAccelerators(
+  EXPECT_TRUE(CompareAccelerators(
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
-      override_data.accelerator);
+      override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kRemove, override_data.action);
 
   // Now re-login to the original profile.
@@ -1634,10 +1634,10 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetPref) {
   AcceleratorModificationData override_data =
       ValueToAcceleratorModificationData(
           accelerator_overrides->front().GetDict());
-  CompareAccelerators(
+  EXPECT_TRUE(CompareAccelerators(
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
-      override_data.accelerator);
+      override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kRemove, override_data.action);
 
   // Now re-login to the original profile.
@@ -1719,10 +1719,10 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorWithPrefs) {
   AcceleratorModificationData override_data =
       ValueToAcceleratorModificationData(
           accelerator_overrides->front().GetDict());
-  CompareAccelerators(
+  EXPECT_TRUE(CompareAccelerators(
       {/*trigger_on_press=*/true, ui::VKEY_A, ui::EF_COMMAND_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
-      override_data.accelerator);
+      override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kAdd, override_data.action);
 
   ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
@@ -1784,10 +1784,10 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorWithConflictWithPrefs) {
   AcceleratorModificationData switch_ime_override_data =
       ValueToAcceleratorModificationData(
           switch_to_last_used_ime_overrides->front().GetDict());
-  CompareAccelerators(
+  EXPECT_TRUE(CompareAccelerators(
       {/*trigger_on_press=*/true, ui::VKEY_C, ui::EF_COMMAND_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
-      switch_ime_override_data.accelerator);
+      switch_ime_override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kAdd,
             switch_ime_override_data.action);
 
@@ -1867,10 +1867,10 @@ TEST_F(AshAcceleratorConfigurationTest,
   AcceleratorModificationData switch_ime_override_data =
       ValueToAcceleratorModificationData(
           switch_to_last_used_ime_overrides->front().GetDict());
-  CompareAccelerators(
+  EXPECT_TRUE(CompareAccelerators(
       {/*trigger_on_press=*/true, ui::VKEY_C, ui::EF_COMMAND_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
-      switch_ime_override_data.accelerator);
+      switch_ime_override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kAdd,
             switch_ime_override_data.action);
 
@@ -1904,10 +1904,10 @@ TEST_F(AshAcceleratorConfigurationTest,
   AcceleratorModificationData toggle_dictation_data =
       ValueToAcceleratorModificationData(
           toggle_dictation_overrides->front().GetDict());
-  CompareAccelerators(
+  EXPECT_TRUE(CompareAccelerators(
       {/*trigger_on_press=*/true, ui::VKEY_C, ui::EF_COMMAND_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
-      toggle_dictation_data.accelerator);
+      toggle_dictation_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kAdd, toggle_dictation_data.action);
 
   const AcceleratorData expected_test_data_2[] = {
@@ -1986,10 +1986,10 @@ TEST_F(AshAcceleratorConfigurationTest,
   AcceleratorModificationData switch_ime_override_data =
       ValueToAcceleratorModificationData(
           switch_to_last_used_ime_overrides->front().GetDict());
-  CompareAccelerators({/*trigger_on_press=*/true, ui::VKEY_M,
-                       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-                       AcceleratorAction::kSwitchToLastUsedIme},
-                      switch_ime_override_data.accelerator);
+  EXPECT_TRUE(CompareAccelerators({/*trigger_on_press=*/true, ui::VKEY_M,
+                                   ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
+                                   AcceleratorAction::kSwitchToLastUsedIme},
+                                  switch_ime_override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kAdd,
             switch_ime_override_data.action);
 
@@ -2025,10 +2025,10 @@ TEST_F(AshAcceleratorConfigurationTest,
   AcceleratorModificationData toggle_dictation_data =
       ValueToAcceleratorModificationData(
           toggle_dictation_overrides->front().GetDict());
-  CompareAccelerators({/*trigger_on_press=*/true, ui::VKEY_M,
-                       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-                       AcceleratorAction::kEnableOrToggleDictation},
-                      toggle_dictation_data.accelerator);
+  EXPECT_TRUE(CompareAccelerators({/*trigger_on_press=*/true, ui::VKEY_M,
+                                   ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
+                                   AcceleratorAction::kEnableOrToggleDictation},
+                                  toggle_dictation_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kAdd, toggle_dictation_data.action);
 
   const AcceleratorData expected_test_data_2[] = {
@@ -2064,10 +2064,10 @@ TEST_F(AshAcceleratorConfigurationTest,
   EXPECT_EQ(1u, switch_to_last_used_ime_overrides_2->size());
   switch_ime_override_data = ValueToAcceleratorModificationData(
       switch_to_last_used_ime_overrides_2->front().GetDict());
-  CompareAccelerators({/*trigger_on_press=*/true, ui::VKEY_M,
-                       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-                       AcceleratorAction::kSwitchToLastUsedIme},
-                      switch_ime_override_data.accelerator);
+  EXPECT_TRUE(CompareAccelerators({/*trigger_on_press=*/true, ui::VKEY_M,
+                                   ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
+                                   AcceleratorAction::kSwitchToLastUsedIme},
+                                  switch_ime_override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kAdd,
             switch_ime_override_data.action);
 
@@ -2148,10 +2148,10 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveThenAddAcceleratorWithPrefs) {
   AcceleratorModificationData override_data =
       ValueToAcceleratorModificationData(
           last_used_ime_overrides->front().GetDict());
-  CompareAccelerators(
+  EXPECT_TRUE(CompareAccelerators(
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
-      override_data.accelerator);
+      override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kRemove, override_data.action);
 
   // Now verify add pref is present.
@@ -2160,9 +2160,10 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveThenAddAcceleratorWithPrefs) {
           base::NumberToString(AcceleratorAction::kToggleCalendar));
   override_data = ValueToAcceleratorModificationData(
       toggle_calendar_overrides->front().GetDict());
-  CompareAccelerators({/*trigger_on_press=*/true, ui::VKEY_SPACE,
-                       ui::EF_CONTROL_DOWN, AcceleratorAction::kToggleCalendar},
-                      override_data.accelerator);
+  EXPECT_TRUE(CompareAccelerators(
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleCalendar},
+      override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kAdd, override_data.action);
 
   const AcceleratorData updated_test_data[] = {
@@ -2229,20 +2230,20 @@ TEST_F(AshAcceleratorConfigurationTest, ReplaceAcceleratorWithPrefs) {
   AcceleratorModificationData remove_override_data =
       ValueToAcceleratorModificationData(
           last_used_ime_overrides->front().GetDict());
-  CompareAccelerators(
+  EXPECT_TRUE(CompareAccelerators(
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
-      remove_override_data.accelerator);
+      remove_override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kRemove,
             remove_override_data.action);
 
   AcceleratorModificationData add_override_data =
       ValueToAcceleratorModificationData(
           last_used_ime_overrides->back().GetDict());
-  CompareAccelerators(
+  EXPECT_TRUE(CompareAccelerators(
       {/*trigger_on_press=*/true, ui::VKEY_A, ui::EF_COMMAND_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
-      add_override_data.accelerator);
+      add_override_data.accelerator));
   EXPECT_EQ(AcceleratorModificationAction::kAdd, add_override_data.action);
 
   const AcceleratorData updated_test_data[] = {
