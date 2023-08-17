@@ -10,11 +10,8 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/segmentation_platform/internal/database/cached_result_provider.h"
-#include "components/segmentation_platform/internal/database/config_holder.h"
+#include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -31,8 +28,7 @@ class SegmentResultProvider;
 // 2. Dispatching requests to client specific request handlers.
 class RequestDispatcher {
  public:
-  explicit RequestDispatcher(const ConfigHolder* config_holder,
-                             CachedResultProvider* cached_result_provider);
+  explicit RequestDispatcher(StorageService* storage_service);
   ~RequestDispatcher();
 
   // Disallow copy/assign.
@@ -75,10 +71,11 @@ class RequestDispatcher {
   void ExecuteAllPendingActions();
   void ExecutePendingActionsForKey(const std::string& segmentation_key);
 
+  using WrappedCallback = base::OnceCallback<void(bool, const RawResult&)>;
   void GetModelResult(const std::string& segmentation_key,
                       const PredictionOptions& options,
                       scoped_refptr<InputContext> input_context,
-                      AnnotatedNumericResultCallback callback);
+                      WrappedCallback callback);
 
   // Wrap the result callback for recording metrics and converting raw result to
   // necessary result type.
@@ -86,10 +83,8 @@ class RequestDispatcher {
   void CallbackWrapper(const std::string& segmentation_key,
                        base::Time start_time,
                        base::OnceCallback<void(const ResultType&)> callback,
+                       bool is_cached_result,
                        const RawResult& raw_result);
-
-  // Configs for all registered clients.
-  const raw_ptr<const ConfigHolder> config_holder_;
 
   // Request handlers associated with the clients.
   std::map<std::string, std::unique_ptr<RequestHandler>> request_handlers_;
@@ -101,8 +96,7 @@ class RequestDispatcher {
   // elements get cleared after a timeout to avoid waiting for too long.
   std::set<std::string> uninitialized_segmentation_keys_;
 
-  // Delegate to provide cached results for all clients, shared among clients.
-  const raw_ptr<CachedResultProvider> cached_result_provider_;
+  const raw_ptr<StorageService> storage_service_;
 
   // Storage initialization status.
   absl::optional<bool> storage_init_status_;

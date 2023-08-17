@@ -102,8 +102,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
   field_trial_recorder_->RecordFieldTrialAtStartup(
       config_holder->configs(), storage_service_->cached_result_provider());
 
-  request_dispatcher_ = std::make_unique<RequestDispatcher>(
-      config_holder, storage_service_->cached_result_provider());
+  request_dispatcher_ =
+      std::make_unique<RequestDispatcher>(storage_service_.get());
 
   for (const auto& config : config_holder->configs()) {
     if (!metadata_utils::ConfigUsesLegacyOutput(config.get())) {

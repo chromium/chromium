@@ -23,6 +23,7 @@
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
@@ -170,7 +171,7 @@ class SegmentationPlatformTest : public InProcessBrowserTest {
     SegmentationPlatformService* service = segmentation_platform::
         SegmentationPlatformServiceFactory::GetForProfile(browser()->profile());
     PredictionOptions options;
-    options.on_demand_execution = true;
+    options.on_demand_execution = false;
     base::RunLoop wait_for_segment;
     service->GetClassificationResult(
         segmentation_key, options, nullptr,
@@ -212,13 +213,12 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest, RunDefaultModel) {
 }
 
 IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest,
-                       PRE_OnDemandFlowForClassificationModel) {
+                       PRE_CachedClassificationModel) {
   WaitForPlatformInit();
   WaitForClientResultPrefUpdate();
 }
 
-IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest,
-                       OnDemandFlowForClassificationModel) {
+IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest, CachedClassificationModel) {
   WaitForPlatformInit();
   // Result is available from previous session's prefs.
   ExpectClassificationResult(

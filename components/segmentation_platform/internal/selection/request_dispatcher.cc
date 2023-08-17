@@ -45,17 +45,14 @@ void PostProcess(const RawResult& raw_result, AnnotatedNumericResult& result) {
 
 }  // namespace
 
-RequestDispatcher::RequestDispatcher(
-    const ConfigHolder* config_holder,
-    CachedResultProvider* cached_result_provider)
-    : config_holder_(config_holder),
-      cached_result_provider_(cached_result_provider) {
+RequestDispatcher::RequestDispatcher(StorageService* storage_service)
+    : storage_service_(storage_service) {
   std::set<proto::SegmentId> found_segments;
 
   // Individual models must be loaded from disk or fetched from network. Fill a
   // list to keep track of which ones are still pending.
   uninitialized_segmentation_keys_ =
-      config_holder_->non_legacy_segmentation_keys();
+      storage_service_->config_holder()->non_legacy_segmentation_keys();
 }
 
 RequestDispatcher::~RequestDispatcher() = default;
@@ -69,7 +66,7 @@ void RequestDispatcher::OnPlatformInitialized(
 
   // Only set request handlers if it has not been set for testing already.
   if (request_handlers_.empty()) {
-    for (const auto& config : config_holder_->configs()) {
+    for (const auto& config : storage_service_->config_holder()->configs()) {
       request_handlers_[config->segmentation_key] = RequestHandler::Create(
           *config, std::move(result_providers[config->segmentation_key]),
           execution_service);
@@ -112,7 +109,8 @@ void RequestDispatcher::ExecutePendingActionsForKey(
 }
 
 void RequestDispatcher::OnModelUpdated(proto::SegmentId segment_id) {
-  auto key_for_updated_segment = config_holder_->GetKeyForSegmentId(segment_id);
+  auto key_for_updated_segment =
+      storage_service_->config_holder()->GetKeyForSegmentId(segment_id);
   if (!key_for_updated_segment) {
     return;
   }
@@ -132,12 +130,30 @@ void RequestDispatcher::CallbackWrapper(
     const std::string& segmentation_key,
     base::Time start_time,
     base::OnceCallback<void(const ResultType&)> callback,
+    bool is_cached_result,
     const RawResult& raw_result) {
   Config* config =
-      config_holder_->GetConfigForSegmentationKey(segmentation_key);
+      storage_service_->config_holder()->GetConfigForSegmentationKey(
+          segmentation_key);
   CHECK(config);
+
   stats::RecordClassificationRequestTotalDuration(
       *config, base::Time::Now() - start_time);
+
+  if (!is_cached_result && raw_result.status == PredictionStatus::kSucceeded) {
+    // Verify if this does not accidentally overwrite results for cached
+    // segments.
+    // TODO(ssid): Remove this check in the future if current system looks good.
+    CHECK(!config->auto_execute_and_cache)
+        << "Overwriting results without checking TTL "
+        << config->segmentation_key;
+    // Cache model execution results in prefs in case they are useful to fetch
+    // results early startup without database, or to record field trials for the
+    // session based on ondemand executions.
+    storage_service_->cached_result_writer()->CacheModelExecution(
+        config, raw_result.result);
+  }
+
   ResultType result(PredictionStatus::kFailed);
   PostProcess(std::move(raw_result), result);
   VLOG(1) << "Computed result for " << segmentation_key << ": "
@@ -149,29 +165,34 @@ void RequestDispatcher::GetModelResult(
     const std::string& segmentation_key,
     const PredictionOptions& options,
     scoped_refptr<InputContext> input_context,
-    RawResultCallback callback) {
-  if (config_holder_->IsLegacySegmentationKey(segmentation_key)) {
+    WrappedCallback callback) {
+  if (storage_service_->config_holder()->IsLegacySegmentationKey(
+          segmentation_key)) {
     VLOG(1) << "Segmentation key: " << segmentation_key
             << " is using a legacy config with the new API which is not "
                "supported. Legacy segments should use "
                "GetSelectedSegmentOnDemand or migrate to the new config.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  RawResult(PredictionStatus::kFailed)));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), /*is_cached_result=*/false,
+                       RawResult(PredictionStatus::kFailed)));
     return;
   }
   Config* config =
-      config_holder_->GetConfigForSegmentationKey(segmentation_key);
+      storage_service_->config_holder()->GetConfigForSegmentationKey(
+          segmentation_key);
   CHECK(config);
 
   if (!options.on_demand_execution) {
     // Returns result directly from prefs for non-ondemand models.
-    auto pred_result =
-        cached_result_provider_->GetPredictionResultForClient(segmentation_key);
+    auto pred_result = storage_service_->cached_result_provider()
+                           ->GetPredictionResultForClient(segmentation_key);
     RawResult raw_result(PredictionStatus::kFailed);
     if (pred_result) {
       raw_result = PostProcessor().GetRawResult(*pred_result,
                                                 PredictionStatus::kSucceeded);
+
+      storage_service_->cached_result_writer()->MarkResultAsUsed(config);
       stats::RecordSegmentSelectionFailure(
           *config, stats::SegmentationSelectionFailureReason::
                        kClassificationResultFromPrefs);
@@ -182,7 +203,9 @@ void RequestDispatcher::GetModelResult(
     }
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(raw_result)));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), /*is_cached_result=*/true,
+                       std::move(raw_result)));
     return;
   }
 
@@ -209,15 +232,18 @@ void RequestDispatcher::GetModelResult(
     stats::RecordSegmentSelectionFailure(
         *config, stats::SegmentationSelectionFailureReason::kDBInitFailure);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  RawResult(PredictionStatus::kFailed)));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), /*is_cached_result=*/false,
+                       RawResult(PredictionStatus::kFailed)));
     return;
   }
 
   auto iter = request_handlers_.find(segmentation_key);
   CHECK(iter != request_handlers_.end());
+  auto final_callback =
+      base::BindOnce(std::move(callback), /*is_cached_result=*/false);
   iter->second->GetPredictionResult(options, input_context,
-                                    std::move(callback));
+                                    std::move(final_callback));
 }
 
 void RequestDispatcher::GetClassificationResult(

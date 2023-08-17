@@ -12,7 +12,10 @@
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/platform_options.h"
+#include "components/segmentation_platform/internal/proto/client_results.pb.h"
+#include "components/segmentation_platform/public/proto/prediction_result.pb.h"
 #include "components/segmentation_platform/public/result.h"
+
 namespace segmentation_platform {
 struct Config;
 class ClientResultPrefs;
@@ -36,6 +39,19 @@ class CachedResultWriter {
   void UpdatePrefsIfExpired(const Config* config,
                             const proto::ClientResult& client_result,
                             const PlatformOptions& platform_options);
+
+  // Marks the result as used by client. Does not change the result. Should be
+  // called when the client code uses the result cached in prefs. Only saves the
+  // first time the result is used. This is valid till the result is deleted and
+  // new result is written.
+  void MarkResultAsUsed(const Config* config);
+
+  // Writes model execution results to prefs. This would overwrite the results
+  // stored in prefs without verifying the TTL of existing results. Can be used
+  // when the client is using the new `result` already and pref is stale even
+  // before TTL expiry.
+  void CacheModelExecution(const Config* config,
+                           const proto::PredictionResult& result);
 
  private:
   // Checks the following to determine whether to update pref with new result.

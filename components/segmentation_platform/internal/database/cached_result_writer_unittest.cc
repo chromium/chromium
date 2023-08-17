@@ -11,6 +11,7 @@
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/public/config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -159,6 +160,106 @@ TEST_F(CachedResultWriterTest, UpdatePrefsIfExpiredResult) {
   EXPECT_TRUE(result_from_pref.has_value());
   EXPECT_EQ(new_client_result.SerializeAsString(),
             result_from_pref.value().SerializeAsString());
+}
+
+TEST_F(CachedResultWriterTest, MarkResultAsUsed) {
+  std::unique_ptr<Config> config = test_utils::CreateTestConfig();
+  proto::ClientResult client_result = CreateClientResult(
+      /*model_scores=*/{0.8}, /*result_timestamp=*/base::Time::Now());
+  cached_result_writer_->UpdatePrefsIfExpired(config.get(), client_result,
+                                              PlatformOptions(false));
+
+  absl::optional<proto::ClientResult> client_result_from_pref =
+      client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
+
+  // Writing results to prefs the first time should not update used timestamp.
+  ASSERT_TRUE(client_result_from_pref.has_value());
+  EXPECT_EQ(0, client_result_from_pref->first_used_timestamp());
+
+  // Marking result as used should update the used timestamp.
+  cached_result_writer_->MarkResultAsUsed(config.get());
+
+  absl::optional<proto::ClientResult> client_result_first_use =
+      client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
+  ASSERT_TRUE(client_result_first_use.has_value());
+  EXPECT_GT(client_result_first_use->first_used_timestamp(), 0);
+
+  // Marking result as used in the future should not reset first used timestamp.
+  clock_.Advance(base::Seconds(10));
+  cached_result_writer_->MarkResultAsUsed(config.get());
+
+  absl::optional<proto::ClientResult> client_result_second_use =
+      client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
+  ASSERT_TRUE(client_result_second_use.has_value());
+  EXPECT_EQ(client_result_first_use->first_used_timestamp(),
+            client_result_second_use->first_used_timestamp());
+}
+
+TEST_F(CachedResultWriterTest, CacheModelExecution) {
+  std::unique_ptr<Config> config = test_utils::CreateTestConfig();
+  proto::ClientResult save_result1 = CreateClientResult(
+      /*model_scores=*/{0.8}, /*result_timestamp=*/base::Time::Now());
+
+  // Caching should save the result to prefs and mark as used.
+  cached_result_writer_->CacheModelExecution(config.get(),
+                                             save_result1.client_result());
+
+  absl::optional<proto::ClientResult> client_result_first_exec =
+      client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
+
+  ASSERT_TRUE(client_result_first_exec.has_value());
+  EXPECT_EQ(save_result1.client_result().SerializeAsString(),
+            client_result_first_exec->client_result().SerializeAsString());
+  EXPECT_GT(client_result_first_exec->first_used_timestamp(), 0);
+  EXPECT_EQ(client_result_first_exec->timestamp_us(),
+            client_result_first_exec->first_used_timestamp());
+
+  constexpr base::TimeDelta kLater = base::Seconds(10);
+  clock_.Advance(kLater);
+
+  // Caching another result (before expiry) should still overwrite the existing
+  // result.
+  proto::ClientResult save_result2 = CreateClientResult(
+      /*model_scores=*/{0.5}, /*result_timestamp=*/base::Time::Now());
+  cached_result_writer_->CacheModelExecution(config.get(),
+                                             save_result2.client_result());
+
+  absl::optional<proto::ClientResult> client_result_second_exec =
+      client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
+
+  ASSERT_TRUE(client_result_second_exec.has_value());
+  EXPECT_EQ(save_result2.client_result().SerializeAsString(),
+            client_result_second_exec->client_result().SerializeAsString());
+  EXPECT_GT(client_result_second_exec->first_used_timestamp(), 0);
+  EXPECT_EQ(client_result_second_exec->timestamp_us(),
+            client_result_second_exec->first_used_timestamp());
+}
+
+TEST_F(CachedResultWriterTest, CacheModelExecutionOverwritesAnyPrefs) {
+  std::unique_ptr<Config> config = test_utils::CreateTestConfig();
+  // Saving unexpired result for client in prefs.
+  proto::ClientResult saved_client_result = CreateClientResult(
+      /*model_scores=*/{0.8}, /*result_timestamp=*/base::Time::Now());
+  cached_result_writer_->UpdatePrefsIfExpired(config.get(), saved_client_result,
+                                              PlatformOptions(false));
+  EXPECT_TRUE(client_result_prefs_->ReadClientResultFromPrefs(
+      config->segmentation_key));
+
+  // Cache execution should overwrite the existing result.
+  proto::ClientResult save_result2 = CreateClientResult(
+      /*model_scores=*/{0.5}, /*result_timestamp=*/base::Time::Now());
+  cached_result_writer_->CacheModelExecution(config.get(),
+                                             save_result2.client_result());
+
+  absl::optional<proto::ClientResult> client_result_after_exec =
+      client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
+
+  ASSERT_TRUE(client_result_after_exec.has_value());
+  EXPECT_EQ(save_result2.client_result().SerializeAsString(),
+            client_result_after_exec->client_result().SerializeAsString());
+  EXPECT_GT(client_result_after_exec->first_used_timestamp(), 0);
+  EXPECT_EQ(client_result_after_exec->timestamp_us(),
+            client_result_after_exec->first_used_timestamp());
 }
 
 }  // namespace segmentation_platform

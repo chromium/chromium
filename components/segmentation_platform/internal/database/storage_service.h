@@ -152,6 +152,15 @@ class StorageService {
 
   UkmDataManager* ukm_data_manager() { return ukm_data_manager_; }
 
+  void set_cached_result_writer_for_testing(
+      std::unique_ptr<CachedResultWriter> writer) {
+    cached_result_writer_ = std::move(writer);
+  }
+  void set_cached_result_provider_for_testing(
+      std::unique_ptr<CachedResultProvider> provider) {
+    cached_result_provider_ = std::move(provider);
+  }
+
  private:
   void OnSegmentInfoDatabaseInitialized(bool success);
   void OnSignalDatabaseInitialized(bool success);

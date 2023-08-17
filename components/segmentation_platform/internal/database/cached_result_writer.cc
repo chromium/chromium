@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/logging.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
@@ -31,6 +32,29 @@ void CachedResultWriter::UpdatePrefsIfExpired(
                  client_result.client_result())
           << " for segmentation key: " << config->segmentation_key;
   UpdateNewClientResultToPrefs(config, client_result);
+}
+
+void CachedResultWriter::MarkResultAsUsed(const Config* config) {
+  absl::optional<proto::ClientResult> old_result =
+      result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
+  if (!old_result || old_result->first_used_timestamp() > 0) {
+    return;
+  }
+
+  old_result->set_first_used_timestamp(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  result_prefs_->SaveClientResultToPrefs(config->segmentation_key, *old_result);
+}
+
+void CachedResultWriter::CacheModelExecution(
+    const Config* config,
+    const proto::PredictionResult& result) {
+  auto now = base::Time::Now();
+  proto::ClientResult update =
+      metadata_utils::CreateClientResultFromPredResult(result, now);
+  update.set_first_used_timestamp(
+      now.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  result_prefs_->SaveClientResultToPrefs(config->segmentation_key, update);
 }
 
 bool CachedResultWriter::IsPrefUpdateRequiredForClient(
