@@ -195,6 +195,8 @@ ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
           {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kSidePanelContentRadius,
            ShapeSysTokens::kMedium},
+          {ShapeContextTokens::kSidePanelPageContentRadius,
+           ShapeSysTokens::kSmall},
       });
   const auto* it = shape_token_map.find(id);
   return it == shape_token_map.end() ? ShapeSysTokens::kDefault : it->second;

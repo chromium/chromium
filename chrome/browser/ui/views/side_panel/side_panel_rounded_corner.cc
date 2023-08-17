@@ -25,7 +25,7 @@ void SidePanelRoundedCorner::Layout() {
     bool is_right_aligned =
         browser_view_->unified_side_panel()->IsRightAligned();
     const float corner_radius = GetLayoutProvider()->GetCornerRadiusMetric(
-        views::ShapeContextTokens::kSidePanelContentRadius);
+        views::ShapeContextTokens::kSidePanelPageContentRadius);
     const gfx::Rect local_bounds = GetLocalBounds();
     if (is_right_aligned) {
       path.moveTo(0, 0);
@@ -62,7 +62,7 @@ void SidePanelRoundedCorner::OnPaint(gfx::Canvas* canvas) {
 
   bool is_right_aligned = browser_view_->unified_side_panel()->IsRightAligned();
   const float corner_radius = GetLayoutProvider()->GetCornerRadiusMetric(
-      views::ShapeContextTokens::kSidePanelContentRadius);
+      views::ShapeContextTokens::kSidePanelPageContentRadius);
   const gfx::Rect local_bounds = GetLocalBounds();
   SkPath path;
   if (is_right_aligned) {

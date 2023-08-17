@@ -768,7 +768,7 @@ void BrowserViewLayout::LayoutSidePanelView(
   if (side_panel_rounded_corner_) {
     const float corner_radius =
         side_panel_rounded_corner_->GetLayoutProvider()->GetCornerRadiusMetric(
-            views::ShapeContextTokens::kSidePanelContentRadius);
+            views::ShapeContextTokens::kSidePanelPageContentRadius);
     if (is_container_after_side_panel) {
       side_panel_rounded_corner_->SetBounds(
           side_panel_bounds.right(),
