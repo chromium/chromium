@@ -136,8 +136,15 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   self.mediator.forcedSigninEnabled =
       self.authService->GetServiceStatus() ==
       AuthenticationService::ServiceStatus::SigninForcedByPolicy;
-  self.viewController = [[ManageSyncSettingsTableViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
+
+  // For kSignedIn state the view will include the account details item with a
+  // transparent background, InsetGrouped should be used in this case to prevent
+  // grey lines from showing around this item with large fonts.
+  UITableViewStyle style = _accountState == SyncSettingsAccountState::kSignedIn
+                               ? UITableViewStyleInsetGrouped
+                               : ChromeTableViewStyle();
+  self.viewController =
+      [[ManageSyncSettingsTableViewController alloc] initWithStyle:style];
 
   NSString* title = self.mediator.overrideViewControllerTitle;
   if (!title) {
