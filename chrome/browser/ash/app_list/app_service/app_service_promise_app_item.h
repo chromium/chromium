@@ -21,7 +21,8 @@ class AppServicePromiseAppItem : public ChromeAppListItem,
 
   AppServicePromiseAppItem(Profile* profile,
                            AppListModelUpdater* model_updater,
-                           const apps::PromiseAppUpdate& app_update);
+                           const apps::PromiseAppUpdate& app_update,
+                           const syncer::StringOrdinal position);
   AppServicePromiseAppItem(const AppServicePromiseAppItem&) = delete;
   AppServicePromiseAppItem& operator=(const AppServicePromiseAppItem&) = delete;
   ~AppServicePromiseAppItem() override;

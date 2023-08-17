@@ -59,6 +59,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/sync/model/string_ordinal.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
@@ -1018,6 +1019,17 @@ syncer::StringOrdinal AppListSyncableService::GetPositionAfterApp(
     return app_item->item_ordinal.CreateBetween(next_item);
 
   return app_item->item_ordinal.CreateAfter();
+}
+
+const syncer::StringOrdinal
+AppListSyncableService::GetSyncPositionForPromiseAppItem(
+    const std::string& promise_package_id) const {
+  for (const auto& [item_id, sync_item] : sync_items_) {
+    if (sync_item->promise_package_id == promise_package_id) {
+      return sync_item->item_ordinal;
+    }
+  }
+  return syncer::StringOrdinal();
 }
 
 void AppListSyncableService::RemoveItem(const std::string& id,

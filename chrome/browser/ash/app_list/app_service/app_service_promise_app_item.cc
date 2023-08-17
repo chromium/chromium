@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_context_menu.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
+#include "components/sync/model/string_ordinal.h"
 
 // static
 const char AppServicePromiseAppItem::kItemType[] = "AppServicePromiseAppItem";
@@ -22,7 +23,8 @@ const char AppServicePromiseAppItem::kItemType[] = "AppServicePromiseAppItem";
 AppServicePromiseAppItem::AppServicePromiseAppItem(
     Profile* profile,
     AppListModelUpdater* model_updater,
-    const apps::PromiseAppUpdate& update)
+    const apps::PromiseAppUpdate& update,
+    const syncer::StringOrdinal position)
     : ChromeAppListItem(profile, update.PackageId().ToString()),
       package_id_(update.PackageId()) {
   InitializeItem(update);
@@ -36,7 +38,8 @@ AppServicePromiseAppItem::AppServicePromiseAppItem(
   // during app installations.
   SetIsEphemeral(true);
 
-  SetPosition(CalculateDefaultPositionIfApplicable());
+  SetPosition(position.IsValid() ? position
+                                 : CalculateDefaultPositionIfApplicable());
 
   // Set model updater last to avoid being called during construction.
   set_model_updater(model_updater);

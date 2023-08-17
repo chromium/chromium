@@ -180,6 +180,12 @@ class AppListSyncableService : public syncer::SyncableService,
   // provided `id`.
   syncer::StringOrdinal GetPositionAfterApp(const std::string& id) const;
 
+  // Find an app in the synced data that has the specified `promise_package_id`.
+  // If a match exists, retrieve the ordinal position of the synced app item.
+  // Otherwise, return an empty ordinal.
+  const syncer::StringOrdinal GetSyncPositionForPromiseAppItem(
+      const std::string& promise_package_id) const;
+
   // Called when properties of an item may have changed, e.g. default/oem state.
   void UpdateItem(const ChromeAppListItem* app_item);
 

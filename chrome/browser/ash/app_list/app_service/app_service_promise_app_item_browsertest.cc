@@ -23,11 +23,13 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
@@ -242,6 +244,36 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   EXPECT_EQ(item->name(), "Test2");
   EXPECT_EQ(item->progress(), 0.3f);
   EXPECT_EQ(item->app_status(), ash::AppStatus::kInstalling);
+}
+
+IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, SetToSyncPosition) {
+  syncer::StringOrdinal ordinal = syncer::StringOrdinal::CreateInitialOrdinal();
+
+  // Add entry in sync data that has a matching PackageId with the promise app.
+  syncer::SyncDataList sync_list;
+  sync_list.push_back((app_list::CreateAppRemoteData(
+      "asdfghjkl", "App Name", /*parent_id=*/std::string(),
+      ordinal.ToInternalValue(), /*item_pin_ordinal=*/std::string(),
+      /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
+      /*is_user_pinned=*/absl::nullopt,
+      /*promise_package_id=*/kTestPackageId.ToString())));
+  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
+      ->MergeDataAndStartSyncing(
+          syncer::APP_LIST, sync_list,
+          std::make_unique<syncer::FakeSyncChangeProcessor>());
+  content::RunAllTasksUntilIdle();
+
+  // Register a promise app in the promise app registry cache.
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<PromiseApp>(kTestPackageId);
+  promise_app->name = "Test";
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Promise app item should exist in the model at the correct position.
+  ChromeAppListItem* item = GetChromeAppListItem(kTestPackageId);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(item->position(), ordinal);
 }
 
 }  // namespace apps
