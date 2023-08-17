@@ -8,14 +8,60 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/test_utils.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
+namespace {
+constexpr char kShowAnimationSmoothnessHistogramName[] =
+    "Ash.StatusArea.TrayItemView.Show";
+constexpr char kHideAnimationSmoothnessHistogramName[] =
+    "Ash.StatusArea.TrayItemView.Hide";
+}  // namespace
+
+// A class that can be used to wait for the given `TrayItemView`'s visibility
+// animation to finish (`TrayItemView` does not currently use layer animations,
+// so we can't just use `ui::LayerAnimationStoppedWaiter`).
+class TrayItemViewAnimationWaiter {
+ public:
+  explicit TrayItemViewAnimationWaiter(TrayItemView* tray_item)
+      : tray_item_(tray_item) {}
+  TrayItemViewAnimationWaiter(const TrayItemViewAnimationWaiter&) = delete;
+  TrayItemViewAnimationWaiter& operator=(const TrayItemViewAnimationWaiter&) =
+      delete;
+  ~TrayItemViewAnimationWaiter() = default;
+
+  // Waits for `tray_item_`'s visibility animation to finish, or no-op if it is
+  // not currently animating.
+  void Wait() {
+    if (tray_item_->IsAnimating()) {
+      tray_item_->SetAnimationIdleClosureForTest(base::BindOnce(
+          &TrayItemViewAnimationWaiter::OnTrayItemAnimationFinished,
+          weak_ptr_factory_.GetWeakPtr()));
+      run_loop_.Run();
+    }
+  }
+
+ private:
+  // Called when `tray_item_`'s visibility animation finishes.
+  void OnTrayItemAnimationFinished() { run_loop_.Quit(); }
+
+  // The tray item whose animation is being waited for. Owned by the views
+  // hierarchy.
+  raw_ptr<TrayItemView, ExperimentalAsh> tray_item_ = nullptr;
+
+  base::RunLoop run_loop_;
+
+  base::WeakPtrFactory<TrayItemViewAnimationWaiter> weak_ptr_factory_{this};
+};
 
 class TestTrayItemView : public TrayItemView {
  public:
@@ -50,6 +96,18 @@ class TrayItemViewTest : public AshTestBase {
   void TearDown() override {
     widget_.reset();
     AshTestBase::TearDown();
+  }
+
+  // Helper function that waits not only for `tray_item()`'s animation to finish
+  // but also for any animation throughput data to be passed from cc to ui.
+  void WaitForAnimation() {
+    TrayItemViewAnimationWaiter waiter(tray_item());
+    waiter.Wait();
+
+    // Ensure there is one more frame presented after animation finishes to
+    // allow animation throughput data to be passed from cc to ui.
+    EXPECT_TRUE(ui::WaitForNextFrameToBePresented(
+        tray_item()->GetWidget()->GetCompositor()));
   }
 
   views::Widget* widget() { return widget_.get(); }
@@ -161,6 +219,90 @@ TEST_F(TrayItemViewTest, LargeImageIcon) {
   // The preferred size is the size of the larger image (which is not the
   // default tray icon size, see static_assert above).
   EXPECT_EQ(tray_item()->CalculatePreferredSize(), kLargeImageSize);
+}
+
+// Tests that a smoothness metric is recorded for the "show" animation.
+TEST_F(TrayItemViewTest, SmoothnessMetricRecordedForShowAnimation) {
+  // Start with the tray item hidden. Note that animations still complete
+  // immediately in this part of the test, so no smoothness metrics are emitted.
+  tray_item()->SetVisible(false);
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kHideAnimationSmoothnessHistogramName, 0);
+
+  // Set the animation duration scale to a non-zero value for the rest of the
+  // test. Smoothness metrics should be emitted from this point onward.
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Start the tray item's "show" animation and wait for it to finish.
+  tray_item()->SetVisible(true);
+  WaitForAnimation();
+
+  // Verify that the "show" animation's smoothness metric was recorded.
+  histogram_tester.ExpectTotalCount(kShowAnimationSmoothnessHistogramName, 1);
+}
+
+// Tests that a smoothness metric is recorded for the "hide" animation.
+TEST_F(TrayItemViewTest, SmoothnessMetricRecordedForHideAnimation) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kHideAnimationSmoothnessHistogramName, 0);
+
+  // Set the animation duration scale to a non-zero value for the rest of the
+  // test. Smoothness metrics should be emitted from this point onward.
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Start the tray item's "hide" animation and wait for it to finish.
+  tray_item()->SetVisible(false);
+  WaitForAnimation();
+
+  // Verify that the "hide" animation's smoothness metric was recorded.
+  histogram_tester.ExpectTotalCount(kHideAnimationSmoothnessHistogramName, 1);
+}
+
+// Tests that the smoothness metric for the "hide" animation is still recorded
+// even when the "hide" animation interrupts the "show" animation.
+TEST_F(TrayItemViewTest, HideSmoothnessMetricRecordedWhenHideInterruptsShow) {
+  // Start with the tray item hidden. Note that animations still complete
+  // immediately in this part of the test, so no smoothness metrics are emitted.
+  tray_item()->SetVisible(false);
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kHideAnimationSmoothnessHistogramName, 0);
+
+  // Set the animation duration scale to a non-zero value for the rest of the
+  // test. Smoothness metrics should be emitted from this point onward.
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Start the tray item's "show" animation, but interrupt it with the "hide"
+  // animation. Wait for the "hide" animation to complete.
+  tray_item()->SetVisible(true);
+  tray_item()->SetVisible(false);
+  WaitForAnimation();
+
+  // Verify that the "hide" animation's smoothness metric was recorded.
+  histogram_tester.ExpectTotalCount(kHideAnimationSmoothnessHistogramName, 1);
+}
+
+// Tests that the smoothness metric for the "show" animation is still recorded
+// even when the "show" animation interrupts the "hide" animation.
+TEST_F(TrayItemViewTest, ShowSmoothnessMetricRecordedWhenShowInterruptsHide) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kHideAnimationSmoothnessHistogramName, 0);
+
+  // Set the animation duration scale to a non-zero value for the rest of the
+  // test. Smoothness metrics should be emitted from this point onward.
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Start the tray item's "hide" animation, but interrupt it with the "show"
+  // animation. Wait for the "show" animation to complete.
+  tray_item()->SetVisible(false);
+  tray_item()->SetVisible(true);
+  WaitForAnimation();
+
+  // Verify that the "show" animation's smoothness metric was recorded.
+  histogram_tester.ExpectTotalCount(kShowAnimationSmoothnessHistogramName, 1);
 }
 
 }  // namespace ash

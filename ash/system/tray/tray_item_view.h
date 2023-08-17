@@ -213,8 +213,11 @@ class ASH_EXPORT TrayItemView : public views::View,
   raw_ptr<views::ImageView, DanglingUntriaged | ExperimentalAsh> image_view_ =
       nullptr;
 
-  // Measure animation smoothness metrics for `animation_`.
-  absl::optional<ui::ThroughputTracker> throughput_tracker_;
+  // Measures animation smoothness metrics for "show" animation.
+  absl::optional<ui::ThroughputTracker> show_throughput_tracker_;
+
+  // Measures animation smoothness metrics for "hide" animation.
+  absl::optional<ui::ThroughputTracker> hide_throughput_tracker_;
 
   // Number of active requests to disable animation.
   size_t disable_animation_count_ = 0u;
