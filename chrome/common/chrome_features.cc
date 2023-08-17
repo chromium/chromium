@@ -1011,7 +1011,7 @@ BASE_FEATURE(kPrerenderFallbackToPreconnect,
 // Enable improved printer state and error state messaging for Print Preview.
 BASE_FEATURE(kPrintPreviewSetupAssistance,
              "PrintPreviewSetupAssistance",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kPrivacyGuideAndroid,
