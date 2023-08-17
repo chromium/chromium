@@ -19,7 +19,7 @@ _PLATFORM_TO_RELEASE_OS = {
   'android': 'android',
   'webview': 'webview',
   'lacros': 'linux',
-  'cros': 'cros',
+  'cros': 'linux',
 }
 
 def pytest_addoption(parser):
