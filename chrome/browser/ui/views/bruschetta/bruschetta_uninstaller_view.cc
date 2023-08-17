@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
@@ -68,6 +69,16 @@ bool BruschettaUninstallerView::Cancel() {
 BruschettaUninstallerView*
 BruschettaUninstallerView::GetActiveViewForTesting() {
   return g_bruschetta_uninstaller_view;
+}
+
+void BruschettaUninstallerView::OnWidgetInitialized() {
+  views::BubbleDialogDelegateView::OnWidgetInitialized();
+  const std::u16string device_type = ui::GetChromeOSDeviceName();
+  const std::u16string name =
+      base::UTF8ToUTF16(bruschetta::GetDisplayName(profile_, guest_id_));
+  GetOkButton()->SetAccessibleDescription(l10n_util::GetStringFUTF16(
+      IDS_BRUSCHETTA_UNINSTALLER_UNINSTALL_BUTTON_ARIA_DESCRIPTION, name,
+      device_type));
 }
 
 BruschettaUninstallerView::BruschettaUninstallerView(Profile* profile,
