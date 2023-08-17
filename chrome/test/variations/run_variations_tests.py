@@ -13,6 +13,7 @@ SRC_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), *([os.pardir] * 3)))
 
 sys.path.append(SRC_DIR)
+sys.path.append(os.getcwd())
 from testing.scripts import common
 
 if __name__ == "__main__":
