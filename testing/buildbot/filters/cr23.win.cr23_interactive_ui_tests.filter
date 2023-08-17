@@ -1,7 +1,6 @@
 # cr2023_interactive_ui_tests that are expected to fail on win bots:
 -All/ExtensionsMenuModelPresenceTest.MenuPresence/0
 -AppMenuFullscreenInteractiveTest.ClosingTab
--MenuControllerUITest.TestMouseOverShownMenu
 -PermissionIndicatorsInteractiveUITest.CameraAccessAndStopTest
 -PermissionIndicatorsInteractiveUITest.CameraAndMicAccessAndStopTest
 -PermissionsFlowInteractiveUITest.CameraActivityIndicatorTest

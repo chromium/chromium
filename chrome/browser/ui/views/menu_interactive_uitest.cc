@@ -75,8 +75,7 @@ class MenuControllerUITest : public InProcessBrowserTest {
     // Figure out the middle of the first menu item.
     mouse_pos_.set_x(first_item_->width() / 2);
     mouse_pos_.set_y(first_item_->height() / 2);
-    View::ConvertPointToScreen(
-        menu_item->GetSubmenu()->GetWidget()->GetRootView(), &mouse_pos_);
+    View::ConvertPointToScreen(first_item_.get(), &mouse_pos_);
     // Move the mouse so that it's where the menu will be shown.
     base::RunLoop run_loop;
     ui_controls::SendMouseMoveNotifyWhenDone(mouse_pos_.x(), mouse_pos_.y(),
@@ -121,14 +120,6 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, TestMouseOverShownMenu) {
   content::testing::ScopedContentAXModeSetter ax_mode_setter(
       ui::kAXModeComplete);
 #endif
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1286137): This test is consistently failing on Win11.
-  if (base::win::OSInfo::GetInstance()->version() >=
-      base::win::Version::WIN11) {
-    GTEST_SKIP() << "Skipping test for WIN11_21H2 and greater";
-  }
-#endif
-
   // Create a parent widget.
   Widget* widget = new views::Widget;
   Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
