@@ -13,7 +13,7 @@ namespace password_manager {
 
 // Represents a Public Key for a user including its version.
 struct PublicKey {
-  // 32 byte X25519 Public key.
+  // Base64 representation of 32 byte X25519 Public key.
   std::string key;
   // Key version.
   uint32_t key_version = 0;

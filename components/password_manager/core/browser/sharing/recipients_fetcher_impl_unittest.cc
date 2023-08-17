@@ -84,6 +84,8 @@ TEST_F(RecipientsFetcherImplTest, ShouldFetchRecpientInfoWhenRequestSucceeds) {
   const std::string kTestProfileImageUrl =
       "https://3837fjsdjaka.image.example.com";
   const std::string kTestPublicKey = "01234567890123456789012345678912";
+  const std::string kTestPublicKeyBase64 =
+      "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MTI=";
   const uint32_t kTestPublicKeyVersion = 0;
 
   // Create set the server response.
@@ -109,7 +111,7 @@ TEST_F(RecipientsFetcherImplTest, ShouldFetchRecpientInfoWhenRequestSucceeds) {
   expected_recipient_info.user_name = kTestUserName;
   expected_recipient_info.email = kTestEmail;
   expected_recipient_info.profile_image_url = kTestProfileImageUrl;
-  expected_recipient_info.public_key.key = kTestPublicKey;
+  expected_recipient_info.public_key.key = kTestPublicKeyBase64;
   expected_recipient_info.public_key.key_version = kTestPublicKeyVersion;
   StrictMock<base::MockCallback<RecipientsFetcher::FetchFamilyMembersCallback>>
       callback;

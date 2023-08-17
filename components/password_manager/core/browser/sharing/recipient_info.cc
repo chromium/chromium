@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/sharing/recipient_info.h"
 
+#include "base/base64.h"
+
 namespace password_manager {
 
 bool PublicKey::operator==(const PublicKey& other) const {
@@ -12,7 +14,10 @@ bool PublicKey::operator==(const PublicKey& other) const {
 
 sync_pb::CrossUserSharingPublicKey PublicKey::ToProto() const {
   sync_pb::CrossUserSharingPublicKey proto_result;
-  proto_result.set_x25519_public_key(key);
+  // Bytes from x25519_public_key proto may not match valid utf-8 characters.
+  // Conversion to Base64 prevents further errors while converting string to
+  // different types.
+  base::Base64Decode(key, proto_result.mutable_x25519_public_key());
   proto_result.set_version(key_version);
   return proto_result;
 }
@@ -21,7 +26,7 @@ sync_pb::CrossUserSharingPublicKey PublicKey::ToProto() const {
 PublicKey PublicKey::FromProto(
     const sync_pb::CrossUserSharingPublicKey& proto_public_key) {
   PublicKey result;
-  result.key = proto_public_key.x25519_public_key();
+  base::Base64Encode(proto_public_key.x25519_public_key(), &result.key);
   result.key_version = proto_public_key.version();
   return result;
 }
