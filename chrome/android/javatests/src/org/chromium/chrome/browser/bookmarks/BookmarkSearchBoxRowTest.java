@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,8 +45,9 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -98,7 +103,7 @@ public class BookmarkSearchBoxRowTest {
 
             mPropertyModel =
                     new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
-                            .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, false)
+                            .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, true)
                             .with(BookmarkSearchBoxRowProperties.QUERY_CALLBACK, mQueryCallback)
                             .with(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK,
                                     mFocusChangeCallback)
@@ -110,10 +115,18 @@ public class BookmarkSearchBoxRowTest {
         });
     }
 
+    private <T> void setProperty(WritableObjectPropertyKey<T> property, T value) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> mPropertyModel.set(property, value));
+    }
+
+    private void setProperty(WritableBooleanPropertyKey property, boolean value) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> mPropertyModel.set(property, value));
+    }
+
     @Test
     @MediumTest
     public void testFocusAndEnter() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> TouchCommon.singleClickView(mEditText));
+        onView(withId(R.id.search_text)).perform(click());
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(mEditText.hasFocus(), Matchers.is(true)));
 
@@ -129,6 +142,7 @@ public class BookmarkSearchBoxRowTest {
     @MediumTest
     public void testQueryCallback() {
         String query = "foo";
+        // TODO(https://crbug.com/1467376): Use a model property instead to set the query text.
         TestThreadUtils.runOnUiThreadBlocking(() -> mEditText.setText(query));
         verify(mQueryCallback).onResult(eq(query));
     }
@@ -136,31 +150,29 @@ public class BookmarkSearchBoxRowTest {
     @Test
     @MediumTest
     public void testFocusChangeCallback() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mBookmarkSearchBoxRow.setHasFocus(true));
+        setProperty(BookmarkSearchBoxRowProperties.HAS_FOCUS, true);
         verify(mFocusChangeCallback).onResult(true);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mBookmarkSearchBoxRow.setHasFocus(false));
-        verify(mFocusChangeCallback).onResult(true);
+        setProperty(BookmarkSearchBoxRowProperties.HAS_FOCUS, false);
+        verify(mFocusChangeCallback).onResult(false);
     }
 
     @Test
     @MediumTest
     public void testShoppingChipVisibility() {
-        assertFalse(mShoppingFilterChip.isShown());
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPropertyModel.set(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, true);
-        });
         assertTrue(mShoppingFilterChip.isShown());
+
+        setProperty(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, false);
+        assertFalse(mShoppingFilterChip.isShown());
     }
 
     @Test
     @MediumTest
     public void testShoppingChipToggle() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(mShoppingFilterChip::performClick);
+        onView(withId(R.id.shopping_filter_chip)).perform(click());
         verify(mToggleCallback).onResult(true);
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(mShoppingFilterChip::performClick);
+        onView(withId(R.id.shopping_filter_chip)).perform(click());
         verify(mToggleCallback).onResult(false);
     }
 }
