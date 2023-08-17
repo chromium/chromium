@@ -8,11 +8,17 @@ import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Responsible for hosting properties for {@link BookmarkSearchBoxRow}. */
 class BookmarkSearchBoxRowProperties {
     public static final ReadableObjectPropertyKey<Callback<String>> QUERY_CALLBACK =
             new ReadableObjectPropertyKey<>();
+    public static final ReadableObjectPropertyKey<Callback<Boolean>> FOCUS_CHANGE_CALLBACK =
+            new ReadableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Boolean> HAS_FOCUS =
+            new WritableObjectPropertyKey<>();
+
     public static final ReadableObjectPropertyKey<Callback<Boolean>> SHOPPING_CHIP_TOGGLE_CALLBACK =
             new ReadableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey SHOPPING_CHIP_VISIBILITY =
@@ -23,6 +29,6 @@ class BookmarkSearchBoxRowProperties {
             new ReadableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {BookmarkManagerProperties.BOOKMARK_LIST_ENTRY,
-            QUERY_CALLBACK, SHOPPING_CHIP_TOGGLE_CALLBACK, SHOPPING_CHIP_VISIBILITY,
-            SHOPPING_CHIP_START_ICON_RES, SHOPPING_CHIP_TEXT_RES};
+            QUERY_CALLBACK, FOCUS_CHANGE_CALLBACK, HAS_FOCUS, SHOPPING_CHIP_TOGGLE_CALLBACK,
+            SHOPPING_CHIP_VISIBILITY, SHOPPING_CHIP_START_ICON_RES, SHOPPING_CHIP_TEXT_RES};
 }

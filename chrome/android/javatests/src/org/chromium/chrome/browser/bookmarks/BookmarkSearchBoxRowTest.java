@@ -61,6 +61,8 @@ public class BookmarkSearchBoxRowTest {
     @Mock
     private Callback<String> mQueryCallback;
     @Mock
+    private Callback<Boolean> mFocusChangeCallback;
+    @Mock
     private Callback<Boolean> mToggleCallback;
 
     private BookmarkSearchBoxRow mBookmarkSearchBoxRow;
@@ -95,6 +97,8 @@ public class BookmarkSearchBoxRowTest {
                     new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
                             .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, false)
                             .with(BookmarkSearchBoxRowProperties.QUERY_CALLBACK, mQueryCallback)
+                            .with(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK,
+                                    mFocusChangeCallback)
                             .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK,
                                     mToggleCallback)
                             .build();
@@ -124,6 +128,16 @@ public class BookmarkSearchBoxRowTest {
         String query = "foo";
         TestThreadUtils.runOnUiThreadBlocking(() -> mEditText.setText(query));
         Mockito.verify(mQueryCallback).onResult(Mockito.eq(query));
+    }
+
+    @Test
+    @MediumTest
+    public void testFocusChangeCallback() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> mBookmarkSearchBoxRow.setHasFocus(true));
+        Mockito.verify(mFocusChangeCallback).onResult(true);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mBookmarkSearchBoxRow.setHasFocus(false));
+        Mockito.verify(mFocusChangeCallback).onResult(true);
     }
 
     @Test

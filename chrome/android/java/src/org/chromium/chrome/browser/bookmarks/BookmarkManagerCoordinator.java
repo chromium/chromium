@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
@@ -50,6 +51,8 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+
+import java.util.function.Consumer;
 
 /** Responsible for setting up sub-components and routing incoming/outgoing signals */
 // TODO(crbug.com/1446506): Add a new coordinator so this class doesn't own everything.
@@ -168,12 +171,15 @@ public class BookmarkManagerCoordinator
 
         BookmarkUndoController bookmarkUndoController =
                 new BookmarkUndoController(context, mBookmarkModel, snackbarManager);
+        Consumer<OnScrollListener> onScrollListenerConsumer =
+                onScrollListener -> mRecyclerView.addOnScrollListener(onScrollListener);
         mMediator = new BookmarkManagerMediator(context, mBookmarkModel, mBookmarkOpener,
                 mSelectableListLayout, mSelectionDelegate, mRecyclerView,
                 dragReorderableRecyclerViewAdapter, largeIconBridge, isDialogUi, isIncognito,
                 mBackPressStateSupplier, mProfile, bookmarkUndoController, modelList,
                 mBookmarkUiPrefs, this::hideKeyboard, bookmarkImageFetcher,
-                ShoppingServiceFactory.getForProfile(mProfile), mSnackbarManager);
+                ShoppingServiceFactory.getForProfile(mProfile), mSnackbarManager,
+                onScrollListenerConsumer);
         mPromoHeaderManager = mMediator.getPromoHeaderManager();
 
         bookmarkDelegateSupplier.set(/*bookmarkDelegate=*/mMediator);

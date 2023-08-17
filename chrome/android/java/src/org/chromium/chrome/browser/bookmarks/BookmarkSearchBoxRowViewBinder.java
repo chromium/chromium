@@ -22,6 +22,11 @@ class BookmarkSearchBoxRowViewBinder {
         ChipView shoppingChip = view.findViewById(R.id.shopping_filter_chip);
         if (key == BookmarkSearchBoxRowProperties.QUERY_CALLBACK) {
             row.setQueryCallback(model.get(BookmarkSearchBoxRowProperties.QUERY_CALLBACK));
+        } else if (key == BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK) {
+            row.setFocusChangeCallback(
+                    model.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK));
+        } else if (key == BookmarkSearchBoxRowProperties.HAS_FOCUS) {
+            row.setHasFocus(model.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
         } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY) {
             boolean isVisible = model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY);
             ((View) shoppingChip.getParent()).setVisibility(isVisible ? View.VISIBLE : View.GONE);

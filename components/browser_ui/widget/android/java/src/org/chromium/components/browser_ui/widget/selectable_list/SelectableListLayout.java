@@ -181,6 +181,9 @@ public class SelectableListLayout<E> extends FrameLayout
                 setToolbarShadowVisibility();
             }
         });
+        mRecyclerView.addOnLayoutChangeListener(
+                (View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
+                        int oldRight, int oldBottom) -> { setToolbarShadowVisibility(); });
 
         mItemAnimator = mRecyclerView.getItemAnimator();
     }

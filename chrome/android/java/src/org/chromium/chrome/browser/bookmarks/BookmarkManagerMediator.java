@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
@@ -66,6 +67,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /** Responsible for BookmarkManager business logic. */
@@ -349,7 +351,7 @@ class BookmarkManagerMediator
             BookmarkUndoController bookmarkUndoController, ModelList modelList,
             BookmarkUiPrefs bookmarkUiPrefs, Runnable hideKeyboardRunnable,
             BookmarkImageFetcher bookmarkImageFetcher, ShoppingService shoppingService,
-            SnackbarManager snackbarManager) {
+            SnackbarManager snackbarManager, Consumer<OnScrollListener> onScrollListenerConsumer) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
@@ -386,6 +388,18 @@ class BookmarkManagerMediator
         mBookmarkImageFetcher = bookmarkImageFetcher;
         mShoppingService = shoppingService;
         mSnackbarManager = snackbarManager;
+
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            onScrollListenerConsumer.accept(new OnScrollListener() {
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    if (dy > 0) {
+                        mHideKeyboardRunnable.run();
+                        clearSearchBoxFocus();
+                    }
+                }
+            });
+        }
 
         // Previously we were waiting for BookmarkModel to be loaded, but it's not necessary.
         PartnerBookmarksReader.addFaviconUpdateObserver(this);
@@ -845,6 +859,17 @@ class BookmarkManagerMediator
         return position;
     }
 
+    private void clearSearchBoxFocus() {
+        assertIsAndroidImprovedBookmarksEnabled();
+        getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.HAS_FOCUS, false);
+    }
+
+    private PropertyModel getSearchBoxPropertyModel() {
+        assertIsAndroidImprovedBookmarksEnabled();
+        int index = getCurrentSearchBoxIndex();
+        return index < 0 ? null : mModelList.get(index).model;
+    }
+
     @SuppressWarnings("NotifyDataSetChanged")
     private void setBookmarks(List<BookmarkListEntry> bookmarkListEntryList) {
         clearHighlight();
@@ -1087,6 +1112,8 @@ class BookmarkManagerMediator
                                 R.string.price_tracking_bookmarks_filter_title)
                         .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK,
                                 this::onShoppingFilterToggle)
+                        .with(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK,
+                                this::onSearchBoxFocusChange)
                         .build();
         return new ListItem(ViewType.SEARCH_BOX, propertyModel);
     }
@@ -1292,6 +1319,10 @@ class BookmarkManagerMediator
         onSearchChange(query, getCurrentSearchPowerFilter());
     }
 
+    private void onSearchBoxFocusChange(Boolean hasFocus) {
+        getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.HAS_FOCUS, hasFocus);
+    }
+
     private void onShoppingFilterToggle(boolean isFiltering) {
         final @NonNull Set<PowerBookmarkType> powerFilter = isFiltering
                 ? Collections.singleton(PowerBookmarkType.SHOPPING)
@@ -1335,6 +1366,10 @@ class BookmarkManagerMediator
             PropertyModel model = mModelList.get(i).model;
             model.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, mIsSelectionEnabled);
         }
+    }
+    @SuppressWarnings("AssertionSideEffect")
+    private void assertIsAndroidImprovedBookmarksEnabled() {
+        assert BookmarkFeatures.isAndroidImprovedBookmarksEnabled();
     }
 
     // Testing methods.

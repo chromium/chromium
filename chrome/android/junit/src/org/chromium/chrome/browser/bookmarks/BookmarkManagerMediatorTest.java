@@ -23,6 +23,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
@@ -38,6 +39,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -117,6 +119,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.function.Consumer;
 
 /** Unit tests for {@link BookmarkManagerMediator}. */
 @Batch(Batch.UNIT_TESTS)
@@ -183,6 +186,8 @@ public class BookmarkManagerMediatorTest {
     private PriceTrackingUtils.Natives mPriceTrackingUtilsJniMock;
     @Mock
     private ListObservable.ListObserver<Void> mListObserver;
+    @Mock
+    private Consumer<OnScrollListener> mOnScrollListenerConsumer;
 
     @Captor
     private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
@@ -194,6 +199,8 @@ public class BookmarkManagerMediatorTest {
     private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
     @Captor
     private ArgumentCaptor<Runnable> mFinishLoadingBookmarkModelCaptor;
+    @Captor
+    private ArgumentCaptor<OnScrollListener> mOnScrollListenerCaptor;
 
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
@@ -364,7 +371,8 @@ public class BookmarkManagerMediatorTest {
                     mDragReorderableRecyclerViewAdapter, mLargeIconBridge, /*isDialogUi=*/true,
                     /*isIncognito=*/false, mBackPressStateSupplier, mProfile,
                     mBookmarkUndoController, mModelList, mBookmarkUiPrefs, mHideKeyboardRunnable,
-                    mBookmarkImageFetcher, mShoppingService, mSnackbarManager);
+                    mBookmarkImageFetcher, mShoppingService, mSnackbarManager,
+                    mOnScrollListenerConsumer);
             mMediator.addUiObserver(mBookmarkUiObserver);
         });
     }
@@ -1270,5 +1278,29 @@ public class BookmarkManagerMediatorTest {
 
         assertTrue(mModelList.get(1).model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         assertTrue(mModelList.get(2).model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testClearFocusOnScroll() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+        verify(mOnScrollListenerConsumer).accept(mOnScrollListenerCaptor.capture());
+        OnScrollListener onScrollListener = mOnScrollListenerCaptor.getValue();
+
+        PropertyModel searchBoxRowPropertyModel = mModelList.get(0).model;
+        searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK)
+                .onResult(true);
+        assertTrue(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
+
+        onScrollListener.onScrolled(mRecyclerView, 0, -1);
+        verifyNoInteractions(mHideKeyboardRunnable);
+        assertTrue(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
+
+        onScrollListener.onScrolled(mRecyclerView, 0, 1);
+        verify(mHideKeyboardRunnable).run();
+        assertFalse(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
     }
 }
