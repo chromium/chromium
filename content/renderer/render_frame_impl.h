@@ -1195,9 +1195,14 @@ class CONTENT_EXPORT RenderFrameImpl
   // Blink Web* layer to check for provisional frames.
   bool in_frame_tree_;
   // TODO(crbug.com/1425281): Temporary for debugging. Note that collecting this
-  // stack trace is limited to non-aarch64 platforms because
-  // base::debug::StackTrace appears to crash on CrOS aarch64 in the renderer
-  // sandbox. See https://crbug.com/1457701.
+  // stack trace is limited to non-Android/non-aarch64 CrOS platforms because:
+  // - https://crbug.com/1457701: unwinding doesn't work inside the sandbox on
+  //   CrOS aarch64
+  // - https://crbug.com/1461901: libunwind crashes on invalid inputs on 32-bit
+  //   Android.
+  // - https://crbug.com/1470012: libunwind crashes on invalid inputs on 64-bit
+  //   Android (which shouldn't have been the case since 64-bit should just be
+  //   able to use the frame pointers rather than relying on unwind tables...)
   absl::optional<base::debug::StackTrace> added_to_frame_tree_stack_trace_;
 
   const int routing_id_;
