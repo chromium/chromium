@@ -398,6 +398,14 @@
     'args': [
       '--everlasting',
     ],
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'fuchsia_emulator_cache',
+          'path': '.fuchsia_emulator/fuchsia-everlasting-emulator',
+        },
+      ],
+    },
   },
   'fuchsia_logs': {
     'args': [

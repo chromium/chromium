@@ -2857,6 +2857,12 @@
             "os": "Ubuntu-20.04",
             "pool": "chromium.tests.fuchsia"
           },
+          "named_caches": [
+            {
+              "name": "fuchsia_emulator_cache",
+              "path": ".fuchsia_emulator/fuchsia-everlasting-emulator"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "aura_unittests",
@@ -2875,6 +2881,12 @@
             "os": "Ubuntu-20.04",
             "pool": "chromium.tests.fuchsia"
           },
+          "named_caches": [
+            {
+              "name": "fuchsia_emulator_cache",
+              "path": ".fuchsia_emulator/fuchsia-everlasting-emulator"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_common_unittests",
@@ -2893,6 +2905,12 @@
             "os": "Ubuntu-20.04",
             "pool": "chromium.tests.fuchsia"
           },
+          "named_caches": [
+            {
+              "name": "fuchsia_emulator_cache",
+              "path": ".fuchsia_emulator/fuchsia-everlasting-emulator"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "courgette_unittests",
@@ -2911,6 +2929,12 @@
             "os": "Ubuntu-20.04",
             "pool": "chromium.tests.fuchsia"
           },
+          "named_caches": [
+            {
+              "name": "fuchsia_emulator_cache",
+              "path": ".fuchsia_emulator/fuchsia-everlasting-emulator"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "crypto_unittests",
@@ -2929,6 +2953,12 @@
             "os": "Ubuntu-20.04",
             "pool": "chromium.tests.fuchsia"
           },
+          "named_caches": [
+            {
+              "name": "fuchsia_emulator_cache",
+              "path": ".fuchsia_emulator/fuchsia-everlasting-emulator"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "filesystem_service_unittests",
@@ -2948,6 +2978,12 @@
             "os": "Ubuntu-20.04",
             "pool": "chromium.tests.fuchsia"
           },
+          "named_caches": [
+            {
+              "name": "fuchsia_emulator_cache",
+              "path": ".fuchsia_emulator/fuchsia-everlasting-emulator"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "web_engine_integration_tests",
@@ -2966,6 +3002,12 @@
             "os": "Ubuntu-20.04",
             "pool": "chromium.tests.fuchsia"
           },
+          "named_caches": [
+            {
+              "name": "fuchsia_emulator_cache",
+              "path": ".fuchsia_emulator/fuchsia-everlasting-emulator"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "web_engine_unittests",

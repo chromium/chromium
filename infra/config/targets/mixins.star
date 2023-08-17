@@ -493,6 +493,16 @@ targets.mixin(
     args = [
         "--everlasting",
     ],
+    swarming = targets.swarming(
+        # The persistent emulator will only be used on dedicated fuchsia pool so
+        # that there isn't a need of cache affinity.
+        named_caches = [
+            swarming.cache(
+                name = "fuchsia_emulator_cache",
+                path = ".fuchsia_emulator/fuchsia-everlasting-emulator",
+            ),
+        ],
+    ),
 )
 
 targets.mixin(
