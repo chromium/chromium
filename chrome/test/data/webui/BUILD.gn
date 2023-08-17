@@ -422,6 +422,7 @@ ts_library("build_ts") {
 
     # TODO(dpapad): Migrate the files below to TypeScript and remove allowJs
     # from tsconfig_base.json.
+    "engagement/site_engagement_test.js",
     "mocha_adapter.js",
     "mojo_webui_test_support.js",
   ]
