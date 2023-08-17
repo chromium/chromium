@@ -12236,28 +12236,6 @@
             ]
         }
     ],
-    "ProcessPerSiteUpToMainFrameThreshold": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ProcessPerSiteUpToMainFrameThreshold"
-                    ],
-                    "disable_features": [
-                        "AllowDevToolsMainThreadDebuggerForMultipleMainFrames"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProductivityLauncherStudy": [
         {
             "platforms": [
