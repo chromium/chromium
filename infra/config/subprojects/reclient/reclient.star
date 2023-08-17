@@ -192,6 +192,28 @@ fyi_reclient_test_builder(
     },
 )
 
+fyi_reclient_test_builder(
+    name = "Linux Builder reclient test (casng)",
+    builder_spec = builder_config.copy_from(
+        "ci/Linux Builder",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "reclient_test",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_category = "linux",
+    reclient_bootstrap_env = {
+        "RBE_use_casng": "true",
+    },
+)
+
 fyi_reclient_staging_builder(
     name = "Mac Builder reclient staging",
     builder_spec = builder_config.copy_from(
