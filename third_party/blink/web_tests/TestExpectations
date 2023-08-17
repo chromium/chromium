@@ -3325,7 +3325,7 @@ crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-4.html [ Crash Pass 
 
 # Moved from NeverFixTests. These may be relevant again now that
 # overlay scrollbars have been fixed (crrev.com/c/3455024).
-crbug.com/1296816 [ Win ] virtual/overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html [ Failure ]
+crbug.com/1296816 virtual/overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html [ Failure Pass ]
 
 crbug.com/964181 external/wpt/css/css-text/overflow-wrap/overflow-wrap-anywhere-inline-002.tentative.html [ Failure ]
 crbug.com/964181 external/wpt/css/css-text/overflow-wrap/overflow-wrap-anywhere-inline-003.tentative.html [ Failure ]
