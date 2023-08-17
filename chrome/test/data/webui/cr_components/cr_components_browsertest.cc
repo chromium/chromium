@@ -102,6 +102,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, ThemeColorPicker) {
   RunTest("cr_components/theme_color_picker_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsTest, ThemeHueSliderDialog) {
+  set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);
+  RunTest("cr_components/theme_hue_slider_dialog_test.js", "mocha.run()");
+}
+
 typedef WebUIMochaBrowserTest CrComponentsAppManagementTest;
 IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, PermissionItem) {
   RunTest("cr_components/app_management/permission_item_test.js",

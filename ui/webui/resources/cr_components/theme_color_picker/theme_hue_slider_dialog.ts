@@ -1,0 +1,119 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+
+import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './theme_hue_slider_dialog.html.js';
+
+const minHue = 0;
+const maxHue = 359;
+
+/**
+ * Compute a CSS linear-gradient that starts with minHue and ends with maxHue.
+ */
+const hueDivisions = 6;
+const hueGradientParts: string[] = [];
+for (let i = 0; i <= hueDivisions; i++) {
+  const percentage = i / hueDivisions;
+  const hsl = `hsl(${minHue + (maxHue - minHue) * percentage}, 100%, 50%)`;
+  hueGradientParts.push(`${hsl} ${percentage * 100}%`);
+}
+const hueGradient = `linear-gradient(to right, ${hueGradientParts.join(',')})`;
+
+export interface ThemeHueSliderDialogElement {
+  $: {
+    crActionMenu: CrActionMenuElement,
+    slider: CrSliderElement,
+  };
+}
+
+const ThemeHueSliderDialogElementBase = I18nMixin(PolymerElement);
+
+export class ThemeHueSliderDialogElement extends
+    ThemeHueSliderDialogElementBase {
+  static get is() {
+    return 'cr-theme-hue-slider-dialog';
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /* Linear gradient for the background of the slider's track. */
+      hueGradient_: {
+        type: String,
+        value: hueGradient,
+      },
+      maxHue_: {
+        type: Number,
+        value: maxHue,
+      },
+      minHue_: {
+        type: Number,
+        value: minHue,
+      },
+      /* The committed value of the slider. */
+      selectedHue: {
+        type: Number,
+        value: minHue,
+        observer: 'onSelectedHueChanged_',
+      },
+      /* The hue value to show in the knob during drag. */
+      knobHue_: {
+        type: Number,
+        value: minHue,
+      },
+    };
+  }
+
+  private hueGradient_: string;
+  private maxHue_: number;
+  private minHue_: number;
+  selectedHue: number;
+  private knobHue_: number;
+
+  private onSelectedHueChanged_() {
+    this.knobHue_ = this.selectedHue;
+  }
+
+  private onCrSliderValueChanged_() {
+    this.knobHue_ = this.$.slider.value;
+  }
+
+  showAt(anchor: HTMLElement) {
+    this.$.crActionMenu.showAt(anchor, {
+      anchorAlignmentY: AnchorAlignment.AFTER_END,
+      noOffset: true,
+    });
+  }
+
+  hide() {
+    this.$.crActionMenu.close();
+  }
+
+  private updateSelectedHueValue_() {
+    this.selectedHue = this.$.slider.value;
+    this.dispatchEvent(new CustomEvent(
+        'selected-hue-changed', {detail: {selectedHue: this.selectedHue}}));
+  }
+}
+
+customElements.define(
+    ThemeHueSliderDialogElement.is, ThemeHueSliderDialogElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-theme-hue-slider-dialog': ThemeHueSliderDialogElement;
+  }
+}

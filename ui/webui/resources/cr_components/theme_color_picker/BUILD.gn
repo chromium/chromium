@@ -27,6 +27,7 @@ build_webui("build") {
     "check_mark_wrapper.ts",
     "theme_color.ts",
     "theme_color_picker.ts",
+    "theme_hue_slider_dialog.ts",
   ]
 
   non_web_component_files = [

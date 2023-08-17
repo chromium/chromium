@@ -468,6 +468,10 @@
   E_CPONLY(kColorThemeColorPickerCheckmarkBackground) \
   E_CPONLY(kColorThemeColorPickerCheckmarkForeground) \
   E_CPONLY(kColorThemeColorPickerCustomColorIconBackground) \
+  E_CPONLY(kColorThemeColorPickerHueSliderDialogBackground) \
+  E_CPONLY(kColorThemeColorPickerHueSliderDialogForeground) \
+  E_CPONLY(kColorThemeColorPickerHueSliderDialogIcon) \
+  E_CPONLY(kColorThemeColorPickerHueSliderHandle) \
   E_CPONLY(kColorThemeColorPickerOptionBackground) \
   E_CPONLY(kColorThrobber) \
   E_CPONLY(kColorThrobberPreconnect) \

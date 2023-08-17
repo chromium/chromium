@@ -23,6 +23,7 @@ function createTheme(): Theme {
     backgroundImageMainColor: undefined,
     isDarkMode: false,
     seedColor: {value: 0xff0000ff},
+    seedColorHue: 0,
     backgroundColor: {value: 0xffff0000},
     foregroundColor: undefined,
     colorPickerIconColor: {value: 0xffff0000},

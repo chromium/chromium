@@ -136,6 +136,12 @@ void ThemeColorPickerHandler::SetSeedColor(
   }
 }
 
+void ThemeColorPickerHandler::SetSeedColorFromHue(float hue) {
+  SetSeedColor(color_utils::HSLToSkColor(
+                   {std::clamp(hue / 360, 0.0f, 1.0f), 1, .5}, 255),
+               ui::mojom::BrowserColorVariant::kTonalSpot);
+}
+
 void ThemeColorPickerHandler::GetChromeColors(
     bool is_dark_mode,
     bool extended_list,
@@ -213,6 +219,9 @@ void ThemeColorPickerHandler::UpdateTheme() {
     theme->color_picker_icon_color =
         web_contents_->GetColorProvider().GetColor(kColorNewTabPageText);
   }
+  color_utils::HSL hsl;
+  color_utils::SkColorToHSL(theme->seed_color, &hsl);
+  theme->seed_color_hue = hsl.h * 360;
   theme->is_grey_baseline = theme_service_->GetIsGrayscale();
   theme->browser_color_variant = theme_service_->GetBrowserColorVariant();
 

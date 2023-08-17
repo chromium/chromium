@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './theme_hue_slider_dialog.js';
 import './theme_color.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {hexColorToSkColor, skColorToHexColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
+import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {BrowserColorVariant} from 'chrome://resources/mojo/ui/base/mojom/themes.mojom-webui.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -17,6 +18,7 @@ import {Color, ColorType, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DA
 import {ThemeColorElement} from './theme_color.js';
 import {getTemplate} from './theme_color_picker.html.js';
 import {ChromeColor, Theme} from './theme_color_picker.mojom-webui.js';
+import {ThemeHueSliderDialogElement} from './theme_hue_slider_dialog.js';
 
 const ThemeColorPickerElementBase = I18nMixin(PolymerElement);
 
@@ -27,6 +29,7 @@ export interface ThemeColorPickerElement {
     customColor: ThemeColorElement,
     colorPicker: HTMLInputElement,
     colorPickerIcon: HTMLElement,
+    hueSlider: ThemeHueSliderDialogElement,
   };
 }
 
@@ -287,14 +290,29 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     if (this.handleClickForManagedColors_()) {
       return;
     }
-    this.$.colorPicker.focus();
-    this.$.colorPicker.click();
+
+    if (this.isChromeRefresh2023_) {
+      this.$.hueSlider.showAt(this.$.customColorContainer);
+    } else {
+      this.$.colorPicker.focus();
+      this.$.colorPicker.click();
+    }
   }
 
   private onCustomColorChange_(e: Event) {
     ThemeColorPickerBrowserProxy.getInstance().handler.setSeedColor(
         hexColorToSkColor((e.target as HTMLInputElement).value),
         BrowserColorVariant.kTonalSpot);
+  }
+
+  private onSelectedHueChanged_() {
+    const selectedHue = this.$.hueSlider.selectedHue;
+    if (this.theme_ && this.theme_.seedColorHue === selectedHue) {
+      return;
+    }
+
+    ThemeColorPickerBrowserProxy.getInstance().handler.setSeedColorFromHue(
+        selectedHue);
   }
 
   private updateCustomColor_() {
@@ -310,7 +328,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     this.$.colorPickerIcon.style.setProperty(
         'background-color', skColorToRgba(this.theme_.colorPickerIconColor));
     if (this.isChromeRefresh2023_) {
-      this.$.colorPicker.value = skColorToHexColor(this.theme_.seedColor);
+      this.$.hueSlider.selectedHue = this.theme_.seedColorHue;
     }
   }
 

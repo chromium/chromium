@@ -75,6 +75,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"currentTheme", IDS_NTP_CUSTOMIZE_CHROME_CURRENT_THEME_LABEL},
       {"defaultColorName", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
       {"greyDefaultColorName", IDS_NTP_CUSTOMIZE_GREY_DEFAULT_LABEL},
+      {"hueSliderTitle", IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_TITLE},
       {"mainColorName", IDS_NTP_CUSTOMIZE_MAIN_COLOR_LABEL},
       {"managedColorsTitle", IDS_NTP_THEME_MANAGED_DIALOG_TITLE},
       {"managedColorsBody", IDS_NTP_THEME_MANAGED_DIALOG_BODY},

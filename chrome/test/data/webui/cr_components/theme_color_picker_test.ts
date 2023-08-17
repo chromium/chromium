@@ -10,7 +10,6 @@ import {Color, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_
 import {ThemeColorElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color.js';
 import {ThemeColorPickerElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.js';
 import {ChromeColor, Theme, ThemeColorPickerClientCallbackRouter, ThemeColorPickerClientRemote, ThemeColorPickerHandlerRemote} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.mojom-webui.js';
-import {skColorToHexColor} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {BrowserColorVariant} from 'chrome://resources/mojo/ui/base/mojom/themes.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -26,6 +25,7 @@ function createTheme(isDarkMode = false): Theme {
     backgroundImageMainColor: undefined,
     isDarkMode,
     seedColor: {value: 0xff0000ff},
+    seedColorHue: 0,
     backgroundColor: {value: 0xffff0000},
     foregroundColor: undefined,
     colorPickerIconColor: {value: 0xffff0000},
@@ -285,7 +285,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
     assertEquals(BrowserColorVariant.kNeutral, args[1]);
   });
 
-  test('sets custom color', () => {
+  test('sets custom color from color input for non-CR2023', async () => {
     initializeElement();
     colorsElement.$.colorPicker.value = '#ff0000';
     colorsElement.$.colorPicker.dispatchEvent(new Event('change'));
@@ -294,6 +294,22 @@ suite('CrComponentsThemeColorPickerTest', () => {
     assertEquals(2, args.length);
     assertEquals(0xffff0000, args[0].value);
     assertEquals(BrowserColorVariant.kTonalSpot, args[1]);
+  });
+
+  test('sets custom color from hue slider for CR2023', async () => {
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+    initializeElement();
+    callbackRouter.setTheme(Object.assign(createTheme(), {seedColorHue: 10}));
+    await callbackRouter.$.flushForTesting();
+
+    colorsElement.$.hueSlider.selectedHue = 10;
+    colorsElement.$.hueSlider.dispatchEvent(new Event('selected-hue-changed'));
+    assertEquals(0, handler.getCallCount('setSeedColorFromHue'));
+
+    colorsElement.$.hueSlider.selectedHue = 30;
+    colorsElement.$.hueSlider.dispatchEvent(new Event('selected-hue-changed'));
+    assertEquals(1, handler.getCallCount('setSeedColorFromHue'));
+    assertEquals(30, handler.getArgs('setSeedColorFromHue')[0]);
   });
 
   test('updates custom color for theme', async () => {
@@ -364,31 +380,28 @@ suite('CrComponentsThemeColorPickerTest', () => {
 
     // Set a custom color theme.
     const customColortheme = createTheme();
-    customColortheme.seedColor = {value: 0xffffff00};
+    customColortheme.seedColorHue = 22;
     customColortheme.backgroundColor = {value: 0xffff0000};
     customColortheme.foregroundColor = {value: 0xff00ff00};
     customColortheme.colorPickerIconColor = {value: 0xff0000ff};
     callbackRouter.setTheme(customColortheme);
     await callbackRouter.$.flushForTesting();
 
-    // Custom colorpicker value should be updated.
+    // Custom hue slider value should be updated.
     assertEquals(
-        colorsElement.$.colorPicker.value,
-        skColorToHexColor(customColortheme.seedColor));
+        colorsElement.$.hueSlider.selectedHue, customColortheme.seedColorHue);
 
     // Set a theme that is not a custom color theme.
     const otherTheme = createTheme();
-    otherTheme.seedColor = {value: 0xff00ff00};
     otherTheme.backgroundColor = {value: 0xffffffff};
     otherTheme.foregroundColor = undefined;  // Makes a default theme.
     otherTheme.colorPickerIconColor = {value: 0xffffffff};
     callbackRouter.setTheme(otherTheme);
     await callbackRouter.$.flushForTesting();
 
-    // Custom colorpicker should still be the same.
+    // Custom hue slider value should still be the same.
     assertEquals(
-        colorsElement.$.colorPicker.value,
-        skColorToHexColor(customColortheme.seedColor));
+        colorsElement.$.hueSlider.selectedHue, customColortheme.seedColorHue);
   });
 
   test('checks selected color', async () => {

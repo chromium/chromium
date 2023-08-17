@@ -19,6 +19,8 @@ struct Theme {
   bool is_dark_mode;
   // The color this theme was calculated from.
   skia.mojom.SkColor seed_color;
+  // The hue of the color this theme was calculated from.
+  float seed_color_hue;
   // The current theme background color.
   skia.mojom.SkColor background_color;
   // The current theme foreground color. If not set, we use the default theme.
@@ -76,6 +78,9 @@ interface ThemeColorPickerHandler {
 
   // Sets a Chrome theme generated from |seed_color|.
   SetSeedColor(skia.mojom.SkColor seed_color, ui.mojom.BrowserColorVariant variant);
+
+  // Sets a Chrome theme generated from |hue|.
+  SetSeedColorFromHue(float hue);
 
   // Removes background image.
   RemoveBackgroundImage();
