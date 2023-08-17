@@ -5,7 +5,7 @@
 import {assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {PropStatus, SearchData, SearchLocation, SearchRecency} from '../../externs/ts/state.js';
-import {clearSearch, updateSearch} from '../actions/search.js';
+import {clearSearch, updateSearch} from '../ducks/search.js';
 import {getEmptyState, getStore, Store} from '../store.js';
 
 let store: Store;

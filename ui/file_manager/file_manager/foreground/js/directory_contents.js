@@ -22,7 +22,8 @@ import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_ap
 import {SearchLocation, SearchOptions, SearchRecency} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {getDefaultSearchOptions, getStore} from '../../state/store.js';
+import {getDefaultSearchOptions} from '../../state/ducks/search.js';
+import {getStore} from '../../state/store.js';
 
 import {constants} from './constants.js';
 import {FileListModel} from './file_list_model.js';

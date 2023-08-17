@@ -211,3 +211,29 @@ export class BaseStore<StateType, ActionType extends BaseAction> {
     });
   }
 }
+
+/** A reducer takes a payload and uses it to generate a new state. */
+export type Reducer<StateType, ActionType extends BaseAction> =
+    (state: StateType, payload: ActionType['payload']) => StateType;
+
+/** A map from actions to arrays of reducers. */
+export type ReducerMap<StateType, ActionType extends BaseAction> =
+    Map<ActionType['type'], Array<Reducer<StateType, ActionType>>>;
+
+/**
+ * Creates action dispatchers for actions that are handled by a single reducer.
+ */
+export function addReducer<StateType, ActionType extends BaseAction>(
+    type: ActionType['type'],
+    reducer: Reducer<StateType, ActionType>,
+    reducerMap: ReducerMap<StateType, ActionType>) {
+  let reducerList = reducerMap.get(type);
+  if (!reducerList) {
+    reducerList = [];
+    reducerMap.set(type, reducerList);
+  }
+  reducerList.push(reducer);
+
+  return (payload: ActionType['payload']): ActionType =>
+             ({type, payload} as ActionType);
+}

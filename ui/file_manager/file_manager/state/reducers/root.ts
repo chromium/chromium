@@ -4,6 +4,7 @@
 
 import {State} from '../../externs/ts/state.js';
 import {Action, ActionType} from '../actions.js';
+import {searchReducerMap as searchReducersMap} from '../ducks/search.js';
 
 import {addChildEntries, cacheEntries, clearCachedEntries, updateMetadata} from './all_entries.js';
 import {addAndroidApps} from './android_apps.js';
@@ -12,9 +13,11 @@ import {changeDirectory, updateDirectoryContent, updateFileTasks, updateSelectio
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from './folder_shortcuts.js';
 import {refreshNavigationRoots, updateNavigationEntry} from './navigation.js';
 import {updatePreferences} from './preferences.js';
-import {search} from './search.js';
 import {addUiEntry, removeUiEntry} from './ui_entries.js';
 import {addVolume, removeVolume, updateIsInteractiveVolume} from './volumes.js';
+
+// Reducers map created from merging together each slice's exported reducersMap.
+const rootReducersMap = new Map([...searchReducersMap]);
 
 /**
  * Root reducer for the State for Files app.
@@ -44,8 +47,6 @@ export function rootReducer(currentState: State, action: Action): State {
       return updateFileTasks(state, action);
     case ActionType.CLEAR_STALE_CACHED_ENTRIES:
       return clearCachedEntries(state, action);
-    case ActionType.SEARCH:
-      return search(state, action);
     case ActionType.UPDATE_DIRECTORY_CONTENT:
       return updateDirectoryContent(state, action);
     case ActionType.UPDATE_METADATA:
@@ -79,8 +80,13 @@ export function rootReducer(currentState: State, action: Action): State {
     case ActionType.UPDATE_IS_INTERACTIVE_VOLUME:
       return updateIsInteractiveVolume(currentState, action);
     default:
-      console.error(`invalid action type: ${(action as any)?.type} action: ${
-          JSON.stringify(action)}`);
-      return state;
+      // Handles ducks reducers.
+      const reducers = rootReducersMap.get(action.type);
+      if (!reducers) {
+        console.error(`No registered reducers for action: ${action.type}`);
+        return currentState;
+      }
+      return reducers.reduce(
+          (state, reducer) => reducer(state, action.payload), currentState);
   }
 }

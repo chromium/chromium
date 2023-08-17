@@ -1,9 +1,13 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SearchData, SearchOptions, State} from '../../externs/ts/state.js';
-import {SearchAction} from '../actions/search.js';
+import {SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../../externs/ts/state.js';
+import {addReducer, BaseAction, Reducer, ReducerMap as ReducersMap} from '../../lib/base_store.js';
+import {Action, ActionType} from '../actions.js';
+
+/** Map of actions to reducers for the search slice. */
+export const searchReducerMap: ReducersMap<State, Action> = new Map();
 
 /**
  * Helper function that does a deep comparison between two SearchOptions.
@@ -23,8 +27,13 @@ function optionsChanged(
       fresh.fileCategory !== stored.fileCategory;
 }
 
-export function search(state: State, action: SearchAction): State {
-  const payload = action.payload;
+/** Action to update the search state. */
+export interface SearchAction extends BaseAction {
+  type: ActionType.SEARCH;
+  payload: SearchData;
+}
+
+function searchReducer(state: State, payload: SearchData): State {
   const blankSearch = {
     query: undefined,
     status: undefined,
@@ -58,4 +67,38 @@ export function search(state: State, action: SearchAction): State {
     changed = true;
   }
   return changed ? {...state, search} : state;
+}
+
+const search = addReducer(
+    ActionType.SEARCH, searchReducer as Reducer<State, Action>,
+    searchReducerMap);
+
+/**
+ * Generates a search action based on the supplied data.
+ * Query, status and options can be adjusted independently of each other.
+ */
+export const updateSearch = (data: SearchData) => search({
+  query: data.query,
+  status: data.status,
+  options: data.options,
+});
+
+/**
+ * Clears all search settings.
+ */
+export const clearSearch = () => search({
+  query: undefined,
+  status: undefined,
+  options: undefined,
+});
+
+/**
+ * Search options to be used if the user did not specify their own.
+ */
+export function getDefaultSearchOptions(): SearchOptions {
+  return {
+    location: SearchLocation.THIS_FOLDER,
+    recency: SearchRecency.ANYTIME,
+    fileCategory: chrome.fileManagerPrivate.FileCategory.ALL,
+  } as SearchOptions;
 }
