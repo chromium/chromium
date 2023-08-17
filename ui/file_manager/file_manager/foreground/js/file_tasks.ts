@@ -573,6 +573,11 @@ export class FileTasks {
               str('OFFLINE_COLUMN_LABEL'));
 
       this.ui_.alertDialog.showHtml(str('OFFLINE_HEADER'), msg);
+      for (const entry of this.entries_) {
+        metrics.recordEnum(
+            'DriveOfflineOpen.Unavailable', FileTasks.getViewFileType(entry),
+            UMA_INDEX_KNOWN_EXTENSIONS as string[]);
+      }
       return Promise.reject('drive is offline');
     }
 
