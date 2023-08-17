@@ -296,6 +296,141 @@ v4l2_ctrl_hevc_scaling_matrix SetupScalingMatrix(const H265SPS* sps,
 
   return v4l2_scaling_matrix;
 }
+
+struct v4l2_ctrl_hevc_decode_params SetupDecodeParams(
+    const H265SliceHeader* slice_hdr,
+    const H265Picture::Vector& ref_pic_list,
+    const H265Picture::Vector& ref_pic_set_lt_curr,
+    const H265Picture::Vector& ref_pic_set_st_curr_after,
+    const H265Picture::Vector& ref_pic_set_st_curr_before,
+    scoped_refptr<H265Picture> curr_pic) {
+  struct v4l2_ctrl_hevc_decode_params v4l2_decode_params;
+  memset(&v4l2_decode_params, 0, sizeof(v4l2_decode_params));
+
+  v4l2_decode_params.pic_order_cnt_val = curr_pic->pic_order_cnt_val_,
+  v4l2_decode_params.short_term_ref_pic_set_size =
+      static_cast<__u16>(slice_hdr->st_rps_bits),
+  v4l2_decode_params.long_term_ref_pic_set_size =
+      static_cast<__u16>(slice_hdr->lt_rps_bits),
+#if BUILDFLAG(IS_CHROMEOS)
+  // .num_delta_pocs_of_ref_rps_idx is upstream but not yet pulled
+  // into linux build sysroot.
+  // TODO(b/261127809): Remove once linux-libc-dev package is updated to
+  // at least v6.5 in the sysroots.
+      v4l2_decode_params.num_delta_pocs_of_ref_rps_idx =
+          static_cast<__u8>(slice_hdr->st_ref_pic_set.rps_idx_num_delta_pocs),
+#endif
+  v4l2_decode_params.flags = static_cast<__u64>(
+      (curr_pic->irap_pic_ ? V4L2_HEVC_DECODE_PARAM_FLAG_IRAP_PIC : 0) |
+      ((curr_pic->nal_unit_type_ >= H265NALU::IDR_W_RADL &&
+        curr_pic->nal_unit_type_ <= H265NALU::IDR_N_LP)
+           ? V4L2_HEVC_DECODE_PARAM_FLAG_IDR_PIC
+           : 0) |
+      (curr_pic->no_output_of_prior_pics_flag_
+           ? V4L2_HEVC_DECODE_PARAM_FLAG_NO_OUTPUT_OF_PRIOR
+           : 0)),
+
+  memset(v4l2_decode_params.dpb, 0, sizeof(v4l2_decode_params.dpb));
+  unsigned int i = 0;
+  for (const auto& pic : ref_pic_list) {
+    if (i >= V4L2_HEVC_DPB_ENTRIES_NUM_MAX) {
+      VLOGF(1) << "Invalid DPB size";
+      break;
+    }
+
+    if (!pic) {
+      continue;
+    }
+
+    // TODO(b/261127809): Handle |!pic->IsUnused()| case
+
+    struct v4l2_hevc_dpb_entry& entry = v4l2_decode_params.dpb[i++];
+    entry = {
+        // TODO(b/261127809): Setup |timestamp|.
+        .flags = static_cast<__u8>(
+            pic->IsLongTermRef() ? V4L2_HEVC_DPB_ENTRY_LONG_TERM_REFERENCE : 0),
+        .field_pic = V4L2_HEVC_SEI_PIC_STRUCT_FRAME,  // No interlaced support
+        .pic_order_cnt_val = pic->pic_order_cnt_val_,
+    };
+  }
+  v4l2_decode_params.num_active_dpb_entries = i;
+
+  // Set defaults
+  std::fill_n(v4l2_decode_params.poc_st_curr_before,
+              std::size(v4l2_decode_params.poc_st_curr_before), 0xff);
+  std::fill_n(v4l2_decode_params.poc_st_curr_after,
+              std::size(v4l2_decode_params.poc_st_curr_after), 0xff);
+  std::fill_n(v4l2_decode_params.poc_lt_curr,
+              std::size(v4l2_decode_params.poc_lt_curr), 0xff);
+
+  i = 0;
+  for (const auto& pic : ref_pic_set_st_curr_before) {
+    if (i >= V4L2_HEVC_DPB_ENTRIES_NUM_MAX) {
+      VLOGF(1) << "Invalid DPB size";
+      break;
+    }
+
+    if (!pic) {
+      continue;
+    }
+
+    for (unsigned int j = 0; j < v4l2_decode_params.num_active_dpb_entries;
+         j++) {
+      if (pic->pic_order_cnt_val_ ==
+          v4l2_decode_params.dpb[j].pic_order_cnt_val) {
+        v4l2_decode_params.poc_st_curr_before[i++] = j;
+        break;
+      }
+    }
+  }
+  v4l2_decode_params.num_poc_st_curr_before = i;
+
+  i = 0;
+  for (const auto& pic : ref_pic_set_st_curr_after) {
+    if (i >= V4L2_HEVC_DPB_ENTRIES_NUM_MAX) {
+      VLOGF(1) << "Invalid DPB size";
+      break;
+    }
+
+    if (!pic) {
+      continue;
+    }
+
+    for (unsigned int j = 0; j < v4l2_decode_params.num_active_dpb_entries;
+         j++) {
+      if (pic->pic_order_cnt_val_ ==
+          v4l2_decode_params.dpb[j].pic_order_cnt_val) {
+        v4l2_decode_params.poc_st_curr_after[i++] = j;
+        break;
+      }
+    }
+  }
+  v4l2_decode_params.num_poc_st_curr_after = i;
+
+  i = 0;
+  for (const auto& pic : ref_pic_set_lt_curr) {
+    if (i >= V4L2_HEVC_DPB_ENTRIES_NUM_MAX) {
+      VLOGF(1) << "Invalid DPB size";
+      break;
+    }
+
+    if (!pic) {
+      continue;
+    }
+
+    for (unsigned int j = 0; j < v4l2_decode_params.num_active_dpb_entries;
+         j++) {
+      if (pic->pic_order_cnt_val_ ==
+          v4l2_decode_params.dpb[j].pic_order_cnt_val) {
+        v4l2_decode_params.poc_lt_curr[i++] = j;
+        break;
+      }
+    }
+  }
+  v4l2_decode_params.num_poc_lt_curr = i;
+
+  return v4l2_decode_params;
+}
 }
 
 H265Decoder::H265Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
@@ -918,6 +1053,9 @@ bool H265Decoder::StartNewFrame(const H265SliceHeader* slice_hdr) {
   struct v4l2_ctrl_hevc_pps v4l2_pps = SetupPPSCtrl(pps);
   struct v4l2_ctrl_hevc_scaling_matrix v4l2_matrix =
       SetupScalingMatrix(sps, pps);
+  struct v4l2_ctrl_hevc_decode_params v4l2_decode_params = SetupDecodeParams(
+      slice_hdr, ref_pic_list_, ref_pic_set_lt_curr_,
+      ref_pic_set_st_curr_after_, ref_pic_set_st_curr_before_, curr_pic_);
 
   struct v4l2_ext_control ctrls[] = {
       {.id = V4L2_CID_STATELESS_HEVC_SPS,
@@ -928,7 +1066,11 @@ bool H265Decoder::StartNewFrame(const H265SliceHeader* slice_hdr) {
        .ptr = &v4l2_pps},
       {.id = V4L2_CID_STATELESS_HEVC_SCALING_MATRIX,
        .size = sizeof(v4l2_matrix),
-       .ptr = &v4l2_matrix}};
+       .ptr = &v4l2_matrix},
+      {.id = V4L2_CID_STATELESS_HEVC_DECODE_PARAMS,
+       .size = sizeof(v4l2_decode_params),
+       .ptr = &v4l2_decode_params}};
+
   struct v4l2_ext_controls ext_ctrls = {
       .count = (sizeof(ctrls) / sizeof(ctrls[0])), .controls = ctrls};
 
