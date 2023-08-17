@@ -350,6 +350,7 @@ template("libwebviewchromium_tmpl") {
     configs += [
       "//build/config/android:hide_all_but_jni",
       "//build/config/compiler:chrome_orderfile_config",
+      "//build/config/compiler:prevent_unsafe_narrowing",
     ]
     java_targets = webview_java_for_jni_targets
 
