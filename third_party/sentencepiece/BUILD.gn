@@ -18,10 +18,6 @@ config("sentencepiece_flags") {
     "-Wno-deprecated-anon-enum-enum-conversion",
     "-Wno-macro-redefined",
   ]
-
-  if (!is_win) {
-    cflags_cc = [ "-fexceptions" ]
-  }
 }
 
 proto_library("sentencepiece_proto") {
@@ -76,7 +72,10 @@ static_library("sentencepiece") {
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [
+    "//build/config/compiler:exceptions",
+    "//build/config/compiler:no_chromium_code",
+  ]
 
   public_configs = [
     ":sentencepiece_config",
