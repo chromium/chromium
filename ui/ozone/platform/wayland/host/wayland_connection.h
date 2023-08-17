@@ -20,6 +20,7 @@
 #include "ui/events/event.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/single_pixel_buffer.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
@@ -346,6 +347,11 @@ class WaylandConnection {
                                          const WaylandWindow* window) const;
 
   void DumpState(std::ostream& out) const;
+
+  bool UseImplicitSyncInterop() const {
+    return !linux_explicit_synchronization_v1() &&
+           WaylandBufferManagerHost::SupportsImplicitSyncInterop();
+  }
 
  private:
   friend class WaylandConnectionTestApi;

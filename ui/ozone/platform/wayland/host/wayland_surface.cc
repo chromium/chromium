@@ -263,7 +263,8 @@ void WaylandSurface::set_acquire_fence(gfx::GpuFenceHandle acquire_fence) {
   // WaylandBufferManagerGPU knows if the synchronization is not available and
   // must disallow clients to use explicit synchronization.
   DCHECK(!apply_state_immediately_);
-  DCHECK(connection_->linux_explicit_synchronization_v1());
+  DCHECK(connection_->linux_explicit_synchronization_v1() ||
+         connection_->UseImplicitSyncInterop());
   if (!acquire_fence.is_null()) {
     base::TimeTicks ticks;
     auto status = gfx::GpuFence::GetStatusChangeTime(
@@ -492,6 +493,12 @@ void WaylandSurface::ApplyPendingState() {
                   wl::Object<zwp_linux_buffer_release_v1>(linux_buffer_release),
                   pending_state_.buffer,
                   std::move(next_explicit_release_request_)));
+        }
+      } else if (connection_->UseImplicitSyncInterop()) {
+        if (!pending_state_.acquire_fence.is_null()) {
+          connection_->buffer_manager_host()->InsertAcquireFence(
+              pending_state_.buffer_id,
+              pending_state_.acquire_fence.owned_fd.get());
         }
       }
     }

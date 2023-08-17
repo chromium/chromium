@@ -648,6 +648,22 @@ void WaylandFrameManager::OnWlBufferRelease(WaylandSurface* surface,
     auto result = frame->submitted_buffers.find(surface);
     if (result != frame->submitted_buffers.end() &&
         result->second->wl_buffer() == wl_buffer) {
+      if (connection_->UseImplicitSyncInterop()) {
+        base::ScopedFD fence =
+            connection_->buffer_manager_host()->ExtractReleaseFence(
+                result->second->id());
+
+        if (fence.is_valid()) {
+          if (frame->merged_release_fence_fd.is_valid()) {
+            frame->merged_release_fence_fd.reset(sync_merge(
+                "", frame->merged_release_fence_fd.get(), fence.get()));
+          } else {
+            frame->merged_release_fence_fd = std::move(fence);
+          }
+          DCHECK(frame->merged_release_fence_fd.is_valid());
+        }
+      }
+
       frame->submitted_buffers.erase(result);
       break;
     }

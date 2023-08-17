@@ -151,6 +151,26 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
       gfx::AcceleratedWidget widget,
       const std::vector<wl::WaylandPresentationInfo>& presentation_infos);
 
+  // Inserts a sync_file into the write fence list of the DMA-BUF. When the
+  // compositor tries to read from this DMA-BUF via GL, the kernel will
+  // automatically force its GPU context to wait on all write fences in the
+  // DMA-BUF, including the fence we inserted. This is used to synchronize with
+  // compositors that don't support the
+  // linux-explicit-synchronization-unstable-v1 protocol. Requires Linux 6.0 or
+  // higher.
+  void InsertAcquireFence(uint32_t buffer_id, int sync_fd);
+
+  // Extracts a sync_file that represents all pending fences inside the DMA-BUF
+  // kernel object. When the compositor reads the DMA-BUF from GL, the kernel
+  // automatically adds a completion fence to the read fences list of the
+  // DMA-BUF that will be signalled once the read operation completes. This is
+  // used to synchronize with compositors that don't support the
+  // linux-explicit-synchronization-unstable-v1 protocol. Requires Linux 6.0 or
+  // higher.
+  base::ScopedFD ExtractReleaseFence(uint32_t buffer_id);
+
+  static bool SupportsImplicitSyncInterop();
+
  private:
   // Validates data sent from GPU. If invalid, returns false and sets an error
   // message to |error_message_|.
@@ -190,6 +210,8 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   // Maps buffer_id's to corresponding WaylandBufferBacking objects.
   base::flat_map<uint32_t, std::unique_ptr<WaylandBufferBacking>>
       buffer_backings_;
+
+  base::flat_map<uint32_t, base::ScopedFD> dma_buffers_;
 };
 
 }  // namespace ui

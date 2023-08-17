@@ -637,6 +637,7 @@ source_set("memory_buffer_sources") {
       "linux/client_native_pixmap_dmabuf.h",
       "linux/client_native_pixmap_factory_dmabuf.cc",
       "linux/client_native_pixmap_factory_dmabuf.h",
+      "linux/dmabuf_uapi.h",
       "linux/native_pixmap_dmabuf.cc",
       "linux/native_pixmap_dmabuf.h",
     ]
