@@ -24,6 +24,7 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]

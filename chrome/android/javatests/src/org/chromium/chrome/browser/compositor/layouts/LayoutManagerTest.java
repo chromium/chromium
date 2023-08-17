@@ -469,12 +469,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     public void testTabSwitcherLayout_Enabled_HighEndPhone() throws Exception {
         // clang-format on
         verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.GRID);
-
-        // Verify accessibility
-        TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
-        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(true);
-        setAccessibilityEnabledForTesting(true);
-        verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.GRID);
     }
 
     @Test
