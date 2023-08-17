@@ -199,11 +199,18 @@ void NativeThemeAura::PaintArrowButton(
     case kNumStates:
       break;
   }
-  if (arrow.thumb_color.has_value()) {
+  if (arrow.thumb_color.has_value() &&
+      arrow.thumb_color.value() == gfx::kPlaceholderColor) {
+     // TODO(crbug.com/1473075): Remove this and the below checks for placeholderColor.
+     DLOG(ERROR) << "thumb_color with a placeholderColor value encountered";
+  }
+  if (arrow.thumb_color.has_value() &&
+      arrow.thumb_color.value() != gfx::kPlaceholderColor) {
     // TODO(crbug.com/891944): Adjust thumb_color based on `state`.
     arrow_color = arrow.thumb_color.value();
   }
-  if (arrow.track_color.has_value()) {
+  if (arrow.track_color.has_value() &&
+      arrow.track_color.value() != gfx::kPlaceholderColor) {
     // TODO(crbug.com/891944): Adjust track_color based on `state`.
     bg_color = arrow.track_color.value();
   }
