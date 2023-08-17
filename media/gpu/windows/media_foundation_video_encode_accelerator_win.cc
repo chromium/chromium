@@ -831,9 +831,12 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
   DCHECK(imf_output_media_type_);
   DCHECK(imf_input_media_type_);
   DCHECK(encoder_);
-  RETURN_ON_FAILURE(
-      bitrate_allocation.GetMode() == bitrate_allocation_.GetMode(),
-      "Invalid bitrate mode", );
+  if (bitrate_allocation.GetMode() != bitrate_allocation_.GetMode()) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                       "Can't change bitrate mode after Initialize()"});
+    return;
+  }
+
   framerate =
       std::clamp(framerate, 1u, static_cast<uint32_t>(kMaxFrameRateNumerator));
 
@@ -859,13 +862,21 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
       var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetPeakBps(),
                                            configured_frame_rate_, framerate);
       hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
-      RETURN_ON_HR_FAILURE(hr, "Couldn't set max bitrate", );
+      if (FAILED(hr)) {
+        NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                           "Couldn't set max bitrate" + PrintHr(hr)});
+        return;
+      }
       [[fallthrough]];
     case Bitrate::Mode::kConstant:
       var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(),
                                            configured_frame_rate_, framerate);
       hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
-      RETURN_ON_HR_FAILURE(hr, "Couldn't update mean bitrate", );
+      if (FAILED(hr)) {
+        NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                           "Couldn't set mean bitrate" + PrintHr(hr)});
+        return;
+      }
       break;
     case Bitrate::Mode::kExternal:
       break;
