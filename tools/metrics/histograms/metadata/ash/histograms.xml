@@ -6596,25 +6596,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.TimeBetweenTaskSwitches" units="seconds"
-    expires_after="2022-04-08">
-  <owner>nupurjain@chromium.org</owner>
-  <owner>tbuckley@google.com</owner>
-  <summary>
-    The number of seconds between contiguous task switch user actions triggered
-    by any of the other task switch actions that are tracked. (e.g.,
-    Ash.Tab.TimeBetweenSwitchToExistingTabUserActions,
-    Ash.WindowCycleController.TimeBetweenTaskSwitches,
-    Ash.AppList.TimeBetweenTaskSwitches,
-    Ash.Overview.TimeBetweenActiveWindowChanges, etc). Note the
-    Ash.AppList.TimeBetweenTaskSwitches and
-    Ash.Tab.TimeBetweenSwitchToExistingTabUserActions histograms were deprecated
-    and removed in 10/2016. Note that
-    Ash.Overview.TimeBetweenActiveWindowChanges was renamed from
-    Ash.WindowSelector.TimeBetweenActiveWindowChanges on 04/2021.
-  </summary>
-</histogram>
-
 <histogram name="Ash.TouchMoveSteps" units="pixels" expires_after="M85">
   <owner>kuscher@google.com</owner>
   <owner>rbyers@chromium.org</owner>
