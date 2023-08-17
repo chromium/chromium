@@ -1199,8 +1199,10 @@ class ShelfWidgetViewsVisibilityTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<ShelfWidget, ExperimentalAsh> primary_shelf_widget_ = nullptr;
-  raw_ptr<ShelfWidget, ExperimentalAsh> secondary_shelf_widget_ = nullptr;
+  raw_ptr<ShelfWidget, DanglingUntriaged | ExperimentalAsh>
+      primary_shelf_widget_ = nullptr;
+  raw_ptr<ShelfWidget, DanglingUntriaged | ExperimentalAsh>
+      secondary_shelf_widget_ = nullptr;
 };
 
 TEST_F(ShelfWidgetViewsVisibilityTest, LoginViewsLockViews) {

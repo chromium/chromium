@@ -60,7 +60,7 @@ class SnapGroupExpandedMenuView : public views::View {
   // `snap_group_` is guaranteed to be non nullptr during `this` lifetime.
   // TODO(michelefan): revisit this comment and related logic if we decided to
   // show divider on one window snapped in clamshell.
-  const raw_ptr<SnapGroup, ExperimentalAsh> snap_group_;
+  const raw_ptr<SnapGroup, DanglingUntriaged | ExperimentalAsh> snap_group_;
 
   // Child views of this class, which are listed from top to bottom (horizontal
   // screen orientation) or left to right (vertical screen orientation).

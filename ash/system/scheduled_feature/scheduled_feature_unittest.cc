@@ -432,8 +432,9 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   // in the return value of `Now()` and defaults to 0.
   base::TimeDelta wall_clock_artificial_advancement_;
   std::unique_ptr<TestScheduledFeature> feature_;
-  raw_ptr<GeolocationController, ExperimentalAsh> geolocation_controller_;
-  raw_ptr<base::OneShotTimer, ExperimentalAsh> timer_ptr_;
+  raw_ptr<GeolocationController, DanglingUntriaged | ExperimentalAsh>
+      geolocation_controller_;
+  raw_ptr<base::OneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_ptr_;
   Geoposition position_;
 };
 

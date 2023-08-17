@@ -110,13 +110,15 @@ class AutoConnectNotifierTest : public AshTestBase {
   }
 
   // Ownership passed to Shell owned AutoConnectNotifier instance.
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_notification_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_notification_timer_;
 
  private:
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
-  raw_ptr<ToastManagerImpl, ExperimentalAsh> toast_manager_ = nullptr;
+  raw_ptr<ToastManagerImpl, DanglingUntriaged | ExperimentalAsh>
+      toast_manager_ = nullptr;
 };
 
 TEST_F(AutoConnectNotifierTest, NoExplicitConnectionRequested) {

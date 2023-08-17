@@ -55,7 +55,7 @@ class EcheStreamOrientationObserverTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  raw_ptr<EcheTray, ExperimentalAsh> eche_tray_ = nullptr;
+  raw_ptr<EcheTray, DanglingUntriaged | ExperimentalAsh> eche_tray_ = nullptr;
   std::unique_ptr<EcheStreamOrientationObserver> observer_;
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
       std::make_unique<TestAshWebViewFactory>();

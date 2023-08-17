@@ -289,8 +289,10 @@ class ASH_EXPORT UnifiedSystemTrayController
   scoped_refptr<UnifiedSystemTrayModel> model_;
 
   // Unowned. Owned by Views hierarchy.
-  raw_ptr<UnifiedSystemTrayView, ExperimentalAsh> unified_view_ = nullptr;
-  raw_ptr<QuickSettingsView, ExperimentalAsh> quick_settings_view_ = nullptr;
+  raw_ptr<UnifiedSystemTrayView, DanglingUntriaged | ExperimentalAsh>
+      unified_view_ = nullptr;
+  raw_ptr<QuickSettingsView, DanglingUntriaged | ExperimentalAsh>
+      quick_settings_view_ = nullptr;
 
   // Unowned.
   raw_ptr<UnifiedSystemTrayBubble, ExperimentalAsh> bubble_ = nullptr;
@@ -313,12 +315,14 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   // Controller of volume slider. Owned.
   std::unique_ptr<UnifiedVolumeSliderController> volume_slider_controller_;
-  raw_ptr<views::View, ExperimentalAsh> unified_volume_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh>
+      unified_volume_view_ = nullptr;
 
   // Controller of brightness slider. Owned.
   std::unique_ptr<UnifiedBrightnessSliderController>
       brightness_slider_controller_;
-  raw_ptr<views::View, ExperimentalAsh> unified_brightness_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh>
+      unified_brightness_view_ = nullptr;
 
   // If the previous state is expanded or not. Only valid during dragging (from
   // BeginDrag to EndDrag).

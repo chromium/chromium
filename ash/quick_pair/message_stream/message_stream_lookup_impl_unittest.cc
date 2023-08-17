@@ -203,9 +203,11 @@ class MessageStreamLookupImplTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
-  raw_ptr<MessageStream, ExperimentalAsh> message_stream_ = nullptr;
+  raw_ptr<MessageStream, DanglingUntriaged | ExperimentalAsh> message_stream_ =
+      nullptr;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  raw_ptr<MessageStreamFakeBluetoothDevice, ExperimentalAsh> device_;
+  raw_ptr<MessageStreamFakeBluetoothDevice, DanglingUntriaged | ExperimentalAsh>
+      device_;
   std::unique_ptr<MessageStreamLookup> message_stream_lookup_;
 };
 

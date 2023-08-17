@@ -172,7 +172,8 @@ class ASH_EXPORT ResultSelectionController {
   base::RepeatingClosure selection_change_callback_;
 
   // The currently selected result view.
-  raw_ptr<SearchResultBaseView, ExperimentalAsh> selected_result_ = nullptr;
+  raw_ptr<SearchResultBaseView, DanglingUntriaged | ExperimentalAsh>
+      selected_result_ = nullptr;
 
   // The currently selected result ID.
   std::string selected_result_id_;

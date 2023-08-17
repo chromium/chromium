@@ -96,7 +96,7 @@ class EcheTrayStreamStatusObserverTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<EcheTray, ExperimentalAsh> eche_tray_ = nullptr;
+  raw_ptr<EcheTray, DanglingUntriaged | ExperimentalAsh> eche_tray_ = nullptr;
   std::unique_ptr<EcheConnectionStatusHandler> connection_status_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   std::unique_ptr<EcheStreamStatusChangeHandler> stream_status_change_handler_;

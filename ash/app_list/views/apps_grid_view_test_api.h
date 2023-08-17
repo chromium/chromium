@@ -97,7 +97,7 @@ class AppsGridViewTestApi {
   AppListItemList* GetItemList() { return view_->item_list_; }
 
  private:
-  raw_ptr<AppsGridView, ExperimentalAsh> view_;
+  raw_ptr<AppsGridView, DanglingUntriaged | ExperimentalAsh> view_;
 };
 
 }  // namespace test

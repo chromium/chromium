@@ -2872,9 +2872,12 @@ class DesksEditableNamesTest : public DesksTest {
   }
 
  private:
-  raw_ptr<DesksController, ExperimentalAsh> controller_ = nullptr;
-  raw_ptr<OverviewGrid, ExperimentalAsh> overview_grid_ = nullptr;
-  raw_ptr<const LegacyDeskBarView, ExperimentalAsh> desks_bar_view_ = nullptr;
+  raw_ptr<DesksController, DanglingUntriaged | ExperimentalAsh> controller_ =
+      nullptr;
+  raw_ptr<OverviewGrid, DanglingUntriaged | ExperimentalAsh> overview_grid_ =
+      nullptr;
+  raw_ptr<const LegacyDeskBarView, DanglingUntriaged | ExperimentalAsh>
+      desks_bar_view_ = nullptr;
 };
 
 TEST_P(DesksEditableNamesTest, DefaultNameChangeAborted) {
@@ -4970,8 +4973,10 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
  private:
   std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
 
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> user_1_prefs_ = nullptr;
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> user_2_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
+      user_1_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
+      user_2_prefs_ = nullptr;
 };
 
 TEST_F(DesksMultiUserTest, SwitchUsersBackAndForth) {

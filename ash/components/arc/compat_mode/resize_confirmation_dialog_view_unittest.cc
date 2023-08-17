@@ -77,7 +77,8 @@ class ResizeConfirmationDialogViewTest : public CompatModeTestBase {
   // An AshColorProvider must exist in scope in order to set up views.
   ash::AshColorProvider ash_color_provider_;
 
-  raw_ptr<ResizeConfirmationDialogView, ExperimentalAsh> dialog_view_;
+  raw_ptr<ResizeConfirmationDialogView, DanglingUntriaged | ExperimentalAsh>
+      dialog_view_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<views::Widget> parent_widget_;
 };

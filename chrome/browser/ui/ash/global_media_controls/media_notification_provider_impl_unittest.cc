@@ -190,8 +190,10 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
 
   std::unique_ptr<ChromeLayoutProvider> layout_provider_;
   std::unique_ptr<MockMediaNotificationProviderObserver> observer_;
-  raw_ptr<MediaNotificationProviderImpl, ExperimentalAsh> provider_ = nullptr;
-  raw_ptr<MediaTestShellDelegate, ExperimentalAsh> shell_delegate_ = nullptr;
+  raw_ptr<MediaNotificationProviderImpl, DanglingUntriaged | ExperimentalAsh>
+      provider_ = nullptr;
+  raw_ptr<MediaTestShellDelegate, DanglingUntriaged | ExperimentalAsh>
+      shell_delegate_ = nullptr;
   crosapi::TestCrosapiEnvironment crosapi_environment_;
 };
 

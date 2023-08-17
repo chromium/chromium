@@ -73,8 +73,8 @@ class ASH_EXPORT NetworkDetailedViewController
   bluetooth_config::mojom::BluetoothSystemState bluetooth_system_state_ =
       bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
 
-  raw_ptr<NetworkDetailedNetworkView, ExperimentalAsh> network_detailed_view_ =
-      nullptr;
+  raw_ptr<NetworkDetailedNetworkView, DanglingUntriaged | ExperimentalAsh>
+      network_detailed_view_ = nullptr;
   std::unique_ptr<NetworkListViewController> network_list_view_controller_;
 };
 

@@ -162,7 +162,8 @@ class FeatureTilesContainerViewTest : public AshTestBase,
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   scoped_refptr<UnifiedSystemTrayModel> tray_model_;
-  raw_ptr<FeatureTilesContainerView, ExperimentalAsh> container_;
+  raw_ptr<FeatureTilesContainerView, DanglingUntriaged | ExperimentalAsh>
+      container_;
 };
 
 // Tests `CalculateRowsFromHeight()` which returns the number of max displayable

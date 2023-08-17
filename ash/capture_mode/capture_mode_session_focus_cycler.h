@@ -117,7 +117,8 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
    private:
     // A convenience pointer to the focus ring, which is owned by the views
     // hierarchy.
-    raw_ptr<views::FocusRing, ExperimentalAsh> focus_ring_ = nullptr;
+    raw_ptr<views::FocusRing, DanglingUntriaged | ExperimentalAsh> focus_ring_ =
+        nullptr;
 
     // True until a highlight path generator has been installed on the focus
     // ring. The path generator can be refreshed (e.g. to change the shape of

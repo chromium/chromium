@@ -173,7 +173,7 @@ class DragWindowResizerTest : public AshTestBase {
   std::unique_ptr<aura::Window> window_;
   std::unique_ptr<aura::Window> always_on_top_window_;
   std::unique_ptr<aura::Window> system_modal_window_;
-  raw_ptr<aura::Window, ExperimentalAsh> transient_child_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> transient_child_;
   std::unique_ptr<aura::Window> transient_parent_;
 };
 

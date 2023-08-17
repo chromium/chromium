@@ -148,7 +148,8 @@ class AppListToastContainerView : public views::View {
   // Whether the toast container is part of the tablet mode app list UI.
   const bool tablet_mode_;
 
-  raw_ptr<AppListToastView, ExperimentalAsh> toast_view_ = nullptr;
+  raw_ptr<AppListToastView, DanglingUntriaged | ExperimentalAsh> toast_view_ =
+      nullptr;
 
   const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
   const raw_ptr<Delegate, ExperimentalAsh> delegate_;

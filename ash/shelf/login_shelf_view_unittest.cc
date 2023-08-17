@@ -199,8 +199,8 @@ class LoginShelfViewTest : public LoginTestBase {
 
   TestTrayActionClient tray_action_client_;
 
-  raw_ptr<LoginShelfView, ExperimentalAsh> login_shelf_view_ =
-      nullptr;  // Unowned.
+  raw_ptr<LoginShelfView, DanglingUntriaged | ExperimentalAsh>
+      login_shelf_view_ = nullptr;  // Unowned.
 
   TestLockScreenActionBackgroundController* action_background_controller() {
     return action_background_controller_;

@@ -117,7 +117,7 @@ class ResizeShadowAndCursorTest : public AshTestBase {
   aura::Window* window() { return window_; }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_;
 };
 
 // Test whether the resize shadows are visible and the cursor type based on the

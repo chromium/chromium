@@ -337,8 +337,8 @@ class LockStateControllerTest : public PowerButtonTestBase {
   std::unique_ptr<ShutdownController::ScopedResetterForTest>
       shutdown_controller_resetter_;
   std::unique_ptr<TestShutdownController> test_shutdown_controller_;
-  raw_ptr<TestSessionStateAnimator, ExperimentalAsh> test_animator_ =
-      nullptr;  // not owned
+  raw_ptr<TestSessionStateAnimator, DanglingUntriaged | ExperimentalAsh>
+      test_animator_ = nullptr;  // not owned
 
  private:
   // Histogram value verifier.

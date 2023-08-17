@@ -98,7 +98,8 @@ class ImeListView : public TrayDetailedView {
 
   std::map<views::View*, std::string> ime_map_;
   std::map<views::View*, std::string> property_map_;
-  raw_ptr<KeyboardStatusRow, ExperimentalAsh> keyboard_status_row_;
+  raw_ptr<KeyboardStatusRow, DanglingUntriaged | ExperimentalAsh>
+      keyboard_status_row_;
 
   // The id of the last item selected with keyboard. It will be empty if the
   // item is not selected with keyboard.
@@ -112,11 +113,13 @@ class ImeListView : public TrayDetailedView {
   bool should_focus_ime_after_selection_with_keyboard_ = false;
 
   // The item view of the current selected IME.
-  raw_ptr<views::View, ExperimentalAsh> current_ime_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> current_ime_view_ =
+      nullptr;
 
   // The container for the IME list. Either a ScrollView (pre-QsRevamp) or a
   // RoundedContainer (post-QsRevamp).
-  raw_ptr<views::View, ExperimentalAsh> container_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> container_ =
+      nullptr;
 };
 
 class ASH_EXPORT ImeListViewTestApi {

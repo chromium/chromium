@@ -354,7 +354,7 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   // container, this Desk pointer is used to determine floating window's desk
   // ownership, since floated window should only be shown on the desk it belongs
   // to.
-  raw_ptr<const Desk, ExperimentalAsh> desk_;
+  raw_ptr<const Desk, DanglingUntriaged | ExperimentalAsh> desk_;
 
   // The start time when the floated window is on the active desk. Used for
   // logging the amount of time a window is floated. Logged when the desk

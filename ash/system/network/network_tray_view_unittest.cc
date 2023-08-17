@@ -78,7 +78,8 @@ class NetworkTrayViewTest : public AshTestBase {
  private:
   std::unique_ptr<FakeCrosNetworkConfig> cros_network_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<NetworkTrayView, ExperimentalAsh> network_tray_view_;
+  raw_ptr<NetworkTrayView, DanglingUntriaged | ExperimentalAsh>
+      network_tray_view_;
 };
 
 TEST_F(NetworkTrayViewTest, NetworkIconTooltip) {

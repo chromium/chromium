@@ -184,7 +184,8 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
   std::unique_ptr<DemoSessionMetricsRecorder> metrics_recorder_;
 
   // Owned by metics_recorder_.
-  raw_ptr<base::MockRepeatingTimer, ExperimentalAsh> mock_timer_ = nullptr;
+  raw_ptr<base::MockRepeatingTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_timer_ = nullptr;
 };
 
 // Verify samples are correct when one app window is active.

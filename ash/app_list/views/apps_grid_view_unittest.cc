@@ -190,7 +190,7 @@ class WindowDeletionWaiter : aura::WindowObserver {
   }
 
   base::RunLoop run_loop_;
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_;
 };
 
 // Find the window with type WINDOW_TYPE_MENU and returns the firstly found one.
@@ -721,15 +721,19 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
 
   // May be a PagedAppsGridView in tablet mode or a ScrollableAppsGridView in
   // clamshell mode.
-  raw_ptr<AppsGridView, ExperimentalAsh> apps_grid_view_ = nullptr;
+  raw_ptr<AppsGridView, DanglingUntriaged | ExperimentalAsh> apps_grid_view_ =
+      nullptr;
 
   // May be owned by different parent views depending on tablet mode.
-  raw_ptr<AppListFolderView, ExperimentalAsh> app_list_folder_view_ = nullptr;
-  raw_ptr<SearchBoxView, ExperimentalAsh> search_box_view_ = nullptr;
+  raw_ptr<AppListFolderView, DanglingUntriaged | ExperimentalAsh>
+      app_list_folder_view_ = nullptr;
+  raw_ptr<SearchBoxView, DanglingUntriaged | ExperimentalAsh> search_box_view_ =
+      nullptr;
 
   // These views exist in tablet mode.
-  raw_ptr<PagedAppsGridView, ExperimentalAsh> paged_apps_grid_view_ = nullptr;
-  raw_ptr<AppListView, ExperimentalAsh> app_list_view_ =
+  raw_ptr<PagedAppsGridView, DanglingUntriaged | ExperimentalAsh>
+      paged_apps_grid_view_ = nullptr;
+  raw_ptr<AppListView, DanglingUntriaged | ExperimentalAsh> app_list_view_ =
       nullptr;  // Owned by native widget.
 
   std::unique_ptr<AppsGridViewTestApi> test_api_;

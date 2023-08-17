@@ -113,7 +113,8 @@ class NetworkDetailedViewTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<NetworkDetailedView, ExperimentalAsh> network_detailed_view_;
+  raw_ptr<NetworkDetailedView, DanglingUntriaged | ExperimentalAsh>
+      network_detailed_view_;
   FakeNetworkDetailedViewDelegate fake_network_detailed_view_delegate_;
   FakeDetailedViewDelegate fake_detailed_view_delegate_;
   NetworkDetailedViewListType list_type_;

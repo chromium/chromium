@@ -776,9 +776,10 @@ class WallpaperControllerTestBase : public AshTestBase {
     run_loop.Run();
   }
 
-  raw_ptr<WallpaperControllerImpl, ExperimentalAsh> controller_;
-  raw_ptr<WallpaperPrefManager, ExperimentalAsh> pref_manager_ =
-      nullptr;  // owned by controller
+  raw_ptr<WallpaperControllerImpl, DanglingUntriaged | ExperimentalAsh>
+      controller_;
+  raw_ptr<WallpaperPrefManager, DanglingUntriaged | ExperimentalAsh>
+      pref_manager_ = nullptr;  // owned by controller
 
   base::ScopedTempDir user_data_dir_;
   base::ScopedTempDir online_wallpaper_dir_;

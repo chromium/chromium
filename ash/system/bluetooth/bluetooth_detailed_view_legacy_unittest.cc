@@ -162,7 +162,8 @@ class BluetoothDetailedViewLegacyTest : public AshTestBase {
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<BluetoothDetailedView, ExperimentalAsh> bluetooth_detailed_view_;
+  raw_ptr<BluetoothDetailedView, DanglingUntriaged | ExperimentalAsh>
+      bluetooth_detailed_view_;
   FakeBluetoothDetailedViewDelegate fake_bluetooth_detailed_view_delegate_;
   FakeDetailedViewDelegate fake_detailed_view_delegate_;
 };

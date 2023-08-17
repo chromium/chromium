@@ -104,9 +104,10 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<SplitViewDragIndicators, ExperimentalAsh>
+  raw_ptr<SplitViewDragIndicators, DanglingUntriaged | ExperimentalAsh>
       split_view_drag_indicators_ = nullptr;
-  raw_ptr<OverviewSession, ExperimentalAsh> overview_session_ = nullptr;
+  raw_ptr<OverviewSession, DanglingUntriaged | ExperimentalAsh>
+      overview_session_ = nullptr;
 };
 
 TEST_F(SplitViewDragIndicatorsTest, Dragging) {

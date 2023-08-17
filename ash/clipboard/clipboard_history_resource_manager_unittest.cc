@@ -125,8 +125,10 @@ class ClipboardHistoryResourceManagerTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<const ClipboardHistory, ExperimentalAsh> clipboard_history_;
-  raw_ptr<const ClipboardHistoryResourceManager, ExperimentalAsh>
+  raw_ptr<const ClipboardHistory, DanglingUntriaged | ExperimentalAsh>
+      clipboard_history_;
+  raw_ptr<const ClipboardHistoryResourceManager,
+          DanglingUntriaged | ExperimentalAsh>
       resource_manager_;
   std::unique_ptr<MockClipboardImageModelFactory> mock_image_factory_;
 };

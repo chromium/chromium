@@ -95,7 +95,8 @@ class ASH_EXPORT WmModeController : public ShellObserver,
   // The window that got selected as the top-most one at the most recent
   // received located event. This window (if available) will be the one that
   // receives all the gestures supported by this mode.
-  raw_ptr<aura::Window, ExperimentalAsh> selected_window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> selected_window_ =
+      nullptr;
 
   // When WM Mode is enabled, we dim all the displays as an indication of this
   // special mode being active, which disallows the normal interaction with

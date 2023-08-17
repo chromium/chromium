@@ -445,7 +445,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // Weak pointer to the overview delegate which will be called when a selection
   // is made.
-  raw_ptr<OverviewDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<OverviewDelegate, DanglingUntriaged | ExperimentalAsh> delegate_;
 
   // A weak pointer to the window which was active on starting overview. If
   // overview is canceled the activation should be restored to this window.
@@ -494,7 +494,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // The selected item when exiting overview mode. nullptr if no window
   // selected.
-  raw_ptr<OverviewItem, ExperimentalAsh> selected_item_ = nullptr;
+  raw_ptr<OverviewItem, DanglingUntriaged | ExperimentalAsh> selected_item_ =
+      nullptr;
 
   // The drag controller for a window in the overview mode.
   std::unique_ptr<OverviewWindowDragController> window_drag_controller_;
@@ -526,7 +527,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   bool chromevox_enabled_;
 
   // When non-null, windows changes on this desk are observed.
-  raw_ptr<const Desk, ExperimentalAsh> observing_desk_ = nullptr;
+  raw_ptr<const Desk, DanglingUntriaged | ExperimentalAsh> observing_desk_ =
+      nullptr;
 
   // This is true *while* an overview item is being dynamically added. It is
   // used to avoid recursively adding overview items.

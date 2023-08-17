@@ -200,7 +200,7 @@ class ASH_EXPORT NotificationCenterView
 
   const raw_ptr<UnifiedSystemTrayView, ExperimentalAsh> parent_;
   scoped_refptr<UnifiedSystemTrayModel> model_;
-  const raw_ptr<UnifiedMessageCenterBubble, ExperimentalAsh>
+  const raw_ptr<UnifiedMessageCenterBubble, DanglingUntriaged | ExperimentalAsh>
       message_center_bubble_;
   const raw_ptr<StackedNotificationBar, ExperimentalAsh> notification_bar_;
   raw_ptr<views::ScrollBar, ExperimentalAsh> scroll_bar_;

@@ -56,7 +56,7 @@ class EcheIconLoadingIndicatorViewTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<EcheIconLoadingIndicatorView, ExperimentalAsh>
+  raw_ptr<EcheIconLoadingIndicatorView, DanglingUntriaged | ExperimentalAsh>
       eche_icon_loading_indicatior_view_;
   std::unique_ptr<views::Widget> test_widget_;
   std::unique_ptr<views::ImageView> icon_;

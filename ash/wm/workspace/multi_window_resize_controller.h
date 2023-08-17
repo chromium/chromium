@@ -229,7 +229,7 @@ class ASH_EXPORT MultiWindowResizeController
   std::unique_ptr<views::Widget> lock_widget_;
 
   // The contents view of the `lock_widget_`.
-  raw_ptr<IconButton, ExperimentalAsh> lock_button_;
+  raw_ptr<IconButton, DanglingUntriaged | ExperimentalAsh> lock_button_;
 
   // If non-null we're in a resize loop.
   std::unique_ptr<WorkspaceWindowResizer> window_resizer_;

@@ -85,7 +85,7 @@ class AppListItemViewTest : public AshTestBase,
   bool IsUsingDragDropController() { return GetParam(); }
 
   int drag_started_on_controller_ = 0;
-  raw_ptr<AppListItemView, ExperimentalAsh> drag_view_;
+  raw_ptr<AppListItemView, DanglingUntriaged | ExperimentalAsh> drag_view_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 INSTANTIATE_TEST_SUITE_P(All, AppListItemViewTest, testing::Bool());

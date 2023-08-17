@@ -155,10 +155,12 @@ class LoginExpandedPublicAccountViewTest
   LoginUserInfo user_;
 
   // Owned by test widget view hierarchy.
-  raw_ptr<views::BoxLayoutView, ExperimentalAsh> container_ = nullptr;
-  raw_ptr<LoginExpandedPublicAccountView, ExperimentalAsh> public_account_ =
+  raw_ptr<views::BoxLayoutView, DanglingUntriaged | ExperimentalAsh>
+      container_ = nullptr;
+  raw_ptr<LoginExpandedPublicAccountView, DanglingUntriaged | ExperimentalAsh>
+      public_account_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> other_view_ =
       nullptr;
-  raw_ptr<views::View, ExperimentalAsh> other_view_ = nullptr;
 };
 
 }  // namespace

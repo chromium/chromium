@@ -125,7 +125,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     void ShowDialog();
 
    private:
-    const raw_ptr<LoginAuthUserView, ExperimentalAsh> view_;
+    const raw_ptr<LoginAuthUserView, DanglingUntriaged | ExperimentalAsh> view_;
   };
 
   using OnAuthCallback =

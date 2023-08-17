@@ -178,7 +178,7 @@ class PinRequestViewTest : public LoginTestBase,
   // Whether the next pin submission will trigger setting an error state.
   bool will_authenticate_ = true;
 
-  raw_ptr<PinRequestView, ExperimentalAsh> view_ =
+  raw_ptr<PinRequestView, DanglingUntriaged | ExperimentalAsh> view_ =
       nullptr;  // Owned by test widget view hierarchy.
 };
 

@@ -271,7 +271,8 @@ class SnapGroupTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<MultiWindowResizeController, ExperimentalAsh> resize_controller_;
+  raw_ptr<MultiWindowResizeController, DanglingUntriaged | ExperimentalAsh>
+      resize_controller_;
 };
 
 // Tests that the corresponding snap group will be created when calling

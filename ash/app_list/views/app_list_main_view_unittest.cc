@@ -208,7 +208,7 @@ class AppListMainViewTest : public AshTestBase,
   }
 
  protected:
-  raw_ptr<AppListView, ExperimentalAsh> app_list_view_ =
+  raw_ptr<AppListView, DanglingUntriaged | ExperimentalAsh> app_list_view_ =
       nullptr;  // Owned by native widget.
  private:
   const bool is_drag_drop_refactor_enabled_;

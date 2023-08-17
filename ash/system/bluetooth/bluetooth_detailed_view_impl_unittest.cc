@@ -97,8 +97,8 @@ class BluetoothDetailedViewImplTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   FakeBluetoothDetailedViewDelegate bluetooth_detailed_view_delegate_;
   FakeDetailedViewDelegate detailed_view_delegate_;
-  raw_ptr<BluetoothDetailedViewImpl, ExperimentalAsh> bluetooth_detailed_view_ =
-      nullptr;
+  raw_ptr<BluetoothDetailedViewImpl, DanglingUntriaged | ExperimentalAsh>
+      bluetooth_detailed_view_ = nullptr;
 };
 
 TEST_F(BluetoothDetailedViewImplTest, PressingSettingsButtonOpensSettings) {

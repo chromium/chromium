@@ -477,7 +477,8 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
   }
 
  private:
-  raw_ptr<FocusCycler, ExperimentalAsh> focus_cycler_ = nullptr;
+  raw_ptr<FocusCycler, DanglingUntriaged | ExperimentalAsh> focus_cycler_ =
+      nullptr;
   // A background layer that may be visible depending on HotseatState.
   raw_ptr<views::View, ExperimentalAsh> translucent_background_ = nullptr;
   raw_ptr<ScrollableShelfView, DanglingUntriaged | ExperimentalAsh>

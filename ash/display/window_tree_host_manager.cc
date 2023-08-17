@@ -233,8 +233,8 @@ class FocusActivationStore {
   raw_ptr<aura::client::CaptureClient, ExperimentalAsh> capture_client_;
   raw_ptr<aura::client::FocusClient, ExperimentalAsh> focus_client_;
   aura::WindowTracker tracker_;
-  raw_ptr<aura::Window, ExperimentalAsh> focused_;
-  raw_ptr<aura::Window, ExperimentalAsh> active_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> focused_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> active_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

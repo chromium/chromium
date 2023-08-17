@@ -60,9 +60,9 @@ class LoginBaseBubbleViewTest : public LoginTestBase {
     container_->AddChildView(bubble_.get());
   }
 
-  raw_ptr<LoginBaseBubbleView, ExperimentalAsh> bubble_;
-  raw_ptr<views::View, ExperimentalAsh> container_;
-  raw_ptr<AnchorView, ExperimentalAsh> anchor_;
+  raw_ptr<LoginBaseBubbleView, DanglingUntriaged | ExperimentalAsh> bubble_;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> container_;
+  raw_ptr<AnchorView, DanglingUntriaged | ExperimentalAsh> anchor_;
 };
 
 TEST_F(LoginBaseBubbleViewTest, BasicProperties) {

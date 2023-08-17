@@ -187,7 +187,7 @@ class GeolocationControllerTest : public AshTestBase {
  private:
   std::unique_ptr<FakeGeolocationController> controller_;
   base::SimpleTestClock test_clock_;
-  raw_ptr<base::OneShotTimer, ExperimentalAsh> timer_ptr_;
+  raw_ptr<base::OneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_ptr_;
   Geoposition position_;
 };
 

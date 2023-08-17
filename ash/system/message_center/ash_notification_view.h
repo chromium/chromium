@@ -335,7 +335,8 @@ class ASH_EXPORT AshNotificationView
   raw_ptr<IconButton, ExperimentalAsh> snooze_button_ = nullptr;
 
   // These views below are dynamically created inside view hierarchy.
-  raw_ptr<NotificationTitleRow, ExperimentalAsh> title_row_ = nullptr;
+  raw_ptr<NotificationTitleRow, DanglingUntriaged | ExperimentalAsh>
+      title_row_ = nullptr;
 
   // Layout manager for the container of header and left content.
   raw_ptr<views::BoxLayout, ExperimentalAsh> header_left_content_layout_ =

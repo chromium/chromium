@@ -87,7 +87,8 @@ void NetworkListNetworkHeaderView::SetToggleState(bool enabled,
         is_on ? enabled_label_id_ : IDS_ASH_QUICK_SETTINGS_NETWORK_DISABLED));
   }
 
-  auto toggle = features::IsQsRevampEnabled() ? qs_toggle_ : toggle_;
+  views::ToggleButton* toggle =
+      features::IsQsRevampEnabled() ? qs_toggle_.get() : toggle_.get();
   toggle->SetEnabled(enabled);
   toggle->SetAcceptsEvents(enabled);
   if (animate_toggle) {
@@ -103,7 +104,8 @@ void NetworkListNetworkHeaderView::AddExtraButtons() {}
 void NetworkListNetworkHeaderView::OnToggleToggled(bool is_on) {}
 
 void NetworkListNetworkHeaderView::SetToggleVisibility(bool visible) {
-  auto toggle = features::IsQsRevampEnabled() ? qs_toggle_ : toggle_;
+  views::ToggleButton* toggle =
+      features::IsQsRevampEnabled() ? qs_toggle_ : toggle_;
   toggle->SetVisible(visible);
 }
 
@@ -119,7 +121,8 @@ void NetworkListNetworkHeaderView::UpdateToggleState(bool has_new_state) {
   // disabling of mobile radio. The toggle will get unlocked in the next
   // call to SetToggleState(). Note that we don't disable/enable
   // because that would clear focus.
-  auto toggle = features::IsQsRevampEnabled() ? qs_toggle_ : toggle_;
+  views::ToggleButton* toggle =
+      features::IsQsRevampEnabled() ? qs_toggle_ : toggle_;
   toggle->SetAcceptsEvents(false);
   OnToggleToggled(has_new_state ? toggle->GetIsOn() : !toggle->GetIsOn());
 }

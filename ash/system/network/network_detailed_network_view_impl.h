@@ -69,7 +69,8 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   // wifi header, and wifi network entries. These containers are only used and
   // added to the `network_list_` when the `features::IsQsRevampEnabled()` is
   // true.
-  raw_ptr<RoundedContainer, ExperimentalAsh> first_list_view_ = nullptr;
+  raw_ptr<RoundedContainer, DanglingUntriaged | ExperimentalAsh>
+      first_list_view_ = nullptr;
   raw_ptr<RoundedContainer, ExperimentalAsh> mobile_top_container_ = nullptr;
   raw_ptr<RoundedContainer, ExperimentalAsh> mobile_network_list_view_ =
       nullptr;

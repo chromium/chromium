@@ -192,13 +192,17 @@ class MediatorTest : public AshTestBase {
   scoped_refptr<Device> subsequent_device_;
   scoped_refptr<Device> retroactive_device_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
-  raw_ptr<FakeFeatureStatusTracker, ExperimentalAsh> feature_status_tracker_;
-  raw_ptr<MockScannerBroker, ExperimentalAsh> mock_scanner_broker_;
-  raw_ptr<FakeRetroactivePairingDetector, ExperimentalAsh>
+  raw_ptr<FakeFeatureStatusTracker, DanglingUntriaged | ExperimentalAsh>
+      feature_status_tracker_;
+  raw_ptr<MockScannerBroker, DanglingUntriaged | ExperimentalAsh>
+      mock_scanner_broker_;
+  raw_ptr<FakeRetroactivePairingDetector, DanglingUntriaged | ExperimentalAsh>
       fake_retroactive_pairing_detector_;
-  raw_ptr<MockPairerBroker, ExperimentalAsh> mock_pairer_broker_;
-  raw_ptr<MockUIBroker, ExperimentalAsh> mock_ui_broker_;
-  raw_ptr<MockFastPairRepository, ExperimentalAsh> mock_fast_pair_repository_;
+  raw_ptr<MockPairerBroker, DanglingUntriaged | ExperimentalAsh>
+      mock_pairer_broker_;
+  raw_ptr<MockUIBroker, DanglingUntriaged | ExperimentalAsh> mock_ui_broker_;
+  raw_ptr<MockFastPairRepository, DanglingUntriaged | ExperimentalAsh>
+      mock_fast_pair_repository_;
   bluetooth_config::FakeAdapterStateController fake_adapter_state_controller_;
   std::unique_ptr<Mediator> mediator_;
 };

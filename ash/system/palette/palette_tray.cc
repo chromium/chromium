@@ -233,7 +233,7 @@ class TitleView : public views::View {
   // clicked.
   raw_ptr<views::View, ExperimentalAsh> settings_button_;
   raw_ptr<views::View, ExperimentalAsh> help_button_;
-  raw_ptr<PaletteTray, ExperimentalAsh> palette_tray_;
+  raw_ptr<PaletteTray, DanglingUntriaged | ExperimentalAsh> palette_tray_;
 };
 
 // Used as a Shell pre-target handler to notify PaletteTray of stylus events.

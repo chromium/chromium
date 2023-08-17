@@ -100,7 +100,8 @@ class ASH_EXPORT HoldingSpaceTrayChildBubble
   void OnAnimateInCompleted(bool aborted);
   void OnAnimateOutCompleted(bool aborted);
 
-  const raw_ptr<HoldingSpaceViewDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<HoldingSpaceViewDelegate, DanglingUntriaged | ExperimentalAsh>
+      delegate_;
 
   // Views owned by view hierarchy.
   std::vector<HoldingSpaceItemViewsSection*> sections_;

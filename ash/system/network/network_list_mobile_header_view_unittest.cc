@@ -160,7 +160,7 @@ class NetworkListMobileHeaderViewTest
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
-  raw_ptr<NetworkListMobileHeaderViewImpl, ExperimentalAsh>
+  raw_ptr<NetworkListMobileHeaderViewImpl, DanglingUntriaged | ExperimentalAsh>
       network_list_mobile_header_view_;
 };
 

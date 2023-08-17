@@ -65,7 +65,8 @@ class PowerEventObserverTest : public AshTestBase {
     return Shell::Get()->session_controller()->IsScreenLocked();
   }
 
-  raw_ptr<PowerEventObserver, ExperimentalAsh> observer_ = nullptr;
+  raw_ptr<PowerEventObserver, DanglingUntriaged | ExperimentalAsh> observer_ =
+      nullptr;
 };
 
 TEST_F(PowerEventObserverTest, LockBeforeSuspend) {

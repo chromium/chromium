@@ -117,7 +117,7 @@ class MediaTrayTest : public AshTestBase {
 
  private:
   std::unique_ptr<MockMediaNotificationProvider> provider_;
-  raw_ptr<MediaTray, ExperimentalAsh> media_tray_;
+  raw_ptr<MediaTray, DanglingUntriaged | ExperimentalAsh> media_tray_;
   std::unique_ptr<MockTrayBackgroundView> mock_tray_;
 };
 

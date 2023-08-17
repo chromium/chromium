@@ -46,7 +46,8 @@ class ASH_EXPORT UnifiedBrightnessSliderController
  private:
   scoped_refptr<UnifiedSystemTrayModel> model_;
   views::Button::PressedCallback const callback_;
-  raw_ptr<UnifiedSliderView, ExperimentalAsh> slider_ = nullptr;
+  raw_ptr<UnifiedSliderView, DanglingUntriaged | ExperimentalAsh> slider_ =
+      nullptr;
 
   // We have to store previous manually set value because |old_value| might be
   // set by UnifiedSystemTrayModel::Observer.

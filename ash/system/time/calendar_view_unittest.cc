@@ -318,7 +318,8 @@ class CalendarViewTest : public AshTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
-  raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;
+  raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> calendar_view_ =
+      nullptr;
   std::unique_ptr<DetailedViewDelegate> delegate_;
   std::unique_ptr<CalendarEventListView> event_list_view_;
   static base::Time fake_time_;
@@ -1544,10 +1545,11 @@ class CalendarViewAnimationTest : public AshTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
-  raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;
+  raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> calendar_view_ =
+      nullptr;
   std::unique_ptr<DetailedViewDelegate> delegate_;
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
-  raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_;
+  raw_ptr<CalendarModel, DanglingUntriaged | ExperimentalAsh> calendar_model_;
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
 };
 

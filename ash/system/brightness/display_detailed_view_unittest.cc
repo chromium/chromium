@@ -46,7 +46,8 @@ class DisplayDetailedViewTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  raw_ptr<DisplayDetailedView, ExperimentalAsh> detailed_view_ = nullptr;
+  raw_ptr<DisplayDetailedView, DanglingUntriaged | ExperimentalAsh>
+      detailed_view_ = nullptr;
 };
 
 TEST_F(DisplayDetailedViewTest, ScrollContentChildren) {

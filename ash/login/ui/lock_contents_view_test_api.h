@@ -58,7 +58,7 @@ class ASH_EXPORT LockContentsViewTestApi {
   FingerprintState GetFingerPrintState(const AccountId& account_id) const;
 
  private:
-  const raw_ptr<LockContentsView, ExperimentalAsh> view_;
+  const raw_ptr<LockContentsView, DanglingUntriaged | ExperimentalAsh> view_;
 };
 
 }  // namespace ash

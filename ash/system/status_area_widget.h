@@ -315,7 +315,8 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
       select_to_speak_tray_ = nullptr;
   raw_ptr<HoldingSpaceTray, DanglingUntriaged | ExperimentalAsh>
       holding_space_tray_ = nullptr;
-  raw_ptr<WmModeButtonTray, ExperimentalAsh> wm_mode_button_tray_ = nullptr;
+  raw_ptr<WmModeButtonTray, DanglingUntriaged | ExperimentalAsh>
+      wm_mode_button_tray_ = nullptr;
 
   // Vector of the tray buttons above. The ordering is used to determine which
   // tray buttons are hidden when they overflow the available width.

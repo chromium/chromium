@@ -71,7 +71,7 @@ class ArcPaymentAppBridge : public KeyedService {
   static void EnsureFactoryBuilt();
 
  private:
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService, DanglingUntriaged | ExperimentalAsh>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 };
 

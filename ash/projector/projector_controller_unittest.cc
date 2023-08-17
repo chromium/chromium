@@ -197,13 +197,15 @@ class ProjectorControllerTest : public AshTestBase {
     CrasAudioHandler::Get()->SetActiveInputNodes({kInternalMic->id});
   }
 
-  raw_ptr<MockProjectorUiController, ExperimentalAsh> mock_ui_controller_ =
-      nullptr;
-  raw_ptr<MockProjectorMetadataController, ExperimentalAsh>
+  raw_ptr<MockProjectorUiController, DanglingUntriaged | ExperimentalAsh>
+      mock_ui_controller_ = nullptr;
+  raw_ptr<MockProjectorMetadataController, DanglingUntriaged | ExperimentalAsh>
       mock_metadata_controller_ = nullptr;
-  raw_ptr<ProjectorMetadataControllerForTest, ExperimentalAsh>
+  raw_ptr<ProjectorMetadataControllerForTest,
+          DanglingUntriaged | ExperimentalAsh>
       metadata_controller_;
-  raw_ptr<ProjectorControllerImpl, ExperimentalAsh> controller_;
+  raw_ptr<ProjectorControllerImpl, DanglingUntriaged | ExperimentalAsh>
+      controller_;
   MockProjectorClient mock_client_;
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;

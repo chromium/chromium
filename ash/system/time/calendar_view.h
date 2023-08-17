@@ -165,7 +165,8 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
       raw_ptr<ScrollContentsView, ExperimentalAsh> content_view_;
     };
 
-    const raw_ptr<CalendarViewController, ExperimentalAsh> controller_;
+    const raw_ptr<CalendarViewController, DanglingUntriaged | ExperimentalAsh>
+        controller_;
     StylusEventHandler stylus_event_handler_;
 
     // Since we only record metrics once when we scroll through a particular
@@ -390,14 +391,22 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
 
   // The following is owned by `CalendarView`.
   raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> current_label_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> previous_label_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> next_label_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> next_next_label_ = nullptr;
-  raw_ptr<CalendarMonthView, ExperimentalAsh> previous_month_ = nullptr;
-  raw_ptr<CalendarMonthView, ExperimentalAsh> current_month_ = nullptr;
-  raw_ptr<CalendarMonthView, ExperimentalAsh> next_month_ = nullptr;
-  raw_ptr<CalendarMonthView, ExperimentalAsh> next_next_month_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> current_label_ =
+      nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> previous_label_ =
+      nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> next_label_ =
+      nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> next_next_label_ =
+      nullptr;
+  raw_ptr<CalendarMonthView, DanglingUntriaged | ExperimentalAsh>
+      previous_month_ = nullptr;
+  raw_ptr<CalendarMonthView, DanglingUntriaged | ExperimentalAsh>
+      current_month_ = nullptr;
+  raw_ptr<CalendarMonthView, DanglingUntriaged | ExperimentalAsh> next_month_ =
+      nullptr;
+  raw_ptr<CalendarMonthView, DanglingUntriaged | ExperimentalAsh>
+      next_next_month_ = nullptr;
   raw_ptr<CalendarHeaderView, ExperimentalAsh> header_ = nullptr;
   // Temporary header, used for animations.
   raw_ptr<CalendarHeaderView, ExperimentalAsh> temp_header_ = nullptr;
@@ -407,9 +416,11 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   raw_ptr<IconButton, ExperimentalAsh> up_button_ = nullptr;
   raw_ptr<IconButton, ExperimentalAsh> down_button_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> calendar_sliding_surface_ = nullptr;
-  raw_ptr<CalendarEventListView, ExperimentalAsh> event_list_view_ = nullptr;
+  raw_ptr<CalendarEventListView, DanglingUntriaged | ExperimentalAsh>
+      event_list_view_ = nullptr;
   // Owned by CalendarView.
-  raw_ptr<CalendarUpNextView, ExperimentalAsh> up_next_view_ = nullptr;
+  raw_ptr<CalendarUpNextView, DanglingUntriaged | ExperimentalAsh>
+      up_next_view_ = nullptr;
   std::map<base::Time, CalendarModel::FetchingStatus> on_screen_month_;
   raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_ =
       Shell::Get()->system_tray_model()->calendar_model();

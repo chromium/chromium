@@ -30,7 +30,7 @@ class AdaptiveChargingControllerTest : public NoSessionAshTestBase {
   }
 
  protected:
-  raw_ptr<chromeos::FakePowerManagerClient, ExperimentalAsh>
+  raw_ptr<chromeos::FakePowerManagerClient, DanglingUntriaged | ExperimentalAsh>
       power_manager_client_ = nullptr;
   std::unique_ptr<AdaptiveChargingController> adaptive_charging_controller_;
 };

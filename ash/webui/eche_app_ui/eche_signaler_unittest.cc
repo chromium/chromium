@@ -250,7 +250,7 @@ class EcheSignalerTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
 
  private:
-  raw_ptr<EcheTray, ExperimentalAsh> eche_tray_ = nullptr;
+  raw_ptr<EcheTray, DanglingUntriaged | ExperimentalAsh> eche_tray_ = nullptr;
   secure_channel::FakeConnectionManager fake_connection_manager_;
   std::unique_ptr<EcheConnectionStatusHandler> eche_connection_status_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;

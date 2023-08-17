@@ -161,7 +161,8 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
   std::unique_ptr<base::ScopedPathOverride> managed_screensaver_dir_override_;
 
   // Ownership of this pref service is transferred to the session controller
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> active_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
+      active_prefs_ = nullptr;
 
   // Class under test
   std::unique_ptr<ScreensaverImagesPolicyHandler> policy_handler_;

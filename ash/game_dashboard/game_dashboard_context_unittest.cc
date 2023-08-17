@@ -313,7 +313,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
  protected:
   std::unique_ptr<aura::Window> game_window_;
-  raw_ptr<chromeos::FrameHeader, ExperimentalAsh> frame_header_;
+  raw_ptr<chromeos::FrameHeader, DanglingUntriaged | ExperimentalAsh>
+      frame_header_;
   std::unique_ptr<GameDashboardContextTestApi> test_api_;
 
   void DragToolbarToPoint(Movement move_type,

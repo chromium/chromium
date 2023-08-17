@@ -45,7 +45,8 @@ class ASH_EXPORT CaptureModeFeaturePodController
                 DanglingUntriaged | ExperimentalAsh>
       tray_controller_;
 
-  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
+      nullptr;
 
   base::WeakPtrFactory<CaptureModeFeaturePodController> weak_ptr_factory_{this};
 };

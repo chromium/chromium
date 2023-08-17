@@ -118,9 +118,12 @@ class ResizeToggleMenu : public views::WidgetObserver,
   raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_{nullptr};
 
   // Store only for testing.
-  raw_ptr<MenuButtonView, ExperimentalAsh> phone_button_{nullptr};
-  raw_ptr<MenuButtonView, ExperimentalAsh> tablet_button_{nullptr};
-  raw_ptr<MenuButtonView, ExperimentalAsh> resizable_button_{nullptr};
+  raw_ptr<MenuButtonView, DanglingUntriaged | ExperimentalAsh> phone_button_{
+      nullptr};
+  raw_ptr<MenuButtonView, DanglingUntriaged | ExperimentalAsh> tablet_button_{
+      nullptr};
+  raw_ptr<MenuButtonView, DanglingUntriaged | ExperimentalAsh>
+      resizable_button_{nullptr};
 
   base::WeakPtrFactory<ResizeToggleMenu> weak_ptr_factory_{this};
 };

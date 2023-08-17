@@ -83,7 +83,8 @@ class AccessibilityFocusHelperView : public views::View {
   }
 
  private:
-  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
+  raw_ptr<UnifiedSystemTrayController, DanglingUntriaged | ExperimentalAsh>
+      controller_;
 };
 
 }  // namespace

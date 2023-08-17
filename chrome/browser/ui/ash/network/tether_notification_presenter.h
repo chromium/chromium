@@ -111,7 +111,7 @@ class TetherNotificationPresenter : public NotificationPresenter {
                                          const std::string& notification_id);
   void RemoveNotificationIfVisible(const std::string& notification_id);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   raw_ptr<NetworkConnect, DanglingUntriaged | ExperimentalAsh> network_connect_;
 
   // The ID of the currently showing notification.

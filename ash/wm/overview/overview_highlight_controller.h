@@ -123,8 +123,8 @@ class ASH_EXPORT OverviewHighlightController {
   absl::optional<int> deleted_index_ = absl::nullopt;
 
   // The current view that is being highlighted, if any.
-  raw_ptr<OverviewHighlightableView, ExperimentalAsh> highlighted_view_ =
-      nullptr;
+  raw_ptr<OverviewHighlightableView, DanglingUntriaged | ExperimentalAsh>
+      highlighted_view_ = nullptr;
 
   // Helps to update the current a11y override window. And accessibility
   // features will focus on the window that is being set. Once `this` goes out

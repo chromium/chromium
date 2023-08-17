@@ -55,7 +55,8 @@ class ASH_EXPORT SelectToSpeakSpeedBubbleController
   // Owned by views hierarchy.
   raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
   raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
-  raw_ptr<SelectToSpeakSpeedView, ExperimentalAsh> speed_view_ = nullptr;
+  raw_ptr<SelectToSpeakSpeedView, DanglingUntriaged | ExperimentalAsh>
+      speed_view_ = nullptr;
 
   // Owned by parent whose lifetime exceeds this class.
   raw_ptr<SelectToSpeakSpeedView::Delegate, ExperimentalAsh> delegate_ =

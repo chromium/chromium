@@ -66,7 +66,8 @@ class EcheStreamStatusChangeHandler
   void NotifyStreamStatusChanged(mojom::StreamStatus status);
 
  private:
-  raw_ptr<AppsLaunchInfoProvider, ExperimentalAsh> apps_launch_info_provider_;
+  raw_ptr<AppsLaunchInfoProvider, DanglingUntriaged | ExperimentalAsh>
+      apps_launch_info_provider_;
   raw_ptr<EcheConnectionStatusHandler, ExperimentalAsh>
       eche_connection_status_handler_;
   mojo::Receiver<mojom::DisplayStreamHandler> display_stream_receiver_{this};

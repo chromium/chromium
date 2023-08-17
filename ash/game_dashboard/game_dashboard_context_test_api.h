@@ -97,7 +97,8 @@ class GameDashboardContextTestApi {
   // `view_id`.
   views::View* GetMainMenuViewById(int view_id);
 
-  const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
+  const raw_ptr<GameDashboardContext, DanglingUntriaged | ExperimentalAsh>
+      context_;
   const raw_ptr<ui::test::EventGenerator, ExperimentalAsh> event_generator_;
 };
 

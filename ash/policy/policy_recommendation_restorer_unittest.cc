@@ -149,11 +149,15 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
     return true;
   }
 
-  raw_ptr<PolicyRecommendationRestorer, ExperimentalAsh> restorer_ = nullptr;
+  raw_ptr<PolicyRecommendationRestorer, DanglingUntriaged | ExperimentalAsh>
+      restorer_ = nullptr;
 
   // Ownerships are passed to SessionController.
-  raw_ptr<TestingPrefStore, ExperimentalAsh> recommended_prefs_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh> prefs_;
+  raw_ptr<TestingPrefStore, DanglingUntriaged | ExperimentalAsh>
+      recommended_prefs_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable,
+          DanglingUntriaged | ExperimentalAsh>
+      prefs_;
 };
 
 // Verifies that when no recommended values have been set, |restorer_| does not

@@ -95,7 +95,8 @@ class CastDetailedViewTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   TestCastConfigController cast_config_;
   std::unique_ptr<FakeDetailedViewDelegate> delegate_;
-  raw_ptr<CastDetailedView, ExperimentalAsh> detailed_view_ = nullptr;
+  raw_ptr<CastDetailedView, DanglingUntriaged | ExperimentalAsh>
+      detailed_view_ = nullptr;
 };
 
 TEST_F(CastDetailedViewTest, ViewsCreatedForCastDevices) {

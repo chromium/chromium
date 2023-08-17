@@ -194,12 +194,16 @@ class FrameSizeButtonTest : public AshTestBase {
 
  private:
   // Not owned.
-  raw_ptr<WindowState, ExperimentalAsh> window_state_;
-  raw_ptr<views::Widget, ExperimentalAsh> widget_;
-  raw_ptr<views::FrameCaptionButton, ExperimentalAsh> minimize_button_;
-  raw_ptr<views::FrameCaptionButton, ExperimentalAsh> size_button_;
-  raw_ptr<views::FrameCaptionButton, ExperimentalAsh> close_button_;
-  raw_ptr<TestWidgetDelegate, ExperimentalAsh> widget_delegate_;
+  raw_ptr<WindowState, DanglingUntriaged | ExperimentalAsh> window_state_;
+  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_;
+  raw_ptr<views::FrameCaptionButton, DanglingUntriaged | ExperimentalAsh>
+      minimize_button_;
+  raw_ptr<views::FrameCaptionButton, DanglingUntriaged | ExperimentalAsh>
+      size_button_;
+  raw_ptr<views::FrameCaptionButton, DanglingUntriaged | ExperimentalAsh>
+      close_button_;
+  raw_ptr<TestWidgetDelegate, DanglingUntriaged | ExperimentalAsh>
+      widget_delegate_;
   bool resizable_ = true;
 };
 

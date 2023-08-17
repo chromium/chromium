@@ -297,7 +297,8 @@ class WindowCloseObserver : public aura::WindowObserver {
 
   // The desk that the user has saved and that we will remove once windows have
   // been removed.
-  raw_ptr<const Desk, ExperimentalAsh> desk_to_remove_ = nullptr;
+  raw_ptr<const Desk, DanglingUntriaged | ExperimentalAsh> desk_to_remove_ =
+      nullptr;
 
   // UUID and name of the saved desk.
   const base::Uuid saved_desk_uuid_;

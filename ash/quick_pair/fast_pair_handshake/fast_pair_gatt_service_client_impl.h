@@ -257,13 +257,17 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   base::TimeTicks notify_keybased_start_time_;
   base::TimeTicks notify_passkey_start_time_;
 
-  raw_ptr<device::BluetoothRemoteGattCharacteristic, ExperimentalAsh>
+  raw_ptr<device::BluetoothRemoteGattCharacteristic,
+          DanglingUntriaged | ExperimentalAsh>
       key_based_characteristic_ = nullptr;
-  raw_ptr<device::BluetoothRemoteGattCharacteristic, ExperimentalAsh>
+  raw_ptr<device::BluetoothRemoteGattCharacteristic,
+          DanglingUntriaged | ExperimentalAsh>
       passkey_characteristic_ = nullptr;
-  raw_ptr<device::BluetoothRemoteGattCharacteristic, ExperimentalAsh>
+  raw_ptr<device::BluetoothRemoteGattCharacteristic,
+          DanglingUntriaged | ExperimentalAsh>
       account_key_characteristic_ = nullptr;
-  raw_ptr<device::BluetoothRemoteGattCharacteristic, ExperimentalAsh>
+  raw_ptr<device::BluetoothRemoteGattCharacteristic,
+          DanglingUntriaged | ExperimentalAsh>
       additional_data_characteristic_ = nullptr;
 
   // Initialize with zero failures.
@@ -273,8 +277,9 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   std::unique_ptr<device::BluetoothGattNotifySession> passkey_notify_session_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   std::unique_ptr<device::BluetoothGattConnection> gatt_connection_;
-  raw_ptr<device::BluetoothRemoteGattService, ExperimentalAsh> gatt_service_ =
-      nullptr;
+  raw_ptr<device::BluetoothRemoteGattService,
+          DanglingUntriaged | ExperimentalAsh>
+      gatt_service_ = nullptr;
 
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>

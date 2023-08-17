@@ -329,7 +329,8 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // The root menu item view of `context_menu_model_`. Cached for testing.
-  raw_ptr<views::MenuItemView, ExperimentalAsh> root_menu_item_view_ = nullptr;
+  raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh>
+      root_menu_item_view_ = nullptr;
 
   // Owned by views hierarchy.
   raw_ptr<PowerButton, ExperimentalAsh> power_button_ = nullptr;

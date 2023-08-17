@@ -74,8 +74,8 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   std::unique_ptr<aura::ScopedEnableUnadjustedMouseEvents>
   RequestUnadjustedMovement() override;
 
-  raw_ptr<AshWindowTreeHostDelegate, ExperimentalAsh> delegate_ =
-      nullptr;  // Not owned.
+  raw_ptr<AshWindowTreeHostDelegate, DanglingUntriaged | ExperimentalAsh>
+      delegate_ = nullptr;  // Not owned.
 
  private:
   // All constructors call into this.
@@ -86,7 +86,8 @@ class ASH_EXPORT AshWindowTreeHostPlatform
 
   TransformerHelper transformer_helper_;
 
-  raw_ptr<ui::InputController, ExperimentalAsh> input_controller_ = nullptr;
+  raw_ptr<ui::InputController, DanglingUntriaged | ExperimentalAsh>
+      input_controller_ = nullptr;
 
   gfx::Rect last_cursor_confine_bounds_in_pixels_;
 };

@@ -971,7 +971,8 @@ class HostWindowObserver : aura::WindowObserver {
 
  private:
   bool removed_from_host_ = false;
-  raw_ptr<const aura::Window, ExperimentalAsh> host_window_ = nullptr;
+  raw_ptr<const aura::Window, DanglingUntriaged | ExperimentalAsh>
+      host_window_ = nullptr;
 };
 
 // Tests that RoundedDisplayProvider and its host window are correctly deleted

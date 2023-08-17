@@ -303,7 +303,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void CloseBubbleView();
 
   InitParams params_;
-  raw_ptr<views::BoxLayout, ExperimentalAsh> layout_;
+  raw_ptr<views::BoxLayout, DanglingUntriaged | ExperimentalAsh> layout_;
   base::WeakPtr<Delegate> delegate_;
   int preferred_width_;
   bool is_gesture_dragging_;

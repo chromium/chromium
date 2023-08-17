@@ -142,7 +142,8 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
   speech::LanguageCode fr_fr() { return speech::LanguageCode::kFrFr; }
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> testing_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> testing_profile_ =
+      nullptr;
 
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};

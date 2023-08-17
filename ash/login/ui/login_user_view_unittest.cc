@@ -72,7 +72,7 @@ class LoginUserViewUnittest : public LoginTestBase {
   int tap_count_ = 0;
   int dropdown_pressed_count_ = 0;
 
-  raw_ptr<views::View, ExperimentalAsh> container_ =
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> container_ =
       nullptr;  // Owned by test widget view hierarchy.
 
  private:

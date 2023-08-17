@@ -407,7 +407,7 @@ class NetworkFeaturePodControllerTest
   std::string wifi_path_;
   std::string tether_path_;
   std::string tether_wifi_path_;
-  raw_ptr<FeatureTile, ExperimentalAsh> feature_tile_;
+  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> feature_tile_;
   std::unique_ptr<FeaturePodButton> feature_pod_button_;
   std::unique_ptr<NetworkFeaturePodController> network_feature_pod_controller_;
 };

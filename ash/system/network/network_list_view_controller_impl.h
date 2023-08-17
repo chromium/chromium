@@ -242,8 +242,8 @@ class ASH_EXPORT NetworkListViewControllerImpl
   raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh>
       connection_warning_label_ = nullptr;
 
-  raw_ptr<NetworkListWifiHeaderView, ExperimentalAsh> wifi_header_view_ =
-      nullptr;
+  raw_ptr<NetworkListWifiHeaderView, DanglingUntriaged | ExperimentalAsh>
+      wifi_header_view_ = nullptr;
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #addr-of
   RAW_PTR_EXCLUSION views::Separator* wifi_separator_view_ = nullptr;
@@ -278,7 +278,7 @@ class ASH_EXPORT NetworkListViewControllerImpl
   absl::optional<bool> is_proxy_managed_;
   absl::optional<bool> is_vpn_managed_;
 
-  raw_ptr<NetworkDetailedNetworkView, ExperimentalAsh>
+  raw_ptr<NetworkDetailedNetworkView, DanglingUntriaged | ExperimentalAsh>
       network_detailed_network_view_;
   NetworkIdToViewMap network_id_to_view_map_;
 

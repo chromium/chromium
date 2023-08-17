@@ -76,7 +76,7 @@ class TopIconAnimationView : public views::View,
   void OnImplicitAnimationsCompleted() override;
   bool RequiresNotificationWhenAnimatorDestroyed() const override;
 
-  raw_ptr<const AppsGridView, ExperimentalAsh>
+  raw_ptr<const AppsGridView, DanglingUntriaged | ExperimentalAsh>
       grid_;  // Owned by views hierarchy.
   gfx::Size icon_size_;
   raw_ptr<views::ImageView, ExperimentalAsh>

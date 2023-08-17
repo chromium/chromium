@@ -130,7 +130,8 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
     SearchResult::Tags GetTags() const { return tags_; }
 
    private:
-    raw_ptr<views::Label, ExperimentalAsh> label_;  // Owned by views hierarchy.
+    raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh>
+        label_;  // Owned by views hierarchy.
     SearchResult::Tags tags_;
   };
 
@@ -345,7 +346,8 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
       nullptr;  // Owned by views hierarchy.
   raw_ptr<views::ImageView, ExperimentalAsh> rating_star_ =
       nullptr;  // Owned by views hierarchy.
-  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
+  raw_ptr<views::ProgressBar, DanglingUntriaged | ExperimentalAsh>
+      progress_bar_ = nullptr;
 
   // Whether the removal confirmation dialog is invoked by long press touch.
   bool confirm_remove_by_long_press_ = false;

@@ -304,7 +304,8 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
   }
 
   base::HistogramTester histogram_tester_;
-  raw_ptr<TestSystemTrayClient, ExperimentalAsh> test_system_tray_client_;
+  raw_ptr<TestSystemTrayClient, DanglingUntriaged | ExperimentalAsh>
+      test_system_tray_client_;
   TestMessageCenter test_message_center_;
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetup>
       fake_multidevice_setup_;

@@ -1634,7 +1634,7 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
 
  private:
   // The default container.
-  raw_ptr<aura::Window, ExperimentalAsh> default_container_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> default_container_;
 };
 
 constexpr absl::optional<Sound> kNoSoundKey = absl::nullopt;
@@ -2082,7 +2082,8 @@ class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
  private:
   gfx::Insets restore_work_area_insets_;
   gfx::Rect keyboard_bounds_;
-  raw_ptr<WorkspaceLayoutManager, ExperimentalAsh> layout_manager_;
+  raw_ptr<WorkspaceLayoutManager, DanglingUntriaged | ExperimentalAsh>
+      layout_manager_;
 };
 
 // Tests that when a child window gains focus the top level window containing it
@@ -2356,8 +2357,9 @@ class WorkspaceLayoutManagerSystemUiAreaTest : public AshTestBase {
   FakeWindowState* test_state() { return test_state_; }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
-  raw_ptr<FakeWindowState, ExperimentalAsh> test_state_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_ = nullptr;
+  raw_ptr<FakeWindowState, DanglingUntriaged | ExperimentalAsh> test_state_ =
+      nullptr;
 };
 
 // Expect that showing and hiding the unified system tray triggers a system ui

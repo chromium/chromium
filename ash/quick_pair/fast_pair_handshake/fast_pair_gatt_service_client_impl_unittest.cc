@@ -670,15 +670,16 @@ class FastPairGattServiceClientTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
-  raw_ptr<FakeBluetoothDevice, ExperimentalAsh> raw_fake_bt_device_;
+  raw_ptr<FakeBluetoothDevice, DanglingUntriaged | ExperimentalAsh>
+      raw_fake_bt_device_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
 
  private:
   // We need temporary pointers to use for write/ready requests because we
   // move the unique pointers when we notify the session.
-  raw_ptr<FakeBluetoothGattCharacteristic, ExperimentalAsh>
+  raw_ptr<FakeBluetoothGattCharacteristic, DanglingUntriaged | ExperimentalAsh>
       temp_fake_key_based_characteristic_;
-  raw_ptr<FakeBluetoothGattCharacteristic, ExperimentalAsh>
+  raw_ptr<FakeBluetoothGattCharacteristic, DanglingUntriaged | ExperimentalAsh>
       temp_passkey_based_characteristic_;
   absl::optional<ash::quick_pair::AccountKeyFailure> account_key_error_ =
       absl::nullopt;

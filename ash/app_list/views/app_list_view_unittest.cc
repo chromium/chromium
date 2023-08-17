@@ -498,7 +498,7 @@ class AppListViewTest : public views::ViewsTestBase {
   // Needed by AppsContainerView::ContinueContainer.
   AshColorProvider ash_color_provider_;
 
-  raw_ptr<AppListView, ExperimentalAsh> view_ =
+  raw_ptr<AppListView, DanglingUntriaged | ExperimentalAsh> view_ =
       nullptr;  // Owned by native widget.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
   std::unique_ptr<AppsGridViewTestApi> test_api_;
@@ -854,7 +854,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
 
  private:
   AshColorProvider ash_color_provider_;
-  raw_ptr<AppListView, ExperimentalAsh> view_ =
+  raw_ptr<AppListView, DanglingUntriaged | ExperimentalAsh> view_ =
       nullptr;  // Owned by native widget.
 
   std::unique_ptr<AppListTestViewDelegate> delegate_;

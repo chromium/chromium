@@ -111,7 +111,8 @@ class CalendarUpNextViewPixelTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<CalendarUpNextView, ExperimentalAsh> up_next_view_ = nullptr;
+  raw_ptr<CalendarUpNextView, DanglingUntriaged | ExperimentalAsh>
+      up_next_view_ = nullptr;
   std::unique_ptr<CalendarViewController> controller_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };

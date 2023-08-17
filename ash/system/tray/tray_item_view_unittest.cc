@@ -59,7 +59,8 @@ class TrayItemViewTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget`:
-  raw_ptr<TrayItemView, ExperimentalAsh> tray_item_ = nullptr;
+  raw_ptr<TrayItemView, DanglingUntriaged | ExperimentalAsh> tray_item_ =
+      nullptr;
 };
 
 // Tests that scheduling a `TrayItemView`'s show animation while its hide

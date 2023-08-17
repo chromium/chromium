@@ -99,7 +99,7 @@ class TestTrayBackgroundView : public TrayBackgroundView,
 
   bool show_bubble_called() const { return show_bubble_called_; }
 
-  raw_ptr<views::Widget, ExperimentalAsh>
+  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh>
       on_bubble_visibility_change_captured_widget_ = nullptr;
   bool on_bubble_visibility_change_captured_visibility_ = false;
 
@@ -207,9 +207,10 @@ class TrayBackgroundViewTest : public AshTestBase,
   }
 
  private:
-  raw_ptr<TestTrayBackgroundView, ExperimentalAsh> test_tray_background_view_ =
-      nullptr;
-  raw_ptr<PersistentBubbleTestTrayBackgroundView, ExperimentalAsh>
+  raw_ptr<TestTrayBackgroundView, DanglingUntriaged | ExperimentalAsh>
+      test_tray_background_view_ = nullptr;
+  raw_ptr<PersistentBubbleTestTrayBackgroundView,
+          DanglingUntriaged | ExperimentalAsh>
       persistent_bubble_test_tray_background_view_ = nullptr;
   int num_animations_scheduled_ = 0;
 };

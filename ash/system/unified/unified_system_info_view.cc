@@ -308,7 +308,9 @@ class DateView : public views::Button, public ClockObserver {
   raw_ptr<views::Label, ExperimentalAsh> label_;
 
   // Unowned.
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
+  const raw_ptr<UnifiedSystemTrayController,
+                DanglingUntriaged | ExperimentalAsh>
+      controller_;
 };
 
 DateView::DateView(UnifiedSystemTrayController* controller)

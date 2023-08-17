@@ -126,8 +126,8 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<KeyboardBacklightColorController> controller_;
-  raw_ptr<WallpaperControllerImpl, ExperimentalAsh> wallpaper_controller_ =
-      nullptr;
+  raw_ptr<WallpaperControllerImpl, DanglingUntriaged | ExperimentalAsh>
+      wallpaper_controller_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -157,7 +157,8 @@ class LaunchAppHelperTest : public ash::AshTestBase {
   std::unique_ptr<EcheConnectionStatusHandler> connection_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   std::unique_ptr<LaunchAppHelper> launch_app_helper_;
-  raw_ptr<ToastManagerImpl, ExperimentalAsh> toast_manager_ = nullptr;
+  raw_ptr<ToastManagerImpl, DanglingUntriaged | ExperimentalAsh>
+      toast_manager_ = nullptr;
 };
 
 TEST_F(LaunchAppHelperTest, TestProhibitedByPolicy) {

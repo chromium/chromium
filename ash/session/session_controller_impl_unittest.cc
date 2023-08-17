@@ -192,7 +192,8 @@ class SessionControllerImplWithShellTest : public AshTestBase {
   const TestSessionObserver* observer() const { return &observer_; }
 
  protected:
-  raw_ptr<WindowState, ExperimentalAsh> window_state_ = nullptr;
+  raw_ptr<WindowState, DanglingUntriaged | ExperimentalAsh> window_state_ =
+      nullptr;
 
  private:
   TestSessionObserver observer_;

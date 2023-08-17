@@ -130,7 +130,7 @@ class ASH_EXPORT CaptureModeSettingsView
 
   // A reference to the session that owns this view indirectly by owning its
   // containing widget.
-  const raw_ptr<CaptureModeSession, ExperimentalAsh>
+  const raw_ptr<CaptureModeSession, DanglingUntriaged | ExperimentalAsh>
       capture_mode_session_;  // Not null;
 
   const raw_ptr<CaptureModeBehavior, ExperimentalAsh> active_behavior_;

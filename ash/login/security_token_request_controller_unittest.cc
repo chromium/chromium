@@ -86,7 +86,7 @@ class SecurityTokenRequestControllerTest : public LoginTestBase {
   // Number of times the UI was closed.
   int ui_closed_by_user_calls_ = 0;
 
-  raw_ptr<PinRequestView, ExperimentalAsh> view_ =
+  raw_ptr<PinRequestView, DanglingUntriaged | ExperimentalAsh> view_ =
       nullptr;  // Owned by test widget view hierarchy.
 
  private:

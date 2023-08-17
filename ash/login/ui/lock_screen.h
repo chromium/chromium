@@ -40,7 +40,7 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
     void AddOnShownCallback(base::OnceClosure on_shown);
 
    private:
-    const raw_ptr<LockScreen, ExperimentalAsh> lock_screen_;
+    const raw_ptr<LockScreen, DanglingUntriaged | ExperimentalAsh> lock_screen_;
   };
 
   // The UI that this instance is displaying.

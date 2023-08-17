@@ -67,7 +67,7 @@ class ArcSplashScreenDialogViewTest : public CompatModeTestBase {
  private:
   ash::AshColorProvider ash_color_provider_;
   std::unique_ptr<views::Widget> parent_widget_;
-  raw_ptr<views::View, ExperimentalAsh> anchor_{nullptr};
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> anchor_{nullptr};
 };
 
 TEST_F(ArcSplashScreenDialogViewTest, TestCloseButton) {

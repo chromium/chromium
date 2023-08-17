@@ -84,7 +84,8 @@ class ASH_EXPORT CaptureModeToastController {
 
   // The capture toast widget and its contents view.
   views::UniqueWidgetPtr capture_toast_widget_;
-  raw_ptr<SystemToastStyle, ExperimentalAsh> toast_contents_view_ = nullptr;
+  raw_ptr<SystemToastStyle, DanglingUntriaged | ExperimentalAsh>
+      toast_contents_view_ = nullptr;
 
   // Stores the toast type of the `capture_toast_widget_` after it's created.
   absl::optional<CaptureToastType> current_toast_type_;

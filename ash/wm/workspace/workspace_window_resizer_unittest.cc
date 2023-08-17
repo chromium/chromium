@@ -243,7 +243,8 @@ class WorkspaceWindowResizerTest : public AshTestBase {
   TestWindowDelegate touch_resize_delegate_;
   std::unique_ptr<aura::Window> touch_resize_window_;
 
-  raw_ptr<WorkspaceWindowResizer, ExperimentalAsh> workspace_resizer_ = nullptr;
+  raw_ptr<WorkspaceWindowResizer, DanglingUntriaged | ExperimentalAsh>
+      workspace_resizer_ = nullptr;
 };
 
 // Assertions around attached window resize dragging from the right with 2

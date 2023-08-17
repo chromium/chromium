@@ -76,7 +76,8 @@ class CaptureModeSessionTestApi {
   bool IsAllUisVisible();
 
  private:
-  const raw_ptr<CaptureModeSession, ExperimentalAsh> session_;
+  const raw_ptr<CaptureModeSession, DanglingUntriaged | ExperimentalAsh>
+      session_;
 };
 
 }  // namespace ash

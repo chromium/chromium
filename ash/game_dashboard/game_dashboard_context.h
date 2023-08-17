@@ -124,7 +124,8 @@ class GameDashboardContext {
 
   // The `GameDashboardMainMenuView` when the user presses the main menu button.
   // Owned by the views hierarchy.
-  raw_ptr<GameDashboardMainMenuView, ExperimentalAsh> main_menu_view_ = nullptr;
+  raw_ptr<GameDashboardMainMenuView, DanglingUntriaged | ExperimentalAsh>
+      main_menu_view_ = nullptr;
 
   // The `GameDashboardToolbarView` when the user makes the toolbar visible.
   // Owned by the views hierarchy.

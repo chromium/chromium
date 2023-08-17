@@ -423,7 +423,8 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // The app list config used to layout this view. The initial values is set
   // during view construction, but can be changed by calling
   // `UpdateAppListConfig()`.
-  raw_ptr<const AppListConfig, ExperimentalAsh> app_list_config_;
+  raw_ptr<const AppListConfig, DanglingUntriaged | ExperimentalAsh>
+      app_list_config_;
 
   const bool is_folder_;
 
@@ -436,7 +437,8 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // Handles dragging and item selection. Might be a stub for items that are not
   // part of an apps grid.
-  const raw_ptr<GridDelegate, ExperimentalAsh> grid_delegate_;
+  const raw_ptr<GridDelegate, DanglingUntriaged | ExperimentalAsh>
+      grid_delegate_;
 
   // AppListControllerImpl by another name.
   const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;

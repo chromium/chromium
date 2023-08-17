@@ -90,8 +90,8 @@ class MultiWindowResizeControllerTest : public AshTestBase {
                MultiWindowResizeController::kShowDelay;
   }
 
-  raw_ptr<MultiWindowResizeController, ExperimentalAsh> resize_controller_ =
-      nullptr;
+  raw_ptr<MultiWindowResizeController, DanglingUntriaged | ExperimentalAsh>
+      resize_controller_ = nullptr;
 };
 
 // Assertions around moving mouse over 2 windows.

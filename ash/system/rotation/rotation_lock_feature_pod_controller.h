@@ -52,8 +52,9 @@ class ASH_EXPORT RotationLockFeaturePodController
   void UpdateTile();
 
   // Owned by views hierarchy.
-  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ = nullptr;
-  raw_ptr<FeatureTile, ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
+      nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
 
   base::WeakPtrFactory<RotationLockFeaturePodController> weak_factory_{this};
 };

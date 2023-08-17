@@ -427,9 +427,10 @@ class CalendarMonthViewFetchTest : public AshTestBase {
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_;
+  raw_ptr<CalendarModel, DanglingUntriaged | ExperimentalAsh> calendar_model_;
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
-  raw_ptr<CalendarMonthView, ExperimentalAsh> calendar_month_view_;
+  raw_ptr<CalendarMonthView, DanglingUntriaged | ExperimentalAsh>
+      calendar_month_view_;
   std::unique_ptr<CalendarViewController> controller_;
   AccountId account_id_;
 };

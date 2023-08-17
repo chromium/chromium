@@ -84,7 +84,9 @@ class APP_MENU_EXPORT NotificationItemView : public views::View {
   raw_ptr<views::Label, ExperimentalAsh> message_label_ = nullptr;
 
   // Owned by AppMenuModelAdapter. Used to activate notifications.
-  const raw_ptr<NotificationMenuView::Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<NotificationMenuView::Delegate,
+                DanglingUntriaged | ExperimentalAsh>
+      delegate_;
 
   // Controls the sideways gesture drag behavior.
   std::unique_ptr<views::SlideOutController> slide_out_controller_;

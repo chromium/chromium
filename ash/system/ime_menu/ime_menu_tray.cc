@@ -341,7 +341,7 @@ class ImeButtonsView : public views::View {
     }
   }
 
-  raw_ptr<ImeMenuTray, ExperimentalAsh> ime_menu_tray_;
+  raw_ptr<ImeMenuTray, DanglingUntriaged | ExperimentalAsh> ime_menu_tray_;
   raw_ptr<SystemMenuButton, ExperimentalAsh> emoji_button_;
   raw_ptr<SystemMenuButton, ExperimentalAsh> handwriting_button_;
   raw_ptr<SystemMenuButton, ExperimentalAsh> voice_button_;

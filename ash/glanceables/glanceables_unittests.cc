@@ -78,7 +78,8 @@ class GlanceablesTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<GlanceablesController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<GlanceablesController, DanglingUntriaged | ExperimentalAsh>
+      controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_{features::kGlanceables};
 };
 

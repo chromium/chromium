@@ -506,13 +506,17 @@ class StatusAreaWidgetCollapseStateTest : public AshTestBase {
     return status_area_->collapse_state();
   }
 
-  raw_ptr<StatusAreaWidget, ExperimentalAsh> status_area_;
-  raw_ptr<StatusAreaOverflowButtonTray, ExperimentalAsh> overflow_button_;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> virtual_keyboard_;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> ime_menu_;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> palette_;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> dictation_button_;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> select_to_speak_;
+  raw_ptr<StatusAreaWidget, DanglingUntriaged | ExperimentalAsh> status_area_;
+  raw_ptr<StatusAreaOverflowButtonTray, DanglingUntriaged | ExperimentalAsh>
+      overflow_button_;
+  raw_ptr<TrayBackgroundView, DanglingUntriaged | ExperimentalAsh>
+      virtual_keyboard_;
+  raw_ptr<TrayBackgroundView, DanglingUntriaged | ExperimentalAsh> ime_menu_;
+  raw_ptr<TrayBackgroundView, DanglingUntriaged | ExperimentalAsh> palette_;
+  raw_ptr<TrayBackgroundView, DanglingUntriaged | ExperimentalAsh>
+      dictation_button_;
+  raw_ptr<TrayBackgroundView, DanglingUntriaged | ExperimentalAsh>
+      select_to_speak_;
 };
 
 TEST_F(StatusAreaWidgetCollapseStateTest, TrayVisibility) {

@@ -54,7 +54,8 @@ class FullscreenNotificationBubbleTest : public AshTestBase {
   std::unique_ptr<aura::Window> window_;
   std::unique_ptr<FullscreenNotificationBubble> bubble_;
 
-  raw_ptr<WindowState, ExperimentalAsh> window_state_ = nullptr;
+  raw_ptr<WindowState, DanglingUntriaged | ExperimentalAsh> window_state_ =
+      nullptr;
 };
 
 TEST_F(FullscreenNotificationBubbleTest, AutoHideBubbleAfterDelay) {

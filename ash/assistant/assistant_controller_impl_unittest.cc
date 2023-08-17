@@ -108,7 +108,8 @@ class AssistantControllerImplTest : public AssistantAshTestBase {
   }
 
  private:
-  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
+      new_window_delegate_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 

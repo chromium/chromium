@@ -529,7 +529,8 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
   const bool tablet_mode_;
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
-  raw_ptr<AppsGridView, ExperimentalAsh> apps_grid_view_ = nullptr;
+  raw_ptr<AppsGridView, DanglingUntriaged | ExperimentalAsh> apps_grid_view_ =
+      nullptr;
 };
 
 // Parameterized by tablet/clamshell mode.
@@ -702,10 +703,10 @@ class PopulatedAppListTest : public AshTestBase,
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> apps_grid_test_api_;
-  raw_ptr<AppListView, ExperimentalAsh> app_list_view_ =
+  raw_ptr<AppListView, DanglingUntriaged | ExperimentalAsh> app_list_view_ =
       nullptr;  // Owned by native widget.
-  raw_ptr<PagedAppsGridView, ExperimentalAsh> apps_grid_view_ =
-      nullptr;  // Owned by |app_list_view_|.
+  raw_ptr<PagedAppsGridView, DanglingUntriaged | ExperimentalAsh>
+      apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
   base::test::ScopedFeatureList scoped_feature_list_;
   const bool is_drag_drop_refactor_enabled_;
 };

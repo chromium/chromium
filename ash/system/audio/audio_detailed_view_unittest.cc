@@ -51,7 +51,8 @@ class AudioDetailedViewTest : public AshTestBase {
 
   std::unique_ptr<views::Widget> widget_;
   FakeDetailedViewDelegate detailed_view_delegate_;
-  raw_ptr<AudioDetailedView, ExperimentalAsh> audio_detailed_view_ = nullptr;
+  raw_ptr<AudioDetailedView, DanglingUntriaged | ExperimentalAsh>
+      audio_detailed_view_ = nullptr;
 };
 
 TEST_F(AudioDetailedViewTest, PressingSettingsButtonOpensSettings) {

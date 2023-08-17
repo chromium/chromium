@@ -48,7 +48,7 @@ class TestActivationDelegate : public ::wm::ActivationDelegate,
       aura::Window* gained_active,
       aura::Window* lost_active) override;
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_ = nullptr;
   bool window_was_active_ = false;
   bool activate_ = true;
   int activated_count_ = 0;

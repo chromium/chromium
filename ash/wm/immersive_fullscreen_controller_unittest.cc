@@ -285,10 +285,10 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
 
   std::unique_ptr<ImmersiveFullscreenControllerTestApi::GlobalAnimationDisabler>
       test_api_animation_disabler_;
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ =
+  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_ =
       nullptr;  // Owned by the native widget.
-  raw_ptr<views::NativeViewHost, ExperimentalAsh> content_view_ =
-      nullptr;  // Owned by |widget_|'s root-view.
+  raw_ptr<views::NativeViewHost, DanglingUntriaged | ExperimentalAsh>
+      content_view_ = nullptr;  // Owned by |widget_|'s root-view.
   std::unique_ptr<ImmersiveFullscreenControllerTestApi> test_api_;
 
   base::test::ScopedFeatureList scoped_feature_list_;

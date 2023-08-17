@@ -160,8 +160,10 @@ class ScrollableAppsGridViewTest : public AshTestBase,
   std::unique_ptr<ShelfItemFactoryFake> shelf_item_factory_;
 
   // Cache some view pointers to make the tests more concise.
-  raw_ptr<ScrollableAppsGridView, ExperimentalAsh> apps_grid_view_ = nullptr;
-  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
+  raw_ptr<ScrollableAppsGridView, DanglingUntriaged | ExperimentalAsh>
+      apps_grid_view_ = nullptr;
+  raw_ptr<views::ScrollView, DanglingUntriaged | ExperimentalAsh> scroll_view_ =
+      nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

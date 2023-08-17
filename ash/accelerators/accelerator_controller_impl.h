@@ -100,7 +100,7 @@ class ASH_EXPORT AcceleratorControllerImpl
                                      const std::string& side);
 
    private:
-    raw_ptr<AcceleratorControllerImpl, ExperimentalAsh>
+    raw_ptr<AcceleratorControllerImpl, DanglingUntriaged | ExperimentalAsh>
         controller_;  // Not owned.
   };
 

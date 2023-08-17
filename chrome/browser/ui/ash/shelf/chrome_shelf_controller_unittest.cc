@@ -1393,15 +1393,16 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   std::unique_ptr<ash::ShelfModel> model_;
 
   // |item_delegate_manager_| owns |test_controller_|.
-  raw_ptr<ash::ShelfItemDelegate, ExperimentalAsh> test_controller_ = nullptr;
+  raw_ptr<ash::ShelfItemDelegate, DanglingUntriaged | ExperimentalAsh>
+      test_controller_ = nullptr;
 
-  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> extension_registry_ =
-      nullptr;
+  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged | ExperimentalAsh>
+      extension_registry_ = nullptr;
 
-  raw_ptr<extensions::ExtensionService, ExperimentalAsh> extension_service_ =
-      nullptr;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged | ExperimentalAsh>
+      extension_service_ = nullptr;
 
-  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
+  raw_ptr<app_list::AppListSyncableService, DanglingUntriaged | ExperimentalAsh>
       app_list_syncable_service_ = nullptr;
 
   PinAssertionMap pin_assertions_;
@@ -1559,9 +1560,11 @@ class ChromeShelfControllerLacrosOnlyTest
   apps::AppServiceProxy* proxy() { return proxy_; }
 
  private:
-  raw_ptr<StandaloneBrowserExtensionAppShelfItemController, ExperimentalAsh>
+  raw_ptr<StandaloneBrowserExtensionAppShelfItemController,
+          DanglingUntriaged | ExperimentalAsh>
       chrome_app_shelf_item_ = nullptr;
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh> proxy_ =
+      nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1631,7 +1634,7 @@ class V2App {
   // The app window which represents the application. Note that the window
   // deletes itself asynchronously after window_->GetBaseWindow()->Close() gets
   // called.
-  raw_ptr<extensions::AppWindow, ExperimentalAsh> window_;
+  raw_ptr<extensions::AppWindow, DanglingUntriaged | ExperimentalAsh> window_;
 };
 
 // The testing framework to test multi profile scenarios.

@@ -149,7 +149,8 @@ class DisplayAlignmentControllerTest : public AshTestBase {
     EXPECT_TRUE(indicator_widget.IsVisible());
   }
 
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_ptr_ = nullptr;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_timer_ptr_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

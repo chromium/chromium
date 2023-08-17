@@ -72,7 +72,8 @@ class GlanceablesKeyedService : public KeyedService {
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Identity manager associated with `profile_`.
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  const raw_ptr<signin::IdentityManager, DanglingUntriaged | ExperimentalAsh>
+      identity_manager_;
 
   // Account id associated with the primary profile.
   const AccountId account_id_;

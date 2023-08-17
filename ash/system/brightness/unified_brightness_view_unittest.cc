@@ -102,13 +102,14 @@ class UnifiedBrightnessViewTest : public AshTestBase {
  private:
   // The `UnifiedBrightnessView` containing a `QuickSettingsSlider`, a
   // `NightLight` button, and a drill-in button.
-  raw_ptr<UnifiedBrightnessView, ExperimentalAsh> unified_brightness_view_ =
-      nullptr;
+  raw_ptr<UnifiedBrightnessView, DanglingUntriaged | ExperimentalAsh>
+      unified_brightness_view_ = nullptr;
 
   // The `UnifiedBrightnessView` containing only a `QuickSettingsSlider`.
   std::unique_ptr<UnifiedBrightnessView> brightness_slider_ = nullptr;
 
-  raw_ptr<UnifiedBrightnessSliderController, ExperimentalAsh>
+  raw_ptr<UnifiedBrightnessSliderController,
+          DanglingUntriaged | ExperimentalAsh>
       brightness_slider_controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };

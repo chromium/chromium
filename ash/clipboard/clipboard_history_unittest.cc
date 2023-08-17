@@ -159,7 +159,8 @@ class ClipboardHistoryTest : public AshTestBase {
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   // Owned by ClipboardHistoryControllerImpl.
-  raw_ptr<ClipboardHistory, ExperimentalAsh> clipboard_history_ = nullptr;
+  raw_ptr<ClipboardHistory, DanglingUntriaged | ExperimentalAsh>
+      clipboard_history_ = nullptr;
 };
 
 // Tests that with nothing copied, nothing is shown.

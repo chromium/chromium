@@ -36,7 +36,8 @@ class UnifiedLocaleDetailedViewController : public DetailedViewController {
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  raw_ptr<LocaleDetailedView, ExperimentalAsh> view_ = nullptr;
+  raw_ptr<LocaleDetailedView, DanglingUntriaged | ExperimentalAsh> view_ =
+      nullptr;
 };
 
 }  // namespace ash

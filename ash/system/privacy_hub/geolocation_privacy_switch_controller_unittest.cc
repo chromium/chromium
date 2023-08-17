@@ -69,7 +69,9 @@ class PrivacyHubGeolocationControllerTest : public AshTestBase {
         ->GetBoolean(prefs::kUserGeolocationAllowed);
   }
 
-  raw_ptr<GeolocationPrivacySwitchController, ExperimentalAsh> controller_;
+  raw_ptr<GeolocationPrivacySwitchController,
+          DanglingUntriaged | ExperimentalAsh>
+      controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
   const base::HistogramTester histogram_tester_;
 };

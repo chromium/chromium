@@ -53,7 +53,7 @@ class TestKeyboardUIFactory : public KeyboardUIFactory {
   std::unique_ptr<KeyboardUI> CreateKeyboardUI() override;
 
  private:
-  raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_;
+  raw_ptr<ui::InputMethod, DanglingUntriaged | ExperimentalAsh> input_method_;
 };
 
 }  // namespace keyboard

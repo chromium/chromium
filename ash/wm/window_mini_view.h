@@ -142,7 +142,8 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   raw_ptr<views::View, ExperimentalAsh> backdrop_view_ = nullptr;
 
   // Optionally shows a preview of |window_|.
-  raw_ptr<WindowPreviewView, ExperimentalAsh> preview_view_ = nullptr;
+  raw_ptr<WindowPreviewView, DanglingUntriaged | ExperimentalAsh>
+      preview_view_ = nullptr;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

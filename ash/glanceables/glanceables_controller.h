@@ -67,7 +67,7 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver,
 
   std::unique_ptr<GlanceablesDelegate> delegate_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<GlanceablesView, ExperimentalAsh> view_ = nullptr;
+  raw_ptr<GlanceablesView, DanglingUntriaged | ExperimentalAsh> view_ = nullptr;
   std::unique_ptr<AmbientWeatherController::ScopedRefresher> weather_refresher_;
 };
 

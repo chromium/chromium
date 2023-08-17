@@ -53,7 +53,8 @@ class PhoneStatusViewTest : public AshTestBase,
 
  protected:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<PhoneStatusView, ExperimentalAsh> status_view_ = nullptr;
+  raw_ptr<PhoneStatusView, DanglingUntriaged | ExperimentalAsh> status_view_ =
+      nullptr;
   phonehub::MutablePhoneModel phone_model_;
   base::test::ScopedFeatureList feature_list_;
   bool can_open_connected_device_settings_ = false;

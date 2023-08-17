@@ -67,7 +67,8 @@ class GlanceablesKeyedServiceTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList feature_list_{features::kGlanceablesV2};
   // Pointer to the primary profile (returned by |profile()|) prefs - owned by
   // the profile.
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable,
+          DanglingUntriaged | ExperimentalAsh>
       profile_prefs_ = nullptr;
   user_manager::ScopedUserManager scoped_user_manager_;
 };

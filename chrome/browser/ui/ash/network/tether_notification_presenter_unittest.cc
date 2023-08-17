@@ -201,7 +201,8 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
   bool has_verified_metrics_;
 
   std::unique_ptr<TestNetworkConnect> test_network_connect_;
-  raw_ptr<TestSettingsUiDelegate, ExperimentalAsh> test_settings_ui_delegate_;
+  raw_ptr<TestSettingsUiDelegate, DanglingUntriaged | ExperimentalAsh>
+      test_settings_ui_delegate_;
   std::unique_ptr<TetherNotificationPresenter> notification_presenter_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 };

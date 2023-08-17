@@ -256,7 +256,7 @@ class NotificationCenterTestApi {
       const message_center::RichNotificationData& optional_fields);
 
   int notification_id_ = 0;
-  const raw_ptr<NotificationCenterTray, ExperimentalAsh>
+  const raw_ptr<NotificationCenterTray, DanglingUntriaged | ExperimentalAsh>
       notification_center_tray_;
 
   const int64_t primary_display_id_;

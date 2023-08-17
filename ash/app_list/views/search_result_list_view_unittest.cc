@@ -299,7 +299,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   AppListTestViewDelegate view_delegate_;
   std::unique_ptr<SearchResultListView> default_view_;
   std::unique_ptr<SearchResultListView> answer_card_view_;
-  raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_;
 };
 
 TEST_F(SearchResultListViewTest, SpokenFeedback) {

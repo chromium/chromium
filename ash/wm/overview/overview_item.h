@@ -379,7 +379,8 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
 
   // The view associated with |item_widget_|. Contains a title, close button and
   // maybe a backdrop. Forwards certain events to |this|.
-  raw_ptr<OverviewItemView, ExperimentalAsh> overview_item_view_ = nullptr;
+  raw_ptr<OverviewItemView, DanglingUntriaged | ExperimentalAsh>
+      overview_item_view_ = nullptr;
 
   // A widget with text that may show up on top of |transform_window_| to notify
   // users this window cannot be snapped.

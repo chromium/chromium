@@ -178,9 +178,12 @@ class PrivacyHubCameraControllerTestBase : public AshTestBase {
             ->sensor_disabled_notification_delegate());
   }
 
-  raw_ptr<::testing::NiceMock<MockSwitchAPI>, ExperimentalAsh> mock_switch_;
+  raw_ptr<::testing::NiceMock<MockSwitchAPI>,
+          DanglingUntriaged | ExperimentalAsh>
+      mock_switch_;
 
-  raw_ptr<CameraPrivacySwitchController, ExperimentalAsh> controller_;
+  raw_ptr<CameraPrivacySwitchController, DanglingUntriaged | ExperimentalAsh>
+      controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
   const base::HistogramTester histogram_tester_;
   std::unique_ptr<ScopedSensorDisabledNotificationDelegateForTest>

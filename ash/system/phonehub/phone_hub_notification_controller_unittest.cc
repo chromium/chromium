@@ -137,13 +137,15 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
  protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
+  raw_ptr<message_center::MessageCenter, DanglingUntriaged | ExperimentalAsh>
+      message_center_;
   phonehub::FakePhoneHubManager phone_hub_manager_;
   raw_ptr<phonehub::FakeNotificationManager, ExperimentalAsh>
       notification_manager_;
   raw_ptr<phonehub::FakeFeatureStatusProvider, ExperimentalAsh>
       feature_status_provider_;
-  raw_ptr<PhoneHubNotificationController, ExperimentalAsh> controller_;
+  raw_ptr<PhoneHubNotificationController, DanglingUntriaged | ExperimentalAsh>
+      controller_;
   base::flat_set<phonehub::Notification> fake_notifications_;
 };
 

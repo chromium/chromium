@@ -45,7 +45,7 @@ class ASH_EXPORT LoginUserView : public views::View,
     bool is_opaque() const;
 
    private:
-    const raw_ptr<LoginUserView, ExperimentalAsh> view_;
+    const raw_ptr<LoginUserView, DanglingUntriaged | ExperimentalAsh> view_;
   };
 
   using OnTap = base::RepeatingClosure;

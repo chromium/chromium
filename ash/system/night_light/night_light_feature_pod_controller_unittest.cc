@@ -84,7 +84,7 @@ class NightLightFeaturePodControllerTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<UnifiedSystemTray, ExperimentalAsh> system_tray_;
+  raw_ptr<UnifiedSystemTray, DanglingUntriaged | ExperimentalAsh> system_tray_;
   std::unique_ptr<NightLightFeaturePodController> controller_;
   std::unique_ptr<FeaturePodButton> button_;
   std::unique_ptr<FeatureTile> tile_;

@@ -63,8 +63,9 @@ class ShelfTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_ = nullptr;
-  raw_ptr<ShelfModel, ExperimentalAsh> shelf_model_ = nullptr;
+  raw_ptr<ShelfView, DanglingUntriaged | ExperimentalAsh> shelf_view_ = nullptr;
+  raw_ptr<ShelfModel, DanglingUntriaged | ExperimentalAsh> shelf_model_ =
+      nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_;
 };
 

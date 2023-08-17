@@ -235,7 +235,8 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   ShelfItems items_;
 
   // This pointer must outlive this class.
-  raw_ptr<ShelfItemFactory, ExperimentalAsh> shelf_item_factory_ = nullptr;
+  raw_ptr<ShelfItemFactory, DanglingUntriaged | ExperimentalAsh>
+      shelf_item_factory_ = nullptr;
 
   // The shelf ID of the currently active shelf item, or an empty ID if
   // nothing is active.

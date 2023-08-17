@@ -79,7 +79,8 @@ class AshColorProviderBase
   base::test::ScopedFeatureList features_;
   base::test::TaskEnvironment task_environment_;
   AshTestHelper ash_test_helper_;
-  raw_ptr<AshColorProvider, ExperimentalAsh> color_provider_;
+  raw_ptr<AshColorProvider, DanglingUntriaged | ExperimentalAsh>
+      color_provider_;
 };
 
 using AshColorProviderBaseLayerTest =

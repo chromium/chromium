@@ -124,7 +124,8 @@ class ChromeUserEducationDelegateTest : public BrowserWithTestWindowTest {
   }
 
   // User management.
-  const raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   // The delegate instance under test.

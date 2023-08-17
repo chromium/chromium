@@ -93,7 +93,8 @@ class ASH_EXPORT ShelfController : public SessionObserver,
 
   // Observed to update notification badging on shelf items. Also used to get
   // initial notification badge information when shelf items are added.
-  raw_ptr<apps::AppRegistryCache, ExperimentalAsh> cache_ = nullptr;
+  raw_ptr<apps::AppRegistryCache, DanglingUntriaged | ExperimentalAsh> cache_ =
+      nullptr;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

@@ -195,7 +195,7 @@ class CollisionDetectionUtilsDisplayTest
 
  private:
   std::unique_ptr<display::ScopedDisplayForNewWindows> scoped_display_;
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_;
 };
 
 TEST_P(CollisionDetectionUtilsDisplayTest, MovementAreaIsInset) {

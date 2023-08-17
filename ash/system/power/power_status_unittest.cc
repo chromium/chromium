@@ -70,7 +70,8 @@ class PowerStatusTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<PowerStatus, ExperimentalAsh> power_status_ = nullptr;  // Not owned.
+  raw_ptr<PowerStatus, DanglingUntriaged | ExperimentalAsh> power_status_ =
+      nullptr;  // Not owned.
   std::unique_ptr<TestObserver> test_observer_;
 };
 

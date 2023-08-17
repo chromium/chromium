@@ -346,9 +346,10 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
   }
 
   std::unique_ptr<ShimlessRmaService> shimless_rma_provider_;
-  raw_ptr<RmadClient, ExperimentalAsh> rmad_client_ =
+  raw_ptr<RmadClient, DanglingUntriaged | ExperimentalAsh> rmad_client_ =
       nullptr;  // Unowned convenience pointer.
-  raw_ptr<VersionUpdater, ExperimentalAsh> version_updater_ = nullptr;
+  raw_ptr<VersionUpdater, DanglingUntriaged | ExperimentalAsh>
+      version_updater_ = nullptr;
 
  private:
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;

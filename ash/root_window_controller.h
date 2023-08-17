@@ -322,8 +322,10 @@ class ASH_EXPORT RootWindowController {
 
   // Heads-up displays for touch events. These HUDs are not owned by the root
   // window controller and manage their own lifetimes.
-  raw_ptr<TouchHudDebug, ExperimentalAsh> touch_hud_debug_ = nullptr;
-  raw_ptr<TouchHudProjection, ExperimentalAsh> touch_hud_projection_ = nullptr;
+  raw_ptr<TouchHudDebug, DanglingUntriaged | ExperimentalAsh> touch_hud_debug_ =
+      nullptr;
+  raw_ptr<TouchHudProjection, DanglingUntriaged | ExperimentalAsh>
+      touch_hud_projection_ = nullptr;
 
   std::unique_ptr<::wm::ScopedCaptureClient> capture_client_;
 

@@ -86,7 +86,8 @@ class VideoDetectorTest : public AshTestBase {
         .Build();
   }
 
-  raw_ptr<VideoDetector, ExperimentalAsh> detector_;  // not owned
+  raw_ptr<VideoDetector, DanglingUntriaged | ExperimentalAsh>
+      detector_;  // not owned
   std::unique_ptr<TestObserver> observer_;
 };
 

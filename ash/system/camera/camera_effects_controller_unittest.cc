@@ -135,8 +135,8 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   FakeVideoConferenceTrayController* controller() { return controller_.get(); }
 
  protected:
-  raw_ptr<CameraEffectsController, ExperimentalAsh> camera_effects_controller_ =
-      nullptr;
+  raw_ptr<CameraEffectsController, DanglingUntriaged | ExperimentalAsh>
+      camera_effects_controller_ = nullptr;
   std::unique_ptr<FakeVideoConferenceTrayController> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

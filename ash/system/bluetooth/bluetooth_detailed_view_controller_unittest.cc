@@ -200,7 +200,7 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<FakeHatsBluetoothRevampTriggerImpl> fake_trigger_impl_;
-  raw_ptr<BluetoothDetailedViewController, ExperimentalAsh>
+  raw_ptr<BluetoothDetailedViewController, DanglingUntriaged | ExperimentalAsh>
       bluetooth_detailed_view_controller_;
   FakeBluetoothDetailedViewFactory bluetooth_detailed_view_factory_;
   FakeBluetoothDeviceListControllerFactory

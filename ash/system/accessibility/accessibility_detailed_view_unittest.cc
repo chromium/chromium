@@ -582,7 +582,8 @@ class AccessibilityDetailedViewTest : public AshTestBase,
   raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> controller_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  raw_ptr<AccessibilityDetailedView, ExperimentalAsh> detailed_menu_ = nullptr;
+  raw_ptr<AccessibilityDetailedView, DanglingUntriaged | ExperimentalAsh>
+      detailed_menu_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

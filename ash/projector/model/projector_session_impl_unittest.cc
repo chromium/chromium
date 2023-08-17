@@ -41,7 +41,7 @@ class ProjectorSessionImplTest : public AshTestBase {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<ProjectorSessionImpl, ExperimentalAsh> session_;
+  raw_ptr<ProjectorSessionImpl, DanglingUntriaged | ExperimentalAsh> session_;
 };
 
 TEST_F(ProjectorSessionImplTest, Start) {

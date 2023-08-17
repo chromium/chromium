@@ -121,7 +121,8 @@ class RefreshRateThrottleControllerTest : public AshTestBase {
   std::unique_ptr<ActionLogger> logger_;
   std::unique_ptr<RefreshRateThrottleController> controller_;
   // Owned by DisplayConfigurator.
-  raw_ptr<TestNativeDisplayDelegate, ExperimentalAsh> native_display_delegate_;
+  raw_ptr<TestNativeDisplayDelegate, DanglingUntriaged | ExperimentalAsh>
+      native_display_delegate_;
 };
 
 TEST_F(RefreshRateThrottleControllerTest, ShouldNotThrottleOnAC) {

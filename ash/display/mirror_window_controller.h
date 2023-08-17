@@ -97,7 +97,7 @@ class ASH_EXPORT MirrorWindowController : public aura::WindowTreeHostObserver,
   typedef std::map<int64_t, MirroringHostInfo*> MirroringHostInfoMap;
   MirroringHostInfoMap mirroring_host_info_map_;
 
-  raw_ptr<aura::WindowTreeHost, ExperimentalAsh>
+  raw_ptr<aura::WindowTreeHost, DanglingUntriaged | ExperimentalAsh>
       current_event_targeter_src_host_;
 
   display::DisplayManager::MultiDisplayMode multi_display_mode_;

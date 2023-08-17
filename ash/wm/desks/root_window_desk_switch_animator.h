@@ -351,7 +351,7 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   int GetXPositionOfScreenshot(int index);
 
   // The root window that this animator is associated with.
-  const raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  const raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_;
 
   // The type of animator, this will determine what type of animation is
   // created.

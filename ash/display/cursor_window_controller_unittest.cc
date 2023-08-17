@@ -104,7 +104,8 @@ class CursorWindowControllerTest : public AshTestBase {
 
  private:
   // Not owned.
-  raw_ptr<CursorWindowController, ExperimentalAsh> cursor_window_controller_;
+  raw_ptr<CursorWindowController, DanglingUntriaged | ExperimentalAsh>
+      cursor_window_controller_;
 };
 
 // Test that the composited cursor moves to another display when the real cursor

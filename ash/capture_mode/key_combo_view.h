@@ -45,7 +45,8 @@ class ASH_EXPORT KeyComboView : public views::View {
   ui::KeyboardCode last_non_modifier_key_ = ui::VKEY_UNKNOWN;
   raw_ptr<ModifiersContainerView, ExperimentalAsh> modifiers_container_view_ =
       nullptr;
-  raw_ptr<KeyItemView, ExperimentalAsh> non_modifier_view_ = nullptr;
+  raw_ptr<KeyItemView, DanglingUntriaged | ExperimentalAsh> non_modifier_view_ =
+      nullptr;
 };
 
 }  // namespace ash

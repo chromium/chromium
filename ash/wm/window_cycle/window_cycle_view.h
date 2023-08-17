@@ -149,20 +149,22 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   std::vector<WindowMiniViewBase*> cycle_views_;
 
   // A container that hosts and lays out all the `WindowMiniViewBase`s.
-  raw_ptr<views::View, ExperimentalAsh> mirror_container_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> mirror_container_ =
+      nullptr;
 
   // Tells users that there are no app windows on the active desk. It only shows
   // when there're more than 1 desk.
-  raw_ptr<views::Label, ExperimentalAsh> no_recent_items_label_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh>
+      no_recent_items_label_ = nullptr;
 
   // The `tab_slider_` only shows when there're more than 1 desk. It contains
   // `all_desks_tab_slider_button_` and `current_desk_tab_slider_button_` which
   // user can tab through or toggle between.
-  raw_ptr<TabSlider, ExperimentalAsh> tab_slider_ = nullptr;
-  raw_ptr<LabelSliderButton, ExperimentalAsh> all_desks_tab_slider_button_ =
-      nullptr;
-  raw_ptr<LabelSliderButton, ExperimentalAsh> current_desk_tab_slider_button_ =
-      nullptr;
+  raw_ptr<TabSlider, DanglingUntriaged | ExperimentalAsh> tab_slider_ = nullptr;
+  raw_ptr<LabelSliderButton, DanglingUntriaged | ExperimentalAsh>
+      all_desks_tab_slider_button_ = nullptr;
+  raw_ptr<LabelSliderButton, DanglingUntriaged | ExperimentalAsh>
+      current_desk_tab_slider_button_ = nullptr;
 
   // The |target_window_| is the window that has the focus ring. When the user
   // completes cycling the |target_window_| is activated.

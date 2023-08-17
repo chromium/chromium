@@ -51,7 +51,7 @@ class PanedWidgetDelegate : public views::WidgetDelegate {
   const views::Widget* GetWidget() const override { return widget_; }
 
  private:
-  raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_;
   std::vector<views::View*> accessible_panes_;
 };
 

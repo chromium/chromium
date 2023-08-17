@@ -98,7 +98,7 @@ class HideAnimationObserver : public ui::ImplicitAnimationObserver {
 
  private:
   // Unowned.
-  const raw_ptr<ui::Layer, ExperimentalAsh> layer_;
+  const raw_ptr<ui::Layer, DanglingUntriaged | ExperimentalAsh> layer_;
 };
 
 class ShelfBackgroundLayerDelegate : public ui::LayerOwner,

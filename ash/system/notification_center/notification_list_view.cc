@@ -412,7 +412,8 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
 
   // The views directly above or below this view in the list. Used to update
   // corner radius when sliding.
-  raw_ptr<MessageViewContainer, ExperimentalAsh> above_view_ = nullptr;
+  raw_ptr<MessageViewContainer, DanglingUntriaged | ExperimentalAsh>
+      above_view_ = nullptr;
   raw_ptr<MessageViewContainer, ExperimentalAsh> below_view_ = nullptr;
 
   // `need_update_corner_radius_` indicates that we need to update the corner

@@ -577,7 +577,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   int GetDesksBarHeight() const;
 
   // Root window the grid is in.
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_;
 
   // Pointer to the OverviewSession that spawned this grid.
   raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
@@ -596,7 +596,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // feature is enabled.
   std::unique_ptr<views::Widget> desks_widget_;
   // The contents view of the above |desks_widget_| if created.
-  raw_ptr<LegacyDeskBarView, ExperimentalAsh> desks_bar_view_ = nullptr;
+  raw_ptr<LegacyDeskBarView, DanglingUntriaged | ExperimentalAsh>
+      desks_bar_view_ = nullptr;
 
   // The drop target widget. The drop target is created when a window or
   // overview item is being dragged, and is destroyed when the drag ends or

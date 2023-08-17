@@ -332,9 +332,10 @@ class DateTrayTest
   bool observering_activation_changes_ = false;
 
   // Owned by `widget_`.
-  raw_ptr<DateTray, ExperimentalAsh> date_tray_ = nullptr;
+  raw_ptr<DateTray, DanglingUntriaged | ExperimentalAsh> date_tray_ = nullptr;
 
-  raw_ptr<UnifiedSystemTray, ExperimentalAsh> unified_system_tray_ = nullptr;
+  raw_ptr<UnifiedSystemTray, DanglingUntriaged | ExperimentalAsh>
+      unified_system_tray_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(GlanceablesV2, DateTrayTest, testing::Bool());

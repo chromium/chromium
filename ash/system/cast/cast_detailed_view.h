@@ -99,7 +99,8 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
       nullptr;
 
   // View shown when no cast devices are available (with QsRevamp).
-  raw_ptr<views::View, ExperimentalAsh> zero_state_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> zero_state_view_ =
+      nullptr;
 
   base::WeakPtrFactory<CastDetailedView> weak_factory_{this};
 };

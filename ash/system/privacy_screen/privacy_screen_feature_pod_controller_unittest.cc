@@ -110,7 +110,8 @@ class PrivacyScreenFeaturePodControllerTest
   base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<display::test::ActionLogger> logger_;
-  raw_ptr<display::test::TestNativeDisplayDelegate, ExperimentalAsh>
+  raw_ptr<display::test::TestNativeDisplayDelegate,
+          DanglingUntriaged | ExperimentalAsh>
       native_display_delegate_ = nullptr;
   std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;

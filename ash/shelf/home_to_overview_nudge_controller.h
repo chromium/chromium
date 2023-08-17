@@ -67,7 +67,8 @@ class ASH_EXPORT HomeToOverviewNudgeController : views::WidgetObserver {
 
   bool nudge_allowed_for_shelf_state_ = false;
 
-  const raw_ptr<HotseatWidget, ExperimentalAsh> hotseat_widget_;
+  const raw_ptr<HotseatWidget, DanglingUntriaged | ExperimentalAsh>
+      hotseat_widget_;
   raw_ptr<ContextualNudge, ExperimentalAsh> nudge_ = nullptr;
 
   base::OneShotTimer nudge_show_timer_;

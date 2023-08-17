@@ -191,7 +191,7 @@ class ASH_EXPORT LoginPasswordView
   bool enabled_on_empty_password_ = false;
 
   // Arrow keystrokes delegate.
-  raw_ptr<LoginArrowNavigationDelegate, ExperimentalAsh>
+  raw_ptr<LoginArrowNavigationDelegate, DanglingUntriaged | ExperimentalAsh>
       arrow_navigation_delegate_ = nullptr;
 
   // Clears the password field after a time without action if the display

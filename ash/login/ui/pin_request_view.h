@@ -113,7 +113,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
     PinRequestViewState state() const;
 
    private:
-    const raw_ptr<PinRequestView, ExperimentalAsh> view_;
+    const raw_ptr<PinRequestView, DanglingUntriaged | ExperimentalAsh> view_;
   };
 
   // Creates pin request view that will enable the user to enter a pin.

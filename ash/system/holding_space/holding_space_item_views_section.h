@@ -142,13 +142,15 @@ class ASH_EXPORT HoldingSpaceItemViewsSection : public views::View {
   void OnAnimateInCompleted(const ui::CallbackLayerAnimationObserver&);
   void OnAnimateOutCompleted(const ui::CallbackLayerAnimationObserver&);
 
-  const raw_ptr<HoldingSpaceViewDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<HoldingSpaceViewDelegate, DanglingUntriaged | ExperimentalAsh>
+      delegate_;
   const raw_ptr<const HoldingSpaceSection, ExperimentalAsh> section_;
 
   // Owned by view hierarchy.
   raw_ptr<views::View, ExperimentalAsh> header_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> container_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> placeholder_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> placeholder_ =
+      nullptr;
   raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
   std::map<std::string, HoldingSpaceItemView*> views_by_item_id_;
 

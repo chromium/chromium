@@ -117,7 +117,8 @@ class VpnDetailedViewPixelTest : public AshTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<VpnDetailedView, ExperimentalAsh> vpn_detailed_view_ = nullptr;
+  raw_ptr<VpnDetailedView, DanglingUntriaged | ExperimentalAsh>
+      vpn_detailed_view_ = nullptr;
 };
 
 TEST_F(VpnDetailedViewPixelTest, OnlyBuiltInVpn) {

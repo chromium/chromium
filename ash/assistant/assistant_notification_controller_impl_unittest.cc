@@ -243,7 +243,9 @@ class AssistantNotificationControllerTest : public AssistantAshTestBase {
   }
 
  private:
-  raw_ptr<AssistantNotificationControllerImpl, ExperimentalAsh> controller_;
+  raw_ptr<AssistantNotificationControllerImpl,
+          DanglingUntriaged | ExperimentalAsh>
+      controller_;
   std::unique_ptr<AssistantNotificationModelObserverMock> observer_;
 };
 

@@ -215,7 +215,8 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
  private:
   std::unique_ptr<MockNotificationMenuController>
       mock_notification_menu_controller_;
-  raw_ptr<NotificationMenuView, ExperimentalAsh> notification_menu_view_;
+  raw_ptr<NotificationMenuView, DanglingUntriaged | ExperimentalAsh>
+      notification_menu_view_;
   std::unique_ptr<NotificationMenuViewTestAPI> test_api_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_scope_;

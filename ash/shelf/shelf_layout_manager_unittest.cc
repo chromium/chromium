@@ -2949,7 +2949,8 @@ class ShelfLayoutManagerDragDropTest
   }
 
  private:
-  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_;
+  raw_ptr<ui::test::EventGenerator, DanglingUntriaged | ExperimentalAsh>
+      generator_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

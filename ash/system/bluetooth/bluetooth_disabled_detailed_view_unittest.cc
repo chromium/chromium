@@ -70,8 +70,8 @@ class BluetoothDisabledDetailedViewTest : public AshTestBase {
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<views::View, ExperimentalAsh> container_;
-  raw_ptr<BluetoothDisabledDetailedView, ExperimentalAsh>
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> container_;
+  raw_ptr<BluetoothDisabledDetailedView, DanglingUntriaged | ExperimentalAsh>
       bluetooth_disabled_detailed_view_;
   base::test::ScopedFeatureList feature_list_;
 };

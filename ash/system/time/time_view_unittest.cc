@@ -81,7 +81,7 @@ class TimeViewTest : public AshTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
-  raw_ptr<TimeView, ExperimentalAsh> time_view_;
+  raw_ptr<TimeView, DanglingUntriaged | ExperimentalAsh> time_view_;
   base::WeakPtrFactory<TimeViewTest> weak_factory_{this};
 };
 

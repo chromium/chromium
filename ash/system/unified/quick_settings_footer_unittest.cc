@@ -78,7 +78,7 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget_`.
-  raw_ptr<QuickSettingsFooter, ExperimentalAsh> footer_;
+  raw_ptr<QuickSettingsFooter, DanglingUntriaged | ExperimentalAsh> footer_;
 
   base::test::ScopedFeatureList feature_list_;
 };

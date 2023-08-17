@@ -64,7 +64,8 @@ class ASH_EXPORT CalendarUpNextView : public views::View {
                                       const int target_edge);
 
   // Owned by `CalendarView`.
-  raw_ptr<CalendarViewController, ExperimentalAsh> calendar_view_controller_;
+  raw_ptr<CalendarViewController, DanglingUntriaged | ExperimentalAsh>
+      calendar_view_controller_;
 
   // Owned by `CalendarUpNextView`.
   const raw_ptr<views::View, ExperimentalAsh> todays_events_button_container_;

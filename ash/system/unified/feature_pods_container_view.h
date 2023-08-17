@@ -108,7 +108,9 @@ class ASH_EXPORT FeaturePodsContainerView : public views::View,
   // PaginationModelObserver:
   void TransitionChanged() override;
 
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
+  const raw_ptr<UnifiedSystemTrayController,
+                DanglingUntriaged | ExperimentalAsh>
+      controller_;
 
   // Owned by UnifiedSystemTrayModel.
   const raw_ptr<PaginationModel, ExperimentalAsh> pagination_model_;

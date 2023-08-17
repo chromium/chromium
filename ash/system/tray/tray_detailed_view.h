@@ -151,17 +151,22 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // Transition to main view from detailed view.
   void TransitionToMainView();
 
-  const raw_ptr<DetailedViewDelegate, ExperimentalAsh> delegate_;
-  raw_ptr<views::BoxLayout, ExperimentalAsh> box_layout_ = nullptr;
-  raw_ptr<views::ScrollView, ExperimentalAsh> scroller_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> scroll_content_ = nullptr;
+  const raw_ptr<DetailedViewDelegate, DanglingUntriaged | ExperimentalAsh>
+      delegate_;
+  raw_ptr<views::BoxLayout, DanglingUntriaged | ExperimentalAsh> box_layout_ =
+      nullptr;
+  raw_ptr<views::ScrollView, DanglingUntriaged | ExperimentalAsh> scroller_ =
+      nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> scroll_content_ =
+      nullptr;
   raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
 
   // The container view for the top-most title row. Owned by views hierarchy.
-  raw_ptr<TriView, ExperimentalAsh> tri_view_ = nullptr;
+  raw_ptr<TriView, DanglingUntriaged | ExperimentalAsh> tri_view_ = nullptr;
 
   // The back button that appears in the title row. Owned by views hierarchy.
-  raw_ptr<views::Button, ExperimentalAsh> back_button_ = nullptr;
+  raw_ptr<views::Button, DanglingUntriaged | ExperimentalAsh> back_button_ =
+      nullptr;
 
   // Gets modified to false in the constructor of the view if it doesn't have a
   // separator.

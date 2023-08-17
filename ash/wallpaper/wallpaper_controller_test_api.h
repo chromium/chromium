@@ -50,7 +50,8 @@ class ASH_EXPORT WallpaperControllerTestApi {
                           bool is_override);
 
  private:
-  raw_ptr<WallpaperControllerImpl, ExperimentalAsh> controller_;
+  raw_ptr<WallpaperControllerImpl, DanglingUntriaged | ExperimentalAsh>
+      controller_;
 };
 
 }  // namespace ash

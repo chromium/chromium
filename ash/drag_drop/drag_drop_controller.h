@@ -211,7 +211,8 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   base::OnceClosure quit_closure_;
 
   // If non-null, a drag is active which required a capture window.
-  raw_ptr<DragDropCaptureDelegate, ExperimentalAsh> capture_delegate_ = nullptr;
+  raw_ptr<DragDropCaptureDelegate, DanglingUntriaged | ExperimentalAsh>
+      capture_delegate_ = nullptr;
 
   ui::mojom::DragEventSource current_drag_event_source_ =
       ui::mojom::DragEventSource::kMouse;
@@ -230,7 +231,7 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   base::ObserverList<aura::client::DragDropClientObserver>::Unchecked
       observers_;
 
-  raw_ptr<ToplevelWindowDragDelegate, ExperimentalAsh>
+  raw_ptr<ToplevelWindowDragDelegate, DanglingUntriaged | ExperimentalAsh>
       toplevel_window_drag_delegate_ = nullptr;
 
   // Weak ptr for async callbacks to be invalidated if a new drag starts.

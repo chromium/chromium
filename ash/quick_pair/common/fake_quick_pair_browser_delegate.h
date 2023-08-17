@@ -43,7 +43,8 @@ class FakeQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
 
  private:
   TestingPrefServiceSimple pref_service_;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged | ExperimentalAsh>
+      identity_manager_ = nullptr;
 };
 
 }  // namespace ash::quick_pair

@@ -37,7 +37,7 @@ class ASH_EXPORT NetworkFeaturePodButton : public FeaturePodButton {
   // views::Button:
   void OnThemeChanged() override;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_;
 };
 
 }  // namespace ash

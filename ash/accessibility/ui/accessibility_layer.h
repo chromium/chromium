@@ -72,7 +72,8 @@ class AccessibilityLayer : public ui::LayerDelegate {
                            bool stack_at_top);
 
   // The current root window containing the focused object.
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_ =
+      nullptr;
 
   // The current layer.
   std::unique_ptr<ui::Layer> layer_;

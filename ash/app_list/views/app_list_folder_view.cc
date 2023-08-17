@@ -266,7 +266,7 @@ class FolderItemTitleAnimation : public AppListFolderView::Animation {
 
   const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;  // Not owned.
 
-  const raw_ptr<views::View, ExperimentalAsh> folder_title_;
+  const raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> folder_title_;
 
   base::OnceClosure completion_callback_;
 

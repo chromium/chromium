@@ -96,8 +96,10 @@ class RoundedScrollBarTest : public views::ViewsTestBase,
  protected:
   views::UniqueWidgetPtr widget_;
   TestScrollBarController controller_;
-  raw_ptr<RoundedScrollBar, ExperimentalAsh> scroll_bar_ = nullptr;
-  raw_ptr<views::BaseScrollBarThumb, ExperimentalAsh> thumb_ = nullptr;
+  raw_ptr<RoundedScrollBar, DanglingUntriaged | ExperimentalAsh> scroll_bar_ =
+      nullptr;
+  raw_ptr<views::BaseScrollBarThumb, DanglingUntriaged | ExperimentalAsh>
+      thumb_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
