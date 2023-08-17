@@ -158,6 +158,9 @@ interface KeyMintServer {
   // during startup.
   ComputeSharedSecret@22(array<SharedSecretParameters> secret_params) =>
       (ByteArrayOrError response);
+
+  // Generates an authenticated timestamp for ISecureClock.
+  GenerateTimeStamp@23(uint64 challenge) => (TimeStampTokenOrError response);
 };
 
 struct AttestationKey {
@@ -393,11 +396,20 @@ union SharedSecretParametersOrError {
   SharedSecretParameters secret_parameters;
 };
 
+union TimeStampTokenOrError {
+  int32 error;
+  TimeStampToken timestamp_token;
+};
+
 // String used as label in the shared key derivation.
 const string shared_secret_key_agreement_label = "KeymasterSharedMac";
 
 // String used as context in the computation of the sharingCheck.
 const string shared_secret_key_check_label = "Keymaster HMAC Verification";
+
+// String used as context in the HMAC computation signing the generated time
+// stamp.
+const string secure_clock_time_stamp_mac_label = "Auth Verification";
 
 [Extensible]
 enum Algorithm {
