@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/compositor.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -203,6 +204,16 @@ void MenuHost::ShowMenuHost(bool do_capture) {
     } else {
       GetGestureRecognizer()->CancelActiveTouchesExcept(nullptr);
     }
+
+    if (record_init_to_presentation_time_ && owner_ &&
+        owner_->GetCompositor()) {
+      // Register callback to emit histogram to measure the time from when the
+      // menu host is initialized to when the next frame is successfully
+      // presented.
+      owner_->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
+          std::move(record_init_to_presentation_time_));
+    }
+
     // If MenuHost has no parent widget, it needs to call Show to get focus,
     // so that it will get keyboard events.
     if (owner_ == nullptr)

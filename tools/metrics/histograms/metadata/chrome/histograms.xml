@@ -327,6 +327,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.WrenchMenu.MenuHostInitToNextFramePresented" units="ms"
+    expires_after="2024-08-10">
+  <owner>temao@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records time from when the menu host initialization is started to when the
+    next frame is successfully presented. It's logged every time the app menu
+    opens.
+  </summary>
+</histogram>
+
 <histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
     expires_after="2023-12-24">
   <owner>tiborg@chromium.org</owner>
