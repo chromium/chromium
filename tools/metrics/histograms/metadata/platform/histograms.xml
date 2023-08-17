@@ -1793,6 +1793,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.StorageCapabilities"
+    enum="InternalStorageCapabilities" expires_after="2024-08-15">
+  <owner>dlunev@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
+  <summary>
+    Sparse histogram of internal storage device capabilities. Sampled once per
+    boot.
+  </summary>
+</histogram>
+
 <histogram name="Platform.SwapInDaily" units="pages" expires_after="2024-01-14">
   <owner>asavery@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>

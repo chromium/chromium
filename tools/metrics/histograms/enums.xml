@@ -54770,6 +54770,11 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="Detected"/>
 </enum>
 
+<enum name="InternalStorageCapabilities">
+  <summary>Enum for sparse histogram of capabilities</summary>
+  <int value="0" label="STORAGE_PRESENT"/>
+</enum>
+
 <enum name="InterruptReason">
   <int value="0" label="NONE"/>
   <int value="1" label="FILE_FAILED"/>
