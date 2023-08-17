@@ -57,7 +57,7 @@ size_t CountDuplicateClientTags(const EntityMetadataMap& metadata_map) {
 ClientTagBasedModelTypeProcessor::ClientTagBasedModelTypeProcessor(
     ModelType type,
     const base::RepeatingClosure& dump_stack)
-    : type_(type), bridge_(nullptr), dump_stack_(dump_stack) {
+    : type_(type), dump_stack_(dump_stack) {
   ResetState(CLEAR_METADATA);
 }
 

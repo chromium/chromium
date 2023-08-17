@@ -121,7 +121,7 @@ class FakeSyncManagerFactory : public SyncManagerFactory {
   ModelTypeSet initial_sync_ended_types_;
   ModelTypeSet progress_marker_types_;
   ModelTypeSet configure_fail_types_;
-  raw_ptr<FakeSyncManager*> fake_manager_;
+  const raw_ptr<FakeSyncManager*> fake_manager_;
 };
 
 class MockActiveDevicesProvider : public ActiveDevicesProvider {

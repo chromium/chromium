@@ -311,7 +311,7 @@ class ToValueVisitor {
   }
 
   const ProtoValueConversionOptions options_;
-  raw_ptr<base::Value::Dict> value_;
+  const raw_ptr<base::Value::Dict> value_;
 };
 
 }  // namespace

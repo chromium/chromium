@@ -90,18 +90,18 @@ class SyncManager {
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
 
     // Must outlive SyncManager.
-    raw_ptr<ExtensionsActivity> extensions_activity;
+    raw_ptr<ExtensionsActivity> extensions_activity = nullptr;
 
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
 
     // Must outlive SyncManager.
-    raw_ptr<SyncEncryptionHandler> encryption_handler;
+    raw_ptr<SyncEncryptionHandler> encryption_handler = nullptr;
 
     // Carries shutdown requests across threads and will be used to cut short
     // any network I/O and tell the syncer to exit early.
     //
     // Must outlive SyncManager.
-    raw_ptr<CancelationSignal> cancelation_signal;
+    raw_ptr<CancelationSignal> cancelation_signal = nullptr;
 
     // Define the polling interval. Must not be zero.
     base::TimeDelta poll_interval;

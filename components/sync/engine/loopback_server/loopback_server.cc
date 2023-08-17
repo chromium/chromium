@@ -241,8 +241,7 @@ LoopbackServer::LoopbackServer(const base::FilePath& persistent_file)
       writer_(
           persistent_file_,
           base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
-      observer_for_tests_(nullptr) {
+              {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
   DCHECK(!persistent_file_.empty());
   Init();
 }

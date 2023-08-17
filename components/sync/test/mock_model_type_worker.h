@@ -176,7 +176,7 @@ class MockModelTypeWorker : public CommitQueue {
   sync_pb::ModelTypeState model_type_state_;
 
   // A pointer to the processor for this mock worker.
-  raw_ptr<ModelTypeProcessor, AcrossTasksDanglingUntriaged> processor_;
+  const raw_ptr<ModelTypeProcessor, AcrossTasksDanglingUntriaged> processor_;
 
   // A record of past commits requests.
   base::circular_deque<CommitRequestDataList> pending_commits_;

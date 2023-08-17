@@ -265,7 +265,7 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to observe the completion of commit messages for the sake of testing.
-  raw_ptr<ObserverForTests> observer_for_tests_;
+  raw_ptr<ObserverForTests> observer_for_tests_ = nullptr;
 
   // Response type override callback used in tests.
   ResponseTypeProvider response_type_override_;

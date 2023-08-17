@@ -43,7 +43,7 @@ class TrackableMockInvalidation : public MockInvalidation {
   // The MockInvalidationTracker that initialized this object, and which keeps
   // track of its acknowledgement status.  It is expected to outlive the
   // invalidations.  The data required for unit test assertions lives there.
-  raw_ptr<MockInvalidationTracker> tracker_;
+  const raw_ptr<MockInvalidationTracker> tracker_;
 
   // An identifier that uniquely identifies this invalidation to its
   // |tracker_|.

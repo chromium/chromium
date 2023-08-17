@@ -441,7 +441,7 @@ class SyncServiceImpl : public SyncService,
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // The global NetworkConnectionTracker instance.
-  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
+  const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   // Indicates if this is the first time sync is being configured.
   // This is set to true if last synced time is not set at the time of

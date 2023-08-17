@@ -151,7 +151,7 @@ class SyncCycleContext {
   // client behavior on server side.
   const raw_ptr<DebugInfoGetter, DanglingUntriaged> debug_info_getter_;
 
-  raw_ptr<ModelTypeRegistry> model_type_registry_;
+  const raw_ptr<ModelTypeRegistry> model_type_registry_;
 
   // Satus information to be sent up to the server.
   sync_pb::ClientStatus client_status_;

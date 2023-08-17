@@ -35,20 +35,7 @@ namespace syncer {
 static char kValidAccessToken[] = "AccessToken";
 static char kCacheGuid[] = "kqyg7097kro6GSUod+GSg==";
 
-MockConnectionManager::MockConnectionManager()
-    : server_reachable_(true),
-      conflict_all_commits_(false),
-      conflict_n_commits_(0),
-      next_new_id_(10000),
-      store_birthday_("Store BDay!"),
-      store_birthday_sent_(false),
-      client_stuck_(false),
-      countdown_to_postbuffer_fail_(0),
-      mid_commit_observer_(nullptr),
-      throttling_(false),
-      partial_failure_(false),
-      fail_non_periodic_get_updates_(false),
-      num_get_updates_requests_(0) {
+MockConnectionManager::MockConnectionManager() {
   SetNewTimestamp(0);
   SetAccessToken(kValidAccessToken);
 }

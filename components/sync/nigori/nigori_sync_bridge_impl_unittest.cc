@@ -254,8 +254,9 @@ class NigoriSyncBridgeImplTest : public testing::Test {
  private:
   std::unique_ptr<NigoriSyncBridgeImpl> bridge_;
   // Ownership transferred to |bridge_|.
-  raw_ptr<testing::NiceMock<MockNigoriLocalChangeProcessor>> processor_;
-  raw_ptr<testing::NiceMock<MockNigoriStorage>> storage_;
+  raw_ptr<testing::NiceMock<MockNigoriLocalChangeProcessor>> processor_ =
+      nullptr;
+  raw_ptr<testing::NiceMock<MockNigoriStorage>> storage_ = nullptr;
   testing::NiceMock<MockObserver> observer_;
 };
 

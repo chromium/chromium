@@ -73,7 +73,7 @@ class CommitProcessor {
   const ModelTypeSet commit_types_;
 
   // A map of 'commit contributors', one for each enabled type.
-  raw_ptr<CommitContributorMap> commit_contributor_map_;
+  const raw_ptr<CommitContributorMap> commit_contributor_map_;
   GatheringPhase phase_;
 };
 

@@ -94,7 +94,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetIsUsingExplicitPassphrase(bool enabled);
 
  private:
-  raw_ptr<TestSyncService> service_;
+  const raw_ptr<TestSyncService> service_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   UserSelectableOsTypeSet selected_os_types_;
   UserSelectableOsTypeSet managed_os_types_;

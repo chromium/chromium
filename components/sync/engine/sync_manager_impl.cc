@@ -85,11 +85,7 @@ GURL MakeConnectionURL(const GURL& sync_server, const std::string& client_id) {
 SyncManagerImpl::SyncManagerImpl(
     const std::string& name,
     network::NetworkConnectionTracker* network_connection_tracker)
-    : name_(name),
-      network_connection_tracker_(network_connection_tracker),
-      initialized_(false),
-      observing_network_connectivity_changes_(false),
-      sync_encryption_handler_(nullptr) {}
+    : name_(name), network_connection_tracker_(network_connection_tracker) {}
 
 SyncManagerImpl::~SyncManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

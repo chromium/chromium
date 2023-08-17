@@ -107,10 +107,7 @@ class MockNigoriSyncBridge : public NigoriSyncBridge {
 
 class NigoriModelTypeProcessorTest : public testing::Test {
  public:
-  NigoriModelTypeProcessorTest() {
-    mock_commit_queue_ = std::make_unique<testing::NiceMock<MockCommitQueue>>();
-    mock_commit_queue_ptr_ = mock_commit_queue_.get();
-  }
+  NigoriModelTypeProcessorTest() = default;
 
   void SimulateModelReadyToSync(bool initial_sync_done, int server_version) {
     NigoriMetadataBatch nigori_metadata_batch;
@@ -172,8 +169,10 @@ class NigoriModelTypeProcessorTest : public testing::Test {
 
  private:
   testing::NiceMock<MockNigoriSyncBridge> mock_nigori_sync_bridge_;
-  std::unique_ptr<testing::NiceMock<MockCommitQueue>> mock_commit_queue_;
-  raw_ptr<MockCommitQueue, DanglingUntriaged> mock_commit_queue_ptr_;
+  std::unique_ptr<testing::NiceMock<MockCommitQueue>> mock_commit_queue_ =
+      std::make_unique<testing::NiceMock<MockCommitQueue>>();
+  raw_ptr<MockCommitQueue, DanglingUntriaged> mock_commit_queue_ptr_ =
+      mock_commit_queue_.get();
   NigoriModelTypeProcessor processor_;
 };
 

@@ -42,7 +42,7 @@ class BlockingTask : public CancelationSignal::Observer {
  private:
   base::WaitableEvent event_;
   base::Thread exec_thread_;
-  raw_ptr<CancelationSignal> cancel_signal_;
+  const raw_ptr<CancelationSignal> cancel_signal_;
   bool was_started_ = false;
 };
 
