@@ -246,7 +246,9 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
   scoped_refptr<network::SharedURLLoaderFactory> factory =
       network::SharedURLLoaderFactory::Create(fallback_factory_->Clone());
 
-  CHECK_EQ(commit_responsibility(), FetchResponseFrom::kNoResponseYet);
+  CHECK(commit_responsibility() == FetchResponseFrom::kNoResponseYet ||
+        commit_responsibility() ==
+            FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect);
   factory->CreateLoaderAndStart(
       forwarded_race_network_request_url_loader_factory_
           ->InitURLLoaderNewPipeAndPassReceiver(),
@@ -324,7 +326,9 @@ void ServiceWorkerSubresourceLoader::StartRequest(
                           TRACE_ID_LOCAL(request_id_)),
       TRACE_EVENT_FLAG_FLOW_OUT, "url", resource_request.url.spec());
   TransitionToStatus(Status::kStarted);
-  CHECK_EQ(commit_responsibility(), FetchResponseFrom::kNoResponseYet);
+  CHECK(commit_responsibility() == FetchResponseFrom::kNoResponseYet ||
+        commit_responsibility() ==
+            FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect);
   DCHECK(!controller_connector_observation_.IsObserving());
   controller_connector_observation_.Observe(controller_connector_.get());
   fetch_request_restarted_ = false;
@@ -516,6 +520,7 @@ void ServiceWorkerSubresourceLoader::OnConnectionClosed() {
         blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed);
     switch (commit_responsibility()) {
       case FetchResponseFrom::kNoResponseYet:
+      case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       case FetchResponseFrom::kServiceWorker:
         CommitCompleted(net::ERR_FAILED, "Disconnected before completed");
         return;
@@ -590,6 +595,7 @@ void ServiceWorkerSubresourceLoader::OnFallback(
 
   switch (commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
+    case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       // If the RaceNetworkRequest is triggered but the response is not handled
       // yet, ask its URLLoaderClient to handle the response regardless of the
       // response status not to dispatch additional network request for
@@ -673,6 +679,7 @@ void ServiceWorkerSubresourceLoader::StartResponse(
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream) {
   switch (commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
+    case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
       break;
     case FetchResponseFrom::kServiceWorker:
@@ -831,6 +838,7 @@ void ServiceWorkerSubresourceLoader::CommitCompleted(int error_code,
   if (error_code == net::OK) {
     switch (commit_responsibility()) {
       case FetchResponseFrom::kNoResponseYet:
+      case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
         NOTREACHED();
         break;
       case FetchResponseFrom::kServiceWorker:
@@ -1087,7 +1095,8 @@ void ServiceWorkerSubresourceLoader::FollowRedirect(
   TransitionToStatus(Status::kNotStarted);
   redirect_info_.reset();
   response_callback_receiver_.reset();
-  reset_commit_responsibility();
+  SetCommitResponsibility(
+      FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect);
   race_network_request_loader_client_.reset();
   race_network_request_url_loader_factory_.reset();
   StartRequest(resource_request_);

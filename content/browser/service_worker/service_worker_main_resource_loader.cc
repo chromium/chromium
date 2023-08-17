@@ -500,6 +500,7 @@ void ServiceWorkerMainResourceLoader::CommitCompleted(int error_code,
   if (error_code == net::OK) {
     switch (commit_responsibility()) {
       case FetchResponseFrom::kNoResponseYet:
+      case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
         NOTREACHED();
         break;
       case FetchResponseFrom::kServiceWorker:
@@ -573,6 +574,8 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
             std::move(body_as_stream->stream));
       }
       return;
+    case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
+      NOTREACHED_NORETURN();
   }
   RecordFetchResponseFrom();
 

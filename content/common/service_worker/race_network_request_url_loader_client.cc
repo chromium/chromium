@@ -150,6 +150,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
   // handler completion.
   switch (owner_->commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
+    case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       // This happens when the response is faster than the fetch handler.
       owner_->SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
       forwarding_client_->OnReceiveRedirect(redirect_info, head->Clone());
@@ -218,6 +219,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
   TransitionState(State::kResponseCommitted);
   switch (owner_->commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
+    case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       // If the fetch handler result is a fallback, commit the
       // RaceNetworkRequest response. If the result is not a fallback and the
       // response is not 200, use the other response from the fetch handler
@@ -271,6 +273,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
   TransitionState(State::kCompleted);
   switch (owner_->commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
+    case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       // If a network error happens, there is a case that OnComplete can be
       // directly called, in that case |owner_->commit_responsibility()| is not
       // set yet. Ask the fetch handler side to handle response.

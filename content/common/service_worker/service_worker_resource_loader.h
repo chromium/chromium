@@ -29,7 +29,13 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
     kNoResponseYet = 0,
     kServiceWorker = 1,
     kWithoutServiceWorker = 2,
-    kMaxValue = kWithoutServiceWorker,
+    // For subresources, the redirect mode is "follow". When redirects happen,
+    // the resource loader restarts the request process after FollowRedirect()
+    // is called. This value indicates that intermediate state. This state has
+    // to be updated to either |kServiceWorker| or |kWithoutServiceWorker| after
+    // receiving the final response.
+    kSubresourceLoaderIsHandlingRedirect = 3,
+    kMaxValue = kSubresourceLoaderIsHandlingRedirect,
   };
 
   ServiceWorkerResourceLoader();
@@ -39,9 +45,6 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
 
   FetchResponseFrom commit_responsibility() { return commit_responsibility_; }
   void SetCommitResponsibility(FetchResponseFrom fetch_response_from);
-  void reset_commit_responsibility() {
-    commit_responsibility_ = FetchResponseFrom::kNoResponseYet;
-  }
 
   // Tells if the class is main resource's class or not.
   virtual bool IsMainResourceLoader() = 0;
