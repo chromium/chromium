@@ -4088,9 +4088,6 @@ extern const char kKioskEnableAppServiceDescription[];
 extern const char kLacrosColorManagementName[];
 extern const char kLacrosColorManagementDescription[];
 
-extern const char kMessagesPreinstallName[];
-extern const char kMessagesPreinstallDescription[];
-
 extern const char kOneGroupPerRendererName[];
 extern const char kOneGroupPerRendererDescription[];
 

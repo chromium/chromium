@@ -8790,10 +8790,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(blink::features::kFileSystemAccessGetCloudIdentifiers)},
 
-    {"messages-preinstall", flag_descriptions::kMessagesPreinstallName,
-     flag_descriptions::kMessagesPreinstallDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(web_app::kMessagesPreinstall)},
-
     {"lacros-color-management", flag_descriptions::kLacrosColorManagementName,
      flag_descriptions::kLacrosColorManagementDescription, kOsLacros,
      FEATURE_VALUE_TYPE(features::kLacrosColorManagement)},

@@ -26,7 +26,6 @@ namespace {
 constexpr const base::Feature* kPreinstalledAppInstallFeatures[] = {
 #if BUILDFLAG(IS_CHROMEOS)
     &kCursiveManagedStylusPreinstall,
-    &kMessagesPreinstall,
 #endif
 };
 
@@ -42,6 +41,9 @@ constexpr const base::StringPiece kShippedPreinstalledAppInstallFeatures[] = {
     // Enables migration of default installed non-GSuite apps over to their
     // replacement web apps.
     "MigrateDefaultChromeAppToWebAppsNonGSuite",
+
+    // Enables installing the Messages app on unmanaged devices.
+    "MessagesPreinstall",
 };
 
 bool g_always_enabled_for_testing = false;
@@ -70,12 +72,6 @@ const FeatureWithEnabledFunction
 BASE_FEATURE(kCursiveManagedStylusPreinstall,
              "CursiveManagedStylusPreinstall",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables installing the Messages app on unmanaged devices.
-BASE_FEATURE(kMessagesPreinstall,
-             "MessagesPreinstall",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,

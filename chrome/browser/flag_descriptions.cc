@@ -7111,10 +7111,6 @@ const char kLacrosColorManagementDescription[] =
     "Uses chrome-color-management wayland protocol to manage color spaces "
     "for lacros. This is necessary for enabling HDR on compatible devices.";
 
-const char kMessagesPreinstallName[] = "Preinstall  Messages PWA";
-const char kMessagesPreinstallDescription[] =
-    "Enables preinstallation of the Messages for Web PWA for unmanaged users.";
-
 const char kOneGroupPerRendererName[] =
     "Use one cgroup for each foreground renderer";
 const char kOneGroupPerRendererDescription[] =
