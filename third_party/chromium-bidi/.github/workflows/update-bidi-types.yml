@@ -42,7 +42,7 @@ jobs:
       - name: Set up Rust
         run: rustup update stable && rustup default stable
       - name: Install cddlconv
-        run: cargo install --git https://github.com/jrandolf/cddlconv.git cddlconv
+        run: cargo install --git https://github.com/google/cddlconv.git cddlconv
       - name: Set up Node.js
         uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8 # v3.7.0
         with:
