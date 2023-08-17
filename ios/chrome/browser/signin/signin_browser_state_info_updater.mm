@@ -50,11 +50,9 @@ void SigninBrowserStateInfoUpdater::UpdateBrowserStateInfo() {
   if (index == std::string::npos)
     return;
 
-  // TODO(crbug.com/1463438): Convert usage of kSync to kSignin. See
-  // ConsentLevel::kSync documentation for more details.
-  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     CoreAccountInfo account_info =
-        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     cache->SetAuthInfoOfBrowserStateAtIndex(
         index, account_info.gaia, base::UTF8ToUTF16(account_info.email));
   } else {
