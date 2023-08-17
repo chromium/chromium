@@ -3315,15 +3315,17 @@
             ]
         }
     ],
-    "ChromeOSMaterialNextWaveOneWithTimeOfDay": [
+    "ChromeOSMaterialNextWaveOneWithTimeOfDayM117AndBeyond": [
         {
             "platforms": [
                 "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "TimeOfDayEnabled",
+                    "name": "TimeOfDayEnabledM117AndBeyond",
                     "enable_features": [
+                        "FeatureManagementTimeOfDayScreenSaver",
+                        "FeatureManagementTimeOfDayWallpaper",
                         "Jelly",
                         "TimeOfDayScreenSaver",
                         "TimeOfDayWallpaper"
