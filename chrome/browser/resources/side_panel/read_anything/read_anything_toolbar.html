@@ -108,23 +108,23 @@
       <iron-icon class="button-image" icon="cr:arrow-back"></iron-icon>
       $i18n{back}
     </button>
-    <button class="dropdown-item" on-click="onDefaultTheme_">
+    <button class="dropdown-item" data$="[[menuStateEnum_.DEFAULT_COLOR]]">
       <iron-icon class="button-image" icon="read-anything:default-theme"></iron-icon>
       $i18n{defaultColorTitle}
     </button>
-    <button class="dropdown-item" on-click="onLightTheme_">
+    <button class="dropdown-item" data$="[[menuStateEnum_.LIGHT]]">
       <iron-icon class="button-image" icon="read-anything:light-theme"></iron-icon>
       $i18n{lightColorTitle}
     </button>
-    <button class="dropdown-item" on-click="onDarkTheme_">
+    <button class="dropdown-item" data$="[[menuStateEnum_.DARK]]">
       <iron-icon class="button-image" icon="read-anything:dark-theme"></iron-icon>
       $i18n{darkColorTitle}
     </button>
-    <button class="dropdown-item" on-click="onYellowTheme_">
+    <button class="dropdown-item" data$="[[menuStateEnum_.YELLOW]]">
       <iron-icon class="button-image" icon="read-anything:yellow-theme"></iron-icon>
       $i18n{yellowColorTitle}
     </button>
-    <button class="dropdown-item" on-click="onBlueTheme_">
+    <button class="dropdown-item" data$="[[menuStateEnum_.BLUE]]">
       <iron-icon class="button-image" icon="read-anything:blue-theme"></iron-icon>
       $i18n{blueColorTitle}
     </button>
@@ -156,17 +156,17 @@
       $i18n{back}
     </button>
     <!--TODO(b/1465029): Fix icon that is slightly out of alignment. -->
-    <button class="dropdown-item" on-click="onLetterSpacingStandardClick_">
+    <button class="dropdown-item" data$="[[menuStateEnum_.LETTER_STANDARD]]">
       <iron-icon class="button-image"
       icon="read-anything:letter-spacing-standard"></iron-icon>
       $i18n{letterSpacingStandardTitle}
     </button>
-    <button class="dropdown-item" on-click="onLetterSpacingWideClick_">
+    <button class="dropdown-item" data$="[[menuStateEnum_.WIDE]]">
       <iron-icon class="button-image"
       icon="read-anything:letter-spacing-wide"></iron-icon>
       $i18n{letterSpacingWideTitle}
     </button>
-    <button class="dropdown-item" on-click="onLetterSpacingVeryWideClick_">
+    <button class="dropdown-item" data$="[[menuStateEnum_.VERY_WIDE]]">
       <iron-icon class="button-image"
       icon="read-anything:letter-spacing-very-wide"></iron-icon>
       $i18n{letterSpacingVeryWideTitle}
