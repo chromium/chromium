@@ -88691,6 +88691,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="3" label="Normal print: Before print document"/>
   <int value="4" label="System print: Before print job"/>
   <int value="5" label="Normal print: Before print job"/>
+  <int value="6" label="Normal print: Open PDF in Preview"/>
 </enum>
 
 <enum name="PrintSettings">

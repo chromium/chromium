@@ -51,12 +51,15 @@ enum class PrintScanningContext {
   kSystemPrintBeforePrintDocument = 4,
   kNormalPrintBeforePrintDocument = 5,
 
-  kMaxValue = kNormalPrintBeforePrintDocument,
+#if BUILDFLAG(IS_MAC)
+  // Represents the code paths after the user has clicked "Open PDF in Preview"
+  // from the print preview dialog on Mac.
+  kOpenPdfInPreview = 6,
 
-  // TODO(b/281087582): Once cloud scanning support is added, add this option
-  // for an extra Mac edge case for the extra "Open PDF in Preview" button on
-  // the print preview dialog.
-  // kMacOpenPdfInPreview = 6,
+  kMaxValue = kOpenPdfInPreview,
+#else
+  kMaxValue = kNormalPrintBeforePrintDocument,
+#endif  // BUILDFLAG(IS_MAC)
 
 };
 

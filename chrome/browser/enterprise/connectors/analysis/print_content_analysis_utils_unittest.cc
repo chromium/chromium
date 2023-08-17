@@ -430,6 +430,48 @@ TEST_P(PrintContentAnalysisUtilsTest,
   }
 }
 
+#if BUILDFLAG(IS_MAC)
+TEST_P(PrintContentAnalysisUtilsTest,
+       GetPrintAnalysisData_MacOpenPdfInPreview) {
+  auto data =
+      GetPrintAnalysisData(contents(), PrintScanningContext::kOpenPdfInPreview);
+
+  if (ExpectPostDialogAnalysis()) {
+    ASSERT_TRUE(data);
+    ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
+
+    ASSERT_EQ(policy_value() == kLocalPolicy,
+              data->settings.cloud_or_local_settings.is_local_analysis());
+    ASSERT_EQ(policy_value() == kCloudPolicy,
+              data->settings.cloud_or_local_settings.is_cloud_analysis());
+
+    if (policy_value() == kLocalPolicy) {
+      histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Local.PrintType",
+                                          1);
+      histogram_tester().ExpectUniqueSample(
+          "Enterprise.OnPrint.Local.PrintType",
+          PrintScanningContext::kOpenPdfInPreview, 1);
+      histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Cloud.PrintType",
+                                          0);
+    } else {
+      histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Cloud.PrintType",
+                                          1);
+      histogram_tester().ExpectUniqueSample(
+          "Enterprise.OnPrint.Cloud.PrintType",
+          PrintScanningContext::kOpenPdfInPreview, 1);
+      histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Local.PrintType",
+                                          0);
+    }
+  } else {
+    ASSERT_FALSE(data);
+    histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Local.PrintType",
+                                        0);
+    histogram_tester().ExpectTotalCount("Enterprise.OnPrint.Cloud.PrintType",
+                                        0);
+  }
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyAllowed) {
   ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
       &PrintTestContentAnalysisDelegate::Create,
