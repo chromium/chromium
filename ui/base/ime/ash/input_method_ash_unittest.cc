@@ -393,7 +393,8 @@ class InputMethodAshTest : public ui::ImeKeyEventDispatcher,
 
   bool stop_propagation_post_ime_;
 
-  raw_ptr<TestInputMethodManager, ExperimentalAsh> input_method_manager_;
+  raw_ptr<TestInputMethodManager, DanglingUntriaged | ExperimentalAsh>
+      input_method_manager_;
 
   base::test::TaskEnvironment task_environment_;
 };

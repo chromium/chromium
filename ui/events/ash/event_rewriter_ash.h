@@ -394,7 +394,7 @@ class EventRewriterAsh : public EventRewriter {
   // used to interpret modifiers on pointer events.
   int last_keyboard_device_id_;
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_;
 
   // For each pair, the first element is the rewritten key state and the second
   // one is the original key state. If no key event rewriting happens, the first
@@ -437,7 +437,8 @@ class EventRewriterAsh : public EventRewriter {
   // latches. See b/216049965 for more details.
   base::flat_map<DomCode, ui::EventFlags> previous_non_modifier_latches_;
 
-  const raw_ptr<KeyboardCapability, ExperimentalAsh> keyboard_capability_;
+  const raw_ptr<KeyboardCapability, DanglingUntriaged | ExperimentalAsh>
+      keyboard_capability_;
   const raw_ptr<ash::input_method::ImeKeyboard, ExperimentalAsh> ime_keyboard_;
 
   // True if alt + key and mouse event remapping is allowed. In some scenario,
