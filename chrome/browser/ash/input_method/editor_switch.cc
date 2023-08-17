@@ -16,8 +16,27 @@ constexpr ui::TextInputType kTextInputTypeAllowlist[] = {
     ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE, ui::TEXT_INPUT_TYPE_TEXT,
     ui::TEXT_INPUT_TYPE_TEXT_AREA};
 
+constexpr std::string_view kInputMethodEngineAllowlist[] = {
+    "xkb:gb::eng",
+    "xkb:gb:extd:eng",          // UK
+    "xkb:gb:dvorak:eng",        // UK Extended
+    "xkb:us:altgr-intl:eng",    // US Extended
+    "xkb:us:colemak:eng",       // US Colemak
+    "xkb:us:dvorak:eng",        // US Dvorak
+    "xkb:us:dvp:eng",           // US Programmer Dvorak
+    "xkb:us:intl_pc:eng",       // US Intl (PC)
+    "xkb:us:intl:eng",          // US Intl
+    "xkb:us:workman-intl:eng",  // US Workman Intl
+    "xkb:us:workman:eng",       // US Workman
+    "xkb:us::eng",              // US
+};
+
 bool IsInputTypeAllowed(ui::TextInputType type) {
   return base::Contains(kTextInputTypeAllowlist, type);
+}
+
+bool IsInputMethodEngineAllowed(std::string_view engine_id) {
+  return base::Contains(kInputMethodEngineAllowlist, engine_id);
 }
 
 }  // namespace
@@ -44,8 +63,15 @@ void EditorSwitch::OnInputContextUpdated(
   UpdateTriggerableCache();
 }
 
+void EditorSwitch::OnActivateIme(std::string_view engine_id) {
+  active_engine_id_ = engine_id;
+  UpdateTriggerableCache();
+}
+
 void EditorSwitch::UpdateTriggerableCache() {
-  can_be_triggered_ = is_allowed_for_use_ && IsInputTypeAllowed(input_type_);
+  can_be_triggered_ = is_allowed_for_use_ &&
+                      IsInputMethodEngineAllowed(active_engine_id_) &&
+                      IsInputTypeAllowed(input_type_);
 }
 
 }  // namespace ash::input_method

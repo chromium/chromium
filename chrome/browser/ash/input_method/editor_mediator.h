@@ -41,6 +41,7 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   // EditorEventSink
   void OnFocus(int context_id) override;
   void OnBlur() override;
+  void OnActivateIme(std::string_view engine_id) override;
 
   // EditorInstanceImpl::Delegate overrides
   void CommitEditorResult(std::string_view text) override;

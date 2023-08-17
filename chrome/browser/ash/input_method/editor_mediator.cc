@@ -49,6 +49,10 @@ void EditorMediator::OnBlur() {
   text_actuator_.OnBlur();
 }
 
+void EditorMediator::OnActivateIme(std::string_view engine_id) {
+  editor_switch_.OnActivateIme(engine_id);
+}
+
 void EditorMediator::CommitEditorResult(std::string_view text) {
   // This assumes that focus will return to the original text input client after
   // the mako web ui is hidden from view. Thus we queue the text to be inserted

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_EVENT_SINK_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_EVENT_SINK_H_
 
+#include <string>
+
 namespace ash {
 namespace input_method {
 
@@ -13,6 +15,7 @@ class EditorEventSink {
   virtual ~EditorEventSink() = default;
   virtual void OnFocus(int context_id) = 0;
   virtual void OnBlur() = 0;
+  virtual void OnActivateIme(std::string_view engine_id) = 0;
 };
 
 }  // namespace input_method

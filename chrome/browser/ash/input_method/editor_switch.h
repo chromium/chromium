@@ -30,12 +30,15 @@ class EditorSwitch {
   void OnInputContextUpdated(
       const TextInputMethod::InputContext& input_context);
 
+  void OnActivateIme(std::string_view engine_id);
+
  private:
   void UpdateTriggerableCache();
 
   bool is_allowed_for_use_ = false;
   bool can_be_triggered_ = false;
 
+  std::string active_engine_id_;
   ui::TextInputType input_type_ = ui::TEXT_INPUT_TYPE_NONE;
 };
 
