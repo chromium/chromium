@@ -771,6 +771,9 @@ export class Authenticator extends EventTarget {
               '&scope=https%3A%2F%2Fwww.google.com%2Faccounts%2FOAuthLogin&' +
               'client_id=' + encodeURIComponent(data.clientId) +
               '&access_type=offline');
+      if (data.rart) {
+        url = appendParam(url, 'rart', data.rart);
+      }
 
       return url;
     }
