@@ -41,7 +41,9 @@ config("pgo_optimization_flags") {
     inputs = []
 
     if (is_win) {
-      if (target_cpu == "x64") {
+      if (target_cpu == "arm64") {
+        _pgo_target = "win-arm64"
+      } else if (target_cpu == "x64") {
         _pgo_target = "win64"
       } else {
         _pgo_target = "win32"
@@ -69,9 +71,10 @@ config("pgo_optimization_flags") {
       } else {
         _pgo_target = "android-arm32"
       }
+
       # Continue to use mac-arm profile until Android native PGO autoroll works.
       # TODO(crbug.com/1308749): Remove the following.
-       _pgo_target = "mac-arm"
+      _pgo_target = "mac-arm"
     } else if (is_fuchsia) {
       if (target_cpu == "arm64") {
         _pgo_target = "mac-arm"
@@ -86,7 +89,9 @@ config("pgo_optimization_flags") {
       }
     }
 
-    if (_pgo_target == "win64") {
+    if (_pgo_target == "win-arm64") {
+      inputs = [ "//chrome/build/win-arm64.pgo.txt" ]
+    } else if (_pgo_target == "win64") {
       inputs = [ "//chrome/build/win64.pgo.txt" ]
     } else if (_pgo_target == "win32") {
       inputs = [ "//chrome/build/win32.pgo.txt" ]

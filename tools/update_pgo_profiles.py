@@ -133,6 +133,7 @@ def main():
       '--target',
       required=True,
       choices=[
+          'win-arm64',
           'win32',
           'win64',
           'mac',
