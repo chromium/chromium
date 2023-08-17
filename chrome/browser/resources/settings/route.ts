@@ -62,7 +62,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     // </if>
   }
 
-  r.PRELOADING = r.COOKIES.createChild('/preloading');
+  if (!loadTimeData.getBoolean(
+          'isPerformanceSettingsPreloadingSubpageEnabled')) {
+    r.PRELOADING = r.COOKIES.createChild('/preloading');
+  }
 
   r.SITE_SETTINGS_ALL = r.SITE_SETTINGS.createChild('all');
   r.SITE_SETTINGS_SITE_DETAILS =
@@ -265,6 +268,10 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
       r.PERFORMANCE = r.BASIC.createSection(
           '/performance', 'performance',
           loadTimeData.getString('performancePageTitle'));
+      if (loadTimeData.getBoolean(
+              'isPerformanceSettingsPreloadingSubpageEnabled')) {
+        r.PRELOADING = r.PERFORMANCE.createChild('/preloading');
+      }
     }
 
     // <if expr="_google_chrome">
