@@ -577,8 +577,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
   RunTest(UNINSTALL_BY_EXTENSION, EXTENSION_LOCAL_SOURCE);
 }
 
+// TODO(crbug.com/1472311): Fix flakiness and re-enable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_UninstallByExtensionShowReportAbuse \
+  DISABLED_InvokeUi_UninstallByExtensionShowReportAbuse
+#else
+#define MAYBE_InvokeUi_UninstallByExtensionShowReportAbuse \
+  InvokeUi_UninstallByExtensionShowReportAbuse
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
-                       InvokeUi_UninstallByExtensionShowReportAbuse) {
+                       MAYBE_InvokeUi_UninstallByExtensionShowReportAbuse) {
   RunTest(UNINSTALL_BY_EXTENSION, EXTENSION_FROM_WEBSTORE);
 }
 
