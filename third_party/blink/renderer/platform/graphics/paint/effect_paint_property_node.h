@@ -304,7 +304,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   // is entirely empty.
   bool DrawsContent() const {
     return MayHaveFilter() || MayHaveBackdropEffect() ||
-           ViewTransitionElementId().valid();
+           ViewTransitionElementId().valid() || !ElementCaptureId()->is_zero();
   }
 
   CompositingReasons DirectCompositingReasonsForDebugging() const {
@@ -322,6 +322,10 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   const viz::ViewTransitionElementResourceId& ViewTransitionElementResourceId()
       const {
     return state_.view_transition_element_resource_id;
+  }
+
+  const RegionCaptureCropId& ElementCaptureId() const {
+    return state_.element_capture_id;
   }
 
   bool SelfOrAncestorParticipatesInViewTransition() const {

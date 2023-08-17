@@ -1158,8 +1158,9 @@ void PropertyTreeManager::BuildEffectNodesRecursively(
     // with the first contiguous set of chunks) is tagged with the shared
     // element resource ID. The view transition should either prevent such
     // content or ensure effect nodes are contiguous. See crbug.com/1303081 for
-    // details.
-    DCHECK(!next_effect.ViewTransitionElementId().valid() ||
+    // details. This restriction also applies to element capture.
+    DCHECK((!next_effect.ViewTransitionElementId().valid() &&
+            next_effect.ElementCaptureId()->is_zero()) ||
            !has_multiple_groups)
         << next_effect.ToString();
     PopulateCcEffectNode(effect_node, next_effect, output_clip_id);
@@ -1238,6 +1239,9 @@ static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
   if (effect.FlattensAtLeafOf3DScene())
     return cc::RenderSurfaceReason::k3dTransformFlattening;
 
+  if (!effect.ElementCaptureId()->is_zero()) {
+    return cc::RenderSurfaceReason::kSubtreeIsBeingCaptured;
+  }
   auto conditional_reason = ConditionalRenderSurfaceReasonForEffect(effect);
   DCHECK(conditional_reason == cc::RenderSurfaceReason::kNone ||
          IsConditionalRenderSurfaceReason(conditional_reason));
@@ -1273,6 +1277,9 @@ void PropertyTreeManager::PopulateCcEffectNode(
       effect.ViewTransitionElementId();
   effect_node.view_transition_element_resource_id =
       effect.ViewTransitionElementResourceId();
+
+  effect_node.subtree_capture_id =
+      viz::SubtreeCaptureId(*effect.ElementCaptureId());
 }
 
 void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(

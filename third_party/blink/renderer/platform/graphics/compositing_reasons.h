@@ -71,6 +71,9 @@ using CompositingReasons = uint64_t;
                             determined after paint. */                         \
   V(OverflowScrolling)                                                         \
                                                                                \
+  /* Element is participating in element capture. */                           \
+  V(ElementCapture)                                                            \
+                                                                               \
   /* The following reasons are not used in paint properties, but are           \
      determined after paint, for debugging. See PaintArtifactCompositor. */    \
   /* This is based on overlapping relationship among pending layers. */        \
@@ -85,8 +88,7 @@ using CompositingReasons = uint64_t;
   V(Scrollbar)                                                                 \
   V(LinkHighlight)                                                             \
   V(DevToolsOverlay)                                                           \
-  V(ViewTransitionContent)                                                     \
-  V(ElementCapture)
+  V(ViewTransitionContent)
 
 class PLATFORM_EXPORT CompositingReason {
   DISALLOW_NEW();

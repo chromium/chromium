@@ -88,6 +88,8 @@ constexpr ReasonAndDescription kReasonDescriptionMap[] = {
      "transition."},
     {CompositingReason::kOverflowScrolling,
      "Is a scrollable overflow element using accelerated scrolling."},
+    {CompositingReason::kElementCapture,
+     "This element is undergoing element-level capture."},
     {CompositingReason::kOverlap, "Overlaps other composited content."},
     {CompositingReason::kBackfaceVisibilityHidden,
      "Has backface-visibility: hidden."},
@@ -104,8 +106,6 @@ constexpr ReasonAndDescription kReasonDescriptionMap[] = {
     {CompositingReason::kDevToolsOverlay, "Is DevTools overlay."},
     {CompositingReason::kViewTransitionContent,
      "The layer containing the contents of a view transition element."},
-    {CompositingReason::kElementCapture,
-     "This element is undergoing element-level capture."},
 };
 
 }  // anonymous namespace
