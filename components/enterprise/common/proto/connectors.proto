@@ -161,6 +161,28 @@ message ContentAnalysisRequest {
   // Count of analysis requests that belong to the same user action.
   optional int64 user_action_requests_count = 17;
 
+  // Indicates the exact reason the request was created, ie which user action
+  // led to a data transfer.
+  enum Reason {
+    UNKNOWN = 0;
+
+    // Only possible for the `FILE_ATTACHED` and `BULK_DATA_ENTRY` actions.
+    CLIPBOARD_PASTE = 1;
+    DRAG_AND_DROP = 2;
+
+    // Only possible for the `FILE_ATTACHED` action.
+    FILE_PICKER_DIALOG = 3;
+
+    // Only possible for the `PRINT` analysis connector.
+    PRINT_PREVIEW_PRINT = 4;
+    SYSTEM_DIALOG_PRINT = 5;
+
+    // Only possible for the `FILE_DOWNLOADED` analysis connector.
+    NORMAL_DOWNLOAD = 6;
+    SAVE_AS_DOWNLOAD = 7;
+  }
+  optional Reason reason = 19;
+
   // Reserved to make sure there is no overlap with DeepScanningClientRequest.
   reserved 3, 4, 6 to 8;
 }
