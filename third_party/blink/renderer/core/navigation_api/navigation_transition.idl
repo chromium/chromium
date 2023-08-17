@@ -1,6 +1,6 @@
 [Exposed=Window]
 interface NavigationTransition {
-  readonly attribute NavigationNavigationType navigationType;
+  readonly attribute NavigationType navigationType;
   readonly attribute NavigationHistoryEntry from;
   [CallWith=ScriptState] readonly attribute Promise<void> finished;
 

@@ -8,7 +8,7 @@
 ] interface NavigateEvent : Event {
   [CallWith=ExecutionContext] constructor(DOMString type, NavigateEventInit eventInit);
 
-  readonly attribute NavigationNavigationType navigationType;
+  readonly attribute NavigationType navigationType;
   readonly attribute NavigationDestination destination;
   [ImplementedAs=canIntercept] readonly attribute boolean canTransition;
   readonly attribute boolean canIntercept;

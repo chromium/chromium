@@ -4,7 +4,7 @@
 
 // https://wicg.github.io/navigation-api/
 
-enum NavigationNavigationType {
+enum NavigationType {
   "reload",
   "push",
   "replace",
@@ -12,7 +12,7 @@ enum NavigationNavigationType {
 };
 
 dictionary NavigateEventInit : EventInit {
-  NavigationNavigationType navigationType = "push";
+  NavigationType navigationType = "push";
   required NavigationDestination destination;
   boolean canIntercept = false;
   boolean userInitiated = false;

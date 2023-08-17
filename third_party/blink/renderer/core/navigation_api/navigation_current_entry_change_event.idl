@@ -7,6 +7,6 @@
   Exposed=Window
 ] interface NavigationCurrentEntryChangeEvent : Event {
   constructor(DOMString type, NavigationCurrentEntryChangeEventInit eventInit);
-  readonly attribute NavigationNavigationType? navigationType;
+  readonly attribute NavigationType? navigationType;
   readonly attribute NavigationHistoryEntry from;
 };
