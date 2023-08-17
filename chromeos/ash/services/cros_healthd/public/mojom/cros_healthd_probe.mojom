@@ -1286,10 +1286,11 @@ union BootPerformanceResult {
 
 // Boot performance information.
 //
-// NextMinVersion: 2, NextIndex: 6
+// NextMinVersion: 3, NextIndex: 11
 [Stable]
 struct BootPerformanceInfo {
-  // Total time since power on to login screen prompt.
+  // Total time of [power on, boot up complete], a.k.a. boot up time.
+  // Boot up complete event is fired when login screen is shown.
   double boot_up_seconds@0;
   // The timestamp when power on.
   double boot_up_timestamp@1;
@@ -1303,6 +1304,16 @@ struct BootPerformanceInfo {
   string shutdown_reason@4;
   // TPM initialization time.
   [MinVersion=1] NullableDouble? tpm_initialization_seconds@5;
+  // Total time of [power on, jump to kernel], a.k.a. firmware time.
+  [MinVersion=2] double? power_on_to_kernel_seconds@6;
+  // Total time of [jump to kernel, pre start up], a.k.a. kernel time.
+  [MinVersion=2] double? kernel_to_pre_startup_seconds@7;
+  // Total time of [jump to kernel, post start up].
+  [MinVersion=2] double? kernel_to_post_startup_seconds@8;
+  // Total time of [start up, chrome exec], a.k.a. system time.
+  [MinVersion=2] double? startup_to_chrome_exec_seconds@9;
+  // Total time of [chrome exec, login screen prompt], a.k.a. chrome time.
+  [MinVersion=2] double? chrome_exec_to_login_seconds@10;
 };
 
 // Bus probe result. Can either be populated with the BusDevice or an error
