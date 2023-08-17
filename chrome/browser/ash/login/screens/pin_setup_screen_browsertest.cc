@@ -108,9 +108,10 @@ class PinSetupScreenTest : public OobeBaseTest {
 
   void ConfigureUserContextForTest() {
     if (ash::features::ShouldUseAuthSessionStorage()) {
-      std::unique_ptr<UserContext> context = std::make_unique<UserContext>();
-      context->SetAuthSessionId("fake-session-id");
-      auto token = ash::AuthSessionStorage::Get()->Store(std::move(context));
+      auto token = ash::AuthSessionStorage::Get()->Store(
+          std::make_unique<UserContext>());
+      ash::AuthSessionStorage::Get()->Peek(token)->SetAuthSessionId(
+          "fake-session-id");
       LoginDisplayHost::default_host()
           ->GetWizardContextForTesting()
           ->extra_factors_token = token;

@@ -54,7 +54,7 @@ void RecoveryFactorEditor::OnGetEditable(
     return;
   }
 
-  const UserContext* user_context_ptr;
+  UserContext* user_context_ptr;
   if (ash::features::ShouldUseAuthSessionStorage()) {
     if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
       LOG(ERROR) << "Invalid auth token";
