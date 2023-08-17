@@ -30,6 +30,7 @@ class StructuredMetricsMixin : public InProcessBrowserTestMixin {
 
   // InProcessBrowserTestMixin:
   void SetUpCommandLine(base::CommandLine* command_line) override;
+  void SetUpOnMainThread() override;
 
  private:
   std::unique_ptr<TestStructuredMetricsProvider>

@@ -7,16 +7,18 @@
 #include <stdint.h>
 
 #include "base/no_destructor.h"
-#include "base/task/sequenced_task_runner.h"
-#include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_metrics_features.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"  // nogncheck
 #include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"  // nogncheck
 #include "chrome/browser/metrics/structured/cros_events_processor.h"  // nogncheck
+#include "chrome/browser/metrics/structured/key_data_provider_ash.h"  // nogncheck
 #include "chrome/browser/metrics/structured/metadata_processor_ash.h"  // nogncheck
+#include "components/metrics/structured/structured_metrics_recorder.h"  // nogncheck
+#include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/task/current_thread.h"
 #include "chrome/browser/metrics/structured/lacros_structured_metrics_recorder.h"  // nogncheck
@@ -80,6 +82,12 @@ void ChromeStructuredMetricsRecorder::Initialize() {
         std::make_unique<cros_event::CrOSEventsProcessor>(
             cros_event::kResetCounterPath));
   }
+
+  // Initialize the key data provider.
+  g_browser_process->GetMetricsServicesManager()
+      ->GetStructuredMetricsService()
+      ->recorder()
+      ->InitializeKeyDataProvider(std::make_unique<KeyDataProviderAsh>());
 
   Recorder::GetInstance()->AddEventsProcessor(
       std::make_unique<MetadataProcessorAsh>());
