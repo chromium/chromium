@@ -8255,6 +8255,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "variant": "tab-pickup-threshold-ten-minutes"
+                    },
                     "enable_features": [
                         "TabPickupThreshold"
                     ]
