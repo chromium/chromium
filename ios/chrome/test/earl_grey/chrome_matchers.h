@@ -572,6 +572,9 @@ id<GREYMatcher> SettingsBottomToolbarDeleteButton();
 // Returns a matcher for the search engine button in the main settings view.
 id<GREYMatcher> SettingsSearchEngineButton();
 
+// Returns a matcher for the address bar button in the main settings view.
+id<GREYMatcher> SettingsAddressBarButton();
+
 // Returns a matcher for an autofill suggestion view.
 id<GREYMatcher> AutofillSuggestionViewMatcher();
 

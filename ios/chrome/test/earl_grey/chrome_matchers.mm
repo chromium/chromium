@@ -701,6 +701,10 @@ id<GREYMatcher> SettingsSearchEngineButton() {
   return [ChromeMatchersAppInterface settingsSearchEngineButton];
 }
 
+id<GREYMatcher> SettingsAddressBarButton() {
+  return [ChromeMatchersAppInterface settingsAddressBarButton];
+}
+
 id<GREYMatcher> AutofillSuggestionViewMatcher() {
   return [ChromeMatchersAppInterface autofillSuggestionViewMatcher];
 }
