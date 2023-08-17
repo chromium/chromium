@@ -60,6 +60,7 @@ extern const char kFileFilters[];
 extern const char kFileBrowserHandlerId[];
 extern const char kFileBrowserHandlers[];
 extern const char kGlobal[];
+extern const char kHandwritingLanguage[];
 extern const char kHideBookmarkButton[];
 extern const char kHomepageURL[];
 extern const char kHostPermissions[];

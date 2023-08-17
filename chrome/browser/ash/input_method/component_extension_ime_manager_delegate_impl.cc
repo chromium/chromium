@@ -351,6 +351,15 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
     out->options_page_url = component_extension.options_page_url;
   }
 
+  const std::string* handwriting_language =
+      dict.FindString(extensions::manifest_keys::kHandwritingLanguage);
+
+  if (handwriting_language != nullptr) {
+    out->handwriting_language = *handwriting_language;
+  } else {
+    out->handwriting_language = absl::nullopt;
+  }
+
   return true;
 }
 

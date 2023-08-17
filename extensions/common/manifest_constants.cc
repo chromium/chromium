@@ -58,6 +58,7 @@ const char kFileHandlerIncludeDirectories[] = "include_directories";
 const char kFileHandlerTypes[] = "types";
 const char kFileHandlerVerb[] = "verb";
 const char kGlobal[] = "global";
+const char kHandwritingLanguage[] = "handwriting_language";
 const char kHideBookmarkButton[] = "hide_bookmark_button";
 const char kHomepageURL[] = "homepage_url";
 const char kHostPermissions[] = "host_permissions";

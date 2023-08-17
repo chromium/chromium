@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/component_extension_ime_manager_delegate.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 
@@ -28,6 +29,7 @@ struct COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionEngine {
   std::string indicator;
   std::vector<std::string> language_codes;  // e.g. "en".
   std::string layout;
+  absl::optional<std::string> handwriting_language;
   GURL options_page_url;
   GURL input_view_url;
 };
