@@ -352,6 +352,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PRE_Basic) {
   histogram_tester.ExpectTotalCount(
       "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",
       /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker",
+      /*expected_count=*/2);
 
   // Verify that the recorded values are sane -- that is, that they are less
   // than the maximum bucket.
@@ -363,6 +366,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PRE_Basic) {
   histogram_tester.ExpectBucketCount(
       "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",
       /*sample=*/base::Days(1).InMilliseconds(), /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker",
+      /*sample=*/false, /*expected_count=*/0);
 }
 
 // After browser restarts, this test step ensures that opening a tab fires

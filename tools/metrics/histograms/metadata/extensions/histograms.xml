@@ -1242,6 +1242,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.Events.DidDispatchToAckSucceed.{BackgroundContextType}"
+    units="Boolean" expires_after="never">
+<!-- expires-never: Monitors core extension system health. -->
+
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records whether an event dispatched through the event router was acked by
+    the renderer within a 5 minute threshold for background context of type
+    {BackgroundContextType}. Emits true shortly after extensions browser code
+    receives the ack from the renderer if within that threshold. Emits false if
+    that ack hasn't occurred within the threshold. The 5 minute upper bound was
+    chosen based on when the majority of events are ack'd.
+  </summary>
+  <token key="BackgroundContextType">
+    <variant name="ExtensionServiceWorker" summary="service worker."/>
+  </token>
+</histogram>
+
 <histogram name="Extensions.Events.Dispatch" enum="ExtensionEvents"
     expires_after="never">
 <!-- expires-never: Monitoring core extensions platform behavior. -->

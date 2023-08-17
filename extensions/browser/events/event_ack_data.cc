@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/uuid.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -16,6 +17,8 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_external_request_result.h"
 #include "extensions/browser/event_router.h"
+
+constexpr base::TimeDelta kEventAckMetricTimeLimit = base::Minutes(5);
 
 namespace extensions {
 
@@ -51,6 +54,22 @@ void EventAckData::IncrementInflightEvent(
       event_id, EventInfo{request_uuid, render_process_id, start_ok,
                           dispatch_start_time, dispatch_source});
   DCHECK(insert_result.second) << "EventAckData: Duplicate event_id.";
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&EventAckData::EmitLateAckedEventTask,
+                     weak_factory_.GetWeakPtr(), event_id),
+      kEventAckMetricTimeLimit);
+}
+
+void EventAckData::EmitLateAckedEventTask(int event_id) {
+  // If the event is still present then we haven't received the ack yet in
+  // `EventAckData::DecrementInflightEvent()`.
+  if (unacked_events_.contains(event_id)) {
+    base::UmaHistogramBoolean(
+        "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker",
+        false);
+  }
 }
 
 void EventAckData::DecrementInflightEvent(
@@ -87,6 +106,17 @@ void EventAckData::DecrementInflightEvent(
         /*time=*/base::TimeTicks::Now() - event_info.dispatch_start_time,
         /*minimum=*/base::Seconds(1), /*maximum=*/base::Days(1),
         /*bucket_count=*/100);
+  }
+
+  // Emit only if we're within the expected event ack time limit. We'll take
+  // care of the emit for a late ack via a delayed task.
+  bool late_ack =
+      (base::TimeTicks::Now() - request_info_iter->second.dispatch_start_time) >
+      kEventAckMetricTimeLimit;
+  if (!late_ack) {
+    base::UmaHistogramBoolean(
+        "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker",
+        true);
   }
 
   base::Uuid request_uuid = std::move(event_info.request_uuid);

@@ -78,6 +78,11 @@ class EventAckData {
     EventDispatchSource dispatch_source;
   };
 
+  // Emits a stale event ack metric if an event with `event_id` is not present
+  // in `unacked_events_`. Meaning that the event was not yet acked by the
+  // renderer to the browser.
+  void EmitLateAckedEventTask(int event_id);
+
   // TODO(crbug.com/1441221): Mark events that are not acked within 5 minutes
   // (if the worker is still around) as stale, and emit
   // Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2 at that point.
