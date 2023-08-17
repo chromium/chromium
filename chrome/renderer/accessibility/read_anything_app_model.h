@@ -48,6 +48,7 @@ class ReadAnythingAppModel {
   float font_size() const { return font_size_; }
   float letter_spacing() const { return letter_spacing_; }
   float line_spacing() const { return line_spacing_; }
+  int color_theme() const { return color_theme_; }
   const SkColor& foreground_color() const { return foreground_color_; }
   const SkColor& background_color() const { return background_color_; }
 
@@ -93,6 +94,12 @@ class ReadAnythingAppModel {
   bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) const;
   bool NodeIsContentNode(ui::AXNodeID ax_node_id) const;
   void OnThemeChanged(read_anything::mojom::ReadAnythingThemePtr new_theme);
+  void OnSettingsRestoredFromPrefs(
+      read_anything::mojom::LineSpacing line_spacing,
+      read_anything::mojom::LetterSpacing letter_spacing,
+      const std::string& font,
+      double font_size,
+      read_anything::mojom::Colors color);
   void OnScroll(bool on_selection, bool from_reading_mode) const;
 
   void Reset(const std::vector<ui::AXNodeID>& content_node_ids);
@@ -213,6 +220,7 @@ class ReadAnythingAppModel {
   float line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;
   SkColor background_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
   SkColor foreground_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
+  int color_theme_ = (int)read_anything::mojom::Colors::kDefaultValue;
 
   // Selection information.
   bool has_selection_ = false;

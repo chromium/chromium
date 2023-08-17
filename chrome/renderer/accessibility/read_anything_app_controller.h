@@ -92,6 +92,12 @@ class ReadAnythingAppController
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
   void OnThemeChanged(
       read_anything::mojom::ReadAnythingThemePtr new_theme) override;
+  void OnSettingsRestoredFromPrefs(
+      read_anything::mojom::LineSpacing line_spacing,
+      read_anything::mojom::LetterSpacing letter_spacing,
+      const std::string& font,
+      double font_size,
+      read_anything::mojom::Colors color) override;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void ScreenAIServiceReady() override;
 #endif
@@ -109,12 +115,18 @@ class ReadAnythingAppController
   SkColor ForegroundColor() const;
   float LetterSpacing() const;
   float LineSpacing() const;
-  int StandardLineSpacing();
-  int LooseLineSpacing();
-  int VeryLooseLineSpacing();
-  int StandardLetterSpacing();
-  int WideLetterSpacing();
-  int VeryWideLetterSpacing();
+  int ColorTheme() const;
+  int StandardLineSpacing() const;
+  int LooseLineSpacing() const;
+  int VeryLooseLineSpacing() const;
+  int StandardLetterSpacing() const;
+  int WideLetterSpacing() const;
+  int VeryWideLetterSpacing() const;
+  int DefaultTheme() const;
+  int LightTheme() const;
+  int DarkTheme() const;
+  int YellowTheme() const;
+  int BlueTheme() const;
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) const;
   std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;
   std::string GetLanguage(ui::AXNodeID ax_node_id) const;

@@ -31,6 +31,9 @@ declare namespace chrome {
     let lineSpacing: number;
     let letterSpacing: number;
 
+    // The current color theme value.
+    let colorTheme: number;
+
     // Enum values for various visual theme changes.
     let standardLineSpacing: number;
     let looseLineSpacing: number;
@@ -38,6 +41,11 @@ declare namespace chrome {
     let standardLetterSpacing: number;
     let wideLetterSpacing: number;
     let veryWideLetterSpacing: number;
+    let defaultTheme: number;
+    let lightTheme: number;
+    let darkTheme: number;
+    let yellowTheme: number;
+    let blueTheme: number;
 
     // Whether the WebUI toolbar feature flag is enabled.
     let isWebUIToolbarVisible: boolean;
@@ -174,5 +182,9 @@ declare namespace chrome {
     // Ping that the theme choices of the user have been changed using the
     // toolbar and are ready to consume.
     function updateTheme(): void;
+
+    // Ping that the theme choices of the user have been retrieved from
+    // preferences and can be used to set up the page.
+    function restoreSettingsFromPrefs(): void;
   }
 }

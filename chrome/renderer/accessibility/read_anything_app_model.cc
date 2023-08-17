@@ -39,6 +39,19 @@ void ReadAnythingAppModel::OnThemeChanged(
   foreground_color_ = new_theme->foreground_color;
 }
 
+void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
+    read_anything::mojom::LineSpacing line_spacing,
+    read_anything::mojom::LetterSpacing letter_spacing,
+    const std::string& font,
+    double font_size,
+    read_anything::mojom::Colors color) {
+  line_spacing_ = GetLineSpacingValue(line_spacing);
+  letter_spacing_ = GetLetterSpacingValue(letter_spacing);
+  font_name_ = font;
+  font_size_ = font_size;
+  color_theme_ = static_cast<size_t>(color);
+}
+
 void ReadAnythingAppModel::InsertDisplayNode(ui::AXNodeID node) {
   display_node_ids_.insert(node);
 }

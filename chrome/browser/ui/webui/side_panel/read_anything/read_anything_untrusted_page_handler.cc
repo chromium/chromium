@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -46,6 +47,19 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   if (coordinator_) {
     coordinator_->AddObserver(this);
     coordinator_->AddModelObserver(this);
+  }
+
+  if (features::IsReadAnythingWebUIToolbarEnabled()) {
+    PrefService* prefs = browser_->profile()->GetPrefs();
+    page_->OnSettingsRestoredFromPrefs(
+        static_cast<read_anything::mojom::LineSpacing>(
+            prefs->GetInteger(prefs::kAccessibilityReadAnythingLineSpacing)),
+        static_cast<read_anything::mojom::LetterSpacing>(
+            prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing)),
+        prefs->GetString(prefs::kAccessibilityReadAnythingFontName),
+        prefs->GetDouble(prefs::kAccessibilityReadAnythingFontScale),
+        static_cast<read_anything::mojom::Colors>(
+            prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo)));
   }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

@@ -16,6 +16,7 @@
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -121,7 +122,9 @@ void ReadAnythingModel::Init(const std::string& lang_code,
 
 void ReadAnythingModel::AddObserver(Observer* obs) {
   observers_.AddObserver(obs);
-  NotifyThemeChanged();
+  if (!features::IsReadAnythingWebUIToolbarEnabled()) {
+    NotifyThemeChanged();
+  }
 }
 
 void ReadAnythingModel::RemoveObserver(Observer* obs) {

@@ -110,6 +110,12 @@ if (chrome.readingMode) {
     assert(readAnythingApp);
     readAnythingApp.showEmpty();
   };
+
+  chrome.readingMode.restoreSettingsFromPrefs = () => {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp);
+    readAnythingApp.restoreSettingsFromPrefs();
+  };
 }
 
 export class ReadAnythingElement extends ReadAnythingElementBase {
@@ -401,6 +407,38 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
+  restoreSettingsFromPrefs() {
+    this.updateLineSpacing(chrome.readingMode.lineSpacing);
+    this.updateLetterSpacing(chrome.readingMode.letterSpacing);
+    this.updateFont(chrome.readingMode.fontName);
+    this.updateStyles({
+      '--font-size': chrome.readingMode.fontSize + 'em',
+    });
+    let colorSuffix: string|undefined;
+    switch (chrome.readingMode.colorTheme) {
+      case chrome.readingMode.defaultTheme:
+        colorSuffix = '';
+        break;
+      case chrome.readingMode.lightTheme:
+        colorSuffix = '-light';
+        break;
+      case chrome.readingMode.darkTheme:
+        colorSuffix = '-dark';
+        break;
+      case chrome.readingMode.yellowTheme:
+        colorSuffix = '-yellow';
+        break;
+      case chrome.readingMode.blueTheme:
+        colorSuffix = '-blue';
+        break;
+      default:
+        // Do nothing
+    }
+    if (colorSuffix !== undefined) {
+      this.updateThemeFromWebUi(colorSuffix);
+    }
+  }
+
   updateLineSpacing(newLineHeight: number) {
     this.updateStyles({
       '--line-height': newLineHeight,
@@ -420,7 +458,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
 
     // Also update the font on the toolbar itself with the validated font name.
-    // TODO(crbug.com/1465029): Ensure the toolbar font is persisted to prefs.
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
     const toolbar = shadowRoot.getElementById('toolbar');

@@ -566,6 +566,20 @@ void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 
+void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
+    read_anything::mojom::LineSpacing line_spacing,
+    read_anything::mojom::LetterSpacing letter_spacing,
+    const std::string& font,
+    double font_size,
+    read_anything::mojom::Colors color) {
+  model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
+                                     font_size, color);
+  // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
+  // replace this function call with firing an event.
+  std::string script = "chrome.readingMode.restoreSettingsFromPrefs();";
+  render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
+}
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void ReadAnythingAppController::ScreenAIServiceReady() {
   distiller_->ScreenAIServiceReady();
@@ -601,6 +615,12 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::WideLetterSpacing)
       .SetProperty("veryWideLetterSpacing",
                    &ReadAnythingAppController::VeryWideLetterSpacing)
+      .SetProperty("colorTheme", &ReadAnythingAppController::ColorTheme)
+      .SetProperty("defaultTheme", &ReadAnythingAppController::DefaultTheme)
+      .SetProperty("lightTheme", &ReadAnythingAppController::LightTheme)
+      .SetProperty("darkTheme", &ReadAnythingAppController::DarkTheme)
+      .SetProperty("yellowTheme", &ReadAnythingAppController::YellowTheme)
+      .SetProperty("blueTheme", &ReadAnythingAppController::BlueTheme)
       .SetProperty("isWebUIToolbarVisible",
                    &ReadAnythingAppController::IsWebUIToolbarEnabled)
       .SetProperty("isSelectable", &ReadAnythingAppController::IsSelectable)
@@ -695,28 +715,52 @@ float ReadAnythingAppController::LineSpacing() const {
   return model_.line_spacing();
 }
 
-int ReadAnythingAppController::StandardLineSpacing() {
+int ReadAnythingAppController::ColorTheme() const {
+  return model_.color_theme();
+}
+
+int ReadAnythingAppController::StandardLineSpacing() const {
   return static_cast<int>(read_anything::mojom::LineSpacing::kStandard);
 }
 
-int ReadAnythingAppController::LooseLineSpacing() {
+int ReadAnythingAppController::LooseLineSpacing() const {
   return static_cast<int>(read_anything::mojom::LineSpacing::kLoose);
 }
 
-int ReadAnythingAppController::VeryLooseLineSpacing() {
+int ReadAnythingAppController::VeryLooseLineSpacing() const {
   return static_cast<int>(read_anything::mojom::LineSpacing::kVeryLoose);
 }
 
-int ReadAnythingAppController::StandardLetterSpacing() {
+int ReadAnythingAppController::StandardLetterSpacing() const {
   return static_cast<int>(read_anything::mojom::LetterSpacing::kStandard);
 }
 
-int ReadAnythingAppController::WideLetterSpacing() {
+int ReadAnythingAppController::WideLetterSpacing() const {
   return static_cast<int>(read_anything::mojom::LetterSpacing::kWide);
 }
 
-int ReadAnythingAppController::VeryWideLetterSpacing() {
+int ReadAnythingAppController::VeryWideLetterSpacing() const {
   return static_cast<int>(read_anything::mojom::LetterSpacing::kVeryWide);
+}
+
+int ReadAnythingAppController::DefaultTheme() const {
+  return static_cast<int>(read_anything::mojom::Colors::kDefault);
+}
+
+int ReadAnythingAppController::LightTheme() const {
+  return static_cast<int>(read_anything::mojom::Colors::kLight);
+}
+
+int ReadAnythingAppController::DarkTheme() const {
+  return static_cast<int>(read_anything::mojom::Colors::kDark);
+}
+
+int ReadAnythingAppController::YellowTheme() const {
+  return static_cast<int>(read_anything::mojom::Colors::kYellow);
+}
+
+int ReadAnythingAppController::BlueTheme() const {
+  return static_cast<int>(read_anything::mojom::Colors::kBlue);
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
