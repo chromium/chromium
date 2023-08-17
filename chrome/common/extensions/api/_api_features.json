@@ -231,7 +231,7 @@
     "matches": [
       "chrome://version/*"
     ],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   }],
   "chromeWebViewInternal": [{
     "internal": true,

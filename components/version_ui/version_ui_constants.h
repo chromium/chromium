@@ -24,7 +24,7 @@ extern const char kKeyProfilePath[];
 // Strings.
 // Must match the constants used in the resource files.
 extern const char kApplicationLabel[];
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kARC[];
 #endif
 extern const char kCL[];
@@ -35,18 +35,15 @@ extern const char kCompany[];
 extern const char kUpdateCohortName[];
 #endif
 extern const char kCopyright[];
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kCustomizationId[];
 #endif
 #if !BUILDFLAG(IS_IOS)
 extern const char kExecutablePath[];
 extern const char kExecutablePathName[];
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kFirmwareVersion[];
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-extern const char kAshChromeVersion[];
 #endif
 #if !BUILDFLAG(IS_IOS)
 extern const char kJSEngine[];
@@ -68,7 +65,7 @@ extern const char kTargetsU[];
 extern const char kGmsName[];
 extern const char kGmsVersion[];
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kPlatform[];
 #endif
 #if !BUILDFLAG(IS_IOS)

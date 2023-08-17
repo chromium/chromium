@@ -3690,6 +3690,7 @@ static_library("ui") {
       "//chromeos/constants",
       "//chromeos/dbus/power",
       "//chromeos/strings",
+      "//chromeos/version",
       "//components/account_manager_core:account_manager_core",
       "//components/metrics/structured:structured_events",
       "//ui/chromeos/styles:cros_styles_views",

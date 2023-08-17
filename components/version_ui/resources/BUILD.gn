@@ -19,7 +19,7 @@ build_webui("build") {
   non_web_component_files = [ "about_version.ts" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     ts_definitions +=
         [ "//tools/typescript/definitions/chromeos_info_private.d.ts" ]
   }

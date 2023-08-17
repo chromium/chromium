@@ -10529,14 +10529,14 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </if>
       </if> <!-- not is_android -->
 
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_ARC_LABEL" desc="Label for ARC">
           ARC
         </message>
         <message name="IDS_PLATFORM_LABEL" desc="Label for Platform">
           Platform
         </message>
-      </if> <!-- chromeos_ash -->
+      </if> <!-- is_chromeos -->
 
       <!-- Settings related strings not specific to chrome://settings.
            (Settings specific strings are in settings_strings.grdp).
