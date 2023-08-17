@@ -288,11 +288,16 @@ Vector<Color> InspectorContrast::GetBackgroundColors(Element* element,
 }
 
 // Get the elements which overlap the given rectangle.
-std::vector<Node*> InspectorContrast::ElementsFromRect(const PhysicalRect& rect,
-                                                       Document& document) {
+HeapVector<Member<Node>> InspectorContrast::ElementsFromRect(
+    const PhysicalRect& rect,
+    Document& document) {
   CollectNodesAndBuildRTreeIfNeeded();
-  std::vector<Node*> overlapping_elements;
-  rtree_.Search(ToPixelSnappedRect(rect), &overlapping_elements);
+  HeapVector<Member<Node>> overlapping_elements;
+  rtree_.Search(ToPixelSnappedRect(rect),
+                [&overlapping_elements](const Member<Node>& payload,
+                                        const gfx::Rect& rect) {
+                  overlapping_elements.push_back(payload);
+                });
   return overlapping_elements;
 }
 
@@ -301,16 +306,19 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
                                           Element* top_element,
                                           Vector<Color>& colors,
                                           float* text_opacity) {
-  std::vector<Node*> elements_under_rect = ElementsFromRect(rect, document);
+  HeapVector<Member<Node>> elements_under_rect =
+      ElementsFromRect(rect, document);
 
   bool found_opaque_color = false;
   bool found_top_element = false;
 
   *text_opacity = 1.0f;
 
-  for (auto e = elements_under_rect.begin();
-       !found_top_element && e != elements_under_rect.end(); ++e) {
-    const Element* element = To<Element>(*e);
+  for (const Member<Node>& node : elements_under_rect) {
+    if (found_top_element) {
+      break;
+    }
+    const Element* element = To<Element>(node.Get());
     if (element == top_element)
       found_top_element = true;
 
@@ -367,7 +375,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
     AddColorsFromImageStyle(*style, *layout_object, colors, found_opaque_color,
                             found_non_transparent_color);
 
-    bool contains = found_top_element || GetNodeRect(*e).Contains(rect);
+    bool contains = found_top_element || GetNodeRect(node).Contains(rect);
     if (!contains && found_non_transparent_color) {
       // Only return colors if some opaque element covers up this one.
       colors.clear();
