@@ -97,7 +97,7 @@ class CryptohomePkcs11ClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   // Convenience pointer to the global instance.
-  raw_ptr<CryptohomePkcs11Client, ExperimentalAsh> client_;
+  raw_ptr<CryptohomePkcs11Client, DanglingUntriaged | ExperimentalAsh> client_;
 
   // The expected replies to the respective D-Bus calls.
   ::user_data_auth::Pkcs11IsTpmTokenReadyReply

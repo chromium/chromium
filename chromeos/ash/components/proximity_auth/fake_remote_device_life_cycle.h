@@ -59,7 +59,9 @@ class FakeRemoteDeviceLifeCycle : public RemoteDeviceLifeCycle {
   base::ObserverList<Observer>::Unchecked observers_;
   bool started_;
   State state_;
-  raw_ptr<ash::secure_channel::ClientChannel, ExperimentalAsh> channel_;
+  raw_ptr<ash::secure_channel::ClientChannel,
+          DanglingUntriaged | ExperimentalAsh>
+      channel_;
   raw_ptr<Messenger, ExperimentalAsh> messenger_;
 };
 

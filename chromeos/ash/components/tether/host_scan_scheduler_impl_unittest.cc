@@ -172,7 +172,8 @@ class HostScanSchedulerImplTest : public testing::Test {
   std::unique_ptr<FakeHostScanner> fake_host_scanner_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
 
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_host_scan_batch_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_host_scan_batch_timer_;
   base::SimpleTestClock test_clock_;
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
 

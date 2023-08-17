@@ -54,7 +54,8 @@ class QuickPairProcessManagerImplTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_enviornment_;
-  raw_ptr<FakeProcessShutdownController, ExperimentalAsh> shutdown_controller_;
+  raw_ptr<FakeProcessShutdownController, DanglingUntriaged | ExperimentalAsh>
+      shutdown_controller_;
   std::unique_ptr<QuickPairProcessManager> process_manager_;
   std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
 };

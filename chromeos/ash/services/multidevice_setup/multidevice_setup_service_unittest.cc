@@ -111,7 +111,8 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
       expected_gcm_device_info_provider_;
   bool expected_is_secondary_user_;
 
-  raw_ptr<FakeMultiDeviceSetup, ExperimentalAsh> instance_ = nullptr;
+  raw_ptr<FakeMultiDeviceSetup, DanglingUntriaged | ExperimentalAsh> instance_ =
+      nullptr;
 };
 
 }  // namespace

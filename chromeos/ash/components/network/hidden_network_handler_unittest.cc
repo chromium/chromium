@@ -194,8 +194,9 @@ class HiddenNetworkHandlerTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<HiddenNetworkHandler, ExperimentalAsh> hidden_network_handler_;
-  raw_ptr<NetworkConfigurationHandler, ExperimentalAsh>
+  raw_ptr<HiddenNetworkHandler, DanglingUntriaged | ExperimentalAsh>
+      hidden_network_handler_;
+  raw_ptr<NetworkConfigurationHandler, DanglingUntriaged | ExperimentalAsh>
       network_configuration_handler_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<FakeNetworkConfigurationObserver>

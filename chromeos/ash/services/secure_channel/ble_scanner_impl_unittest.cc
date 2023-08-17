@@ -348,7 +348,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 
   std::unique_ptr<device::BluetoothDiscoverySession> discovery_session_;
-  raw_ptr<FakeServiceDataProvider, ExperimentalAsh>
+  raw_ptr<FakeServiceDataProvider, DanglingUntriaged | ExperimentalAsh>
       fake_service_data_provider_ = nullptr;
   base::WeakPtr<device::BluetoothDiscoverySession> discovery_session_weak_ptr_;
   raw_ptr<device::BluetoothLowEnergyScanSession, ExperimentalAsh>

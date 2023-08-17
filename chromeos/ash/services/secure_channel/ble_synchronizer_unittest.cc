@@ -423,7 +423,8 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
 
   scoped_refptr<NiceMock<MockBluetoothAdapterWithAdvertisements>> mock_adapter_;
 
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_timer_;
   base::SimpleTestClock test_clock_;
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
 

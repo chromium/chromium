@@ -137,7 +137,7 @@ class DeviceToDeviceAuthenticatorForTest : public DeviceToDeviceAuthenticator {
   }
 
   // This instance is owned by the super class.
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_;
 
   base::test::SingleThreadTaskEnvironment env_;
 };
@@ -246,7 +246,8 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
 
   // The SecureMessageDelegate used by the authenticator.
   // Owned by |authenticator_|.
-  raw_ptr<multidevice::FakeSecureMessageDelegate, ExperimentalAsh>
+  raw_ptr<multidevice::FakeSecureMessageDelegate,
+          DanglingUntriaged | ExperimentalAsh>
       secure_message_delegate_;
 
   // The DeviceToDeviceAuthenticator under test.

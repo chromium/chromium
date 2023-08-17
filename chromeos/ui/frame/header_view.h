@@ -154,7 +154,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
   // Helper for painting the header.
   std::unique_ptr<chromeos::DefaultFrameHeader> frame_header_;
 
-  raw_ptr<views::ImageView, ExperimentalAsh> avatar_icon_ = nullptr;
+  raw_ptr<views::ImageView, DanglingUntriaged | ExperimentalAsh> avatar_icon_ =
+      nullptr;
 
   // View which draws the content of the frame.
   raw_ptr<HeaderContentView, ExperimentalAsh> header_content_view_ = nullptr;

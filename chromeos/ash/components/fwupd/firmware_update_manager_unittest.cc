@@ -549,7 +549,8 @@ class FirmwareUpdateManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   // `FwupdClient` must be be before `FirmwareUpdateManager`.
-  raw_ptr<FwupdClient, ExperimentalAsh> dbus_client_ = nullptr;
+  raw_ptr<FwupdClient, DanglingUntriaged | ExperimentalAsh> dbus_client_ =
+      nullptr;
   std::unique_ptr<FakeFwupdDownloadClient> fake_fwupd_download_client_;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
   // `FirmwareUpdateNotificationController` must be be after

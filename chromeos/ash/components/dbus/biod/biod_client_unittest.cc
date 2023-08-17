@@ -176,7 +176,7 @@ class BiodClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   // Convenience pointer to the global instance.
-  raw_ptr<BiodClient, ExperimentalAsh> client_;
+  raw_ptr<BiodClient, DanglingUntriaged | ExperimentalAsh> client_;
 
   // Maps from biod signal name to the corresponding callback provided by
   // |client_|.

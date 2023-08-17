@@ -134,7 +134,7 @@ class InstallAttributesClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   // Convenience pointer to the global instance.
-  raw_ptr<InstallAttributesClient, ExperimentalAsh> client_;
+  raw_ptr<InstallAttributesClient, DanglingUntriaged | ExperimentalAsh> client_;
 
   // The expected replies to the respective D-Bus calls.
   ::user_data_auth::InstallAttributesGetReply

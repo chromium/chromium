@@ -284,7 +284,7 @@ class NetworkCertLoaderTest : public testing::Test,
 
   base::test::TaskEnvironment task_environment_;
 
-  raw_ptr<NetworkCertLoader, ExperimentalAsh> cert_loader_;
+  raw_ptr<NetworkCertLoader, DanglingUntriaged | ExperimentalAsh> cert_loader_;
 
   // The NSSCertDatabse and underlying slots for the primary user (because
   // NetworkCertLoader uses device-wide certs and primary user's certs).

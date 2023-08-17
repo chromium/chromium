@@ -62,8 +62,8 @@ class ShillThirdPartyVpnDriverClientTest : public ShillClientUnittestBase {
   }
 
  protected:
-  raw_ptr<ShillThirdPartyVpnDriverClient, ExperimentalAsh> client_ =
-      nullptr;  // Unowned
+  raw_ptr<ShillThirdPartyVpnDriverClient, DanglingUntriaged | ExperimentalAsh>
+      client_ = nullptr;  // Unowned
 };
 
 TEST_F(ShillThirdPartyVpnDriverClientTest, PlatformSignal) {

@@ -573,8 +573,8 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SystemMonitor system_monitor_;
   SystemMonitorObserver system_monitor_observer_;
-  raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_ =
-      nullptr;  // Not owned.
+  raw_ptr<CrasAudioHandler, DanglingUntriaged | ExperimentalAsh>
+      cras_audio_handler_ = nullptr;  // Not owned.
   std::unique_ptr<TestObserver> test_observer_;
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
   std::unique_ptr<FakeMediaControllerManager> fake_manager_;

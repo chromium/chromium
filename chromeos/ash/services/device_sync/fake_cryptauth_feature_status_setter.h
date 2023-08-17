@@ -112,8 +112,8 @@ class FakeCryptAuthFeatureStatusSetterFactory
   std::vector<FakeCryptAuthFeatureStatusSetter*> instances_;
   std::string last_instance_id_;
   std::string last_instance_id_token_;
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =
-      nullptr;
+  raw_ptr<CryptAuthClientFactory, DanglingUntriaged | ExperimentalAsh>
+      last_client_factory_ = nullptr;
 };
 
 }  // namespace device_sync

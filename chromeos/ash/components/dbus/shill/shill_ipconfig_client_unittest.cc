@@ -50,7 +50,7 @@ class ShillIPConfigClientTest : public ShillClientUnittestBase {
   }
 
  protected:
-  raw_ptr<ShillIPConfigClient, ExperimentalAsh> client_ =
+  raw_ptr<ShillIPConfigClient, DanglingUntriaged | ExperimentalAsh> client_ =
       nullptr;  // Unowned convenience pointer.
 };
 

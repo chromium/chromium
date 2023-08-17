@@ -435,7 +435,8 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
 
   const base::test::TaskEnvironment task_environment_;
 
-  raw_ptr<FakeMultiDeviceSetup, ExperimentalAsh> fake_multidevice_setup_;
+  raw_ptr<FakeMultiDeviceSetup, DanglingUntriaged | ExperimentalAsh>
+      fake_multidevice_setup_;
   std::unique_ptr<FakeMultiDeviceSetupInitializerFactory>
       fake_multidevice_setup_impl_factory_;
   std::unique_ptr<MultiDeviceSetupService> service_;

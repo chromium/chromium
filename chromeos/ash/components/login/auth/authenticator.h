@@ -114,7 +114,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) Authenticator
  protected:
   virtual ~Authenticator();
 
-  raw_ptr<AuthStatusConsumer, ExperimentalAsh> consumer_;
+  raw_ptr<AuthStatusConsumer, DanglingUntriaged | ExperimentalAsh> consumer_;
 
  private:
   friend class base::RefCountedThreadSafe<Authenticator>;

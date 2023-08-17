@@ -45,7 +45,8 @@ class BrowserTabsModelController
   BrowserTabsModel cached_model_;
   raw_ptr<BrowserTabsModelProvider, ExperimentalAsh>
       browser_tabs_model_provider_;
-  raw_ptr<MutablePhoneModel, ExperimentalAsh> mutable_phone_model_;
+  raw_ptr<MutablePhoneModel, DanglingUntriaged | ExperimentalAsh>
+      mutable_phone_model_;
 };
 
 }  // namespace phonehub

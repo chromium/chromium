@@ -370,7 +370,7 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestingDriveFsHostDelegate> host_delegate_;
   std::unique_ptr<DriveFsHost> host_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_;
   absl::optional<bool> verbose_logging_enabled_;
 
   mojo::Receiver<mojom::DriveFsBootstrap> bootstrap_receiver_{this};

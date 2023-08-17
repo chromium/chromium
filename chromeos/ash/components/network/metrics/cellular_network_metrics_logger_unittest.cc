@@ -144,7 +144,8 @@ class CellularNetworkMetricsLoggerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
-  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh>
+  raw_ptr<ShillServiceClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
       shill_service_client_;
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;

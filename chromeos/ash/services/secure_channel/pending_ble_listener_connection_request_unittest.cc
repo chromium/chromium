@@ -78,7 +78,7 @@ class SecureChannelPendingBleListenerConnectionRequestTest
 
   std::unique_ptr<FakePendingConnectionRequestDelegate>
       fake_pending_connection_request_delegate_;
-  raw_ptr<FakeClientConnectionParameters, ExperimentalAsh>
+  raw_ptr<FakeClientConnectionParameters, DanglingUntriaged | ExperimentalAsh>
       fake_client_connection_parameters_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 

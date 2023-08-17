@@ -469,10 +469,17 @@ class NetworkStateHandlerTest : public testing::Test {
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<TestObserver> test_observer_;
   FakeStubCellularNetworksProvider fake_stub_cellular_networks_provider_;
-  raw_ptr<ShillDeviceClient::TestInterface, ExperimentalAsh> device_test_;
-  raw_ptr<ShillManagerClient::TestInterface, ExperimentalAsh> manager_test_;
-  raw_ptr<ShillProfileClient::TestInterface, ExperimentalAsh> profile_test_;
-  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh> service_test_;
+  raw_ptr<ShillDeviceClient::TestInterface, DanglingUntriaged | ExperimentalAsh>
+      device_test_;
+  raw_ptr<ShillManagerClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      manager_test_;
+  raw_ptr<ShillProfileClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      profile_test_;
+  raw_ptr<ShillServiceClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      service_test_;
 };
 
 TEST_F(NetworkStateHandlerTest, NetworkStateHandlerStub) {

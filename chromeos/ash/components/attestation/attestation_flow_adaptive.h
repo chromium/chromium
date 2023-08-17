@@ -100,7 +100,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
   // initialize.
   std::unique_ptr<ServerProxy> server_proxy_;
   // Owened by either `server_proxy_` or `attestation_flow_factory_`.
-  const raw_ptr<ServerProxy, ExperimentalAsh> raw_server_proxy_;
+  const raw_ptr<ServerProxy, DanglingUntriaged | ExperimentalAsh>
+      raw_server_proxy_;
 
   // `AttestationFlowTypeDecider` object that decides which attestation flow
   // type we can use.

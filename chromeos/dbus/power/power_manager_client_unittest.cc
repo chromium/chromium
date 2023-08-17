@@ -391,7 +391,8 @@ class PowerManagerClientTest : public testing::Test {
   scoped_refptr<dbus::MockBus> bus_;
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
-  raw_ptr<PowerManagerClient, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<PowerManagerClient, DanglingUntriaged | ExperimentalAsh> client_ =
+      nullptr;
 
   // Maps from powerd signal name to the corresponding callback provided by
   // |client_|.

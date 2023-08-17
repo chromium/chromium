@@ -254,10 +254,12 @@ class DeviceSyncCryptAuthEnrollmentManagerImplTest
   base::SimpleTestClock clock_;
 
   // Owned by |enrollment_manager_|.
-  raw_ptr<MockCryptAuthEnrollerFactory, ExperimentalAsh> enroller_factory_;
+  raw_ptr<MockCryptAuthEnrollerFactory, DanglingUntriaged | ExperimentalAsh>
+      enroller_factory_;
 
   // Ownered by |enrollment_manager_|.
-  raw_ptr<multidevice::FakeSecureMessageDelegate, ExperimentalAsh>
+  raw_ptr<multidevice::FakeSecureMessageDelegate,
+          DanglingUntriaged | ExperimentalAsh>
       secure_message_delegate_;
 
   cryptauth::GcmDeviceInfo device_info_;

@@ -125,7 +125,8 @@ class SecureChannelErrorTolerantBleAdvertisementImplTest
 
   std::unique_ptr<FakeBleSynchronizer> fake_synchronizer_;
 
-  raw_ptr<device::MockBluetoothAdvertisement, ExperimentalAsh>
+  raw_ptr<device::MockBluetoothAdvertisement,
+          DanglingUntriaged | ExperimentalAsh>
       fake_advertisement_;
 
   bool stopped_callback_called_;

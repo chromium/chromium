@@ -557,20 +557,23 @@ class LorgnetteManagerClientTest : public testing::Test {
   // Holds the client's kScannerListChangedSignal callback.
   dbus::ObjectProxy::SignalCallback scanner_list_changed_signal_callback_;
   // Used to respond to kListScannersMethod D-Bus calls.
-  raw_ptr<dbus::Response, ExperimentalAsh> list_scanners_response_ = nullptr;
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
+      list_scanners_response_ = nullptr;
   // Used to respond to kStartScannerDiscoveryMethod D-Bus calls.
-  raw_ptr<dbus::Response, ExperimentalAsh> start_scanner_discovery_response_ =
-      nullptr;
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
+      start_scanner_discovery_response_ = nullptr;
   // Used to respond to kStopScannerDiscoveryMethod D-Bus calls.
-  raw_ptr<dbus::Response, ExperimentalAsh> stop_scanner_discovery_response_ =
-      nullptr;
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
+      stop_scanner_discovery_response_ = nullptr;
   // Used to respond to kGetScannerCapabilitiesMethod D-Bus calls.
-  raw_ptr<dbus::Response, ExperimentalAsh> get_scanner_capabilities_response_ =
-      nullptr;
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
+      get_scanner_capabilities_response_ = nullptr;
   // Used to respond to kStartScanMethod D-Bus calls.
-  raw_ptr<dbus::Response, ExperimentalAsh> start_scan_response_ = nullptr;
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
+      start_scan_response_ = nullptr;
   // Used to respond to kCancelScanMethod D-Bus calls.
-  raw_ptr<dbus::Response, ExperimentalAsh> cancel_scan_response_ = nullptr;
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
+      cancel_scan_response_ = nullptr;
   // Used to respond to kGetNextImageMethod D-Bus calls. A single call to some
   // of LorgnetteManagerClient's methods can result in multiple
   // kGetNextImageMethod D-Bus calls, so we need to queue the responses. Also

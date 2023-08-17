@@ -133,7 +133,7 @@ class CryptohomeMiscClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   // Convenience pointer to the global instance.
-  raw_ptr<CryptohomeMiscClient, ExperimentalAsh> client_;
+  raw_ptr<CryptohomeMiscClient, DanglingUntriaged | ExperimentalAsh> client_;
 
   // The expected replies to the respective D-Bus calls.
   ::user_data_auth::GetSystemSaltReply expected_get_system_salt_reply_;

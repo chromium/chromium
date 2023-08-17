@@ -465,7 +465,7 @@ class DeviceSyncCryptAuthDeviceSyncerImplTest : public testing::Test {
       fake_attestation_certificates_syncer_;
   std::unique_ptr<FakeSyncedBluetoothAddressTracker>
       fake_synced_bluetooth_address_tracker_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_;
 
   absl::optional<CryptAuthDeviceSyncResult> device_sync_result_;
 

@@ -206,7 +206,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
       network_state_handler_observer_{this};
   raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged | ExperimentalAsh>
       managed_cellular_pref_handler_ = nullptr;
-  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+  raw_ptr<ManagedNetworkConfigurationHandler,
+          DanglingUntriaged | ExperimentalAsh>
       managed_network_configuration_handler_ = nullptr;
 
   bool is_installing_ = false;

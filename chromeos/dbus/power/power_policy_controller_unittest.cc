@@ -43,7 +43,8 @@ class PowerPolicyControllerTest : public testing::Test {
     return FakePowerManagerClient::Get();
   }
 
-  raw_ptr<PowerPolicyController, ExperimentalAsh> policy_controller_;
+  raw_ptr<PowerPolicyController, DanglingUntriaged | ExperimentalAsh>
+      policy_controller_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 

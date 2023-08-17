@@ -145,15 +145,17 @@ class NetworkSmsHandlerTest
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<ShillDeviceClient::TestInterface, ExperimentalAsh> device_test_;
-  raw_ptr<ModemMessagingClient::TestInterface, ExperimentalAsh>
+  raw_ptr<ShillDeviceClient::TestInterface, DanglingUntriaged | ExperimentalAsh>
+      device_test_;
+  raw_ptr<ModemMessagingClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
       modem_messaging_test_;
   std::unique_ptr<NetworkSmsHandler> network_sms_handler_;
   std::unique_ptr<TestObserver> test_observer_;
 
  private:
   base::test::ScopedFeatureList features_;
-  raw_ptr<FakeSMSClient, ExperimentalAsh> fake_sms_client_;
+  raw_ptr<FakeSMSClient, DanglingUntriaged | ExperimentalAsh> fake_sms_client_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

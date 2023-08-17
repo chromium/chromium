@@ -62,7 +62,9 @@ class TestObserver final : public GmsCoreNotificationsStateTracker::Observer {
   }
 
  private:
-  raw_ptr<GmsCoreNotificationsStateTrackerImpl, ExperimentalAsh> tracker_;
+  raw_ptr<GmsCoreNotificationsStateTrackerImpl,
+          DanglingUntriaged | ExperimentalAsh>
+      tracker_;
 
   uint32_t change_count_ = 0;
   std::vector<std::string> names_from_last_update_;

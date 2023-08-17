@@ -211,7 +211,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
   raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_ = nullptr;
-  raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
+  raw_ptr<CellularESimProfileHandler, DanglingUntriaged | ExperimentalAsh>
       cellular_esim_profile_handler_ = nullptr;
 
   ConnectionState state_ = ConnectionState::kIdle;

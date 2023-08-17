@@ -161,7 +161,8 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
 
   // The anchor of the menu's widget if it exists. Set if there is an anchor and
   // we want the menu to close if the mouse has exited the menu bounds.
-  raw_ptr<views::View, ExperimentalAsh> anchor_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> anchor_view_ =
+      nullptr;
 
   base::OneShotTimer exit_timer_;
 

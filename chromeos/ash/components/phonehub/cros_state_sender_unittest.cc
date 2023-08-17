@@ -61,9 +61,11 @@ class CrosStateSenderTest : public testing::Test {
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
   std::unique_ptr<MutablePhoneModel> phone_model_;
-  raw_ptr<FakeAttestationCertificateGenerator, ExperimentalAsh>
+  raw_ptr<FakeAttestationCertificateGenerator,
+          DanglingUntriaged | ExperimentalAsh>
       fake_attestation_certificate_generator_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_timer_;
 
  private:
   std::unique_ptr<CrosStateSender> cros_state_sender_;

@@ -142,7 +142,8 @@ class SecureChannelAuthenticatedChannelImplTest : public testing::Test {
 
   std::unordered_set<int> sent_sequence_numbers_;
 
-  raw_ptr<FakeSecureChannelConnection, ExperimentalAsh> fake_secure_channel_;
+  raw_ptr<FakeSecureChannelConnection, DanglingUntriaged | ExperimentalAsh>
+      fake_secure_channel_;
   std::unique_ptr<FakeAuthenticatedChannelObserver> test_observer_;
 
   std::unique_ptr<AuthenticatedChannel> channel_;

@@ -76,7 +76,7 @@ class ShillDeviceClientTest : public ShillClientUnittestBase {
   }
 
  protected:
-  raw_ptr<ShillDeviceClient, ExperimentalAsh> client_ =
+  raw_ptr<ShillDeviceClient, DanglingUntriaged | ExperimentalAsh> client_ =
       nullptr;  // Unowned convenience pointer.
 };
 

@@ -105,7 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   // The view the menu is anchored to if any. This is only passed if we want to
   // close the menu when the mouse moves out of the multitask menu or its anchor
   // view.
-  const raw_ptr<views::View, ExperimentalAsh> anchor_view_;
+  const raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> anchor_view_;
 
   // Runs when the widget which contains `this` should be destroyed. For
   // example, after any of the buttons are pressed, or a press out of the menu

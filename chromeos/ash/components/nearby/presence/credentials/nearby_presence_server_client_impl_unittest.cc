@@ -207,7 +207,8 @@ class NearbyPresenceServerClientImplTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
-  raw_ptr<FakeNearbyApiCallFlow, ExperimentalAsh> api_call_flow_;
+  raw_ptr<FakeNearbyApiCallFlow, DanglingUntriaged | ExperimentalAsh>
+      api_call_flow_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   std::unique_ptr<NearbyPresenceServerClient> client_;
 };

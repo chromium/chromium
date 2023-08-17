@@ -38,7 +38,9 @@ class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
   const ash::ForeignSyncedSessionAsh* GetForeignSyncedSession() const;
 
  private:
-  raw_ptr<const sync_sessions::SyncedSession, ExperimentalAsh> session_;
+  raw_ptr<const sync_sessions::SyncedSession,
+          DanglingUntriaged | ExperimentalAsh>
+      session_;
   raw_ptr<const ForeignSyncedSessionAsh, ExperimentalAsh>
       foreign_synced_session_;
   base::OnceCallback<void(BrowserTabsMetadataResponse)> callback_;

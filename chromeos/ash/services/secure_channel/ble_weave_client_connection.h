@@ -333,7 +333,8 @@ class BluetoothLowEnergyWeaveClientConnection
 
     Packet value;
     WriteRequestType request_type;
-    raw_ptr<WireMessage, ExperimentalAsh> associated_wire_message;
+    raw_ptr<WireMessage, DanglingUntriaged | ExperimentalAsh>
+        associated_wire_message;
     int number_of_failed_attempts = 0;
   };
 

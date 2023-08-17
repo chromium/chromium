@@ -267,8 +267,10 @@ class NetworkMetadataStoreTest : public ::testing::Test {
     AssertCustomApnListFirstValue();
   }
 
-  raw_ptr<const user_manager::User, ExperimentalAsh> primary_user_;
-  raw_ptr<const user_manager::User, ExperimentalAsh> secondary_user_;
+  raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh>
+      primary_user_;
+  raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh>
+      secondary_user_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:

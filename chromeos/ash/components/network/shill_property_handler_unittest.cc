@@ -285,14 +285,17 @@ class ShillPropertyHandlerTest : public testing::Test {
   std::unique_ptr<TestListener> listener_;
   std::unique_ptr<internal::ShillPropertyHandler> shill_property_handler_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  raw_ptr<ShillManagerClient::TestInterface, ExperimentalAsh> manager_test_ =
-      nullptr;
-  raw_ptr<ShillDeviceClient::TestInterface, ExperimentalAsh> device_test_ =
-      nullptr;
-  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh> service_test_ =
-      nullptr;
-  raw_ptr<ShillProfileClient::TestInterface, ExperimentalAsh> profile_test_ =
-      nullptr;
+  raw_ptr<ShillManagerClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      manager_test_ = nullptr;
+  raw_ptr<ShillDeviceClient::TestInterface, DanglingUntriaged | ExperimentalAsh>
+      device_test_ = nullptr;
+  raw_ptr<ShillServiceClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      service_test_ = nullptr;
+  raw_ptr<ShillProfileClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      profile_test_ = nullptr;
 };
 
 TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerStub) {

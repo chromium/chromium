@@ -75,7 +75,8 @@ class IpPeripheralServiceClientTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<IpPeripheralServiceClient, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<IpPeripheralServiceClient, DanglingUntriaged | ExperimentalAsh>
+      client_ = nullptr;
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
 };

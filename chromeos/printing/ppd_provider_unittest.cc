@@ -87,10 +87,12 @@ const char kDefaultManufacturersJson[] = R"({
 // PpdProvider at construct time. Used throughout to activate testing
 // codepaths.
 struct PpdProviderComposedMembers {
-  raw_ptr<FakePrinterConfigCache, ExperimentalAsh> config_cache = nullptr;
-  raw_ptr<FakePrinterConfigCache, ExperimentalAsh> manager_config_cache =
-      nullptr;
-  raw_ptr<PpdMetadataManager, ExperimentalAsh> metadata_manager = nullptr;
+  raw_ptr<FakePrinterConfigCache, DanglingUntriaged | ExperimentalAsh>
+      config_cache = nullptr;
+  raw_ptr<FakePrinterConfigCache, DanglingUntriaged | ExperimentalAsh>
+      manager_config_cache = nullptr;
+  raw_ptr<PpdMetadataManager, DanglingUntriaged | ExperimentalAsh>
+      metadata_manager = nullptr;
 };
 
 class PpdProviderTest : public ::testing::Test {

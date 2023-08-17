@@ -370,12 +370,13 @@ class CrosAudioConfigImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_ =
-      nullptr;  // Not owned.
+  raw_ptr<CrasAudioHandler, DanglingUntriaged | ExperimentalAsh>
+      cras_audio_handler_ = nullptr;  // Not owned.
   std::unique_ptr<CrosAudioConfigImpl> cros_audio_config_;
   mojo::Remote<mojom::CrosAudioConfig> remote_;
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
-  raw_ptr<FakeCrasAudioClient, ExperimentalAsh> fake_cras_audio_client_;
+  raw_ptr<FakeCrasAudioClient, DanglingUntriaged | ExperimentalAsh>
+      fake_cras_audio_client_;
 };
 
 TEST_F(CrosAudioConfigImplTest, HandleExternalInputGainUpdate) {

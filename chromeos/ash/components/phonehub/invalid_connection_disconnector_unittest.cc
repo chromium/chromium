@@ -68,7 +68,7 @@ class InvalidConnectionDisconnectorTest : public testing::Test {
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;
   MutablePhoneModel fake_phone_model_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_;
   std::unique_ptr<InvalidConnectionDisconnector>
       invalid_connection_disconnector_;
 };

@@ -237,7 +237,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
       nullptr;
   raw_ptr<HotspotConfigurationHandler, ExperimentalAsh>
       hotspot_configuration_handler_ = nullptr;
-  raw_ptr<HotspotEnabledStateNotifier, ExperimentalAsh>
+  raw_ptr<HotspotEnabledStateNotifier, DanglingUntriaged | ExperimentalAsh>
       hotspot_enabled_state_notifier_ = nullptr;
   raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
       nullptr;

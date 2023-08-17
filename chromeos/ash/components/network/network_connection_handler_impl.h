@@ -191,7 +191,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
       network_state_handler_observer_{this};
   raw_ptr<NetworkConfigurationHandler, ExperimentalAsh> configuration_handler_ =
       nullptr;
-  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+  raw_ptr<ManagedNetworkConfigurationHandler,
+          DanglingUntriaged | ExperimentalAsh>
       managed_configuration_handler_ = nullptr;
   raw_ptr<CellularConnectionHandler, ExperimentalAsh>
       cellular_connection_handler_ = nullptr;

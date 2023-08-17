@@ -83,7 +83,8 @@ class FakeMultiplexedChannelFactory : public MultiplexedChannelImpl::Factory {
     EXPECT_EQ(1u, num_deleted);
   }
 
-  raw_ptr<const MultiplexedChannel::Delegate, ExperimentalAsh>
+  raw_ptr<const MultiplexedChannel::Delegate,
+          DanglingUntriaged | ExperimentalAsh>
       expected_delegate_;
 
   raw_ptr<AuthenticatedChannel, ExperimentalAsh>

@@ -107,7 +107,8 @@ class DriveFsAuthTest : public ::testing::Test {
 
   std::unique_ptr<AuthDelegateImpl> delegate_;
   std::unique_ptr<DriveFsAuth> auth_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_ =
+      nullptr;
 };
 
 TEST_F(DriveFsAuthTest, GetAccessToken_Success) {

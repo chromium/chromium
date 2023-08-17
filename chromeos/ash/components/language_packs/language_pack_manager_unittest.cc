@@ -124,7 +124,8 @@ class LanguagePackManagerTest : public testing::Test {
  protected:
   raw_ptr<LanguagePackManager, ExperimentalAsh> manager_;
   PackResult pack_result_;
-  raw_ptr<FakeDlcserviceClient, ExperimentalAsh> dlcservice_client_;
+  raw_ptr<FakeDlcserviceClient, DanglingUntriaged | ExperimentalAsh>
+      dlcservice_client_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
 
  private:

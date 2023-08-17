@@ -272,17 +272,17 @@ class PrintscanmgrClientTest : public testing::Test {
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
   // Used to respond to kCupsAddManuallyConfiguredPrinter D-Bus calls.
-  raw_ptr<dbus::Response, ExperimentalAsh>
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
       cups_add_manually_configured_printer_response_ = nullptr;
   // Used to respond to kCupsAddAutoConfiguredPrinter D-Bus calls.
-  raw_ptr<dbus::Response, ExperimentalAsh>
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
       cups_add_autoconfigured_printer_response_ = nullptr;
   // Used to respond to kCupsRemovePrinter D-Bus calls.
-  raw_ptr<dbus::Response, ExperimentalAsh> cups_remove_printer_response_ =
-      nullptr;
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
+      cups_remove_printer_response_ = nullptr;
   // Used to respond to kCupsRetrievePpd D-Bus calls.
-  raw_ptr<dbus::Response, ExperimentalAsh> cups_retrieve_ppd_response_ =
-      nullptr;
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
+      cups_retrieve_ppd_response_ = nullptr;
 };
 
 // Test that the client can request that cupsd adds a manually configured

@@ -210,7 +210,8 @@ class MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       test_pref_service_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_timer_ = nullptr;
 
   std::unique_ptr<GrandfatheredEasyUnlockHostDisabler>
       grandfathered_easy_unlock_host_disabler_;

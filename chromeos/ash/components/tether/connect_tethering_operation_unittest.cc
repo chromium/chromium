@@ -142,7 +142,8 @@ class ConnectTetheringOperationTest : public testing::Test {
   std::unique_ptr<StrictMock<MockTetherHostResponseRecorder>>
       mock_tether_host_response_recorder_;
   base::SimpleTestClock test_clock_;
-  raw_ptr<TestTimerFactory, ExperimentalAsh> test_timer_factory_;
+  raw_ptr<TestTimerFactory, DanglingUntriaged | ExperimentalAsh>
+      test_timer_factory_;
   MockOperationObserver mock_observer_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ConnectTetheringOperation> operation_;

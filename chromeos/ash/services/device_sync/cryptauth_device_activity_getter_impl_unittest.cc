@@ -206,7 +206,7 @@ class DeviceSyncCryptAuthDeviceActivityGetterImplTest
   mojom::NetworkRequestResult network_request_result_;
 
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_;
 
   std::unique_ptr<CryptAuthDeviceActivityGetter> device_activity_getter_;
 };

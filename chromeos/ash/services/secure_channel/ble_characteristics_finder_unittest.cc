@@ -279,7 +279,7 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
   std::vector<std::unique_ptr<BluetoothRemoteGattService>> services_;
   std::vector<std::unique_ptr<MockBluetoothGattCharacteristic>>
       all_mock_characteristics_;
-  raw_ptr<FakeBackgroundEidGenerator, ExperimentalAsh>
+  raw_ptr<FakeBackgroundEidGenerator, DanglingUntriaged | ExperimentalAsh>
       fake_background_eid_generator_;
   RemoteAttribute remote_service_;
   RemoteAttribute to_peripheral_char_;

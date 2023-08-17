@@ -122,7 +122,8 @@ class TestableProximityAuthSystem : public ProximityAuthSystem {
     return life_cycle;
   }
 
-  raw_ptr<FakeRemoteDeviceLifeCycle, ExperimentalAsh> life_cycle_;
+  raw_ptr<FakeRemoteDeviceLifeCycle, DanglingUntriaged | ExperimentalAsh>
+      life_cycle_;
 };
 
 }  // namespace

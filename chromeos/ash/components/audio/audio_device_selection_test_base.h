@@ -55,10 +55,10 @@ class AudioDeviceSelectionTestBase : public testing::Test {
   // Test services
   std::unique_ptr<ActiveNodeObserver> active_node_observer_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_ =
-      nullptr;  // Not owned.
-  raw_ptr<FakeCrasAudioClient, ExperimentalAsh> fake_cras_audio_client_ =
-      nullptr;  // Not owned.
+  raw_ptr<CrasAudioHandler, DanglingUntriaged | ExperimentalAsh>
+      cras_audio_handler_ = nullptr;  // Not owned.
+  raw_ptr<FakeCrasAudioClient, DanglingUntriaged | ExperimentalAsh>
+      fake_cras_audio_client_ = nullptr;  // Not owned.
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 
   // Counters
