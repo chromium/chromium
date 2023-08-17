@@ -1437,6 +1437,8 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       SharedImageManager::SupportsScanoutImages();
   caps.supports_luminance_shared_images =
       !feature_info_->gl_version_info().is_angle_metal;
+  caps.disable_r8_shared_images =
+      feature_info_->workarounds().r8_egl_images_broken;
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
   caps.chromium_nonblocking_readback = true;
   caps.mesa_framebuffer_flip_y =

@@ -320,6 +320,16 @@ viz::SharedImageFormat GetRGBSharedImageFormat(VideoPixelFormat format) {
 #endif
 }
 
+viz::SharedImageFormat GetSingleChannel8BitFormat(
+    const gpu::Capabilities& caps) {
+  if (caps.texture_rg && !caps.disable_r8_shared_images) {
+    return viz::SinglePlaneFormat::kR_8;
+  }
+
+  DCHECK(caps.supports_luminance_shared_images);
+  return viz::SinglePlaneFormat::kLUMINANCE_8;
+}
+
 // Returns true if the input VideoFrame format can be stored directly in the
 // provided output shared image format.
 bool HasCompatibleFormat(VideoPixelFormat input_format,
@@ -814,17 +824,14 @@ viz::SharedImageFormat VideoResourceUpdater::YuvSharedImageFormat(
     return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
   if (bits_per_channel <= 8) {
     DCHECK(caps.supports_luminance_shared_images || caps.texture_rg);
-    return caps.texture_rg ? viz::SinglePlaneFormat::kR_8
-                           : viz::SinglePlaneFormat::kLUMINANCE_8;
+    return GetSingleChannel8BitFormat(caps);
   }
   if (use_r16_texture_ && caps.texture_norm16)
     return viz::SinglePlaneFormat::kR_16;
   if (caps.texture_half_float_linear && caps.supports_luminance_shared_images) {
     return viz::SinglePlaneFormat::kLUMINANCE_F16;
   }
-  DCHECK(caps.supports_luminance_shared_images || caps.texture_rg);
-  return caps.texture_rg ? viz::SinglePlaneFormat::kR_8
-                         : viz::SinglePlaneFormat::kLUMINANCE_8;
+  return GetSingleChannel8BitFormat(caps);
 }
 
 bool VideoResourceUpdater::ReallocateUploadPixels(size_t needed_size) {

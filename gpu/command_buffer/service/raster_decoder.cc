@@ -1237,6 +1237,8 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
       SharedImageManager::SupportsScanoutImages();
   caps.supports_luminance_shared_images =
       !feature_info()->gl_version_info().is_angle_metal;
+  caps.disable_r8_shared_images =
+      feature_info()->workarounds().r8_egl_images_broken;
   caps.max_texture_size = shared_context_state_->GetMaxTextureSize();
   caps.using_vulkan_context =
       shared_context_state_->GrContextIsVulkan() ? true : false;

@@ -4247,6 +4247,23 @@
       "features": [
         "limit_d3d11_video_decoder_to_11_0"
       ]
+    },
+    {
+      "id": 418,
+      "description": "Uploading data or rendering to R8 EGL images generates driver errors.",
+      "cr_bugs": [1455752],
+      "os": {
+        "type": "android",
+        "version": {
+          "op": "<=",
+          "value": "9.0"
+        }
+      },
+      "gl_vendor": "ARM.*",
+      "gl_type": "gles",
+      "features": [
+        "r8_egl_images_broken"
+      ]
     }
   ]
 }
