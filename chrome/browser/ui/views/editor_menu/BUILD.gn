@@ -21,12 +21,15 @@ source_set("editor_menu") {
 
 source_set("views") {
   sources = [
+    "editor_menu_chip_view.cc",
+    "editor_menu_chip_view.h",
     "editor_menu_view.cc",
     "editor_menu_view.h",
   ]
 
   deps = [
     "//base",
+    "//components/vector_icons",
     "//ui/aura",
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/gfx",

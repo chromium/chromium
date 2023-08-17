@@ -5,10 +5,19 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_VIEW_H_
 
+#include <vector>
+
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
+namespace views {
+class FlexLayoutView;
+}  // namespace views
+
 namespace chromeos::editor_menu {
+
+class EditorMenuChipView;
 
 // A bubble style view to show Editor Menu.
 class EditorMenuView : public views::View {
@@ -33,9 +42,15 @@ class EditorMenuView : public views::View {
  private:
   void InitLayout();
   void AddTitleContainer();
+  void AddChipsContainer();
 
   // Containing title, badge, and icons.
   raw_ptr<views::View> title_container_ = nullptr;
+
+  // Containing chips.
+  raw_ptr<views::FlexLayoutView> chips_container_ = nullptr;
+
+  std::vector<raw_ptr<EditorMenuChipView>> chips_;
 };
 
 }  // namespace chromeos::editor_menu

@@ -4,9 +4,14 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 
+#include <array>
+#include <string_view>
+#include <vector>
+
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/aura/window.h"
-#include "ui/base/metadata/metadata_header_macros.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_chip_view.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -14,11 +19,13 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -35,8 +42,19 @@ constexpr int kRadiusDip = 4;
 
 constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(10, 16, 10, 10);
 
+constexpr int kChipsContainerVerticalSpacingDip = 16;
+constexpr gfx::Insets kChipsMargin =
+    gfx::Insets::TLBR(0, 8, kChipsContainerVerticalSpacingDip, 0);
+constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::TLBR(0, 8, 0, 8);
+
 // Spacing between this view and the anchor view (context menu).
 constexpr int kMarginDip = 8;
+
+// TODO(b/295059934): Call EditorMediator API to get the actual labels.
+constexpr std::array<std::u16string_view, 6> kChipLables = {
+    u"chip label 1", u"chip label 2", u"chip label 3",
+    u"chip label 4", u"chip label 5", u"chip label 6",
+};
 
 }  // namespace
 
@@ -102,6 +120,7 @@ void EditorMenuView::InitLayout() {
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
   AddTitleContainer();
+  AddChipsContainer();
 }
 
 void EditorMenuView::AddTitleContainer() {
@@ -121,6 +140,45 @@ void EditorMenuView::AddTitleContainer() {
   title_container_->SetPreferredSize(
       gfx::Size(kContainerMinWidthDip - kTitleContainerInsets.width(),
                 title->GetPreferredSize().height()));
+}
+
+void EditorMenuView::AddChipsContainer() {
+  chips_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
+  chips_container_->SetOrientation(views::LayoutOrientation::kVertical);
+
+  // Add a new row if the chip cannot fit the rest space in the current row.
+  // A simple calculation of the running width, considering the margins and
+  // paddings.
+  int running_width = 0;
+  views::View* row = nullptr;
+  for (const auto& label : kChipLables) {
+    auto chip = std::make_unique<EditorMenuChipView>(
+        base::RepeatingClosure(), label.data(), &vector_icons::kProductIcon);
+
+    int chip_width = chip->GetPreferredSize().width();
+    if (running_width == 0) {
+      // Add the container's left insets.
+      running_width += kChipsContainerInsets.left();
+      running_width += chip_width;
+    } else {
+      // Add the chip's left margin.
+      running_width += kChipsMargin.left();
+      running_width += chip_width;
+    }
+    // Add the containers's right insets when decide if wrap the row.
+    const bool should_wrap_row =
+        running_width + kChipsContainerInsets.right() > kContainerMinWidthDip;
+    if (row == nullptr || should_wrap_row) {
+      running_width = should_wrap_row ? 0 : running_width;
+      row = chips_container_->AddChildView(std::make_unique<views::View>());
+      auto* layout =
+          row->SetLayoutManager(std::make_unique<views::FlexLayout>());
+      layout->SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetInteriorMargin(kChipsContainerInsets)
+          .SetDefault(views::kMarginsKey, kChipsMargin);
+    }
+    chips_.emplace_back(row->AddChildView(std::move(chip)));
+  }
 }
 
 BEGIN_METADATA(EditorMenuView, views::View)
