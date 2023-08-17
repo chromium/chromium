@@ -17,8 +17,8 @@ NavigationTransition::NavigationTransition(ExecutionContext* context,
     : navigation_type_(navigation_type),
       from_(from),
       finished_(MakeGarbageCollected<FinishedProperty>(context)) {
-  // See comment for the finished promise in navigation_api_navigation.cc for
-  // the reason why we mark finished promises as handled.
+  // See comment for the finished promise in navigation_api_method_tracker.cc
+  // for the reason why we mark finished promises as handled.
   finished_->MarkAsHandled();
 }
 

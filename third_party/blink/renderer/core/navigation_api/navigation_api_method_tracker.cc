@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/navigation_api/navigation_api_navigation.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_api_method_tracker.h"
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -14,7 +14,7 @@
 
 namespace blink {
 
-NavigationApiNavigation::NavigationApiNavigation(
+NavigationApiMethodTracker::NavigationApiMethodTracker(
     ScriptState* script_state,
     NavigationOptions* options,
     const String& key,
@@ -47,23 +47,25 @@ NavigationApiNavigation::NavigationApiNavigation(
   finished_resolver_->Promise().MarkAsHandled();
 }
 
-void NavigationApiNavigation::NotifyAboutTheCommittedToEntry(
+void NavigationApiMethodTracker::NotifyAboutTheCommittedToEntry(
     NavigationHistoryEntry* entry,
     WebFrameLoadType type) {
   CHECK_EQ(committed_to_entry_, nullptr);
   committed_to_entry_ = entry;
 
-  if (type != WebFrameLoadType::kBackForward)
+  if (type != WebFrameLoadType::kBackForward) {
     committed_to_entry_->SetAndSaveState(std::move(serialized_state_));
+  }
 
   committed_resolver_->Resolve(committed_to_entry_);
 }
 
-void NavigationApiNavigation::ResolveFinishedPromise() {
+void NavigationApiMethodTracker::ResolveFinishedPromise() {
   finished_resolver_->Resolve(committed_to_entry_);
 }
 
-void NavigationApiNavigation::RejectFinishedPromise(const ScriptValue& value) {
+void NavigationApiMethodTracker::RejectFinishedPromise(
+    const ScriptValue& value) {
   if (committed_resolver_) {
     // We never hit NotifyAboutTheCommittedToEntry(), so we should reject that
     // too.
@@ -74,14 +76,14 @@ void NavigationApiNavigation::RejectFinishedPromise(const ScriptValue& value) {
   serialized_state_.reset();
 }
 
-void NavigationApiNavigation::CleanupForWillNeverSettle() {
+void NavigationApiMethodTracker::CleanupForWillNeverSettle() {
   CHECK_EQ(committed_to_entry_, nullptr);
   committed_resolver_->Detach();
   finished_resolver_->Detach();
   serialized_state_.reset();
 }
 
-void NavigationApiNavigation::Trace(Visitor* visitor) const {
+void NavigationApiMethodTracker::Trace(Visitor* visitor) const {
   visitor->Trace(info_);
   visitor->Trace(committed_to_entry_);
   visitor->Trace(committed_resolver_);

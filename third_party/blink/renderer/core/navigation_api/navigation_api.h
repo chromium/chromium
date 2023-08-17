@@ -24,7 +24,7 @@ namespace blink {
 
 class DOMException;
 class HistoryItem;
-class NavigationApiNavigation;
+class NavigationApiMethodTracker;
 class NavigationUpdateCurrentEntryOptions;
 class NavigationHistoryEntry;
 class NavigateEvent;
@@ -167,9 +167,10 @@ class CORE_EXPORT NavigationApi final : public EventTarget {
 
   Member<NavigationTransition> transition_;
 
-  Member<NavigationApiNavigation> ongoing_navigation_;
-  HeapHashMap<String, Member<NavigationApiNavigation>> upcoming_traversals_;
-  Member<NavigationApiNavigation> upcoming_non_traversal_navigation_;
+  Member<NavigationApiMethodTracker> ongoing_api_method_tracker_;
+  HeapHashMap<String, Member<NavigationApiMethodTracker>>
+      upcoming_traverse_api_method_trackers_;
+  Member<NavigationApiMethodTracker> upcoming_non_traverse_api_method_tracker_;
 
   Member<NavigateEvent> ongoing_navigate_event_;
 
