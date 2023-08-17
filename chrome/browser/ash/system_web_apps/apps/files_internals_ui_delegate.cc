@@ -158,9 +158,18 @@ void ChromeFilesInternalsUIDelegate::GetFileTasks(
         out += "<html><body>\n";
         out +=
             "<p>See also <a href=\"chrome://app-service-internals\">App "
-            "Service Internals</a>.</p>\n<p>FileSystemURL: <b>";
+            "Service Internals</a> and <a "
+            "href=\"chrome://extensions-internals/\">Extensions "
+            "Internals</a>.</p>\n<p>FileSystemURL: <b>";
         out += base::EscapeForHTML(fs_url.ToGURL().spec());
-        out += "</b></p>\n";
+        out +=
+            "</b></p>\n<p>Note that some Task icons and titles are separately "
+            "<a "
+            "href=\"https://source.chromium.org/chromium/chromium/src/+/"
+            "main:ui/file_manager/file_manager/foreground/js/"
+            "file_tasks.ts;l=913;drc="
+            "9c9022199a6b2e7411a3cafdc347efeb6f229785\">overriden in the Files "
+            "app frontend</a>.</p>\n";
 
         for (const auto& task : resulting_tasks->tasks) {
           out += "<hr><table><tr><td><img width=64px height=64px src=\"";
