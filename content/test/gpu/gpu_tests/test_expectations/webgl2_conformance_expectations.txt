@@ -140,7 +140,7 @@ crbug.com/1421437 [ no-passthrough ] WebglExtension_WEBGL_shader_pixel_local_sto
 # Extension only available through passthrough decoder?
 crbug.com/849576 [ no-passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 # KHR_parallel_shader_compile will not be exposed on OpenGL drivers that don't have support for it.
-crbug.com/angleproject/3031 [ android angle-opengl passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
+crbug.com/angleproject/3031 [ android angle-opengles passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 crbug.com/angleproject/3031 [ mac angle-opengl passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 crbug.com/angleproject/3031 [ win angle-opengl passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 

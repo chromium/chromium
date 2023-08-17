@@ -129,7 +129,7 @@ crbug.com/808744 [ android ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
 crbug.com/808744 [ fuchsia ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
 crbug.com/849576 [ no-passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 # KHR_parallel_shader_compile will not be exposed on OpenGL drivers that don't have support for it.
-crbug.com/angleproject/3031 [ android angle-opengl passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
+crbug.com/angleproject/3031 [ android angle-opengles passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 crbug.com/angleproject/3031 [ mac angle-opengl passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 crbug.com/angleproject/3031 [ win angle-opengl passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 crbug.com/776222 [ android ] WebglExtension_WEBGL_video_texture [ Skip ]
