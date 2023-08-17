@@ -62,6 +62,7 @@ class PopupViewViews : public PopupBaseView,
   // AutofillPopupView:
   bool Show(AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void Hide() override;
+  bool OverlapsWithPictureInPictureWindow() const override;
   absl::optional<int32_t> GetAxUniqueId() override;
   void AxAnnounce(const std::u16string& text) override;
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override;

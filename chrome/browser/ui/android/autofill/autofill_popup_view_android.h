@@ -53,6 +53,7 @@ class AutofillPopupViewAndroid : public AutofillPopupView {
   // AutofillPopupView:
   bool Show(AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void Hide() override;
+  bool OverlapsWithPictureInPictureWindow() const override;
   bool HandleKeyPressEvent(
       const content::NativeWebKeyboardEvent& event) override;
   void OnSuggestionsChanged() override;

@@ -14,7 +14,9 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
@@ -51,7 +53,9 @@ class ContentAutofillDriver;
 // This class is a controller for an AutofillPopupView. It implements
 // AutofillPopupController to allow calls from AutofillPopupView. The
 // other, public functions are available to its instantiator.
-class AutofillPopupControllerImpl : public AutofillPopupController {
+class AutofillPopupControllerImpl
+    : public AutofillPopupController,
+      public PictureInPictureWindowManager::Observer {
  public:
   AutofillPopupControllerImpl(const AutofillPopupControllerImpl&) = delete;
   AutofillPopupControllerImpl& operator=(const AutofillPopupControllerImpl&) =
@@ -104,6 +108,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   void DisableThresholdForTesting(bool disable_threshold) {
     disable_threshold_for_testing_ = disable_threshold;
   }
+
+  // PictureInPictureWindowManager::Observer
+  void OnEnterPictureInPicture() override;
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(AutofillPopupControllerUnitTest,
@@ -255,6 +262,14 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.
   bool keep_popup_open_for_testing_ = false;
+
+  // Observer needed to check autofill popup overlap with picture-in-picture
+  // window. It is guaranteed that there can only be one
+  // PictureInPictureWindowManager per Chrome instance, therefore, it is also
+  // guaranteed that PictureInPictureWindowManager would outlive its observers.
+  base::ScopedObservation<PictureInPictureWindowManager,
+                          PictureInPictureWindowManager::Observer>
+      picture_in_picture_window_observation_{this};
 
   // Callback invoked to try to show the password migration warning on Android.
   // Used to facilitate testing.

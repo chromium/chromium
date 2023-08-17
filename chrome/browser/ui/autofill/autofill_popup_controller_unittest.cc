@@ -144,6 +144,7 @@ class MockAutofillPopupView : public AutofillPopupView {
               (const content::NativeWebKeyboardEvent&),
               (override));
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
+  MOCK_METHOD(bool, OverlapsWithPictureInPictureWindow, (), (const override));
   MOCK_METHOD(absl::optional<int32_t>, GetAxUniqueId, (), (override));
   MOCK_METHOD(void, AxAnnounce, (const std::u16string&), (override));
 
@@ -667,6 +668,18 @@ TEST_F(AutofillPopupControllerUnitTest,
   popup_controller().AcceptSuggestion(0);
   histogram_tester.ExpectTotalCount(
       "Autofill.Popup.AcceptanceDelayThresholdNotMet", 3);
+}
+
+// Tests that when a picture-in-picture window is initialized, there is a call
+// to the popup view to check if the autofill popup bounds overlap with the
+// picture-in-picture window.
+TEST_F(AutofillPopupControllerUnitTest,
+       CheckBoundsOverlapWithPictureInPicture) {
+  EXPECT_CALL(*autofill_popup_view(), OverlapsWithPictureInPictureWindow)
+      .Times(1);
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+  picture_in_picture_window_manager->EnterVideoPictureInPicture(web_contents());
 }
 
 #if BUILDFLAG(IS_ANDROID)

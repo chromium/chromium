@@ -323,6 +323,10 @@ void PopupViewViews::OnSuggestionsChanged() {
   DoUpdateBoundsAndRedrawPopup();
 }
 
+bool PopupViewViews::OverlapsWithPictureInPictureWindow() const {
+  return BoundsOverlapWithPictureInPictureWindow(GetBoundsInScreen());
+}
+
 absl::optional<int32_t> PopupViewViews::GetAxUniqueId() {
   return absl::optional<int32_t>(
       PopupBaseView::GetViewAccessibility().GetUniqueId());

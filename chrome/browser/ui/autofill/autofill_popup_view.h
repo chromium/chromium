@@ -43,6 +43,10 @@ class AutofillPopupView {
   // insufficient size).
   virtual void OnSuggestionsChanged() = 0;
 
+  // Returns true if the autofill popup overlaps with the
+  // picture-in-picture window.
+  virtual bool OverlapsWithPictureInPictureWindow() const = 0;
+
   // Makes accessibility announcement.
   virtual void AxAnnounce(const std::u16string& text) = 0;
 

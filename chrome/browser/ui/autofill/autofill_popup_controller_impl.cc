@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -125,6 +126,11 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
   ClearState();
   delegate->RegisterDeletionCallback(base::BindOnce(
       &AutofillPopupControllerImpl::HideViewAndDie, GetWeakPtr()));
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+  CHECK(picture_in_picture_window_manager);
+  picture_in_picture_window_observation_.Observe(
+      picture_in_picture_window_manager);
 }
 
 AutofillPopupControllerImpl::~AutofillPopupControllerImpl() = default;
@@ -426,6 +432,12 @@ base::i18n::TextDirection AutofillPopupControllerImpl::GetElementTextDirection()
 
 std::vector<Suggestion> AutofillPopupControllerImpl::GetSuggestions() const {
   return suggestions_;
+}
+
+void AutofillPopupControllerImpl::OnEnterPictureInPicture() {
+  if (view_.Call(&AutofillPopupView::OverlapsWithPictureInPictureWindow)) {
+    Hide(PopupHidingReason::kOverlappingWithPictureInPictureWindow);
+  }
 }
 
 int AutofillPopupControllerImpl::GetLineCount() const {
