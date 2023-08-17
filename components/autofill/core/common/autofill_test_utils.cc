@@ -330,14 +330,10 @@ void CreateTestCreditCardFormData(FormData* form,
 
 FormData CreateTestIbanFormData(std::string_view value) {
   FormData form;
-  CreateTestIbanFormData(&form, value);
+  form.url = GURL("https://www.foo.com");
+  form.fields = {
+      CreateTestFormField("IBAN Value:", "iban_value", value, "text")};
   return form;
-}
-
-void CreateTestIbanFormData(FormData* form_data, std::string_view value) {
-  FormFieldData field;
-  test::CreateTestFormField("IBAN Value:", "iban_value", value, "text", &field);
-  form_data->fields.push_back(field);
 }
 
 }  // namespace autofill::test

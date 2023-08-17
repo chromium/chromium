@@ -215,8 +215,6 @@ void CreateTestCreditCardFormData(FormData* form,
 // which can be useful for building up more complex test forms.
 [[nodiscard]] FormData CreateTestIbanFormData(
     std::string_view value = kIbanValue);
-void CreateTestIbanFormData(FormData* form_data,
-                            std::string_view value = kIbanValue);
 
 }  // namespace test
 

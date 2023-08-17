@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/iban_manager.h"
 
+#include <string_view>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
@@ -85,7 +87,7 @@ class IbanManagerTest : public testing::Test {
   }
 
   // Sets up the TestPersonalDataManager with an IBAN.
-  Iban SetUpIban(base::StringPiece value, base::StringPiece nickname) {
+  Iban SetUpIban(std::string_view value, std::string_view nickname) {
     Iban iban;
     std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     iban.set_guid(guid);
@@ -102,17 +104,16 @@ class IbanManagerTest : public testing::Test {
     SuggestionsContext context;
     autofill_field.SetTypeTo(AutofillType(type));
     context.focused_field = &autofill_field;
-    FormData form_data;
-    test::CreateTestIbanFormData(&form_data);
-    form_structure_ = std::make_unique<FormStructure>(form_data);
+    form_structure_ =
+        std::make_unique<FormStructure>(test::CreateTestIbanFormData());
     context.form_structure = form_structure_.get();
     return context;
   }
 
   // Sets up the TestPersonalDataManager with an IBAN and corresponding
   // suggestion.
-  Suggestion SetUpIbanAndSuggestion(base::StringPiece value,
-                                    base::StringPiece nickname) {
+  Suggestion SetUpIbanAndSuggestion(std::string_view value,
+                                    std::string_view nickname) {
     Iban iban = SetUpIban(value, nickname);
     Suggestion iban_suggestion(iban.GetIdentifierStringForAutofillDisplay());
     iban_suggestion.popup_item_id = PopupItemId::kIbanEntry;

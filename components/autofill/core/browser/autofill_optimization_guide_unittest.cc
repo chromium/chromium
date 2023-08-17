@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -26,6 +27,8 @@
 #include "url/gurl.h"
 
 namespace autofill {
+
+using test::CreateTestIbanFormData;
 
 class MockOptimizationGuideDecider
     : public optimization_guide::OptimizationGuideDecider {
@@ -100,9 +103,7 @@ TEST_F(AutofillOptimizationGuideTest, EnsureIntegratorInitializedCorrectly) {
 // Test that the `IBAN_AUTOFILL_BLOCKED` optimization type is registered when we
 // have seen an IBAN form.
 TEST_F(AutofillOptimizationGuideTest, IbanFieldFound_IbanAutofillBlocked) {
-  FormData form_data;
-  test::CreateTestIbanFormData(&form_data);
-  FormStructure form_structure{form_data};
+  FormStructure form_structure{CreateTestIbanFormData()};
   test_api(form_structure).SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
 
   EXPECT_CALL(*decider_, RegisterOptimizationTypes(testing::ElementsAre(
@@ -275,8 +276,7 @@ TEST_F(AutofillOptimizationGuideTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kAutofillEnableMerchantOptOutClientSideUrlFiltering}, {});
-  FormData form_data;
-  test::CreateTestIbanFormData(&form_data);
+  FormData form_data = CreateTestIbanFormData();
   test::CreateTestCreditCardFormData(&form_data, /*is_https=*/true,
                                      /*use_month_type=*/false);
   FormStructure form_structure{form_data};
@@ -301,9 +301,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // optimization type.
 TEST_F(AutofillOptimizationGuideTest,
        ShouldBlockSingleFieldSuggestions_IbanAutofillBlocked) {
-  FormData form_data;
-  test::CreateTestIbanFormData(&form_data);
-  FormStructure form_structure{form_data};
+  FormStructure form_structure{CreateTestIbanFormData()};
   test_api(form_structure).SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
   GURL url("https://example.com/");
   ON_CALL(*decider_,
@@ -325,9 +323,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // use-case.
 TEST_F(AutofillOptimizationGuideTest,
        ShouldNotBlockSingleFieldSuggestions_IbanAutofillBlocked) {
-  FormData form_data;
-  test::CreateTestIbanFormData(&form_data);
-  FormStructure form_structure{form_data};
+  FormStructure form_structure{CreateTestIbanFormData()};
   test_api(form_structure).SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
   GURL url("https://example.com/");
   ON_CALL(*decider_,
@@ -348,9 +344,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(
     AutofillOptimizationGuideTest,
     ShouldNotBlockSingleFieldSuggestions_IbanAutofillBlocked_FieldTypeForBlockingNotFound) {
-  FormData form_data;
-  test::CreateTestIbanFormData(&form_data);
-  FormStructure form_structure{form_data};
+  FormStructure form_structure{CreateTestIbanFormData()};
   GURL url("https://example.com/");
   EXPECT_CALL(*decider_,
               CanApplyOptimization(

@@ -49,6 +49,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -60,13 +61,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::test::CreateTestFormField;
-using base::UTF8ToUTF16;
-using ::testing::_;
-
 namespace autofill {
 
 namespace {
+
+using base::UTF8ToUTF16;
+using test::CreateTestFormField;
+using test::CreateTestIbanFormData;
+using ::testing::_;
 
 constexpr char kLocale[] = "en_US";
 
@@ -2783,15 +2785,11 @@ TEST_P(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_NoIban) {
 }
 
 TEST_P(FormDataImporterTest, ExtractFormData_SubmittingIbanFormUpdatesPref) {
-  // Simulate a form submission with a new IBAN.
-  FormData form;
-  form.url = GURL("https://www.foo.com");
   // The pref should always start disabled.
   ASSERT_FALSE(personal_data_manager_->IsAutofillHasSeenIbanPrefEnabled());
 
-  test::CreateTestIbanFormData(&form);
-
-  FormStructure form_structure(form);
+  // Simulate a form submission with a new IBAN.
+  FormStructure form_structure(CreateTestIbanFormData());
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   ExtractFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
@@ -2818,14 +2816,9 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        ExtractFormData_ImportIbanRecordType_IbanAutofill_NewInvalidIban) {
   // Simulate a form submission with a new IBAN.
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-
   // Invalid Kuwait IBAN with incorrect IBAN length.
   // KW16 will be converted into 203216, and the remainder on 97 is 1.
-  test::CreateTestIbanFormData(&form, "KW1600000000000000000");
-
-  FormStructure form_structure(form);
+  FormStructure form_structure(CreateTestIbanFormData("KW1600000000000000000"));
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
@@ -2838,12 +2831,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        ExtractFormData_ImportIbanRecordType_IbanAutofill_NewIban) {
   // Simulate a form submission with a new IBAN.
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-
-  test::CreateTestIbanFormData(&form);
-
-  FormStructure form_structure(form);
+  FormStructure form_structure(CreateTestIbanFormData());
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
@@ -2863,12 +2851,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   EXPECT_THAT(*results[0], ComparesEqual(iban));
 
   // Simulate a form submission with the same IBAN.
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-
-  test::CreateTestIbanFormData(&form);
-
-  FormStructure form_structure(form);
+  FormStructure form_structure(CreateTestIbanFormData());
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
@@ -3779,13 +3762,8 @@ TEST_P(FormDataImporterTest,
 
 TEST_P(FormDataImporterTest,
        ExtractFormData_ProcessIbanImportCandidate_NoIban) {
-  // Simulate a form submission with a new IBAN.
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-
-  test::CreateTestIbanFormData(&form, "");
-
-  FormStructure form_structure(form);
+  // Simulate a form submission with an empty Iban.
+  FormStructure form_structure(CreateTestIbanFormData(/*value=*/""));
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
   ASSERT_FALSE(ExtractFormDataAndProcessIbanCandidates(
@@ -3797,12 +3775,7 @@ TEST_P(
     FormDataImporterTest,
     ExtractFormData_ProcessIbanImportCandidate_PaymentMethodsSettingDisabled) {
   // Simulate a form submission with a new IBAN.
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-
-  test::CreateTestIbanFormData(&form);
-
-  FormStructure form_structure(form);
+  FormStructure form_structure(CreateTestIbanFormData());
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
   ASSERT_FALSE(ExtractFormDataAndProcessIbanCandidates(
@@ -3813,12 +3786,7 @@ TEST_P(
 TEST_P(FormDataImporterTest,
        ExtractFormData_ProcessIbanImportCandidate_NewIban) {
   // Simulate a form submission with a new IBAN.
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-
-  test::CreateTestIbanFormData(&form);
-
-  FormStructure form_structure(form);
+  FormStructure form_structure(CreateTestIbanFormData());
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
   EXPECT_TRUE(ExtractFormDataAndProcessIbanCandidates(
@@ -3834,12 +3802,7 @@ TEST_P(FormDataImporterTest,
 
   WaitForOnPersonalDataChanged();
   // Simulate a form submission with a new IBAN.
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-
-  test::CreateTestIbanFormData(&form);
-
-  FormStructure form_structure(form);
+  FormStructure form_structure(CreateTestIbanFormData());
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
   ASSERT_FALSE(ExtractFormDataAndProcessIbanCandidates(
@@ -3858,12 +3821,7 @@ TEST_P(FormDataImporterTest,
           test::GetStrippedValue(test::kIbanValue)));
 
   // Simulate a form submission with a new IBAN.
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-
-  test::CreateTestIbanFormData(&form);
-
-  FormStructure form_structure(form);
+  FormStructure form_structure(CreateTestIbanFormData());
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
   ASSERT_FALSE(ExtractFormDataAndProcessIbanCandidates(
