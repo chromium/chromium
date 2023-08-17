@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/string_compare.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -45,6 +46,8 @@
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
@@ -295,6 +298,11 @@ void AuthenticatorRequestDialogModel::StartFlow(
   started_ = true;
   transport_availability_ = std::move(transport_availability);
   use_conditional_mediation_ = use_conditional_mediation;
+
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnSortRecognizedCredentials)) {
+    SortRecognizedCredentials();
+  }
 
 #if BUILDFLAG(IS_MAC)
   RecordMacOsStartedHistogram();
@@ -1383,6 +1391,37 @@ AuthenticatorRequestDialogModel::GetPrioritySyncedPhoneIndex() const {
     }
   }
   return ret;
+}
+
+void AuthenticatorRequestDialogModel::SortRecognizedCredentials() {
+  struct {
+    bool operator()(const device::DiscoverableCredentialMetadata& a,
+                    const device::DiscoverableCredentialMetadata& b) {
+      return std::tie(a.user.id, a.cred_id) < std::tie(b.user.id, b.cred_id);
+    }
+  } id_comparator;
+  base::ranges::sort(transport_availability_.recognized_credentials,
+                     std::ref(id_comparator));
+
+  struct UsernameComparator {
+    explicit UsernameComparator(const icu::Locale* locale) {
+      UErrorCode error = U_ZERO_ERROR;
+      collator_.reset(icu::Collator::createInstance(*locale, error));
+    }
+
+    bool operator()(const device::DiscoverableCredentialMetadata& a,
+                    const device::DiscoverableCredentialMetadata& b) {
+      return base::i18n::CompareString16WithCollator(
+                 *collator_, base::UTF8ToUTF16(a.user.name.value_or("")),
+                 base::UTF8ToUTF16(b.user.name.value_or(""))) == UCOL_LESS;
+    }
+
+    std::unique_ptr<icu::Collator> collator_;
+  };
+  UsernameComparator user_name_comparator(&icu::Locale::getDefault());
+
+  base::ranges::stable_sort(transport_availability_.recognized_credentials,
+                            std::ref(user_name_comparator));
 }
 
 void AuthenticatorRequestDialogModel::PopulateMechanisms() {

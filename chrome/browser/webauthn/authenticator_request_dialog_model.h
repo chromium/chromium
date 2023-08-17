@@ -713,6 +713,10 @@ class AuthenticatorRequestDialogModel {
   // through Chrome Sync, or absl::nullopt if there isn't one.
   absl::optional<size_t> GetPrioritySyncedPhoneIndex() const;
 
+  // SortRecognizedCredentials sorts
+  // `transport_availability_.recognized_credentials` into username order.
+  void SortRecognizedCredentials();
+
   // PopulateMechanisms fills in |mechanisms_|.
   void PopulateMechanisms();
 

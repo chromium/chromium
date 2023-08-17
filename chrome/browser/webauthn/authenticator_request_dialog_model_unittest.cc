@@ -602,7 +602,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {one_phone_cred, two_cred},
        {psync("a")},
-       {c(other), c(other), c(phone), add},
+       {c(other), c(phone), c(other), add},
        mss},
       // Internal credentials + qr code.
       {L,
@@ -658,7 +658,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {one_phone_cred, two_cred, has_winapi, only_hybrid_or_internal},
        {psync("a")},
-       {c(other), c(other), c(phone), add},
+       {c(other), c(phone), c(other), add},
        mss},
       // Mix of phone, internal credentials, and USB/NFC.
       // This should offer dispatching to the Windows API for USB/NFC.
@@ -667,7 +667,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {one_phone_cred, two_cred, has_winapi},
        {psync("a")},
-       {c(other), c(other), c(phone), winapi, add},
+       {c(other), c(phone), c(other), winapi, add},
        mss},
       // Phone credentials and unknown Windows Hello credential status.
       // This should offer dispatching to the Windows API for Windows Hello.
@@ -688,7 +688,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {one_phone_cred, two_cred, has_winapi, only_hybrid_or_internal},
        {psync("a")},
-       {c(other), c(other), c(phone), winapi},
+       {c(other), c(phone), c(other), winapi},
        mss},
       // Internal credentials only.
       // This should not offer dispatching directly to the Windows API.
@@ -1791,7 +1791,8 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
                   /*is_conditional_mediation=*/false);
 
   // TODO(crbug.com/1459273): i18n.
-  // The first entry should correspond to the first local passkey.
+  // Entries will be sorted by username. So the first entry should correspond to
+  // the first local passkey.
   const AuthenticatorRequestDialogModel::Mechanism& mech1 =
       model.mechanisms()[0];
   EXPECT_EQ(mech1.name, base::UTF8ToUTF16(*kUser1.name));
@@ -1812,19 +1813,21 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
       kLocalAuthenticatorId, AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kWinNative));
 
-  // The second entry should correspond to the first local passkey.
+  // The second entry will be `kPhoneCred1`.
   const AuthenticatorRequestDialogModel::Mechanism& mech2 =
       model.mechanisms()[1];
-  EXPECT_EQ(mech2.name, base::UTF8ToUTF16(*kUser2.name));
-  EXPECT_EQ(mech2.short_name, base::UTF8ToUTF16(*kUser2.name));
-  EXPECT_EQ(mech2.description, u"Use device sign-in");
-  EXPECT_EQ(mech2.icon, vector_icons::kPasskeyIcon);
+  EXPECT_EQ(mech2.name, base::UTF8ToUTF16(*kPhoneUser1.name));
+  EXPECT_EQ(mech2.short_name, base::UTF8ToUTF16(*kPhoneUser1.name));
+  EXPECT_EQ(mech2.description,
+            l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
+                                       u"Phone from sync"));
+  EXPECT_EQ(mech2.icon, kSmartphoneIcon);
   mech2.callback.Run();
   result = account_preselected_callback.WaitForResult();
-  EXPECT_EQ(result.id, kCred2.cred_id);
+  EXPECT_EQ(result.id, kPhoneCred1.cred_id);
   EXPECT_THAT(result.transports,
-              testing::ElementsAre(device::FidoTransportProtocol::kInternal));
-  EXPECT_EQ(request_callback.WaitForResult(), kLocalAuthenticatorId);
+              testing::ElementsAre(device::FidoTransportProtocol::kHybrid));
+  EXPECT_TRUE(contact_phone_callback.WaitForResult());
 
   // Reset the model as if the user had cancelled out of the operation.
   model.StartOver();
@@ -1832,19 +1835,17 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
       kLocalAuthenticatorId, AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kWinNative));
 
-  // The third entry should correspond to the GPM passkey.
+  // The third entry should correspond to `kCred2`.
   const AuthenticatorRequestDialogModel::Mechanism& mech3 =
       model.mechanisms()[2];
-  EXPECT_EQ(mech3.name, base::UTF8ToUTF16(*kPhoneUser1.name));
-  EXPECT_EQ(mech3.short_name, base::UTF8ToUTF16(*kPhoneUser1.name));
-  EXPECT_EQ(mech3.description,
-            l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
-                                       u"Phone from sync"));
-  EXPECT_EQ(mech3.icon, kSmartphoneIcon);
+  EXPECT_EQ(mech3.name, base::UTF8ToUTF16(*kUser2.name));
+  EXPECT_EQ(mech3.short_name, base::UTF8ToUTF16(*kUser2.name));
+  EXPECT_EQ(mech3.description, u"Use device sign-in");
+  EXPECT_EQ(mech3.icon, vector_icons::kPasskeyIcon);
   mech3.callback.Run();
   result = account_preselected_callback.WaitForResult();
-  EXPECT_EQ(result.id, kPhoneCred1.cred_id);
+  EXPECT_EQ(result.id, kCred2.cred_id);
   EXPECT_THAT(result.transports,
-              testing::ElementsAre(device::FidoTransportProtocol::kHybrid));
-  EXPECT_TRUE(contact_phone_callback.WaitForResult());
+              testing::ElementsAre(device::FidoTransportProtocol::kInternal));
+  EXPECT_EQ(request_callback.WaitForResult(), kLocalAuthenticatorId);
 }

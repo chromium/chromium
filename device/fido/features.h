@@ -131,6 +131,10 @@ BASE_DECLARE_FEATURE(kWebAuthnDontPrelinkInProfiles);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNewPasskeyUI);
 
+// Sort discoverable credentials in the UI before showing.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnSortRecognizedCredentials);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
