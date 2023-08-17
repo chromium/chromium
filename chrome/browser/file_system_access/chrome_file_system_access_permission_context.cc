@@ -1933,7 +1933,7 @@ bool ChromeFileSystemAccessPermissionContext::AncestorHasActivePermission(
 // TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
 // feature flag checks before launch.
 // TODO(crbug.com/1011533): Add checks for `PersistentPermissionPref` value
-// once implemented.
+// once the ContentSetting is implemented.
 bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
     const url::Origin& origin) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1949,12 +1949,11 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
     return false;
   }
 
-  if (origin_has_extended_permission_for_testing_) {
+  const auto& origin_it = extended_permissions_settings_map_.find(origin);
+  if (origin_it != extended_permissions_settings_map_.end() &&
+      origin_it->second == ContentSetting::CONTENT_SETTING_ALLOW) {
     return true;
   }
-
-  // TODO(https://crbug.com/1011533): Check whether user has opted-in to
-  // Extended Permission mode from the website setting value.
 
   DCHECK(profile());
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(

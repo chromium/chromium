@@ -901,7 +901,6 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
   std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context =
       std::make_unique<ChromeFileSystemAccessPermissionContext>(
           browser()->profile());
-  permission_context->SetOriginHasExtendedPermissionForTesting();
 
   ui::SelectFileDialog::SetFactory(
       std::make_unique<SelectPredeterminedFileDialogFactory>(
@@ -915,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
-
+  permission_context->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto grant = permission_context->GetWritePermissionGrant(
       kTestOrigin, test_file,
       content::FileSystemAccessPermissionContext::HandleType::kFile,
@@ -925,6 +924,7 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
       kTestOrigin, test_file,
       content::FileSystemAccessPermissionContext::HandleType::kFile,
       ChromeFileSystemAccessPermissionContext::GrantType::kWrite));
+
   EXPECT_EQ(content::FileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
             grant->GetStatus());
 

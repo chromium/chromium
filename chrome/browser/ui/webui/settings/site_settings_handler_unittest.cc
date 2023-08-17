@@ -3530,7 +3530,6 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
        HandleGetFileSystemGrants) {
   ChromeFileSystemAccessPermissionContext* context =
       FileSystemAccessPermissionContextFactory::GetForProfile(&profile_);
-  context->SetOriginHasExtendedPermissionForTesting();
 
   auto kTestOrigin1 = url::Origin::Create(GURL("https://www.a.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://www.b.com"));
@@ -3540,6 +3539,9 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   const base::FilePath kTestPath3 = base::FilePath(FILE_PATH_LITERAL("/e/"));
   const base::FilePath kTestPath4 =
       base::FilePath(FILE_PATH_LITERAL("/f/g/h/"));
+
+  context->SetOriginHasExtendedPermissionForTesting(kTestOrigin1);
+  context->SetOriginHasExtendedPermissionForTesting(kTestOrigin2);
 
   // Populate the `grants` object with permissions.
   auto file_read_grant = context->GetExtendedReadPermissionGrantForTesting(
@@ -3555,6 +3557,7 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
       context->GetExtendedWritePermissionGrantForTesting(
           kTestOrigin2, kTestPath4,
           ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
+
   auto kTestOrigin1Grants =
       context->ConvertObjectsToGrants(context->GetGrantedObjects(kTestOrigin1));
   auto kTestOrigin2Grants =
@@ -3627,7 +3630,6 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
        HandleRevokeFileSystemGrant) {
   ChromeFileSystemAccessPermissionContext* context =
       FileSystemAccessPermissionContextFactory::GetForProfile(&profile_);
-  context->SetOriginHasExtendedPermissionForTesting();
 
   auto kTestOrigin1 = url::Origin::Create(GURL("https://www.a.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://www.b.com"));
@@ -3637,6 +3639,9 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   const base::FilePath kTestPath3 = base::FilePath(FILE_PATH_LITERAL("/e/"));
   const base::FilePath kTestPath4 =
       base::FilePath(FILE_PATH_LITERAL("/f/g/h/"));
+
+  context->SetOriginHasExtendedPermissionForTesting(kTestOrigin1);
+  context->SetOriginHasExtendedPermissionForTesting(kTestOrigin2);
 
   // Populate the `grants` object with permissions.
   auto file_read_grant = context->GetExtendedReadPermissionGrantForTesting(
@@ -3702,7 +3707,6 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
        HandleRevokeFileSystemGrants) {
   ChromeFileSystemAccessPermissionContext* context =
       FileSystemAccessPermissionContextFactory::GetForProfile(&profile_);
-  context->SetOriginHasExtendedPermissionForTesting();
 
   auto kTestOrigin1 = url::Origin::Create(GURL("https://www.a.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://www.b.com"));
@@ -3712,6 +3716,9 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   const base::FilePath kTestPath3 = base::FilePath(FILE_PATH_LITERAL("/e/"));
   const base::FilePath kTestPath4 =
       base::FilePath(FILE_PATH_LITERAL("/f/g/h/"));
+
+  context->SetOriginHasExtendedPermissionForTesting(kTestOrigin1);
+  context->SetOriginHasExtendedPermissionForTesting(kTestOrigin2);
 
   // Populate the `grants` object with permissions.
   auto file_read_grant = context->GetExtendedReadPermissionGrantForTesting(

@@ -877,7 +877,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetReadPermissionGrant_InitialState_Open_File) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
@@ -923,7 +923,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_InitialState_WritableImplicitState) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
@@ -948,7 +948,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_WriteGrantedChangesExistingGrant) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto grant1 = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   auto grant2 = permission_context()->GetWritePermissionGrant(
@@ -980,7 +980,7 @@ TEST_F(
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_GrantIsAutoGrantedViaPersistentPermissions) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
@@ -1022,7 +1022,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 TEST_F(
     ChromeFileSystemAccessPermissionContextTest,
     GetGrantedObjectsAndConvertObjectsToGrants_GrantsAreRetainedViaPersistedPermissions) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto kTestPath2 = kTestPath.AppendASCII("baz");
   auto file_write_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
@@ -1030,7 +1030,6 @@ TEST_F(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   auto file_read_only_grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath2, HandleType::kFile, UserAction::kSave);
-
   auto grants = permission_context()->ConvertObjectsToGrants(
       permission_context()->GetGrantedObjects(kTestOrigin));
   std::vector<base::FilePath> expected_file_write_grants = {kTestPath};
@@ -1052,10 +1051,11 @@ TEST_F(
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetExtendedPersistedObjects) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
   auto kTestPath2 = kTestPath.AppendASCII("foo");
   const url::Origin kTestOrigin2 =
       url::Origin::Create(GURL("https://www.c.com"));
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin2);
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
@@ -1099,7 +1099,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_InitialState_OpenAction_GlobalGuardBlocked) {
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
-
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::DENIED, grant->GetStatus());
@@ -1119,10 +1119,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 TEST_F(
     ChromeFileSystemAccessPermissionContextTest,
     GetWritePermissionGrant_InitialState_WritableImplicitState_GlobalGuardBlocked) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
-
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(PermissionStatus::DENIED, grant->GetStatus());
@@ -1281,7 +1280,7 @@ TEST_F(
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetReadPermissionGrant_InheritFromAncestor) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
 
@@ -1307,7 +1306,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_InheritFromAncestor) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
 
@@ -1333,7 +1332,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        DoNotInheritFromAncestorOfOppositeType) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
 
@@ -1360,7 +1359,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetReadPermissionGrant_InheritFromPersistedAncestor) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
 
@@ -1397,7 +1396,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_InheritFromPersistedAncestor) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
 
@@ -1433,7 +1432,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        DoNotInheritFromPersistedAncestorOfOppositeType) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
 
@@ -1468,7 +1467,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        PersistedPermission_RevokeOnlyActiveGrants) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
@@ -1502,7 +1501,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        PersistedPermission_NotAccessibleIfContentSettingBlock) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
@@ -1528,7 +1527,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        PersistedPermission_SharedFateReadAndWrite) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto read_grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(PermissionStatus::GRANTED, read_grant->GetStatus());
@@ -1578,7 +1577,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest, RequestPermission_Granted) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
   content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
@@ -1616,7 +1615,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, RequestPermission_Denied) {
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_NoUserActivation) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
 
@@ -1635,7 +1634,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_NoUserActivation_UserActivationNotRequired) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
 
@@ -1654,10 +1653,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_AlreadyGranted) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
   // If the permission has already been granted, a call to RequestPermission()
   // should call the passed-in callback and return immediately without showing a
   // prompt.
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
 
@@ -1854,7 +1853,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetReadPermissionGrant_FileBecomesDirectory) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto file_grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
@@ -1876,7 +1875,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_FileBecomesDirectory) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto file_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
@@ -1897,7 +1896,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest, NotifyEntryMoved_File) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto file_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
@@ -1923,10 +1922,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, NotifyEntryMoved_File) {
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        NotifyEntryMoved_ChildFileObtainedLater) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
-
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto parent_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   base::test::TestFuture<PermissionRequestOutcome> future;
@@ -1972,10 +1970,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        NotifyEntryMoved_ChildFileObtainedFirst) {
-  permission_context()->SetOriginHasExtendedPermissionForTesting();
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
-
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   // Acquire permission to the child file's path.
   const auto old_file_path = kTestPath.AppendASCII("old_name.txt");
   auto file_grant = permission_context()->GetWritePermissionGrant(
