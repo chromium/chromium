@@ -1,39 +1,19 @@
 This is a testharness.js-based test.
 FAIL .target > * 1 assert_equals: 
-<span data-offset-y="81"></span>
-offsetTop expected 81 but got 29
-FAIL .target > * 2 assert_equals: 
-<textarea data-offset-y="11" class="inner"></textarea>
-offsetTop expected 11 but got 10
-FAIL .target > * 3 assert_equals: 
-<span data-offset-y="81"></span>
-offsetTop expected 81 but got 80
-FAIL .target > * 4 assert_equals: 
-<textarea data-offset-y="11" class="inner">X X X X X</textarea>
-offsetTop expected 11 but got 10
+<span data-offset-y="80"></span>
+offsetTop expected 80 but got 29
+PASS .target > * 2
+PASS .target > * 3
+PASS .target > * 4
 FAIL .target > * 5 assert_equals: 
-<span data-offset-y="81"></span>
-offsetTop expected 81 but got 29
-FAIL .target > * 6 assert_equals: 
-<textarea data-offset-y="11" class="inner" placeholder="X X X X X"></textarea>
-offsetTop expected 11 but got 10
-FAIL .target > * 7 assert_equals: 
-<span data-offset-y="81"></span>
-offsetTop expected 81 but got 80
-FAIL .target > * 8 assert_equals: 
-<textarea data-offset-y="11" class="inner" style="font-size: 100px;"></textarea>
-offsetTop expected 11 but got 10
-FAIL .target > * 9 assert_equals: 
-<span data-offset-y="81"></span>
-offsetTop expected 81 but got 80
-FAIL .target > * 10 assert_equals: 
-<textarea data-offset-y="11" class="inner" style="font-size: 100px;">X X X X X</textarea>
-offsetTop expected 11 but got 10
-FAIL .target > * 11 assert_equals: 
-<span data-offset-y="81"></span>
-offsetTop expected 81 but got 80
-FAIL .target > * 12 assert_equals: 
-<textarea data-offset-y="11" class="inner" style="font-size: 100px;" placeholder="X X X X X"></textarea>
-offsetTop expected 11 but got 10
+<span data-offset-y="80"></span>
+offsetTop expected 80 but got 29
+PASS .target > * 6
+PASS .target > * 7
+PASS .target > * 8
+PASS .target > * 9
+PASS .target > * 10
+PASS .target > * 11
+PASS .target > * 12
 Harness: the test ran to completion.
 

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS ".a:has(.b:has(.c))" should be an invalid selector
+FAIL ".a:has(:is(.b:has(.c)))" should be a valid selector assert_equals: serialization should be canonical expected ".a:has(:is(.b:has(.c)))" but got ".a:has(:is())"
+FAIL ".a:has(:is(.b:has(.c), .d))" should be a valid selector assert_equals: serialization should be canonical expected ".a:has(:is(.b:has(.c), .d))" but got ".a:has(:is(.d))"
+Harness: the test ran to completion.
+

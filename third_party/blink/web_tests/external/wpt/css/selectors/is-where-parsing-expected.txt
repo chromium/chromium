@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+PASS Trailing whitespace
+PASS Multiple selectors with combinators
+PASS Nested :is
+PASS Nested :where
+PASS Nested inside :host, without combinators
+PASS Nested inside :host, with trailing whitespace
+PASS Nested inside :host, with combinators
+PASS Pseudo-classes inside
+PASS Pseudo-classes after
+PASS Pseudo-elements after
+FAIL Pseudo-elements inside assert_equals: Pseudo-elements inside: :is(::before) expected ":is(::before)" but got ":is()"
+PASS Combinators after
+PASS After part with simple pseudo-class
+PASS After part with invalid selector after
+PASS Nested inside :not, without combinators
+PASS Nested inside :not, with combinators
+Harness: the test ran to completion.
+
