@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MAC_SCOPED_TYPEREF_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MAC_SCOPED_TYPEREF_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_APPLE_SCOPED_TYPEREF_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_APPLE_SCOPED_TYPEREF_H_
 
 #include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/scoped_policy.h"
@@ -56,21 +56,24 @@ class ScopedTypeRef {
       element_type object = Traits::InvalidValue(),
       base::scoped_policy::OwnershipPolicy policy = base::scoped_policy::ASSUME)
       : object_(object) {
-    if (object_ && policy == base::scoped_policy::RETAIN)
+    if (object_ && policy == base::scoped_policy::RETAIN) {
       object_ = Traits::Retain(object_);
+    }
   }
 
   ScopedTypeRef(const ScopedTypeRef<T, Traits>& that) : object_(that.object_) {
-    if (object_)
+    if (object_) {
       object_ = Traits::Retain(object_);
+    }
   }
 
   // This allows passing an object to a function that takes its superclass.
   template <typename R, typename RTraits>
   explicit ScopedTypeRef(const ScopedTypeRef<R, RTraits>& that_as_subclass)
       : object_(that_as_subclass.get()) {
-    if (object_)
+    if (object_) {
       object_ = Traits::Retain(object_);
+    }
   }
 
   ScopedTypeRef(ScopedTypeRef<T, Traits>&& that) : object_(that.object_) {
@@ -78,8 +81,9 @@ class ScopedTypeRef {
   }
 
   ~ScopedTypeRef() {
-    if (object_)
+    if (object_) {
       Traits::Release(object_);
+    }
   }
 
   ScopedTypeRef& operator=(const ScopedTypeRef<T, Traits>& that) {
@@ -102,10 +106,12 @@ class ScopedTypeRef {
   void reset(element_type object = Traits::InvalidValue(),
              base::scoped_policy::OwnershipPolicy policy =
                  base::scoped_policy::ASSUME) {
-    if (object && policy == base::scoped_policy::RETAIN)
+    if (object && policy == base::scoped_policy::RETAIN) {
       object = Traits::Retain(object);
-    if (object_)
+    }
+    if (object_) {
       Traits::Release(object_);
+    }
     object_ = object;
   }
 
@@ -142,4 +148,4 @@ class ScopedTypeRef {
 
 }  // namespace partition_alloc::internal::base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MAC_SCOPED_TYPEREF_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_APPLE_SCOPED_TYPEREF_H_

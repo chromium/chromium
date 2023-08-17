@@ -422,7 +422,7 @@ source_set("allocator_base") {
       sources += [ "partition_alloc_base/time/time_android.cc" ]
     }
     if (is_apple) {
-      sources += [ "partition_alloc_base/time/time_mac.mm" ]
+      sources += [ "partition_alloc_base/time/time_apple.mm" ]
     } else {
       sources += [ "partition_alloc_base/time/time_now_posix.cc" ]
     }
@@ -454,12 +454,12 @@ source_set("allocator_base") {
   if (is_apple) {
     # Apple-specific utilities
     sources += [
-      "partition_alloc_base/mac/foundation_util.h",
-      "partition_alloc_base/mac/foundation_util.mm",
-      "partition_alloc_base/mac/mach_logging.cc",
-      "partition_alloc_base/mac/mach_logging.h",
-      "partition_alloc_base/mac/scoped_cftyperef.h",
-      "partition_alloc_base/mac/scoped_typeref.h",
+      "partition_alloc_base/apple/foundation_util.h",
+      "partition_alloc_base/apple/foundation_util.mm",
+      "partition_alloc_base/apple/mach_logging.cc",
+      "partition_alloc_base/apple/mach_logging.h",
+      "partition_alloc_base/apple/scoped_cftyperef.h",
+      "partition_alloc_base/apple/scoped_typeref.h",
     ]
     if (is_ios) {
       sources += [
@@ -537,8 +537,8 @@ source_set("allocator_shim") {
     }
     if (is_apple) {
       sources += [
-        "shim/allocator_shim_override_mac_default_zone.h",
-        "shim/allocator_shim_override_mac_symbols.h",
+        "shim/allocator_shim_override_apple_default_zone.h",
+        "shim/allocator_shim_override_apple_symbols.h",
         "shim/early_zone_registration_constants.h",
       ]
       configs += [ ":mac_no_default_new_delete_symbols" ]
@@ -566,7 +566,7 @@ source_set("allocator_shim") {
       }
       if (is_apple) {
         sources +=
-            [ "shim/allocator_shim_default_dispatch_to_mac_zoned_malloc.cc" ]
+            [ "shim/allocator_shim_default_dispatch_to_apple_zoned_malloc.cc" ]
       }
       if (is_chromeos || is_linux) {
         sources += [ "shim/allocator_shim_default_dispatch_to_glibc.cc" ]
@@ -585,10 +585,10 @@ source_set("allocator_shim") {
 
   if (is_apple) {
     sources += [
-      "shim/allocator_interception_mac.h",
-      "shim/allocator_interception_mac.mm",
-      "shim/malloc_zone_functions_mac.cc",
-      "shim/malloc_zone_functions_mac.h",
+      "shim/allocator_interception_apple.h",
+      "shim/allocator_interception_apple.mm",
+      "shim/malloc_zone_functions_apple.cc",
+      "shim/malloc_zone_functions_apple.h",
     ]
 
     # Do not compile with ARC because this target has to interface with

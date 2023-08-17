@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/partition_alloc_base/mac/foundation_util.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/apple/foundation_util.h"
 
 #include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 
-namespace partition_alloc::internal::base::mac {
+namespace partition_alloc::internal::base::apple {
 
 #define PA_CF_CAST_DEFN(TypeCF)                                    \
   template <>                                                      \
@@ -42,4 +42,4 @@ PA_CF_CAST_DEFN(CFUUID)
 
 #undef PA_CF_CAST_DEFN
 
-}  // namespace partition_alloc::internal::base::mac
+}  // namespace partition_alloc::internal::base::apple

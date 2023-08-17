@@ -12,7 +12,7 @@ specific_include_rules = {
     "+base/threading/platform_thread.h",
     "+base/threading/thread_local.h",
   ],
-  "allocator_interception_mac_unittest\.mm$": [
+  "allocator_interception_apple_unittest\.mm$": [
     "+testing/gtest/include/gtest/gtest.h",
   ],
 }

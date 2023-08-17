@@ -16,7 +16,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_interception_apple.h"
 #endif
 
 namespace base::allocator {
