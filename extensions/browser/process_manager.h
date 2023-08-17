@@ -23,6 +23,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/service_worker_external_request_result.h"
 #include "content/public/browser/service_worker_external_request_timeout_type.h"
 #include "extensions/browser/activity.h"
 #include "extensions/browser/event_page_tracker.h"
@@ -63,10 +64,18 @@ class ProcessManager : public KeyedService,
 
   // A struct representing an active service worker keepalive.
   struct ServiceWorkerKeepaliveData {
+    // The worker ID associated with the keepalive.
     WorkerId worker_id;
+    // The type of activity for the keepalive.
     Activity::Type activity_type;
+    // Any "additional data" for the keepalive; for instance, this could be
+    // the API function or event name.
     std::string extra_data;
+    // The timeout behavior for the given request.
     content::ServiceWorkerExternalRequestTimeoutType timeout_type;
+    // The result of trying to start an external request with the service
+    // worker layer.
+    content::ServiceWorkerExternalRequestResult start_result;
   };
   using ServiceWorkerKeepaliveDataMap =
       std::map<base::Uuid, ServiceWorkerKeepaliveData>;

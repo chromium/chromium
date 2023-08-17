@@ -4113,6 +4113,49 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Extensions.ServiceWorkerBackground.ProcessManagerFinishedExternalRequestResultWithSuccessfulStart"
+    enum="ServiceWorkerExternalRequestResult" expires_after="2024-08-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The result from the extension process manager notifying the
+    ServiceWorkerContext of a service worker-based extension that an external
+    request that started with a result of &quot;OK&quot; has finished. Emitted
+    immediately after the call to notify the ServiceWorkerContext is made as
+    part of decrementing the service worker keepalive count.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ServiceWorkerBackground.ProcessManagerFinishedExternalRequestResultWithUnsuccessfulStart"
+    enum="ServiceWorkerExternalRequestResult" expires_after="2024-08-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The result from the extension process manager notifying the
+    ServiceWorkerContext of a service worker-based extension that an external
+    request that started with a result of anything other than &quot;OK&quot; has
+    finished. Emitted immediately after the call to notify the
+    ServiceWorkerContext is made as part of decrementing the service worker
+    keepalive count.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ServiceWorkerBackground.ProcessManagerStartingExternalRequestResult"
+    enum="ServiceWorkerExternalRequestResult" expires_after="2024-08-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The result from the extension process manager notifying the
+    ServiceWorkerContext of a service worker-based extension that an external
+    request has started as part of incrementing the service worker keepalive
+    count. Emitted immediately after the call to to notify the
+    ServiceWorkerContext is made.
+  </summary>
+</histogram>
+
+<histogram
     name="Extensions.ServiceWorkerBackground.RegistrationMismatchLocation"
     enum="ExtensionLocation" expires_after="2023-04-01">
   <owner>lazyboy@chromium.org</owner>
