@@ -429,6 +429,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   views::InstallEmptyHighlightPathGenerator(this);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
   if (chromeos::features::IsJellyEnabled()) {
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
   } else {
