@@ -140,6 +140,11 @@ CastNotificationControllerLacros::CreateNotification(const MediaRoute& route) {
   message_center::RichNotificationData data;
   data.buttons = GetButtons(route, freeze_host);
   data.pinned = true;
+  // `vector_small_image` is ignored by the crosapi so we must convert it to
+  // `small_image`. Also, kAppIconImageSize=16 is used in AshNotificationView,
+  // but 16 here somehow results in a blurry image.
+  data.small_image = gfx::Image(gfx::CreateVectorIcon(
+      gfx::IconDescription(vector_icons::kMediaRouterIdleIcon, 32)));
 
   return message_center::Notification{
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
