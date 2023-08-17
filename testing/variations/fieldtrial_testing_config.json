@@ -11027,6 +11027,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "interval": "8s"
+                    },
                     "enable_features": [
                         "PartitionAllocMemoryReclaimer"
                     ]
