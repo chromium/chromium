@@ -1625,12 +1625,20 @@ void CaptureModeController::OnVideoFileSaved(
                               saved_video_file_path);
       }
 
+      auto reply = base::BindOnce(&RecordVideoFileSizeKB, is_gif, behavior);
+      if (on_file_saved_callback_for_test_) {
+        reply = std::move(reply).Then(
+            base::BindOnce(std::move(on_file_saved_callback_for_test_),
+                           saved_video_file_path));
+      }
+
       // We only record the file size histogram if the recording is not saved on
       // DriveFs.
       blocking_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE, base::BindOnce(&GetFileSizeInKB, saved_video_file_path),
-          base::BindOnce(&RecordVideoFileSizeKB, is_gif, behavior));
+          std::move(reply));
     }
+
     CHECK(!recording_start_time_.is_null());
     RecordCaptureModeRecordingDuration(
         (base::TimeTicks::Now() - recording_start_time_), behavior, is_gif);
@@ -1639,8 +1647,14 @@ void CaptureModeController::OnVideoFileSaved(
     RecordSaveToLocation(GetSaveToOption(saved_video_file_path), behavior);
   }
 
-  if (on_file_saved_callback_for_test_)
+  // If `on_file_saved_callback_for_test_` is not empty, it means that it hasn't
+  // been consumed yet since file size metric will not be recorded if saved on
+  // DriveFs for example the projector-initiated capture mode. In this case, we
+  // need to explicitly run the callback to let the running wait runloop quit on
+  // file saved.
+  if (on_file_saved_callback_for_test_) {
     std::move(on_file_saved_callback_for_test_).Run(saved_video_file_path);
+  }
 }
 
 void CaptureModeController::ShowPreviewNotification(

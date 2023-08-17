@@ -7244,9 +7244,6 @@ TEST_P(CaptureModeHistogramTest, VideoRecordingAudioVideoMetrics) {
   StopRecording();
   WaitForCaptureFileToBeSaved();
 
-  // Since getting the file size is an async operation, we have to run a loop
-  // until the task that records the file size is done.
-  base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(
       BuildHistogramName("ScreenRecordingFileSize", /*behavior=*/nullptr,
                          /*append_ui_mode_suffix=*/true),

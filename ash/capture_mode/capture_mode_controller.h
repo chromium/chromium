@@ -668,7 +668,8 @@ class ASH_EXPORT CaptureModeController
   base::flat_map<aura::Window*, /*protection_mask*/ uint32_t>
       protected_windows_;
 
-  // If set, it will be called when either an image or video file is saved.
+  // If set, it will be called when either an image or video file is saved and
+  // the file size metric has been recorded.
   base::OnceCallback<void(const base::FilePath&)>
       on_file_saved_callback_for_test_;
 
