@@ -82,6 +82,7 @@ source_set("password_ui") {
   ]
   deps = [
     ":common",
+    ":features",
     ":password_constants",
     ":title_view",
     "//base",

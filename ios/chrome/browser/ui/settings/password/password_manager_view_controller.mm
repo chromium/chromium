@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_items.h"
@@ -1901,7 +1902,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
       TableViewItem* item = [model itemAtIndexPath:indexPath];
 
-      if (!IsPasswordNotesWithBackupEnabled()) {
+      if (!IsPasswordNotesWithBackupEnabled() ||
+          password_manager::features::IsAuthOnEntryV2Enabled()) {
         [self showDetailedViewPageForItem:item];
       } else if ([self.reauthenticationModule canAttemptReauth]) {
         void (^showPasswordDetailsHandler)(ReauthenticationResult) =
