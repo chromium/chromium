@@ -78,7 +78,8 @@ enum class Step {
 
 // Enumeration of interactions users may engage in after the Welcome Tour. These
 // values are persisted to logs. Entries should not be renumbered and numeric
-// values should never be reused.
+// values should never be reused. Be sure to update `kAllInteractionsSet`
+// accordingly.
 enum class Interaction {
   kMinValue = 0,
   kFilesApp = kMinValue,
@@ -89,10 +90,19 @@ enum class Interaction {
   kMaxValue = kSettingsApp,
 };
 
-using AllInteractionsSet =
-    base::EnumSet<Interaction, Interaction::kMinValue, Interaction::kMaxValue>;
+static constexpr auto kAllInteractionsSet =
+    base::EnumSet<Interaction, Interaction::kMinValue, Interaction::kMaxValue>({
+        Interaction::kFilesApp,
+        Interaction::kLauncher,
+        Interaction::kQuickSettings,
+        Interaction::kSearch,
+        Interaction::kSettingsApp,
+    });
 
 // Utilities -------------------------------------------------------------------
+
+// Record that a given `interaction` has occurred.
+ASH_EXPORT void RecordInteraction(Interaction interaction);
 
 // Record that the given `step` of the Welcome Tour was aborted.
 ASH_EXPORT void RecordStepAborted(Step step);
@@ -102,12 +112,6 @@ ASH_EXPORT void RecordStepDuration(Step step, base::TimeDelta duration);
 
 // Record that the given `step` of the Welcome Tour was shown.
 ASH_EXPORT void RecordStepShown(Step step);
-
-// Record the time to first occurrence of a given `interaction`. This should
-// be measured from the time the user is first able to interact in the intended
-// way, i.e. after the Welcome Tour is ended or prevented.
-ASH_EXPORT void RecordTimeToInteraction(Interaction interaction,
-                                        base::TimeDelta delta);
 
 // Record that the Welcome Tour was aborted for the given `reason`.
 ASH_EXPORT void RecordTourAborted(AbortedReason reason);

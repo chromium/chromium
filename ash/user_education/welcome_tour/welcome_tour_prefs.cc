@@ -113,7 +113,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kTimeOfFirstTourPrevention, base::Time());
   registry->RegisterIntegerPref(kReasonForFirstTourPrevention, -1);
 
-  for (const auto interaction : welcome_tour_metrics::AllInteractionsSet()) {
+  for (const auto interaction : welcome_tour_metrics::kAllInteractionsSet) {
     registry->RegisterTimePref(GetTimeOfFirstInteractionPrefName(interaction),
                                base::Time());
   }

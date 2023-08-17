@@ -114501,6 +114501,14 @@ Called by update_scheduler_enums.py.-->
   <int value="4" label="kUserDeclinedTour"/>
 </enum>
 
+<enum name="WelcomeTourInteraction">
+  <int value="0" label="kFilesApp"/>
+  <int value="1" label="kLauncher"/>
+  <int value="2" label="kQuickSettings"/>
+  <int value="3" label="kSearch"/>
+  <int value="4" label="kSettingsApp"/>
+</enum>
+
 <enum name="WelcomeTourPreventedReason">
   <int value="0" label="kUnknown"/>
   <int value="1" label="kChromeVoxEnabled"/>
