@@ -182,7 +182,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     ASSERT_TRUE(page_info_ || incognito_page_info_)
         << "No PageInfo instance created.";
     incognito_web_contents_.reset();
-    RenderViewHostTestHarness::TearDown();
+    ChromeRenderViewHostTestHarness::TearDown();
     page_info_.reset();
     incognito_page_info_.reset();
   }
@@ -2306,4 +2306,11 @@ TEST_F(PageInfoToggleStatesUnitTest, ToggleGuardPermissionDefaultBlockTest) {
   hid_guard.setting = CONTENT_SETTING_BLOCK;
   PageInfoUI::ToggleBetweenAllowAndBlock(hid_guard);
   EXPECT_EQ(hid_guard.setting, CONTENT_SETTING_ASK);
+}
+
+TEST_F(PageInfoTest, WithoutPageSpecificContentSettings) {
+  SetContents(CreateTestWebContents());
+  EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForPage(
+      web_contents()->GetPrimaryPage()));
+  page_info();
 }

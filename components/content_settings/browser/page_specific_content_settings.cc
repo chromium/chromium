@@ -508,8 +508,11 @@ PageSpecificContentSettings::SiteDataObserver::SiteDataObserver(
   // Make sure the handler was attached to the WebContents as some UT might skip
   // this.
   auto* handler = WebContentsHandler::FromWebContents(web_contents_);
-  if (handler)
+  if (handler) {
     handler->AddSiteDataObserver(this);
+  } else {
+    web_contents_ = nullptr;
+  }
 }
 
 PageSpecificContentSettings::SiteDataObserver::~SiteDataObserver() {
