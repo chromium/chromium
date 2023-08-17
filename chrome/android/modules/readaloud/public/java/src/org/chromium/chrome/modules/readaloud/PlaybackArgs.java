@@ -11,61 +11,79 @@ import java.util.List;
  * Encapsulates information about the playback tha's requested.
  */
 public class PlaybackArgs {
+    /** TODO(basiaz): Delete after source lands e2e */
+    private final String mUrl;
+    /* Can represent either page url or plain text */
+    private final String mSource;
+    /* if false, the surce is plain text rather than url of a website. */
+    private final boolean mIsSourceUrl;
 
-  private final String mUrl;
-  @Nullable
-  private final String mLanguage;
-  @Nullable
-  private final List<PlaybackVoice> mVoices;
+    @Nullable
+    private final String mLanguage;
+    @Nullable
+    private final List<PlaybackVoice> mVoices;
+    private final long mDateModifiedMsSinceEpoch;
 
-  private final long mDateModifiedMsSinceEpoch;
+    /**
+     * Encapsulates info about a TTS voice that can be used for playback.
+     * Description is only relevant for the UI, language and voiceId are required
+     * for the server request.
+     */
+    class PlaybackVoice {
+        private final String mLanguage;
+        private final String mVoiceId;
+        @Nullable
+        private final String mDescription;
 
-  public PlaybackArgs(String url) {
-    this(url, null, null, 0);
-  }
+        public PlaybackVoice(String language, String voiceId, String description) {
+            this.mLanguage = language;
+            this.mVoiceId = voiceId;
+            this.mDescription = description;
+        }
 
-  /**
-   * Encapsulates info about a TTS voice that can be used for playback.
-   * Description is only relevant for the UI, language and voiceId are required
-   * for the server request.
-   */
-  class PlaybackVoice {
-      private final String mLanguage;
-      private final String mVoiceId;
-      @Nullable
-      private final String mDescription;
+        public String getLanguage() {
+            return mLanguage;
+        }
 
-      public PlaybackVoice(String language, String voiceId, String description) {
-          this.mLanguage = language;
-          this.mVoiceId = voiceId;
-          this.mDescription = description;
-      }
+        public String getVoiceId() {
+            return mVoiceId;
+        }
 
-      public String getLanguage() {
-          return mLanguage;
-      }
-
-      public String getVoiceId() {
-          return mVoiceId;
-      }
-
-      @Nullable
-      public String getDescription() {
-          return mDescription;
-      }
-  }
+        @Nullable
+        public String getDescription() {
+            return mDescription;
+        }
+    }
 
   public PlaybackArgs(String url, @Nullable String language, @Nullable List<PlaybackVoice> voices,
           long dateModifiedMsSinceEpoch) {
-      this.mUrl = url;
+      this(url, true, language, voices, dateModifiedMsSinceEpoch);
+  }
+
+  public PlaybackArgs(String mSource, boolean isUrl, @Nullable String language,
+          @Nullable List<PlaybackVoice> voices, long dateModifiedMsSinceEpoch) {
+      this.mUrl = mSource;
+      this.mSource = mSource;
+      this.mIsSourceUrl = isUrl;
       this.mLanguage = language;
       this.mVoices = voices;
       this.mDateModifiedMsSinceEpoch = dateModifiedMsSinceEpoch;
   }
 
   /** Returns the URL of the playback page. */
+  @Deprecated
   public String getUrl() {
-    return mUrl;
+      return mUrl;
+  }
+
+  /** Returns the source which can either be an URL or plain text */
+  public String getSource() {
+      return mSource;
+  }
+
+  /** Returns true if the source is an URL, false if it's plain text. */
+  public boolean isSourceUrl() {
+      return mIsSourceUrl;
   }
 
   /**
