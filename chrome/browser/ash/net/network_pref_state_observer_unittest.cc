@@ -74,7 +74,8 @@ class NetworkPrefStateObserverTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   NetworkHandlerTestHelper network_handler_test_helper_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   TestingProfileManager profile_manager_;
   session_manager::SessionManager session_manager_;

@@ -226,7 +226,8 @@ class NetworkInfoSamplerBrowserTest
   }
 
  private:
-  raw_ptr<::ash::ShillDeviceClient::TestInterface, ExperimentalAsh>
+  raw_ptr<::ash::ShillDeviceClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
       device_client_;
   ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };

@@ -280,7 +280,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // after login.
   // The provider is owned by the base class; this field is just a typed weak
   // pointer to get to the ProxyPolicyProvider at SetUserPolicyDelegate().
-  raw_ptr<ProxyPolicyProvider, ExperimentalAsh>
+  raw_ptr<ProxyPolicyProvider, DanglingUntriaged | ExperimentalAsh>
       global_user_cloud_policy_provider_ = nullptr;
 
   std::unique_ptr<DeviceNetworkConfigurationUpdaterAsh>

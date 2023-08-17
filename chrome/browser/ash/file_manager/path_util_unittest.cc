@@ -729,8 +729,9 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   arc::FakeFileSystemInstance fake_file_system_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_;
-  raw_ptr<TestingProfile, ExperimentalAsh> secondary_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> primary_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
+      secondary_profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   base::FilePath drive_mount_point_;

@@ -27,7 +27,8 @@ class ChromeAppWindowTrackerAshFake : public ChromeAppWindowTrackerAsh {
   }
 
   std::string last_updated_app_id_;
-  raw_ptr<aura::Window, ExperimentalAsh> last_updated_window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh>
+      last_updated_window_ = nullptr;
 };
 
 class ChromeAppWindowTrackerAsh : public testing::Test {

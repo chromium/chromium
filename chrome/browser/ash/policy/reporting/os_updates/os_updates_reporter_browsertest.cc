@@ -121,8 +121,8 @@ class OsUpdatesReporterBrowserTest
 
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
-  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> fake_update_engine_client_ =
-      nullptr;
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+      fake_update_engine_client_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(OsUpdatesReporterBrowserTest, ReportUpdateSuccessEvent) {

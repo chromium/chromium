@@ -165,11 +165,12 @@ class ArcUsbHostPermissionTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_pref_;
-  raw_ptr<ArcUsbHostPermissionManager, ExperimentalAsh>
+  raw_ptr<ArcAppListPrefs, DanglingUntriaged | ExperimentalAsh>
+      arc_app_list_pref_;
+  raw_ptr<ArcUsbHostPermissionManager, DanglingUntriaged | ExperimentalAsh>
       arc_usb_permission_manager_;
   std::unique_ptr<FakeAppInstance> app_instance_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
 };
 
 class ArcUsbHostKioskPermissionTest : public ArcUsbHostPermissionTest {

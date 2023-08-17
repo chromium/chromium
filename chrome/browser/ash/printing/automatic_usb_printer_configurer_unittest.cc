@@ -88,7 +88,8 @@ class FakeObservablePrintersManager {
     observer_->OnPrintersChanged(printer_class, printers_.Get(printer_class));
   }
 
-  raw_ptr<CupsPrintersManager::Observer, ExperimentalAsh> observer_;
+  raw_ptr<CupsPrintersManager::Observer, DanglingUntriaged | ExperimentalAsh>
+      observer_;
   PrintersMap printers_;
 };
 

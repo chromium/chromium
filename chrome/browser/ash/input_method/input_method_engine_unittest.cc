@@ -169,7 +169,7 @@ class InputMethodEngineTest : public testing::Test {
 
   std::unique_ptr<InputMethodEngine> engine_;
 
-  raw_ptr<TestObserver, ExperimentalAsh> observer_;
+  raw_ptr<TestObserver, DanglingUntriaged | ExperimentalAsh> observer_;
   std::vector<std::string> languages_;
   std::vector<std::string> layouts_;
   GURL options_page_;

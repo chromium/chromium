@@ -192,9 +192,9 @@ class ConnectionManagerTest : public testing::Test {
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
   std::unique_ptr<FakeAndroidSmsAppManager> fake_android_sms_app_manager_;
-  raw_ptr<FakeConnectionEstablisher, ExperimentalAsh>
+  raw_ptr<FakeConnectionEstablisher, DanglingUntriaged | ExperimentalAsh>
       fake_connection_establisher_;
-  raw_ptr<TestServiceWorkerProvider, ExperimentalAsh>
+  raw_ptr<TestServiceWorkerProvider, DanglingUntriaged | ExperimentalAsh>
       test_service_worker_provider_;
 
   std::unique_ptr<ConnectionManager> connection_manager_;

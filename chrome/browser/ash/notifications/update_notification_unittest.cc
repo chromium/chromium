@@ -100,13 +100,15 @@ class UpdateNotificationTest : public testing::Test,
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<FakeChromeUserManager> user_manager_;
-  raw_ptr<FakeProfileManager, ExperimentalAsh> fake_profile_manager_;
+  raw_ptr<FakeProfileManager, DanglingUntriaged | ExperimentalAsh>
+      fake_profile_manager_;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir user_data_dir_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<StubNotificationDisplayService, ExperimentalAsh> display_service_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<StubNotificationDisplayService, DanglingUntriaged | ExperimentalAsh>
+      display_service_;
 };
 
 INSTANTIATE_TEST_SUITE_P(UpdateNotification,

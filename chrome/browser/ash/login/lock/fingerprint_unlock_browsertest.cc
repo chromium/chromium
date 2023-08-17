@@ -216,7 +216,8 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<FakeBiodClient, ExperimentalAsh> biod_;  // Non-owning pointer.
+  raw_ptr<FakeBiodClient, DanglingUntriaged | ExperimentalAsh>
+      biod_;  // Non-owning pointer.
   std::unique_ptr<base::SimpleTestClock> test_clock_;
   std::unique_ptr<base::SimpleTestTickClock> test_tick_clock_;
 
@@ -232,7 +233,8 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
 
   base::OnceClosure fingerprint_session_callback_;
 
-  raw_ptr<QuickUnlockStorage, ExperimentalAsh> quick_unlock_storage_;
+  raw_ptr<QuickUnlockStorage, DanglingUntriaged | ExperimentalAsh>
+      quick_unlock_storage_;
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
   std::unique_ptr<quick_unlock::TestApi> test_api_;

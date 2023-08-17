@@ -246,7 +246,8 @@ class FileChangeServiceTest : public BrowserWithTestWindowTest {
     return CreateProfileWithName(kPrimaryProfileName);
   }
 
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 

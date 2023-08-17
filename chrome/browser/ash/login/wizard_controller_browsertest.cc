@@ -852,51 +852,55 @@ class WizardControllerFlowTest : public WizardControllerTest {
 
   // All of the *Screen types are owned by WizardController. The views are owned
   // by this test class.
-  raw_ptr<MockWelcomeScreen, ExperimentalAsh> mock_welcome_screen_ = nullptr;
+  raw_ptr<MockWelcomeScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_welcome_screen_ = nullptr;
 
-  raw_ptr<MockNetworkScreen, ExperimentalAsh> mock_network_screen_ = nullptr;
+  raw_ptr<MockNetworkScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_network_screen_ = nullptr;
   std::unique_ptr<MockNetworkScreenView> mock_network_screen_view_;
 
-  raw_ptr<MockUpdateScreen, ExperimentalAsh> mock_update_screen_ = nullptr;
+  raw_ptr<MockUpdateScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_update_screen_ = nullptr;
   std::unique_ptr<MockUpdateView> mock_update_view_;
 
-  raw_ptr<MockEnrollmentScreen, ExperimentalAsh> mock_enrollment_screen_ =
-      nullptr;
+  raw_ptr<MockEnrollmentScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_enrollment_screen_ = nullptr;
   std::unique_ptr<MockEnrollmentScreenView> mock_enrollment_screen_view_;
 
   // Auto enrollment check screen is a nice mock because it may or may not be
   // shown depending on when asynchronous auto enrollment check finishes. Only
   // add expectations for this if you are sure they are not affected by race
   // conditions.
-  raw_ptr<testing::NiceMock<MockAutoEnrollmentCheckScreen>, ExperimentalAsh>
+  raw_ptr<testing::NiceMock<MockAutoEnrollmentCheckScreen>,
+          DanglingUntriaged | ExperimentalAsh>
       mock_auto_enrollment_check_screen_ = nullptr;
   std::unique_ptr<MockAutoEnrollmentCheckScreenView>
       mock_auto_enrollment_check_screen_view_;
 
-  raw_ptr<MockWrongHWIDScreen, ExperimentalAsh> mock_wrong_hwid_screen_ =
-      nullptr;
+  raw_ptr<MockWrongHWIDScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_wrong_hwid_screen_ = nullptr;
   std::unique_ptr<MockWrongHWIDScreenView> mock_wrong_hwid_screen_view_;
 
-  raw_ptr<MockEnableAdbSideloadingScreen, ExperimentalAsh>
+  raw_ptr<MockEnableAdbSideloadingScreen, DanglingUntriaged | ExperimentalAsh>
       mock_enable_adb_sideloading_screen_ = nullptr;
   std::unique_ptr<MockEnableAdbSideloadingScreenView>
       mock_enable_adb_sideloading_screen_view_;
 
-  raw_ptr<MockEnableDebuggingScreen, ExperimentalAsh>
+  raw_ptr<MockEnableDebuggingScreen, DanglingUntriaged | ExperimentalAsh>
       mock_enable_debugging_screen_ = nullptr;
   std::unique_ptr<MockEnableDebuggingScreenView>
       mock_enable_debugging_screen_view_;
 
-  raw_ptr<MockDemoSetupScreen, ExperimentalAsh> mock_demo_setup_screen_ =
-      nullptr;
+  raw_ptr<MockDemoSetupScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_demo_setup_screen_ = nullptr;
   std::unique_ptr<MockDemoSetupScreenView> mock_demo_setup_screen_view_;
 
-  raw_ptr<MockDemoPreferencesScreen, ExperimentalAsh>
+  raw_ptr<MockDemoPreferencesScreen, DanglingUntriaged | ExperimentalAsh>
       mock_demo_preferences_screen_ = nullptr;
   std::unique_ptr<MockDemoPreferencesScreenView>
       mock_demo_preferences_screen_view_;
 
-  raw_ptr<MockConsolidatedConsentScreen, ExperimentalAsh>
+  raw_ptr<MockConsolidatedConsentScreen, DanglingUntriaged | ExperimentalAsh>
       mock_consolidated_consent_screen_ = nullptr;
   std::unique_ptr<MockConsolidatedConsentScreenView>
       mock_consolidated_consent_screen_view_;
@@ -906,7 +910,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
-  raw_ptr<NetworkPortalDetectorTestImpl, ExperimentalAsh>
+  raw_ptr<NetworkPortalDetectorTestImpl, DanglingUntriaged | ExperimentalAsh>
       network_portal_detector_ = nullptr;
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
 };
@@ -2862,10 +2866,12 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
   }
 
   std::unique_ptr<MockWelcomeView> mock_welcome_view_;
-  raw_ptr<MockWelcomeScreen, ExperimentalAsh> mock_welcome_screen_;
+  raw_ptr<MockWelcomeScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_welcome_screen_;
 
   std::unique_ptr<MockEnrollmentScreenView> mock_enrollment_screen_view_;
-  raw_ptr<MockEnrollmentScreen, ExperimentalAsh> mock_enrollment_screen_;
+  raw_ptr<MockEnrollmentScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_enrollment_screen_;
 
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
 };
@@ -3024,7 +3030,8 @@ class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
         policy::AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
   }
 
-  raw_ptr<FakeRollbackNetworkConfig, ExperimentalAsh> network_config_;
+  raw_ptr<FakeRollbackNetworkConfig, DanglingUntriaged | ExperimentalAsh>
+      network_config_;
 };
 
 // Ensure that enrollment screen is triggered after auto enrollment check

@@ -175,7 +175,8 @@ class ArcKioskAppServiceTest : public testing::Test {
   std::unique_ptr<ArcKioskAppManager> app_manager_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
 
-  raw_ptr<arc::ArcPolicyBridge, ExperimentalAsh> arc_policy_bridge_;
+  raw_ptr<arc::ArcPolicyBridge, DanglingUntriaged | ExperimentalAsh>
+      arc_policy_bridge_;
 };
 
 TEST_F(ArcKioskAppServiceTest, LaunchConditions) {

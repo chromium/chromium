@@ -242,13 +242,16 @@ class CrostiniManagerTest : public testing::Test {
         user_manager::UserManager::Get());
   }
 
-  raw_ptr<ash::FakeCiceroneClient, ExperimentalAsh> fake_cicerone_client_;
-  raw_ptr<ash::FakeConciergeClient, ExperimentalAsh> fake_concierge_client_;
-  raw_ptr<ash::FakeAnomalyDetectorClient, ExperimentalAsh>
+  raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged | ExperimentalAsh>
+      fake_cicerone_client_;
+  raw_ptr<ash::FakeConciergeClient, DanglingUntriaged | ExperimentalAsh>
+      fake_concierge_client_;
+  raw_ptr<ash::FakeAnomalyDetectorClient, DanglingUntriaged | ExperimentalAsh>
       fake_anomaly_detector_client_;
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<CrostiniManager, ExperimentalAsh> crostini_manager_;
+  raw_ptr<CrostiniManager, DanglingUntriaged | ExperimentalAsh>
+      crostini_manager_;
   const guest_os::GuestId container_id_ =
       guest_os::GuestId(kCrostiniDefaultVmType, kVmName, kContainerName);
   device::FakeUsbDeviceManager fake_usb_manager_;
@@ -2291,7 +2294,7 @@ class CrostiniManagerAnsibleInfraTest : public CrostiniManagerRestartTest {
   }
 
   std::unique_ptr<AnsibleManagementTestHelper> ansible_management_test_helper_;
-  raw_ptr<MockAnsibleManagementService, ExperimentalAsh>
+  raw_ptr<MockAnsibleManagementService, DanglingUntriaged | ExperimentalAsh>
       mock_ansible_management_service_;
 };
 

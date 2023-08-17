@@ -167,7 +167,8 @@ class AndroidSmsAppManagerImplTest : public testing::Test {
   std::unique_ptr<FakeAndroidSmsAppSetupController>
       fake_android_sms_app_setup_controller_;
 
-  raw_ptr<TestPwaDelegate, ExperimentalAsh> test_pwa_delegate_;
+  raw_ptr<TestPwaDelegate, DanglingUntriaged | ExperimentalAsh>
+      test_pwa_delegate_;
   std::unique_ptr<TestObserver> test_observer_;
 
   std::unique_ptr<AndroidSmsAppManagerImpl> android_sms_app_manager_;

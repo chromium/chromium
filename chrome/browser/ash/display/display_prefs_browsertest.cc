@@ -48,7 +48,7 @@ class DisplayPrefsBrowserTest : public InProcessBrowserTest {
     return result;
   }
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
 };
 
 // Test that display prefs are registered in the browser local_state

@@ -292,7 +292,8 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
   }
 
   // Unowned.
-  raw_ptr<FakeAccessibilityService, ExperimentalAsh> fake_service_ = nullptr;
+  raw_ptr<FakeAccessibilityService, DanglingUntriaged | ExperimentalAsh>
+      fake_service_ = nullptr;
 
  private:
   std::unique_ptr<KeyedService> CreateTestAccessibilityService(

@@ -26,7 +26,8 @@ class AppZeroStateProvider : public SearchProvider {
   ash::AppListSearchResultType ResultType() const override;
 
  private:
-  const raw_ptr<AppSearchDataSource, ExperimentalAsh> data_source_;
+  const raw_ptr<AppSearchDataSource, DanglingUntriaged | ExperimentalAsh>
+      data_source_;
 };
 
 }  // namespace app_list

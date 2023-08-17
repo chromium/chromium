@@ -50,7 +50,7 @@ class ArcPlayStoreSearchProvider : public SearchProvider {
 
   const int max_results_;
   const raw_ptr<Profile, ExperimentalAsh> profile_;  // Owned by ProfileInfo.
-  const raw_ptr<AppListControllerDelegate, ExperimentalAsh>
+  const raw_ptr<AppListControllerDelegate, DanglingUntriaged | ExperimentalAsh>
       list_controller_;        // Owned by AppListClient.
   std::u16string last_query_;  // Most recent query issued.
   base::WeakPtrFactory<ArcPlayStoreSearchProvider> weak_ptr_factory_{this};

@@ -142,7 +142,8 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
   const raw_ptr<TestingProfile, ExperimentalAsh> profile_;
-  const raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager user_manager_owner_;
   raw_ptr<HoldingSpaceKeyedService, ExperimentalAsh>
       holding_space_keyed_service_;

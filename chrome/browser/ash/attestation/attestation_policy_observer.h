@@ -39,7 +39,7 @@ class AttestationPolicyObserver {
   // Checks attestation policy and starts any necessary work.
   void Start();
 
-  raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
+  raw_ptr<CrosSettings, DanglingUntriaged | ExperimentalAsh> cros_settings_;
   raw_ptr<MachineCertificateUploader, ExperimentalAsh> certificate_uploader_;
 
   base::CallbackListSubscription attestation_subscription_;

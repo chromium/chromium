@@ -37,7 +37,7 @@ class OwnerFlagsStorage : public ::flags_ui::PrefServiceFlagsStorage {
   bool SetFlags(const std::set<std::string>& flags) override;
 
  private:
-  raw_ptr<ownership::OwnerSettingsService, ExperimentalAsh>
+  raw_ptr<ownership::OwnerSettingsService, DanglingUntriaged | ExperimentalAsh>
       owner_settings_service_;
 };
 

@@ -68,7 +68,8 @@ class InSessionPasswordSyncManagerTest : public testing::Test {
   raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_ = nullptr;
   raw_ptr<TestingProfile, ExperimentalAsh> secondary_profile_ = nullptr;
 
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_ = nullptr;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<MockLockHandler> lock_handler_;
   std::unique_ptr<InSessionPasswordSyncManager> manager_;

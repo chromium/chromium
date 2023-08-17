@@ -117,11 +117,12 @@ class DlpFilesPolicyServiceProviderTest
 
   content::BrowserTaskEnvironment task_environment_;
 
-  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ =
-      nullptr;
+  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
+      mock_rules_manager_ = nullptr;
 
   const std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 
   std::unique_ptr<DlpFilesPolicyServiceProvider> dlp_policy_service_;

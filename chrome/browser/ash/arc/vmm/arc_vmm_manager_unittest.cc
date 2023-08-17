@@ -220,8 +220,10 @@ class ArcVmmManagerTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
-  raw_ptr<ArcVmmManager, ExperimentalAsh> manager_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
+      testing_profile_ = nullptr;
+  raw_ptr<ArcVmmManager, DanglingUntriaged | ExperimentalAsh> manager_ =
+      nullptr;
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
 };

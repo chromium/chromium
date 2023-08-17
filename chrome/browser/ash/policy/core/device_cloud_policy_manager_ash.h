@@ -218,9 +218,9 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   // Manages external data referenced by device policies.
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
 
-  raw_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
+  raw_ptr<ServerBackedStateKeysBroker, DanglingUntriaged> state_keys_broker_;
 
-  raw_ptr<StartCrdSessionJobDelegate> crd_delegate_;
+  raw_ptr<StartCrdSessionJobDelegate, DanglingUntriaged> crd_delegate_;
 
   // Helper object that handles updating the server with our current device
   // state.

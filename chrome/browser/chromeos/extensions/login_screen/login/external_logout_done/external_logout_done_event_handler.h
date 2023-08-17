@@ -38,7 +38,7 @@ class ExternalLogoutDoneEventHandler
   void SetEventRouterForTesting(EventRouter* event_router);
 
  private:
-  raw_ptr<EventRouter, ExperimentalAsh> event_router_;
+  raw_ptr<EventRouter, DanglingUntriaged | ExperimentalAsh> event_router_;
   base::ScopedObservation<crosapi::LoginAsh,
                           crosapi::LoginAsh::ExternalLogoutDoneObserver>
       scoped_observation_{this};

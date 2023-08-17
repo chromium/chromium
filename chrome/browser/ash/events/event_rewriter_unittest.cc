@@ -413,10 +413,11 @@ class EventRewriterTest : public ChromeAshTestBase {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh>
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
       fake_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
-  raw_ptr<input_method::MockInputMethodManagerImpl, ExperimentalAsh>
+  raw_ptr<input_method::MockInputMethodManagerImpl,
+          DanglingUntriaged | ExperimentalAsh>
       input_method_manager_mock_;
   testing::FakeUdevLoader fake_udev_;
   ui::DeviceDataManagerTestApi device_data_manager_test_api_;
@@ -4539,7 +4540,8 @@ class EventRewriterAshTest : public ChromeAshTestBase {
   }
 
  protected:
-  raw_ptr<StickyKeysController, ExperimentalAsh> sticky_keys_controller_;
+  raw_ptr<StickyKeysController, DanglingUntriaged | ExperimentalAsh>
+      sticky_keys_controller_;
   std::unique_ptr<MockInputDeviceSettingsController>
       input_device_settings_controller_mock_;
   mojom::KeyboardSettingsPtr keyboard_settings;
@@ -4555,7 +4557,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
   EventBuffer buffer_;
   TestEventSource source_;
 
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh>
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
       fake_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
@@ -5141,7 +5143,7 @@ class StickyKeysOverlayTest : public EventRewriterAshTest {
     ASSERT_TRUE(overlay_);
   }
 
-  raw_ptr<StickyKeysOverlay, ExperimentalAsh> overlay_;
+  raw_ptr<StickyKeysOverlay, DanglingUntriaged | ExperimentalAsh> overlay_;
 };
 
 TEST_F(StickyKeysOverlayTest, OneModifierEnabled) {

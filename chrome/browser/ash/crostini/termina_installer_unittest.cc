@@ -99,7 +99,8 @@ class TerminaInstallTest : public testing::Test {
  protected:
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
-  raw_ptr<ash::FakeDlcserviceClient, ExperimentalAsh> fake_dlc_client_;
+  raw_ptr<ash::FakeDlcserviceClient, DanglingUntriaged | ExperimentalAsh>
+      fake_dlc_client_;
   TerminaInstaller termina_installer_;
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

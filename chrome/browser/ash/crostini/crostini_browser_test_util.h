@@ -42,7 +42,8 @@ class CrostiniBrowserTestBase : public InProcessBrowserTest {
   crostini::FakeCrostiniFeatures fake_crostini_features_;
 
   // Owned by content::Browser
-  raw_ptr<CrostiniBrowserTestChromeBrowserMainExtraParts, ExperimentalAsh>
+  raw_ptr<CrostiniBrowserTestChromeBrowserMainExtraParts,
+          DanglingUntriaged | ExperimentalAsh>
       extra_parts_ = nullptr;
 
  private:
@@ -55,7 +56,8 @@ class CrostiniBrowserTestBase : public InProcessBrowserTest {
                      ash::disks::DiskMountManager::MountPathCallback callback);
 
   // Owned by ash::disks::DiskMountManager;
-  raw_ptr<ash::disks::MockDiskMountManager, ExperimentalAsh> dmgr_;
+  raw_ptr<ash::disks::MockDiskMountManager, DanglingUntriaged | ExperimentalAsh>
+      dmgr_;
 };
 
 #endif  // CHROME_BROWSER_ASH_CROSTINI_CROSTINI_BROWSER_TEST_UTIL_H_

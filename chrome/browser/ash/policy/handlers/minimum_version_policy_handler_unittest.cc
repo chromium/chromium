@@ -96,7 +96,7 @@ class MinimumVersionPolicyHandlerTest
   base::test::ScopedFeatureList feature_list_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
-  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh>
+  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
       fake_update_engine_client_;
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<base::Version> current_version_;

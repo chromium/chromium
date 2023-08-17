@@ -86,7 +86,7 @@ class AppSearchDataSource : public apps::AppRegistryCache::Observer {
   // repeatedly calling `Refresh()` during batch updates in app service.
   void ScheduleRefresh();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
   const raw_ptr<base::Clock, ExperimentalAsh> clock_;
 

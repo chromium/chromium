@@ -209,7 +209,7 @@ class MultiProfileUserControllerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh>
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
       fake_user_manager_;  // Not owned
   user_manager::ScopedUserManager user_manager_enabler_;
 

@@ -278,7 +278,7 @@ class SystemNotificationManager {
   std::map<std::string, SystemNotificationManagerMountStatus> mount_status_;
 
   // User profile.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
 
   // Application name (used for notification display source).
   std::u16string const app_name_;
@@ -288,7 +288,8 @@ class SystemNotificationManager {
       drivefs_event_router_ = nullptr;
 
   // IOTaskController is owned by VolumeManager.
-  raw_ptr<file_manager::io_task::IOTaskController, ExperimentalAsh>
+  raw_ptr<file_manager::io_task::IOTaskController,
+          DanglingUntriaged | ExperimentalAsh>
       io_task_controller_ = nullptr;
 
   // Keep track of the bulk-pinning stage.

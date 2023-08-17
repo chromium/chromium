@@ -123,7 +123,7 @@ class AppWindowCloser : public BrowserListObserver {
   }
 
  private:
-  raw_ptr<Browser, ExperimentalAsh> app_browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged | ExperimentalAsh> app_browser_ = nullptr;
   // TODO(crbug/1379290): Use `TestFuture<void>` in all these tests
   TestFuture<bool> closed_waiter_;
 };
@@ -210,7 +210,7 @@ class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
 
  protected:
   AccountId account_id_;
-  raw_ptr<web_app::TestWebAppUrlLoader, ExperimentalAsh>
+  raw_ptr<web_app::TestWebAppUrlLoader, DanglingUntriaged | ExperimentalAsh>
       url_loader_;  // Owned by `launcher_`.
 
  private:
@@ -347,7 +347,8 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
 };

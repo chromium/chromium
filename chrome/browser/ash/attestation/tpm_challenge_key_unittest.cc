@@ -62,7 +62,7 @@ class TpmChallengeKeyTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  raw_ptr<MockTpmChallengeKeySubtle, ExperimentalAsh>
+  raw_ptr<MockTpmChallengeKeySubtle, DanglingUntriaged | ExperimentalAsh>
       mock_tpm_challenge_key_subtle_ = nullptr;
   std::unique_ptr<TpmChallengeKey> challenge_key_;
   // In the current implementation of TpmChallengeKey the profile is just

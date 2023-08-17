@@ -74,8 +74,10 @@ class ChromeAppListItemTest : public InProcessBrowserTest {
   Profile* profile() { return ProfileManager::GetActiveUserProfile(); }
 
  protected:
-  raw_ptr<AppListClientImpl, ExperimentalAsh> client_ = nullptr;
-  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_ = nullptr;
+  raw_ptr<AppListClientImpl, DanglingUntriaged | ExperimentalAsh> client_ =
+      nullptr;
+  raw_ptr<AppListModelUpdater, DanglingUntriaged | ExperimentalAsh>
+      model_updater_ = nullptr;
 };
 
 // Tests that app icon load is deferred until UI is shown.

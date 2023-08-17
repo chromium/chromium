@@ -57,8 +57,9 @@ class LowDiskSpaceDialogViewTest : public CompatModeTestBase {
   bool should_open_storage_settings_ = false;
   int on_close_callback_count_ = 0;
   std::unique_ptr<views::Widget> arc_widget_;
-  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_;
-  raw_ptr<LowDiskSpaceDialogView, ExperimentalAsh> dialog_view_;
+  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> bubble_widget_;
+  raw_ptr<LowDiskSpaceDialogView, DanglingUntriaged | ExperimentalAsh>
+      dialog_view_;
 };
 
 TEST_F(LowDiskSpaceDialogViewTest, ConstructDestruct) {

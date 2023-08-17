@@ -139,8 +139,8 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
   std::string crostini_mount_name_;
   base::FilePath crostini_dir_;
 
-  raw_ptr<FakeSeneschalClient, ExperimentalAsh> fake_seneschal_client_ =
-      nullptr;
+  raw_ptr<FakeSeneschalClient, DanglingUntriaged | ExperimentalAsh>
+      fake_seneschal_client_ = nullptr;
 };
 
 TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {

@@ -343,16 +343,17 @@ class CrostiniPackageServiceTest : public testing::Test {
     fake_cicerone_client_->InstallLinuxPackageProgress(signal);
   }
 
-  raw_ptr<FakeCiceroneClient, ExperimentalAsh> fake_cicerone_client_ = nullptr;
-  raw_ptr<FakeSeneschalClient, ExperimentalAsh> fake_seneschal_client_ =
-      nullptr;
+  raw_ptr<FakeCiceroneClient, DanglingUntriaged | ExperimentalAsh>
+      fake_cicerone_client_ = nullptr;
+  raw_ptr<FakeSeneschalClient, DanglingUntriaged | ExperimentalAsh>
+      fake_seneschal_client_ = nullptr;
 
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> crostini_test_helper_;
   std::unique_ptr<NotificationDisplayServiceTester>
       notification_display_service_tester_;
-  raw_ptr<StubNotificationDisplayService, ExperimentalAsh>
+  raw_ptr<StubNotificationDisplayService, DanglingUntriaged | ExperimentalAsh>
       notification_display_service_;
   std::unique_ptr<CrostiniPackageService> service_;
 

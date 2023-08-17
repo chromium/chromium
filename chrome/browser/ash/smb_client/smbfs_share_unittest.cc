@@ -150,7 +150,8 @@ class SmbFsShareTest : public testing::Test {
   SmbFsShare::MounterCreationCallback mounter_creation_callback_;
   std::unique_ptr<MockSmbFsMounter> mounter_ =
       std::make_unique<MockSmbFsMounter>();
-  raw_ptr<MockSmbFsMounter, ExperimentalAsh> raw_mounter_ = mounter_.get();
+  raw_ptr<MockSmbFsMounter, DanglingUntriaged | ExperimentalAsh> raw_mounter_ =
+      mounter_.get();
 };
 
 TEST_F(SmbFsShareTest, Mount) {

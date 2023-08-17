@@ -85,7 +85,7 @@ class BrowserRemovalObserver final : public BrowserListObserver {
   }
 
  private:
-  raw_ptr<Browser, ExperimentalAsh> browser_;
+  raw_ptr<Browser, DanglingUntriaged | ExperimentalAsh> browser_;
   base::OnceClosure callback_;
 };
 

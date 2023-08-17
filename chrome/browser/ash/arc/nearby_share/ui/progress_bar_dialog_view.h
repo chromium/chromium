@@ -44,10 +44,12 @@ class ProgressBarDialogView : public views::BoxLayoutView {
 
  private:
   // Progress bar view to show file streaming progress to the user.
-  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
+  raw_ptr<views::ProgressBar, DanglingUntriaged | ExperimentalAsh>
+      progress_bar_ = nullptr;
 
   // Message label for the progress bar.
-  raw_ptr<views::Label, ExperimentalAsh> message_label_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh> message_label_ =
+      nullptr;
 
   // Indicates whether multiple files are being shared for UI string.
   const bool is_multiple_files_;

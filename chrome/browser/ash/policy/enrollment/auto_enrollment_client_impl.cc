@@ -395,7 +395,8 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
     }
   }
 
-  raw_ptr<DeviceManagementService, ExperimentalAsh> device_management_service_;
+  raw_ptr<DeviceManagementService, DanglingUntriaged | ExperimentalAsh>
+      device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   raw_ptr<PrefService, ExperimentalAsh> local_state_;
   const std::string device_id_;
@@ -707,7 +708,8 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
     std::move(completion_callback_).Run(result);
   }
 
-  raw_ptr<DeviceManagementService, ExperimentalAsh> device_management_service_;
+  raw_ptr<DeviceManagementService, DanglingUntriaged | ExperimentalAsh>
+      device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   raw_ptr<PrefService, ExperimentalAsh> local_state_;
   const std::string device_id_;

@@ -457,7 +457,8 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
   TestingProfile profile_;
   raw_ptr<HostContentSettingsMap, ExperimentalAsh> host_content_settings_map_;
   std::unique_ptr<FakeCookieManager> fake_cookie_manager_;
-  raw_ptr<TestPwaDelegate, ExperimentalAsh> test_pwa_delegate_;
+  raw_ptr<TestPwaDelegate, DanglingUntriaged | ExperimentalAsh>
+      test_pwa_delegate_;
   std::unique_ptr<AndroidSmsAppSetupController> setup_controller_;
 };
 

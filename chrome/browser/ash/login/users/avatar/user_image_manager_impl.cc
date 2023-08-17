@@ -241,7 +241,7 @@ class UserImageManagerImpl::Job {
 
   const AccountId& account_id() const { return parent_->account_id_; }
 
-  raw_ptr<UserImageManagerImpl, ExperimentalAsh> parent_;
+  raw_ptr<UserImageManagerImpl, DanglingUntriaged | ExperimentalAsh> parent_;
 
   // Whether one of the Load*() or Set*() methods has been run already.
   bool run_;

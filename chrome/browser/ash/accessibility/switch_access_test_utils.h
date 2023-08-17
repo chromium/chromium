@@ -43,7 +43,7 @@ class SwitchAccessTestUtils {
   void WaitForJS(const std::string& js_to_eval);
   void InjectFocusRingWatcher();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
 };
 

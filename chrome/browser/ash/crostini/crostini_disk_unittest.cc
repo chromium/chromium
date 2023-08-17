@@ -92,7 +92,8 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
   Profile* profile() { return profile_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<ash::FakeConciergeClient, ExperimentalAsh> fake_concierge_client_;
+  raw_ptr<ash::FakeConciergeClient, DanglingUntriaged | ExperimentalAsh>
+      fake_concierge_client_;
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;

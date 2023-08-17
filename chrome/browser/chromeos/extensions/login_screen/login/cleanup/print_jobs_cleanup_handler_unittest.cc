@@ -141,7 +141,7 @@ class PrintJobsCleanupHandlerUnittest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   TestingPrefServiceSimple test_prefs_;
   TestingProfileManager testing_profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> testing_profile_;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<ash::TestCupsPrintJobManager> print_job_manager_;
   std::unique_ptr<history::HistoryService> history_service_;

@@ -350,11 +350,12 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   // Owned by |device_scheduled_update_checker_|
-  raw_ptr<FakeScheduledTaskExecutor, ExperimentalAsh> scheduled_task_executor_;
+  raw_ptr<FakeScheduledTaskExecutor, DanglingUntriaged | ExperimentalAsh>
+      scheduled_task_executor_;
   std::unique_ptr<DeviceScheduledUpdateCheckerForTest>
       device_scheduled_update_checker_;
   ash::ScopedTestingCrosSettings cros_settings_;
-  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh>
+  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
       fake_update_engine_client_;
   std::unique_ptr<ash::NetworkStateTestHelper> network_state_test_helper_;
   device::TestWakeLockProvider wake_lock_provider_;

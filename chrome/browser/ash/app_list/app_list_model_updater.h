@@ -38,7 +38,8 @@ class AppListModelUpdater {
     }
 
    private:
-    const raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_;
+    const raw_ptr<AppListModelUpdater, DanglingUntriaged | ExperimentalAsh>
+        model_updater_;
   };
 
   virtual ~AppListModelUpdater();

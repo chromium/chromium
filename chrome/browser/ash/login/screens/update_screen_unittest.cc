@@ -113,9 +113,10 @@ class UpdateScreenUnitTest : public testing::Test {
   MockUpdateView mock_view_;
   MockErrorScreenView mock_error_view_;
   std::unique_ptr<MockErrorScreen> mock_error_screen_;
-  raw_ptr<MockNetworkPortalDetector, ExperimentalAsh>
+  raw_ptr<MockNetworkPortalDetector, DanglingUntriaged | ExperimentalAsh>
       mock_network_portal_detector_;
-  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+      fake_update_engine_client_;
   std::unique_ptr<WizardContext> wizard_context_;
 
   absl::optional<UpdateScreen::Result> last_screen_result_;

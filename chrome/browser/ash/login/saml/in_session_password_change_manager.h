@@ -186,8 +186,9 @@ class InSessionPasswordChangeManager
                                AuthenticationError error);
   void OnPasswordUpdateSuccess(std::unique_ptr<UserContext> user_context);
 
-  raw_ptr<Profile, ExperimentalAsh> primary_profile_;
-  raw_ptr<const user_manager::User, ExperimentalAsh> primary_user_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> primary_profile_;
+  raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh>
+      primary_user_;
   base::ObserverList<Observer> observer_list_;
   RecheckPasswordExpiryTask recheck_task_;
   PasswordUpdateFlow password_update_flow_;

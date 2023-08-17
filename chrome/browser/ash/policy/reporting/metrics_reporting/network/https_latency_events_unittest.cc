@@ -183,7 +183,8 @@ class HttpsLatencyEventsTest : public ::testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;

@@ -80,7 +80,8 @@ class DlpFilesController {
   // TODO(b/284122497): Remove testing friend.
   FRIEND_TEST_ALL_PREFIXES(DlpFilesControllerComponentsTest, TestConvert);
 
-  const raw_ref<const DlpRulesManager, ExperimentalAsh> rules_manager_;
+  const raw_ref<const DlpRulesManager, DanglingUntriaged | ExperimentalAsh>
+      rules_manager_;
 };
 
 }  // namespace policy

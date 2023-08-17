@@ -123,7 +123,8 @@ class FileSystemProviderServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile, ExperimentalAsh> profile_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<extensions::ExtensionRegistry> extension_registry_;
   std::unique_ptr<Service> service_;

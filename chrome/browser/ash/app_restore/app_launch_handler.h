@@ -84,7 +84,7 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
       const std::string& app_id,
       const ::app_restore::RestoreData::LaunchList& launch_list);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   std::unique_ptr<::app_restore::RestoreData> restore_data_;
 
   base::ScopedObservation<apps::AppRegistryCache,

@@ -64,7 +64,8 @@ class HatsUnlockSurveyTrigger {
   Profile* GetProfile(const AccountId& account_id);
 
   std::unique_ptr<Impl> impl_;
-  raw_ptr<Profile, ExperimentalAsh> profile_for_testing_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_for_testing_ =
+      nullptr;
 };
 
 }  // namespace ash

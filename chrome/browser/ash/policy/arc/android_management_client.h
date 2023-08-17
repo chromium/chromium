@@ -101,7 +101,8 @@ class AndroidManagementClientImpl : public AndroidManagementClient {
   // The account ID that will be used for the access token fetch.
   const CoreAccountId account_id_;
 
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged | ExperimentalAsh>
+      identity_manager_;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
 
   StatusCallback callback_;

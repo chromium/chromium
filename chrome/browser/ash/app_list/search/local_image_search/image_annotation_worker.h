@@ -108,7 +108,8 @@ class ImageAnnotationWorker {
 
   // AnnotationStorage owns this ImageAnnotationWorker. All the methods must
   // be called from the main sequence.
-  raw_ptr<AnnotationStorage, ExperimentalAsh> annotation_storage_;
+  raw_ptr<AnnotationStorage, DanglingUntriaged | ExperimentalAsh>
+      annotation_storage_;
   // Controls the OCR library.
   screen_ai::ScreenAIServiceRouter screen_ai_service_router_;
 

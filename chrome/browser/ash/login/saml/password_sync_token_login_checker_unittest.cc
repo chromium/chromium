@@ -43,7 +43,8 @@ class PasswordSyncTokenLoginCheckerTest : public testing::Test {
 
   ScopedTestingLocalState scoped_local_state_;
   std::unique_ptr<net::BackoffEntry> sync_token_retry_backoff_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_ = nullptr;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<PasswordSyncTokenLoginChecker> checker_;
 };

@@ -32,7 +32,8 @@ class ProgressBarDialogViewTest : public CompatModeTestBase {
   }
 
  protected:
-  raw_ptr<ProgressBarDialogView, ExperimentalAsh> dialog_view_;
+  raw_ptr<ProgressBarDialogView, DanglingUntriaged | ExperimentalAsh>
+      dialog_view_;
   std::unique_ptr<views::Widget> widget_;
 };
 

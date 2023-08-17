@@ -105,7 +105,8 @@ class SoftBindAttestationFlowImpl : public SoftBindAttestationFlow {
                         base::Time not_valid_after,
                         std::string* pem_encoded_cert);
 
-  const raw_ptr<AttestationClient, ExperimentalAsh> attestation_client_;
+  const raw_ptr<AttestationClient, DanglingUntriaged | ExperimentalAsh>
+      attestation_client_;
   std::unique_ptr<AttestationFlow> attestation_flow_;
   std::set<std::string> renewals_in_progress_;
 

@@ -97,8 +97,8 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
   HttpRequestManagerGetter http_request_manager_getter_;
   bool successfully_resolved_hosts_ = true;
   bool failed_connection_ = false;
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_ =
-      nullptr;  // Unowned
+  raw_ptr<const base::TickClock, DanglingUntriaged | ExperimentalAsh>
+      tick_clock_ = nullptr;  // Unowned
   base::TimeTicks request_start_time_;
   base::TimeTicks request_end_time_;
   std::vector<GURL> hostnames_to_query_dns_;

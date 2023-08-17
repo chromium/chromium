@@ -220,7 +220,8 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
 
   TestLoginScreen test_login_screen_;
 
-  raw_ptr<FakeWindowFactory, ExperimentalAsh> fake_window_factory_ = nullptr;
+  raw_ptr<FakeWindowFactory, DanglingUntriaged | ExperimentalAsh>
+      fake_window_factory_ = nullptr;
 
   std::unique_ptr<UiHandler> ui_handler_;
 };

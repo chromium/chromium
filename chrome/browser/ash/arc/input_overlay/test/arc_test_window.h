@@ -30,7 +30,7 @@ class ArcTestWindow {
   void SetBounds(display::Display& display, gfx::Rect bounds);
 
  private:
-  raw_ptr<exo::Surface, ExperimentalAsh> surface_;
+  raw_ptr<exo::Surface, DanglingUntriaged | ExperimentalAsh> surface_;
   std::unique_ptr<exo::ClientControlledShellSurface> shell_surface_;
 };
 

@@ -124,9 +124,9 @@ class HelpAppSearchBrowserTest : public HelpAppSearchBrowserTestBase {
                       std::move(drive_continue_section_provider)));
   }
 
-  raw_ptr<TestContinueFilesSearchProvider, ExperimentalAsh>
+  raw_ptr<TestContinueFilesSearchProvider, DanglingUntriaged | ExperimentalAsh>
       local_continue_section_provider_ = nullptr;
-  raw_ptr<TestContinueFilesSearchProvider, ExperimentalAsh>
+  raw_ptr<TestContinueFilesSearchProvider, DanglingUntriaged | ExperimentalAsh>
       drive_continue_section_provider_ = nullptr;
 };
 

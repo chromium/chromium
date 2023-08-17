@@ -142,7 +142,7 @@ class BorealisWindowManager : public apps::InstanceRegistry::Observer {
   void HandleWindowDestruction(aura::Window* window, const std::string& app_id);
   void HandleWindowCreation(aura::Window* window, const std::string& app_id);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>
       instance_registry_observation_;

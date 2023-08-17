@@ -288,7 +288,8 @@ class SystemNotificationManagerTest
   // profile_ is owned by TestingProfileManager.
   raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   // notification_display_service is owned by NotificationDisplayServiceFactory.
-  raw_ptr<NotificationDisplayServiceImpl, ExperimentalAsh> display_service_;
+  raw_ptr<NotificationDisplayServiceImpl, DanglingUntriaged | ExperimentalAsh>
+      display_service_;
   std::unique_ptr<SystemNotificationManager> notification_manager_;
   std::unique_ptr<DeviceEventRouterImpl> event_router_;
 
@@ -298,10 +299,13 @@ class SystemNotificationManagerTest
   size_t notification_count_ = 0;
 
   // notification_platform_bridge is owned by NotificationDisplayService.
-  raw_ptr<TestNotificationPlatformBridgeDelegator, ExperimentalAsh> bridge_;
+  raw_ptr<TestNotificationPlatformBridgeDelegator,
+          DanglingUntriaged | ExperimentalAsh>
+      bridge_;
 
   // Used for tests with IOTask:
-  raw_ptr<io_task::IOTaskController, ExperimentalAsh> io_task_controller;
+  raw_ptr<io_task::IOTaskController, DanglingUntriaged | ExperimentalAsh>
+      io_task_controller;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   // Keep track of the task state transitions.
@@ -1740,8 +1744,9 @@ class SystemNotificationManagerPolicyTest
     return fpnm;
   }
 
-  raw_ptr<policy::MockFilesPolicyNotificationManager, ExperimentalAsh> fpnm_ =
-      nullptr;
+  raw_ptr<policy::MockFilesPolicyNotificationManager,
+          DanglingUntriaged | ExperimentalAsh>
+      fpnm_ = nullptr;
 };
 
 TEST_F(SystemNotificationManagerPolicyTest, HandleIOTaskProgressWarning) {

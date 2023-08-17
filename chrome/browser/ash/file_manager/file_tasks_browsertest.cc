@@ -1411,7 +1411,8 @@ class OneDriveTest : public TestAccountBrowserTest,
   std::unique_ptr<FakeWebAppPublisher> web_app_publisher_;
   base::FilePath relative_test_path_;
   base::FilePath test_path_within_odfs_;
-  raw_ptr<test::FakeProvidedFileSystemOneDrive, ExperimentalAsh>
+  raw_ptr<test::FakeProvidedFileSystemOneDrive,
+          DanglingUntriaged | ExperimentalAsh>
       provided_file_system_;  // Owned by Service.
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("chrome://abc");

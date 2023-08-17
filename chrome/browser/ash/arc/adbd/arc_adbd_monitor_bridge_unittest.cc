@@ -101,7 +101,7 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
   std::unique_ptr<FakeAdbdMonitorInstance> instance_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
-  raw_ptr<ArcAdbdMonitorBridge, ExperimentalAsh> bridge_;
+  raw_ptr<ArcAdbdMonitorBridge, DanglingUntriaged | ExperimentalAsh> bridge_;
 
   // List of upstart operations recorded. When it's "start" the boolean is set
   // to true.

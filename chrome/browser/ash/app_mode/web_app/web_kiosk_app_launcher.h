@@ -100,7 +100,7 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   KioskAppLauncher::ObserverList observers_;
-  raw_ptr<Browser, ExperimentalAsh> browser_ =
+  raw_ptr<Browser, DanglingUntriaged | ExperimentalAsh> browser_ =
       nullptr;  // Browser instance that runs the web kiosk app.
 
   // Web contents used for loading app info.

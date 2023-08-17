@@ -361,12 +361,14 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
   std::unique_ptr<FakeTabletMode> tablet_mode_controller_;
   std::unique_ptr<ash::ArcInputMethodBoundsTracker>
       input_method_bounds_tracker_;
-  raw_ptr<TestInputMethodManager, ExperimentalAsh> input_method_manager_ =
-      nullptr;
+  raw_ptr<TestInputMethodManager, DanglingUntriaged | ExperimentalAsh>
+      input_method_manager_ = nullptr;
   raw_ptr<TestInputMethodManagerBridge, ExperimentalAsh> test_bridge_ =
       nullptr;  // Owned by |service_|
-  raw_ptr<ArcInputMethodManagerService, ExperimentalAsh> service_ = nullptr;
-  raw_ptr<TestWindowDelegate, ExperimentalAsh> window_delegate_ = nullptr;
+  raw_ptr<ArcInputMethodManagerService, DanglingUntriaged | ExperimentalAsh>
+      service_ = nullptr;
+  raw_ptr<TestWindowDelegate, DanglingUntriaged | ExperimentalAsh>
+      window_delegate_ = nullptr;
 };
 
 }  // anonymous namespace

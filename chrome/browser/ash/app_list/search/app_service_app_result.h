@@ -47,7 +47,8 @@ class AppServiceAppResult : public AppResult {
   void CallLoadIcon(bool chip, bool allow_placeholder_icon);
   void OnLoadIcon(bool chip, apps::IconValuePtr icon_value);
 
-  const raw_ptr<apps::IconLoader, ExperimentalAsh> icon_loader_;
+  const raw_ptr<apps::IconLoader, DanglingUntriaged | ExperimentalAsh>
+      icon_loader_;
 
   // When non-nullptr, signifies that this object is using the most recent icon
   // fetched from |icon_loader_|. When destroyed, informs |icon_loader_| that

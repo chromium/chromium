@@ -299,7 +299,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
   base::FilePath test_data_dir_;
   base::FilePath user_data_dir_;
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
 
   gfx::ImageSkia decoded_image_;
 

@@ -132,7 +132,9 @@ class NetworkChangeManagerClientBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh> service_client_;
+  raw_ptr<ShillServiceClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      service_client_;
 };
 
 // Tests that network changes from shill are received by both the

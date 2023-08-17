@@ -541,7 +541,8 @@ class MultiProfileDriveFileSystemExtensionApiTest
       create_drive_integration_service_;
   std::unique_ptr<DriveIntegrationServiceFactory::ScopedFactoryForTest>
       service_factory_for_test_;
-  raw_ptr<Profile, ExperimentalAsh> second_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> second_profile_ =
+      nullptr;
   std::unordered_map<Profile*, std::unique_ptr<drive::FakeDriveFsHelper>>
       fake_drivefs_helpers_;
 };

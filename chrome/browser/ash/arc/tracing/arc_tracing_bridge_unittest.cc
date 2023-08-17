@@ -64,7 +64,7 @@ class ArcTracingBridgeTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
 
   ArcBridgeService bridge_service_;
   std::unique_ptr<ArcTracingBridge> tracing_bridge_;

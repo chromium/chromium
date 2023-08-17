@@ -105,7 +105,7 @@ class PrefsAsh : public mojom::Prefs,
   void OnAppTerminating();
 
   // In production, owned by g_browser_process, which outlives this object.
-  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  const raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
 
   PrefChangeRegistrar local_state_registrar_;
   std::unique_ptr<PrefChangeRegistrar> profile_prefs_registrar_;

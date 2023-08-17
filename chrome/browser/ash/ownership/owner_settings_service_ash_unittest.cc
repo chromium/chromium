@@ -154,7 +154,8 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
   }
 
  protected:
-  raw_ptr<OwnerSettingsServiceAsh, ExperimentalAsh> service_ = nullptr;
+  raw_ptr<OwnerSettingsServiceAsh, DanglingUntriaged | ExperimentalAsh>
+      service_ = nullptr;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<DeviceSettingsProvider> provider_;
   base::ScopedPathOverride user_data_dir_override_;

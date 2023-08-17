@@ -119,15 +119,16 @@ class ArcWallpaperServiceTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<arc::ArcWallpaperService, ExperimentalAsh> service_ = nullptr;
+  raw_ptr<arc::ArcWallpaperService, DanglingUntriaged | ExperimentalAsh>
+      service_ = nullptr;
   std::unique_ptr<arc::FakeWallpaperInstance> wallpaper_instance_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
 
  private:
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
-  const raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_ =
-      nullptr;
+  const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_ = nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
   arc::ArcServiceManager arc_service_manager_;
   // testing_profile_ needs to be deleted before arc_service_manager_.

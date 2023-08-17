@@ -87,7 +87,8 @@ class CameraGeneralSurveyHandlerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<MockDelegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<MockDelegate, DanglingUntriaged | ExperimentalAsh> delegate_ =
+      nullptr;
   std::unique_ptr<CameraGeneralSurveyHandler> survey_handler_;
 };
 

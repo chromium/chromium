@@ -342,14 +342,20 @@ class MetricReportingManagerTest
   }
 
   ::ash::SessionTerminationManager session_termination_manager_;
-  raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> info_queue_ptr_;
-  raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> telemetry_queue_ptr_;
-  raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> event_queue_ptr_;
-  raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> peripheral_queue_ptr_;
-  raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh>
+  raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
+      info_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
+      telemetry_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
+      event_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
+      peripheral_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
       user_telemetry_queue_ptr_;
-  raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> user_event_queue_ptr_;
-  raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> app_event_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
+      user_event_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
+      app_event_queue_ptr_;
 
   std::unique_ptr<::testing::NiceMock<MockDelegate>> mock_delegate_;
 };

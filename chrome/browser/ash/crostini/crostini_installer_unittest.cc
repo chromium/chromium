@@ -189,10 +189,10 @@ class CrostiniInstallerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   // Owned by DiskMountManager
-  raw_ptr<ash::disks::MockDiskMountManager, ExperimentalAsh>
+  raw_ptr<ash::disks::MockDiskMountManager, DanglingUntriaged | ExperimentalAsh>
       disk_mount_manager_mock_ = nullptr;
 
-  raw_ptr<WaitingFakeConciergeClient, ExperimentalAsh>
+  raw_ptr<WaitingFakeConciergeClient, DanglingUntriaged | ExperimentalAsh>
       waiting_fake_concierge_client_ = nullptr;
 
   std::unique_ptr<TestingProfile> profile_;

@@ -130,8 +130,8 @@ class BrowserUtilTest : public testing::Test {
   // destruction timing.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
-      nullptr;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   TestingPrefServiceSimple pref_service_;
   ash::system::FakeStatisticsProvider statistics_provider_;

@@ -193,7 +193,7 @@ class FileManagerFileAPIUtilTest : public ::testing::Test {
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
 };
 
 // Passes the |result| to the |output| pointer.

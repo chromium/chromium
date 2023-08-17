@@ -92,7 +92,7 @@ class ApkWebAppInstaller {
   // If |weak_owner_| is ever invalidated while this class is working,
   // installation will be aborted. |weak_owner_|'s lifetime must be equal to or
   // shorter than that of |profile_|.
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   bool is_web_only_twa_;
   absl::optional<std::string> sha256_fingerprint_;
   InstallFinishCallback callback_;

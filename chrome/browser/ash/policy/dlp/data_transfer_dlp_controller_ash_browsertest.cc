@@ -221,7 +221,8 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
                                 "PLACEHOLDER_IP"));
   }
 
-  raw_ptr<MockDlpRulesManager, ExperimentalAsh> rules_manager_;
+  raw_ptr<MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
+      rules_manager_;
   std::unique_ptr<DlpReportingManager> reporting_manager_;
   std::vector<DlpPolicyEvent> events;
   FakeClipboardNotifier helper_;

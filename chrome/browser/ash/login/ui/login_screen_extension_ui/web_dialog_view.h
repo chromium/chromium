@@ -45,7 +45,8 @@ class WebDialogView : public views::WebDialogView, public SystemTrayObserver {
  private:
   // views::WebDialogView extends views::DialogDelegate, so fully qualified name
   // is needed.
-  raw_ptr<login_screen_extension_ui::DialogDelegate, ExperimentalAsh>
+  raw_ptr<login_screen_extension_ui::DialogDelegate,
+          DanglingUntriaged | ExperimentalAsh>
       delegate_ = nullptr;
 };
 

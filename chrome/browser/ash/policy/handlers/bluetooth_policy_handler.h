@@ -36,7 +36,8 @@ class BluetoothPolicyHandler {
   // |Shutdown| on the Bluetooth stack in order to disable it.
   void SetBluetoothPolicy(scoped_refptr<device::BluetoothAdapter> adapter);
 
-  raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
+  raw_ptr<ash::CrosSettings, DanglingUntriaged | ExperimentalAsh>
+      cros_settings_;
   base::CallbackListSubscription allow_bluetooth_subscription_;
   base::CallbackListSubscription allowed_services_subscription_;
   scoped_refptr<device::BluetoothAdapter> adapter_;

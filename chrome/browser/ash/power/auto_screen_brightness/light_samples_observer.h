@@ -52,7 +52,7 @@ class LightSamplesObserver
   void SetChannelsEnabled();
   void SetChannelsEnabledCallback(const std::vector<int32_t>& failed_indices);
 
-  raw_ptr<AlsReader, ExperimentalAsh> als_reader_;
+  raw_ptr<AlsReader, DanglingUntriaged | ExperimentalAsh> als_reader_;
 
   mojo::Remote<chromeos::sensors::mojom::SensorDevice> sensor_device_remote_;
 

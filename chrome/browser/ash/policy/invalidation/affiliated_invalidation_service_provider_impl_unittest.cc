@@ -98,7 +98,8 @@ class FakeConsumer : public AffiliatedInvalidationServiceProvider::Consumer {
   invalidation::FakeInvalidationHandler invalidation_handler_;
 
   int invalidation_service_set_count_ = 0;
-  raw_ptr<invalidation::InvalidationService, ExperimentalAsh>
+  raw_ptr<invalidation::InvalidationService,
+          DanglingUntriaged | ExperimentalAsh>
       invalidation_service_ = nullptr;
 };
 
@@ -145,15 +146,18 @@ class AffiliatedInvalidationServiceProviderImplTest : public testing::Test {
                                  bool is_affiliated);
   std::unique_ptr<AffiliatedInvalidationServiceProviderImpl> provider_;
   std::unique_ptr<FakeConsumer> consumer_;
-  raw_ptr<invalidation::InvalidationService, ExperimentalAsh>
+  raw_ptr<invalidation::InvalidationService,
+          DanglingUntriaged | ExperimentalAsh>
       device_invalidation_service_;
-  raw_ptr<invalidation::FakeInvalidationService, ExperimentalAsh>
+  raw_ptr<invalidation::FakeInvalidationService,
+          DanglingUntriaged | ExperimentalAsh>
       profile_invalidation_service_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   network::TestURLLoaderFactory test_url_loader_factory_;

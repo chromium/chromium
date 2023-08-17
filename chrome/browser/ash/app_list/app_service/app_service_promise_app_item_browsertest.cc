@@ -79,7 +79,8 @@ class AppServicePromiseAppItemBrowserTest
   }
 
  private:
-  raw_ptr<apps::PromiseAppRegistryCache, ExperimentalAsh> cache_;
+  raw_ptr<apps::PromiseAppRegistryCache, DanglingUntriaged | ExperimentalAsh>
+      cache_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

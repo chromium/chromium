@@ -218,9 +218,11 @@ class PreferencesTest : public testing::Test {
   raw_ptr<TestingProfile, ExperimentalAsh> test_profile_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
       pref_service_;
-  raw_ptr<input_method::MyMockInputMethodManager, ExperimentalAsh>
+  raw_ptr<input_method::MyMockInputMethodManager,
+          DanglingUntriaged | ExperimentalAsh>
       mock_manager_;
-  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+      fake_update_engine_client_;
 };
 
 TEST_F(PreferencesTest, TestUpdatePrefOnBrowserScreenDetails) {

@@ -47,7 +47,7 @@ class GameResult : public ChromeSearchResult, public ash::ColorModeObserver {
   void UpdateText(const apps::Result& game, const std::u16string& query);
   void OnIconLoaded(const gfx::ImageSkia& image, apps::DiscoveryError error);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
 
   GURL launch_url_;

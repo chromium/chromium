@@ -853,7 +853,8 @@ class AppListAppLaunchTest : public extensions::ExtensionBrowserTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
  private:
-  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_;
+  raw_ptr<AppListModelUpdater, DanglingUntriaged | ExperimentalAsh>
+      model_updater_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppListAppLaunchTest,

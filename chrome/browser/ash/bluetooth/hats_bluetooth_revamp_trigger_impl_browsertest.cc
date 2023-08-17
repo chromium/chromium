@@ -101,7 +101,7 @@ class HatsBluetoothRevampTriggerTest : public InProcessBrowserTest {
  private:
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  raw_ptr<HatsBluetoothRevampTriggerImpl, ExperimentalAsh>
+  raw_ptr<HatsBluetoothRevampTriggerImpl, DanglingUntriaged | ExperimentalAsh>
       bluetooth_revamp_trigger_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

@@ -401,7 +401,8 @@ class ScanServiceTest : public testing::Test {
   const raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<ScopedTestMountPoint> scanned_files_mount_;
   std::unique_ptr<TestSessionController> session_controller_;
-  const raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager user_manager_owner_;
   std::unique_ptr<ScanService> scan_service_;
 

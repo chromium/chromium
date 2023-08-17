@@ -151,7 +151,8 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Unowned pointer
-  raw_ptr<aura::Window, ExperimentalAsh> arc_window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> arc_window_ =
+      nullptr;
 
   // Created and lives on the UI thread but is destructed on the IO thread.
   scoped_refptr<ShareInfoFileHandler> file_handler_;

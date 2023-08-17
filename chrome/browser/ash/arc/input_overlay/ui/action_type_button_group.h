@@ -57,7 +57,7 @@ class ActionTypeButtonGroup : public ash::OptionButtonGroup,
   void OnButtonClicked(ash::OptionButtonBase* button) override;
 
   raw_ptr<DisplayOverlayController> controller_ = nullptr;
-  raw_ptr<Action, ExperimentalAsh> action_;
+  raw_ptr<Action, DanglingUntriaged | ExperimentalAsh> action_;
 };
 
 }  // namespace arc::input_overlay

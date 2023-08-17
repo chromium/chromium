@@ -57,7 +57,7 @@ class EcheAppNotificationController {
   void ShowNotification(
       std::unique_ptr<message_center::Notification> notification);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   base::RepeatingCallback<void(Profile*)> relaunch_callback_;
   base::WeakPtrFactory<EcheAppNotificationController> weak_ptr_factory_{this};
 };

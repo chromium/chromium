@@ -66,14 +66,15 @@ class TrashBaseTest : public testing::Test {
   // DriveIntegrationService tied to the TestingProfile.
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
-  raw_ptr<drive::DriveIntegrationService, ExperimentalAsh>
+  raw_ptr<drive::DriveIntegrationService, DanglingUntriaged | ExperimentalAsh>
       integration_service_ = nullptr;
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
       service_factory_for_test_;
 
-  raw_ptr<crostini::CrostiniManager, ExperimentalAsh> crostini_manager_;
+  raw_ptr<crostini::CrostiniManager, DanglingUntriaged | ExperimentalAsh>
+      crostini_manager_;
   ash::disks::FakeDiskMountManager disk_mount_manager_;
 
   base::ScopedTempDir temp_dir_;

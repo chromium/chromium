@@ -372,8 +372,9 @@ class UserCloudPolicyManagerAshTest
   testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
   FakeDeviceManagementService device_management_service_{
       &job_creation_handler_};
-  raw_ptr<MockCloudPolicyStore, ExperimentalAsh> store_;  // Not owned.
-  raw_ptr<MockCloudExternalDataManager, ExperimentalAsh>
+  raw_ptr<MockCloudPolicyStore, DanglingUntriaged | ExperimentalAsh>
+      store_;  // Not owned.
+  raw_ptr<MockCloudExternalDataManager, DanglingUntriaged | ExperimentalAsh>
       external_data_manager_;  // Not owned.
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   SchemaRegistry schema_registry_;
@@ -388,7 +389,8 @@ class UserCloudPolicyManagerAshTest
       identity_test_env_profile_adaptor_;
   user_manager::UserType user_type_ = user_manager::UserType::USER_TYPE_REGULAR;
 
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   // This is automatically checked in TearDown() to ensure that we get a
   // fatal error iff |fatal_error_expected_| is true.

@@ -185,7 +185,8 @@ class WebKioskAppManagerTest : public BrowserWithTestWindowTest {
   AccountId account_id_;
 
   apps::AppServiceTest app_service_test_;
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
+      app_service_ = nullptr;
 
   // A keyed service not owned by this class.
   raw_ptr<web_app::FakeWebAppProvider, DanglingUntriaged>

@@ -473,7 +473,8 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
 
   // Pointer to the primary profile (returned by |profile()|) prefs - owned by
   // the profile.
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable,
+          DanglingUntriaged | ExperimentalAsh>
       profile_prefs_ = nullptr;
 
  private:

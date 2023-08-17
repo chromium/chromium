@@ -51,7 +51,8 @@ class DlpFilesTestBase : public testing::Test {
 #endif
   raw_ptr<TestingProfile> profile_;
 
-  raw_ptr<MockDlpRulesManager, ExperimentalAsh> rules_manager_ = nullptr;
+  raw_ptr<MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
+      rules_manager_ = nullptr;
 };
 
 }  // namespace policy

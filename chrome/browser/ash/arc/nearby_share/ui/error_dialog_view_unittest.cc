@@ -45,8 +45,9 @@ class ErrorDialogViewTest : public CompatModeTestBase {
  private:
   int on_close_callback_count_ = 0;
   std::unique_ptr<views::Widget> arc_widget_;
-  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_;
-  raw_ptr<ErrorDialogView, ExperimentalAsh> error_dialog_view_;
+  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> bubble_widget_;
+  raw_ptr<ErrorDialogView, DanglingUntriaged | ExperimentalAsh>
+      error_dialog_view_;
 };
 
 TEST_F(ErrorDialogViewTest, ConstructDestruct) {

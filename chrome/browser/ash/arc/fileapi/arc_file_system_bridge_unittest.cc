@@ -94,7 +94,7 @@ class ArcFileSystemBridgeTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
 
   FakeFileSystemInstance fake_file_system_;
   ArcBridgeService arc_bridge_service_;

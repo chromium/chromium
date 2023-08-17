@@ -153,7 +153,8 @@ class WilcoDtcSupportdBridge final
   // The Wilco DTC configuration data blob, passed from the device policy, is
   // stored and owned by |WilcoDtcSupportdManager|.
   // nullptr if there is no available configuration data for the Wilco DTC.
-  raw_ptr<const std::string, ExperimentalAsh> configuration_data_ = nullptr;
+  raw_ptr<const std::string, DanglingUntriaged | ExperimentalAsh>
+      configuration_data_ = nullptr;
 
   // These weak pointer factories must be the last members:
 

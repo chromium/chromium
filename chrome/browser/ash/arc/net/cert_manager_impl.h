@@ -72,7 +72,7 @@ class CertManagerImpl : public CertManager {
                                      const std::string& cert_pem,
                                      ImportPrivateKeyAndCertCallback callback,
                                      net::NSSCertDatabase* database);
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   base::WeakPtrFactory<CertManagerImpl> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(CertManagerImplTest, ImportKeyAndCertTest);

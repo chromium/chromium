@@ -166,8 +166,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
 
  private:
   std::vector<const sync_sessions::SyncedSession*> foreign_sessions_;
-  raw_ptr<sync_sessions::SyncedSession, ExperimentalAsh> local_session_ =
-      nullptr;
+  raw_ptr<sync_sessions::SyncedSession, DanglingUntriaged | ExperimentalAsh>
+      local_session_ = nullptr;
 };
 
 }  // namespace
@@ -237,7 +237,7 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
   // for: #addr-of
   RAW_PTR_EXCLUSION const sync_sessions::SyncedSession* restored_session_ =
       nullptr;
-  raw_ptr<const DeskTemplate, ExperimentalAsh>
+  raw_ptr<const DeskTemplate, DanglingUntriaged | ExperimentalAsh>
       restored_floating_workspace_template_ = nullptr;
   raw_ptr<DeskTemplate, ExperimentalAsh> uploaded_desk_template_ = nullptr;
   std::unique_ptr<MockOpenTabsUIDelegate> mock_open_tabs_;

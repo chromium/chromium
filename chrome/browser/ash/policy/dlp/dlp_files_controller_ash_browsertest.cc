@@ -111,7 +111,8 @@ class DlpFilesControllerAshBrowserTest : public InProcessBrowserTest {
  protected:
   // MockDlpRulesManager is owned by KeyedService and is guaranteed to outlive
   // this class.
-  raw_ptr<MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ = nullptr;
+  raw_ptr<MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
+      mock_rules_manager_ = nullptr;
 
   std::unique_ptr<DlpFilesControllerAsh> files_controller_ = nullptr;
 

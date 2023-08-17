@@ -122,7 +122,7 @@ class PrintServersManagerTest : public testing::Test,
   // Captured printer lists from observer callbacks.
   base::flat_map<PrinterClass, std::vector<Printer>> observed_printers_;
 
-  raw_ptr<FakeServerPrintersProvider, ExperimentalAsh>
+  raw_ptr<FakeServerPrintersProvider, DanglingUntriaged | ExperimentalAsh>
       server_printers_provider_;
   FakePrintServersProvider user_policy_print_servers_provider_;
   FakePrintServersProvider device_policy_print_servers_provider_;

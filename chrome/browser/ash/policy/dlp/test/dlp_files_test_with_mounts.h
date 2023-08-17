@@ -39,7 +39,9 @@ class DlpFilesTestWithMounts : public DlpFilesTestBase {
   std::unique_ptr<KeyedService> SetFilesPolicyNotificationManager(
       content::BrowserContext* context);
 
-  raw_ptr<MockFilesPolicyNotificationManager, ExperimentalAsh> fpnm_ = nullptr;
+  raw_ptr<MockFilesPolicyNotificationManager,
+          DanglingUntriaged | ExperimentalAsh>
+      fpnm_ = nullptr;
   std::unique_ptr<DlpFilesControllerAsh> files_controller_;
   std::unique_ptr<DlpReportingManager> reporting_manager_;
   std::vector<DlpPolicyEvent> events;

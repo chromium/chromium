@@ -31,7 +31,8 @@ class GameModeControllerTestBase : public ChromeAshTestBase {
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<GameModeController> game_mode_controller_;
-  raw_ptr<ash::FakeResourcedClient, ExperimentalAsh> fake_resourced_client_;
+  raw_ptr<ash::FakeResourcedClient, DanglingUntriaged | ExperimentalAsh>
+      fake_resourced_client_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 

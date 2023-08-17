@@ -203,9 +203,9 @@ class NativeInputMethodEngineWithoutImeServiceTest
   }
 
   std::unique_ptr<NativeInputMethodEngine> engine_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<PrefService, ExperimentalAsh> prefs_;
-  raw_ptr<TestObserver, ExperimentalAsh> observer_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> prefs_;
+  raw_ptr<TestObserver, DanglingUntriaged | ExperimentalAsh> observer_;
 
  private:
   InputMethodAsh input_method_;

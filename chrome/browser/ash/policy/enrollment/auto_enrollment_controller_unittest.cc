@@ -24,7 +24,7 @@ class EnrollmentFwmpHelperTest : public testing::Test {
   void TearDown() override { ash::InstallAttributesClient::Shutdown(); }
 
  protected:
-  raw_ptr<ash::FakeInstallAttributesClient, ExperimentalAsh>
+  raw_ptr<ash::FakeInstallAttributesClient, DanglingUntriaged | ExperimentalAsh>
       install_attributes_client_;
 
  private:

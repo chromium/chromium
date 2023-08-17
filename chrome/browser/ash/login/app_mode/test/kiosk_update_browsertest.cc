@@ -461,7 +461,8 @@ class KioskUpdateTest : public KioskBaseTest {
   };
 
   // Owned by DiskMountManager.
-  raw_ptr<KioskFakeDiskMountManager, ExperimentalAsh> fake_disk_mount_manager_;
+  raw_ptr<KioskFakeDiskMountManager, DanglingUntriaged | ExperimentalAsh>
+      fake_disk_mount_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_LaunchOfflineEnabledAppNoNetwork) {

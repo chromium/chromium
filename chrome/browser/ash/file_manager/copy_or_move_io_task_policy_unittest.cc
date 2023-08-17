@@ -1394,13 +1394,14 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ash::disks::FakeDiskMountManager disk_mount_manager_;
-  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ =
-      nullptr;
+  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
+      mock_rules_manager_ = nullptr;
   std::unique_ptr<policy::MockDlpFilesControllerAsh> files_controller_;
   const std::unique_ptr<TestingProfile> profile_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("chrome-extension://abc");

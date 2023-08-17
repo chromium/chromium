@@ -347,7 +347,8 @@ class SamlTestBase : public OobeBaseTest {
   FakeSamlIdpMixin* fake_saml_idp() { return &fake_saml_idp_mixin_; }
 
  protected:
-  raw_ptr<SecretInterceptingFakeUserDataAuthClient, ExperimentalAsh>
+  raw_ptr<SecretInterceptingFakeUserDataAuthClient,
+          DanglingUntriaged | ExperimentalAsh>
       cryptohome_client_;
 
   FakeGaiaMixin fake_gaia_{&mixin_host_};

@@ -35,7 +35,7 @@ class SystemProxyHandler {
   ash::SystemProxyManager* GetSystemProxyManager();
 
   // Owned by the test fixture.
-  raw_ptr<ash::SystemProxyManager, ExperimentalAsh>
+  raw_ptr<ash::SystemProxyManager, DanglingUntriaged | ExperimentalAsh>
       system_proxy_manager_for_testing_ = nullptr;
   raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
   base::CallbackListSubscription system_proxy_subscription_;

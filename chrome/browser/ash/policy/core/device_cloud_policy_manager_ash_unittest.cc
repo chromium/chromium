@@ -363,10 +363,12 @@ class DeviceCloudPolicyManagerAshTest
   ServerBackedStateKeysBroker state_keys_broker_;
   StrictMock<ash::attestation::MockAttestationFlow> mock_attestation_flow_;
 
-  raw_ptr<DeviceCloudPolicyStoreAsh, ExperimentalAsh> store_;
+  raw_ptr<DeviceCloudPolicyStoreAsh, DanglingUntriaged | ExperimentalAsh>
+      store_;
   SchemaRegistry schema_registry_;
   ash::attestation::ScopedStubAttestationFeatures attestation_features_;
-  raw_ptr<MockCloudExternalDataManager, ExperimentalAsh> external_data_manager_;
+  raw_ptr<MockCloudExternalDataManager, DanglingUntriaged | ExperimentalAsh>
+      external_data_manager_;
   std::unique_ptr<TestingDeviceCloudPolicyManagerAsh> manager_;
   std::unique_ptr<DeviceCloudPolicyInitializer> initializer_;
   network::TestURLLoaderFactory test_url_loader_factory_;

@@ -158,7 +158,7 @@ class RendererFreezerTest : public testing::Test {
   }
 
   // Owned by |renderer_freezer_|.
-  raw_ptr<TestDelegate, ExperimentalAsh> test_delegate_;
+  raw_ptr<TestDelegate, DanglingUntriaged | ExperimentalAsh> test_delegate_;
   std::unique_ptr<RendererFreezer> renderer_freezer_;
 
  private:

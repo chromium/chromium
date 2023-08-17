@@ -86,8 +86,8 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
   void OnNotificationAdded() { notification_count_++; }
 
  protected:
-  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> user_manager_ =
-      nullptr;
+  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<LowDiskNotification> low_disk_notification_;

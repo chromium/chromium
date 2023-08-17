@@ -148,7 +148,8 @@ class ArcAppTest {
   // Unowned pointer.
   raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
-  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_pref_ = nullptr;
+  raw_ptr<ArcAppListPrefs, DanglingUntriaged | ExperimentalAsh>
+      arc_app_list_pref_ = nullptr;
 
   bool wait_default_apps_ = true;
 

@@ -81,7 +81,8 @@ class ReleaseNotesStorageTest : public testing::Test,
         /*disabled_features=*/{});
   }
 
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;

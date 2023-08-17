@@ -1972,7 +1972,8 @@ class DlpFilesAppServiceTest : public DlpFilesControllerAshTest {
         std::move(fake_apps), app_type, /*should_notify_initialized=*/false);
   }
 
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
+      app_service_proxy_ = nullptr;
   apps::AppServiceTest app_service_test_;
 };
 

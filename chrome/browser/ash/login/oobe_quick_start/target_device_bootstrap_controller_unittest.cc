@@ -159,11 +159,11 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
   network::TestURLLoaderFactory test_factory_;
   std::unique_ptr<FakeQuickStartConnectivityService>
       fake_quick_start_connectivity_service_;
-  raw_ptr<FakeTargetDeviceConnectionBroker, ExperimentalAsh>
+  raw_ptr<FakeTargetDeviceConnectionBroker, DanglingUntriaged | ExperimentalAsh>
       fake_target_device_connection_broker_;
   std::unique_ptr<FakeObserver> fake_observer_;
   raw_ptr<MockAuthBroker> auth_broker_;
-  raw_ptr<FakeAccessibilityManagerWrapper, ExperimentalAsh>
+  raw_ptr<FakeAccessibilityManagerWrapper, DanglingUntriaged | ExperimentalAsh>
       fake_accessibility_manager_ = nullptr;
   std::unique_ptr<TargetDeviceBootstrapController> bootstrap_controller_;
   ScopedTestingLocalState local_state_;

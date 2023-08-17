@@ -136,10 +136,12 @@ class ExtensionCleanupHandlerUnittest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable,
+          DanglingUntriaged | ExperimentalAsh>
       mock_prefs_;
   TestingProfileManager mock_profile_manager_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<ExtensionCleanupHandler> extension_cleanup_handler_;
   raw_ptr<MockExtensionService, ExperimentalAsh> extension_service_;

@@ -54,7 +54,8 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
     void SaveAppActivity();
 
    private:
-    const raw_ptr<AppActivityRegistry, ExperimentalAsh> registry_;
+    const raw_ptr<AppActivityRegistry, DanglingUntriaged | ExperimentalAsh>
+        registry_;
   };
 
   // Interface for the observers interested in the changes of apps state.

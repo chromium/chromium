@@ -134,9 +134,11 @@ class GuestOsMountProviderTest : public testing::Test {
   const std::string kMountName = std::string{"guestos++cow+ptery%2Fdaccy"};
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<ash::disks::MockDiskMountManager, ExperimentalAsh> disk_manager_;
+  raw_ptr<ash::disks::MockDiskMountManager, DanglingUntriaged | ExperimentalAsh>
+      disk_manager_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<file_manager::VolumeManager, ExperimentalAsh> volume_manager_;
+  raw_ptr<file_manager::VolumeManager, DanglingUntriaged | ExperimentalAsh>
+      volume_manager_;
   std::unique_ptr<MockVolumeManagerObserver> volume_manager_observer_;
   std::unique_ptr<MockMountProvider> provider_;
   int cid_ = 41;     // Default set in MockMountProvider

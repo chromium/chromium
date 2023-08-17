@@ -289,7 +289,7 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
 
   std::unique_ptr<WizardContext> wizard_context_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ =
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_ =
       nullptr;  // Owned by |profile_manager_|.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
 

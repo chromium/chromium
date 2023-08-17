@@ -139,8 +139,9 @@ class SystemInfoCardProvider : public SearchProvider,
       probe_service_;
   std::string chromeOS_version_{""};
   CpuUsageData previous_cpu_usage_data_{CpuUsageData()};
-  raw_ptr<ash::cros_healthd::mojom::MemoryInfo, ExperimentalAsh> memory_info_{
-      nullptr};
+  raw_ptr<ash::cros_healthd::mojom::MemoryInfo,
+          DanglingUntriaged | ExperimentalAsh>
+      memory_info_{nullptr};
   std::unique_ptr<BatteryHealth> battery_health_{nullptr};
   gfx::ImageSkia os_settings_icon_;
   gfx::ImageSkia diagnostics_icon_;

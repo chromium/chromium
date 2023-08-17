@@ -257,8 +257,8 @@ class RootsRecursionDelegate {
  private:
   // counts the number of |roots| processed.
   uint counter_ = 0;
-  raw_ptr<storage::FileSystemContext, ExperimentalAsh> file_system_context_ =
-      nullptr;
+  raw_ptr<storage::FileSystemContext, DanglingUntriaged | ExperimentalAsh>
+      file_system_context_ = nullptr;
   const std::vector<storage::FileSystemURL> roots_;
   FolderRecursionDelegate::FileURLsCallback callback_;
   std::vector<storage::FileSystemURL> files_urls_;

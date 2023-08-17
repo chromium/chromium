@@ -23,7 +23,7 @@ class TestBrowserClosedWaiter : public BrowserListObserver {
  private:
   void OnBrowserRemoved(Browser* browser) override;
 
-  raw_ptr<Browser, ExperimentalAsh> browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged | ExperimentalAsh> browser_ = nullptr;
   base::test::TestFuture<bool> future_;
 };
 

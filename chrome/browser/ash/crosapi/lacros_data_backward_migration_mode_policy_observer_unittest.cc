@@ -113,7 +113,8 @@ class LacrosDataBackwardMigrationModePolicyObserverTest : public testing::Test {
       std::make_unique<user_manager::FakeUserManager>()};
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<user_manager::User, ExperimentalAsh> test_user_ = nullptr;
-  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
+      primary_profile_ = nullptr;
 };
 
 TEST_F(LacrosDataBackwardMigrationModePolicyObserverTest, OnPolicyUpdate) {

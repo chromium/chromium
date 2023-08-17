@@ -297,11 +297,12 @@ class SmbServiceWithSmbfsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::REAL_IO_THREAD};
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<disks::FakeDiskMountManager, ExperimentalAsh> disk_mount_manager_ =
-      new disks::FakeDiskMountManager;
+  raw_ptr<disks::FakeDiskMountManager, DanglingUntriaged | ExperimentalAsh>
+      disk_mount_manager_ = new disks::FakeDiskMountManager;
 
   // Not owned.
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_ =
+      nullptr;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;

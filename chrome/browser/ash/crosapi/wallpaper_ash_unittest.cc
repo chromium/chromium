@@ -92,9 +92,10 @@ class WallpaperAshTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   WallpaperAsh wallpaper_ash_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
-  const raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
-  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> testing_profile_;
   TestingProfileManager testing_profile_manager_;
   TestWallpaperController test_wallpaper_controller_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;

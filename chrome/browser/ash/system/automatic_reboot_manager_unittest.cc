@@ -231,8 +231,8 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_enabler_;
   session_manager::SessionManager session_manager_;
 
-  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> update_engine_client_ =
-      nullptr;  // Not owned.
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+      update_engine_client_ = nullptr;  // Not owned.
 };
 
 enum AutomaticRebootManagerTestScenario {

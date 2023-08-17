@@ -127,7 +127,7 @@ class DnsLatencyRoutineTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
-  raw_ptr<Profile, ExperimentalAsh> test_profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> test_profile_;
   std::unique_ptr<FakeTickClock> fake_tick_clock_;
   session_manager::SessionManager session_manager_;
   TestingProfileManager profile_manager_;

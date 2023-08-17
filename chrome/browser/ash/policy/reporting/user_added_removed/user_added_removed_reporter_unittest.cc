@@ -135,13 +135,16 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
     return profile;
   }
 
-  raw_ptr<::reporting::MockReportQueueStrict, ExperimentalAsh> mock_queue_;
+  raw_ptr<::reporting::MockReportQueueStrict,
+          DanglingUntriaged | ExperimentalAsh>
+      mock_queue_;
 
   std::unique_ptr<base::WeakPtrFactory<::reporting::MockReportQueueStrict>>
       weak_mock_queue_factory_;
 
  private:
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
 
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 

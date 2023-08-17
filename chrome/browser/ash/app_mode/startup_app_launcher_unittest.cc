@@ -499,7 +499,8 @@ class ScopedKioskAppManagerOverrides : public KioskAppManager::Overrides {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ScopedCrosSettingsTestHelper> accounts_settings_helper_;
 
-  raw_ptr<chromeos::TestExternalCache, ExperimentalAsh> external_cache_;
+  raw_ptr<chromeos::TestExternalCache, DanglingUntriaged | ExperimentalAsh>
+      external_cache_;
   bool kiosk_system_session_initialized_ = false;
 };
 
@@ -1614,7 +1615,8 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   FakeChromeKioskLaunchController launch_controller_;
   crosapi::FakeBrowserManager browser_manager_;

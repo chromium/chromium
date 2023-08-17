@@ -44,7 +44,8 @@ class HatsBluetoothRevampTriggerImpl : public HatsBluetoothRevampTrigger {
   Profile* GetActiveUserProfile();
 
   base::OneShotTimer hats_timer_;
-  raw_ptr<Profile, ExperimentalAsh> profile_for_testing_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_for_testing_ =
+      nullptr;
   bool did_set_profile_for_testing_ = false;
   scoped_refptr<ash::HatsNotificationController> hats_notification_controller_;
   base::WeakPtrFactory<HatsBluetoothRevampTriggerImpl> weak_ptr_factory_{this};

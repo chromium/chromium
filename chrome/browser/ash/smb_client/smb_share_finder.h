@@ -97,7 +97,8 @@ class SmbShareFinder : public base::SupportsWeakPtr<SmbShareFinder> {
 
   NetworkScanner scanner_;
 
-  raw_ptr<SmbProviderClient, ExperimentalAsh> client_;  // Not owned.
+  raw_ptr<SmbProviderClient, DanglingUntriaged | ExperimentalAsh>
+      client_;  // Not owned.
 
   uint32_t host_counter_ = 0u;
 

@@ -80,7 +80,8 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+      fake_update_engine_client_;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<EolNotification> eol_notification_;
   std::unique_ptr<base::SimpleTestClock> clock_;

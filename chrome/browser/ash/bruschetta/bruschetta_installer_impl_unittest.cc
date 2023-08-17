@@ -566,7 +566,8 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
   MockObserver observer_;
   // Pointer owned by DiskMountManager
-  const raw_ref<ash::disks::MockDiskMountManager, ExperimentalAsh>
+  const raw_ref<ash::disks::MockDiskMountManager,
+                DanglingUntriaged | ExperimentalAsh>
       disk_mount_manager_{*new ash::disks::MockDiskMountManager};
 
   bool destroy_installer_on_completion_ = true;

@@ -1227,7 +1227,8 @@ class DeviceStatusCollectorTest : public testing::Test {
   const DeviceLocalAccount fake_web_kiosk_device_local_account_;
   base::ScopedPathOverride user_data_dir_override_;
   base::ScopedPathOverride crash_dumps_dir_override_;
-  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh> update_engine_client_;
+  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+      update_engine_client_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestClock test_clock_;

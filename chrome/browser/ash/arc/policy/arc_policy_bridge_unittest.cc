@@ -351,9 +351,10 @@ class ArcPolicyBridgeTestBase {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   base::RunLoop run_loop_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
   std::unique_ptr<ArcBridgeService> bridge_service_;
-  raw_ptr<CertStoreService, ExperimentalAsh> cert_store_service_;  // Not owned.
+  raw_ptr<CertStoreService, DanglingUntriaged | ExperimentalAsh>
+      cert_store_service_;  // Not owned.
 
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcPolicyBridge> policy_bridge_;

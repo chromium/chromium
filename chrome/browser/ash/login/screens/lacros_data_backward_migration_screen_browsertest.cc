@@ -90,7 +90,8 @@ class LacrosDataBackwardMigrationScreenTest : public OobeBaseTest {
   FakeBackMigrator* fake_back_migrator() { return fake_back_migrator_; }
 
  private:
-  raw_ptr<FakeBackMigrator, ExperimentalAsh> fake_back_migrator_;
+  raw_ptr<FakeBackMigrator, DanglingUntriaged | ExperimentalAsh>
+      fake_back_migrator_;
 
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};

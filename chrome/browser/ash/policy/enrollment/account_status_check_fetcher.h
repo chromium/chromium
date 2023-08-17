@@ -86,7 +86,8 @@ class AccountStatusCheckFetcher {
   // Job that sends request to the DM server.
   std::unique_ptr<DeviceManagementService::Job> fetch_request_job_;
 
-  raw_ptr<DeviceManagementService, ExperimentalAsh> service_ = nullptr;
+  raw_ptr<DeviceManagementService, DanglingUntriaged | ExperimentalAsh>
+      service_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Randomly generated device id for the request to make sure request won't

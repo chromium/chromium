@@ -53,7 +53,8 @@ class BorealisFeaturesTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   base::test::ScopedFeatureList features_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 

@@ -241,7 +241,7 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   TpmChallengeKeyCallback callback_;
   // |profile_| may be nullptr if this is an instance that is used device-wide
   // and only intended to work with machine keys.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
 
   ::attestation::VerifiedAccessFlow flow_type_ =
       ::attestation::ENTERPRISE_MACHINE;

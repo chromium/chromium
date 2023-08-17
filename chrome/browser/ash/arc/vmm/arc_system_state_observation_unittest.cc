@@ -74,9 +74,12 @@ class ArcSystemStateObservationTest : public testing::Test {
 
   std::unique_ptr<ArcSystemStateObservation> observation_;
 
-  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> active_window_observer_;
-  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> background_service_observer_;
-  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> arc_window_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
+      active_window_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
+      background_service_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
+      arc_window_observer_;
 };
 
 TEST_F(ArcSystemStateObservationTest, TestConstructDestruct) {}

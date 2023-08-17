@@ -384,9 +384,11 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
-  raw_ptr<UnittestProfileManager, ExperimentalAsh> profile_manager_;
+  raw_ptr<UnittestProfileManager, DanglingUntriaged | ExperimentalAsh>
+      profile_manager_;
 
-  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
+      primary_profile_ = nullptr;
 
   base::SimpleTestTickClock tick_clock_;
 

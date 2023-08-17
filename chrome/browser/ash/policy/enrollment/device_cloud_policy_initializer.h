@@ -82,10 +82,13 @@ class DeviceCloudPolicyInitializer
 
   raw_ptr<DeviceManagementService, DanglingUntriaged | ExperimentalAsh>
       enterprise_service_;
-  raw_ptr<ash::InstallAttributes, ExperimentalAsh> install_attributes_;
+  raw_ptr<ash::InstallAttributes, DanglingUntriaged | ExperimentalAsh>
+      install_attributes_;
   raw_ptr<ServerBackedStateKeysBroker, ExperimentalAsh> state_keys_broker_;
-  raw_ptr<DeviceCloudPolicyStoreAsh, ExperimentalAsh> policy_store_;
-  raw_ptr<DeviceCloudPolicyManagerAsh, ExperimentalAsh> policy_manager_;
+  raw_ptr<DeviceCloudPolicyStoreAsh, DanglingUntriaged | ExperimentalAsh>
+      policy_store_;
+  raw_ptr<DeviceCloudPolicyManagerAsh, DanglingUntriaged | ExperimentalAsh>
+      policy_manager_;
   raw_ptr<ash::system::StatisticsProvider, ExperimentalAsh>
       statistics_provider_;
   bool is_initialized_ = false;

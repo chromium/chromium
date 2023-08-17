@@ -45,7 +45,8 @@ class MemoryAnswerResult : public SystemInfoAnswerResult,
  private:
   SystemInfoCardProvider::UpdateMemoryResultCallback callback_;
   std::unique_ptr<base::RepeatingTimer> timer_;
-  raw_ptr<SystemInfoCardProvider, ExperimentalAsh> provider_;
+  raw_ptr<SystemInfoCardProvider, DanglingUntriaged | ExperimentalAsh>
+      provider_;
   base::WeakPtrFactory<MemoryAnswerResult> weak_factory_{this};
 };
 

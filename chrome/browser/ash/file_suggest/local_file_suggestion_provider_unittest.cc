@@ -94,7 +94,7 @@ class LocalFileSuggestionProviderTest : public testing::Test {
     WaitForProviderToBeInitialized();
   }
 
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

@@ -86,8 +86,8 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
   void MaybeWaitForLoginScreenLoad();
 
  private:
-  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> update_engine_client_ =
-      nullptr;
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+      update_engine_client_ = nullptr;
 
   std::unique_ptr<LoginOrLockScreenVisibleWaiter> login_screen_load_observer_;
 };

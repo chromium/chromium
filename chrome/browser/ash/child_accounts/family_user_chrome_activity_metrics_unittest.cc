@@ -153,8 +153,8 @@ class FamilyUserChromeActivityMetricsTest
       family_user_chrome_activity_metrics_;
   std::unique_ptr<TestBrowserWindowAura> browser_window_;
   session_manager::SessionManager session_manager_;
-  raw_ptr<extensions::ExtensionService, ExperimentalAsh> extension_service_ =
-      nullptr;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged | ExperimentalAsh>
+      extension_service_ = nullptr;
 };
 
 TEST_F(FamilyUserChromeActivityMetricsTest, Basic) {

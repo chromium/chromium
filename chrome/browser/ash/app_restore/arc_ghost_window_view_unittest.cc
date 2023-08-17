@@ -114,10 +114,11 @@ class ArcGhostWindowViewTest : public testing::Test {
 
   base::test::ScopedFeatureList feature_list_;
 
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;  // Not own.
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;  // Not own.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 

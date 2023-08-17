@@ -56,8 +56,8 @@ class CrosapiUtilTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> testing_profile_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
-      nullptr;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   TestingPrefServiceSimple pref_service_;
 };

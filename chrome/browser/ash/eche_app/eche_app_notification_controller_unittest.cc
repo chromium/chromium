@@ -93,7 +93,8 @@ class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
     notification->delegate()->Click(0, absl::nullopt);
   }
 
-  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
+      new_window_delegate_;
 
  private:
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;

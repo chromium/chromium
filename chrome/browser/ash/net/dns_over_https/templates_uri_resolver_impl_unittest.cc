@@ -137,7 +137,8 @@ class TemplatesUriResolverImplTest : public testing::Test {
 
  private:
   TestingPrefServiceSimple pref_service_;
-  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   ScopedStubInstallAttributes test_install_attributes_{
       StubInstallAttributes::CreateCloudManaged("fake-domain", "fake-id")};

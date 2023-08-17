@@ -1591,7 +1591,8 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   }
 
  protected:
-  raw_ptr<app_restore::ArcAppQueueRestoreHandler, ExperimentalAsh>
+  raw_ptr<app_restore::ArcAppQueueRestoreHandler,
+          DanglingUntriaged | ExperimentalAsh>
       arc_app_queue_restore_handler_ = nullptr;
   AppRestoreArcTestHelper arc_helper_;
 

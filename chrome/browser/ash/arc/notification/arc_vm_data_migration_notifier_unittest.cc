@@ -110,8 +110,8 @@ class ArcVmDataMigrationNotifierTest : public ash::AshTestBase {
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ =
-      nullptr;  // Owned by |profile_manager_|.
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
+      testing_profile_ = nullptr;  // Owned by |profile_manager_|.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
 };

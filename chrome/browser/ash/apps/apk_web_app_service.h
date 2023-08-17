@@ -184,7 +184,8 @@ class ApkWebAppService : public KeyedService,
   WebAppCallbackForTesting web_app_uninstalled_callback_;
 
   raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
+  raw_ptr<ArcAppListPrefs, DanglingUntriaged | ExperimentalAsh>
+      arc_app_list_prefs_;
 
   // Delegate implementation used in production.
   std::unique_ptr<Delegate> real_delegate_;

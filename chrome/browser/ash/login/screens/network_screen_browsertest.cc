@@ -150,9 +150,9 @@ class NetworkScreenTest : public OobeBaseTest {
       std::move(screen_exit_callback_).Run();
   }
 
-  raw_ptr<login::MockNetworkStateHelper, ExperimentalAsh>
+  raw_ptr<login::MockNetworkStateHelper, DanglingUntriaged | ExperimentalAsh>
       mock_network_state_helper_;
-  raw_ptr<NetworkScreen, ExperimentalAsh> network_screen_;
+  raw_ptr<NetworkScreen, DanglingUntriaged | ExperimentalAsh> network_screen_;
   bool screen_exited_ = false;
   base::test::ScopedFeatureList feature_list_;
   absl::optional<NetworkScreen::Result> last_screen_result_;

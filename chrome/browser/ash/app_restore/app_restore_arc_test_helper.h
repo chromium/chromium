@@ -56,7 +56,7 @@ class AppRestoreArcTestHelper {
   arc::mojom::AppHost* GetAppHost();
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
 
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
 };

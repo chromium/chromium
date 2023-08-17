@@ -197,8 +197,8 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   ash::ScopedCrosSettingsTestHelper settings_helper_{
       /* create_settings_service= */ false};
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_{
-      new ash::FakeChromeUserManager()};
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_{new ash::FakeChromeUserManager()};
   user_manager::ScopedUserManager scoped_user_manager_{
       base::WrapUnique(fake_user_manager_.get())};
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;

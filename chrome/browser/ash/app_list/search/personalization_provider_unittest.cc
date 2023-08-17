@@ -122,7 +122,8 @@ class PersonalizationProviderTest : public testing::Test {
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile, ExperimentalAsh> profile_;
-  raw_ptr<::apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;
+  raw_ptr<::apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
+      app_service_proxy_;
   std::unique_ptr<PersonalizationProvider> provider_;
 };
 

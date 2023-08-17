@@ -249,7 +249,7 @@ class ManagedConfigurationVariablesBase {
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
 
   ash::system::FakeStatisticsProvider statistics_provider_;
 

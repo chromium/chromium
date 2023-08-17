@@ -97,7 +97,8 @@ class KioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
   }
 
   apps::AppServiceTest app_service_test_;
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
+      app_service_ = nullptr;
 
   std::unique_ptr<FakePublisher> publisher_;
   std::unique_ptr<KioskAppServiceLauncher> launcher_;
