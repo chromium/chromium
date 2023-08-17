@@ -98,14 +98,8 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animation_;
 };
 
-#if BUILDFLAG(IS_MAC)
-// Fails on Mac OS. http://crbug.com/453256
-#define MAYBE_HidePopupOnWindowMove DISABLED_HidePopupOnWindowMove
-#else
-#define MAYBE_HidePopupOnWindowMove HidePopupOnWindowMove
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
-                       MAYBE_HidePopupOnWindowMove) {
+                       HidePopupOnWindowMove) {
   GenerateTestAutofillPopup(&autofill_external_delegate());
 
   EXPECT_FALSE(autofill_external_delegate().popup_hidden());
