@@ -81,6 +81,7 @@ extern const char kOverflowMenuDestinationUsageHistoryEnabled[];
 extern const char kOverflowMenuNewDestinations[];
 extern const char kOverflowMenuDestinationsOrder[];
 extern const char kOverflowMenuHiddenDestinations[];
+extern const char kOverflowMenuDestinationBadgeData[];
 extern const char kOverflowMenuActionsOrder[];
 extern const char kPrintingEnabled[];
 extern const char kSearchSuggestEnabled[];

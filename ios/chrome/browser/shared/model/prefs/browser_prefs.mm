@@ -204,6 +204,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                              PrefRegistry::LOSSY_PREF);
   registry->RegisterListPref(prefs::kOverflowMenuDestinationsOrder);
   registry->RegisterListPref(prefs::kOverflowMenuHiddenDestinations);
+  registry->RegisterDictionaryPref(prefs::kOverflowMenuDestinationBadgeData);
   registry->RegisterDictionaryPref(prefs::kOverflowMenuActionsOrder);
   registry->RegisterBooleanPref(
       prefs::kOverflowMenuDestinationUsageHistoryEnabled, true);

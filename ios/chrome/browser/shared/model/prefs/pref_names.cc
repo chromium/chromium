@@ -324,6 +324,10 @@ const char kOverflowMenuDestinationsOrder[] =
 const char kOverflowMenuHiddenDestinations[] =
     "overflow_menu.hidden_destinations";
 
+// List preference which tracks the currently badged overflow menu destinations.
+const char kOverflowMenuDestinationBadgeData[] =
+    "overflow_menu.destination_badge_data";
+
 // Dict preference which tracks the current elements and order of the overflow
 // menu's actions.
 const char kOverflowMenuActionsOrder[] = "overflow_menu.actions_order";

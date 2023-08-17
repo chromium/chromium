@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_orderer.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
@@ -25,6 +26,15 @@ const char kShownActionsKey[] = "shown";
 
 // The dictionary key used for storing the hidden action ordering.
 const char kHiddenActionsKey[] = "hidden";
+
+// The dictionary key used for storing the impressions remaining.
+const char kImpressionsRemainingKey[] = "impressions_remaining";
+
+// The dictionary key used for storing the badge type.
+const char kBadgeTypeKey[] = "badge_type";
+
+// The dictionary key used for storing whether the badge is feature driven.
+const char kIsFeatureDrivenBadgeKey[] = "is_feature_driven_badge";
 
 // Ingests base::Value::List of destination names (strings) (`from` list),
 // converts each string to an overflow_menu::Destination, then appends each
@@ -97,6 +107,45 @@ struct BadgeData {
   BadgeType badgeType;
   bool isFeatureDrivenBadge;
 };
+
+// Creates a `BadgeData` from the provided dict.
+absl::optional<BadgeData> BadgeDataFromDict(const base::Value::Dict& dict) {
+  BadgeData badgeData;
+
+  absl::optional<int> impressionsRemaining =
+      dict.FindInt(kImpressionsRemainingKey);
+  if (!impressionsRemaining) {
+    return absl::nullopt;
+  }
+  badgeData.impressionsRemaining = impressionsRemaining.value();
+
+  absl::optional<bool> isFeatureDrivenBadge =
+      dict.FindBool(kIsFeatureDrivenBadgeKey);
+  if (!isFeatureDrivenBadge) {
+    return absl::nullopt;
+  }
+  badgeData.isFeatureDrivenBadge = isFeatureDrivenBadge.value();
+
+  const std::string* badgeType = dict.FindString(kBadgeTypeKey);
+  if (!badgeType) {
+    return absl::nullopt;
+  }
+  badgeData.badgeType = [OverflowMenuDestination
+      badgeTypeFromString:base::SysUTF8ToNSString(*badgeType)];
+
+  return badgeData;
+}
+
+// Creates a `base::Value::Dict` from the provided `BadgeData`.
+base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
+  std::string badgeTypeString = base::SysNSStringToUTF8(
+      [OverflowMenuDestination stringFromBadgeType:badgeData.badgeType]);
+  return base::Value::Dict()
+      .Set(kImpressionsRemainingKey, badgeData.impressionsRemaining)
+      .Set(kIsFeatureDrivenBadgeKey, badgeData.isFeatureDrivenBadge)
+      .Set(kBadgeTypeKey, badgeTypeString);
+}
+
 }  // namespace
 
 @interface OverflowMenuOrderer ()
@@ -241,6 +290,8 @@ struct BadgeData {
       !_destinationBadgeData[destination].isFeatureDrivenBadge) {
     _destinationBadgeData.erase(destination);
   }
+
+  [self flushDestinationsToPrefs];
 
   [self.destinationUsageHistory recordClickForDestination:destination];
 }
@@ -421,6 +472,24 @@ struct BadgeData {
         _localStatePrefs->GetList(prefs::kOverflowMenuHiddenDestinations);
     AppendDestinationsToVector(storedHiddenDestinations,
                                _destinationOrderData.hiddenDestinations);
+
+    const base::Value::Dict& storedBadgeData =
+        _localStatePrefs->GetDict(prefs::kOverflowMenuDestinationBadgeData);
+
+    for (const auto&& [key, value] : storedBadgeData) {
+      if (!value.is_dict()) {
+        continue;
+      }
+
+      absl::optional<BadgeData> badgeData = BadgeDataFromDict(value.GetDict());
+      if (!badgeData) {
+        continue;
+      }
+
+      overflow_menu::Destination destination =
+          overflow_menu::DestinationForStringName(key);
+      _destinationBadgeData[destination] = badgeData.value();
+    }
   }
 
   [self loadShownDestinationsPref];
@@ -536,6 +605,17 @@ struct BadgeData {
 
     _localStatePrefs->SetList(prefs::kOverflowMenuHiddenDestinations,
                               std::move(hiddenDestinations));
+
+    // Flush dict of badge data to Prefs.
+    base::Value::Dict badgeDataPref;
+    for (const auto& [destination, badgeData] : _destinationBadgeData) {
+      std::string destinationKey =
+          overflow_menu::StringNameForDestination(destination);
+      badgeDataPref.Set(destinationKey, DictFromBadgeData(badgeData));
+    }
+
+    _localStatePrefs->SetDict(prefs::kOverflowMenuDestinationBadgeData,
+                              std::move(badgeDataPref));
   }
 
   // Flush the new untapped destinations to Prefs.
