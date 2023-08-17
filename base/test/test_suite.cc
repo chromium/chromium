@@ -333,24 +333,24 @@ int RunUnitTestsUsingBaseTestSuite(int argc, char** argv) {
                          BindOnce(&TestSuite::Run, Unretained(&test_suite)));
 }
 
-TestSuite::TestSuite(int argc, char** argv) {
-  Construct(argc, argv);
+TestSuite::TestSuite(int argc, char** argv) : argc_(argc), argv_(argv) {
+  PreInitialize();
 }
 
 #if BUILDFLAG(IS_WIN)
-TestSuite::TestSuite(int argc, wchar_t** argv) {
-  std::vector<std::string> arg_strs;
-  arg_strs.reserve(argc);
-  std::vector<char*> arg_ptrs;
-  arg_ptrs.reserve(argc);
-  std::for_each(argv, argv + argc, [&](wchar_t* arg) {
-    arg_strs.push_back(WideToUTF8(arg));
-    arg_ptrs.push_back(arg_strs.back().data());
+TestSuite::TestSuite(int argc, wchar_t** argv) : argc_(argc) {
+  argv_as_strings_.reserve(argc);
+  argv_as_pointers_.reserve(argc + 1);
+  std::for_each(argv, argv + argc, [this](wchar_t* arg) {
+    argv_as_strings_.push_back(WideToUTF8(arg));
+    // Have to use .data() here to get a mutable pointer.
+    argv_as_pointers_.push_back(argv_as_strings_.back().data());
   });
   // `argv` is specified as containing `argc + 1` pointers, of which the last is
   // null.
-  arg_ptrs.push_back(nullptr);
-  Construct(argc, arg_ptrs.data());
+  argv_as_pointers_.push_back(nullptr);
+  argv_ = argv_as_pointers_.data();
+  PreInitialize();
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -490,6 +490,12 @@ void TestSuite::SuppressErrorDialogs() {
 void TestSuite::Initialize() {
   DCHECK(!is_initialized_);
 
+  InitializeFromCommandLine(&argc_, argv_);
+
+  // Logging must be initialized before any thread has a chance to call logging
+  // functions.
+  InitializeLogging();
+
   // The AsanService causes ASAN errors to emit additional information. It is
   // helpful on its own. It is also required by ASAN BackupRefPtr when
   // reconfiguring PartitionAlloc below.
@@ -593,13 +599,13 @@ void TestSuite::Initialize() {
   is_initialized_ = true;
 }
 
-void TestSuite::InitializeFromCommandLine(int argc, char** argv) {
-  initialized_command_line_ = CommandLine::Init(argc, argv);
-  testing::InitGoogleTest(&argc, argv);
-  testing::InitGoogleMock(&argc, argv);
+void TestSuite::InitializeFromCommandLine(int* argc, char** argv) {
+  // CommandLine::Init() is called earlier from PreInitialize().
+  testing::InitGoogleTest(argc, argv);
+  testing::InitGoogleMock(argc, argv);
 
 #if BUILDFLAG(IS_IOS)
-  InitIOSArgs(argc, argv);
+  InitIOSArgs(*argc, argv);
 #endif
 }
 
@@ -610,14 +616,6 @@ int TestSuite::RunAllTests() {
 void TestSuite::Shutdown() {
   DCHECK(is_initialized_);
   debug::StopProfiling();
-}
-
-void TestSuite::Construct(int argc, char** argv) {
-  PreInitialize();
-  InitializeFromCommandLine(argc, argv);
-  // Logging must be initialized before any thread has a chance to call logging
-  // functions.
-  InitializeLogging();
 }
 
 void TestSuite::PreInitialize() {
@@ -660,6 +658,10 @@ void TestSuite::PreInitialize() {
 #if !BUILDFLAG(IS_ANDROID)
   at_exit_manager_ = std::make_unique<AtExitManager>();
 #endif
+
+  // This needs to be done during construction as some users of this class rely
+  // on the constructor to initialise the CommandLine.
+  initialized_command_line_ = CommandLine::Init(argc_, argv_);
 
   // Don't add additional code to this function.  Instead add it to
   // Initialize().  See bug 6436.

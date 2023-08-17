@@ -22,6 +22,11 @@
 #include "base/test/trace_to_file.h"
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
+#if BUILDFLAG(IS_WIN)
+#include <vector>
+#include "base/allocator/partition_allocator/pointers/raw_ptr_exclusion.h"
+#endif
+
 namespace logging {
 class ScopedLogAssertHandler;
 }
@@ -76,7 +81,7 @@ class TestSuite {
   // Override these for custom test handling. Use these instead of putting
   // complex code in your constructor/destructor.
   virtual void Initialize();
-  virtual void InitializeFromCommandLine(int argc, char** argv);
+  virtual void InitializeFromCommandLine(int* argc, char** argv);
   virtual int RunAllTests();
   virtual void Shutdown();
 
@@ -85,11 +90,6 @@ class TestSuite {
   std::unique_ptr<base::AtExitManager> at_exit_manager_;
 
  private:
-  // Implementation of the constructor. Factored to a helper so that the
-  // Windows-specific constructor can delegate to it after doing some string
-  // conversion.
-  void Construct(int argc, char** argv);
-
   // Basic initialization for the test suite happens here.
   void PreInitialize();
 
@@ -99,15 +99,22 @@ class TestSuite {
   test::TraceToFile trace_to_file_;
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
-  bool initialized_command_line_ = false;
-
   raw_ptr<XmlUnitTestResultPrinter, DanglingUntriaged> printer_ = nullptr;
 
   std::unique_ptr<logging::ScopedLogAssertHandler> assert_handler_;
 
+  bool initialized_command_line_ = false;
   bool check_for_leaked_globals_ = true;
   bool check_for_thread_and_process_priority_ = true;
   bool is_initialized_ = false;
+  int argc_;
+#if BUILDFLAG(IS_WIN)
+  // We need argv_as_pointers_.data() to have type char**, so we can't use
+  // raw_ptr here.
+  RAW_PTR_EXCLUSION std::vector<char*> argv_as_pointers_;
+  std::vector<std::string> argv_as_strings_;
+#endif
+  raw_ptr<char*> argv_;
 };
 
 }  // namespace base

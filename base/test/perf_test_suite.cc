@@ -50,9 +50,9 @@ void PerfTestSuite::Initialize() {
     RaiseProcessToHighPriority();
 }
 
-void PerfTestSuite::InitializeFromCommandLine(int argc, char** argv) {
+void PerfTestSuite::InitializeFromCommandLine(int* argc, char** argv) {
   TestSuite::InitializeFromCommandLine(argc, argv);
-  ::benchmark::Initialize(&argc, argv);
+  ::benchmark::Initialize(argc, argv);
 }
 
 int PerfTestSuite::RunAllTests() {
