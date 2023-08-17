@@ -4,6 +4,8 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/strings/cstring_builder.h"
 
+#include <cmath>
+
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
