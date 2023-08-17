@@ -22,8 +22,8 @@
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_system.h"
@@ -199,16 +199,11 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 
-    content::AccessibilityNotificationWaiter waiter(
-        web_contents, ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
     CHECK(ui_test_utils::NavigateToURL(
         browser(), GURL(("data:text/html;charset=utf-8,<p "
                          "id='selected'>This is some selected text</p>"))));
-    std::ignore = waiter.WaitForNotification();
+    EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
-    content::AccessibilityNotificationWaiter selection_waiter(
-        web_contents, ui::kAXModeComplete,
-        ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED);
     content::BoundingBoxUpdateWaiter bounding_box_waiter(web_contents);
 
     BrowserView* browser_view =
@@ -224,9 +219,7 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
 
     // Set selection with ctrl+a.
     generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
-
     bounding_box_waiter.Wait();
-    CHECK(selection_waiter.WaitForNotification());
 
     ContextMenuWaiter menu_waiter;
     generator.PressRightButton();

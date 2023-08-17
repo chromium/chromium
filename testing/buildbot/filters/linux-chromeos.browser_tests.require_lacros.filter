@@ -35,7 +35,7 @@ CrosapiSystemLogSourceTest*
 -ChromeVoxPanelTest.LinkMenu
 -ChromeVoxPortalsTest.PortalName
 -ChromeVoxPortalsTest.ShouldFocusPortal
-# TODO(crbug.com/1378396) Remove once ash extension context menus are passed through to lacros
+# TODO(crbug.com/1378396) Flaky due to Lacros failure to start up.
 -SelectToSpeakContextMenuTest.*
 -SelectToSpeakEnhancedNetworkTtsVoicesTest.*
 -SelectToSpeakNavigationControlTest.*

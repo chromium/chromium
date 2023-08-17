@@ -76,6 +76,7 @@
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/echo_private.mojom.h"
+#include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom.h"
 #include "chromeos/crosapi/mojom/extension_info_private.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
@@ -292,7 +293,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 114,
+static_assert(crosapi::mojom::Crosapi::Version_ == 115,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -418,6 +419,8 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<media_session::mojom::AudioFocusManager>(),
     MakeInterfaceVersionEntry<media_session::mojom::AudioFocusManagerDebug>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ParentAccess>(),
+    MakeInterfaceVersionEntry<
+        crosapi::mojom::EmbeddedAccessibilityHelperClientFactory>(),
 };
 
 constexpr bool HasDuplicatedUuid() {

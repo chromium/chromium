@@ -48,6 +48,7 @@
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/echo_private.mojom.h"
+#include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom.h"
 #include "chromeos/crosapi/mojom/extension_info_private.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
@@ -338,6 +339,11 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::EchoPrivate,
                   &crosapi::mojom::Crosapi::BindEchoPrivate,
                   Crosapi::MethodMinVersions::kBindEchoPrivateMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::EmbeddedAccessibilityHelperClientFactory,
+      &Crosapi::BindEmbeddedAccessibilityHelperClientFactory,
+      Crosapi::MethodMinVersions::
+          kBindEmbeddedAccessibilityHelperClientFactoryMinVersion>();
   ConstructRemote<crosapi::mojom::EmojiPicker, &Crosapi::BindEmojiPicker,
                   Crosapi::MethodMinVersions::kBindEmojiPickerMinVersion>();
   ConstructRemote<

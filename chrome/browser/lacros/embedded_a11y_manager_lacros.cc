@@ -14,6 +14,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -96,6 +98,14 @@ void EmbeddedA11yManagerLacros::Init() {
           &EmbeddedA11yManagerLacros::OnSwitchAccessEnabledChanged,
           weak_ptr_factory_.GetWeakPtr()));
 
+  chromeos::LacrosService* impl = chromeos::LacrosService::Get();
+  if (impl->IsAvailable<
+          crosapi::mojom::EmbeddedAccessibilityHelperClientFactory>()) {
+    impl->GetRemote<crosapi::mojom::EmbeddedAccessibilityHelperClientFactory>()
+        ->BindEmbeddedAccessibilityHelperClient(
+            a11y_helper_remote_.BindNewPipeAndPassReceiver());
+  }
+
   pdf_ocr_always_active_observer_ = std::make_unique<CrosapiPrefObserver>(
       crosapi::mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
       base::BindRepeating(
@@ -116,7 +126,11 @@ void EmbeddedA11yManagerLacros::Init() {
 }
 
 void EmbeddedA11yManagerLacros::SpeakSelectedText() {
-  // TODO(b/271633121): Forward through crosapi to Ash.
+  // Check the remote is bound. It might not be bound on older versions
+  // of Ash.
+  if (a11y_helper_remote_.is_bound()) {
+    a11y_helper_remote_->SpeakSelectedText();
+  }
   if (speak_selected_text_callback_for_test_) {
     speak_selected_text_callback_for_test_.Run();
   }

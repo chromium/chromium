@@ -117,6 +117,7 @@ import "mojo/public/mojom/base/values.mojom";
 import "services/device/public/mojom/hid.mojom";
 import "services/media_session/public/mojom/audio_focus.mojom";
 import "services/media_session/public/mojom/media_controller.mojom";
+import "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom";
 import "url/mojom/url.mojom";
 
 // BrowserInfo is a set of parameters passed to ash from browser (such as
@@ -144,8 +145,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 115
-// Next method id: 118
+// Next version: 116
+// Next method id: 119
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -326,6 +327,12 @@ interface Crosapi {
   // confirm the device is a ChromeOS device.
   [MinVersion=71] BindEchoPrivate@74(
       pending_receiver<EchoPrivate> receiver);
+
+  // Binds the accessibility helper client factory interface which allows Lacros
+  // to send information to Ash needed for accessibility features.
+  [MinVersion=115]
+  BindEmbeddedAccessibilityHelperClientFactory@118(
+      pending_receiver<EmbeddedAccessibilityHelperClientFactory> receiver);
 
   // EmojiPicker is a service to allow lacros to open the system emoji picker.
   [MinVersion=85] BindEmojiPicker@89(pending_receiver<EmojiPicker> receiver);

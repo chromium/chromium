@@ -147,6 +147,7 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   // workaround for fixing crbug/1371655.
   lacros_args.emplace_back(base::StringPrintf("--%s=%s", switches::kGaiaUrl,
                                               base_url().spec().c_str()));
+  lacros_args.emplace_back("--enable-features=ApiAccessibilityServicePrivate");
   command_line->AppendSwitchASCII(ash::switches::kLacrosChromeAdditionalArgs,
                                   base::JoinString(lacros_args, "####"));
 

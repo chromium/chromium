@@ -65,6 +65,7 @@ class DownloadControllerAsh;
 class DownloadStatusUpdaterAsh;
 class DriveIntegrationServiceAsh;
 class EchoPrivateAsh;
+class EmbeddedAccessibilityHelperClientAsh;
 class EmojiPickerAsh;
 class ExtensionInfoPrivateAsh;
 class FeedbackAsh;
@@ -213,6 +214,10 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DriveIntegrationService> receiver) override;
   void BindEchoPrivate(
       mojo::PendingReceiver<mojom::EchoPrivate> receiver) override;
+  void BindEmbeddedAccessibilityHelperClientFactory(
+      mojo::PendingReceiver<
+          ::crosapi::mojom::EmbeddedAccessibilityHelperClientFactory> receiver)
+      override;
   void BindEmojiPicker(
       mojo::PendingReceiver<mojom::EmojiPicker> receiver) override;
   void BindExtensionInfoPrivate(
@@ -422,6 +427,11 @@ class CrosapiAsh : public mojom::Crosapi {
 
   EchoPrivateAsh* echo_private_ash() { return echo_private_ash_.get(); }
 
+  EmbeddedAccessibilityHelperClientAsh*
+  embedded_accessibility_helper_client_ash() {
+    return embedded_accessibility_helper_client_ash_.get();
+  }
+
   EmojiPickerAsh* emoji_picker_ash() { return emoji_picker_ash_.get(); }
 
   ExtensionInfoPrivateAsh* extension_info_private_ash() {
@@ -580,6 +590,8 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<DownloadStatusUpdaterAsh> download_status_updater_ash_;
   std::unique_ptr<DriveIntegrationServiceAsh> drive_integration_service_ash_;
   std::unique_ptr<EchoPrivateAsh> echo_private_ash_;
+  std::unique_ptr<EmbeddedAccessibilityHelperClientAsh>
+      embedded_accessibility_helper_client_ash_;
   std::unique_ptr<EmojiPickerAsh> emoji_picker_ash_;
   std::unique_ptr<ExtensionInfoPrivateAsh> extension_info_private_ash_;
   std::unique_ptr<FeedbackAsh> feedback_ash_;

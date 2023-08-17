@@ -13,7 +13,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/lacros/crosapi_pref_observer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace extensions {
 class ComponentLoader;
@@ -110,6 +112,9 @@ class EmbeddedA11yManagerLacros : public ProfileObserver,
       observed_profiles_{this};
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
+
+  mojo::Remote<crosapi::mojom::EmbeddedAccessibilityHelperClient>
+      a11y_helper_remote_;
 
   base::WeakPtrFactory<EmbeddedA11yManagerLacros> weak_ptr_factory_{this};
 

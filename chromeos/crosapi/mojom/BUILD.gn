@@ -40,6 +40,7 @@ mojom("mojom") {
     "download_status_updater.mojom",
     "drive_integration_service.mojom",
     "echo_private.mojom",
+    "embedded_accessibility_helper.mojom",
     "emoji_picker.mojom",
     "extension_info_private.mojom",
     "extension_keeplist.mojom",
