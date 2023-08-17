@@ -140,8 +140,12 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     // No need to reload since the model has not been loaded yet.
     return;
   }
-  [self.tableView deleteSections:sections
-                withRowAnimation:UITableViewRowAnimationNone];
+  [UIView performWithoutAnimation:^{
+    [self.tableView beginUpdates];
+    [self.tableView deleteSections:sections
+                  withRowAnimation:UITableViewRowAnimationNone];
+    [self.tableView endUpdates];
+  }];
 }
 
 - (void)reloadItem:(TableViewItem*)item {
