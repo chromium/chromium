@@ -4700,7 +4700,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.CookiePartitionKeyOK"
-    enum="Boolean" expires_after="2023-12-01">
+    enum="Boolean" expires_after="2024-01-01">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -4728,7 +4728,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.PartitionedCookiesInScript"
-    units="cookies" expires_after="2023-12-24">
+    units="cookies" expires_after="2024-01-01">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -4738,7 +4738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.SetPartitionedCookie"
-    enum="Boolean" expires_after="2023-08-20">
+    enum="Boolean" expires_after="2024-01-01">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
