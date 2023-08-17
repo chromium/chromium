@@ -150,6 +150,8 @@ class BASE_EXPORT FilePathWatcher {
                         const Callback& callback);
 
  private:
+  explicit FilePathWatcher(std::unique_ptr<PlatformDelegate> delegate);
+
   std::unique_ptr<PlatformDelegate> impl_;
 
   SEQUENCE_CHECKER(sequence_checker_);
