@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -74,11 +76,10 @@ AuthenticatorMultiSourcePickerSheetView::BuildStepSpecificContent() {
                           sheet_model->dialog_model()->mechanisms()));
   }
 
-  // TODO(crbug.com/1459273): i18n.
-  container->AddChildView(
-      CreatePasskeyList(u"Passkeys on other devices (UNTRANSLATED)",
-                        sheet_model->secondary_passkey_indices(),
-                        sheet_model->dialog_model()->mechanisms()));
+  container->AddChildView(CreatePasskeyList(
+      l10n_util::GetStringUTF16(IDS_WEBAUTHN_OTHER_DEVICES_LABEL),
+      sheet_model->secondary_passkey_indices(),
+      sheet_model->dialog_model()->mechanisms()));
 
   return std::make_pair(std::move(container), AutoFocus::kYes);
 }

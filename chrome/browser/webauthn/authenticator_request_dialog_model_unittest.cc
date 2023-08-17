@@ -26,6 +26,7 @@
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
@@ -42,6 +43,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/fake_webauthn_api.h"
@@ -1835,7 +1837,9 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
       model.mechanisms()[2];
   EXPECT_EQ(mech3.name, base::UTF8ToUTF16(*kPhoneUser1.name));
   EXPECT_EQ(mech3.short_name, base::UTF8ToUTF16(*kPhoneUser1.name));
-  EXPECT_EQ(mech3.description, u"Use \"Phone from sync\" (UNTRANSLATED)");
+  EXPECT_EQ(mech3.description,
+            l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
+                                       u"Phone from sync"));
   EXPECT_EQ(mech3.icon, kSmartphoneIcon);
   mech3.callback.Run();
   result = account_preselected_callback.WaitForResult();

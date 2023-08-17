@@ -78,17 +78,6 @@ constexpr int GetMessageIdForTransportDescription(
   }
 }
 
-int GetAuthenticatorLabel(device::AuthenticatorType type) {
-  switch (type) {
-    case device::AuthenticatorType::kWinNative:
-      return IDS_PASSWORD_MANAGER_USE_WINDOWS_HELLO;
-    case device::AuthenticatorType::kTouchID:
-      return IDS_PASSWORD_MANAGER_USE_TOUCH_ID;
-    default:
-      return IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
-  }
-}
-
 std::u16string GetTransportDescription(AuthenticatorTransport transport) {
   const int msg_id = GetMessageIdForTransportDescription(transport);
   if (!msg_id) {
@@ -217,10 +206,38 @@ std::u16string GetMechanismDescription(
     device::AuthenticatorType type,
     const absl::optional<std::u16string>& priority_phone_name) {
   if (type == device::AuthenticatorType::kPhone) {
-    return std::u16string(u"Use \"") + *priority_phone_name +
-           u"\" (UNTRANSLATED)";
+    return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
+                                      *priority_phone_name);
   }
-  return l10n_util::GetStringUTF16(GetAuthenticatorLabel(type));
+  int message;
+  switch (type) {
+    case device::AuthenticatorType::kWinNative:
+      message = IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
+      break;
+    case device::AuthenticatorType::kTouchID:
+      message = IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
+      break;
+    case device::AuthenticatorType::kICloudKeychain:
+      // TODO(crbug.com/1439987): Use IDS_WEBAUTHN_SOURCE_CUSTOM_VENDOR for
+      // third party providers.
+      message = IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
+      break;
+    default:
+      message = IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
+  }
+  return l10n_util::GetStringUTF16(message);
+}
+
+int GetHybridButtonLabel(bool has_security_key, bool specific_phones_listed) {
+  if (has_security_key) {
+    return specific_phones_listed
+               ? IDS_WEBAUTHN_PASSKEY_DIFFERENT_PHONE_TABLET_OR_SECURITY_KEY_LABEL
+               : IDS_WEBAUTHN_PASSKEY_PHONE_TABLET_OR_SECURITY_KEY_LABEL;
+  } else {
+    return specific_phones_listed
+               ? IDS_WEBAUTHN_PASSKEY_DIFFERENT_PHONE_OR_TABLET_LABEL
+               : IDS_WEBAUTHN_PASSKEY_PHONE_OR_TABLET_LABEL;
+  }
 }
 
 }  // namespace
@@ -1387,6 +1404,9 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
           !list_phone_passkeys) {
         continue;
       }
+      if (cred.source == device::AuthenticatorType::kPhone) {
+        specific_phones_listed = true;
+      }
       std::u16string name = base::UTF8ToUTF16(cred.user.name.value_or(""));
       auto& mechanism = mechanisms_.emplace_back(
           AuthenticatorRequestDialogModel::Mechanism::Credential(cred.source),
@@ -1453,7 +1473,8 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   }
 
   if (transport_availability_.has_icloud_keychain) {
-    const std::u16string name = u"iCloud Keychain (UNTRANSLATED)";
+    const std::u16string name =
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_ICLOUD_KEYCHAIN);
     mechanisms_.emplace_back(
         Mechanism::ICloudKeychain(), name, name, kSmartphoneIcon,
         base::BindRepeating(
@@ -1476,7 +1497,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   }
   if (win_native_api_enabled() && show_windows_button) {
     const std::u16string desc = l10n_util::GetStringUTF16(
-        IDS_WEBAUTHN_TRANSPORT_POPUP_DIFFERENT_AUTHENTICATOR_WIN);
+        IDS_WEBAUTHN_TRANSPORT_WINDOWS_HELLO_OR_SECURITY_KEY);
     // TODO(crbug.com/1459273): Update the label depending on transports that
     // Windows can serve.
     mechanisms_.emplace_back(
@@ -1522,17 +1543,10 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   if (include_add_phone_option) {
     std::u16string label;
     if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
-      if (base::Contains(transport_availability_.available_transports,
-                         AuthenticatorTransport::kUsbHumanInterfaceDevice)) {
-        label = specific_phones_listed
-                    ? u"Use a different phone, tablet, or security key "
-                      u"(UNTRANSLATED)"
-                    : u"Use a phone, tablet, or security key (UNTRANSLATED)";
-      } else {
-        label = specific_phones_listed
-                    ? u"Use a different phone or tablet (UNTRANSLATED)"
-                    : u"Use a phone or tablet (UNTRANSLATED)";
-      }
+      label = l10n_util::GetStringUTF16(GetHybridButtonLabel(
+          base::Contains(transport_availability_.available_transports,
+                         AuthenticatorTransport::kUsbHumanInterfaceDevice),
+          specific_phones_listed));
     } else {
       label = l10n_util::GetStringUTF16(
           specific_phones_listed

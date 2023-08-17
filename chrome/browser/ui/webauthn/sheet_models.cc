@@ -105,7 +105,11 @@ bool AuthenticatorSheetModelBase::IsOtherMechanismButtonVisible() const {
 
 std::u16string AuthenticatorSheetModelBase::GetOtherMechanismButtonLabel()
     const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_DEVICE);
+  if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
+    return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_PASSKEY);
+  } else {
+    return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_DEVICE);
+  }
 }
 
 std::u16string AuthenticatorSheetModelBase::GetCancelButtonLabel() const {
@@ -1298,25 +1302,22 @@ bool AuthenticatorQRSheetModel::ShowSecurityKeyLabel() const {
 }
 
 std::u16string AuthenticatorQRSheetModel::GetSecurityKeyLabel() const {
-  // TODO(crbug.com/1459273): i18n.
   switch (dialog_model()->transport_availability()->request_type) {
     case device::FidoRequestType::kMakeCredential:
-      return u"If you want to create passkey for " +
-             base::UTF8ToUTF16(dialog_model()->relying_party_id()) +
-             u" on a hardware security key, insert and touch it now "
-             u"(UNTRANSLATED)";
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_QR_CREATE_PASSKEY_ON_SECURITY_KEY_LABEL,
+          GetRelyingPartyIdString(dialog_model()));
     case device::FidoRequestType::kGetAssertion:
-      return u"If your passkey for " +
-             base::UTF8ToUTF16(dialog_model()->relying_party_id()) +
-             u" is on a hardware security key, insert and touch it now "
-             u"(UNTRANSLATED)";
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_QR_USE_PASSKEY_ON_SECURITY_KEY_LABEL,
+          GetRelyingPartyIdString(dialog_model()));
   }
 }
 
 std::u16string AuthenticatorQRSheetModel::GetOtherMechanismButtonLabel() const {
   return base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)
-             ? u"Back (UNTRANSLATED)"
-             : l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_DEVICE);
+             ? l10n_util::GetStringUTF16(IDS_WEBAUTHN_BACK)
+             : AuthenticatorSheetModelBase::GetOtherMechanismButtonLabel();
 }
 
 // AuthenticatorConnectingSheetModel ------------------------------------------
@@ -1501,9 +1502,9 @@ AuthenticatorMultiSourcePickerSheetModel::
                absl::get<CredentialMech>(mech.type).value() !=
                    device::AuthenticatorType::kPhone;
       });
-  // TODO(crbug.com/1459273): i18n.
   if (has_local_passkeys) {
-    primary_passkeys_label_ = u"From this device (UNTRANSLATED)";
+    primary_passkeys_label_ =
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_THIS_DEVICE_LABEL);
     for (size_t i = 0; i < dialog_model->mechanisms().size(); ++i) {
       const AuthenticatorRequestDialogModel::Mechanism& mech =
           dialog_model->mechanisms()[i];
@@ -1522,7 +1523,7 @@ AuthenticatorMultiSourcePickerSheetModel::
       dialog_model->GetPrioritySyncedPhoneName();
   if (phone_name) {
     primary_passkeys_label_ =
-        std::u16string(u"From \"") + *phone_name + u"\" (UNTRANSLATED)";
+        l10n_util::GetStringFUTF16(IDS_WEBAUTHN_FROM_PHONE_LABEL, *phone_name);
   }
   for (size_t i = 0; i < dialog_model->mechanisms().size(); ++i) {
     const AuthenticatorRequestDialogModel::Mechanism& mech =
@@ -1543,9 +1544,8 @@ AuthenticatorMultiSourcePickerSheetModel::
     ~AuthenticatorMultiSourcePickerSheetModel() = default;
 
 std::u16string AuthenticatorMultiSourcePickerSheetModel::GetStepTitle() const {
-  return base::UTF8ToUTF16(std::string("Choose a passkey for ") +
-                           dialog_model()->relying_party_id() +
-                           " (UNTRANSLATED)");
+  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_CHOOSE_PASSKEY_FOR_RP_TITLE,
+                                    GetRelyingPartyIdString(dialog_model()));
 }
 
 std::u16string AuthenticatorMultiSourcePickerSheetModel::GetStepDescription()
