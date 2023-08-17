@@ -6,6 +6,7 @@
 #include "base/feature_list_buildflags.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time_override.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -171,6 +172,12 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
                                   "/third_party_partitioned_cookies.html");
   }
 
+  static base::Time GetReferenceTime() {
+    base::Time time;
+    EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2023 11:00:00", &time));
+    return time;
+  }
+
   base::UserActionTester user_actions_;
   feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -186,9 +193,12 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, BubbleOpens) {
           WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)));
 }
 
-// TODO(crbug.com/1472648): Fix flakiness and reenable the test.
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
-                       DISABLED_CreateException) {
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, CreateException) {
+  // Overriding `base::Time::Now()` to obtain a consistent X days until
+  // exception expiration calculation regardless of the time the test runs.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CookieControlsInteractiveUiTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
   // Open the bubble while 3PC are blocked, re-enable them for the site, and
   // confirm the appropriate exception is created.
   BlockThirdPartyCookies();
@@ -204,9 +214,12 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
       CheckStateForTemporaryException());
 }
 
-// TODO(crbug.com/1472648): Fix flakiness and reenable the test.
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
-                       DISABLED_RemoveException) {
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, RemoveException) {
+  // Overriding `base::Time::Now()` to obtain a consistent X days until
+  // exception expiration calculation regardless of the time the test runs.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CookieControlsInteractiveUiTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
   // Open the bubble while 3PC are blocked, but the page already has an
   // exception. Disable 3PC for the page, and confirm the exception is removed.
   BlockCookiesAndSetHighConfidenceForSite();

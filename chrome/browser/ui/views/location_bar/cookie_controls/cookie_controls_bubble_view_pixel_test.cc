@@ -152,6 +152,12 @@ class CookieControlsBubbleViewPixelTest
     run_loop.Run();
   }
 
+  static base::Time GetReferenceTime() {
+    base::Time time;
+    EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2023 11:00:00", &time));
+    return time;
+  }
+
   void NavigateToUrlWithThirdPartyCookies() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -192,6 +198,12 @@ class CookieControlsBubbleViewPixelTest
 };
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest, InvokeUi) {
+  // Overriding `base::Time::Now()` to obtain a consistent X days until
+  // exception expiration calculation regardless of the time the test runs.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CookieControlsBubbleViewPixelTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
   ShowAndVerifyUi();
 }
 
