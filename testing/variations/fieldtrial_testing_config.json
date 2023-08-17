@@ -10308,6 +10308,22 @@
             ]
         }
     ],
+    "OmniboxTextAndAnimationOptimizations": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230811",
+                    "enable_features": [
+                        "AvoidRelayoutDuringFocusAnimation",
+                        "ScrollToTLDOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxUISimplificationDesktop": [
         {
             "platforms": [
@@ -13654,21 +13670,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ScreenTimeIntegration"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ScrollToTLDOptimization": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230615",
-                    "enable_features": [
-                        "ScrollToTLDOptimization"
                     ]
                 }
             ]
