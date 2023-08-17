@@ -31,6 +31,8 @@ namespace content {
 
 namespace {
 
+// Note that this function would also return false if the context origin is
+// opaque. This is stricter than the web platform's notion of "secure context".
 // TODO(yaoxia): This should be function in FrameTreeNode.
 bool IsSecureFrame(RenderFrameHost* frame) {
   while (frame) {
@@ -88,6 +90,13 @@ void SharedStorageDocumentServiceImpl::Bind(
         receiver) {
   CHECK(!receiver_)
       << "Multiple attempts to bind the SharedStorageDocumentService receiver";
+
+  if (render_frame_host().GetLastCommittedOrigin().opaque()) {
+    mojo::ReportBadMessage(
+        "Attempted to request SharedStorageDocumentService from an opaque "
+        "origin context");
+    return;
+  }
 
   if (!IsSecureFrame(&render_frame_host())) {
     // This could indicate a compromised renderer, so let's terminate it.
