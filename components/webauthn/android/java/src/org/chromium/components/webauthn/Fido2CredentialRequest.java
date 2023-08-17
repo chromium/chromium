@@ -555,7 +555,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
      * the allowlist are non-discoverable credentials in the local platform
      * authenticator then the request should be sent directly to Play Services.
      */
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private void checkForNonDiscoverableMatch(PublicKeyCredentialRequestOptions options,
             Origin callerOrigin, byte[] maybeClientDataHash) {
         assert options.allowCredentials != null;
@@ -578,7 +578,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 });
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private void checkForNonDiscoverableMatchCredentialsReceived(
             PublicKeyCredentialRequestOptions options, Origin callerOrigin,
             byte[] maybeClientDataHash, List<WebAuthnCredentialDetails> retrievedCredentials) {
@@ -903,9 +903,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
 
     /**
      * Create a credential using the Android 14 CredMan API.
-     * TODO: update the version code to U when Chromium builds with Android 14 SDK.
      */
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private void makeCredentialViaCredMan(
             PublicKeyCredentialCreationOptions options, Origin origin, byte[] maybeClientDataHash) {
         final String requestAsJson =
@@ -1044,9 +1043,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
 
     /**
      * Gets the credential using the Android 14 CredMan API.
-     * TODO: update the version code to U when Chromium builds with Android 14 SDK.
      */
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private void getCredentialViaCredMan(PublicKeyCredentialRequestOptions options, Origin origin,
             byte[] maybeClientDataHash, boolean requestPasswords) {
         // The Android 14 APIs have to be called via reflection until Chromium
@@ -1225,9 +1223,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
 
     /**
      * Queries credential availability using the Android 14 CredMan API.
-     * TODO: update the version code to U when Chromium builds with Android 14 SDK.
      */
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private void prefetchCredentialsViaCredMan(
             PublicKeyCredentialRequestOptions options, Origin origin, byte[] maybeClientDataHash) {
         long startTimeMs = SystemClock.elapsedRealtime();
