@@ -19,7 +19,7 @@ owners:
 - anasalazar@google.com
 schema:
   type: boolean
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:118-
 tags: []
 type: main
