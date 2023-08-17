@@ -302,6 +302,10 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
 
 absl::optional<int> BatterySaverController::GetRemainingMinutes(
     const PowerStatus* status) {
+  if (status->IsBatteryTimeBeingCalculated()) {
+    return absl::nullopt;
+  }
+
   const absl::optional<base::TimeDelta> remaining_time =
       status->GetBatteryTimeToEmpty();
 
