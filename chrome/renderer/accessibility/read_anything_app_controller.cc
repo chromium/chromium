@@ -919,7 +919,7 @@ void ReadAnythingAppController::OnYellowTheme() {
 }
 
 void ReadAnythingAppController::OnBlueTheme() {
-  page_handler_->OnColorChange(read_anything::mojom::Colors::kYellow);
+  page_handler_->OnColorChange(read_anything::mojom::Colors::kBlue);
 }
 
 void ReadAnythingAppController::OnFontChange(const std::string& font) {
