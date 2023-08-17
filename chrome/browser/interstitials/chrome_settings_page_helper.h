@@ -31,12 +31,13 @@ class ChromeSettingsPageHelper : public SettingsPageHelper {
   ChromeSettingsPageHelper(const ChromeSettingsPageHelper&) = delete;
   ChromeSettingsPageHelper& operator=(const ChromeSettingsPageHelper&) = delete;
 
-  // SettingsPageHelper:
+  // SettingsPageHelper::
   void OpenEnhancedProtectionSettings(
       content::WebContents* web_contents) const override;
   void OpenEnhancedProtectionSettingsWithIph(
       content::WebContents* web_contents,
-      SafeBrowsingSettingReferralMethod referral_method) const override;
+      safe_browsing::SafeBrowsingSettingReferralMethod referral_method)
+      const override;
 };
 
 }  // namespace security_interstitials

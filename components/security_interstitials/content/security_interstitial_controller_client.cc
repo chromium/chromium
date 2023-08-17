@@ -100,8 +100,8 @@ void SecurityInterstitialControllerClient::OpenEnhancedProtectionSettings() {
 #else
   if (safe_browsing::kEsbIphBubbleAndCollapseSettingsEnableIph.Get()) {
     settings_page_helper_->OpenEnhancedProtectionSettingsWithIph(
-        web_contents_,
-        SafeBrowsingSettingReferralMethod::kSecurityInterstitial);
+        web_contents_, safe_browsing::SafeBrowsingSettingReferralMethod::
+                           kSecurityInterstitial);
   } else {
     settings_page_helper_->OpenEnhancedProtectionSettings(web_contents_);
   }

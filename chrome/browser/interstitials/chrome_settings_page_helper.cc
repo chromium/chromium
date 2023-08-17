@@ -9,17 +9,11 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/android/safe_browsing_settings_launcher_android.h"
+#include "components/safe_browsing/core/common/safe_browsing_settings_metrics.h"
 #else
-#include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/user_education/show_promo_in_page.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
-#include "components/safe_browsing/core/common/safe_browsing_settings_metrics.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
-#include "ui/base/l10n/l10n_util.h"
 #endif
 
 namespace security_interstitials {
@@ -50,18 +44,8 @@ void ChromeSettingsPageHelper::OpenEnhancedProtectionSettings(
 
 void ChromeSettingsPageHelper::OpenEnhancedProtectionSettingsWithIph(
     content::WebContents* web_contents,
-    SafeBrowsingSettingReferralMethod referral_method) const {
+    safe_browsing::SafeBrowsingSettingReferralMethod referral_method) const {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  ShowPromoInPage::Params params;
-  params.target_url =
-      chrome::GetSettingsUrl(chrome::kSafeBrowsingEnhancedProtectionSubPage);
-  params.bubble_anchor_id = kEnhancedProtectionSettingElementId;
-  params.bubble_arrow = user_education::HelpBubbleArrow::kBottomLeft;
-  params.bubble_text = l10n_util::GetStringUTF16(
-      IDS_SETTINGS_SAFEBROWSING_ENHANCED_IPH_BUBBLE_TEXT);
-  params.close_button_alt_text_id =
-      IDS_SETTINGS_SAFEBROWSING_ENHANCED_IPH_BUBBLE_CLOSE_BUTTON_ARIA_LABEL_TEXT;
-
   // In rare circumstances, this happens outside of a Browser, better ignore
   // than crash.
   // TODO(crbug.com/1219535): Remove and find a better way, e.g. not showing the
@@ -69,11 +53,8 @@ void ChromeSettingsPageHelper::OpenEnhancedProtectionSettingsWithIph(
   if (!chrome::FindBrowserWithWebContents(web_contents)) {
     return;
   }
-  base::UmaHistogramEnumeration("SafeBrowsing.EsbPromotionFlow.IphShown",
-                                referral_method);
-  safe_browsing::LogShowEnhancedProtectionAction();
-  ShowPromoInPage::Start(chrome::FindBrowserWithWebContents(web_contents),
-                         std::move(params));
+  chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
+      chrome::FindBrowserWithWebContents(web_contents), referral_method);
 #endif
 }
 

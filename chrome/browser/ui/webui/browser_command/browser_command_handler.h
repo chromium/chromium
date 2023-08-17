@@ -81,6 +81,7 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual void OpenFeedbackForm();
   virtual user_education::TutorialService* GetTutorialService();
   virtual ui::ElementContext GetUiElementContext();
+  virtual void NavigateToEnhancedProtectionSetting();
   virtual void OpenPasswordManager();
   void StartTabGroupTutorial();
   void OpenNTPAndStartCustomizeChromeTutorial(

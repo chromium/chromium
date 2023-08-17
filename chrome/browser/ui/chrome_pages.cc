@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -32,17 +33,20 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #include "chrome/browser/ui/user_education/user_education_service.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_settings_metrics.h"
+#include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/signin/public/base/consent_level.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
@@ -460,6 +464,26 @@ void ShowPasswordCheck(Browser* browser) {
 void ShowSafeBrowsingEnhancedProtection(Browser* browser) {
   safe_browsing::LogShowEnhancedProtectionAction();
   ShowSettingsSubPage(browser, kSafeBrowsingEnhancedProtectionSubPage);
+}
+
+void ShowSafeBrowsingEnhancedProtectionWithIph(
+    Browser* browser,
+    safe_browsing::SafeBrowsingSettingReferralMethod referral_method) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  ShowPromoInPage::Params params;
+  params.target_url =
+      chrome::GetSettingsUrl(chrome::kSafeBrowsingEnhancedProtectionSubPage);
+  params.bubble_anchor_id = kEnhancedProtectionSettingElementId;
+  params.bubble_arrow = user_education::HelpBubbleArrow::kBottomLeft;
+  params.bubble_text = l10n_util::GetStringUTF16(
+      IDS_SETTINGS_SAFEBROWSING_ENHANCED_IPH_BUBBLE_TEXT);
+  params.close_button_alt_text_id =
+      IDS_SETTINGS_SAFEBROWSING_ENHANCED_IPH_BUBBLE_CLOSE_BUTTON_ARIA_LABEL_TEXT;
+  base::UmaHistogramEnumeration("SafeBrowsing.EsbPromotionFlow.IphShown",
+                                referral_method);
+  safe_browsing::LogShowEnhancedProtectionAction();
+  ShowPromoInPage::Start(browser, std::move(params));
+#endif
 }
 
 void ShowImportDialog(Browser* browser) {

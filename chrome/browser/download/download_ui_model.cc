@@ -17,9 +17,9 @@
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/offline_item_utils.h"
-#include "chrome/browser/interstitials/chrome_settings_page_helper.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -718,8 +718,6 @@ bool DownloadUIModel::IsCommandChecked(
 
 void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
                                      DownloadCommands::Command command) {
-  auto helper = security_interstitials::ChromeSettingsPageHelper::
-      CreateChromeSettingsPageHelper();
   switch (command) {
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::OPEN_WHEN_COMPLETE:
@@ -761,11 +759,10 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
           ui::PAGE_TRANSITION_LINK, false));
       break;
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
-      helper->OpenEnhancedProtectionSettingsWithIph(
-          download_commands->GetBrowser()
-              ->tab_strip_model()
-              ->GetActiveWebContents(),
-          SafeBrowsingSettingReferralMethod::kDownloadBubbleSubpage);
+      chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
+          download_commands->GetBrowser(),
+          safe_browsing::SafeBrowsingSettingReferralMethod::
+              kDownloadBubbleSubpage);
       break;
     case DownloadCommands::PAUSE:
       Pause();

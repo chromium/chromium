@@ -27,6 +27,7 @@
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "components/user_education/common/tutorial_service.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -149,9 +150,7 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
           base::UserMetricsAction("NewTabPage_Promos_SafetyCheck"));
       break;
     case Command::kOpenSafeBrowsingEnhancedProtectionSettings:
-      NavigateToURL(GURL(chrome::GetSettingsUrl(
-                        chrome::kSafeBrowsingEnhancedProtectionSubPage)),
-                    disposition);
+      NavigateToEnhancedProtectionSetting();
       base::RecordAction(
           base::UserMetricsAction("NewTabPage_Promos_EnhancedProtection"));
       break;
@@ -226,6 +225,12 @@ void BrowserCommandHandler::StartTabGroupTutorial() {
   tutorial_service->StartTutorial(tutorial_id, context);
   tutorial_service->LogStartedFromWhatsNewPage(
       tutorial_id, tutorial_service->IsRunningTutorial());
+}
+
+void BrowserCommandHandler::NavigateToEnhancedProtectionSetting() {
+  chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
+      chrome::FindBrowserWithProfile(profile_),
+      safe_browsing::SafeBrowsingSettingReferralMethod::kPromoSlingerReferral);
 }
 
 void BrowserCommandHandler::OpenPasswordManager() {

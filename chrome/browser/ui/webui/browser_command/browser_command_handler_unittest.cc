@@ -65,6 +65,11 @@ class TestCommandHandler : public BrowserCommandHandler {
                               supported_commands) {}
   ~TestCommandHandler() override = default;
 
+  void NavigateToEnhancedProtectionSetting() override {
+    // The functionality of opening a URL is removed, as it cannot be executed
+    // in a unittest.
+  }
+
   void NavigateToURL(const GURL&, WindowOpenDisposition) override {
     // The functionality of opening a URL is removed, as it cannot be executed
     // in a unittest.
@@ -191,6 +196,8 @@ class MockCommandHandler : public TestCommandHandler {
  public:
   explicit MockCommandHandler(Profile* profile) : TestCommandHandler(profile) {}
   ~MockCommandHandler() override = default;
+
+  MOCK_METHOD(void, NavigateToEnhancedProtectionSetting, ());
 
   MOCK_METHOD(void, NavigateToURL, (const GURL&, WindowOpenDisposition));
 
@@ -417,15 +424,11 @@ TEST_F(
 TEST_F(BrowserCommandHandlerTest, OpenSafeBrowsingEnhancedProtectionCommand) {
   // The kOpenSafeBrowsingEnhancedProtectionSettings command opens a new
   // settings window with the Safe Browsing settings with the Enhanced
-  // Protection section expanded, and the correct disposition.
+  // Protection section expanded, and an In-product help bubble
   ClickInfoPtr info = ClickInfo::New();
   info->middle_button = true;
   info->meta_key = true;
-  EXPECT_CALL(
-      *command_handler_,
-      NavigateToURL(GURL(chrome::GetSettingsUrl(
-                        chrome::kSafeBrowsingEnhancedProtectionSubPage)),
-                    DispositionFromClick(*info)));
+  EXPECT_CALL(*command_handler_, NavigateToEnhancedProtectionSetting());
   EXPECT_TRUE(ExecuteCommand(
       Command::kOpenSafeBrowsingEnhancedProtectionSettings, std::move(info)));
 }

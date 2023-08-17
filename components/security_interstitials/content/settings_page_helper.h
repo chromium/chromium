@@ -30,7 +30,8 @@ class SettingsPageHelper {
   // Browsing radio button.
   virtual void OpenEnhancedProtectionSettingsWithIph(
       content::WebContents* web_contents,
-      SafeBrowsingSettingReferralMethod referral_method) const = 0;
+      safe_browsing::SafeBrowsingSettingReferralMethod referral_method)
+      const = 0;
 };
 
 }  // namespace security_interstitials
