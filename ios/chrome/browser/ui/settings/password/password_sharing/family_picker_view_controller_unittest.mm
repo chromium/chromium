@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_view_controller.h"
 
+#import "base/mac/foundation_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -165,7 +166,7 @@ TEST_F(FamilyPickerViewControllerTest, TestAccessoryViewOfEligibleRecipient) {
       DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize), 0, 0);
 
   FamilyPickerViewController* family_controller =
-      static_cast<FamilyPickerViewController*>(controller());
+      base::mac::ObjCCastStrict<FamilyPickerViewController>(controller());
   [family_controller tableView:family_controller.tableView
        didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
   CheckCellAccessoryViewImage(
@@ -175,4 +176,50 @@ TEST_F(FamilyPickerViewControllerTest, TestAccessoryViewOfEligibleRecipient) {
       didDeselectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
   CheckCellAccessoryViewImage(
       DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize), 0, 0);
+}
+
+TEST_F(FamilyPickerViewControllerTest, TestShareButtonEnabledWithSelectedRows) {
+  RecipientInfo recipient1;
+  recipient1.public_key.key = kPublicKey;
+  recipient1.public_key.key_version = kPublicKeyVersion;
+  RecipientInfo recipient2;
+  recipient2.public_key.key = kPublicKey;
+  recipient2.public_key.key_version = kPublicKeyVersion;
+  SetFamilyWithRecipients({recipient1, recipient2});
+
+  EXPECT_EQ(NumberOfSections(), 1);
+  EXPECT_EQ(NumberOfItemsInSection(0), 2);
+
+  FamilyPickerViewController* family_controller =
+      base::mac::ObjCCastStrict<FamilyPickerViewController>(controller());
+  EXPECT_FALSE(family_controller.navigationItem.rightBarButtonItem.isEnabled);
+
+  NSIndexPath* indexPath1 = [NSIndexPath indexPathForRow:0 inSection:0];
+  NSIndexPath* indexPath2 = [NSIndexPath indexPathForRow:1 inSection:0];
+
+  [family_controller.tableView
+      selectRowAtIndexPath:indexPath1
+                  animated:NO
+            scrollPosition:UITableViewScrollPositionNone];
+  [family_controller tableView:family_controller.tableView
+       didSelectRowAtIndexPath:indexPath1];
+  EXPECT_TRUE(family_controller.navigationItem.rightBarButtonItem.isEnabled);
+
+  [family_controller.tableView
+      selectRowAtIndexPath:indexPath2
+                  animated:NO
+            scrollPosition:UITableViewScrollPositionNone];
+  [family_controller tableView:family_controller.tableView
+       didSelectRowAtIndexPath:indexPath2];
+  EXPECT_TRUE(family_controller.navigationItem.rightBarButtonItem.isEnabled);
+
+  [family_controller.tableView deselectRowAtIndexPath:indexPath1 animated:NO];
+  [family_controller tableView:family_controller.tableView
+      didDeselectRowAtIndexPath:indexPath1];
+  EXPECT_TRUE(family_controller.navigationItem.rightBarButtonItem.isEnabled);
+
+  [family_controller.tableView deselectRowAtIndexPath:indexPath2 animated:NO];
+  [family_controller tableView:family_controller.tableView
+      didDeselectRowAtIndexPath:indexPath2];
+  EXPECT_FALSE(family_controller.navigationItem.rightBarButtonItem.isEnabled);
 }

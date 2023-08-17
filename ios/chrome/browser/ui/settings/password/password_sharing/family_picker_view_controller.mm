@@ -84,6 +84,7 @@ const CGFloat kAccessorySymbolSize = 22;
   if (_recipients[indexPath.row].isEligible) {
     [tableView cellForRowAtIndexPath:indexPath].accessoryView =
         [[UIImageView alloc] initWithImage:[self checkmarkCircleIcon]];
+    self.navigationItem.rightBarButtonItem.enabled = YES;
   }
 }
 
@@ -92,7 +93,15 @@ const CGFloat kAccessorySymbolSize = 22;
   if (_recipients[indexPath.row].isEligible) {
     [tableView cellForRowAtIndexPath:indexPath].accessoryView =
         [[UIImageView alloc] initWithImage:[self circleIcon]];
+    if (tableView.indexPathsForSelectedRows.count == 0) {
+      self.navigationItem.rightBarButtonItem.enabled = NO;
+    }
   }
+}
+
+- (BOOL)tableView:(UITableView*)tableView
+    shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  return _recipients[indexPath.row].isEligible;
 }
 
 #pragma mark - UITableViewDataSource
