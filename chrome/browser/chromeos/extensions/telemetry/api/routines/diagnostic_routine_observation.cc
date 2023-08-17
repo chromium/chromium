@@ -9,6 +9,7 @@
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/uuid.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_converters.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -21,6 +22,7 @@ namespace chromeos {
 namespace {
 
 namespace crosapi = ::crosapi::mojom;
+namespace cx_diag = api::os_diagnostics;
 
 }  // namespace
 
@@ -46,16 +48,34 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
       LOG(WARNING) << "Got unknown routine state";
       return;
     case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kInitialized: {
-      api::os_diagnostics::RoutineInitializedInfo arg;
-      arg.uuid = uuid_.AsLowercaseString();
+      auto init_info = converters::routines::ConvertPtr(
+          std::move(state->state_union->get_initialized()), uuid_);
       event = std::make_unique<extensions::Event>(
           extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_INITIALIZED,
-          api::os_diagnostics::OnRoutineInitialized::kEventName,
-          base::Value::List().Append(arg.ToValue()), browser_context_);
+          cx_diag::OnRoutineInitialized::kEventName,
+          base::Value::List().Append(init_info.ToValue()), browser_context_);
       break;
     }
-    case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kRunning:
-    case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kWaiting:
+    case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kRunning: {
+      auto running_info = converters::routines::ConvertPtr(
+          std::move(state->state_union->get_running()), uuid_,
+          state->percentage);
+      event = std::make_unique<extensions::Event>(
+          extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_RUNNING,
+          cx_diag::OnRoutineRunning::kEventName,
+          base::Value::List().Append(running_info.ToValue()), browser_context_);
+      break;
+    }
+    case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kWaiting: {
+      auto running_info = converters::routines::ConvertPtr(
+          std::move(state->state_union->get_waiting()), uuid_,
+          state->percentage);
+      event = std::make_unique<extensions::Event>(
+          extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_WAITING,
+          cx_diag::OnRoutineWaiting::kEventName,
+          base::Value::List().Append(running_info.ToValue()), browser_context_);
+      break;
+    }
     case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kFinished:
       NOTIMPLEMENTED();
       break;

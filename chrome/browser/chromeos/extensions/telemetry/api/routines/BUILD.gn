@@ -4,6 +4,8 @@
 
 source_set("routines") {
   sources = [
+    "diagnostic_routine_converters.cc",
+    "diagnostic_routine_converters.h",
     "diagnostic_routine_observation.cc",
     "diagnostic_routine_observation.h",
   ]
@@ -18,6 +20,18 @@ source_set("routines") {
   ]
 
   public_deps = [ "//extensions/browser" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "diagnostic_routine_converters_unittest.cc" ]
+
+  deps = [
+    ":routines",
+    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/crosapi/mojom",
+    "//testing/gtest",
+  ]
 }
 
 source_set("browser_tests") {

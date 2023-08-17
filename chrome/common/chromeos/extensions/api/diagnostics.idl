@@ -181,6 +181,25 @@ namespace os.diagnostics {
     DOMString? uuid;
   };
 
+  dictionary RoutineRunningInfo {
+    DOMString? uuid;
+    long? percentage;
+  };
+
+  enum RoutineWaitingReason {
+    waiting_to_be_scheduled,
+    waiting_user_input
+  };
+
+  dictionary RoutineWaitingInfo {
+    DOMString? uuid;
+    long? percentage;
+    // Reason why the routine waits.
+    RoutineWaitingReason? reason;
+    // Additional information, may be used to pass instruction or explanation.
+    DOMString? message;
+  };
+
   interface Functions {
     [supportsPromises] static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
 
@@ -260,6 +279,18 @@ namespace os.diagnostics {
   interface Events {
     // Informs the extension that a routine was intitialized.
     static void onRoutineInitialized(RoutineInitializedInfo initializedInfo);
+
+    // Informs the extension that a routine started running. This can happen in
+    // two situations:
+    // 1. `startRoutine` was called and the routine successfully started
+    //    execution.
+    // 2. The routine exited the "waiting" state and returned to running.
+    static void onRoutineRunning(RoutineRunningInfo runningInfo);
+
+    // Informs the extension that a routine stopped execution and waits for an
+    // event, e.g. user interaction. `RoutineWaitingInfo` contains information
+    // about what the routine is waiting for (see prototype above).
+    static void onRoutineWaiting(RoutineWaitingInfo waitingInfo);
   };
 
   // LINT.ThenChange(//docs/telemetry_extension/api_overview.md)

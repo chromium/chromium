@@ -108,6 +108,44 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
+                       CanObserveOnRoutineRunningWithoutFeatureFlagFail) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function canObserveOnRoutineRunningFail() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.onRoutineRunning.addListener((event) => {
+            // unreachable
+          });
+        }, [],
+          'Cannot read properties of undefined (reading \'addListener\')'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
+                       CanObserveOnRoutineWaitingWithoutFeatureFlagFail) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function canObserveOnRoutineWaitingFail() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.onRoutineWaiting.addListener((event) => {
+            // unreachable
+          });
+        }, [],
+          'Cannot read properties of undefined (reading \'addListener\')'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 class PendingApprovalTelemetryExtensionDiagnosticRoutineObserverBrowserTest
     : public TelemetryExtensionDiagnosticRoutineObserverBrowserTest {
  public:
@@ -141,6 +179,77 @@ IN_PROC_BROWSER_TEST_F(
       async function canObserveOnRoutineInitialized() {
         chrome.os.diagnostics.onRoutineInitialized.addListener((event) => {
           chrome.test.assertEq(event, {
+            uuid: "%s",
+          });
+
+          chrome.test.succeed();
+        });
+      }
+    ]);
+  )",
+                         uuid_.AsLowercaseString().c_str()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PendingApprovalTelemetryExtensionDiagnosticRoutineObserverBrowserTest,
+    CanObserveOnRoutineRunning) {
+  RegisterEventObserver(
+      api::os_diagnostics::OnRoutineRunning::kEventName,
+      base::BindLambdaForTesting([this] {
+        auto running_state = crosapi::TelemetryDiagnosticRoutineState::New();
+        running_state->state_union =
+            crosapi::TelemetryDiagnosticRoutineStateUnion::NewRunning(
+                crosapi::TelemetryDiagnosticRoutineStateRunning::New());
+        running_state->percentage = 50;
+
+        remote_->OnRoutineStateChange(std::move(running_state));
+      }));
+
+  CreateExtensionAndRunServiceWorker(
+      base::StringPrintf(R"(
+    chrome.test.runTests([
+      async function canObserveOnRoutineRunning() {
+        chrome.os.diagnostics.onRoutineRunning.addListener((event) => {
+          chrome.test.assertEq(event, {
+            percentage: 50,
+            uuid: "%s",
+          });
+
+          chrome.test.succeed();
+        });
+      }
+    ]);
+  )",
+                         uuid_.AsLowercaseString().c_str()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PendingApprovalTelemetryExtensionDiagnosticRoutineObserverBrowserTest,
+    CanObserveOnRoutineWaiting) {
+  RegisterEventObserver(
+      api::os_diagnostics::OnRoutineWaiting::kEventName,
+      base::BindLambdaForTesting([this] {
+        auto waiting_state = crosapi::TelemetryDiagnosticRoutineState::New();
+        waiting_state->state_union =
+            crosapi::TelemetryDiagnosticRoutineStateUnion::NewWaiting(
+                crosapi::TelemetryDiagnosticRoutineStateWaiting::New(
+                    crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
+                        kWaitingToBeScheduled,
+                    "TEST"));
+        waiting_state->percentage = 50;
+
+        remote_->OnRoutineStateChange(std::move(waiting_state));
+      }));
+
+  CreateExtensionAndRunServiceWorker(
+      base::StringPrintf(R"(
+    chrome.test.runTests([
+      async function canObserveOnRoutineWaiting() {
+        chrome.os.diagnostics.onRoutineWaiting.addListener((event) => {
+          chrome.test.assertEq(event, {
+            message: "TEST",
+            percentage: 50,
+            reason: "waiting_to_be_scheduled",
             uuid: "%s",
           });
 
