@@ -55590,6 +55590,8 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="Bookmark"/>
   <int value="2" label="Top Sites"/>
   <int value="3" label="Actions"/>
+  <int value="4" label="Reading list"/>
+  <int value="5" label="Open tab"/>
 </enum>
 
 <enum name="IOSStabilityUserVisibleTerminationType">
