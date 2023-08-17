@@ -26,6 +26,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -913,21 +914,33 @@ void FakeSessionManagerClient::set_on_start_device_wipe_callback(
 FakeSessionManagerClient::FlagsState::FlagsState() = default;
 FakeSessionManagerClient::FlagsState::~FlagsState() = default;
 
-ScopedFakeSessionManagerClient::ScopedFakeSessionManagerClient() {
-  SessionManagerClient::InitializeFake();
+ScopedFakeSessionManagerClient::ScopedFakeSessionManagerClient()
+    : ScopedFakeSessionManagerClient(
+          FakeSessionManagerClient::PolicyStorageType::kOnDisk) {}
+
+ScopedFakeSessionManagerClient::ScopedFakeSessionManagerClient(
+    FakeSessionManagerClient::PolicyStorageType policy_storage) {
+  // No previous FakeSessionManagerClient instance.
+  DCHECK(!FakeSessionManagerClient::Get());
+
+  // Release the existing instance if any.
+  if (SessionManagerClient::Get()) {
+    SessionManagerClient::Shutdown();
+  }
+
+  switch (policy_storage) {
+    case FakeSessionManagerClient::PolicyStorageType::kOnDisk:
+      SessionManagerClient::InitializeFake();
+      break;
+    case FakeSessionManagerClient::PolicyStorageType::kInMemory:
+      SessionManagerClient::InitializeFakeInMemory();
+      break;
+  }
 }
 
 ScopedFakeSessionManagerClient::~ScopedFakeSessionManagerClient() {
-  SessionManagerClient::Shutdown();
-}
-
-ScopedFakeInMemorySessionManagerClient::
-    ScopedFakeInMemorySessionManagerClient() {
-  SessionManagerClient::InitializeFakeInMemory();
-}
-
-ScopedFakeInMemorySessionManagerClient::
-    ~ScopedFakeInMemorySessionManagerClient() {
+  // The current instance should be a FakeSessionManagerClient.
+  DCHECK_EQ(SessionManagerClient::Get(), FakeSessionManagerClient::Get());
   SessionManagerClient::Shutdown();
 }
 

@@ -91,7 +91,8 @@ class DeviceCommandRemotePowerwashJobTest : public testing::Test {
 
   const std::unique_ptr<MockCloudPolicyClient> client_;
   const std::unique_ptr<TestingRemoteCommandsService> service_;
-  ash::ScopedFakeInMemorySessionManagerClient scoped_session_manager_;
+  ash::ScopedFakeSessionManagerClient scoped_session_manager_{
+      ash::FakeSessionManagerClient::PolicyStorageType::kInMemory};
 };
 
 DeviceCommandRemotePowerwashJobTest::DeviceCommandRemotePowerwashJobTest()

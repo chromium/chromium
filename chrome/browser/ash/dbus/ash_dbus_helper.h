@@ -7,6 +7,21 @@
 
 namespace ash {
 
+// An observer for DBus initialization and shutdown for test.
+// TODO(b/296389100): Replace with a `AshDBusConfig`.
+class DBusHelperObserverForTest {
+ public:
+  virtual ~DBusHelperObserverForTest();
+
+  static void Set(DBusHelperObserverForTest* observer);
+
+  // Invoked after `InitializeDBus()`.
+  virtual void PostInitializeDBus() = 0;
+
+  // Invoked before `ShutdownDBus()`.
+  virtual void PreShutdownDBus() = 0;
+};
+
 // Initializes the D-Bus thread manager and Chrome D-Bus services for Ash.
 void InitializeDBus();
 

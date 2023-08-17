@@ -5,6 +5,8 @@
 #ifndef CHROME_TEST_BASE_CHROMEOS_CROSIER_INTERACTIVE_ASH_TEST_H_
 #define CHROME_TEST_BASE_CHROMEOS_CROSIER_INTERACTIVE_ASH_TEST_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -20,6 +22,10 @@ class Profile;
 
 namespace content {
 class NavigationHandle;
+}
+
+namespace {
+class FakeSessionManagerClientBrowserHelper;
 }
 
 // Base class for tests of ash-chrome integration with the ChromeOS platform,
@@ -69,14 +75,18 @@ class InteractiveAshTest
   // browser_navigator.h.
   base::WeakPtr<content::NavigationHandle> CreateBrowserWindow(const GURL& url);
 
-  // BrowserTestBase:
-  void TearDownOnMainThread() override;
-
  private:
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
   // This test runs on linux-chromeos in interactive_ui_tests and on a DUT in
   // chromeos_integration_tests.
   ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
+
+  // Whether to use real session manager client for tests that needs real
+  // user session.
+  bool use_real_session_manager_ = false;
+
+  std::unique_ptr<FakeSessionManagerClientBrowserHelper>
+      fake_session_manager_client_helper_;
 #endif
 };
 

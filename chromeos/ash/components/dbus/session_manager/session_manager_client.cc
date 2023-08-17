@@ -1259,7 +1259,8 @@ void SessionManagerClient::InitializeFakeInMemory() {
 
 // static
 void SessionManagerClient::Shutdown() {
-  DCHECK(g_instance);
+  // Note `g_instance` could be nullptr when ScopedFakeSessionManagerClient is
+  // used.
   delete g_instance;
 }
 
