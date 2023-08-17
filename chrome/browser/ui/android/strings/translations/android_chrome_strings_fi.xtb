@@ -3,6 +3,7 @@
 <translationbundle lang="fi">
 <translation id="1011749477052068769">Siirrä tähän</translation>
 <translation id="1016498331642356377">Hae nopeasti äänikomennoilla. Kosketa pikakuvaketta pitkään, niin voit muokata sitä.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Lähetetään: <ph name="DEVICE_NAME" /></translation>
 <translation id="103269572468856066">Poistetaanko data?</translation>
 <translation id="1034259925032978114">Ikkuna on auki</translation>
@@ -51,6 +52,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1240288207750131269">Ladataan: <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa nimesi, sähköpostiosoitteesi, osoitteesi ja profiilikuvasi tälle sivustolle. Tutustu sivuston <ph name="BEGIN_LINK1" />tietosuojakäytäntöön<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />käyttöehtoihin<ph name="END_LINK2" />.</translation>
 <translation id="124116460088058876">Lisää kieliä</translation>
+<translation id="1241792820757384812">Salasanasi poistetaan Google Salasanoista täällä: <ph name="CHROME_CHANNEL" />. Säilytät juuri lataamasi salasanatiedoston.</translation>
 <translation id="1242883863226959074">laitteella</translation>
 <translation id="124678866338384709">Sulje nykyinen välilehti</translation>
 <translation id="1246905108078336582">Poistetaanko ehdotus leikepöydältä?</translation>
@@ -576,6 +578,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="4124152339699379357">Ilmoitusluvan työnkulku koko näytön kokoisena</translation>
 <translation id="4135200667068010335">Välilehden jakamisen laiteluettelo on suljettu.</translation>
 <translation id="4137746084635924146">Laitteen kieli</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Oletusarvoiset tietokonesivustot</translation>
 <translation id="4147131678541801076">Kokeilujen aikana roskasisällön ja petosten vähentäminen auttaa sivustoja estämään petoksia ja erottamaan botteja ihmisistä yksityisten tilamerkkien avulla.
 
@@ -1069,6 +1072,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6649642165559792194">Esikatsele kuva <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Salasana</translation>
 <translation id="6659594942844771486">Välilehti</translation>
+<translation id="6662119761881114773">Tälle laitteelle tallennettuja salasanoja ei tällä hetkellä voi käyttää Chrome-kanavilla. Chrome 121:n jälkeen Chromelle ja <ph name="CHROME_CHANNEL" /> ‑kanavalle tallennetut salasanat yhdistetään, ja niitä voi käyttää molemmissa sovelluksissa.</translation>
 <translation id="666731172850799929">Avaa sovelluksessa <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Kopioi kuva</translation>
 <translation id="6672917148207387131">Lisää <ph name="DOMAIN" /></translation>
@@ -1561,6 +1565,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="9158770349521403363">Jaa vain sisältö</translation>
 <translation id="9159716826369098114">Palauta <ph name="TAB_COUNT" /> välilehden välilehtiryhmä uutena taustavälilehtiryhmänä.</translation>
 <translation id="9169507124922466868">Navigointihistoria on puoliksi auki</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Historia löytyy kaikilta synkronoiduilta laitteilta, joten voit jatkaa samasta kohdasta</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tarkistettu 1 minuutti sitten}other{Tarkistettu # minuuttia sitten}}</translation>
 <translation id="9204021776105550328">Poistetaan</translation>
@@ -1576,6 +1581,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="927968626442779827">Käytä Yksinkertaistettua tilaa Google Chromessa</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> seurannassa</translation>
 <translation id="932327136139879170">Etusivu</translation>
+<translation id="93533588269984624">Kaikki salasanat ladataan laitteellesi ja poistetaan täältä: <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">(Virhe: <ph name="ERROR_CODE" />)</translation>
 <translation id="939598580284253335">Anna tunnuslause</translation>
 <translation id="952301137339791907">Sivun tietojen alapaneeli on avattu</translation>

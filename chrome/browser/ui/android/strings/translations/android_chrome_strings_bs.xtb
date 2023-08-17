@@ -1072,7 +1072,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6649642165559792194">Pregledajte sliku <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="6659594942844771486">Kartica</translation>
-<translation id="6662119761881114773">Zaporke spremljene na ovom uređaju trenutačno se ne mogu upotrebljavati na Chromeovim kanalima. Nakon Chromea 121 zaporke spremljene na vašem uređaju za Chrome i <ph name="CHROME_CHANNEL" /> spojit će se i moći će se upotrebljavati u obje aplikacije.</translation>
+<translation id="6662119761881114773">Trenutno se lozinke koje su sačuvane na uređaju ne mogu koristiti na Chromeovim kanalima. Nakon Chromeove verzije 121, lozinke sačuvane na vašem uređaju za Chrome i kanal <ph name="CHROME_CHANNEL" /> će se spojiti i moći će se koristiti u objema aplikacijama.</translation>
 <translation id="666731172850799929">Otvorite u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Kopiraj sliku</translation>
 <translation id="6672917148207387131">Dodavanje web lokacije <ph name="DOMAIN" /></translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="pl">
 <translation id="1011749477052068769">Przenieś tutaj</translation>
 <translation id="1016498331642356377">Szybko wyszukaj głosowo. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
+<translation id="1024113959924243553">wersji deweloperskiej Chrome</translation>
 <translation id="1028699632127661925">Przesyłam na: <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Wyczyścić też dane z tych stron i aplikacji?</translation>
 <translation id="1034259925032978114">Okno jest otwarte</translation>
@@ -51,6 +52,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="1240288207750131269">Ładuję: <ph name="LANG" /></translation>
 <translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe. Zapoznaj się z <ph name="BEGIN_LINK2" />warunkami korzystania z tej witryny<ph name="END_LINK2" /> oraz jej <ph name="BEGIN_LINK1" />polityką prywatności<ph name="END_LINK1" />.</translation>
 <translation id="124116460088058876">Więcej języków</translation>
+<translation id="1241792820757384812">Twoje hasła zostaną usunięte z Menedżera haseł Google w <ph name="CHROME_CHANNEL" />. Pobrany przed chwilą plik z hasłami pozostanie zapisany na urządzeniu.</translation>
 <translation id="1242883863226959074">urządzeniu</translation>
 <translation id="124678866338384709">Zamknij bieżącą kartę</translation>
 <translation id="1246905108078336582">Usunąć podpowiedź ze schowka?</translation>
@@ -576,6 +578,7 @@ Tokeny prywatności zwiększają prywatność w sieci i nie można za ich pomo
 <translation id="4124152339699379357">Proces wyrażania zgody na wyświetlanie powiadomień otwarty na całą wysokość</translation>
 <translation id="4135200667068010335">Lista urządzeń, którym udostępnisz kartę, jest zamknięta.</translation>
 <translation id="4137746084635924146">Aktualny język urządzenia</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Domyślnie żądanie stron w wersji na komputery</translation>
 <translation id="4147131678541801076">Gdy testy są włączone, ograniczanie spamu i nieuczciwych działań jest możliwe dzięki tokenom prywatności, które pomagają witrynom zwalczać oszustwa i odróżniać boty od ludzi.
 
@@ -1562,6 +1565,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="9158770349521403363">Udostępnij tylko treść</translation>
 <translation id="9159716826369098114">Przywróć grupę <ph name="TAB_COUNT" /> kart jako nową grupę kart w tle.</translation>
 <translation id="9169507124922466868">Historia nawigacji jest otwarta w połowie</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Będziesz mieć dostęp do swojej historii na wszystkich zsynchronizowanych urządzeniach, aby możliwe było kontynuowanie przerwanych działań</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Sprawdzano minutę temu}few{Sprawdzano # minuty temu}many{Sprawdzano # minut temu}other{Sprawdzano # minuty temu}}</translation>
 <translation id="9204021776105550328">Usuwam</translation>
@@ -1577,6 +1581,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="927968626442779827">Użyj wersji uproszczonej w Google Chrome</translation>
 <translation id="928550791203542716">Obserwujesz: <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Strona główna</translation>
+<translation id="93533588269984624">Wszystkie hasła zostaną pobrane na urządzenie i usunięte z <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Błąd: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Wpisz hasło</translation>
 <translation id="952301137339791907">Plansza dolna ze statystykami strony jest otwarta</translation>

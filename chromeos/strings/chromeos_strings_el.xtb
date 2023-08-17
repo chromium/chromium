@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Το παράθυρο Ενημέρωσης υλικολογισμικού για εξωτερικές συσκευές είναι ανοικτό. <ph name="NUM_UPDATES" /> διαθέσιμες ενημερώσεις.</translation>
 <translation id="1145516343487477149">Βρείτε άρθρα βοήθειας και απαντήσεις σε συνήθεις ερωτήσεις του Chromebook</translation>
+<translation id="1154390310959620237">Μπορείτε να προσαρμόσετε μόνο 5 συντομεύσεις. Διαγράψτε μια συντόμευση, για να προσθέσετε μια νέα.</translation>
 <translation id="1164939766849482256">Προστασία οθόνης Από την αυγή μέχρι να νυχτώσει</translation>
 <translation id="1167755866710282443">Ανοίξτε το μενού για να προσαρμόσετε τα πλήκτρα. Σύρετε το μενού για μετακίνηση.</translation>
 <translation id="1175697296044146566">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από <ph name="MANAGER" />.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Επανεκκίνηση…</translation>
 <translation id="2533048460510040082">Προτεινόμενο περιεχόμενο βοήθειας</translation>
 <translation id="2536159006530886390">Δεν είναι δυνατή η σύνδεση στο διαδίκτυο.</translation>
+<translation id="2555662516429796509">Πατήστε 1-4 τροποποιητές και 1 άλλο πλήκτρο στο πληκτρολόγιό σας.</translation>
 <translation id="2570743873672969996">Εκτέλεση δοκιμής <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Για να ρυθμίσετε το δίκτυο, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="2597774443162333062">Τα αρχεία θα σταλούν στην Google για εντοπισμό και διόρθωση σφαλμάτων</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">Είστε βέβαιοι ότι θέλετε να διαγράψετε όλο το ιστορικό εκτύπωσης; Οι τρέχουσες εργασίες εκτύπωσης δεν θα διαγραφούν.</translation>
 <translation id="3373141842870501561">Ταπετσαρία Κίνηση της Γης</translation>
 <translation id="337375748120863155">Πληροφορίες που σχετίζονται με την επιλογή σας Χρησιμοποιήστε τα πλήκτρα αριστερού ή δεξιού βέλους, για να αποκτήσετε πρόσβαση στα στοιχεία ελέγχου.</translation>
+<translation id="3383623117265110236">Αποκλειστικό</translation>
 <translation id="3404249063913988450">Ενεργοποίηση προφύλαξης οθόνης.</translation>
 <translation id="3413935475507503304">Για να συνεχίσετε με την ενημέρωση, κάντε κλικ στο Επόμενο.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">μείωση φωτεινότητας</translation>
 <translation id="4176463684765177261">Απενεργοποιημένο</translation>
 <translation id="4176659219503619100">Πίνακας ελέγχου</translation>
+<translation id="4185315616950253617">Η συντόμευση με πλήκτρα επάνω σειράς πρέπει να περιλαμβάνει το πλήκτρο αναζήτησης.</translation>
 <translation id="420283545744377356">Απενεργοποίηση προφύλαξης οθόνης</translation>
 <translation id="4213104098953699324">Πληκτρολόγιο USB</translation>
 <translation id="4227825898293920515">Ο κωδικός πρόσβασης λήγει σε <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">Λανθάνων χρόνος HTTP</translation>
 <translation id="4271957103967917607">Προβολή πλήρους οθόνης</translation>
 <translation id="4275663329226226506">Μέσα</translation>
+<translation id="4278766082079064416">Η συντόμευση χρησιμοποιείται για το <ph name="CONFLICT_ACCEL_NAME" />. Επεξεργαστείτε ή καταργήστε την για να επιλύσετε τη διένεξη.</translation>
 <translation id="4289540628985791613">Επισκόπηση</translation>
 <translation id="4289849978083912975">Προβολή διαφανειών</translation>
 <translation id="4297501883039923494">Διακοπή - Άγνωστο σφάλμα</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Απομένει {0} προσπάθεια}other{<ph name="ERROR_MESSAGE" /> Απομένουν {0} προσπάθειες}}</translation>
 <translation id="4873827928179867585">Αλγόριθμος ελέγχου ταυτότητας</translation>
 <translation id="4880328057631981605">Όνομα σημείου πρόσβασης</translation>
+<translation id="488307179443832524">Η συντόμευση χρησιμοποιείται για το <ph name="CONFLICT_ACCEL_NAME" />. Πατήστε μια νέα συντόμευση.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Επιλέξτε άμεσα έναν νέο</translation>
 <translation id="4891842000192098784">Καταπόνηση</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Αύξηση φωτεινότητας οθόνης</translation>
 <translation id="57838592816432529">Σίγαση</translation>
 <translation id="5784136236926853061">Υψηλός λανθάνων χρόνος HTTP</translation>
+<translation id="5816802250591013230">Δεν έχει αντιστοιχιστεί συντόμευση.</translation>
 <translation id="5826644637650799838">Σχετικά με το έργο τέχνης</translation>
 <translation id="5832805196449965646">Προσθήκη ατόμου</translation>
 <translation id="583281660410589416">Άγνωστο</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτήν τη συσκευή και έχει πρόσβαση σε όλη τη δραστηριότητα των χρηστών, συμπεριλαμβανομένων των ιστοσελίδων που επισκέπτεστε, των κωδικών πρόσβασης και του ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="7040230719604914234">Χειριστής</translation>
 <translation id="7041549558901442110">Η συσκευή δεν είναι συνδεδεμένη.</translation>
+<translation id="7046522406494308071">Επαναφορά όλων των συντομεύσεων στις προεπιλογές;</translation>
 <translation id="7058278511608979688">Λήξη και αποθήκευση</translation>
 <translation id="7059230779847288458">Φόρτιση, απομένουν <ph name="TIME_VALUE" /> μέχρι την ολοκλήρωση</translation>
 <translation id="7068619307603204412">Προετοιμασία της συσκευής</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Αποτυχία - Ο έλεγχος ταυτότητας απέτυχε</translation>
 <translation id="7103252855940681301">Συσκευή <ph name="INDEX" /> από <ph name="COUNT" /> με όνομα <ph name="NAME" />.</translation>
+<translation id="7107255225945990211">Επιλέξτε αποκλειστικά έργα τέχνης <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Όνομα σημείου πρόσβασης (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Διακομιστής ονομάτων}other{Διακομιστές ονομάτων}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Πάροχος δικτύου κινητής τηλεφωνίας</translation>
 <translation id="725133483556299729">Επιλογή διεύθυνσης ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="7271040990581020067">Ο σαρωτής χρησιμοποιείται αυτήν τη στιγμή. Δοκιμάστε ξανά αργότερα.</translation>
+<translation id="7273347807225967898">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χρησιμοποιώντας ένα πλήκτρο τροποποίησης (ctrl, alt, shift, αναζήτηση ή λειτουργία εκκίνησης εφαρμογών).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Νιώστε το αεράκι</translation>
 <translation id="7287310195820267359">Συλλογές ταπετσαρίας</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">φωτισμός πληκτρολογίου</translation>
 <translation id="773153675489693198">Πλήθος φορτίσεων-εξαντλήσεων μπαταρίας</translation>
 <translation id="7747039790905080783">Ήδη κοινόχρηστο κλειδί</translation>
+<translation id="7752963721013053477">Από την αυγή μέχρι να νυχτώσει, αποκλειστικό</translation>
 <translation id="7762130827864645708">Η αλλαγή του κωδικού πρόσβασής σας ήταν επιτυχής. Χρησιμοποιείτε στο εξής τον νέο κωδικό πρόσβασης.</translation>
 <translation id="7763470514545477072">Αντιστοιχία επιθήματος τομέα</translation>
 <translation id="7769672763586021400">Αναγνωριστικό μοντέλου</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Τύπος παρόχου</translation>
 <translation id="7882501334836096755">Δημόσιο κλειδί</translation>
+<translation id="7903695460270716054">Επιλογή επιμελημένων έργων τέχνης και εικόνων</translation>
 <translation id="7915220255123750251">Διαχείριση ρυθμίσεων APN δικτύου. Τα APN δημιουργούν μια σύνδεση μεταξύ ενός δικτύου κινητής τηλεφωνίας και του διαδικτύου.</translation>
 <translation id="7936303884198020182">Δεν βρέθηκαν διακομιστές ονομάτων.</translation>
 <translation id="7942349550061667556">Κόκκινο</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Αλλαγή κωδικού πρόσβασης</translation>
 <translation id="8094062939584182041">Επιτρέψτε στην Google να σας στέλνει μηνύματα ηλεκτρονικού ταχυδρομείου σχετικά με αυτό το ζήτημα</translation>
 <translation id="8104083085214006426">Χρησιμοποιείτε ένα ανοιχτό και μη ασφαλές δίκτυο.</translation>
+<translation id="8111706652656628199">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χρησιμοποιώντας το shift και 1 ακόμα πλήκτρο τροποποίησης (ctrl, alt, αναζήτηση ή λειτουργία εκκίνησης εφαρμογών).</translation>
 <translation id="811820734797650957">(Android) Η πύλη λαμβάνει ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Αίτημα για μετρητές επισκεψιμότητας</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Λεύκωμα Φωτογραφιών Google</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">Η συντόμευση χρησιμοποιείται για το <ph name="CONFLICT_ACCEL_NAME" />. Πατήστε μια νέα συντόμευση. Για να αντικαταστήσετε την αρχική συντόμευση, πατήστε ξανά αυτήν τη συντόμευση.</translation>
 <translation id="879568662008399081">Αυτό το δίκτυο μπορεί να έχει πύλη υποδοχής</translation>
 <translation id="8798099450830957504">Προεπιλογή</translation>
 <translation id="8798441408945964110">Όνομα παρόχου</translation>

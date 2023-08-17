@@ -3,6 +3,7 @@
 <translationbundle lang="fr">
 <translation id="1011749477052068769">Déplacer ici</translation>
 <translation id="1016498331642356377">Recherchez rapidement par commande vocale. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Envoi sur <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Effacer ces données ?</translation>
 <translation id="1034259925032978114">Fenêtre ouverte</translation>
@@ -51,6 +52,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1240288207750131269"><ph name="LANG" /> : chargement…</translation>
 <translation id="1240903469550363138">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil. Consultez les <ph name="BEGIN_LINK1" />Règles de confidentialité<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation<ph name="END_LINK2" /> de ce site.</translation>
 <translation id="124116460088058876">Plus de langues</translation>
+<translation id="1241792820757384812">Vos mots de passe seront supprimés du Gestionnaire de mots de passe de Google pour <ph name="CHROME_CHANNEL" />. Vous conserverez le fichier de mots de passe que vous venez de télécharger.</translation>
 <translation id="1242883863226959074">appareil</translation>
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
 <translation id="1246905108078336582">Supprimer la suggestion du presse-papiers ?</translation>
@@ -576,6 +578,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="4124152339699379357">Flux d'autorisation de notification ouvert à pleine hauteur</translation>
 <translation id="4135200667068010335">La liste des appareils avec lesquels vous pouvez partager un onglet est fermée.</translation>
 <translation id="4137746084635924146">Langue actuelle de l'appareil</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Versions pour ordinateur demandées par défaut</translation>
 <translation id="4147131678541801076">Pendant les essais, la réduction du spam et de la fraude repose sur des jetons d'état privés pour aider les sites à lutter contre la fraude et à distinguer les robots des humains.
 
@@ -1069,6 +1072,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6649642165559792194">Prévisualiser l'image <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659594942844771486">Onglet</translation>
+<translation id="6662119761881114773">Pour le moment, les mots de passe enregistrés sur cet appareil ne peuvent pas être utilisés sur les différentes versions de Chrome. Après Chrome 121, les mots de passe enregistrés sur votre appareil pour Chrome et <ph name="CHROME_CHANNEL" /> seront fusionnés et pourront être utilisés dans les deux applis.</translation>
 <translation id="666731172850799929">Ouvrir dans <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Copier l'image</translation>
 <translation id="6672917148207387131">Ajouter <ph name="DOMAIN" /></translation>
@@ -1561,6 +1565,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="9158770349521403363">Partager uniquement le contenu</translation>
 <translation id="9159716826369098114">Restaurer le groupe d'onglets de <ph name="TAB_COUNT" /> onglets en tant que nouveau groupe d'onglets en arrière-plan.</translation>
 <translation id="9169507124922466868">L'historique de navigation est ouvert à moitié</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Comme vous aurez votre historique sur tous vos appareils synchronisés, vous pourrez continuer vos activités</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Vérification effectuée il y a 1 minute}one{Vérification effectuée il y a # minute}other{Vérification effectuée il y a # minutes}}</translation>
 <translation id="9204021776105550328">Suppression…</translation>
@@ -1576,6 +1581,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="927968626442779827">Utilisez le mode simplifié dans Google Chrome</translation>
 <translation id="928550791203542716">Vous suivez <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Accueil</translation>
+<translation id="93533588269984624">Tous les mots de passe seront téléchargés sur votre appareil et supprimés de <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Erreur <ph name="ERROR_CODE" />.</translation>
 <translation id="939598580284253335">Saisir la phrase secrète</translation>
 <translation id="952301137339791907">La bottom sheet des insights sur la page est ouverte</translation>

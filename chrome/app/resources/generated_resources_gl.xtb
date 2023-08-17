@@ -1083,6 +1083,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1854180393107901205">Deter emisión</translation>
 <translation id="1856715684130786728">Engadir localización...</translation>
 <translation id="1858585891038687145">Confía neste certificado para identificar fabricantes de software</translation>
+<translation id="1859294693760125695">Xa non me interesa</translation>
 <translation id="1859339856433307593">Xa hai un contrasinal para esta conta gardado no <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Este cartafol está baleiro</translation>
 <translation id="1862311223300693744">Tes algún proxy, VPN, firewall ou software NAS especial instalado?</translation>
@@ -3280,6 +3281,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3660234220361471169">Non fiables</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Atopouse un contrasinal}other{Atopáronse {NUM_PASSWORDS} contrasinais}}</translation>
 <translation id="3664511988987167893">Icona de extensión</translation>
+<translation id="3665301845536101715">Abrir no panel lateral</translation>
 <translation id="3665589677786828986">Chrome detectou que outro programa danou algunhas opcións de configuración e restableceunas aos valores predeterminados orixinais.</translation>
 <translation id="3665919494326051362">A versión actual é <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Baleirado de depuración para Intel Wifi NICs</translation>
@@ -8642,6 +8644,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="814204052173971714">{COUNT,plural, =1{1 vídeo}other{# vídeos}}</translation>
 <translation id="8143442547342702591">Aplicación non válida</translation>
 <translation id="8143609395536282994">Como podes xestionar os teus datos?</translation>
+<translation id="8144429778087524791">Marcar como feito e ocultar</translation>
 <translation id="8145170459658034418">Aforro de memoria</translation>
 <translation id="8146177459103116374">Se xa te rexistraches neste dispositivo, podes <ph name="LINK2_START" />iniciar sesión como usuario existente<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Engade e clasifica os teus idiomas preferidos. Sempre que sexa posible, os sitios web mostraránseche nesas linguas. Estas preferencias sincronízanse coa configuración do teu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>

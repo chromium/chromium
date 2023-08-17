@@ -1081,6 +1081,7 @@
 <translation id="1854180393107901205">Трансляцияны тоқтату</translation>
 <translation id="1856715684130786728">Орын қосу…</translation>
 <translation id="1858585891038687145">Бағдарламалық жасақтама авторларын анықтауда осы сертификатқа сену</translation>
+<translation id="1859294693760125695">Бұдан былай қызықтырмайды</translation>
 <translation id="1859339856433307593">Бұл аккаунттың құпия сөзі <ph name="BRAND" /> (<ph name="USER_EMAIL" />) қызметіне сақталып қойылған</translation>
 <translation id="1861262398884155592">Бұл қалта бос</translation>
 <translation id="1862311223300693744">Арнайы VPN, прокси, брандмауэр немесе NAS бағдарламалық құралы орнатылған ба?</translation>
@@ -3275,6 +3276,7 @@
 <translation id="3660234220361471169">Сенімсіз</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 бұрыннан бар құпия сөз табылды}other{{NUM_PASSWORDS} бұрыннан бар құпия сөз табылды}}</translation>
 <translation id="3664511988987167893">Кеңейтім белгішесі</translation>
+<translation id="3665301845536101715">Бүйірлік панельде ашу</translation>
 <translation id="3665589677786828986">Chrome кейбір параметрлеріңізді басқа бағдарлама бүлдіргенін анықтап, бастапқы әдепкі параметрлеріне қайтарды.</translation>
 <translation id="3665919494326051362">Ағымдағы нұсқасы: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel WiFi NIC түзету дампы</translation>
@@ -7696,6 +7698,7 @@
 <translation id="7396017167185131589">Ортақ қалталар осы жерде көрсетіледі.</translation>
 <translation id="7396845648024431313">Жүйе қосылғанда, <ph name="APP_NAME" /> ашылады және барлық басқа <ph name="PRODUCT_NAME" /> терезелерін жапсаңыз да, фонда істеп тұра береді.</translation>
 <translation id="7399045143794278225">Синхрондауды реттеу</translation>
+<translation id="7399616692258236448">Сіз рұқсат еткеннен басқа барлық сайт үшін локация сұраулары автоматты түрде блокталады.</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470"><ph name="OLD_SEARCH_PROVIDER" /> іздеу жүйесіне ораласыз ба?</translation>
 <translation id="7400839060291901923"><ph name="PHONE_NAME" /> телефоныңыздағы байланысты реттеу</translation>
@@ -8635,6 +8638,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{бейне}other{# бейне}}</translation>
 <translation id="8143442547342702591">Жарамсыз қолданба</translation>
 <translation id="8143609395536282994">Дерек қалай басқарылады:</translation>
+<translation id="8144429778087524791">Дайын деп белгілеу және жасыру</translation>
 <translation id="8145170459658034418">Жад үнемдегіш</translation>
 <translation id="8146177459103116374">Бұл құрылғыда әлдеқашан тіркелген болсаңыз, <ph name="LINK2_START" />бұрыннан бар пайдаланушы ретінде кіруіңізге<ph name="LINK2_END" /> болады.</translation>
 <translation id="8146287226035613638">Қалаған тілдерді қосып, жіктеңіз. Мүмкін болған кезде веб-сайттар өзіңізге ыңғайлы тілде көрсетіледі. Бұл параметрлер браузер параметрлерімен синхрондалады. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>

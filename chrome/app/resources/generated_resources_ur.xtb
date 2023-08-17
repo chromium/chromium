@@ -1084,6 +1084,7 @@
 <translation id="1854180393107901205">کاسٹ کرنا بند کریں</translation>
 <translation id="1856715684130786728">مقام شامل کریں…</translation>
 <translation id="1858585891038687145">سافٹ ویئر بنانے والوں کی شناخت کرنے کیلئے اس سرٹیفیکیٹ پر بھروسہ کریں</translation>
+<translation id="1859294693760125695">مزید دلچسپی نہیں ہے</translation>
 <translation id="1859339856433307593">اس اکاؤنٹ کا ایک پاس ورڈ آپ کے (<ph name="USER_EMAIL" />) <ph name="BRAND" /> میں پہلے ہی محفوظ ہے</translation>
 <translation id="1861262398884155592">یہ فولڈر خالی ہے</translation>
 <translation id="1862311223300693744">‏کیا آپ نے کوئی خصوصی VPN، پراکسی، فائروال یا NAS سافٹ ویئر انسٹال کیا ہوا ہے؟</translation>
@@ -3280,6 +3281,7 @@
 <translation id="3660234220361471169">غیر بھروسہ مند</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 موجودہ پاس ورڈ ملا}other{{NUM_PASSWORDS} موجودہ پاس ورڈز ملے}}</translation>
 <translation id="3664511988987167893">ایکسٹینشن آئیکن</translation>
+<translation id="3665301845536101715">سائیڈ پینل میں کھولیں</translation>
 <translation id="3665589677786828986">‏Chrome کو پتا چلا کہ آپ کی کچھ ترتیبات دوسرے پروگرام کی وجہ سے خراب ہوگئی تھیں اور انہیں ان کی اصل ڈیفالٹ میں دوبارہ ترتیب دے دیا گیا تھا۔</translation>
 <translation id="3665919494326051362">موجودہ ورژن <ph name="CURRENT_VERSION" /> ہے</translation>
 <translation id="3666196264870170605">‏Intel WiFi NICs ڈیبگ ڈمپ</translation>
@@ -8644,6 +8646,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{ایک ویڈیو}other{# ویڈیوز}}</translation>
 <translation id="8143442547342702591">غلط ایپلیکیشن</translation>
 <translation id="8143609395536282994">آپ اپنے ڈیٹا کا نظم کیسے کر سکتے ہیں:</translation>
+<translation id="8144429778087524791">مکمل کے طور پر نشان زد کریں اور چھپائیں</translation>
 <translation id="8145170459658034418">میموری سیور</translation>
 <translation id="8146177459103116374">اگر آپ پہلے ہی اس آلہ پر رجسٹر ہو گئے ہیں تو آپ <ph name="LINK2_START" />ایک موجودہ صارف کے بطور سائن ان<ph name="LINK2_END" /> کر سکتے ہیں۔</translation>
 <translation id="8146287226035613638">اپنی ترجیحی زبانیں شامل کریں اور انہیں زمرہ بند کریں۔ ممکن ہونے پر ویب سائٹس آپ کی ترجیحی زبانوں میں دکھائی دیں گی۔ یہ ترجیحات آپ کے براؤزر کی ترتیبات کے ساتھ مطابقت پذیر ہیں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="si">
 <translation id="1011749477052068769">මෙහි ගෙන එන්න</translation>
 <translation id="1016498331642356377">ඔබගේ කටහඬ සමගින් ඉක්මනින් සොයන්න. මෙම කෙටිමඟ සංස්කරණය කිරීමට, ස්පර්ශ කර අල්ලාගෙන සිටින්න.</translation>
+<translation id="1024113959924243553">Chrome සංවර්ධක</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> වෙත යවනු ලැබේ...</translation>
 <translation id="103269572468856066">මෙම අඩවි සහ යෙදුම්වලින් ද දත්ත හිස් කරන්න ද?</translation>
 <translation id="1034259925032978114">කවුළුව විවෘත කර ඇත</translation>
@@ -51,6 +52,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> පූරණය කරමින්</translation>
 <translation id="1240903469550363138">ඉදිරියට යාමට, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ඔබගේ නම, ඉ-තැපැල් ලිපිනය සහ පැතිකඩ පින්තූරය මෙම අඩවිය සමග බෙදා ගනු ඇත. මෙම අඩවියෙහි <ph name="BEGIN_LINK1" />පෞද්ගලිකත්ව ප්‍රතිපත්තිය<ph name="END_LINK1" /> සහ <ph name="BEGIN_LINK2" />සේවා නියම<ph name="END_LINK2" /> බලන්න.</translation>
 <translation id="124116460088058876">තවත් භාෂා</translation>
+<translation id="1241792820757384812">ඔබේ මුරපද <ph name="CHROME_CHANNEL" /> සඳහා Google මුරපද කළමනාකරු වෙතින් මකනු ලැබේ. ඔබ දැන් බාගත කළ මුරපද ගොනුව තබා ගනු ඇත.</translation>
 <translation id="1242883863226959074">උපාංගය</translation>
 <translation id="124678866338384709">වත්මන් ටැබය වසන්න</translation>
 <translation id="1246905108078336582">පසුරු පුවරුවෙන් යෝජනාව ඉවත් කරන්නේද?</translation>
@@ -579,6 +581,7 @@
 <translation id="4124152339699379357">දැනුම්දීම් අවසර ප්‍රවාහය සම්පූර්ණ උසින් විවෘත විය</translation>
 <translation id="4135200667068010335">වසා ඇති පටිත්තක් බෙදා ගැනීම සඳහා වන උපාංග ලැයිස්තුව.</translation>
 <translation id="4137746084635924146">වත්මන් උපාංග භාෂාව</translation>
+<translation id="4139654229316918773">Chrome කැනරි</translation>
 <translation id="414128724510021958">ඩෙස්ක්ටොප් අඩවි පෙරනිමියෙන් ඉල්ලා ඇත</translation>
 <translation id="4147131678541801076">අත්හදා බැලීම් ක්‍රියාත්මක විට, අයාචිත සහ වංචාව අඩු කිරීම අඩවිවලට වංචාවට එරෙහිව සටන් කිරීමට සහ පුද්ගලයින්ගෙන් බොට් වෙන් කර හඳුනා ගැනීමට උදවු කිරීමට පෞද්ගලික තත්ත්ව ටෝකන මත රඳා පවතී.
 
@@ -1079,6 +1082,7 @@
 <translation id="6649642165559792194">රූපය පෙරදකින්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">මුරපදය</translation>
 <translation id="6659594942844771486">ටැබ</translation>
+<translation id="6662119761881114773">මේ මොහොතේ, මෙම උපාංගයේ සුරකින ලද මුරපද Chrome නාලිකා හරහා භාවිතා කළ නොහැක. Chrome 121 හට පසුව, Chrome සහ <ph name="CHROME_CHANNEL" /> සඳහා ඔබේ උපාංගයෙහි සුරකින ලද මුරපද ඒකාබද්ධ කරනු ලබන අතර යෙදුම් දෙකෙහිම භාවිතා කළ හැක.</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> තුළ විවෘත කරන්න</translation>
 <translation id="6671495933530132209">රූපය පිටපත් කරන්න</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> එක් කරන්න</translation>
@@ -1575,6 +1579,7 @@
 <translation id="9158770349521403363">අන්තර්ගතය පමණක් බෙදා ගන්න</translation>
 <translation id="9159716826369098114">නව පසුබිම් ටැබ සමූහයක් ලෙස ටැබ <ph name="TAB_COUNT" />ක ටැබ සමූහය ප්‍රතිසාධනය කරන්න.</translation>
 <translation id="9169507124922466868">සංචලන ඉතිහාසය අඩක් විවෘතයි</translation>
+<translation id="918419812064856259">Chrome බීටා</translation>
 <translation id="9190276265094487094">ඔබට ඔබේ සමමුහුර්ත කළ උපාංග සියල්ලෙහි ඔබේ ඉතිහාසය ඇති නිසා ඔබට ඔබ කරමින් සිටි දේ දිගටම කර ගෙන යා හැක</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{මිනිත්තු 1කට පෙර පරීක්ෂා කරන ලදි}one{මිනිත්තු #කට පෙර පරීක්ෂා කරන ලදි}other{මිනිත්තු #කට පෙර පරීක්ෂා කරන ලදි}}</translation>
 <translation id="9204021776105550328">මකමින්</translation>
@@ -1590,6 +1595,7 @@
 <translation id="927968626442779827">Google Chrome හි සැහැල්ලු ප්‍රකාරය භාවිත කරන්න</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> අනුගමනය කරමින්</translation>
 <translation id="932327136139879170">මුල් පිටුව</translation>
+<translation id="93533588269984624">සියලු ම මුරපද ඔබේ උපාංගයට බාගෙන <ph name="CHROME_CHANNEL" /> වෙතින් ඉවත් කරනු ලැබේ</translation>
 <translation id="938850635132480979">දෝෂය: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">මුරවදන ඇතුළත් කරන්න</translation>
 <translation id="952301137339791907">පිටු විදසුන් පහළ පත්‍රය විවෘතව ඇත</translation>

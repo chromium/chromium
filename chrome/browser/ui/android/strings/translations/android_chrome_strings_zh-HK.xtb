@@ -52,7 +52,7 @@
 <translation id="1240288207750131269">正在載入<ph name="LANG" /></translation>
 <translation id="1240903469550363138">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。查看此網站的《<ph name="BEGIN_LINK1" />私隱權政策<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="124116460088058876">更多語言</translation>
-<translation id="1241792820757384812">密碼將從 <ph name="CHROME_CHANNEL" />的 Google 密碼管理工具中刪除。你可以保留剛剛下載的密碼檔案。</translation>
+<translation id="1241792820757384812">密碼將從 <ph name="CHROME_CHANNEL" />的「Google 密碼管理工具」中刪除。你可保留剛剛下載的密碼檔案。</translation>
 <translation id="1242883863226959074">裝置</translation>
 <translation id="124678866338384709">關閉目前分頁</translation>
 <translation id="1246905108078336582">要從剪貼簿中移除建議嗎？</translation>
@@ -1072,7 +1072,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="6649642165559792194">預覽圖片<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659594942844771486">分頁</translation>
-<translation id="6662119761881114773">目前無法將儲存在這部裝置上的密碼用於其他 Chrome 版本。在 Chrome 121 以後的版本中，系統會將裝置上儲存的 Chrome 和 <ph name="CHROME_CHANNEL" /> 密碼合併，可同時用於這兩個應用程式。</translation>
+<translation id="6662119761881114773">目前無法將儲存在此裝置上的密碼用於其他 Chrome 版本。在 Chrome 121 以後的版本中，系統會將裝置上儲存的 Chrome 和 <ph name="CHROME_CHANNEL" />密碼合併，可同時在這兩個應用程式上使用。</translation>
 <translation id="666731172850799929">在「<ph name="APP_NAME" />」中開啟</translation>
 <translation id="6671495933530132209">複製圖片</translation>
 <translation id="6672917148207387131">新增 <ph name="DOMAIN" /></translation>
@@ -1581,7 +1581,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="927968626442779827">使用 Google Chrome 的「精簡模式」</translation>
 <translation id="928550791203542716">正在追蹤「<ph name="SITE_NAME" />」</translation>
 <translation id="932327136139879170">首頁</translation>
-<translation id="93533588269984624">所有密碼都會下載到你的裝置，並從 <ph name="CHROME_CHANNEL" />中移除</translation>
+<translation id="93533588269984624">所有密碼都會下載至你的裝置，並從 <ph name="CHROME_CHANNEL" />中移除</translation>
 <translation id="938850635132480979">錯誤：<ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">請輸入複雜密碼</translation>
 <translation id="952301137339791907">開咗頁面分析資料頁底面板</translation>

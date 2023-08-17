@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1143896152279775643">Teie parool salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
+<translation id="1180362651362502943">Jätkake Google’i kontol Chrome’i andmete kasutamist.</translation>
 <translation id="1282031177488366470">Aidake täiustada Chrome'i funktsioone ja toimivust</translation>
 <translation id="1352919863522755794">Google'i paroolihalduril ei õnnestunud teie paroole kontrollida. Kontrollige internetiühendust.</translation>
+<translation id="1407843355326180937">Logige sisse sellele saidile ja Chrome’i, et teie järjehoidjad ja muu sisu oleksid saadaval kõigis seadmetes.</translation>
 <translation id="1462727070346936664">Chrome'i parimal moel kasutamiseks logige sisse.</translation>
 <translation id="1479202195792305274">Chrome saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
 <translation id="1491435845014430217">Lülitage sisse valik „Lukusta Chrome'i sulgemisel inkognito vahelehed“.</translation>
 <translation id="1493827051843127077">Määrake Chrome vaikebrauseriks, et sünkroonida kõikides oma seadetes vahelehti, paroole ja makseteavet</translation>
 <translation id="1504372625950710826">Chrome ei saanud värskendusi otsida. Kontrollige internetiühendust.</translation>
 <translation id="1511320244449497906">Olete sisse logitud ja andmed sünkroonitakse kontoga, mida haldab <ph name="DOMAIN" />, kus selle administraator saab nüüd määrata konto kasutajareegleid, millega saab Chrome'i käitumist muuta.</translation>
+<translation id="1526327845902180576">Sisselülitamise korral
+<ph name="BEGIN_INDENT" />  • Aitate täiustada Chrome’i inimeste jaoks, kes kasutavad seda nagu teie.<ph name="END_INDENT" />
+
+Tasub teada
+<ph name="BEGIN_INDENT" />  • Google’ile saadetakse teie Chrome’i kasutuse kohta teavet, kuid seda ei seostata teiega.
+
+  • Kui Chrome jookseb kokku, võivad kokkujooksmise üksikasjad sisaldada isiklikku teavet.
+
+  • Kui sünkroonite oma ajaloo Google’i kontoga, võivad mõõdikud sisaldada teavet ka teie külastatavate URL-ide kohta.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Teil on Chrome'i tugevaim kaitse ohtlike veebisaitide vastu</translation>
 <translation id="1682483655351012182">Chrome'i andmete sünkroonimine</translation>
 <translation id="1733654336159102143">Lukustage Chrome’ist väljumisel või muu rakenduse aktiveerimisel oma inkognito vahelehed.</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">Chrome'i sulgemisel inkognito vahelehtede lukustamine</translation>
 <translation id="3827545470516145620">Saate selles seadmes standardse turvakaitse</translation>
 <translation id="384394811301901750">Chrome ei saa praegu kaamerat kasutada</translation>
+<translation id="3901001113120561395">Kasutage Chrome’i parimal moel.</translation>
 <translation id="3980220367029651214">Vahetate kontode sünkroonimise kontolt <ph name="USER_EMAIL1" /> kontole <ph name="USER_EMAIL2" />. Olemasolevaid Chrome'i andmeid haldab domeen <ph name="DOMAIN" />. See kustutab teie andmed sellest seadmest, kuid teie andmed jäävad alles kontole <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Teie organisatsioon nõuab, et jääksite Chrome'ist väljalogituks.</translation>
 <translation id="3988789688219830639">Google Chrome'il pole juurdepääsu fotodele ega videotele. Lubage iOS-is juurdep. valikutega Seaded &gt; Privaatsus &gt; Fotod.</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">Logige sellele saidile ja Chrome'i sisse.</translation>
 <translation id="4698415050768537821">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti või <ph name="BEGIN_LINK" />kontrollige oma Google'i kontol paroole<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Rakenduse täiustamiseks saadab Chrome Google'ile kasutus- ja krahhiandmeid. <ph name="BEGIN_LINK" />Haldamine<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">Teatud Chrome’i andmeid pole veel teie Google’i kontole salvestatud.
+
+        Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed kustutatakse.</translation>
 <translation id="484033449593719797">Ei toetata Chrome'i beetaversioonis</translation>
 <translation id="4840404732697892756">Google'i paroolihaldur saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
 <translation id="4903674399067644695">Sellel kaardil kuvatakse soovitusi selle kohta, kuidas Chrome'i parimal moel kasutada.</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">Chrome'i täiustamine</translation>
 <translation id="5119391094379141756">Valige Chrome</translation>
 <translation id="5162467219239570114">Chrome on aegunud. Kui <ph name="BEGIN_LINK" />App Store'is<ph name="END_LINK" /> pole värskendust saadaval, on võimalik, et teie seade ei toeta enam Chrome'i uuemaid versioone.</translation>
+<translation id="5190139289262548459">Teie organisatsioon <ph name="DOMAIN" /> haldab kontot, millele olete sisse logitud, ja Chrome’i kasutamist.</translation>
 <translation id="5389212809648216794">Google Chrome ei saa kaamerat kasutada, kuna seda kasutab muu rakendus</translation>
 <translation id="5395376160638294582">Veenduge, et saaksite alati kasutada oma Google'i kontol Chrome'i andmeid</translation>
 <translation id="5439191312780166229">Hoiatab teid ohtlike saitide eest, isegi nende eest, millest Google varem ei teadnud, analüüsides standardse kaitsega võrreldes rohkem saitidelt pärinevaid andmeid. Soovi korral saate Chrome'i hoiatused vahele jätta.</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">Logite sisse kontoga, mida haldab <ph name="DOMAIN" />, ja annate selle administraatorile üle Chrome'i andmete juhtimise. Teie andmed seotakse jäädavalt selle kontoga. Chrome'ist väljalogimisel kustutatakse teie andmed sellest seadmest, kuid need jäävad alles teie Google'i kontole.</translation>
 <translation id="6676840375528380067">Kas kustutada sellest seadmest Chrome'i andmed?</translation>
 <translation id="6709398533399187136">Teie parool oli andmetega seotud rikkumise käigus avalikustatud. Google'i paroolihaldur soovitab teil kohe seda parooli muuta.</translation>
+<translation id="6815466750807582739">Makseviise ja aadresse ei krüpteerita. Chrome’i sirvimisajalugu ei sünkroonita.
+
+Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Parooli ei saadeta Google’ile ja Google ei salvesta seda. Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige hiljem uuesti.</translation>
 <translation id="6964931465519938134">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="6975725306479268850">Valige automaattäite jaoks Chrome</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">Kuvatakse viibad Chrome'i sisselogimiseks.</translation>
 <translation id="8788269841521769222">Te ei pea seda parooli meelde jätma. See salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
 <translation id="8808828119384186784">Chrome'i seaded</translation>
+<translation id="8856877214925961642">Parooliga krüpteerimine ei hõlma makseviise ja aadresse.
+
+Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google'i paroolihalduril ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
 <translation id="8897749957032330183">Paroolid salvestatakse selles seadmes Google'i paroolihaldurisse.</translation>
 <translation id="8969290730818637510">Kui see on sisse lülitatud

@@ -1096,6 +1096,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1854180393107901205">Hætta útsendingu</translation>
 <translation id="1856715684130786728">Bæta staðsetningu við...</translation>
 <translation id="1858585891038687145">Treysta þessu vottorði til að bera kennsl á hugbúnaðarframleiðendur</translation>
+<translation id="1859294693760125695">Hef ekki lengur áhuga</translation>
 <translation id="1859339856433307593">Aðgangsorð fyrir þennan reikning er þegar vistað í <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Mappan er tóm</translation>
 <translation id="1862311223300693744">Ertu með einhvern sérstakan VPN-, staðgengilsþjóns-, eldveggjar- eða NAS-hugbúnað
@@ -3294,6 +3295,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3660234220361471169">Ótraust</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 fyrirliggjandi aðgangsorð fannst}one{{NUM_PASSWORDS} fyrirliggjandi aðgangsorð fannst}other{{NUM_PASSWORDS} fyrirliggjandi aðgangsorð fundust}}</translation>
 <translation id="3664511988987167893">Tákn viðbótar</translation>
+<translation id="3665301845536101715">Opna í hliðarglugga</translation>
 <translation id="3665589677786828986">Chrome greindi að annað forrit hefur nýlega spillt einhverjum stillingum hjá þér og endurstillti þær því í sjálfgildi.</translation>
 <translation id="3665919494326051362">Núverandi útgáfa er <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Villuleitargögn fyrir WiFi-netkort frá Intel</translation>
@@ -8662,6 +8664,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="814204052173971714">{COUNT,plural, =1{myndskeið}one{# myndskeið}other{# myndskeið}}</translation>
 <translation id="8143442547342702591">Ógilt forrit</translation>
 <translation id="8143609395536282994">Svona geturðu stjórnað gögnunum þínum:</translation>
+<translation id="8144429778087524791">Merkja sem lokið og fela</translation>
 <translation id="8145170459658034418">Minnissparnaður</translation>
 <translation id="8146177459103116374">Ef þú hefur þegar skráð þig í þessu tæki geturðu <ph name="LINK2_START" />skráð þig inn sem fyrirliggjandi notandi<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Bættu við kjörtungumálum og raðaðu þeim í forgangsröð. Vefsvæði birtast á kjörtungumálum sé þess kostur. Þessar kjörstillingar eru samstilltar vafrastillingunum. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>

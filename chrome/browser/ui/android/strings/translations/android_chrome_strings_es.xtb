@@ -1072,6 +1072,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6649642165559792194">Revisar imagen <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6659594942844771486">Pestaña</translation>
+<translation id="6662119761881114773">En este momento, las contraseñas guardadas en este dispositivo no se pueden usar en todos los canales de Chrome. Después de la versión 121 de Chrome, las contraseñas guardadas en tu dispositivo para Chrome y <ph name="CHROME_CHANNEL" /> se combinarán y se podrán usar en ambas aplicaciones.</translation>
 <translation id="666731172850799929">Abrir en <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Copiar imagen</translation>
 <translation id="6672917148207387131">Añadir <ph name="DOMAIN" /></translation>

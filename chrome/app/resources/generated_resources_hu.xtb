@@ -7719,6 +7719,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7396017167185131589">A megosztott mappák itt jelennek meg</translation>
 <translation id="7396845648024431313">A(z) <ph name="APP_NAME" />  el fog indulni a rendszer indításakor, és akkor is tovább fut a háttérben, ha már bezárta az összes többi <ph name="PRODUCT_NAME" />-ablakot.</translation>
 <translation id="7399045143794278225">A szinkronizálás személyre szabása</translation>
+<translation id="7399616692258236448">Az Ön által engedélyezett webhelyek kivételével a rendszer automatikusan letiltja a helykérelmeket.</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Visszaállítja a régi keresőt (<ph name="OLD_SEARCH_PROVIDER" />)?</translation>
 <translation id="7400839060291901923">Kapcsolat beállítása a(z) <ph name="PHONE_NAME" /> eszközön</translation>

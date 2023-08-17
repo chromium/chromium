@@ -1093,6 +1093,7 @@
 <translation id="1854180393107901205">ప్రసారాన్ని ఆపివేయి</translation>
 <translation id="1856715684130786728">స్థానాన్ని జోడించండి...</translation>
 <translation id="1858585891038687145">సాఫ్ట్‌వేర్ రూపకర్తలను గుర్తించడం కోసం ఈ ప్రమాణపత్రాన్ని విశ్వసిస్తుంది</translation>
+<translation id="1859294693760125695">ఇకపై ఆసక్తి లేదు</translation>
 <translation id="1859339856433307593">ఈ ఖాతా కోసం పాస్‌వర్డ్ ఇప్పటికే మీ <ph name="BRAND" /> (<ph name="USER_EMAIL" />)కి సేవ్ చేయబడింది</translation>
 <translation id="1861262398884155592">ఈ ఫోల్డర్ ఖాళీగా ఉంది</translation>
 <translation id="1862311223300693744">మీరు ఏదైనా ప్రత్యేక VPN, ప్రాక్సీ, ఫైర్‌వాల్ లేదా NAS సాఫ్ట్‌వేర్‌ను
@@ -3291,6 +3292,7 @@
 <translation id="3660234220361471169">అవిశ్వసనీయ</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{ఇప్పటికే ఉన్న పాస్‌వర్డ్ 1 కనుగొనబడింది}other{ఇప్పటికే ఉన్న పాస్‌వర్డ్‌లు {NUM_PASSWORDS} కనుగొనబడ్డాయి}}</translation>
 <translation id="3664511988987167893">ఎక్స్‌టెన్షన్ చిహ్నం</translation>
+<translation id="3665301845536101715">సైడ్ ప్యానెల్‌లో తెరవండి</translation>
 <translation id="3665589677786828986">మీ సెట్టింగ్‌లలో కొన్నింటిని మరో ప్రోగ్రామ్ మార్చినట్లుగా Chrome గుర్తించింది, తర్వాత వాటిని వాటి అసలు డిఫాల్ట్‌లకు రీసెట్ చేసింది.</translation>
 <translation id="3665919494326051362">ప్రస్తుతం ఉన్న వెర్షన్ <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NICsకు సంబంధించిన డీబగ్ డంప్</translation>
@@ -8655,6 +8657,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{వీడియో}other{# వీడియోలు}}</translation>
 <translation id="8143442547342702591">చెల్లని అప్లికేషన్</translation>
 <translation id="8143609395536282994">మీరు మీ డేటాను ఎలా మేనేజ్ చేసుకోగలరు:</translation>
+<translation id="8144429778087524791">పూర్తయినట్లు మార్క్ చేసి, దాచండి</translation>
 <translation id="8145170459658034418">మెమరీ సేవర్</translation>
 <translation id="8146177459103116374">మీరు ఇప్పటికే ఈ పరికరంలో నమోదు చేసి ఉంటే, మీరు <ph name="LINK2_START" />ఇప్పటికే ఉన్న వినియోగదారు వలే సైన్ ఇన్ చేయవచ్చు<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">మీ ప్రాధాన్య భాషలను జోడించి, వాటికి ర్యాంకింగ్ ఇవ్వండి. సాధ్యమైనప్పుడల్లా, వెబ్‌సైట్‌లు, తమ కంటెంట్‌ను మీ ప్రాధాన్య భాషలలో చూపుతాయి. ఈ ప్రాధాన్యతలు మీ బ్రౌజర్ సెట్టింగ్‌లతో సింక్ చేయబడతాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="my">
 <translation id="1011749477052068769">ဤနေရာသို့ ရွှေ့ရန်</translation>
 <translation id="1016498331642356377">သင့်အသံဖြင့် အမြန်ရှာပါ။ ဤဖြတ်လမ်းလင့်ခ်ကို ပြင်ဆင်ရန် တို့ထိ၍ဖိထားပါ။</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> သို့ ပို့နေသည်...</translation>
 <translation id="103269572468856066">ဒေတာများ ရှင်းထုတ်မလား။</translation>
 <translation id="1034259925032978114">ဝင်းဒိုးပွင့်နေသည်</translation>
@@ -51,6 +52,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> ကို ဖွင့်နေသည်</translation>
 <translation id="1240903469550363138">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့်အမည်၊ အီးမေးလ်လိပ်စာနှင့် ပရိုဖိုင်ပုံကို ဤဝဘ်ဆိုက်အား မျှဝေမည်။ ဤဝဘ်ဆိုက်၏ <ph name="BEGIN_LINK1" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို ကြည့်ပါ။</translation>
 <translation id="124116460088058876">နောက်ထပ် ဘာသာစကားများ</translation>
+<translation id="1241792820757384812"><ph name="CHROME_CHANNEL" /> အတွက် Google Password Manager မှ သင့်စကားဝှက်များကို ဖျက်ပါမည်။ ယခုလေးတင် ဒေါင်းလုဒ်လုပ်လိုက်သော စကားဝှက်ဖိုင်ကို ဆက်သိမ်းထားပါမည်။</translation>
 <translation id="1242883863226959074">စက်</translation>
 <translation id="124678866338384709">လက်ရှိတဘ်ကို ပိတ်ရန်</translation>
 <translation id="1246905108078336582">ကလစ်ဘုတ်မှ အကြံပြုချက်ကို ဖယ်ရှားလိုပါသလား။</translation>
@@ -576,6 +578,7 @@
 <translation id="4124152339699379357">အကြောင်းကြားခွင့် လုပ်ငန်းစဉ်ကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်</translation>
 <translation id="4135200667068010335">တဘ်မျှဝေရန် စက်ပစ္စည်းစာရင်းကို ပိတ်ထားသည်။</translation>
 <translation id="4137746084635924146">စက်၏ လက်ရှိဘာသာစကား</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">မူရင်းသတ်မှတ်ချက်အရ ဒက်စ်တော့ဝဘ်ဆိုက်များ တောင်းဆိုထားသည်</translation>
 <translation id="4147131678541801076">အစမ်းသုံးခြင်းများ ဖွင့်ထားပါက စပမ်းနှင့် လိမ်လည်မှုလျှော့ချခြင်းသည် သီးသန့်အခြေအနေ တိုကင်များပေါ် အမှီပြုပြီး ဝဘ်ဆိုက်များ လိမ်လည်မှုတိုက်ဖျက်ရာတွင်၊ လူနှင့် ဘော့တ်များကို ခွဲခြားဖော်ထုတ်ရာတွင် ကူညီပေးသည်။
 
@@ -1561,6 +1564,7 @@
 <translation id="9158770349521403363">အကြောင်းအရာသီးသန့် မျှဝေပါ</translation>
 <translation id="9159716826369098114">နောက်ခံတဘ်အုပ်စုအသစ်အဖြစ် တဘ် <ph name="TAB_COUNT" /> ခု ပါသည့် တဘ်အုပ်စုကို ပြန်ယူနိုင်ပါသည်။</translation>
 <translation id="9169507124922466868">လမ်းညွှန်မှု မှတ်တမ်း တစ်ဝက်ဖွင့်ထားသည်</translation>
+<translation id="918419812064856259">Chrome စမ်းသပ်ဆော့ဖ်ဝဲ</translation>
 <translation id="9190276265094487094">စင့်ခ်လုပ်ထားသော စက်အားလုံးတွင် သင်၏မှတ်တမ်း ရရှိမည်ဖြစ်သဖြင့် သင်လုပ်ဆောင်နေသည်များကို ရှေ့ဆက်နိုင်သည်</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{လွန်ခဲ့သော ၁ မိနစ်က စစ်ဆေးခဲ့သည်}other{လွန်ခဲ့သော # မိနစ်က စစ်ဆေးခဲ့သည်}}</translation>
 <translation id="9204021776105550328">ဖျက်နေသည်</translation>
@@ -1576,6 +1580,7 @@
 <translation id="927968626442779827">Google Chrome တွင် အပေါ့စားမုဒ် သုံးရန်</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> ကို လိုက်ကြည့်နေသည်</translation>
 <translation id="932327136139879170">ပင်မ</translation>
+<translation id="93533588269984624">စကားဝှက်အားလုံးကို သင်၏စက်တွင် ဒေါင်းလုဒ်လုပ်ပြီး <ph name="CHROME_CHANNEL" /> မှ ဖယ်ရှားလိုက်မည်</translation>
 <translation id="938850635132480979">အမှား- <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">စကားစုဝှက်ကို ရိုက်ထည့်ရန်</translation>
 <translation id="952301137339791907">စာမျက်နှာ သိကောင်းစရာများအတွက် အောက်ခြေအပိုဆောင်း စာမျက်နှာ ဖွင့်ထားသည်</translation>

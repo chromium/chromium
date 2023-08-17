@@ -3,6 +3,7 @@
 <translationbundle lang="am">
 <translation id="1011749477052068769">ወደዚህ አንቀሳቅስ</translation>
 <translation id="1016498331642356377">በድምጽዎ በፍጥነት ይፈልጉ። ይህን አቋራጭ ለማርትዕ ነክተው ይያዙ።</translation>
+<translation id="1024113959924243553">Chrome ገንቢ</translation>
 <translation id="1028699632127661925">ወደ <ph name="DEVICE_NAME" /> በመላክ ላይ...</translation>
 <translation id="103269572468856066">ከእነዚህ ጣቢያዎች እና መተግበሪያዎች የመጣ ውሂብም ይጽዳ?</translation>
 <translation id="1034259925032978114">መስኮት ተከፍቷል</translation>
@@ -51,6 +52,7 @@
 <translation id="1240288207750131269"><ph name="LANG" />ን በመጫን ላይ</translation>
 <translation id="1240903469550363138">ለመቀጠል <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን ስም፣ ኢሜይል አድራሻ እና የመገለጫ ሥዕል ለዚህ ጣቢያ ያጋራል። የዚህ ጣቢያ <ph name="BEGIN_LINK1" />የግላዊነት መመሪያ<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የአገልግሎት ውል<ph name="END_LINK2" /> ይመልከቱ።</translation>
 <translation id="124116460088058876">ተጨማሪ ቋንቋዎች</translation>
+<translation id="1241792820757384812">የእርስዎ የይለፍ ቃላት ለ<ph name="CHROME_CHANNEL" /> ከGoogle የይለፍ ቃል አስተዳዳሪ ይሰረዛሉ። አሁን ያወረዷቸውን የይለፍ ቃላት ፋይል ያቆያሉ።</translation>
 <translation id="1242883863226959074">መሣሪያ</translation>
 <translation id="124678866338384709">የአሁኑን ትር ዝጋ</translation>
 <translation id="1246905108078336582">የአስተያየት ጥቆማ ከቅንጥብ ሰሌዳ ይወገድ?</translation>
@@ -576,6 +578,7 @@
 <translation id="4124152339699379357">የማሳወቂያ ፈቃድ ፍሰት በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="4135200667068010335">የተዘጋ ትር የሚጋሩ የመሣሪያዎች ዝርዝር።</translation>
 <translation id="4137746084635924146">የአሁኑ የመሣሪያ ቋንቋ</translation>
+<translation id="4139654229316918773">Chrome ካናሪ</translation>
 <translation id="414128724510021958">በነባሪ የተጠየቁ የዴስክቶፕ ጣቢያዎች</translation>
 <translation id="4147131678541801076">ሙከራዎች ሲበሩ የአይፈለጌ መልዕክት እና የመጭበርበር ቅነሳ ጣቢያዎች መጭበርበርን እንዲዋጉ እና ቦቶቹን ከሰዎች እንዲለዩ ለማገዝ በግል ሁኔታ ማስመሰያዎች ላይ ይተማመናል።
 
@@ -1562,6 +1565,7 @@
 <translation id="9158770349521403363">ይዘትን ብቻ ያጋሩ</translation>
 <translation id="9159716826369098114">የ<ph name="TAB_COUNT" /> ትሮችን የትር ቡድን እንደ አዲስ የዳራ ትር ቡድን ወደነበረበት መልስ።</translation>
 <translation id="9169507124922466868">የዳሰሳ ታሪክ በግማሽ ተከፍቷል</translation>
+<translation id="918419812064856259">Chrome ቅድመ-ይሁንታ</translation>
 <translation id="9190276265094487094">ሲያደርጉት የነበረውን እንገር መቀጠል እንዲችሉ ታሪክዎ በሁሉም የሰመሩ መሣሪያዎችዎ ላይ ይኖረዎታል</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ከ1 ደቂቃ በፊት ተፈትሿል}one{ከ# ደቂቃዎች በፊት ተፈትሿል}other{ከ# ደቂቃዎች በፊት ተፈትሿል}}</translation>
 <translation id="9204021776105550328">በመሰረዝ ላይ</translation>
@@ -1577,6 +1581,7 @@
 <translation id="927968626442779827">በGoogle Chrome ላይ ቀላል ሁነታን ይጠቀሙ</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" />ን በመከተል ላይ</translation>
 <translation id="932327136139879170">መነሻ</translation>
+<translation id="93533588269984624">ሁሉም የይለፍ ቃላት በመሣሪያዎ ላይ ይወርዳሉ እና ከ<ph name="CHROME_CHANNEL" /> ይወገዳሉ</translation>
 <translation id="938850635132480979">ስህተት፦ <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">የይለፍ ሐረግ ያስገቡ</translation>
 <translation id="952301137339791907">የገጽ ግንዛቤዎች የግርጌ ሉህ ተከፍቷል</translation>

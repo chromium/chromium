@@ -1094,6 +1094,7 @@
 <translation id="1854180393107901205">कास्ट करणे थांबवा</translation>
 <translation id="1856715684130786728">स्थान जोडा...</translation>
 <translation id="1858585891038687145">सॉफ्टवेअर निर्मात्यांना ओळखण्याकरिता या सर्टिफिकेटवर विश्वास ठेवा</translation>
+<translation id="1859294693760125695">आता स्वारस्य नाही</translation>
 <translation id="1859339856433307593">या खात्याचा पासवर्ड आधीपासून तुमच्या <ph name="BRAND" /> वर सेव्ह केला आहे (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">हे फोल्डर रिक्त आहे</translation>
 <translation id="1862311223300693744">तुमची कोणतेही विशेष VPN, प्रॉक्‍सी, फायरवॉल किंवा NAS सॉफ्‍टवेअर
@@ -3292,6 +3293,7 @@
 <translation id="3660234220361471169">अविश्‍वासू</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{एक सद्य पासवर्ड आढळला आहे}other{{NUM_PASSWORDS} सद्य पासवर्ड आढळले आहेत}}</translation>
 <translation id="3664511988987167893">एक्स्टेंशन आयकन</translation>
+<translation id="3665301845536101715">साइड पॅनलमध्ये उघडा</translation>
 <translation id="3665589677786828986">Chrome ला आढळले आहे की आपल्या काही सेटिंग्ज दुसर्‍या प्रोग्रामद्वारे दूषित झाल्या होत्या आणि त्यांच्या मूळ डीफॉल्टवर त्या रीसेट केल्या.</translation>
 <translation id="3665919494326051362">सध्याची आवृत्ती <ph name="CURRENT_VERSION" /> ही आहे</translation>
 <translation id="3666196264870170605">Intel वायफाय NICs डीबग डंप</translation>
@@ -7717,6 +7719,7 @@
 <translation id="7396017167185131589">शेअर केलेली फोल्डर येथे दिसतील</translation>
 <translation id="7396845648024431313">सिस्टीम सुरूाच्या वेळी <ph name="APP_NAME" /> लाँच होईल आणि एकदा तुम्ही सर्व अन्य <ph name="PRODUCT_NAME" /> विंडो बंद केल्यानंतर बॅकग्राउंडमध्ये चालणे सुरू ठेवेल.</translation>
 <translation id="7399045143794278225">सिंक कस्टमाइझ करा</translation>
+<translation id="7399616692258236448">तुम्ही अनुमती दिलेली साइट वगळता सर्व साइटसाठी स्थानाशी संबंधित विनंत्या या आपोआप ब्लॉक केल्या आहेत</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470"><ph name="OLD_SEARCH_PROVIDER" /> वर परत बदलायचे आहे का?</translation>
 <translation id="7400839060291901923">तुमच्या <ph name="PHONE_NAME" />वर कनेक्शन सेट अप करा</translation>
@@ -8656,6 +8659,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{व्हिडिओ}other{# व्हिडिओ}}</translation>
 <translation id="8143442547342702591">चुकीचे ॲप्लिकेशन</translation>
 <translation id="8143609395536282994">तुम्ही तुमचा डेटा कसा व्यवस्थापित करू शकता:</translation>
+<translation id="8144429778087524791">पूर्ण झाले म्हणून मार्क करा आणि लपवा</translation>
 <translation id="8145170459658034418">मेमरी सेव्हर</translation>
 <translation id="8146177459103116374">तुम्ही या डिव्हाइसवर आधीपासूनच नोंदणीकृत असल्यास, तुम्ही <ph name="LINK2_START" />विद्यमान वापरकर्ता म्हणून साइन इन<ph name="LINK2_END" /> करु शकता.</translation>
 <translation id="8146287226035613638">तुमच्या प्राधान्य दिलेल्या भाषा जोडा आणि रँक करा. शक्य असेल तेव्हा, वेबसाइट या तुमच्या प्राधान्य दिलेल्या भाषांमध्ये दिसतील. ही प्राधान्ये तुमच्या ब्राउझर सेटिंग्जसह सिंक केली आहेत. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>

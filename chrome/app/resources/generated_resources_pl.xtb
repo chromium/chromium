@@ -1082,6 +1082,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1854180393107901205">Zatrzymaj przesyłanie</translation>
 <translation id="1856715684130786728">Dodaj lokalizację...</translation>
 <translation id="1858585891038687145">Ufaj temu certyfikatowi przy identyfikowaniu producentów oprogramowania</translation>
+<translation id="1859294693760125695">Już mnie to nie interesuje</translation>
 <translation id="1859339856433307593">Hasło do tego konta jest już zapisane w usłudze <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Ten folder jest pusty</translation>
 <translation id="1862311223300693744">Czy masz zainstalowane jakieś specjalne oprogramowanie VPN, serwera proxy, zapory sieciowej lub NAS?</translation>
@@ -3265,6 +3266,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3660234220361471169">Niezaufany</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Znaleziono 1 istniejące hasło}few{Znaleziono {NUM_PASSWORDS} istniejące hasła}many{Znaleziono {NUM_PASSWORDS} istniejących haseł}other{Znaleziono {NUM_PASSWORDS} istniejącego hasła}}</translation>
 <translation id="3664511988987167893">Ikona rozszerzenia</translation>
+<translation id="3665301845536101715">Otwórz w panelu bocznym</translation>
 <translation id="3665589677786828986">Przeglądarka Chrome wykryła, że niektóre z jej ustawień zostały zmodyfikowane przez inny program, i przywróciła im pierwotne wartości domyślne.</translation>
 <translation id="3665919494326051362">Bieżąca wersja to <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Zrzut plików debugowania karty NIC Intel Wi-Fi</translation>
@@ -7691,6 +7693,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7396017167185131589">Tu pojawią się udostępnione foldery</translation>
 <translation id="7396845648024431313">Aplikacja <ph name="APP_NAME" /> zostanie włączona podczas uruchamiania systemu i będzie działać w tle nawet po zamknięciu wszystkich pozostałych okien przeglądarki <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Dostosuj synchronizację</translation>
+<translation id="7399616692258236448">Prośby o lokalizację są automatycznie blokowane w przypadku wszystkich stron oprócz tych, którym na nie zezwolisz</translation>
 <translation id="7400418766976504921">Adres URL</translation>
 <translation id="7400447915166857470">Czy przywrócić <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Skonfiguruj połączenie na telefonie <ph name="PHONE_NAME" /></translation>
@@ -8631,6 +8634,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="814204052173971714">{COUNT,plural, =1{film}few{# filmy}many{# filmów}other{# filmu}}</translation>
 <translation id="8143442547342702591">Nieprawidłowa aplikacja</translation>
 <translation id="8143609395536282994">W jaki sposób możesz zarządzać swoimi danymi:</translation>
+<translation id="8144429778087524791">Oznacz jako gotowe i ukryj</translation>
 <translation id="8145170459658034418">Oszczędzanie pamięci</translation>
 <translation id="8146177459103116374">Jeśli zarejestrowałeś się już na tym urządzeniu, możesz <ph name="LINK2_START" />zalogować się jako istniejący użytkownik<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Dodaj preferowane języki i ustal ich kolejność. Gdy będzie to możliwe, strony internetowe będą się wyświetlać w wybranych językach. Te ustawienia są zsynchronizowane z ustawieniami przeglądarki. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="bn">
 <translation id="1011749477052068769">এখানে সরান</translation>
 <translation id="1016498331642356377">আপনার আওয়াজ ব্যবহার করে দ্রুত সার্চ করুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে থাকুন।</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />-এ পাঠানো হচ্ছে...</translation>
 <translation id="103269572468856066">এই সাইট ও অ্যাপের ডেটাও মুছে ফেলতে চান?</translation>
 <translation id="1034259925032978114">উইন্ডো খোলা রয়েছে</translation>
@@ -51,6 +52,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> লোড হচ্ছে</translation>
 <translation id="1240903469550363138">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> আপনার নাম, ইমেল আইডি ও প্রোফাইল ছবি এই সাইটের সাথে শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK1" />গোপনীয়তা নীতি<ph name="END_LINK1" /> ও <ph name="BEGIN_LINK2" />পরিষেবার শর্তাবলী<ph name="END_LINK2" /> দেখুন।</translation>
 <translation id="124116460088058876">আরও ভাষা</translation>
+<translation id="1241792820757384812"><ph name="CHROME_CHANNEL" />-এর জন্য Google Password Manager থেকে আপনার পাসওয়ার্ড মুছে ফেলা হবে। এই মাত্র ডাউনলোড করা পাসওয়ার্ড ফাইল আপনি রেখে দেবেন।</translation>
 <translation id="1242883863226959074">ডিভাইস</translation>
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
 <translation id="1246905108078336582">ক্লিপবোর্ড থেকে সাজেশন সরাতে চান?</translation>
@@ -578,6 +580,7 @@
 <translation id="4124152339699379357">বিজ্ঞপ্তির অনুমতি ফ্লো সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="4135200667068010335">ট্যাব শেয়ার করা যাবে এমন ডিভাইসের সূচি বন্ধ আছে।</translation>
 <translation id="4137746084635924146">ডিভাইসের বর্তমান ভাষা</translation>
+<translation id="4139654229316918773">Chrome ক্যানারি</translation>
 <translation id="414128724510021958">সাধারণত ডেস্কটপ সাইটগুলি অনুরোধ করা হয়েছে</translation>
 <translation id="4147131678541801076">ট্রায়াল চলাকালীন, সাইটকে প্রতারণার বিরুদ্ধে লড়াইয়ে সাহায্য করার জন্য এবং বট আইডি থেকে ব্যক্তির আইডি আলাদা করতে, স্প্যাম ও প্রতারণার সংখ্যা কমানোর বিষয়টি ব্যক্তিগত স্টেট টোকেনের উপর নির্ভরশীল।
 
@@ -1071,6 +1074,7 @@
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> ছবির প্রিভিউ দেখুন</translation>
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
 <translation id="6659594942844771486">ট্যাব</translation>
+<translation id="6662119761881114773">এখনই, এই ডিভাইসে সেভ করা পাসওয়ার্ড Chrome চ্যানেল জুড়ে ব্যবহার করা যাবে না। Chrome ১২১ ভার্সনের পরে, আপনার ডিভাইসে Chrome ও <ph name="CHROME_CHANNEL" />-এর জন্য সেভ করা পাসওয়ার্ড মার্জ করা হবে এবং দুটি অ্যাপেই ব্যবহার করা যাবে।</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> এ খুলুন</translation>
 <translation id="6671495933530132209">ছবি কপি করুন</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> যোগ করুন</translation>
@@ -1563,6 +1567,7 @@
 <translation id="9158770349521403363">শুধুমাত্র কন্টেন্ট শেয়ার করুন</translation>
 <translation id="9159716826369098114">নতুন ব্যাকগ্রাউন্ড ট্যাব গ্রুপ হিসেবে <ph name="TAB_COUNT" />টি ট্যাবের ট্যাব গ্রুপ ফিরিয়ে আনুন।</translation>
 <translation id="9169507124922466868">নেভিগেশনের ইতিহাস অর্ধেক খোলা রয়েছে</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">আপনার সিঙ্ক করা সব ডিভাইসে ইতিহাস সেভ হবে, তাই আপনার আগের করা কাজ চালিয়ে যেতে পারবেন</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{১ মিনিট আগে চেক করা হয়েছে}one{# মিনিট আগে চেক করা হয়েছে}other{# মিনিট আগে চেক করা হয়েছে}}</translation>
 <translation id="9204021776105550328">মোছা হচ্ছে</translation>
@@ -1578,6 +1583,7 @@
 <translation id="927968626442779827">Google Chrome-এ 'লাইট' মোড ব্যবহার করুন</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> অনুসরণ করা হচ্ছে</translation>
 <translation id="932327136139879170">হোম</translation>
+<translation id="93533588269984624">আপনার ডিভাইসে সবকটি পাসওয়ার্ড ডাউনলোড করা হবে এবং <ph name="CHROME_CHANNEL" /> থেকে সরিয়ে দেওয়া হবে</translation>
 <translation id="938850635132480979">ত্রুটি: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">পাসফ্রেজ প্রবেশ করান</translation>
 <translation id="952301137339791907">পেজ ইনসাইট স্ক্রিনের নিচে অ্যাটাচ করা শিট খোলা আছে</translation>

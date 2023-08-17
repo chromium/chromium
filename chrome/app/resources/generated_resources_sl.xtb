@@ -1098,6 +1098,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1854180393107901205">Ustavi predvajanje</translation>
 <translation id="1856715684130786728">Dodaj lokacijo ...</translation>
 <translation id="1858585891038687145">Zaupaj temu potrdilu za prepoznavanje proizvajalcev programske opreme</translation>
+<translation id="1859294693760125695">Ne zanima me več</translation>
 <translation id="1859339856433307593">Geslo za ta račun je že shranjeno v storitvi <ph name="BRAND" /> (<ph name="USER_EMAIL" />).</translation>
 <translation id="1861262398884155592">Ta mapa je prazna</translation>
 <translation id="1862311223300693744">Ali imate nameščeno posebno omrežje VPN, strežnik proxy, požarni zid ali
@@ -3296,6 +3297,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3660234220361471169">Ni vredno zaupanja</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Najdeno je bilo 1 obstoječe geslo}one{Najdeno je bilo {NUM_PASSWORDS} obstoječe geslo}two{Najdeni sta bili {NUM_PASSWORDS} obstoječi gesli}few{Najdena so bila {NUM_PASSWORDS} obstoječa gesla}other{Najdenih je bilo {NUM_PASSWORDS} obstoječih gesel}}</translation>
 <translation id="3664511988987167893">Ikona razširitve</translation>
+<translation id="3665301845536101715">Odpri v stranskem podoknu</translation>
 <translation id="3665589677786828986">Chrome je zaznal, da je drug program spremenil nastavitve, in jih ponastavil na prvotne privzete nastavitve.</translation>
 <translation id="3665919494326051362">Trenutna različica je <ph name="CURRENT_VERSION" />.</translation>
 <translation id="3666196264870170605">Izvoz podatkov za odpravljanje napak Intelovih kontrolnikov omrežnih vmesnikov Wi-Fi</translation>
@@ -8672,6 +8674,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="814204052173971714">{COUNT,plural, =1{videoposnetek}one{# videoposnetek}two{# videoposnetka}few{# videoposnetki}other{# videoposnetkov}}</translation>
 <translation id="8143442547342702591">Neveljavna aplikacija</translation>
 <translation id="8143609395536282994">Kako lahko upravljate podatke:</translation>
+<translation id="8144429778087524791">Označi kot dokončano in skrij</translation>
 <translation id="8145170459658034418">Varčevanje s pomnilnikom</translation>
 <translation id="8146177459103116374">Če ste se v tej napravi že registrirali, se lahko <ph name="LINK2_START" />prijavite kot obstoječi uporabnik<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Dodajte in uvrstite izbrane jezike. Spletna mesta bodo prikazana v izbranih jezikih, če je mogoče. Te nastavitve se sinhronizirajo z nastavitvami brskalnika. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>

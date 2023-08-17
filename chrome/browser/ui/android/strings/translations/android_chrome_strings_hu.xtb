@@ -3,6 +3,7 @@
 <translationbundle lang="hu">
 <translation id="1011749477052068769">Áthelyezés ide</translation>
 <translation id="1016498331642356377">Gyorsan végezhet hangalapú keresést. A gyorsparancs szerkesztéséhez tartsa lenyomva.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Küldés a következő eszközre: <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Törli e webhelyek és alkalmazások adatait is?</translation>
 <translation id="1034259925032978114">Megnyitott ablak</translation>
@@ -51,6 +52,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1240288207750131269">Betöltés: <ph name="LANG" /></translation>
 <translation id="1240903469550363138">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Tekintse át a webhely <ph name="BEGIN_LINK1" />adatvédelmi irányelveit<ph name="END_LINK1" /> és <ph name="BEGIN_LINK2" />általános szerződési feltételeit<ph name="END_LINK2" />.</translation>
 <translation id="124116460088058876">További nyelvek…</translation>
+<translation id="1241792820757384812">Jelszavai törlődnek a <ph name="CHROME_CHANNEL" /> verziójával használt Google Jelszókezelőből. A most letöltött jelszófájl nem törlődik.</translation>
 <translation id="1242883863226959074">eszközén</translation>
 <translation id="124678866338384709">Az aktuális lap bezárása</translation>
 <translation id="1246905108078336582">Eltávolítja a javaslatot a vágólapról?</translation>
@@ -576,6 +578,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="4124152339699379357">Az értesítések engedélyezési folyamata teljes magasságban van megnyitva</translation>
 <translation id="4135200667068010335">Lap megosztására szolgáló eszközök listája bezárva.</translation>
 <translation id="4137746084635924146">Eszköz jelenlegi nyelve</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Asztali webhelyek kérve alapértelmezés szerint</translation>
 <translation id="4147131678541801076">Az aktív próbaidőszakokban a spam és a csalás elleni védelem privát állapottokenekre támaszkodva segít a webhelyeknek a csalás elleni küzdelemben és a robotok és az emberek megkülönböztetésében.
 
@@ -1069,6 +1072,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6649642165559792194">Kép előnézete <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Jelszó</translation>
 <translation id="6659594942844771486">Lap</translation>
+<translation id="6662119761881114773">Az eszközre mentett jelszavak jelenleg nem használhatók a Chrome-csatornákban. A Chrome 121-es verziója után az eszközre mentett Chrome- és <ph name="CHROME_CHANNEL" />-jelszavakat a rendszer összevonja, és ezek a jelszavak mindkét alkalmazásban használhatók lesznek.</translation>
 <translation id="666731172850799929">Megnyitás itt: <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Kép másolása</translation>
 <translation id="6672917148207387131">A(z) <ph name="DOMAIN" /> hozzáadása</translation>
@@ -1561,6 +1565,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="9158770349521403363">Csak tartalom megosztása</translation>
 <translation id="9159716826369098114"><ph name="TAB_COUNT" /> lapból álló lapcsoport visszaállítása új háttérbeli lapcsoportként.</translation>
 <translation id="9169507124922466868">Félmagasságban megnyitott navigációs előzmények</translation>
+<translation id="918419812064856259">Chrome Béta</translation>
 <translation id="9190276265094487094">Előzményeihez az összes szinkronizált eszközén hozzáférhet, így ott folytathatja a böngészést, ahol abbahagyta</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 perce ellenőrizve}other{# perce ellenőrizve}}</translation>
 <translation id="9204021776105550328">Törlés</translation>
@@ -1576,6 +1581,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="927968626442779827">Használja az Egyszerűsített módot a Google Chrome-ban</translation>
 <translation id="928550791203542716">A(z) <ph name="SITE_NAME" /> webhely követve</translation>
 <translation id="932327136139879170">Főoldal</translation>
+<translation id="93533588269984624">A rendszer az összes jelszót letölti az eszközre, és eltávolítja a <ph name="CHROME_CHANNEL" /> böngészőből</translation>
 <translation id="938850635132480979">Hiba: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Összetett jelszó megadása</translation>
 <translation id="952301137339791907">Az oldalstatisztikák alsó lapja meg van nyitva</translation>

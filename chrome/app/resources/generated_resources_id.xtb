@@ -1095,6 +1095,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1854180393107901205">Hentikan transmisi</translation>
 <translation id="1856715684130786728">+ lokasi...</translation>
 <translation id="1858585891038687145">Mempercayai sertifikat ini untuk mengidentifikasi pembuat software</translation>
+<translation id="1859294693760125695">Tidak tertarik lagi</translation>
 <translation id="1859339856433307593">Sandi untuk akun ini sudah disimpan ke <ph name="BRAND" /> (<ph name="USER_EMAIL" />) Anda</translation>
 <translation id="1861262398884155592">Folder ini kosong</translation>
 <translation id="1862311223300693744">Apakah Anda menginstal software VPN, proxy, firewall, atau
@@ -3293,6 +3294,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3660234220361471169">Tidak tepercaya</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 sandi yang sudah ada ditemukan}other{{NUM_PASSWORDS} sandi yang sudah ada ditemukan}}</translation>
 <translation id="3664511988987167893">Ikon Ekstensi</translation>
+<translation id="3665301845536101715">Buka di panel samping</translation>
 <translation id="3665589677786828986">Chrome mendeteksi bahwa beberapa setelan Anda dirusak oleh program lain dan menyetelnya ulang ke setelan default aslinya.</translation>
 <translation id="3665919494326051362">Versi saat ini adalah <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">File Dump Debug NIC WiFi Intel</translation>
@@ -8660,6 +8662,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="814204052173971714">{COUNT,plural, =1{1 video}other{# video}}</translation>
 <translation id="8143442547342702591">Aplikasi tidak valid</translation>
 <translation id="8143609395536282994">Cara Anda dapat mengelola data Anda:</translation>
+<translation id="8144429778087524791">Tandai sebagai selesai dan sembunyikan</translation>
 <translation id="8145170459658034418">Penghemat Memori</translation>
 <translation id="8146177459103116374">Jika Anda telah terdaftar di perangkat ini, Anda dapat <ph name="LINK2_START" />login sebagai pengguna yang ada<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Menambahkan dan memberi peringkat bahasa pilihan Anda. Situs akan ditampilkan dalam bahasa pilihan Anda, jika memungkinkan. Preferensi ini akan disinkronkan dengan setelan browser Anda. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>

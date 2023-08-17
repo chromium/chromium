@@ -3,6 +3,7 @@
 <translationbundle lang="mr">
 <translation id="1011749477052068769">येथे हलवा</translation>
 <translation id="1016498331642356377">तुमचा आवाज वापरून झटपट शोधा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करा आणि धरून ठेवा.</translation>
+<translation id="1024113959924243553">Chrome डेव्हलपर</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> ला पाठवत आहे…</translation>
 <translation id="103269572468856066">डेटासुद्धा साफ करायचा?</translation>
 <translation id="1034259925032978114">विंडो उघडी आहे</translation>
@@ -51,6 +52,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> लोड करत आहे</translation>
 <translation id="1240903469550363138">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल अ‍ॅड्रेस आणि प्रोफाइल फोटो या साइटसह शेअर करेल. या साइटचे <ph name="BEGIN_LINK1" />गोपनीयता धोरण<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />सेवा अटी<ph name="END_LINK2" /> पहा.</translation>
 <translation id="124116460088058876">आणखी भाषा...</translation>
+<translation id="1241792820757384812">Google Password Manager मधून <ph name="CHROME_CHANNEL" /> साठी तुमचे पासवर्ड हटवले जातील. तुम्ही आताच डाउनलोड केलेली पासवर्डची फाइल तुमच्याजवळ ठेवाल.</translation>
 <translation id="1242883863226959074">डिव्हाइस</translation>
 <translation id="124678866338384709">वर्तमान टॅब बंद करा</translation>
 <translation id="1246905108078336582">क्लिपबोर्डवरून सूचना काढून टाकायची आहे का?</translation>
@@ -576,6 +578,7 @@
 <translation id="4124152339699379357">सूचना परवानगी फ्लो पूर्ण उंचीवर उघडला</translation>
 <translation id="4135200667068010335">बंद केलेल्या टॅबसह शेअर करण्यासाठी डिव्हाइसची सूची.</translation>
 <translation id="4137746084635924146">डिव्हाइसची सध्याची भाषा</translation>
+<translation id="4139654229316918773">Chrome कॅनरी</translation>
 <translation id="414128724510021958">बाय डीफॉल्ट डेस्कटॉप साइटची विनंती केली आहे</translation>
 <translation id="4147131678541801076">चाचण्या सुरू असताना, स्पॅम आणि घोटाळा कमी करणे हे खाजगी स्टेट टोकनवर अवलंबून असते, त्यांच्यामुळे साइटना घोटाळ्याविरुद्ध लढण्यात आणि लोक व बॉट यांच्यातील फरक ओळखण्यात मदत होते.
 
@@ -1562,6 +1565,7 @@
 <translation id="9158770349521403363">फक्त आशय शेअर करा</translation>
 <translation id="9159716826369098114">नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT" /> टॅबचा टॅब गट रिस्टोअर करा.</translation>
 <translation id="9169507124922466868">नेव्हिगेशन इतिहास अर्धा उघडा आहे</translation>
+<translation id="918419812064856259">Chrome बीटा</translation>
 <translation id="9190276265094487094">तुमच्याकडे तुमच्या सर्व सिंक केलेल्या डिव्हाइसवर तुमचा इतिहास असेल, जेणेकरून तुम्ही जे करत होता ते पुढे सुरू ठेवू शकाल</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{एका मिनिटापूर्वी तपासले}other{# मिनिटांपूर्वी तपासले}}</translation>
 <translation id="9204021776105550328">हटवत आहे</translation>
@@ -1577,6 +1581,7 @@
 <translation id="927968626442779827">Google Chrome वर लाइट मोड वापरा</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> ला फॉलो करत आहे</translation>
 <translation id="932327136139879170">होम</translation>
+<translation id="93533588269984624">सर्व पासवर्ड तुमच्या डिव्हाइसवर डाउनलोड केले जातील आणि <ph name="CHROME_CHANNEL" /> मधून काढून टाकले जातील</translation>
 <translation id="938850635132480979">एरर: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">सांकेतिक पासफ्रेझ एंटर करा</translation>
 <translation id="952301137339791907">तळाशी असलेली पेजच्या इनसाइटची शीट सुरू केली आहे</translation>

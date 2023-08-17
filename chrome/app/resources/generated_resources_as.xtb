@@ -1093,6 +1093,7 @@
 <translation id="1854180393107901205">কাষ্ট কৰা বন্ধ কৰক</translation>
 <translation id="1856715684130786728">অৱস্থান যোগ কৰক...</translation>
 <translation id="1858585891038687145">ছফ্‌টৱেৰ মেকাৰসকলক চিনাক্ত কৰিবলৈ এই প্ৰমাণপত্ৰখনক বিশ্বাস কৰক</translation>
+<translation id="1859294693760125695">এতিয়া আৰু আগ্ৰহী নহয়</translation>
 <translation id="1859339856433307593">এই একাউণ্টটোৰ বাবে এটা পাছৱৰ্ড ইতিমধ্যে আপোনাৰ <ph name="BRAND" /> (<ph name="USER_EMAIL" />)ত ছেভ কৰা হৈছে</translation>
 <translation id="1861262398884155592">এই ফল্ডাৰটো খালী</translation>
 <translation id="1862311223300693744">আপোনাৰ কোনো বিশেষ ভিপিএন, প্ৰ'ক্সী, ফায়াৰৱাল অথবা NAS ছফ্টৱেৰ ইনষ্টল কৰি থোৱা
@@ -3291,6 +3292,7 @@
 <translation id="3660234220361471169">অবিশ্বাসী হিচাপে চিহ্নিত</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{১ টা পূৰ্বৰে পৰা থকা পাছৱৰ্ড পোৱা গৈছে}one{{NUM_PASSWORDS} টা পূৰ্বৰে পৰা থকা পাছৱৰ্ড পোৱা গৈছে}other{{NUM_PASSWORDS} টা পূৰ্বৰে পৰা থকা পাছৱৰ্ড পোৱা গৈছে}}</translation>
 <translation id="3664511988987167893">এক্সটেনশ্বন আইকন</translation>
+<translation id="3665301845536101715">ছাইডৰ পেনেলত খোলক</translation>
 <translation id="3665589677786828986">Chromeএ আপোনাৰ ডিভাইচৰ কিছুমান ছেটিং অন্য এটা প্ৰ’গ্ৰেমে বিকল কৰিছে বুলি ধৰা পেলাইছে আৰু সেইসমূহ প্ৰকৃত ডিফ’ল্টলৈ ৰিছেট কৰিছে।</translation>
 <translation id="3665919494326051362">বৰ্তমানৰ সংস্কৰণ হৈছে <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intelৰ ৱাই-ফাই NICসমূহৰ ডিবাগ ডাম্প</translation>
@@ -8658,6 +8660,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{এটা ভিডিঅ’}one{# টা ভিডিঅ’}other{# টা ভিডিঅ’}}</translation>
 <translation id="8143442547342702591">অমান্য এপ্লিকেশ্বন</translation>
 <translation id="8143609395536282994">আপুনি নিজৰ ডেটা কেনেকৈ পৰিচালনা কৰিব পাৰে:</translation>
+<translation id="8144429778087524791">কৰা হ’ল বুলি চিহ্নিত কৰক আৰু লুকুৱাওক</translation>
 <translation id="8145170459658034418">মেম’ৰী সঞ্চয়কাৰী</translation>
 <translation id="8146177459103116374">যদি আপুনি যদি ইতিমধ্যে এই ডিভাইচত পঞ্জীয়ন কৰিছে তেন্তে আপুনি <ph name="LINK2_START" />পূর্বে থকা ব্যৱহাৰকাৰী হিচাপে ছাইন ইন কৰিব পাৰিব<ph name="LINK2_END" />।</translation>
 <translation id="8146287226035613638">আপুনি অগ্ৰাধিকাৰ দিয়া ভাষাসমূহ যোগ দিয়ক আৰু সেইবোৰৰ ক্ৰম নির্ধাৰণ কৰক। ৱেবছাইটে যেতিয়া সম্ভৱ হয় তেতিয়া আপুনি অগ্ৰাধিকাৰ দিয়া ভাষাসমূহ দেখুৱাব। এই অগ্ৰাধিকাৰসমূহ আপোনাৰ ব্ৰাউজাৰৰ ছেটিঙৰ সৈতে ছিংক কৰা আছে। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>

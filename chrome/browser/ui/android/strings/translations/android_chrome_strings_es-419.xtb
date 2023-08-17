@@ -3,6 +3,7 @@
 <translationbundle lang="es-419">
 <translation id="1011749477052068769">Mover aquí</translation>
 <translation id="1016498331642356377">Haz una búsqueda rápida con la voz. Para editar este atajo, mantenlo presionado.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Enviando a <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">¿Borrar estos datos?</translation>
 <translation id="1034259925032978114">La ventana está abierta</translation>
@@ -51,6 +52,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1240288207750131269">Cargando <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo electrónico y foto de perfil con este sitio. Consulta la <ph name="BEGIN_LINK1" />política de privacidad<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />condiciones del servicio<ph name="END_LINK2" /> de este sitio.</translation>
 <translation id="124116460088058876">Más idiomas</translation>
+<translation id="1241792820757384812">Se borrarán tus contraseñas del Administrador de contraseñas de Google para <ph name="CHROME_CHANNEL" />. Conservarás el archivo de contraseñas que acabas de descargar.</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Cerrar la pestaña actual</translation>
 <translation id="1246905108078336582">¿Quieres quitar la sugerencia del portapapeles?</translation>
@@ -576,6 +578,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="4124152339699379357">El flujo de permisos de notificaciones está abierto en su totalidad</translation>
 <translation id="4135200667068010335">La lista de dispositivos con los que se puede compartir una pestaña está cerrada.</translation>
 <translation id="4137746084635924146">Idioma actual del dispositivo</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Se solicitan los sitios de escritorio de forma predeterminada</translation>
 <translation id="4147131678541801076">Cuando comienzan las pruebas, la reducción de spam y fraude se basa en tokens de estado privado que ayudan a los sitios a combatir el fraude y distinguir a los bots de las personas.
 
@@ -1069,6 +1072,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6649642165559792194">Vista previa de imagen <ph name="BEGIN_NEW" />Nueva<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6659594942844771486">Pestaña</translation>
+<translation id="6662119761881114773">Por el momento, las contraseñas guardadas en este dispositivo no se pueden usar en todos los canales de Chrome. Después de la versión 121 de Chrome, las contraseñas guardadas en tu dispositivo para Chrome y <ph name="CHROME_CHANNEL" /> se combinarán y se podrán usar en ambas apps.</translation>
 <translation id="666731172850799929">Abrir en <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Copiar imagen</translation>
 <translation id="6672917148207387131">Agregar <ph name="DOMAIN" /></translation>
@@ -1561,6 +1565,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="9158770349521403363">Compartir solo el contenido</translation>
 <translation id="9159716826369098114">Restablece un grupo de pestañas de <ph name="TAB_COUNT" /> pestañas como nuevo grupo de pestañas en segundo plano.</translation>
 <translation id="9169507124922466868">El historial de navegación está abierto a la mitad</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Verás tu historial en todos los dispositivos sincronizados para que puedas retomar la navegación</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Se verificó hace 1 minuto}other{Se verificó hace # minutos}}</translation>
 <translation id="9204021776105550328">Borrando</translation>
@@ -1576,6 +1581,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="927968626442779827">Usa el modo lite en Google Chrome</translation>
 <translation id="928550791203542716">Siguiendo <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Página principal</translation>
+<translation id="93533588269984624">Se descargarán todas las contraseñas en el dispositivo y se quitarán de <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ingresar frase de contraseña</translation>
 <translation id="952301137339791907">Está abierta la hoja inferior de las estadísticas de la página</translation>

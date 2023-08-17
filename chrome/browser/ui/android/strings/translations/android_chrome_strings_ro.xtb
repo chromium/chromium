@@ -3,6 +3,7 @@
 <translationbundle lang="ro">
 <translation id="1011749477052068769">Mută aici</translation>
 <translation id="1016498331642356377">Caută rapid cu ajutorul vocii. Pentru a edita comanda rapidă, atinge-o lung.</translation>
+<translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Se trimite la <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Ștergi și datele de la aceste site-uri și aplicații?</translation>
 <translation id="1034259925032978114">Fereastra este deschisă</translation>
@@ -51,6 +52,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1240288207750131269">Se încarcă <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil. Consultă <ph name="BEGIN_LINK1" />politica de confidențialitate<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />termenii și condițiile<ph name="END_LINK2" /> site-ului.</translation>
 <translation id="124116460088058876">Mai multe limbi</translation>
+<translation id="1241792820757384812">Parolele se vor șterge din Managerul de parole Google pentru <ph name="CHROME_CHANNEL" />. Vei păstra fișierul cu parole pe care tocmai l-ai descărcat.</translation>
 <translation id="1242883863226959074">dispozitiv</translation>
 <translation id="124678866338384709">Închide fila actuală</translation>
 <translation id="1246905108078336582">Elimini sugestia din clipboard?</translation>
@@ -576,6 +578,7 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="4124152339699379357">Fluxul de permisiune pentru notificări a fost deschis la înălțimea completă</translation>
 <translation id="4135200667068010335">Lista de dispozitive pe care să trimiți o filă este închisă.</translation>
 <translation id="4137746084635924146">Limba actuală a dispozitivului</translation>
+<translation id="4139654229316918773">Chrome Canary</translation>
 <translation id="414128724510021958">Versiuni ale site-ului pentru computer solicitate în mod prestabilit</translation>
 <translation id="4147131678541801076">În versiunile de încercare, Reducerea spamului și fraudei se bazează pe indicative private de stare pentru a ajuta site-urile să prevină frauda și să deosebească aplicațiile bot de persoane.
 
@@ -1562,6 +1565,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="9158770349521403363">Trimite numai conținutul</translation>
 <translation id="9159716826369098114">Restabilește grupul de <ph name="TAB_COUNT" /> file ca pe un nou grup de file din fundal.</translation>
 <translation id="9169507124922466868">Istoricul de navigare este pe jumătate deschis</translation>
+<translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Istoricul apare pe toate dispozitivele tale sincronizate. Astfel, poți continua ceea ce făceai.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A rulat acum un minut}few{A rulat acum # minute}other{A rulat acum # de minute}}</translation>
 <translation id="9204021776105550328">Se șterge</translation>
@@ -1577,6 +1581,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="927968626442779827">Folosește modul Lite în Google Chrome</translation>
 <translation id="928550791203542716">Urmărești <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Pagina de pornire</translation>
+<translation id="93533588269984624">Toate parolele vor fi descărcate pe dispozitiv și șterse din <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Eroare: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introdu expresia de acces</translation>
 <translation id="952301137339791907">Foaia paginii Statistici din partea de jos este deschisă</translation>
