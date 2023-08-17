@@ -59,8 +59,39 @@ public interface PlaybackListener {
      */
     default void onError(Exception error) {}
 
+    /** Information needed for highlighting phrases. */
+    interface PhraseTiming {
+        /** The start offset of the phrase, relative to the full text. */
+        int absoluteStartIndex();
+        /** The end offset of the phrase, relative to the full text. */
+        int absoluteEndIndex();
+        /**
+         * The start time offset of the phrase, relative to the start of the audio in the specific
+         * paragraph.
+         */
+        long startTimeMillis();
+        /**
+         * The end time offset of the phrase, relative to the start of the audio in the specific
+         * paragraph.
+         */
+        long endTimeMillis();
+        /**
+         * The start offset of the phrase, relative to the paragraph text which was used for TTS.
+         */
+        int relativeStartIndex();
+        /** The end offset of the phrase, relative to the paragraph text which was used for TTS. */
+        int relativeEndIndex();
+    }
+
     /**
      * Called when the next phrase is reached in playback.
+     * @param phraseTiming Phrase indices and times.
+     */
+    default void onPhraseChanged(PhraseTiming phraseTiming) {}
+
+    /**
+     * Called when the next phrase is reached in playback.
+     * TODO remove when new version is implemented.
      * @param phraseTiming Serialized PhraseTiming proto message.
      */
     default void onPhraseChanged(byte[] phraseTiming) {}
