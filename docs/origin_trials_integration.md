@@ -389,6 +389,14 @@ You can also run Chrome with both the test public key and the default public key
 along side by passing:
 `--origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=,fMS4mpO6buLQ/QMd+zJmxzty/VQ6B1EUZqoCU04zoRU=`
 
+*** promo
+**TIP:** See
+[this doc](https://www.chromium.org/developers/how-tos/run-chromium-with-flags/)
+to apply commandline switches for Chrome for Android and
+[this doc](/android_webview/docs/commandline-flags.md) to apply commandline
+switches for Android WebView.
+***
+
 The `--origin-trial-public-key` switch is not needed with `content_shell`, as it
 uses the test public key by default.
 
