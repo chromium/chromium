@@ -433,6 +433,18 @@ public class BookmarkManagerMediatorTest {
         return bookmarkItem.getId();
     }
 
+    /** Mimics the view, which typically responds to focus model changes by running the callback. */
+    private void setUpFocusProxy(PropertyModel searchBoxRowPropertyModel) {
+        searchBoxRowPropertyModel.addObserver((source, propertyKey) -> {
+            if (propertyKey == BookmarkSearchBoxRowProperties.HAS_FOCUS) {
+                boolean hasFocus =
+                        searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS);
+                searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK)
+                        .onResult(hasFocus);
+            }
+        });
+    }
+
     @Test
     public void initAndLoadBookmarkModel() {
         finishLoading();
@@ -1293,6 +1305,7 @@ public class BookmarkManagerMediatorTest {
         OnScrollListener onScrollListener = mOnScrollListenerCaptor.getValue();
 
         PropertyModel searchBoxRowPropertyModel = mModelList.get(0).model;
+        setUpFocusProxy(searchBoxRowPropertyModel);
         searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK)
                 .onResult(true);
         assertTrue(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
@@ -1302,8 +1315,28 @@ public class BookmarkManagerMediatorTest {
         assertTrue(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
 
         onScrollListener.onScrolled(mRecyclerView, 0, 1);
-        verify(mHideKeyboardRunnable).run();
         assertFalse(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
+        verify(mHideKeyboardRunnable).run();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testHideKeyboardOnLostSearchFocus() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+        PropertyModel searchBoxRowPropertyModel = mModelList.get(0).model;
+
+        searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK)
+                .onResult(true);
+        assertTrue(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
+        verifyNoInteractions(mHideKeyboardRunnable);
+
+        searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK)
+                .onResult(false);
+        assertFalse(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
+        verify(mHideKeyboardRunnable).run();
     }
 
     @Test

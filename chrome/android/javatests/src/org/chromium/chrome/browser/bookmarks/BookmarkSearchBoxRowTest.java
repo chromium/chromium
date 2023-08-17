@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -174,5 +176,38 @@ public class BookmarkSearchBoxRowTest {
 
         onView(withId(R.id.shopping_filter_chip)).perform(click());
         verify(mToggleCallback).onResult(false);
+    }
+
+    @Test
+    @MediumTest
+    public void testTapSearchRowLayoutClearsSearchFocus() {
+        setProperty(BookmarkSearchBoxRowProperties.HAS_FOCUS, true);
+        verify(mFocusChangeCallback).onResult(true);
+
+        onView(withId(R.id.bookmark_toolbar)).perform(click());
+        verify(mFocusChangeCallback).onResult(false);
+    }
+
+    @Test
+    @MediumTest
+    public void testTogglingChipDoesNotClearSearchFocus() {
+        setProperty(BookmarkSearchBoxRowProperties.HAS_FOCUS, true);
+        verify(mFocusChangeCallback).onResult(true);
+
+        onView(withId(R.id.shopping_filter_chip)).perform(click());
+        verify(mFocusChangeCallback, never()).onResult(false);
+
+        onView(withId(R.id.shopping_filter_chip)).perform(click());
+        verify(mFocusChangeCallback, never()).onResult(false);
+    }
+
+    @Test
+    @MediumTest
+    public void testTapFilterLayoutClearsSearchFocus() {
+        setProperty(BookmarkSearchBoxRowProperties.HAS_FOCUS, true);
+        verify(mFocusChangeCallback).onResult(true);
+
+        onView(withChild(withId(R.id.shopping_filter_chip))).perform(click());
+        verify(mFocusChangeCallback).onResult(false);
     }
 }

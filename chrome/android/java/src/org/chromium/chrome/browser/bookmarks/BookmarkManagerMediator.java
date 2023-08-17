@@ -394,7 +394,6 @@ class BookmarkManagerMediator
                 @Override
                 public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                     if (dy > 0) {
-                        mHideKeyboardRunnable.run();
                         clearSearchBoxFocus();
                     }
                 }
@@ -1323,6 +1322,9 @@ class BookmarkManagerMediator
 
     private void onSearchBoxFocusChange(Boolean hasFocus) {
         getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.HAS_FOCUS, hasFocus);
+        if (!hasFocus) {
+            mHideKeyboardRunnable.run();
+        }
     }
 
     private void onShoppingFilterToggle(boolean isFiltering) {
