@@ -38,7 +38,7 @@ class SyncErrorNotifier : public syncer::SyncServiceObserver,
 
  private:
   // The sync service to query for error details.
-  raw_ptr<syncer::SyncService, ExperimentalAsh> sync_service_;
+  raw_ptr<syncer::SyncService, ExperimentalAsh> sync_service_ = nullptr;
 
   // The Profile this service belongs to.
   const raw_ptr<Profile, ExperimentalAsh> profile_;
