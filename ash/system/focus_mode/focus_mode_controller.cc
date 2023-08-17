@@ -7,12 +7,37 @@
 
 namespace ash {
 
-FocusModeController::FocusModeController() = default;
+namespace {
+
+FocusModeController* g_instance = nullptr;
+
+// The default Focus Mode session duration, in minutes.
+constexpr base::TimeDelta kDefaultSessionDuration = base::Minutes(30);
+
+}  // namespace
+
+FocusModeController::FocusModeController()
+    : session_duration_(kDefaultSessionDuration) {
+  CHECK_EQ(g_instance, nullptr);
+  g_instance = this;
+
+  // TODO(b/286932458): Get the Focus Mode session duration and DND setting from
+  // user prefs.
+}
 
 FocusModeController::~FocusModeController() {
   if (in_focus_session_) {
     ToggleFocusMode();
   }
+
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
+
+// static
+FocusModeController* FocusModeController::Get() {
+  CHECK(g_instance);
+  return g_instance;
 }
 
 void FocusModeController::AddObserver(Observer* observer) {
@@ -34,13 +59,11 @@ void FocusModeController::ToggleFocusMode() {
     message_center->SetQuietMode(previous_do_not_disturb_state_);
   } else {
     // Turn on DND.
-    // TODO: Set DND based on user input.
     previous_do_not_disturb_state_ = message_center->IsQuietMode();
-    message_center->SetQuietMode(true);
+    message_center->SetQuietMode(turn_on_do_not_disturb_);
 
-    // Start timer for 30 minutes.
-    // TODO: Set `end_time_` based on user input.
-    end_time_ = base::Time::Now() + base::Minutes(30);
+    // Start timer for the specified `session_duration_`.
+    end_time_ = base::Time::Now() + session_duration_;
     timer_.Start(FROM_HERE, base::Seconds(1), this,
                  &FocusModeController::OnTimerTick, base::TimeTicks::Now());
   }

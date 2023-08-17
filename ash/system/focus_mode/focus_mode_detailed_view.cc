@@ -20,7 +20,7 @@ constexpr auto kContainerMargins = gfx::Insets::TLBR(2, 0, 0, 0);
 FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
     : TrayDetailedView(delegate) {
   // TODO(b/288975135): update with official string.
-  CreateTitleRow(IDS_ASH_STATUS_TRAY_CAST);
+  CreateTitleRow(IDS_ASH_STATUS_TRAY_FOCUS_MODE);
   CreateScrollableList();
 
   // TODO(b/286932057): remove border inset and add row toggle UI.
