@@ -62,7 +62,10 @@ class ProxyImplBase {
   ~ProxyImplBase() { VLOG(2) << __func__; }
 
   void PostRPCTask(base::OnceClosure task) {
-    task_runner_->PostTask(FROM_HERE, std::move(task));
+    // TODO(crbug.com/1473487): replace with CHECK.
+    task_runner_->PostTask(FROM_HERE, base::BindOnce([] {
+                                        DUMP_WILL_BE_CHECK(IsSTA());
+                                      }).Then(std::move(task)));
   }
 
   HResultOr<Microsoft::WRL::ComPtr<Interface>> CreateInterface() const {
