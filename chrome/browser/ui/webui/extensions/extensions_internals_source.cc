@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -495,9 +495,7 @@ void AddEventListenerData(extensions::EventRouter* event_router,
                           base::Value::List* data) {
   // A map of extension ID to the listener data for that extension,
   // which is of type LIST of DICTIONARY.
-  std::unordered_map<base::StringPiece, base::Value::List,
-                     base::StringPieceHash>
-      listeners_map;
+  base::flat_map<base::StringPiece, base::Value::List> listeners_map;
 
   // Build the map of extension IDs to the list of events.
   for (const auto& entry : event_router->listeners().listeners()) {

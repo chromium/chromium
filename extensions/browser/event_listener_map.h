@@ -9,7 +9,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -160,7 +159,7 @@ class EventListenerMap {
  public:
   using ListenerList = std::vector<std::unique_ptr<EventListener>>;
   // The key here is an event name.
-  using ListenerMap = std::unordered_map<std::string, ListenerList>;
+  using ListenerMap = base::flat_map<std::string, ListenerList>;
 
   class Delegate {
    public:
