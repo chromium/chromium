@@ -520,6 +520,9 @@ struct AutocompleteMatch {
   // providers.
   bool IsOnDeviceSearchSuggestion() const;
 
+  // Returns true if the match is eligible to be re-scored by ML Url scoring.
+  bool IsUrlScoringEligible() const;
+
   // Filter OmniboxActions based on the supplied qualifiers.
   // The order of the supplied qualifiers determines the preference.
   void FilterOmniboxActions(
