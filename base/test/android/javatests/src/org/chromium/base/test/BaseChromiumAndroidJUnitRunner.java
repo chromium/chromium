@@ -781,6 +781,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                 "AwComponentUpdateServicePreferences.xml",
                 "ComponentsProviderServicePreferences.xml",
                 "org.chromium.webengine.test.instrumentation_test_apk_preferences.xml",
+                "AwOriginVisitLoggerPrefs.xml",
         };
         for (String name : allowlist) {
             // SharedPreferences may also access a ".bak" backup file from a previous run. See
