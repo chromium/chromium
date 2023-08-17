@@ -188,8 +188,9 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   content::TestWebUI web_ui_;
-  raw_ptr<TestSyncService, DanglingUntriaged> test_sync_service_;
-  raw_ptr<FakeUserEventService, DanglingUntriaged> fake_user_event_service_;
+  raw_ptr<TestSyncService, DanglingUntriaged> test_sync_service_ = nullptr;
+  raw_ptr<FakeUserEventService, DanglingUntriaged> fake_user_event_service_ =
+      nullptr;
   std::unique_ptr<TestableSyncInternalsMessageHandler> handler_;
   int about_sync_data_delegate_call_count_ = 0;
   raw_ptr<SyncService, DanglingUntriaged> last_delegate_sync_service_ = nullptr;
