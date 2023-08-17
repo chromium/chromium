@@ -10,6 +10,7 @@
 import '//resources/cr_elements/cr_shared_style.css.js';
 import './base_page.js';
 
+import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './profile_discovery_consent_page.html.js';
@@ -17,6 +18,8 @@ import {getTemplate} from './profile_discovery_consent_page.html.js';
 Polymer({
   _template: getTemplate(),
   is: 'profile-discovery-consent-page',
+
+  behaviors: [I18nBehavior],
 
   properties: {},
 });

@@ -25,6 +25,7 @@ js_type_check("closure_compile_module") {
     ":esim_manager_utils",
     ":final_page",
     ":mojo_interface_provider",
+    ":profile_discovery_consent_page",
     ":profile_discovery_list_item",
     ":profile_discovery_list_item_legacy",
     ":profile_discovery_list_page",
@@ -83,6 +84,13 @@ js_library("confirmation_code_page") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+  ]
+}
+
+js_library("profile_discovery_consent_page") {
+  deps = [
+    ":base_page",
+    "//ash/webui/common/resources:i18n_behavior",
   ]
 }
 
@@ -220,6 +228,7 @@ js_library("esim_flow_ui") {
     ":esim_manager_utils",
     ":final_page",
     ":mojo_interface_provider",
+    ":profile_discovery_consent_page",
     ":profile_discovery_list_item",
     ":profile_discovery_list_item_legacy",
     ":profile_discovery_list_page",

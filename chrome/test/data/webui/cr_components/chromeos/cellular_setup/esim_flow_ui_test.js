@@ -10,6 +10,7 @@ import {ESimPageName, ESimSetupFlowResult, FAILED_ESIM_SETUP_DURATION_METRIC_NAM
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ESimOperationResult, ProfileInstallResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -32,6 +33,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
   let eSimManagerRemote;
   let ironPages;
   let profileLoadingPage;
+  let profileDiscoveryConsentPage;
   let profileDiscoveryPage;
   let activationCodePage;
   let confirmationCodePage;
@@ -93,7 +95,9 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
   }
 
   function setSmdsSupportEnabled(value) {
-    eSimPage.smdsSupportEnabled_ = value;
+    loadTimeData.overrideValues({
+      'isSmdsSupportEnabled': value,
+    });
   }
 
   setup(async function() {
@@ -109,14 +113,16 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
       focusDefaultButtonEventFired = true;
     });
 
+    setSmdsSupportEnabled(true);
+
     eSimPage = document.createElement('esim-flow-ui');
     eSimPage.delegate = new FakeCellularSetupDelegate();
     document.body.appendChild(eSimPage);
-    setSmdsSupportEnabled(true);
     flush();
 
     ironPages = eSimPage.$$('iron-pages');
     profileLoadingPage = eSimPage.$$('#profileLoadingPage');
+    profileDiscoveryConsentPage = eSimPage.$$('#profileDiscoveryConsentPage');
     profileDiscoveryPage = eSimPage.$$('#profileDiscoveryPage');
     activationCodePage = eSimPage.$$('#activationCodePage');
     confirmationCodePage = eSimPage.$$('#confirmationCodePage');
@@ -139,6 +145,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
         playVideoFunction, stopStreamFunction);
 
     assertTrue(!!profileLoadingPage);
+    assertTrue(!!profileDiscoveryConsentPage);
     assertTrue(!!profileDiscoveryPage);
     assertTrue(!!activationCodePage);
     assertTrue(!!confirmationCodePage);
@@ -237,11 +244,16 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     focusDefaultButtonEventFired = false;
   }
 
-  async function assertProfileLoadingPageAndContinue() {
-    assertSelectedPage(ESimPageName.PROFILE_LOADING, profileLoadingPage);
+  async function assertProfileDiscoveryConsentPageAndContinue() {
+    assertSelectedPage(
+        ESimPageName.PROFILE_DISCOVERY_CONSENT, profileDiscoveryConsentPage);
     assertButtonState(
-        /*forwardButtonShouldBeEnabled=*/ false,
+        /*forwardButtonShouldBeEnabled=*/ true,
         /*backButtonState=*/ ButtonState.HIDDEN);
+
+    // When the user clicks the "scan" button, they consent to profile
+    // discovery. Navigate forward to the next page.
+    eSimPage.navigateForward();
     await flushAsync();
   }
 
@@ -279,6 +291,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
     euicc.setRequestPendingProfilesResult(ESimOperationResult.kFailure);
     eSimPage.initSubflow();
+    await assertProfileDiscoveryConsentPageAndContinue();
 
     await flushAsync();
     endFlowAndVerifyResult(ESimSetupFlowResult.ERROR_FETCHING_PROFILES);
@@ -295,7 +308,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
       await flushAsync();
       eSimPage.initSubflow();
 
-      await assertProfileLoadingPageAndContinue();
+      await assertProfileDiscoveryConsentPageAndContinue();
 
       // Should now be at the activation code page.
       assertActivationCodePage(
@@ -441,7 +454,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
       eSimPage.initSubflow();
 
       assertFocusDefaultButtonEventFired();
-      await assertProfileLoadingPageAndContinue();
+      await assertProfileDiscoveryConsentPageAndContinue();
 
       // Should go to profile discovery page.
       assertProfileDiscoveryPage();
@@ -696,7 +709,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
   test('Show final page with error if no EUICC', async function() {
     eSimPage.initSubflow();
-    await assertProfileLoadingPageAndContinue();
+    await assertProfileDiscoveryConsentPageAndContinue();
     await flushAsync();
     await assertFinalPageAndPressDoneButton(/*shouldBeShowingError=*/ true);
 
