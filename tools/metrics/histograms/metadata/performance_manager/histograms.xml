@@ -118,6 +118,26 @@ each histogram.
   </summary>
 </histogram>
 
+<histogram name="PerformanceManager.TabRevisitTracker.TimeToClose"
+    units="seconds" expires_after="2024-08-09">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Logged everytime a background tab is closed. Records the time in seconds
+    that the tab has spent in the background since it was last active.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.TabRevisitTracker.TimeToRevisit"
+    units="seconds" expires_after="2024-08-09">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Logged everytime a background tab is revisited. Records the time in seconds
+    that the tab has spent in the background since it was last active.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceManager.UserTuning.BatterySaverModeEnabledPercent"
     units="%" expires_after="2023-12-31">
   <owner>anthonyvd@chromium.org</owner>
