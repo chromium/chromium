@@ -185,9 +185,10 @@ def PatchRustRevision(new_version: RustVersion) -> RustVersion:
 
 
 def PatchRustStage0():
-  verify_stage0 = subprocess.run([BUILD_RUST_PY_PATH, '--verify-stage0-hash'],
-                                 capture_output=True,
-                                 text=True)
+  verify_stage0 = subprocess.run(
+      [sys.executable, BUILD_RUST_PY_PATH, '--verify-stage0-hash'],
+      capture_output=True,
+      text=True)
   if verify_stage0.returncode == 0:
     return
 
@@ -239,7 +240,8 @@ def Git(*args, no_run: bool):
 
 def GitDiffHasChanges(from_git_hash, to_git_hash, glob, git_dir):
   diff = subprocess.check_output(
-      ['git', '-C', git_dir, 'diff', f'{from_git_hash}..{to_git_hash}', glob])
+      ['git', '-C', git_dir, 'diff', f'{from_git_hash}..{to_git_hash}', glob],
+      shell=is_win)
   return bool(diff)
 
 
