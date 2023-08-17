@@ -159,8 +159,10 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // capture mode type changed.
   void MaybeUpdateSelfieCamInSessionVisibility();
 
-  // Gets the bounds of current window selected for |kWindow| capture source.
-  gfx::Rect GetSelectedWindowBounds() const;
+  // Gets the bounds of current window selected for `kWindow` capture source. It
+  // can be the actual bounds for the selected window or the transformed bounds
+  // if the window is in overview session.
+  gfx::Rect GetSelectedWindowTargetBounds() const;
 
   const raw_ptr<CaptureModeController, ExperimentalAsh> controller_;
 

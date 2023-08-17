@@ -232,10 +232,10 @@ class CaptureModeTest : public AshTestBase {
     return CaptureModeSessionTestApi(session).IsFolderSelectionDialogShown();
   }
 
-  bool IsAllCaptureSessionUisVisible() const {
+  bool AreAllCaptureSessionUisVisible() const {
     auto* session = CaptureModeController::Get()->capture_mode_session();
     DCHECK(session);
-    return CaptureModeSessionTestApi(session).IsAllUisVisible();
+    return CaptureModeSessionTestApi(session).AreAllUisVisible();
   }
 
   aura::Window* GetDimensionsLabelWindow() const {
@@ -2586,9 +2586,9 @@ TEST_F(CaptureModeTest, RefreshCaptureRegionInOverviewForKWindow) {
   const auto target_bounds = overview_item->target_bounds();
   event_generator->MoveMouseTo(
       gfx::ToRoundedPoint(target_bounds.CenterPoint()));
-  auto capture_region_in_overview = session->GetCaptureSurfaceConfineBounds();
-  wm::ConvertRectToScreen(overview_item->item_widget()->GetNativeWindow(),
-                          &capture_region_in_overview);
+  auto capture_region_in_overview =
+      CaptureModeSessionTestApi(session).GetSelectedWindowTargetBounds();
+  wm::ConvertRectToScreen(window->GetRootWindow(), &capture_region_in_overview);
   EXPECT_EQ(capture_region_in_overview, gfx::ToRoundedRect(target_bounds));
 }
 
@@ -6464,7 +6464,7 @@ TEST_F(CaptureModeSettingsTest, SelectFolderFromDialog) {
 
   ClickOnView(test_api.GetSelectFolderMenuItem(), event_generator);
   EXPECT_TRUE(IsFolderSelectionDialogShown());
-  EXPECT_FALSE(IsAllCaptureSessionUisVisible());
+  EXPECT_FALSE(AreAllCaptureSessionUisVisible());
 
   auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
   auto* dialog_window = dialog_factory->GetDialogWindow();
@@ -6481,7 +6481,7 @@ TEST_F(CaptureModeSettingsTest, SelectFolderFromDialog) {
   dialog_factory->AcceptPath(custom_folder);
   WaitForSettingsMenuToBeRefreshed();
   EXPECT_FALSE(IsFolderSelectionDialogShown());
-  EXPECT_TRUE(IsAllCaptureSessionUisVisible());
+  EXPECT_TRUE(AreAllCaptureSessionUisVisible());
   EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
   EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
   EXPECT_EQ(u"test",

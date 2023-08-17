@@ -1557,7 +1557,7 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
       break;
 
     case CaptureModeSource::kWindow:
-      region = GetSelectedWindowBounds();
+      region = GetSelectedWindowTargetBounds();
       break;
 
     case CaptureModeSource::kRegion:
@@ -2413,7 +2413,7 @@ gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
 
   gfx::Rect bounds(current_root_->bounds());
   const gfx::Rect capture_region = controller_->user_capture_region();
-  const gfx::Rect window_bounds = GetSelectedWindowBounds();
+  const gfx::Rect window_bounds = GetSelectedWindowTargetBounds();
   const CaptureModeSource source = controller_->source();
 
   // For fullscreen mode, the capture label is placed in the middle of the

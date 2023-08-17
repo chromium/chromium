@@ -108,8 +108,12 @@ bool CaptureModeSessionTestApi::IsFolderSelectionDialogShown() {
          session_->folder_selection_dialog_controller_->dialog_window();
 }
 
-bool CaptureModeSessionTestApi::IsAllUisVisible() {
+bool CaptureModeSessionTestApi::AreAllUisVisible() {
   return session_->is_all_uis_visible_;
+}
+
+gfx::Rect CaptureModeSessionTestApi::GetSelectedWindowTargetBounds() {
+  return session_->GetSelectedWindowTargetBounds();
 }
 
 }  // namespace ash

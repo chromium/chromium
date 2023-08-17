@@ -3079,14 +3079,14 @@ TEST_P(CaptureModeCameraPreviewTest, PreviewVisibilityWhileFolderSelection) {
   CaptureModeSettingsTestApi settings_test_api;
   ClickOnView(settings_test_api.GetSelectFolderMenuItem(), event_generator);
   EXPECT_TRUE(session_test_api.IsFolderSelectionDialogShown());
-  EXPECT_FALSE(session_test_api.IsAllUisVisible());
+  EXPECT_FALSE(session_test_api.AreAllUisVisible());
   EXPECT_FALSE(preview_widget->IsVisible());
 
   // Dismiss the folder selection dialog, all capture UIs should show again,
   // including the camera preview.
   FakeFolderSelectionDialogFactory::Get()->CancelDialog();
   EXPECT_FALSE(session_test_api.IsFolderSelectionDialogShown());
-  EXPECT_TRUE(session_test_api.IsAllUisVisible());
+  EXPECT_TRUE(session_test_api.AreAllUisVisible());
   EXPECT_TRUE(preview_widget->IsVisible());
 }
 
