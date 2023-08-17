@@ -144,7 +144,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   // Returns pages related to the current browsing context (excluding the
   // current page).  See also
-  // https://html.spec.whatwg.org/C/#unit-of-related-browsing-contexts
+  // https://html.spec.whatwg.org/C/#nested-browsing-contexts
   HeapVector<Member<Page>> RelatedPages();
 
   // Should be called when |GetScrollbarTheme().UsesOverlayScrollbars()|
