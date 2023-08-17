@@ -354,6 +354,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &omnibox::kOmniboxMatchToolbarAndStatusBarColor,
     &omnibox::kOmniboxModernizeVisualUpdate,
     &omnibox::kOmniboxOnClobberFocusTypeOnContent,
+    &omnibox::kSearchReadyOmniboxAllowQueryEdit,
     &omnibox::kSuggestionAnswersColorReverse,
     &omnibox::kUpdatedConnectionSecurityIndicators,
     &optimization_guide::features::kPushNotifications,

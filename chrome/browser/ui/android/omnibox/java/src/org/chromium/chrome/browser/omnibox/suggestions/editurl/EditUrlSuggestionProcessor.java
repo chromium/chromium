@@ -172,13 +172,21 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     /** Invoked when user interacts with Edit action button. */
     private void onEditLink(AutocompleteMatch suggestion) {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Edit");
-        // Pass the decoded URL to the Omnibox to avoid %-encoded unicode characters.
-        var text = suggestion.getUrl().getSpec();
-        try {
-            text = URLDecoder.decode(text, Charset.defaultCharset().name());
-        } catch (UnsupportedEncodingException | IllegalArgumentException e) {
-            // text should not be modified here.
+
+        var text = OmniboxFeatures.sSearchReadyOmniboxAllowQueryEdit.isEnabled()
+                ? mSuggestionHost.queryFromGurl(suggestion.getUrl())
+                : null;
+
+        if (TextUtils.isEmpty(text)) {
+            // Pass the decoded URL to the Omnibox to avoid %-encoded unicode characters.
+            text = suggestion.getUrl().getSpec();
+            try {
+                text = URLDecoder.decode(text, Charset.defaultCharset().name());
+            } catch (UnsupportedEncodingException | IllegalArgumentException e) {
+                // Text should already contain encoded URL.
+            }
         }
+
         mUrlBarDelegate.setOmniboxEditingText(text);
     }
 }

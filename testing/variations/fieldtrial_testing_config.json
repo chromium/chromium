@@ -9928,7 +9928,8 @@
                         "OmniboxMostVisitedTilesTitleWrapAround",
                         "OmniboxRemoveSuggestionHeaderChevron",
                         "OmniboxRetainSuggestionsWithHeaders",
-                        "OmniboxUIExperimentMaxAutocompleteMatches"
+                        "OmniboxUIExperimentMaxAutocompleteMatches",
+                        "SearchReadyOmniboxAllowQueryEdit"
                     ]
                 }
             ]

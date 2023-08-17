@@ -87,6 +87,10 @@ public class OmniboxFeatures {
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.SHORT_CIRCUIT_UNFOCUS_ANIMATION, false);
 
+    public static final MutableFlagWithSafeDefault sSearchReadyOmniboxAllowQueryEdit =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT, false);
+
     /**
      * @param context The activity context.
      * @return Whether the new modernize visual UI update should be shown.

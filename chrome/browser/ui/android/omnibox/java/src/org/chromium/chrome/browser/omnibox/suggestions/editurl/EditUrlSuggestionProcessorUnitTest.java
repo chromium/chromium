@@ -274,6 +274,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT})
     public void editButton_click() {
         mProcessor.populateModel(mMatch, mModel, 0);
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
@@ -314,6 +315,47 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
         // Expect the original content.
         verify(mUrlBarDelegate).setOmniboxEditingText(JUnitTestGURLs.INVALID_ESCAPED_PATH_URL_1);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT})
+    public void editButton_click_populatesOriginalQueryWhenPossible() {
+        assertTrue(OmniboxFeatures.sSearchReadyOmniboxAllowQueryEdit.isEnabled());
+        mProcessor.populateModel(mMatch, mModel, 0);
+        doReturn("Query").when(mSuggestionHost).queryFromGurl(any());
+
+        mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
+
+        verify(mSuggestionHost).queryFromGurl(mMatch.getUrl());
+        verify(mUrlBarDelegate).setOmniboxEditingText("Query");
+        verifyNoMoreInteractions(mSuggestionHost, mUrlBarDelegate);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT})
+    public void editButton_click_showsOriginalUrlWhenQueryIsNull() {
+        assertTrue(OmniboxFeatures.sSearchReadyOmniboxAllowQueryEdit.isEnabled());
+        mProcessor.populateModel(mMatch, mModel, 0);
+        doReturn(null).when(mSuggestionHost).queryFromGurl(any());
+
+        mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
+
+        verify(mSuggestionHost).queryFromGurl(mMatch.getUrl());
+        verify(mUrlBarDelegate).setOmniboxEditingText(SEARCH_URL_1.getSpec());
+        verifyNoMoreInteractions(mSuggestionHost, mUrlBarDelegate);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT})
+    public void editButton_click_showsOriginalUrlWhenQueryIsEmpty() {
+        assertTrue(OmniboxFeatures.sSearchReadyOmniboxAllowQueryEdit.isEnabled());
+        mProcessor.populateModel(mMatch, mModel, 0);
+        doReturn("").when(mSuggestionHost).queryFromGurl(any());
+
+        mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
+
+        verify(mSuggestionHost).queryFromGurl(mMatch.getUrl());
+        verify(mUrlBarDelegate).setOmniboxEditingText(SEARCH_URL_1.getSpec());
         verifyNoMoreInteractions(mSuggestionHost, mUrlBarDelegate);
     }
 
