@@ -854,7 +854,7 @@ void ReadAnythingAppController::OnFontSizeChanged(bool increase) {
     model_.DecreaseTextSize();
   }
 
-  // TODO(crbug.com/1465029) save font size prefs
+  page_handler_->OnFontSizeChange(model_.font_size());
 }
 
 void ReadAnythingAppController::OnScroll(bool on_selection) const {
