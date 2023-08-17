@@ -31,40 +31,16 @@ namespace enterprise_connectors {
 
 namespace {
 
-// Enum for the operation being performed on the Secure Enclave key. This is
-// used for recording the key operation status.
-enum Operation {
-  CREATE,
-  COPY,
-  DELETE,
-  UPDATE,
-};
+bool IsSuccess(OSStatus status) {
+  return status == errSecSuccess;
+}
 
-// Logs a SecureEnclaveOperationStatus metric for the type of `operation` being
-// performed and the key storage `type`.
-void LogKeyOperationFailure(Operation operation,
-                            SecureEnclaveClient::KeyType type) {
-  SecureEnclaveOperationStatus status;
-
-  switch (operation) {
-    case Operation::CREATE:
-      status = SecureEnclaveOperationStatus::kCreateSecureKeyFailed;
-      break;
-    case Operation::COPY:
-      status = SecureEnclaveOperationStatus::
-          kCopySecureKeyRefDataProtectionKeychainFailed;
-      break;
-    case Operation::DELETE:
-      status = SecureEnclaveOperationStatus::
-          kDeleteSecureKeyDataProtectionKeychainFailed;
-      break;
-    case Operation::UPDATE:
-      status = SecureEnclaveOperationStatus::
-          kUpdateSecureKeyLabelDataProtectionKeychainFailed;
-      break;
-  }
-
-  RecordKeyOperationStatus(status, type);
+// Logs UMA metrics on the type of `operation` being performed, the key storage
+// `type` and the `error_code` returned by Keychain APIs.
+void LogKeyOperationFailure(KeychainOperation operation,
+                            SecureEnclaveClient::KeyType type,
+                            OSStatus error_code) {
+  RecordKeyOperationStatus(operation, type, error_code);
 }
 
 // Returns the key label based on the key `type` if the key type is not
@@ -150,18 +126,24 @@ base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CreatePermanentKey() {
   // Deletes a permanent Secure Enclave key if it exists from a previous
   // key rotation.
   DeleteKey(KeyType::kPermanent);
-  auto key = helper_->CreateSecureKey(attributes);
-  if (!key)
-    LogKeyOperationFailure(Operation::CREATE, KeyType::kPermanent);
+
+  OSStatus status;
+  auto key = helper_->CreateSecureKey(attributes, &status);
+  if (!key) {
+    LogKeyOperationFailure(KeychainOperation::kCreate, KeyType::kPermanent,
+                           status);
+  }
 
   return key;
 }
 
 base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CopyStoredKey(
     KeyType type) {
-  auto key_ref = helper_->CopyKey(CreateQueryForKey(type));
-  if (!key_ref)
-    LogKeyOperationFailure(Operation::COPY, type);
+  OSStatus status;
+  auto key_ref = helper_->CopyKey(CreateQueryForKey(type), &status);
+  if (!key_ref) {
+    LogKeyOperationFailure(KeychainOperation::kCopy, type, status);
+  }
 
   return key_ref;
 }
@@ -182,26 +164,34 @@ bool SecureEnclaveClientImpl::UpdateStoredKeyLabel(KeyType current_key_type,
   CFDictionarySetValue(attributes_to_update, kSecAttrLabel,
                        base::SysUTF8ToCFStringRef(label));
 
-  bool success = helper_->Update(CreateQueryForKey(current_key_type),
-                                 attributes_to_update);
-  if (!success)
-    LogKeyOperationFailure(Operation::UPDATE, current_key_type);
+  OSStatus status = helper_->Update(CreateQueryForKey(current_key_type),
+                                    attributes_to_update);
+
+  bool success = IsSuccess(status);
+  if (!success) {
+    LogKeyOperationFailure(KeychainOperation::kUpdate, current_key_type,
+                           status);
+  }
 
   return success;
 }
 
 bool SecureEnclaveClientImpl::DeleteKey(KeyType type) {
-  bool success = helper_->Delete(CreateQueryForKey(type));
-  if (!success)
-    LogKeyOperationFailure(Operation::DELETE, type);
+  OSStatus status = helper_->Delete(CreateQueryForKey(type));
+
+  bool success = IsSuccess(status);
+  if (!success) {
+    LogKeyOperationFailure(KeychainOperation::kDelete, type, status);
+  }
 
   return success;
 }
 
 bool SecureEnclaveClientImpl::GetStoredKeyLabel(KeyType type,
                                                 std::vector<uint8_t>& output) {
-  if (!helper_->CopyKey(CreateQueryForKey(type))) {
-    LogKeyOperationFailure(Operation::COPY, type);
+  OSStatus status;
+  if (!helper_->CopyKey(CreateQueryForKey(type), &status)) {
+    LogKeyOperationFailure(KeychainOperation::kCopy, type, status);
     return false;
   }
 

@@ -1025,6 +1025,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Enterprise.DeviceTrust.Mac.KeychainOSStatus.{KeyType}.{Operation}"
+    enum="ErrSecOSStatus" expires_after="2024-06-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>hmare@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded when a failed OSStatus code is returned from a Keychain Services
+    API for the {KeyType} keypair during a {Operation} operation.
+  </summary>
+  <token key="KeyType">
+    <variant name="Permanent" summary="permanent"/>
+    <variant name="Temporary" summary="temporary"/>
+  </token>
+  <token key="Operation">
+    <variant name="Copy" summary="Copy"/>
+    <variant name="Create" summary="Create"/>
+    <variant name="Delete" summary="Delete"/>
+    <variant name="Update" summary="Update"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.Mac.SecureEnclaveOperation.{KeyType}"
     enum="DTSecureEnclaveOperationStatus" expires_after="2024-06-01">
   <owner>hmare@google.com</owner>
@@ -1035,8 +1057,8 @@ chromium-metrics-reviews@google.com.
     Secure Enclave signing key in the {KeyType} key storage.
   </summary>
   <token key="KeyType">
-    <variant name="Permanent" summary="Permanent key storage"/>
-    <variant name="Temporary" summary="Temporary key storage"/>
+    <variant name="Permanent" summary="permanent"/>
+    <variant name="Temporary" summary="temporary"/>
   </token>
 </histogram>
 
