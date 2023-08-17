@@ -3597,7 +3597,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.AndroidRegistrationResult.{Type}"
+<histogram name="Conversions.AndroidRegistrationResult.{Type}2"
     enum="ConversionAndroidRegistrationResult" expires_after="M121">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>

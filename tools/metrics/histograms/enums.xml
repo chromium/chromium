@@ -19797,6 +19797,7 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Timeout error"/>
   <int value="7" label="Limit exceeded error"/>
   <int value="8" label="Internal error"/>
+  <int value="9" label="Background caller error"/>
 </enum>
 
 <enum name="ConversionAssembleAggregatableReportStatus">
