@@ -47,6 +47,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionTypeForceRequest);
 // Controls whether new deep scanning UX is enabled or not.
 BASE_DECLARE_FEATURE(kDeepScanningUpdatedUX);
 
+// Controls whether we prompt encrypted archive deep scans to provide a
+// password.
+BASE_DECLARE_FEATURE(kDeepScanningEncryptedArchives);
+
 // Controls whether the delayed warning experiment is enabled.
 BASE_DECLARE_FEATURE(kDelayedWarnings);
 // True if mouse clicks should undelay the warnings immediately when delayed
