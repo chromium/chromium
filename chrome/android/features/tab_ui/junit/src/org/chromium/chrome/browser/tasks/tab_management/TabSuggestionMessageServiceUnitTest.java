@@ -197,7 +197,6 @@ public class TabSuggestionMessageServiceUnitTest {
 
     @Test
     public void testClosingSuggestionNavigationHandler() {
-        ChromeFeatureList.sTabGroupsAndroid.setForTesting(true);
         ChromeFeatureList.sTabGroupsContinuationAndroid.setForTesting(true);
         List<Tab> suggestedTabs = Arrays.asList(mTab1, mTab2);
         TabSuggestion tabSuggestion =
@@ -214,7 +213,6 @@ public class TabSuggestionMessageServiceUnitTest {
                 mTabSuggestionFeedbackCallbackArgumentCaptor.getValue();
         assertEquals(tabSuggestion, capturedFeedback.tabSuggestion);
         assertEquals(DISMISSED, capturedFeedback.tabSuggestionResponse);
-        ChromeFeatureList.sTabGroupsAndroid.setForTesting(null);
         ChromeFeatureList.sTabGroupsContinuationAndroid.setForTesting(null);
     }
 

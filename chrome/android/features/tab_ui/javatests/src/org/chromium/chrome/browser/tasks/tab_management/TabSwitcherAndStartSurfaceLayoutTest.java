@@ -34,7 +34,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.c
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.finishActivity;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.leaveTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
@@ -945,8 +944,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-                    ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
                     ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void testUrlUpdatedNotCrashing_ForUndoableClosedTab(
             boolean isStartSurfaceRefactorEnabled) throws Exception {
@@ -969,8 +967,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void testUrlUpdatedNotCrashing_ForTabNotInCurrentModel(
             boolean isStartSurfaceRefactorEnabled) throws Exception {
@@ -1355,8 +1352,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void testCloseTabViaCloseButton(boolean isStartSurfaceRefactorEnabled) throws Exception {
         // clang-format on
@@ -1374,8 +1370,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisabledTest(message = "Flaky - https://crbug.com/1124041, crbug.com/1061178")
     public void testSwipeToDismiss_GTS(boolean isStartSurfaceRefactorEnabled) {
         // clang-format on
@@ -1409,8 +1404,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/enable_launch_polish/true"})
     public void testCloseButtonDescription(boolean isStartSurfaceRefactorEnabled) {
         String expectedDescription = "Close New tab tab";
@@ -1524,7 +1518,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     @DisabledTest(message = "crbug.com/1096997")
     public void testTabGroupManualSelection(boolean isStartSurfaceRefactorEnabled)
@@ -1574,9 +1567,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Feature("TabSuggestion")
     @UseMethodParameter(LegacyTestParams.class)
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-            ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
+    @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
     @DisabledTest(message = "https://crbug.com/1449985")
@@ -1661,48 +1653,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    public void testTabGroupNotFormDuringRestore(boolean isStartSurfaceRefactorEnabled)
-            throws Exception {
-        // clang-format on
-        // Finish the activity and disable the ChromeFeatureList.TAB_GROUPS_ANDROID flag.
-        finishActivity(mActivityTestRule.getActivity());
-        ChromeFeatureList.sTabGroupsAndroid.setForTesting(false);
-
-        mActivityTestRule.startMainActivityOnBlankPage();
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        mActivityTestRule.loadUrl(mUrl);
-        Tab parentTab = cta.getTabModelSelector().getCurrentTab();
-
-        // Create a tab whose parent tab is parentTab.
-        TabCreator tabCreator =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> cta.getTabCreator(false));
-        LoadUrlParams loadUrlParams = new LoadUrlParams(mUrl);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> tabCreator.createNewTab(
-                                loadUrlParams, TabLaunchType.FROM_LONGPRESS_BACKGROUND, parentTab));
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Restart activity with tab group enabled, and the tabs should remain as single tabs.
-        finishActivity(cta);
-        ChromeFeatureList.sTabGroupsAndroid.setForTesting(true);
-        mActivityTestRule.startMainActivityOnBlankPage();
-        final ChromeTabbedActivity ctaRestarted = mActivityTestRule.getActivity();
-        assertTrue(ctaRestarted.getTabModelSelector()
-                           .getTabModelFilterProvider()
-                           .getCurrentTabModelFilter()
-                           instanceof TabGroupModelFilter);
-        enterTabSwitcher(ctaRestarted);
-        verifyTabSwitcherCardCount(ctaRestarted, 3);
-    }
-
-    @Test
-    @MediumTest
-    @UseMethodParameter(RefactorTestParams.class)
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void verifyTabGroupStateAfterReparenting(boolean isStartSurfaceRefactorEnabled)
             throws Exception {
         // clang-format on
@@ -1742,8 +1692,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
             ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
     // clang-format off
     @CommandLineFlags.Add({
@@ -1777,7 +1726,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.INSTANT_START,
+    @EnableFeatures({ChromeFeatureList.INSTANT_START,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     // TODO(crbug.com/1112557): Remove this test when critical tests in StartSurfaceLayoutTest are
     // running with InstantStart on.
@@ -1804,7 +1753,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     public void testUndoGroupClosureInTabSwitcher(boolean isStartSurfaceRefactorEnabled) {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -1905,7 +1853,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     public void testUndoGroupMergeInTabSwitcher_TabToTab(boolean isStartSurfaceRefactorEnabled) {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -1928,7 +1875,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     public void testUndoGroupMergeInTabSwitcher_TabToGroupAdjacent(
             boolean isStartSurfaceRefactorEnabled) {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1973,7 +1919,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     public void testUndoGroupMergeInTabSwitcher_GroupToGroupNonAdjacent(
             boolean isStartSurfaceRefactorEnabled) {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -2032,7 +1977,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     public void testUndoGroupMergeInTabSwitcher_PostMergeGroupTitleCommit(
             boolean isStartSurfaceRefactorEnabled) {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();

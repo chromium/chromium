@@ -207,7 +207,6 @@ public class StartSurfaceTabSwitcherTest {
     @MediumTest
     @Feature({"StartSurface", "TabGroup"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @DisabledTest(message = "https://crbug.com/1232695")
     public void testCreateTabWithinTabGroup() throws Exception {
         // Create tab state files for a group with two tabs.
@@ -330,7 +329,6 @@ public class StartSurfaceTabSwitcherTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
         + "show_tabs_in_mru_order/true/open_ntp_instead_of_start/false/open_start_as_homepage/true",

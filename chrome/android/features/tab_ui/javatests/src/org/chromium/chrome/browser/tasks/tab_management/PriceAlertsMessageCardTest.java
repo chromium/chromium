@@ -82,7 +82,7 @@ import java.io.IOException;
         "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group"})
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.CLOSE_TAB_SUGGESTIONS})
+@Features.DisableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS})
 public class PriceAlertsMessageCardTest {
     // clang-format on
     private static final String BASE_PARAMS =

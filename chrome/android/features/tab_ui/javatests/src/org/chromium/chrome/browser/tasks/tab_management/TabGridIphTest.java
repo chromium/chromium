@@ -88,8 +88,7 @@ import java.io.IOException;
         "session_rate/<1"
 })
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-    ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+@Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
 // TODO(https://crbug.com/1362059): The message cards aren't shown the first time when entering GTS
 // with Start surface enabled.
 @Features.DisableFeatures({

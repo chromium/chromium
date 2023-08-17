@@ -210,7 +210,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         // causes races in the Android accessibility focus framework.
         skipAnimation |=
                 (inTabSwitcherMode && ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()
-                        && ChromeFeatureList.sTabGroupsAndroid.isEnabled()
                         && DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.getValue()
                         && AccessibilityState.isTouchExplorationEnabled());
 

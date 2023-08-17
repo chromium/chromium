@@ -40,8 +40,7 @@ import org.chromium.ui.test.util.UiRestriction;
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@Features.DisableFeatures({
-    ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.START_SURFACE_ANDROID})
+@Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class AdaptiveToolbarTest {
     // clang-format on
     @Rule
@@ -60,7 +59,6 @@ public class AdaptiveToolbarTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testTopToolbar() {
         setupAndLaunchActivity();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -83,7 +81,6 @@ public class AdaptiveToolbarTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testTopToolbar_IncognitoDisabled() {
         IncognitoUtils.setEnabledForTesting(false);
         setupAndLaunchActivity();

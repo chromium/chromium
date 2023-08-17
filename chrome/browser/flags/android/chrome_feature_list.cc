@@ -307,7 +307,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabDragDropAndroid,
     &kTabAndLinkDragDropAndroid,
     &kTabEngagementReportingAndroid,
-    &kTabGroupsAndroid,
     &kTabGroupsContinuationAndroid,
     &kTabStripRedesign,
     &kTabletToolbarReordering,
@@ -1002,13 +1001,6 @@ BASE_FEATURE(kTabAndLinkDragDropAndroid,
 BASE_FEATURE(kTabEngagementReportingAndroid,
              "TabEngagementReportingAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enabled, but used in tests to simulate behaviors for configurations where tab
-// groups are currently unsupported (low-end devices and users of the
-// accessibility tab switcher).
-BASE_FEATURE(kTabGroupsAndroid,
-             "TabGroupsAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupsContinuationAndroid,
              "TabGroupsContinuationAndroid",

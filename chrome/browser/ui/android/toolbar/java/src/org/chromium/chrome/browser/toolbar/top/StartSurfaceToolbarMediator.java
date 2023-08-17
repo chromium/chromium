@@ -377,7 +377,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         // causes races in the Android accessibility focus framework.
         if (shouldShowAnimation && !wasOnGridTabSwitcher
                 && ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()
-                && ChromeFeatureList.sTabGroupsAndroid.isEnabled()
                 && DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.getValue()
                 && AccessibilityState.isTouchExplorationEnabled()) {
             shouldShowAnimation = false;

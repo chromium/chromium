@@ -145,8 +145,7 @@ public class TabUiFeatureUtilities {
             return true;
         }
 
-        return !DeviceClassManager.enableAccessibilityLayout(context)
-                && ChromeFeatureList.sTabGroupsAndroid.isEnabled();
+        return !DeviceClassManager.enableAccessibilityLayout(context);
     }
 
     /**

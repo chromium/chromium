@@ -221,7 +221,6 @@ public class InstantStartTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
-            ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     // TODO(https://crbug.com/1315676): Removes this test once the start surface refactoring is
     // done, since the secondary tasks surface will go away.
@@ -347,8 +346,7 @@ public class InstantStartTest {
     @SmallTest
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testInstantStartDisabledOnLowEndDevice() throws IOException {
         // clang-format on
         StartSurfaceTestUtils.createTabStateFile(new int[] {123});

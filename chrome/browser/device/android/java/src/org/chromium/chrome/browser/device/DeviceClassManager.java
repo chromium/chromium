@@ -103,8 +103,7 @@ public class DeviceClassManager {
         final boolean defaultBehavior = enableAccessibilityLayoutInternal();
 
         // TODO(crbug.com/1007598): Support TabGrid and TabGroup in Accessibility mode.
-        if (ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()
-                && ChromeFeatureList.sTabGroupsAndroid.isEnabled()) {
+        if (ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()) {
             final boolean isLowEndDevice = SysUtils.isLowEndDevice();
             final boolean isAccessibilityEnabled =
                     ChromeAccessibilityUtil.get().isAccessibilityEnabled();

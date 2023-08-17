@@ -737,7 +737,6 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void openDialogButton_SingleTab() {
         // Mock that tab 1 is a single tab.
         doReturn(new ArrayList<>(Arrays.asList(mTab1)))
@@ -747,7 +746,6 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void openDialogButton_TabGroup_NotEmpty() {
         // Set up a tab group.
         Tab newTab = prepareTab(TAB4_ID, TAB4_TITLE);
@@ -762,7 +760,6 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void openDialogButton_TabGroup_Empty() {
         // Assume that due to tab model change, current group becomes empty in current model.
         doReturn(new ArrayList<>()).when(mTabModelFilter).getRelatedTabList(TAB1_ID);

@@ -43,7 +43,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -51,7 +50,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for Multi-window related behavior in grid tab switcher. */
@@ -179,7 +177,6 @@ public class TabSwitcherMultiWindowTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testMoveTabsAcrossWindow_GTS_WithGroup() {
         // Initially, we have 5 normal tabs (including the one created at activity start) and 5
         // incognito tabs in mCta1.
@@ -264,7 +261,6 @@ public class TabSwitcherMultiWindowTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testMoveLastIncognitoTab() {
         // clang-format on
         // Initially, we have 1 normal tab (created in #setup()) and 1 incognito tab in mCta1.

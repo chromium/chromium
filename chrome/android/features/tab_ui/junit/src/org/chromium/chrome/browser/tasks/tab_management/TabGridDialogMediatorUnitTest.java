@@ -85,7 +85,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 // clang-format off
-@Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
 @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
 public class TabGridDialogMediatorUnitTest {
     // clang-format on
