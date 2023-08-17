@@ -486,13 +486,23 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   if (visibility == ResourcePriority::kVisible)
     priority = ResourceLoadPriority::kHigh;
 
-  // LCP Critical Path Predictor identified previous LCP images get a boost
-  // to VeryHigh priority.
+  // LCP Critical Path Predictor identified previous LCP images get a higher
+  // priority.
   // Note: The `priority` set here may be overridden by the logic below,
   //       while that is not the case as of July 2023.
   if (is_potentially_lcp_element) {
     ++potentially_lcp_resource_priority_boosts_;
-    priority = ResourceLoadPriority::kVeryHigh;
+    switch (features::kLCPCriticalPathPredictorImageLoadPriority.Get()) {
+      case features::LcppImageLoadPriority::kMedium:
+        priority = std::max(priority, ResourceLoadPriority::kMedium);
+        break;
+      case features::LcppImageLoadPriority::kHigh:
+        priority = std::max(priority, ResourceLoadPriority::kHigh);
+        break;
+      case features::LcppImageLoadPriority::kVeryHigh:
+        priority = std::max(priority, ResourceLoadPriority::kVeryHigh);
+        break;
+    }
   }
 
   // Resources before the first image are considered "early" in the document and
