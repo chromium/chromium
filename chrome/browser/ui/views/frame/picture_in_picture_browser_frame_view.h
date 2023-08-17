@@ -36,10 +36,6 @@ namespace {
 class WindowEventObserver;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-class AutoPipSettingOverlayView;
-#endif
-
 class PictureInPictureBrowserFrameView
     : public BrowserNonClientFrameView,
       public ChromeLocationBarModelDelegate,
@@ -265,7 +261,7 @@ class PictureInPictureBrowserFrameView
 
 #if !BUILDFLAG(IS_ANDROID)
   // If non-null, this displays the allow / block setting overlay for autopip.
-  raw_ptr<AutoPipSettingOverlayView> auto_pip_setting_overlay_ = nullptr;
+  raw_ptr<views::View> auto_pip_setting_overlay_ = nullptr;
 #endif
 };
 

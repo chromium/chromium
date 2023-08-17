@@ -6,9 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
-#endif
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -25,9 +22,9 @@
 #include "chromeos/ui/frame/frame_utils.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -378,14 +375,12 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   hide_close_button_animation_.set_delegate(this);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1464066): Get the auto pip settings UI when needed, rather
-  // than create it here.
-  const bool is_auto_pip = base::FeatureList::IsEnabled(
-      blink::features::kMediaSessionEnterPictureInPicture);
-  const bool is_setting_ask = true;
-  if (is_auto_pip && is_setting_ask) {
-    auto_pip_setting_overlay_ = AddChildView(
-        std::make_unique<AutoPipSettingOverlayView>(base::DoNothing()));
+  // If the window manager wants us to display an overlay, get it.  In practice,
+  // this is the auto-pip Allow / Block content setting UI.
+  if (auto auto_pip_setting_overlay =
+          PictureInPictureWindowManager::GetInstance()->GetOverlayView()) {
+    auto_pip_setting_overlay_ =
+        AddChildView(std::move(auto_pip_setting_overlay));
   }
 #endif
 

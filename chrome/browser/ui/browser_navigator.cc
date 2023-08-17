@@ -271,11 +271,6 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
       return {GetOrCreateBrowser(profile, params.user_gesture), -1};
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
 #if !BUILDFLAG(IS_ANDROID)
-      // Picture in picture windows may not be opened by other picture in
-      // picture windows.
-      if (params.browser->is_type_picture_in_picture())
-        return {nullptr, -1};
-
       {
         Browser::CreateParams browser_params(Browser::TYPE_PICTURE_IN_PICTURE,
                                              profile, params.user_gesture);
@@ -678,6 +673,28 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     DCHECK_EQ(params->disposition, WindowOpenDisposition::SINGLETON_TAB);
     contents_to_navigate_or_insert = params->switch_to_singleton_tab;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // If this is a Picture in Picture window, then notify the pip manager about
+  // it. This enables the opener and pip window to stay connected, so that (for
+  // example), the pip window does not outlive the opener.
+  //
+  // We do this before creating the browser window, so that the browser can talk
+  // to the PictureInPictureWindowManager.  Otherwise, the manager has no idea
+  // that there's a pip window.
+  if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+    // Picture in picture windows may not be opened by other picture in
+    // picture windows, or without an opener.
+    if (!params->browser || params->browser->is_type_picture_in_picture()) {
+      params->browser = nullptr;
+      return nullptr;
+    }
+
+    PictureInPictureWindowManager::GetInstance()->EnterDocumentPictureInPicture(
+        params->source_contents, contents_to_navigate_or_insert);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   int singleton_index;
   std::tie(params->browser, singleton_index) =
       GetBrowserAndTabForDisposition(*params);
@@ -892,16 +909,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
         params->source_contents->Close();
     }
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  // If this is a Picture in Picture window, then notify the pip manager about
-  // it. This enables the opener and pip window to stay connected, so that (for
-  // example), the pip window does not outlive the opener.
-  if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
-    PictureInPictureWindowManager::GetInstance()->EnterDocumentPictureInPicture(
-        params->source_contents, contents_to_navigate_or_insert);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   params->navigated_or_inserted_contents = contents_to_navigate_or_insert;
   return navigation_handle;

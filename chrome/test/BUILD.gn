@@ -6184,6 +6184,7 @@ test("unit_tests") {
       "../browser/metrics/power/battery_discharge_reporter_unittest.cc",
       "../browser/performance_manager/metrics/metrics_provider_desktop_unittest.cc",
       "../browser/permissions/permission_hats_trigger_unittest.cc",
+      "../browser/picture_in_picture/auto_pip_setting_helper_unittest.cc",
       "../browser/picture_in_picture/auto_pip_setting_overlay_view_unittest.cc",
       "../browser/policy/messaging_layer/util/reporting_server_connector_unittest.cc",
       "../browser/segmentation_platform/client_util/local_tab_handler_unittest.cc",

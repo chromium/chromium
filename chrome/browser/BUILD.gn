@@ -1884,6 +1884,8 @@ static_library("browser") {
 
   if (!is_android) {
     sources += [
+      "picture_in_picture/auto_pip_setting_helper.cc",
+      "picture_in_picture/auto_pip_setting_helper.h",
       "picture_in_picture/auto_pip_setting_overlay_view.cc",
       "picture_in_picture/auto_pip_setting_overlay_view.h",
     ]

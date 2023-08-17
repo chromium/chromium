@@ -16,6 +16,12 @@
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/geometry/size.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
+#include "third_party/blink/public/common/features.h"
+#include "ui/views/view.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -140,6 +146,16 @@ bool PictureInPictureWindowManager::ExitPictureInPicture() {
     return true;
   }
   return false;
+}
+
+// static
+void PictureInPictureWindowManager::ExitPictureInPictureSoon() {
+  // Unretained is safe because we're a singleton.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(
+                         &PictureInPictureWindowManager::ExitPictureInPicture),
+                     base::Unretained(GetInstance())));
 }
 
 void PictureInPictureWindowManager::FocusInitiator() {
@@ -271,6 +287,9 @@ void PictureInPictureWindowManager::CloseWindowInternal() {
   video_web_contents_observer_.reset();
   pip_window_controller_->Close(false /* should_pause_video */);
   pip_window_controller_ = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
+  auto_pip_setting_helper_.reset();
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -281,6 +300,34 @@ void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
   document_web_contents_observer_.reset();
   if (pip_window_controller_)
     pip_window_controller_ = nullptr;
+}
+
+std::unique_ptr<views::View> PictureInPictureWindowManager::GetOverlayView() {
+  // This should probably DCHECK, but tests often can't set the controller.
+  if (!pip_window_controller_) {
+    return nullptr;
+  }
+
+  // This should only happen if this is an auto-pip window, and also if the
+  // content setting is 'ask'.  For now, do it any time the auto-pip flag is
+  // enabled, which should only happen during internal development.
+  // TODO(crbug.com/1464066): Do this at the right time.
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kMediaSessionEnterPictureInPicture)) {
+    return nullptr;
+  }
+
+  auto auto_pip_setting_helper = std::make_unique<AutoPipSettingHelper>(
+      pip_window_controller_->GetWebContents()->GetURL(),
+      base::BindOnce(&PictureInPictureWindowManager::ExitPictureInPictureSoon));
+
+  auto overlay_view = auto_pip_setting_helper->CreateOverlayViewIfNeeded();
+  if (overlay_view) {
+    // Retain the setting helper for the overlay view, and add the overlay view.
+    auto_pip_setting_helper_ = std::move(auto_pip_setting_helper);
+  }
+
+  return overlay_view;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

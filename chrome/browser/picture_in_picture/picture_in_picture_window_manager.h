@@ -24,6 +24,14 @@ namespace display {
 class Display;
 }  // namespace display
 
+#if !BUILDFLAG(IS_ANDROID)
+class AutoPipSettingHelper;
+
+namespace views {
+class View;
+}  // namespace views
+#endif
+
 // PictureInPictureWindowManager is a singleton that handles the lifetime of the
 // current Picture-in-Picture window and its PictureInPictureWindowController.
 // The class also guarantees that only one window will be present per Chrome
@@ -129,6 +137,10 @@ class PictureInPictureWindowManager {
     observers_.RemoveObserver(observer);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<views::View> GetOverlayView();
+#endif
+
  private:
   friend struct base::DefaultSingletonTraits<PictureInPictureWindowManager>;
   class VideoWebContentsObserver;
@@ -166,6 +178,11 @@ class PictureInPictureWindowManager {
   void DocumentWebContentsDestroyed();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  // Exits picture in picture soon, but not before this call returns.  If
+  // picture in picture closes between now and then, that's okay.  Intended as a
+  // helper class for callbacks, to avoid re-entrant calls during pip set-up.
+  static void ExitPictureInPictureSoon();
+
   PictureInPictureWindowManager();
   ~PictureInPictureWindowManager();
 
@@ -175,6 +192,8 @@ class PictureInPictureWindowManager {
   std::unique_ptr<VideoWebContentsObserver> video_web_contents_observer_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
+
+  std::unique_ptr<AutoPipSettingHelper> auto_pip_setting_helper_;
 #endif  //! BUILDFLAG(IS_ANDROID)
 
   raw_ptr<content::PictureInPictureWindowController, DanglingUntriaged>
