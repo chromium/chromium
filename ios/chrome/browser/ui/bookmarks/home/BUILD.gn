@@ -100,6 +100,7 @@ source_set("eg2_tests") {
     "//components/bookmarks/common",
     "//components/policy:generated",
     "//components/signin/public/base",
+    "//components/sync/base:base",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:eg_test_support+eg2",

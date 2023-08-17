@@ -141,7 +141,9 @@
   }
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
-  if (!bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(syncService)) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) &&
+      !bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(syncService)) {
     // The user signed in, but not opted into syncing bookmarks - show sync
     // promo.
     self.shouldShowSigninPromo = YES;
