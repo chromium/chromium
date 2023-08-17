@@ -1058,9 +1058,10 @@ TEST(KURLTest, SetFileProtocolFromNonSpecial) {
 
 TEST(KURLTest, SetFileProtocolToNonSpecial) {
   KURL url("file:///path");
+  EXPECT_EQ(url.GetPath(), "/path");
   EXPECT_TRUE(url.SetProtocol("non-special-scheme"));
-  EXPECT_EQ(url.Protocol(), "non-special-scheme");
-  EXPECT_EQ(url.GetPath(), "///path");
+  EXPECT_EQ(url.Protocol(), "file");
+  EXPECT_EQ(url.GetPath(), "/path");
 }
 
 TEST(KURLTest, SetNonSpecialSchemeOnSpecialSchemeHistogram) {

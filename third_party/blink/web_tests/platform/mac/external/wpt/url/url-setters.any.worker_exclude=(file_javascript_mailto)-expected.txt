@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 222 tests; 148 PASS, 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 222 tests; 151 PASS, 71 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS URL: Setting <a://example.net>.protocol = 'b'
@@ -13,9 +13,9 @@ PASS URL: Setting <a://example.net>.protocol = 'bé' Non-ASCII is rejected
 PASS URL: Setting <http://test@example.net>.protocol = 'file' Can’t switch from URL containing username/password/port to file
 PASS URL: Setting <https://example.net:1234>.protocol = 'file'
 PASS URL: Setting <wss://x:x@example.net:1234>.protocol = 'file'
-FAIL URL: Setting <http://example.net>.protocol = 'b' Can’t switch from special scheme to non-special assert_equals: expected "http://example.net/" but got "b://example.net/"
-FAIL URL: Setting <https://example.net>.protocol = 's' assert_equals: expected "https://example.net/" but got "s://example.net/"
-FAIL URL: Setting <ftp://example.net>.protocol = 'test' assert_equals: expected "ftp://example.net/" but got "test://example.net/"
+PASS URL: Setting <http://example.net>.protocol = 'b' Can’t switch from special scheme to non-special
+PASS URL: Setting <https://example.net>.protocol = 's'
+PASS URL: Setting <ftp://example.net>.protocol = 'test'
 FAIL URL: Setting <ssh://me@example.net>.protocol = 'http' Can’t switch from non-special scheme to special assert_equals: expected "ssh://me@example.net" but got "http://me@example.net/"
 FAIL URL: Setting <ssh://me@example.net>.protocol = 'https' assert_equals: expected "ssh://me@example.net" but got "https://me@example.net/"
 FAIL URL: Setting <ssh://me@example.net>.protocol = 'file' assert_equals: expected "ssh://me@example.net" but got "file://me%40example.net/"

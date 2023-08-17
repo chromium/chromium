@@ -3,7 +3,7 @@ PASS Loading data…
 FAIL URL: Setting <file://localhost/>.protocol = 'http' Can’t switch from file URL with no host assert_equals: expected "file:///" but got "http://localhost/"
 PASS URL: Setting <file:///test>.protocol = 'https'
 PASS URL: Setting <file:>.protocol = 'wss'
-FAIL URL: Setting <file://hi/path>.protocol = 's' assert_equals: expected "file://hi/path" but got "s://hi/path"
+PASS URL: Setting <file://hi/path>.protocol = 's'
 PASS URL: Setting <file:///home/you/index.html>.username = 'me' No host means no username
 PASS URL: Setting <file://test/>.username = 'test'
 PASS URL: Setting <file:///home/me/index.html>.password = 'secret' No host means no password

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 443 tests; 303 PASS, 140 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 443 tests; 309 PASS, 134 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS <area>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
@@ -25,12 +25,12 @@ PASS <a>: Setting <https://example.net:1234>.protocol = 'file'
 PASS <area>: Setting <https://example.net:1234>.protocol = 'file'
 PASS <a>: Setting <wss://x:x@example.net:1234>.protocol = 'file'
 PASS <area>: Setting <wss://x:x@example.net:1234>.protocol = 'file'
-FAIL <a>: Setting <http://example.net>.protocol = 'b' Can’t switch from special scheme to non-special assert_equals: expected "http://example.net/" but got "b://example.net/"
-FAIL <area>: Setting <http://example.net>.protocol = 'b' Can’t switch from special scheme to non-special assert_equals: expected "http://example.net/" but got "b://example.net/"
-FAIL <a>: Setting <https://example.net>.protocol = 's' assert_equals: expected "https://example.net/" but got "s://example.net/"
-FAIL <area>: Setting <https://example.net>.protocol = 's' assert_equals: expected "https://example.net/" but got "s://example.net/"
-FAIL <a>: Setting <ftp://example.net>.protocol = 'test' assert_equals: expected "ftp://example.net/" but got "test://example.net/"
-FAIL <area>: Setting <ftp://example.net>.protocol = 'test' assert_equals: expected "ftp://example.net/" but got "test://example.net/"
+PASS <a>: Setting <http://example.net>.protocol = 'b' Can’t switch from special scheme to non-special
+PASS <area>: Setting <http://example.net>.protocol = 'b' Can’t switch from special scheme to non-special
+PASS <a>: Setting <https://example.net>.protocol = 's'
+PASS <area>: Setting <https://example.net>.protocol = 's'
+PASS <a>: Setting <ftp://example.net>.protocol = 'test'
+PASS <area>: Setting <ftp://example.net>.protocol = 'test'
 FAIL <a>: Setting <ssh://me@example.net>.protocol = 'http' Can’t switch from non-special scheme to special assert_equals: expected "ssh://me@example.net" but got "http://me@example.net/"
 FAIL <area>: Setting <ssh://me@example.net>.protocol = 'http' Can’t switch from non-special scheme to special assert_equals: expected "ssh://me@example.net" but got "http://me@example.net/"
 FAIL <a>: Setting <ssh://me@example.net>.protocol = 'https' assert_equals: expected "ssh://me@example.net" but got "https://me@example.net/"

@@ -491,20 +491,19 @@ bool KURL::SetProtocol(const String& protocol) {
       String(canon_protocol.data(), protocol_length);
 
   if (SchemeRegistry::IsSpecialScheme(Protocol())) {
-    base::UmaHistogramBoolean(
-        "URL.Scheme.SetNonSpecialSchemeOnSpecialScheme",
-        !SchemeRegistry::IsSpecialScheme(new_protocol_canon));
-  }
+    bool new_protocol_is_special_scheme =
+        SchemeRegistry::IsSpecialScheme(new_protocol_canon);
 
-  // We don't currently perform the check from
-  // https://url.spec.whatwg.org/#scheme-state that special schemes are not
-  // converted to non-special schemes and vice-versa, but the following logic
-  // should only be applied to special schemes.
-  // TODO(ricea): Maybe disallow switching between special and non-special
-  // schemes, to match the standard, if we can develop confidence that it won't
-  // break pages.
-  if (SchemeRegistry::IsSpecialScheme(Protocol()) &&
-      SchemeRegistry::IsSpecialScheme(new_protocol_canon)) {
+    base::UmaHistogramBoolean("URL.Scheme.SetNonSpecialSchemeOnSpecialScheme",
+                              !new_protocol_is_special_scheme);
+
+    // https://url.spec.whatwg.org/#scheme-state
+    // 2.1.1 If url’s scheme is a special scheme and buffer is not a special
+    //       scheme, then return.
+    if (!new_protocol_is_special_scheme) {
+      return true;
+    }
+
     // The protocol is lower-cased during canonicalization.
     const bool new_protocol_is_file = new_protocol_canon == url::kFileScheme;
     const bool old_protocol_is_file = ProtocolIs(url::kFileScheme);
