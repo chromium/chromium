@@ -1084,6 +1084,7 @@
 <translation id="1854180393107901205">ტრანსლირების შეწყვეტა</translation>
 <translation id="1856715684130786728">დაამატეთ ადგილმდებარეობა…</translation>
 <translation id="1858585891038687145">ამ სერტიფიკატისთვის პროგრამული უზრუნველყოფის შემქმნელების ამოცნობის მინდობა</translation>
+<translation id="1859294693760125695">აღარ მაინტერესებს</translation>
 <translation id="1859339856433307593">ამ ანგარიშის პაროლი უკვე შენახულია თქვენს <ph name="BRAND" />-ში (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">ეს საქაღალდე ცარიელია</translation>
 <translation id="1862311223300693744">გაქვთ თუ არა დაინსტალირებული სპეციალური პროგრამული უზრუნველყოფა VPN-ისთვის, პროქსისთვის, ქსელის დაცვისთვის ან NAS-ისთვის?</translation>
@@ -3278,6 +3279,7 @@
 <translation id="3660234220361471169">არასანდო</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{მოიძებნა 1 არსებული პაროლი}other{მოიძებნა {NUM_PASSWORDS} არსებული პაროლი}}</translation>
 <translation id="3664511988987167893">გაფართოების ხატულა</translation>
+<translation id="3665301845536101715">გვერდით პანელში გახსნა</translation>
 <translation id="3665589677786828986">Chrome-მა აღმოაჩინა, რომ თქვენი ბრაუზერის ზოგიერთი პარამეტრი დაზიანდა სხვა პროგრამის მიერ და აღდგენილ იქნა ორიგინალი ნაგულისხმევი პარამეტრები.</translation>
 <translation id="3665919494326051362">მიმდინარე ვერსიაა <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC-ების გამართვის მონაცემების გროვა</translation>
@@ -8642,6 +8644,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{ვიდეო}other{# ვიდეო}}</translation>
 <translation id="8143442547342702591">აპლიკაცია არასწორია</translation>
 <translation id="8143609395536282994">თქვენი მონაცემების მართვის ხერხები:</translation>
+<translation id="8144429778087524791">შესრულებულად მონიშვნა და დამალვა</translation>
 <translation id="8145170459658034418">მეხსიერების დამზოგი</translation>
 <translation id="8146177459103116374">თუ თქვენ უკვე რეგისტრირებული ხართ ამ მოწყობილობაზე, თქვენ შეგიძლიათ <ph name="LINK2_START" />შეხვიდეთ როგორც არსებული მომხმარებელი<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">დაამატეთ და დაახარისხეთ სასურველი ენები. ვებსაიტები, შეძლებისდაგვარად, თქვენთვის სასურველ ენებზე გამოჩნდება. ეს პარამეტრები სინქრონიზდება თქვენი ბრაუზერის პარამეტრებთან. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>

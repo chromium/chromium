@@ -1084,6 +1084,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1854180393107901205">Atura l'emissió</translation>
 <translation id="1856715684130786728">Afegeix una ubicació...</translation>
 <translation id="1858585891038687145">Confia en aquest certificat per identificar generadors de programari</translation>
+<translation id="1859294693760125695">Ja no m'interessa</translation>
 <translation id="1859339856433307593">Ja hi ha una contrasenya d'aquest compte desada a <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Aquesta carpeta és buida</translation>
 <translation id="1862311223300693744">Tens instal·lat cap servidor intermediari, VPN, tallafoc o programari de NAS?</translation>
@@ -3278,6 +3279,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3660234220361471169">No és de confiança</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{S'ha trobat 1 contrasenya existent}other{S'han trobat {NUM_PASSWORDS} contrasenyes existents}}</translation>
 <translation id="3664511988987167893">Icona de l'extensió</translation>
+<translation id="3665301845536101715">Obre al tauler lateral</translation>
 <translation id="3665589677786828986">Chrome ha detectat que un altre programa ha malmès alguns dels paràmetres de configuració i els ha restablert als valors predeterminats originals.</translation>
 <translation id="3665919494326051362">La versió actual és <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Buidatge de depuració de NIC de Wi-Fi d'Intel</translation>
@@ -8643,6 +8645,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="814204052173971714">{COUNT,plural, =1{1 vídeo}other{# vídeos}}</translation>
 <translation id="8143442547342702591">Aplicació no vàlida</translation>
 <translation id="8143609395536282994">Com pots gestionar les teves dades:</translation>
+<translation id="8144429778087524791">Marca com a fet i amaga</translation>
 <translation id="8145170459658034418">Estalvi de memòria</translation>
 <translation id="8146177459103116374">Si ja esteu registrat en aquest dispositiu, podeu <ph name="LINK2_START" />iniciar la sessió com a usuari existent<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Afegeix i classifica els teus idiomes preferits. Quan sigui possible, els llocs web es mostraran en aquests idiomes. Aquestes preferències se sincronitzen amb la configuració del navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>

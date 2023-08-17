@@ -1093,6 +1093,7 @@
 <translation id="1854180393107901205">توقف فرستادن</translation>
 <translation id="1856715684130786728">افزودن موقعیت مکانی...</translation>
 <translation id="1858585891038687145">برای شناسایی سازندگان نرم‌افزار، به این گواهی اطمینان شود</translation>
+<translation id="1859294693760125695">دیگر علاقه‌ای ندارم</translation>
 <translation id="1859339856433307593">درحال‌حاضر گذرواژه‌ای برای این حساب (<ph name="USER_EMAIL" />) در <ph name="BRAND" /> ذخیره شده است</translation>
 <translation id="1861262398884155592">این پوشه خالی است</translation>
 <translation id="1862311223300693744">‏آیا نرم‌افزار VPN، پراکسی، دیوار آتش، یا NAS خاصی نصب کرده‌اید؟</translation>
@@ -3290,6 +3291,7 @@
 <translation id="3660234220361471169">غیر قابل اطمینان</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{یک گذرواژه موجود پیدا شد}one{{NUM_PASSWORDS} گذرواژه موجود پیدا شد}other{{NUM_PASSWORDS} گذرواژه موجود پیدا شد}}</translation>
 <translation id="3664511988987167893">نماد افزونه</translation>
+<translation id="3665301845536101715">باز کردن در پانل کناری</translation>
 <translation id="3665589677786828986">‏Chrome تشخیص داد که برنامه دیگری برخی از تنظیمات شما را خراب کرده است و این تنظیمات را به پیش‌فرض‌های اولیه آن‌ها بازنشانی کرد.</translation>
 <translation id="3665919494326051362">نسخه کنونی: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">‏رونوشت اشکال‌زدایی کنترل‌کننده‌های رابط شبکه Intel Wi-Fi</translation>
@@ -8659,6 +8661,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{یک ویدیو}one{# ویدیو}other{# ویدیو}}</translation>
 <translation id="8143442547342702591">برنامه نامعتبر است</translation>
 <translation id="8143609395536282994">چگونه می‌توانید داده‌هایتان را مدیریت کنید:</translation>
+<translation id="8144429778087524791">علامت‌گذاری به‌عنوان انجام‌شده و پنهان کردن</translation>
 <translation id="8145170459658034418">بهینه‌سازی حافظه</translation>
 <translation id="8146177459103116374">اگر قبلاً در این دستگاه ثبت‌نام کردید، می‌توانید <ph name="LINK2_START" />به‌عنوان یک کاربر موجود، وارد شوید<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">زبان‌های برگزیده‌تان را اضافه و رتبه‌بندی کنید. درصورت امکان، وب‌سایت‌ها به زبان‌های برگزیده‌تان نشان داده می‌شوند. این اولویت‌ها با تنظیمات مرورگرتان همگام‌سازی می‌شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>

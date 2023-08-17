@@ -1085,6 +1085,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1854180393107901205">Nu mai trimite</translation>
 <translation id="1856715684130786728">Adăugați o locație...</translation>
 <translation id="1858585891038687145">Ai încredere în acest certificat pentru a identifica furnizorii de software</translation>
+<translation id="1859294693760125695">Nu mă mai interesează</translation>
 <translation id="1859339856433307593">S-a salvat deja o parolă pentru acest cont pe <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Acest dosar este gol</translation>
 <translation id="1862311223300693744">Ai un software special de VPN, proxy, firewall sau NAS instalat?</translation>
@@ -3279,6 +3280,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3660234220361471169">Nu prezintă încredere</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{S-a găsit o parolă}few{S-au găsit {NUM_PASSWORDS} parole}other{S-au găsit {NUM_PASSWORDS} de parole}}</translation>
 <translation id="3664511988987167893">Pictograma extensiei</translation>
+<translation id="3665301845536101715">Deschide în panoul lateral</translation>
 <translation id="3665589677786828986">Chrome a detectat că unele dintre setări au fost deteriorate de alt program și le-a resetat la valorile inițiale.</translation>
 <translation id="3665919494326051362">Versiunea actuală este <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Date pentru remedierea erorilor cardurilor de interfață cu rețeaua Intel Wi-Fi</translation>
@@ -8648,6 +8650,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="814204052173971714">{COUNT,plural, =1{un videoclip}few{# videoclipuri}other{# de videoclipuri}}</translation>
 <translation id="8143442547342702591">Aplicație nevalidă</translation>
 <translation id="8143609395536282994">Cum îți poți gestiona datele:</translation>
+<translation id="8144429778087524791">Marchează ca finalizată și ascunde</translation>
 <translation id="8145170459658034418">Economisirea memoriei</translation>
 <translation id="8146177459103116374">Dacă v-ați înregistrat deja pe acest dispozitiv, puteți să vă <ph name="LINK2_START" />conectați ca utilizator existent<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Adaugă și ordonează limbile preferate. Site-urile se vor afișa în limbile tale preferate, dacă este posibil. Aceste preferințe se sincronizează cu setările browserului. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>

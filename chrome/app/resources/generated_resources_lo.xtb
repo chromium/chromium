@@ -1093,6 +1093,7 @@
 <translation id="1854180393107901205">ຢຸດ​ການ​ຄາສທ໌</translation>
 <translation id="1856715684130786728">ເພີ່ມ​ທີ່ຕັ້ງ...</translation>
 <translation id="1858585891038687145">ເຊື່ອໝັ້ນໃບຢັ້ງຢືນນີ້ສຳລັບການລະບຸຕົວຕົນຜູ້ສ້າງຊອບແວ</translation>
+<translation id="1859294693760125695">ບໍ່ສົນໃຈແລ້ວ</translation>
 <translation id="1859339856433307593">ລະຫັດຜ່ານສຳລັບບັນຊີນີ້ຖືກບັນທຶກໃສ່ <ph name="BRAND" /> (<ph name="USER_EMAIL" />) ຂອງທ່ານແລ້ວ</translation>
 <translation id="1861262398884155592">ໂຟນເດີນີ້ຫວ່າງເປົ່າ</translation>
 <translation id="1862311223300693744">ທ່ານມີ VPN, ພຣັອກຊີ, firewall ຫຼື ຊອບແວ NAS ພິເສດຕິດຕັ້ງໄວ້ບໍ່?</translation>
@@ -3292,6 +3293,7 @@
 <translation id="3660234220361471169">ບໍ່ເຊື່ອຖືໄດ້</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{ພົບ 1 ລະຫັດຜ່ານທີ່ມີຢູ່ແລ້ວ}other{ພົບ {NUM_PASSWORDS} ລະຫັດຜ່ານທີ່ມີຢູ່ແລ້ວ}}</translation>
 <translation id="3664511988987167893">ໄອຄອນສ່ວນຂະຫຍາຍ</translation>
+<translation id="3665301845536101715">ເປີດໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="3665589677786828986">Chrome ກວດພົບວ່າ ການຕັ້ງຄ່າຂອງທ່ານບາງຕົວໄດ້ຮັບຄວາມເສຍຫາຍໂດຍໂປຣແກຼມອື່ນ ແລະໄດ້ຕັ້ງຄ່າພວກມັນໄປເປັນຄ່າມາດຕະຖານເດີມຂອງພວກມັນແລ້ວ.</translation>
 <translation id="3665919494326051362">ເວີຊັນປັດຈຸບັນແມ່ນ <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">ໄຟລ໌ Dump ການດີບັກສຳລັບ Intel Wi-Fi NIC</translation>
@@ -8655,6 +8657,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{ວິດີໂອ}other{# ວິດີໂອ}}</translation>
 <translation id="8143442547342702591">ແອັບພລິເຄຊັນໃຊ້ບໍ່ໄດ້</translation>
 <translation id="8143609395536282994">ທ່ານສາມາດຈັດການຂໍ້ມູນຂອງທ່ານໄດ້ແນວໃດ:</translation>
+<translation id="8144429778087524791">ໝາຍວ່າແລ້ວໆ ແລະ ເຊື່ອງໄວ້</translation>
 <translation id="8145170459658034418">ຕົວປະຢັດໜ່ວຍຄວາມຈຳ</translation>
 <translation id="8146177459103116374">ຖ້າ​ທ່ານ​ໄດ້​ລົງ​ທະ​ບຽນ​​ອຸ​ປະ​ກອນ​ນີ້​ແລ້ວ​, ທ່ານ​ສາ​ມາດ <ph name="LINK2_START" />ລົງຊື່ເຂົ້າ​ໃຊ້ເປັນຜູ້ໃຊ້ທີ່ມີຢູ່ໄດ້<ph name="LINK2_END" /> .</translation>
 <translation id="8146287226035613638">ເພີ່ມ ແລະ ຈັດລະດັບພາສາທີ່ທ່ານຕ້ອງການ. ເວັບໄຊຈະສະແດງເປັນພາສາທີ່ທ່ານຕ້ອງການ, ເມື່ອເປັນໄປໄດ້. ການຕັ້ງຄ່າເຫຼົ່ານີ້ແມ່ນຊິ້ງຂໍ້ມູນກັບການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>

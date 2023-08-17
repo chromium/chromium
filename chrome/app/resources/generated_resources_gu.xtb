@@ -1081,6 +1081,7 @@
 <translation id="1854180393107901205">કાસ્ટ કરવાનું રોકો</translation>
 <translation id="1856715684130786728">સ્થાન ઉમેરો...</translation>
 <translation id="1858585891038687145">સૉફ્ટવેર માર્કર્સને ઓળખવા માટે આ પ્રમાણપત્ર પર વિશ્વાસ કરો</translation>
+<translation id="1859294693760125695">હવે રુચિ ધરાવતા નથી</translation>
 <translation id="1859339856433307593">આ એકાઉન્ટ માટેનો પાસવર્ડ પહેલેથી તમારા <ph name="BRAND" /> (<ph name="USER_EMAIL" />) પર સાચવેલો છે</translation>
 <translation id="1861262398884155592">આ ફોલ્ડર ખાલી છે</translation>
 <translation id="1862311223300693744">શું તમે કોઈ વિશિષ્ટ VPN, પ્રૉક્સી, ફાયરવૉલ અથવા NAS સૉફ્ટવેર ઇન્સ્ટૉલ કરેલું છે?</translation>
@@ -3276,6 +3277,7 @@
 <translation id="3660234220361471169">અવિશ્વસનીય</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 વર્તમાન પાસવર્ડ મળ્યો}one{{NUM_PASSWORDS} વર્તમાન પાસવર્ડ મળ્યો}other{{NUM_PASSWORDS} વર્તમાન પાસવર્ડ મળ્યા}}</translation>
 <translation id="3664511988987167893">એક્સ્ટેંશન આઇકન</translation>
+<translation id="3665301845536101715">બાજુની પૅનલમાં ખોલો</translation>
 <translation id="3665589677786828986">Chromeને જાણ થઈ છે કે તમારા કેટલાક સેટિંગ બીજા પ્રોગ્રામ દ્વારા દૂષિત કરવામાં આવેલા અને તેમને તેમના મૂળ ડિફૉલ્ટ પર રીસેટ કર્યા છે.</translation>
 <translation id="3665919494326051362">વર્તમાન વર્ઝન <ph name="CURRENT_VERSION" /> છે</translation>
 <translation id="3666196264870170605">Intel વાઇ-ફાઇ NICs ડીબગ ડમ્પ</translation>
@@ -8641,6 +8643,7 @@ USB ડિવાઇસ</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{એક વીડિયો}one{# વીડિયો}other{# વીડિયો}}</translation>
 <translation id="8143442547342702591">અમાન્ય ઍપ્લિકેશન</translation>
 <translation id="8143609395536282994">તમે તમારો ડેટા કેવી રીતે મેનેજ કરી શકો છો:</translation>
+<translation id="8144429778087524791">'થઈ ગયું' તરીકે માર્ક કરો અને છુપાવો</translation>
 <translation id="8145170459658034418">મેમરી સેવર</translation>
 <translation id="8146177459103116374">જો તમે આ ઉપકરણ પર પહેલાથી નોંધણી કરાવી છે, તો તમે <ph name="LINK2_START" />અસ્તિત્વમાં છે તે વપરાશકર્તા તરીકે સાઇન ઇન<ph name="LINK2_END" /> કરી શકો છો.</translation>
 <translation id="8146287226035613638">તમારી પસંદગીની ભાષાઓ ઉમેરો અને તેમને રેંકિંગ આપો. જ્યારે શક્ય હશે, ત્યારે વેબસાઇટ તમારી પસંદગીની ભાષાઓમાં બતાવશે. આ પસંદગીઓને તમારા બ્રાઉઝર સેટિંગ સાથે સિંક કરવામાં આવે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>

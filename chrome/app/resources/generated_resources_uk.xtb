@@ -1112,6 +1112,7 @@
 <translation id="1854180393107901205">Зупинити трансляцію</translation>
 <translation id="1856715684130786728">Додати розташування…</translation>
 <translation id="1858585891038687145">Довіряти цьому сертифікату для ідентифікації виробників програмного забезпечення</translation>
+<translation id="1859294693760125695">Більше не цікаво</translation>
 <translation id="1859339856433307593">Пароль для цього облікового запису вже збережено в <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Ця папка порожня</translation>
 <translation id="1862311223300693744">Чи встановлено на Вашому пристрої таке програмне забезпечення, як VPN-клієнт, проксі-сервер, брандмауер
@@ -3339,6 +3340,7 @@
 <translation id="3660234220361471169">Ненадійні</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 пароль уже існує}one{{NUM_PASSWORDS} пароль уже існує}few{{NUM_PASSWORDS} паролі вже існують}many{{NUM_PASSWORDS} паролів уже існують}other{{NUM_PASSWORDS} пароля вже існують}}</translation>
 <translation id="3664511988987167893">Значок розширення</translation>
+<translation id="3665301845536101715">Відкрити на бічній панелі</translation>
 <translation id="3665589677786828986">Chrome виявив, що інша програма пошкодила деякі ваші налаштування, і відновив початкові налаштування за умовчанням.</translation>
 <translation id="3665919494326051362">Поточна версія: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Дамп налагодження Intel Wi-Fi NIC</translation>
@@ -8770,6 +8772,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{відео}one{# відео}few{# відео}many{# відео}other{# відео}}</translation>
 <translation id="8143442547342702591">Недійсний додаток</translation>
 <translation id="8143609395536282994">Як ви можете керувати своїми даними</translation>
+<translation id="8144429778087524791">Позначити як виконане й приховати</translation>
 <translation id="8145170459658034418">Заощадження пам’яті</translation>
 <translation id="8146177459103116374">Якщо ви вже зареєструвалися на цьому пристрої, можна <ph name="LINK2_START" />ввійти як існуючий користувач<ph name="LINK2_END" /> .</translation>
 <translation id="8146287226035613638">Додайте та впорядкуйте бажані мови. Текст на веб-сайтах відображатиметься ними, коли буде така можливість. Ці параметри синхронізуються з налаштуваннями веб-переглядача. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>

@@ -1095,6 +1095,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1854180393107901205">Átküldés leállítása</translation>
 <translation id="1856715684130786728">Hely hozzáadása...</translation>
 <translation id="1858585891038687145">Bízzon meg ebben a tanúsítványban a szoftvergyártók azonosításakor</translation>
+<translation id="1859294693760125695">Már nem érdekel</translation>
 <translation id="1859339856433307593">Ehhez a fiókhoz (<ph name="USER_EMAIL" />) már tartozik mentett jelszó a(z) <ph name="BRAND" /> szolgáltatásban</translation>
 <translation id="1861262398884155592">Ez a mappa üres</translation>
 <translation id="1862311223300693744">Rendelkezik telepített speciális VPN-, proxy-, tűzfal- vagy NAS-szoftverrel?</translation>
@@ -3292,6 +3293,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3660234220361471169">Nem megbízható</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 meglévő jelszó található}other{{NUM_PASSWORDS} meglévő jelszó található}}</translation>
 <translation id="3664511988987167893">Bővítmény ikonja</translation>
+<translation id="3665301845536101715">Megnyitás az oldalsó panelen</translation>
 <translation id="3665589677786828986">A Chrome azt észlelte, hogy egy másik program miatt megsérült néhány beállítás, ezért visszaállítja őket az eredeti alapértelmezett értékekre.</translation>
 <translation id="3665919494326051362">Jelenlegi verzió: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi hálózati interfészkártyák hibakeresési memóriaképfájlja</translation>
@@ -8660,6 +8662,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="814204052173971714">{COUNT,plural, =1{egy videót}other{# videót}}</translation>
 <translation id="8143442547342702591">Érvénytelen alkalmazás</translation>
 <translation id="8143609395536282994">A következőképpen kezelheti az adatait:</translation>
+<translation id="8144429778087524791">Megjelölés készként és elrejtés</translation>
 <translation id="8145170459658034418">Memóriatakarékos</translation>
 <translation id="8146177459103116374">Ha már regisztrálva van ezen az eszközön, akkor <ph name="LINK2_START" />bejelentkezhet meglévő felhasználóként<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Vegye fel a listára, és rangsorolja az előnyben részesített nyelveit. A webhelyek szövege a preferált nyelveken jelenik meg, ha lehetséges. Ezeket a preferenciákat a rendszer szinkronizálja a böngésző beállításaival. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>

@@ -1080,6 +1080,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1854180393107901205">Yayımı dayandırın</translation>
 <translation id="1856715684130786728">Məkan əlavə edin...</translation>
 <translation id="1858585891038687145">Proqram yaradıcılarının aşkarlanması üçün bu sertifikata güvənin.</translation>
+<translation id="1859294693760125695">Artıq maraqlanmıram</translation>
 <translation id="1859339856433307593">Bu hesab üçün parol <ph name="BRAND" /> bölməsində (<ph name="USER_EMAIL" />) saxlanıb</translation>
 <translation id="1861262398884155592">Qovluq boşdur</translation>
 <translation id="1862311223300693744">Quraşdırılmış istənilən xüsusi VPN, proksi, qoruyucu divar və ya NAS proqram təminatınız var?</translation>
@@ -3277,6 +3278,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3660234220361471169">Güvənilməyən</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 mövcud parol tapıldı}other{{NUM_PASSWORDS} mövcud parol tapıldı}}</translation>
 <translation id="3664511988987167893">Arıtırma İkonası</translation>
+<translation id="3665301845536101715">Yan paneldə açın</translation>
 <translation id="3665589677786828986">Chrome ayarlarınızdan bəzilərinin digər proqram tərəfindən xarab edildiyini aşkarladı və onları defolt vəziyyətinə sıfırladı.</translation>
 <translation id="3665919494326051362">Cari versiya: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel WiFi NIC sazlama dampı</translation>
@@ -8638,6 +8640,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{video}other{# video}}</translation>
 <translation id="8143442547342702591">Yanlış tətbiq</translation>
 <translation id="8143609395536282994">Datanızı necə idarə edə bilərsiniz:</translation>
+<translation id="8144429778087524791">Hazır kimi işarələyin və gizlədin</translation>
 <translation id="8145170459658034418">Yaddaşa Qənaət</translation>
 <translation id="8146177459103116374">Bu cihazda artıq qeydiyyatdan keçmisinizsə, <ph name="LINK2_START" />mövcud istifadəçi olaraq hesaba girə bilərsiniz<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Tərcih etdiyiniz dilləri əlavə edin və sıralayın. Mümkün olduqda vebsaytlar tərcih etdiyiniz dillərdə göstəriləcək. Bu tərcihlər brauzer ayarlarınızla sinxronlaşdırılır. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>

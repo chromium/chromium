@@ -1095,6 +1095,7 @@
 <translation id="1854180393107901205">전송 중지</translation>
 <translation id="1856715684130786728">위치 추가...</translation>
 <translation id="1858585891038687145">소프트웨어 제작자를 식별하기 위해 이 인증서 신뢰</translation>
+<translation id="1859294693760125695">더 이상 관심 없음</translation>
 <translation id="1859339856433307593">이 계정의 비밀번호가 <ph name="BRAND" />(<ph name="USER_EMAIL" />)에 이미 저장되어 있습니다.</translation>
 <translation id="1861262398884155592">폴더가 비어 있습니다.</translation>
 <translation id="1862311223300693744">특별히 설치한 VPN, 프록시, 방화벽 또는 NAS 소프트웨어가
@@ -3295,6 +3296,7 @@
 <translation id="3660234220361471169">신뢰할 수 없음</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{기존 비밀번호 1개 찾음}other{기존 비밀번호 {NUM_PASSWORDS}개 찾음}}</translation>
 <translation id="3664511988987167893">확장 프로그램 아이콘</translation>
+<translation id="3665301845536101715">측면 패널에서 열기</translation>
 <translation id="3665589677786828986">Chrome에서 다른 프로그램이 브라우저 설정을 일부 손상시키고 원래 기본값으로 재설정했음을 감지했습니다.</translation>
 <translation id="3665919494326051362">현재 버전은 <ph name="CURRENT_VERSION" />입니다.</translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC 디버그 덤프</translation>
@@ -8661,6 +8663,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{동영상 1개}other{동영상 #개}}</translation>
 <translation id="8143442547342702591">잘못된 애플리케이션</translation>
 <translation id="8143609395536282994">데이터 관리 방법:</translation>
+<translation id="8144429778087524791">완료로 표시하고 숨기기</translation>
 <translation id="8145170459658034418">메모리 절약</translation>
 <translation id="8146177459103116374">이 기기에 이미 등록한 경우 <ph name="LINK2_START" />기존 사용자로 로그인<ph name="LINK2_END" />할 수 있습니다.</translation>
 <translation id="8146287226035613638">기본 언어를 추가하고 순위를 지정하세요. 가능한 경우 웹사이트가 기본 언어로 표시됩니다. 이러한 환경설정은 브라우저 설정과 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>

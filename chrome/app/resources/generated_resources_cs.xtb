@@ -1086,6 +1086,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1854180393107901205">Zastavit odesílání</translation>
 <translation id="1856715684130786728">Přidat polohu...</translation>
 <translation id="1858585891038687145">Důvěřovat tomuto certifikátu při ověřování identity výrobců softwaru</translation>
+<translation id="1859294693760125695">Už nemám zájem</translation>
 <translation id="1859339856433307593">Heslo pro tento účet už je do <ph name="BRAND" /> pro účet <ph name="USER_EMAIL" /> uloženo</translation>
 <translation id="1861262398884155592">Tato složka je prázdná</translation>
 <translation id="1862311223300693744">Používáte zvláštní VPN, proxy, firewall nebo software NAS?</translation>
@@ -3280,6 +3281,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3660234220361471169">Nedůvěryhodný</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Bylo nalezeno 1 existující heslo}few{Byla nalezena {NUM_PASSWORDS} existující hesla}many{Bylo nalezeno {NUM_PASSWORDS} existujícího hesla}other{Bylo nalezeno {NUM_PASSWORDS} existujících hesel}}</translation>
 <translation id="3664511988987167893">Ikona rozšíření</translation>
+<translation id="3665301845536101715">Otevřít v bočním panelu</translation>
 <translation id="3665589677786828986">Prohlížeč Chrome zjistil, že některá z vašich nastavení byla upravena jiným programem, a obnovil je na původní výchozí hodnoty.</translation>
 <translation id="3665919494326051362">Aktuální verze je <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Výpis ladění pro Intel Wi‑Fi NICs</translation>
@@ -8646,6 +8648,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="814204052173971714">{COUNT,plural, =1{video}few{# videa}many{# videa}other{# videí}}</translation>
 <translation id="8143442547342702591">Neplatná aplikace</translation>
 <translation id="8143609395536282994">Jak můžete své údaje spravovat:</translation>
+<translation id="8144429778087524791">Označit jako hotové a skrýt</translation>
 <translation id="8145170459658034418">Spořič paměti</translation>
 <translation id="8146177459103116374">V tomto zařízení jste již zaregistrováni. Můžete se <ph name="LINK2_START" />přihlásit jako stávající uživatel<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Přidejte a ohodnoťte preferované jazyky. Pokud to bude možné, webové stránky se budou zobrazovat ve vašem preferovaném jazyce. Tyto předvolby jsou synchronizovány s nastavením prohlížeče. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>

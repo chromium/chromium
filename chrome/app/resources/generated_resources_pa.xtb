@@ -1096,6 +1096,7 @@
 <translation id="1854180393107901205">ਕਾਸਟ ਕਰਨਾ ਰੋਕੋ</translation>
 <translation id="1856715684130786728">ਨਿਰਧਾਰਿਤ ਸਥਾਨ ਜੋੜੋ...</translation>
 <translation id="1858585891038687145">ਸਾਫਟਵੇਅਰ ਨਿਰਮਾਤਾਵਾਂ ਦੀ ਪਛਾਣ ਕਰਨ ਲਈ ਇਸ ਪ੍ਰਮਾਣ-ਪੱਤਰ 'ਤੇ ਭਰੋਸਾ ਕਰੋ</translation>
+<translation id="1859294693760125695">ਹੁਣ ਕੋਈ ਦਿਲਚਸਪੀ ਨਹੀਂ ਹੈ</translation>
 <translation id="1859339856433307593">ਇਸ ਖਾਤੇ ਦਾ ਪਾਸਵਰਡ ਪਹਿਲਾਂ ਹੀ ਤੁਹਾਡੇ <ph name="BRAND" /> (<ph name="USER_EMAIL" />) ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਹੈ</translation>
 <translation id="1861262398884155592">ਇਹ ਫੋਲਡਰ ਖਾਲੀ ਹੈ</translation>
 <translation id="1862311223300693744">ਕੀ ਤੁਸੀਂ ਕੋਈ ਖਾਸ VPN, ਪ੍ਰੌਕਸੀ, ਫ਼ਾਇਰਵਾਲ ਜਾਂ NAS ਸਾਫ਼ਟਵੇਅਰ
@@ -3293,6 +3294,7 @@
 <translation id="3660234220361471169">ਭਰੋਸੇਯੋਗ ਨਹੀਂ</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 ਮੌਜੂਦਾ ਪਾਸਵਰਡ ਮਿਲਿਆ}one{{NUM_PASSWORDS} ਮੌਜੂਦਾ ਪਾਸਵਰਡ ਮਿਲਿਆ}other{{NUM_PASSWORDS} ਮੌਜੂਦਾ ਪਾਸਵਰਡ ਮਿਲੇ}}</translation>
 <translation id="3664511988987167893">ਐਕਟੈਂਸ਼ਨ ਪ੍ਰਤੀਕ</translation>
+<translation id="3665301845536101715">ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="3665589677786828986">Chrome ਨੇ ਪਤਾ ਲਗਾਇਆ ਕਿ ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਗਰਾਮ ਨਾ ਤੁਹਾਡੀਆਂ ਕੁਝ ਸੈਟਿੰਗਾਂ ਨੂੰ ਖਰਾਬ ਕਰ ਦਿੱਤਾ ਹੈ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਮੂਲ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਸੈਟਿੰਗਾਂ 'ਤੇ ਰੀਸੈੱਟ ਕੀਤਾ ਗਿਆ ਸੀ।</translation>
 <translation id="3665919494326051362">ਮੌਜੂਦਾ ਵਰਜਨ <ph name="CURRENT_VERSION" /> ਹੈ</translation>
 <translation id="3666196264870170605">Intel WiFi NIC ਡੀਬੱਗ ਡੰਪ</translation>
@@ -8661,6 +8663,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{ਇੱਕ ਵੀਡੀਓ}one{# ਵੀਡੀਓ}other{# ਵੀਡੀਓ}}</translation>
 <translation id="8143442547342702591">ਅਵੈਧ ਐਪਲੀਕੇਸ਼ਨ</translation>
 <translation id="8143609395536282994">ਤੁਸੀਂ ਆਪਣੇ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਿਵੇਂ ਕਰ ਸਕਦੇ ਹੋ:</translation>
+<translation id="8144429778087524791">ਹੋ ਗਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰੋ ਅਤੇ ਲੁਕਾਓ</translation>
 <translation id="8145170459658034418">ਮੈਮੋਰੀ ਸੇਵਰ</translation>
 <translation id="8146177459103116374">ਜੇਕਰ ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰਜਿਸਟਰ ਕੀਤਾ ਹੈ, ਤਾਂ ਤੁਸੀਂ <ph name="LINK2_START" />ਇੱਕ ਮੌਜੂਦਾ ਵਰਤੋਂਕਾਰ ਦੇ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਇਨ<ph name="LINK2_END" /> ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8146287226035613638">ਆਪਣੀਆਂ ਤਰਜੀਹੀ ਭਾਸ਼ਾਵਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ ਅਤੇ ਦਰਜਾ ਦਿਓ। ਜਦੋਂ ਵੀ ਸੰਭਵ ਹੋਵੇ, ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੀਆਂ ਤਰਜੀਹੀ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਦਿਖਾਇਆ ਜਾਵੇਗਾ। ਇਹਨਾਂ ਤਰਜੀਹਾਂ ਦਾ ਤੁਹਾਡੀਆਂ ਬ੍ਰਾਊਜ਼ਰ ਸੈਟਿੰਗਾਂ ਨਾਲ ਸਿੰਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
