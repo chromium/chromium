@@ -2049,8 +2049,16 @@ bool AutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
   bool cvc_result = false;
   if (old_credit_card->cvc() != credit_card.cvc()) {
     sql::Statement cvc_statement;
-    UpdateBuilder(db_, cvc_statement, kLocalStoredCvcTable,
-                  {kGuid, kValueEncrypted, kLastUpdatedTimestamp}, "guid=?1");
+    // If existing card doesn't have CVC, we will insert CVC into
+    // local_stored_cvc table. If existing card does have CVC, we will update
+    // CVC for local_stored_cvc table.
+    if (old_credit_card->cvc().empty()) {
+      InsertBuilder(db_, cvc_statement, kLocalStoredCvcTable,
+                    {kGuid, kValueEncrypted, kLastUpdatedTimestamp});
+    } else {
+      UpdateBuilder(db_, cvc_statement, kLocalStoredCvcTable,
+                    {kGuid, kValueEncrypted, kLastUpdatedTimestamp}, "guid=?1");
+    }
     BindLocalStoredCvcToStatement(credit_card, AutofillClock::Now(),
                                   &cvc_statement, *autofill_table_encryptor_);
     cvc_result = cvc_statement.Run();

@@ -1364,6 +1364,21 @@ TEST_F(AutofillTableTest, CreditCardCvc) {
   EXPECT_FALSE(cvc_removed_statement.Step());
 }
 
+// Tests that update a credit card CVC that doesn't have CVC set initially.
+TEST_F(AutofillTableTest, UpdateCvcForExistingCreditCardWithoutCvc) {
+  CreditCard card = test::GetCreditCard();
+  EXPECT_TRUE(table_->AddCreditCard(card));
+
+  std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
+  EXPECT_EQ(u"", db_card->cvc());
+
+  // Update the credit card CVC, we should expect success and CVC gets updated.
+  card.set_cvc(u"123");
+  EXPECT_TRUE(table_->UpdateCreditCard(card));
+  db_card = table_->GetCreditCard(card.guid());
+  EXPECT_EQ(u"123", db_card->cvc());
+}
+
 // Tests that verify add, update and clear server cvc function working as
 // expected.
 TEST_F(AutofillTableTest, ServerCvc) {
