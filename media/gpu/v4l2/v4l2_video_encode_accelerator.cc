@@ -658,7 +658,7 @@ void V4L2VideoEncodeAccelerator::FrameProcessed(
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "media,gpu", "V4L2VEA::ImageProcessor::Process",
       timestamp.InMicroseconds(), "timestamp", timestamp.InMicroseconds(),
-      "input_size", image_processor_->input_config().size.ToString());
+      "output_size", image_processor_->output_config().size.ToString());
 
   encoder_input_queue_.emplace(std::move(frame), force_keyframe,
                                output_buffer_index);
