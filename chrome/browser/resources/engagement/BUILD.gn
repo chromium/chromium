@@ -7,7 +7,8 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "engagement"
   static_files = [ "site_engagement.html" ]
-  non_web_component_files = [ "site_engagement.ts" ]
+  web_component_files = [ "app.ts" ]
+  html_to_wrapper_template = "native"
 
   mojo_files_deps =
       [ "//components/site_engagement/core/mojom:mojo_bindings_ts__generator" ]

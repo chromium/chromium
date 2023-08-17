@@ -5,8 +5,8 @@
 /**
  * @fileoverview Test suite for the Site Engagement WebUI.
  */
-var EXAMPLE_URL_1 = 'http://example.com/';
-var EXAMPLE_URL_2 = 'http://shmlexample.com/';
+const EXAMPLE_URL_1 = 'http://example.com/';
+const EXAMPLE_URL_2 = 'http://shmlexample.com/';
 
 GEN('#include "components/site_engagement/content/site_engagement_service.h"');
 GEN('#include "chrome/browser/engagement/site_engagement_service_factory.h"');
@@ -35,29 +35,21 @@ SiteEngagementBrowserTest.prototype = {
     '//third_party/mocha/mocha.js',
     '//chrome/test/data/webui/mocha_adapter.js',
   ],
-
-  /** @override */
-  setUp: function() {
-    testing.Test.prototype.setUp.call(this);
-    suiteSetup(async function() {
-      await whenPageIsPopulatedForTest();
-      await disableAutoupdateForTests();
-    });
-  },
 };
 
 TEST_F('SiteEngagementBrowserTest', 'All', function() {
-  var cells;
+  let app;
+  let cells;
 
   function getCells() {
-    var originCells =
-        Array.from(document.getElementsByClassName('origin-cell'));
-    var scoreInputs =
-        Array.from(document.getElementsByClassName('base-score-input'));
-    var bonusScoreCells =
-        Array.from(document.getElementsByClassName('bonus-score-cell'));
-    var totalScoreCells =
-        Array.from(document.getElementsByClassName('total-score-cell'));
+    const originCells =
+        Array.from(app.shadowRoot.querySelectorAll('.origin-cell'));
+    const scoreInputs =
+        Array.from(app.shadowRoot.querySelectorAll('.base-score-input'));
+    const bonusScoreCells =
+        Array.from(app.shadowRoot.querySelectorAll('.bonus-score-cell'));
+    const totalScoreCells =
+        Array.from(app.shadowRoot.querySelectorAll('.total-score-cell'));
     return originCells.map((c, i) => {
       return {
         origin: c,
@@ -70,6 +62,11 @@ TEST_F('SiteEngagementBrowserTest', 'All', function() {
 
   setup(async function() {
     await import('chrome://webui-test/mojo_webui_test_support.js');
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    app = document.createElement('site-engagement-app');
+    document.body.appendChild(app);
+    await app.whenPopulatedForTest();
+    app.disableAutoupdate();
     cells = getCells();
   });
 
@@ -86,11 +83,12 @@ TEST_F('SiteEngagementBrowserTest', 'All', function() {
   });
 
   test('change score', async function() {
-    var firstRow = cells[0];
+    const firstRow = cells[0];
     firstRow.scoreInput.value = 50;
     firstRow.scoreInput.dispatchEvent(new Event('change'));
 
-    const {info} = await engagementDetailsProvider.getSiteEngagementDetails();
+    const {info} =
+        await app.engagementDetailsProvider.getSiteEngagementDetails();
     assertEquals(firstRow.origin.textContent, info[0].origin.url);
     assertEquals(50, info[0].baseScore);
   });

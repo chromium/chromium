@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/engagement_resources.h"
 #include "chrome/grit/engagement_resources_map.h"
@@ -98,12 +99,9 @@ SiteEngagementUI::SiteEngagementUI(content::WebUI* web_ui)
   // Set up the chrome://site-engagement/ source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUISiteEngagementHost);
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://webui-test 'self';");
-  source->AddResourcePaths(
-      base::make_span(kEngagementResources, kEngagementResourcesSize));
-  source->SetDefaultResource(IDR_ENGAGEMENT_SITE_ENGAGEMENT_HTML);
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kEngagementResources, kEngagementResourcesSize),
+      IDR_ENGAGEMENT_SITE_ENGAGEMENT_HTML);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SiteEngagementUI)
