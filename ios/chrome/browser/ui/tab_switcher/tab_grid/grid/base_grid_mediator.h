@@ -36,6 +36,9 @@ class WebStateList;
 // Contained grid which provides tab grid toolbar configuration.
 @property(nonatomic, weak) id<GridToolbarsConfigurationProvider>
     containedGridToolbarsProvider;
+// The UI consumer to which updates are made.
+@property(nonatomic, weak) id<TabCollectionConsumer> consumer;
+
 // Initializer with `consumer` as the receiver of model layer updates.
 - (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;

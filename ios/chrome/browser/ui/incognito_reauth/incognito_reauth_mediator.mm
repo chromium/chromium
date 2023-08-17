@@ -9,9 +9,6 @@
 
 @interface IncognitoReauthMediator () <IncognitoReauthObserver>
 
-// Consumer for this mediator.
-@property(nonatomic, weak) id<IncognitoReauthConsumer> consumer;
-
 // Agent tracking the authentication status.
 @property(nonatomic, weak) IncognitoReauthSceneAgent* reauthAgent;
 
@@ -19,18 +16,18 @@
 
 @implementation IncognitoReauthMediator
 
-- (instancetype)initWithConsumer:(id<IncognitoReauthConsumer>)consumer
-                     reauthAgent:(IncognitoReauthSceneAgent*)reauthAgent {
+- (instancetype)initWithReauthAgent:(IncognitoReauthSceneAgent*)reauthAgent {
   self = [super init];
   if (self) {
-    _consumer = consumer;
     _reauthAgent = reauthAgent;
     [reauthAgent addObserver:self];
-
-    [_consumer
-        setItemsRequireAuthentication:reauthAgent.authenticationRequired];
   }
   return self;
+}
+
+- (void)setConsumer:(id<IncognitoReauthConsumer>)consumer {
+  _consumer = consumer;
+  [_consumer setItemsRequireAuthentication:_reauthAgent.authenticationRequired];
 }
 
 - (void)dealloc {

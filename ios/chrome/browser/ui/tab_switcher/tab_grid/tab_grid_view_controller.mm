@@ -2498,6 +2498,74 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _isSubjectToParentalControls = isSubjectToParentalControls;
 }
 
+- (BOOL)updateTabGridForIncognitoModeDisabled:(BOOL)isIncognitoModeDisabled {
+  BOOL isTabGridUpdated = NO;
+  UIViewController* updatedIncognitoViewController = nil;
+
+  if (isIncognitoModeDisabled &&
+      _pageConfiguration == TabGridPageConfiguration::kAllPagesEnabled) {
+    // Disable incognito mode if it was available before.
+    _pageConfiguration = TabGridPageConfiguration::kIncognitoPageDisabled;
+    isTabGridUpdated = YES;
+
+    // Remove the current incognito tab view controller.
+    [_incognitoTabsViewController willMoveToParentViewController:nil];
+    [_incognitoTabsViewController removeFromParentViewController];
+    [_incognitoTabsViewController.view removeFromSuperview];
+    _incognitoTabsViewController = nil;
+
+    // Create and initialize the disabled incognito tab view controller.
+    _incognitoDisabledTabViewController = [[DisabledTabViewController alloc]
+        initWithPage:TabGridPageIncognitoTabs];
+    _incognitoDisabledTabViewController.delegate = self;
+    [self setupDisabledTabViewForPageType:TabGridPageIncognitoTabs];
+
+    updatedIncognitoViewController = _incognitoDisabledTabViewController;
+  } else if (!isIncognitoModeDisabled &&
+             _pageConfiguration ==
+                 TabGridPageConfiguration::kIncognitoPageDisabled) {
+    // Enable incognito mode if it was previously disabled.
+    _pageConfiguration = TabGridPageConfiguration::kAllPagesEnabled;
+    isTabGridUpdated = YES;
+
+    // Remove the disabled incognito tab view controller.
+    [_incognitoDisabledTabViewController willMoveToParentViewController:nil];
+    [_incognitoDisabledTabViewController removeFromParentViewController];
+    [_incognitoDisabledTabViewController.view removeFromSuperview];
+    _incognitoDisabledTabViewController = nil;
+
+    // Create and initialize the incognito view controller.
+    _incognitoTabsViewController = [[GridViewController alloc] init];
+    self.incognitoTabsViewController.mode = self.tabGridMode;
+    [self setupIncognitoTabsViewController];
+
+    updatedIncognitoViewController = _incognitoTabsViewController;
+  }
+
+  // Finalize the updated tab grid.
+  if (isTabGridUpdated) {
+    CHECK(updatedIncognitoViewController);
+
+    // Point the regular tab view to the incognito tab view.
+    [self.regularTabsViewController.view.leadingAnchor
+        constraintEqualToAnchor:updatedIncognitoViewController.view
+                                    .trailingAnchor]
+        .active = YES;
+
+    // Enable new incognito tab button and set incognito tabs to be visible.
+    [self configureButtonsForActiveAndCurrentPage];
+    [self broadcastIncognitoContentVisibility];
+
+    // Update list of view controllers.
+    _pageViewControllers = @[
+      updatedIncognitoViewController, _regularTabsViewController,
+      _remoteTabsViewController
+    ];
+  }
+
+  return isTabGridUpdated;
+}
+
 #pragma mark - IncognitoReauthObserver
 
 - (void)reauthAgent:(IncognitoReauthSceneAgent*)agent

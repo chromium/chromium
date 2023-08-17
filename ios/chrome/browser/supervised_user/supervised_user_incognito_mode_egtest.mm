@@ -23,7 +23,16 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using chrome_test_util::ToolsMenuView;
+namespace {
+
+// Message shown in the disabled incognito tab page for supervised users.
+NSString* const kTestSupervisedIncognitoMessage =
+    @"Your account is managed by your parent.";
+
+// Label used to find the 'Learn more' link.
+NSString* const kTestLearnMoreLabel = @"Learn more";
+
+}  // namespace
 
 // Tests that supervised users have incognito mode disabled.
 @interface SupervisedUserIncognitoModeTestCase : ChromeTestCase
@@ -102,24 +111,70 @@ using chrome_test_util::ToolsMenuView;
 }
 
 // Test that the disabled incognito tab grid shows a link to Family Link.
-// TODO(b/264669964): Enable this test once the tab grid state is refreshed on
-// sign-in.
-- (void)DISABLED_testIncognitoTabGridTapFamilyLinkLearnMore {
+- (void)testTabGridIncognitoDisabled {
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Open incognito tab grid.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridIncognitoTabsPanelButton()]
+      performAction:grey_tap()];
+
+  // New Incognito Tab button `(+)` should be disabled.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_TOOLBAR_SHOW_TABS)]
+      selectElementWithMatcher:chrome_test_util::TabGridNewIncognitoTabButton()]
+      assertWithMatcher:grey_accessibilityTrait(
+                            UIAccessibilityTraitNotEnabled)];
+
+  // The disabled incognito tab grid should display a message for supervised
+  // users.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
+                                          kTestSupervisedIncognitoMessage)]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the "Learn more" link works.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(kTestLearnMoreLabel),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
-  // Side swipe right on the tab grid to show incognito disabled menu.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kTabGridScrollViewIdentifier)]
-      performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_TAB_GRID_SUPERVISED_INCOGNITO_MESSAGE))]
+  // Wait for the Family Link page to finish loading.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // For testing, there will be a redirect to the main Family Link website and
+  // thus we only compare the hostnames.
+  std::string expectedHostname =
+      GURL(supervised_user::kManagedByParentUiMoreInfoUrl.Get()).host();
+  GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL].host(),
+                  expectedHostname,
+                  @"Did not open the correct Learn more URL with hostname %s",
+                  expectedHostname.c_str());
+}
+
+// Test that the incognito tab grid is available after signout.
+- (void)testTabGridIncognitoEnabledOnSignout {
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+  [SigninEarlGrey verifySignedOut];
+
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Open incognito tab grid.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridIncognitoTabsPanelButton()]
       performAction:grey_tap()];
 
-  [ChromeEarlGrey waitForWebStateVisible];
+  // New Incognito Tab button `(+)` should be enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridNewIncognitoTabButton()]
+      assertWithMatcher:grey_not(grey_accessibilityTrait(
+                            UIAccessibilityTraitNotEnabled))];
+
+  // The disabled incognito tab should not display any messages from the
+  // disabled incognito tab grid.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
+                                          kTestSupervisedIncognitoMessage)]
+      assertWithMatcher:grey_nil()];
 }
 
 @end
