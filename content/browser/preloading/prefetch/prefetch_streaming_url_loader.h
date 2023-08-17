@@ -25,10 +25,7 @@ class PrefetchStreamingURLLoader;
 // `PrefetchContainer::SinglePrefetch`, i.e. one redirect hop.
 //
 // A sequences of events are received from `PrefetchStreamingURLLoader` and
-// served to `serving_url_loader_client_`. Expected sequences are either:
-// - Redirect cases: `HandleRedirect()` [last event]
-// - Non-redirect cases: `OnReceiveResponse()` -> `OnComplete()` [last event]
-// with optional `OnReceiveEarlyHints()` and `OnTransferSizeUpdated()` events.
+// served to `serving_url_loader_client_`.
 //
 // `PrefetchResponseReader` is kept alive by:
 // - `PrefetchContainer::SinglePrefetch::response_reader_`
@@ -132,13 +129,44 @@ class CONTENT_EXPORT PrefetchResponseReader final
   };
   EventQueueStatus event_queue_status_{EventQueueStatus::kNotStarted};
 
-  // Indicates whether the last event is added to `event_queue_` and thus no
-  // more events can be added. See the class comment for valid event sequences.
-  bool last_event_added_ = false;
+  // Valid state transitions (which imply valid event sequences) are:
+  // - Redirect: `kStarted` -> `kRedirectHandled`
+  // - Non-redirect: `kStarted` -> `kResponseReceived` -> `kCompleted`
+  // - Failure: `kStarted` -> `kFailed`
+  //            `kStarted` -> `kFailedResponseReceived` -> `kFailed`
+  //            `kStarted` -> `kResponseReceived` -> `kFailed`
+  // Optional `OnReceiveEarlyHints()` and `OnTransferSizeUpdated()` events can
+  // be received in any non-final states.
+  enum class LoadState {
+    // Initial state, not yet receiving a redirect nor non-redirect response.
+    kStarted,
+
+    // [Final] A redirect response is received (`HandleRedirect()` is called).
+    // This is a final state because we always switch to a new
+    // `PrefetchResponseReader` on redirects.
+    kRedirectHandled,
+
+    // [servable] A non-redirect successful response is received
+    // (`OnReceiveResponse()` is called with `servable` = true).
+    kResponseReceived,
+
+    // A non-redirect failed response is received (`OnReceiveResponse()` is
+    // called with `servable` = false).
+    kFailedResponseReceived,
+
+    // [Final, servable] Successful completion (`OnComplete(net::OK)` is called
+    // after `kResponseReceived`.
+    kCompleted,
+
+    // [Final] Failed completion (`OnComplete()` is called, either with
+    // non-`net::OK`, or after `kFailedResponseReceived`).
+    kFailed
+  };
+
+  LoadState load_state_{LoadState::kStarted};
 
   // The prefetched data and metadata. Not set for a redirect response.
   network::mojom::URLResponseHeadPtr head_;
-  bool servable_{false};
   absl::optional<network::URLLoaderCompletionStatus> completion_status_;
   absl::optional<base::TimeTicks> response_complete_time_;
 

@@ -70,12 +70,26 @@ void PrefetchStreamingURLLoader::SetResponseReader(
 
 bool PrefetchResponseReader::Servable(
     base::TimeDelta cacheable_duration) const {
+  bool servable = false;
+  switch (load_state_) {
+    case LoadState::kResponseReceived:
+    case LoadState::kCompleted:
+      servable = true;
+      break;
+
+    case LoadState::kStarted:
+    case LoadState::kRedirectHandled:
+    case LoadState::kFailedResponseReceived:
+    case LoadState::kFailed:
+      servable = false;
+      break;
+  }
+
   // If the response hasn't been received yet (meaning response_complete_time_
   // is absl::nullopt), we can still serve the prefetch (depending on |head_|).
-  return servable_ &&
-         (!response_complete_time_.has_value() ||
-          base::TimeTicks::Now() <
-              response_complete_time_.value() + cacheable_duration);
+  return servable && (!response_complete_time_.has_value() ||
+                      base::TimeTicks::Now() <
+                          response_complete_time_.value() + cacheable_duration);
 }
 
 bool PrefetchStreamingURLLoader::Failed() const {
@@ -444,17 +458,32 @@ void PrefetchResponseReader::RunEventQueue() {
 
 void PrefetchResponseReader::OnComplete(
     network::URLLoaderCompletionStatus completion_status) {
-  DCHECK(!last_event_added_);
+  switch (load_state_) {
+    case LoadState::kStarted:
+      CHECK_NE(completion_status.error_code, net::OK);
+      load_state_ = LoadState::kFailed;
+      break;
+    case LoadState::kResponseReceived:
+      if (completion_status.error_code == net::OK) {
+        load_state_ = LoadState::kCompleted;
+      } else {
+        load_state_ = LoadState::kFailed;
+      }
+      break;
+    case LoadState::kFailedResponseReceived:
+      load_state_ = LoadState::kFailed;
+      break;
+    case LoadState::kRedirectHandled:
+    case LoadState::kCompleted:
+    case LoadState::kFailed:
+      CHECK(false);
+      break;
+  }
+
   DCHECK(!response_complete_time_);
   DCHECK(!completion_status_);
-
-  last_event_added_ = true;
   response_complete_time_ = base::TimeTicks::Now();
   completion_status_ = completion_status;
-
-  if (completion_status.error_code != net::OK) {
-    servable_ = false;
-  }
 
   if (serving_url_loader_client_ &&
       event_queue_status_ == EventQueueStatus::kFinished) {
@@ -468,7 +497,10 @@ void PrefetchResponseReader::OnComplete(
 
 void PrefetchResponseReader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
-  DCHECK(!last_event_added_);
+  CHECK(load_state_ == LoadState::kStarted ||
+        load_state_ == LoadState::kResponseReceived ||
+        load_state_ == LoadState::kFailedResponseReceived);
+
   if (serving_url_loader_client_ &&
       event_queue_status_ == EventQueueStatus::kFinished) {
     ForwardEarlyHints(std::move(early_hints));
@@ -481,7 +513,10 @@ void PrefetchResponseReader::OnReceiveEarlyHints(
 }
 
 void PrefetchResponseReader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
-  DCHECK(!last_event_added_);
+  CHECK(load_state_ == LoadState::kStarted ||
+        load_state_ == LoadState::kResponseReceived ||
+        load_state_ == LoadState::kFailedResponseReceived);
+
   if (serving_url_loader_client_ &&
       event_queue_status_ == EventQueueStatus::kFinished) {
     ForwardTransferSizeUpdate(transfer_size_diff);
@@ -496,10 +531,8 @@ void PrefetchResponseReader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
 void PrefetchResponseReader::HandleRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr redirect_head) {
-  DCHECK(!last_event_added_);
-  // Because we always switch to a new `PrefetchResponseReader` on redirects,
-  // this redirect event is the last event of `this`.
-  last_event_added_ = true;
+  CHECK_EQ(load_state_, LoadState::kStarted);
+  load_state_ = LoadState::kRedirectHandled;
 
   DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted);
   AddEventToQueue(base::BindOnce(&PrefetchResponseReader::ForwardRedirect,
@@ -511,13 +544,17 @@ void PrefetchResponseReader::OnReceiveResponse(
     bool servable,
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK(!last_event_added_);
+  CHECK_EQ(load_state_, LoadState::kStarted);
+  if (servable) {
+    load_state_ = LoadState::kResponseReceived;
+  } else {
+    load_state_ = LoadState::kFailedResponseReceived;
+  }
+
   DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted);
-  DCHECK(!servable_);
   DCHECK(!head_);
   DCHECK(head);
 
-  servable_ = servable;
   head_ = std::move(head);
   AddEventToQueue(base::BindOnce(&PrefetchResponseReader::ForwardResponse,
                                  base::Unretained(this), std::move(body)));
