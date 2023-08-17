@@ -185,6 +185,9 @@ void CSSImageValue::TraceAfterDispatch(blink::Visitor* visitor) const {
 }
 
 void CSSImageValue::ReResolveURL(const Document& document) const {
+  if (relative_url_.empty()) {
+    return;
+  }
   KURL url = document.CompleteURL(relative_url_);
   AtomicString url_string(url.GetString());
   if (url_string == absolute_url_) {

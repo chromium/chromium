@@ -19,6 +19,14 @@ StyleFetchedImage* StyleImageCache::CacheStyleImage(
     OriginClean origin_clean,
     bool is_ad_related,
     const float override_image_resolution) {
+  // Special-case for null request KURL's, because they cannot be hashed.
+  if (params.Url().IsNull()) {
+    if (!null_url_image_) {
+      null_url_image_ = CreateImage(document, params, origin_clean,
+                                    is_ad_related, override_image_resolution);
+    }
+    return null_url_image_;
+  }
   // TODO: Investigate key/val change to
   // "URL (sans fragment) -> ImageResourceContent"
   // see https://crbug.com/1417158
@@ -29,19 +37,31 @@ StyleFetchedImage* StyleImageCache::CacheStyleImage(
   auto result = fetched_image_map_.insert(key, nullptr);
 
   if (result.is_new_entry || !result.stored_value->value) {
-    result.stored_value->value = MakeGarbageCollected<StyleFetchedImage>(
-        ImageResourceContent::Fetch(params, document.Fetcher()), document,
-        params.GetImageRequestBehavior() ==
-            FetchParameters::ImageRequestBehavior::kDeferImageLoad,
-        origin_clean == OriginClean::kTrue, is_ad_related, params.Url(),
-        override_image_resolution);
+    result.stored_value->value =
+        CreateImage(document, params, origin_clean, is_ad_related,
+                    override_image_resolution);
   }
 
   return result.stored_value->value;
 }
 
+StyleFetchedImage* StyleImageCache::CreateImage(
+    Document& document,
+    FetchParameters& params,
+    OriginClean origin_clean,
+    bool is_ad_related,
+    const float override_image_resolution) {
+  return MakeGarbageCollected<StyleFetchedImage>(
+      ImageResourceContent::Fetch(params, document.Fetcher()), document,
+      params.GetImageRequestBehavior() ==
+          FetchParameters::ImageRequestBehavior::kDeferImageLoad,
+      origin_clean == OriginClean::kTrue, is_ad_related, params.Url(),
+      override_image_resolution);
+}
+
 void StyleImageCache::Trace(Visitor* visitor) const {
   visitor->Trace(fetched_image_map_);
+  visitor->Trace(null_url_image_);
 }
 
 }  // namespace blink

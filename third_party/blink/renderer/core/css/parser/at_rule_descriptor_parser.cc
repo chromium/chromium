@@ -118,7 +118,7 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
     return nullptr;
   }
   CSSFontFaceSrcValue* uri_value(CSSFontFaceSrcValue::Create(
-      url, context.CompleteURL(url), context.GetReferrer(),
+      url, context.CompleteNonEmptyURL(url), context.GetReferrer(),
       context.JavascriptWorld(),
       context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
       context.IsAdRelated()));

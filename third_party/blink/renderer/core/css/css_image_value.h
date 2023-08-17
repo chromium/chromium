@@ -60,7 +60,6 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
       CrossOriginAttributeValue = kCrossOriginAttributeNotSet,
       const float override_image_resolution = 0.0f);
 
-  const String& Url() const { return absolute_url_; }
   const String& RelativeUrl() const { return relative_url_; }
 
   void ReResolveURL(const Document&) const;

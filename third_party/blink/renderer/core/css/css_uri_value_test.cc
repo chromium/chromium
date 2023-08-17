@@ -27,5 +27,21 @@ TEST(CSSURIValueTest, AlreadyComputedCSSValue) {
   EXPECT_EQ("url(\"http://baz.com/a\")", abs->CssText());
 }
 
+TEST(CSSURIValueTest, LocalComputedCSSValue) {
+  cssvalue::CSSURIValue* rel = MakeGarbageCollected<cssvalue::CSSURIValue>(
+      AtomicString("#a"), KURL("http://baz.com/a"));
+  cssvalue::CSSURIValue* abs =
+      rel->ComputedCSSValue(KURL("http://bar.com"), WTF::TextEncoding());
+  EXPECT_EQ("url(\"#a\")", abs->CssText());
+}
+
+TEST(CSSURIValueTest, EmptyComputedCSSValue) {
+  cssvalue::CSSURIValue* rel =
+      MakeGarbageCollected<cssvalue::CSSURIValue>(g_empty_atom, KURL());
+  cssvalue::CSSURIValue* abs =
+      rel->ComputedCSSValue(KURL("http://bar.com"), WTF::TextEncoding());
+  EXPECT_EQ("url(\"\")", abs->CssText());
+}
+
 }  // namespace
 }  // namespace blink

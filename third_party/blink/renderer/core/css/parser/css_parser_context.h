@@ -122,6 +122,9 @@ class CORE_EXPORT CSSParserContext final
 
   KURL CompleteURL(const String& url) const;
 
+  // Like CompleteURL(), but if `url` is empty a null KURL is returned.
+  KURL CompleteNonEmptyURL(const String& url) const;
+
   SecureContextMode GetSecureContextMode() const {
     return secure_context_mode_;
   }
