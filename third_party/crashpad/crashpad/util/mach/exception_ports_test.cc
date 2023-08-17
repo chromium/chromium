@@ -19,9 +19,9 @@
 #include <signal.h>
 #include <unistd.h>
 
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
 #include "base/check.h"
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
@@ -444,8 +444,8 @@ class TestExceptionPorts : public MachMultiprocess,
 
     ScopedForbidReturn threads_need_owners;
     ASSERT_EQ(thread_count, 2u);
-    base::mac::ScopedMachSendRight main_thread(threads[0]);
-    base::mac::ScopedMachSendRight other_thread(threads[1]);
+    base::apple::ScopedMachSendRight main_thread(threads[0]);
+    base::apple::ScopedMachSendRight other_thread(threads[1]);
     threads_need_owners.Disarm();
 
     ExceptionPorts main_thread_ports(ExceptionPorts::kTargetTypeThread,
@@ -467,7 +467,7 @@ class TestExceptionPorts : public MachMultiprocess,
           mach_task_self(), local_port, local_port, MACH_MSG_TYPE_MAKE_SEND);
       ASSERT_EQ(kr, KERN_SUCCESS)
           << MachErrorMessage(kr, "mach_port_insert_right");
-      base::mac::ScopedMachSendRight send_owner(local_port);
+      base::apple::ScopedMachSendRight send_owner(local_port);
 
       switch (set_or_swap_) {
         case kSetExceptionPort: {
@@ -819,7 +819,7 @@ TEST(ExceptionPorts, HostExceptionPorts) {
 
   const bool expect_success = geteuid() == 0;
 
-  base::mac::ScopedMachSendRight host(mach_host_self());
+  base::apple::ScopedMachSendRight host(mach_host_self());
   ExceptionPorts explicit_host_ports(ExceptionPorts::kTargetTypeHost,
                                      host.get());
   EXPECT_STREQ("host", explicit_host_ports.TargetTypeName());

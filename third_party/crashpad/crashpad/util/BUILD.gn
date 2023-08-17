@@ -20,9 +20,9 @@ if (crashpad_is_in_chromium) {
 }
 
 if (crashpad_is_apple) {
-  if (crashpad_is_in_chromium) {
+  if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
     import("//build/config/sysroot.gni")
-  } else if (!crashpad_is_in_fuchsia) {
+  } else {
     import("$mini_chromium_import_root/build/sysroot.gni")
   }
 

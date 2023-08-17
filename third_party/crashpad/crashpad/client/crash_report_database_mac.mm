@@ -30,8 +30,8 @@
 #include <mutex>
 #include <tuple>
 
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/logging.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_piece.h"
@@ -813,7 +813,7 @@ bool CrashReportDatabaseMac::ReadReportMetadataLocked(
 CrashReportDatabase::OperationStatus CrashReportDatabaseMac::ReportsInDirectory(
     const base::FilePath& path,
     std::vector<CrashReportDatabase::Report>* reports) {
-  base::mac::ScopedNSAutoreleasePool pool;
+  base::apple::ScopedNSAutoreleasePool pool;
 
   DCHECK(reports->empty());
 

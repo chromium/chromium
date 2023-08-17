@@ -24,9 +24,9 @@
 #include <string>
 #include <vector>
 
+#include "base/apple/mach_logging.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
 #include "tools/tool_support.h"
 #include "util/mach/bootstrap.h"
 #include "util/mach/exc_server_variants.h"
@@ -267,8 +267,8 @@ int CatchExceptionToolMain(int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
-  base::mac::ScopedMachReceiveRight
-      service_port(BootstrapCheckIn(options.mach_service));
+  base::apple::ScopedMachReceiveRight service_port(
+      BootstrapCheckIn(options.mach_service));
   if (service_port == kMachPortNull) {
     return EXIT_FAILURE;
   }

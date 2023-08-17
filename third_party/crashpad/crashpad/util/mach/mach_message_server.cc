@@ -18,9 +18,9 @@
 
 #include <limits>
 
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_vm.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_vm.h"
 #include "util/mach/mach_message.h"
 
 namespace crashpad {
@@ -83,7 +83,7 @@ class MachMessageBuffer {
   }
 
  private:
-  base::mac::ScopedMachVM vm_;
+  base::apple::ScopedMachVM vm_;
 };
 
 // Wraps MachMessageWithDeadline(), using a MachMessageBuffer argument which

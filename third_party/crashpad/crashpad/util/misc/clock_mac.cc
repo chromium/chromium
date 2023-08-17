@@ -16,7 +16,7 @@
 
 #include <mach/mach_time.h>
 
-#include "base/mac/mach_logging.h"
+#include "base/apple/mach_logging.h"
 
 namespace {
 

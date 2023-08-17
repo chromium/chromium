@@ -38,7 +38,7 @@
 #if BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
 
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/scoped_mach_port.h"
 #include "snapshot/mac/process_snapshot_mac.h"
 #include "util/mach/scoped_task_suspend.h"
 #include "util/mach/task_for_pid.h"
@@ -144,7 +144,7 @@ int GenerateDumpMain(int argc, char* argv[]) {
   if (task == TASK_NULL) {
     return EXIT_FAILURE;
   }
-  base::mac::ScopedMachSendRight task_owner(task);
+  base::apple::ScopedMachSendRight task_owner(task);
 
   // This tool may have been installed as a setuid binary so that TaskForPID()
   // could succeed. Drop any privileges now that they’re no longer necessary.

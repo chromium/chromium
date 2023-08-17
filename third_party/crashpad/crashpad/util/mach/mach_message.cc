@@ -18,8 +18,8 @@
 
 #include <limits>
 
+#include "base/apple/mach_logging.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
 #include "build/build_config.h"
 #include "util/misc/clock.h"
 #include "util/misc/implicit_cast.h"

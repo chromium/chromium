@@ -21,9 +21,9 @@
 #include <libproc.h>
 #include <strings.h>
 
+#include "base/apple/mach_logging.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
 #include "util/mac/mac_util.h"
 #include "util/mach/mach_extensions.h"
 #include "util/misc/no_cfi_icall.h"

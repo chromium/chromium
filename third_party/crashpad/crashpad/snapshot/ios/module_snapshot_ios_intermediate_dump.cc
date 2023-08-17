@@ -17,8 +17,8 @@
 #include <mach-o/loader.h>
 #include <mach/mach.h>
 
+#include "base/apple/mach_logging.h"
 #include "base/files/file_path.h"
-#include "base/mac/mach_logging.h"
 #include "client/annotation.h"
 #include "snapshot/ios/intermediate_dump_reader_util.h"
 #include "util/ios/ios_intermediate_dump_data.h"

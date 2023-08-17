@@ -24,8 +24,8 @@
 #include <tuple>
 #include <utility>
 
+#include "base/apple/mach_logging.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
 #include "base/strings/stringprintf.h"
 #include "util/mac/mac_util.h"
 #include "util/mach/bootstrap.h"
@@ -122,7 +122,7 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
   //!
   //! \return On success, a send right to the Crashpad handler that has been
   //!     started. On failure, `MACH_PORT_NULL` with a message logged.
-  static base::mac::ScopedMachSendRight InitialStart(
+  static base::apple::ScopedMachSendRight InitialStart(
       const base::FilePath& handler,
       const base::FilePath& database,
       const base::FilePath& metrics_dir,
@@ -130,10 +130,10 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
       const std::map<std::string, std::string>& annotations,
       const std::vector<std::string>& arguments,
       bool restartable) {
-    base::mac::ScopedMachReceiveRight receive_right(
+    base::apple::ScopedMachReceiveRight receive_right(
         NewMachPort(MACH_PORT_RIGHT_RECEIVE));
     if (!receive_right.is_valid()) {
-      return base::mac::ScopedMachSendRight();
+      return base::apple::ScopedMachSendRight();
     }
 
     mach_port_t port;
@@ -145,9 +145,9 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
                                                &right_type);
     if (kr != KERN_SUCCESS) {
       MACH_LOG(ERROR, kr) << "mach_port_extract_right";
-      return base::mac::ScopedMachSendRight();
+      return base::apple::ScopedMachSendRight();
     }
-    base::mac::ScopedMachSendRight send_right(port);
+    base::apple::ScopedMachSendRight send_right(port);
     DCHECK_EQ(port, receive_right.get());
     DCHECK_EQ(right_type,
               implicit_cast<mach_msg_type_name_t>(MACH_MSG_TYPE_PORT_SEND));
@@ -171,7 +171,7 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
                      std::move(receive_right),
                      handler_restarter.get(),
                      false)) {
-      return base::mac::ScopedMachSendRight();
+      return base::apple::ScopedMachSendRight();
     }
 
     if (handler_restarter &&
@@ -211,7 +211,7 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
                 url_,
                 annotations_,
                 arguments_,
-                base::mac::ScopedMachReceiveRight(rights),
+                base::apple::ScopedMachReceiveRight(rights),
                 this,
                 true);
 
@@ -256,7 +256,7 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
                           const std::string& url,
                           const std::map<std::string, std::string>& annotations,
                           const std::vector<std::string>& arguments,
-                          base::mac::ScopedMachReceiveRight receive_right,
+                          base::apple::ScopedMachReceiveRight receive_right,
                           HandlerStarter* handler_restarter,
                           bool restart) {
     DCHECK(!restart || handler_restarter);
@@ -282,7 +282,7 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
         // port-destroyed notifications can be delivered.
         handler_restarter->notify_port_.reset();
       } else {
-        base::mac::ScopedMachSendRight previous_owner(previous);
+        base::apple::ScopedMachSendRight previous_owner(previous);
         DCHECK(restart || !previous_owner.is_valid());
       }
 
@@ -430,7 +430,7 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
   std::string url_;
   std::map<std::string, std::string> annotations_;
   std::vector<std::string> arguments_;
-  base::mac::ScopedMachReceiveRight notify_port_;
+  base::apple::ScopedMachReceiveRight notify_port_;
   uint64_t last_start_time_;
 };
 
@@ -458,7 +458,7 @@ bool CrashpadClient::StartHandler(
   // The “restartable” behavior can only be selected on OS X 10.10 and later. In
   // previous OS versions, if the initial client were to crash while attempting
   // to restart the handler, it would become an unkillable process.
-  base::mac::ScopedMachSendRight exception_port(HandlerStarter::InitialStart(
+  base::apple::ScopedMachSendRight exception_port(HandlerStarter::InitialStart(
       handler,
       database,
       metrics_dir,
@@ -476,7 +476,8 @@ bool CrashpadClient::StartHandler(
 }
 
 bool CrashpadClient::SetHandlerMachService(const std::string& service_name) {
-  base::mac::ScopedMachSendRight exception_port(BootstrapLookUp(service_name));
+  base::apple::ScopedMachSendRight exception_port(
+      BootstrapLookUp(service_name));
   if (!exception_port.is_valid()) {
     return false;
   }
@@ -486,7 +487,7 @@ bool CrashpadClient::SetHandlerMachService(const std::string& service_name) {
 }
 
 bool CrashpadClient::SetHandlerMachPort(
-    base::mac::ScopedMachSendRight exception_port) {
+    base::apple::ScopedMachSendRight exception_port) {
   DCHECK(!exception_port_.is_valid());
   DCHECK(exception_port.is_valid());
 
@@ -498,7 +499,7 @@ bool CrashpadClient::SetHandlerMachPort(
   return true;
 }
 
-base::mac::ScopedMachSendRight CrashpadClient::GetHandlerMachPort() const {
+base::apple::ScopedMachSendRight CrashpadClient::GetHandlerMachPort() const {
   DCHECK(exception_port_.is_valid());
 
   // For the purposes of this method, only return a port set by
@@ -519,16 +520,16 @@ base::mac::ScopedMachSendRight CrashpadClient::GetHandlerMachPort() const {
       mach_task_self(), exception_port_.get(), MACH_PORT_RIGHT_SEND, 1);
   if (kr != KERN_SUCCESS) {
     MACH_LOG(ERROR, kr) << "mach_port_mod_refs";
-    return base::mac::ScopedMachSendRight(MACH_PORT_NULL);
+    return base::apple::ScopedMachSendRight(MACH_PORT_NULL);
   }
 
-  return base::mac::ScopedMachSendRight(exception_port_.get());
+  return base::apple::ScopedMachSendRight(exception_port_.get());
 }
 
 // static
 void CrashpadClient::UseSystemDefaultHandler() {
-  base::mac::ScopedMachSendRight
-      system_crash_reporter_handler(SystemCrashReporterHandler());
+  base::apple::ScopedMachSendRight system_crash_reporter_handler(
+      SystemCrashReporterHandler());
 
   // Proceed even if SystemCrashReporterHandler() failed, setting MACH_PORT_NULL
   // to clear the current exception ports.

@@ -17,7 +17,7 @@
 #include <Availability.h>
 #include <pthread.h>
 
-#include "base/mac/mach_logging.h"
+#include "base/apple/mach_logging.h"
 #include "build/build_config.h"
 #include "util/mac/mac_util.h"
 

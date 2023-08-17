@@ -21,7 +21,7 @@
 #include <TargetConditionals.h>
 #import <UIKit/UIKit.h>
 
-#include "base/mac/mach_logging.h"
+#include "base/apple/mach_logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"

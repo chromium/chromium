@@ -19,10 +19,10 @@
 
 #include <iterator>
 
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_port.h"
 #include "build/build_config.h"
 #include "util/mach/exc_client_variants.h"
 #include "util/mach/exception_behaviors.h"
@@ -205,7 +205,7 @@ void SimulateCrash(const NativeCPUContext& cpu_context) {
 #error Port to your CPU architecture
 #endif
 
-  base::mac::ScopedMachSendRight thread(mach_thread_self());
+  base::apple::ScopedMachSendRight thread(mach_thread_self());
   exception_type_t exception = kMachExceptionSimulated;
   mach_exception_data_type_t codes[] = {0, 0};
   mach_msg_type_number_t code_count = std::size(codes);

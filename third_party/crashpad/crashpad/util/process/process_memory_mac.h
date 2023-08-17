@@ -21,7 +21,7 @@
 #include <memory>
 #include <string>
 
-#include "base/mac/scoped_mach_vm.h"
+#include "base/apple/scoped_mach_vm.h"
 #include "util/misc/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/process/process_memory.h"
@@ -82,7 +82,7 @@ class ProcessMemoryMac : public ProcessMemory {
                  size_t user_offset,
                  size_t user_size);
 
-    base::mac::ScopedMachVM vm_;
+    base::apple::ScopedMachVM vm_;
     const void* data_;
     size_t user_size_;
 

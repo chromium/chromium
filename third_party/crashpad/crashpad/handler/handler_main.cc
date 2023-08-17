@@ -71,7 +71,7 @@
 #include <libgen.h>
 #include <signal.h>
 
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/scoped_mach_port.h"
 #include "handler/mac/crash_report_exception_handler.h"
 #include "handler/mac/exception_handler_server.h"
 #include "handler/mac/file_limit_annotation.h"
@@ -1113,7 +1113,7 @@ int HandlerMain(int argc,
     CloseStdinAndStdout();
   }
 
-  base::mac::ScopedMachReceiveRight receive_right;
+  base::apple::ScopedMachReceiveRight receive_right;
 
   if (options.handshake_fd >= 0) {
     receive_right.reset(

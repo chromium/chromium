@@ -21,8 +21,8 @@
 #include <memory>
 #include <string>
 
-#include "base/mac/scoped_mach_port.h"
-#include "base/mac/scoped_mach_vm.h"
+#include "base/apple/scoped_mach_port.h"
+#include "base/apple/scoped_mach_vm.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
 #include "util/misc/from_pointer_cast.h"
@@ -37,7 +37,7 @@ TEST(ProcessMemoryMac, ReadMappedSelf) {
   kern_return_t kr =
       vm_allocate(mach_task_self(), &address, kSize, VM_FLAGS_ANYWHERE);
   ASSERT_EQ(kr, KERN_SUCCESS) << MachErrorMessage(kr, "vm_allocate");
-  base::mac::ScopedMachVM vm_owner(address, mach_vm_round_page(kSize));
+  base::apple::ScopedMachVM vm_owner(address, mach_vm_round_page(kSize));
 
   char* region = reinterpret_cast<char*>(address);
   for (size_t index = 0; index < kSize; ++index) {
@@ -92,7 +92,7 @@ TEST(ProcessMemoryMac, ReadSelfUnmapped) {
   kern_return_t kr =
       vm_allocate(mach_task_self(), &address, kSize, VM_FLAGS_ANYWHERE);
   ASSERT_EQ(kr, KERN_SUCCESS) << MachErrorMessage(kr, "vm_allocate");
-  base::mac::ScopedMachVM vm_owner(address, mach_vm_round_page(kSize));
+  base::apple::ScopedMachVM vm_owner(address, mach_vm_round_page(kSize));
 
   char* region = reinterpret_cast<char*>(address);
   for (size_t index = 0; index < kSize; ++index) {
@@ -154,7 +154,7 @@ TEST(ProcessMemoryMac, ReadCStringSelfUnmapped) {
   kern_return_t kr =
       vm_allocate(mach_task_self(), &address, kSize, VM_FLAGS_ANYWHERE);
   ASSERT_EQ(kr, KERN_SUCCESS) << MachErrorMessage(kr, "vm_allocate");
-  base::mac::ScopedMachVM vm_owner(address, mach_vm_round_page(kSize));
+  base::apple::ScopedMachVM vm_owner(address, mach_vm_round_page(kSize));
 
   char* region = reinterpret_cast<char*>(address);
   for (size_t index = 0; index < kSize; ++index) {
@@ -219,7 +219,7 @@ bool IsAddressMapped(vm_address_t address) {
     // |object| will be MACH_PORT_NULL (10.9.4 xnu-2422.110.17/osfmk/vm/vm_map.c
     // vm_map_region()), but the interface acts as if it might carry a send
     // right, so treat it as documented.
-    base::mac::ScopedMachSendRight object_owner(object);
+    base::apple::ScopedMachSendRight object_owner(object);
 
     return address >= region_address && address <= region_address + region_size;
   }

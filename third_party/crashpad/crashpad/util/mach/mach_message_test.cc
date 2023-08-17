@@ -18,7 +18,7 @@
 
 #include <tuple>
 
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/scoped_mach_port.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
@@ -116,7 +116,7 @@ TEST(MachMessage, MachMessageDestroyReceivedPort) {
   ASSERT_NE(port, kMachPortNull);
   EXPECT_TRUE(MachMessageDestroyReceivedPort(port, MACH_MSG_TYPE_PORT_RECEIVE));
 
-  base::mac::ScopedMachReceiveRight receive(
+  base::apple::ScopedMachReceiveRight receive(
       NewMachPort(MACH_PORT_RIGHT_RECEIVE));
   mach_msg_type_name_t right_type;
   kern_return_t kr = mach_port_extract_right(mach_task_self(),
@@ -163,7 +163,8 @@ TEST(MachMessage, MachMessageDestroyReceivedPort) {
 #if BUILDFLAG(IS_MAC)
 
 TEST(MachMessage, AuditPIDFromMachMessageTrailer) {
-  base::mac::ScopedMachReceiveRight port(NewMachPort(MACH_PORT_RIGHT_RECEIVE));
+  base::apple::ScopedMachReceiveRight port(
+      NewMachPort(MACH_PORT_RIGHT_RECEIVE));
   ASSERT_NE(port, kMachPortNull);
 
   mach_msg_empty_send_t send = {};
