@@ -1328,6 +1328,26 @@ message LinuxPulseOutput {
   optional uint32 frame_size_bytes = 5;
 };
 
+// Debug information for system layer of audio rendering on ChromeOS.
+message CrasUnified {
+  // The total duration of silence due to missing samples during the stream.
+  optional int64 underrun_duration_us = 1;
+  // Previous underrun duration, used for calculating the length of silence
+  // since the last callback.
+  optional int64 last_underrun_duration_us = 2;
+  // Difference in total underrun duration since the last callback. Logged only
+  // when positive, which is when a glitch occurs.
+  optional int64 underrun_glitch_duration_us = 3;
+  // OS playout latency reported by cras.
+  optional int64 latency_us = 4;
+  // The number of frames that the stream requests from the audio source.
+  optional int32 requested_frames = 5;
+  // The number of frames that the source provided.
+  optional uint32 filled_frames = 6;
+  // Sample rate of the stream.
+  optional int32 sample_rate = 7;
+};
+
 message ChromeUnguessableToken {
   optional uint64 low_token = 1;
   optional uint64 high_token = 2;
@@ -1487,5 +1507,7 @@ message ChromeTrackEvent {
     optional LinuxPulseOutput linux_pulse_output = 1051;
 
     optional ChromeGraphicsPipeline chrome_graphics_pipeline = 1052;
+
+    optional CrasUnified chromeos_cras_unified = 1053;
   }
 }
