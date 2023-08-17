@@ -249,7 +249,7 @@ void MaybeAppendManagePasswordsEntry(
 #if !BUILDFLAG(IS_ANDROID)
 autofill::Suggestion CreateWebAuthnEntry() {
   autofill::Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DEVICE_PASSKEY));
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY));
   suggestion.icon = "device";
   suggestion.popup_item_id =
       autofill::PopupItemId::kWebauthnSignInWithAnotherDevice;

@@ -28,6 +28,7 @@ class PasskeyCredential {
     kAndroidPhone,
     kTouchId,
     kWindowsHello,
+    kICloudKeychain,
     kOther,
   };
 

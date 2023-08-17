@@ -477,7 +477,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, GPMPasskeys) {
   ASSERT_EQ(webauthn_entry_count, 1u);
   ASSERT_LT(suggestion_index, suggestions.size()) << "WebAuthn entry not found";
   EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
-  EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value, kPhoneName);
+  EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value,
+            l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
+                                       kPhoneName));
   EXPECT_EQ(webauthn_entry.icon, "globeIcon");
 
   // Click the credential.
@@ -522,7 +524,8 @@ class WebAuthnWindowsAutofillIntegrationTest
   }
 
   std::u16string GetDeviceString() override {
-    return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_WINDOWS_HELLO);
+    return l10n_util::GetStringUTF16(
+        IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO);
   }
 
  protected:

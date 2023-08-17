@@ -81,10 +81,13 @@ std::u16string PasskeyCredential::GetAuthenticatorLabel() const {
   int id;
   switch (source_) {
     case Source::kWindowsHello:
-      id = IDS_PASSWORD_MANAGER_USE_WINDOWS_HELLO;
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO;
       break;
     case Source::kTouchId:
-      id = IDS_PASSWORD_MANAGER_USE_TOUCH_ID;
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE;
+      break;
+    case Source::kICloudKeychain:
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN;
       break;
     case Source::kAndroidPhone:
       id = IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK;

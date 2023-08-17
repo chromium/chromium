@@ -145,8 +145,9 @@ password_manager::PasskeyCredential::Source ToPasswordManagerSource(
       return password_manager::PasskeyCredential::Source::kTouchId;
     case device::AuthenticatorType::kPhone:
       return password_manager::PasskeyCredential::Source::kAndroidPhone;
-    case device::AuthenticatorType::kChromeOS:
     case device::AuthenticatorType::kICloudKeychain:
+      return password_manager::PasskeyCredential::Source::kICloudKeychain;
+    case device::AuthenticatorType::kChromeOS:
     case device::AuthenticatorType::kEnclave:
     case device::AuthenticatorType::kOther:
       return password_manager::PasskeyCredential::Source::kOther;
@@ -1281,7 +1282,8 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
                   credential.user.display_name.value_or("")));
           if (credential.source == device::AuthenticatorType::kPhone &&
               priority_phone) {
-            passkey.set_authenticator_label(*priority_phone);
+            passkey.set_authenticator_label(l10n_util::GetStringFUTF16(
+                IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE, *priority_phone));
           }
           return passkey;
         });
