@@ -184,6 +184,38 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
                    .IsValid());
 }
 
+// The parsing progress may end up being
+// `PrivacySandboxAttestations::Progress::kFinished` but there is no in-memory
+// attestations map. Verify that the second attempt to parse should not crash.
+TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
+       TryParseNonExistentAttestationsFileTwice) {
+  base::RunLoop first_attempt;
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetLoadAttestationsDoneCallbackForTesting(first_attempt.QuitClosure());
+
+  // Call the parsing function with a non-existent file.
+  PrivacySandboxAttestations::GetInstance()->LoadAttestations(
+      base::Version("0.0.1"), base::FilePath());
+  first_attempt.Run();
+
+  // The parsing should fail.
+  EXPECT_FALSE(PrivacySandboxAttestations::GetInstance()
+                   ->GetVersionForTesting()
+                   .IsValid());
+
+  base::RunLoop second_attempt;
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetLoadAttestationsDoneCallbackForTesting(second_attempt.QuitClosure());
+  PrivacySandboxAttestations::GetInstance()->LoadAttestations(
+      base::Version("0.0.1"), base::FilePath());
+  second_attempt.Run();
+
+  // The parsing should fail again, without crashes.
+  EXPECT_FALSE(PrivacySandboxAttestations::GetInstance()
+                   ->GetVersionForTesting()
+                   .IsValid());
+}
+
 TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
        InvalidAttestationsFileIsNotLoaded) {
   // Write an invalid proto file, and try to parse it.

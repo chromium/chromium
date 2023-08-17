@@ -211,7 +211,6 @@ void PrivacySandboxAttestations::LoadAttestationsInternal(
   if (!file_version_.IsValid()) {
     // There is no existing attestations map.
     CHECK(!attestations_map_.has_value());
-    CHECK_EQ(attestations_parse_progress_, Progress::kNotStarted);
   } else {
     // There is an existing attestations map.
     CHECK(attestations_map_.has_value());
