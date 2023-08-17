@@ -1,0 +1,6 @@
+# List of src-relative directories to ignore for source-indexing purposes.
+# This is consumed by pdb_processing.py and passed to source_index.py.
+# Put one directory per line.
+
+# Rust toolchain library:
+third_party\rust-toolchain\lib\rustlib\src\rust

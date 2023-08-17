@@ -252,6 +252,11 @@ def ExtractGitInfo(local_filename):
                           cwd=local_file_dir, raise_on_failure=False)
 
   if not file_info:
+    # If this message is being printed then it may be necessary to add a new
+    # entry to tools/symsrc/indexing-exclusions.txt to prevent the expensive
+    # calls from happening.
+    print('No results from running git log %s in %s. This can be expensive.' %
+          (local_file_basename, local_file_dir))
     return
 
   # Get the revision of the master branch.
@@ -458,21 +463,20 @@ def UpdatePDB(pdb_filename, verbose=True, build_dir=None, toolchain_dir=None,
   """Update a pdb file with source information."""
   dir_exclusion_list = { }
 
-  if build_dir:
-    # Excluding the build directory allows skipping the generated files, for
-    # Chromium this makes the indexing ~10x faster.
-    build_dir = (os.path.normpath(build_dir)).lower()
-    for directory, _, _ in os.walk(build_dir):
-      dir_exclusion_list[directory.lower()] = True
-    dir_exclusion_list[build_dir.lower()] = True
+  # We want to exclude files that aren't in git repos. This includes generated
+  # files, toolchain files, and possibly others.
 
-  if toolchain_dir:
-    # Exclude the directories from the toolchain as we don't have revision info
-    # for them.
-    toolchain_dir = (os.path.normpath(toolchain_dir)).lower()
-    for directory, _, _ in os.walk(toolchain_dir):
-      dir_exclusion_list[directory.lower()] = True
-    dir_exclusion_list[toolchain_dir.lower()] = True
+  dirs = [build_dir, toolchain_dir]
+  if exclusion_dirs:
+    dirs.extend(exclusion_dirs.split(';'))
+  for dir in dirs:
+    if dir:
+      if not os.path.exists(dir):
+        print('Warning: Exclusion directory %s does not exist.' % dir)
+      dir = (os.path.abspath(dir)).lower()
+      for directory, _, _ in os.walk(dir):
+        dir_exclusion_list[directory.lower()] = True
+      dir_exclusion_list[dir.lower()] = True
 
   # Writes the header of the source index stream.
   #
