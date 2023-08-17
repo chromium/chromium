@@ -1456,33 +1456,6 @@ bool VASupportedImageFormats::InitSupportedImageFormats_Locked(
 
   // Resize the list to the actual number of formats returned by the driver.
   supported_formats_.resize(static_cast<size_t>(num_image_formats));
-
-  // Now work around some driver misreporting.
-  auto va_display_state_handle = VADisplayStateSingleton::GetHandle();
-
-  // Note: InitSupportedImageFormats_Locked() is called only from the
-  // VASupportedImageFormats constructor. This call occurs while a valid
-  // VADisplayStateHandle exists (because of the check in the constructor). That
-  // means that at this point, there is an initialized VADisplayStateSingleton,
-  // so the VADisplayStateSingleton::GetHandle() call above must produce a valid
-  // handle.
-  CHECK(va_display_state_handle);
-
-  if (va_display_state_handle->implementation_type() ==
-      VAImplementation::kMesaGallium) {
-    // TODO(andrescj): considering that the VAAPI state tracker in mesa can
-    // convert from NV12 to IYUV when doing vaGetImage(), it's reasonable to
-    // assume that IYUV/I420 is supported. However, it's not currently being
-    // reported. See https://gitlab.freedesktop.org/mesa/mesa/commit/b0a44f10.
-    // Remove this workaround once b/128340287 is resolved.
-    if (!base::Contains(supported_formats_,
-                        static_cast<unsigned int>(VA_FOURCC_I420),
-                        &VAImageFormat::fourcc)) {
-      VAImageFormat i420_format{};
-      i420_format.fourcc = VA_FOURCC_I420;
-      supported_formats_.push_back(i420_format);
-    }
-  }
   return true;
 }
 
