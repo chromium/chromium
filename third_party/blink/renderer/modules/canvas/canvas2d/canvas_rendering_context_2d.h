@@ -116,7 +116,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void Reset() override;
 
-  void setFont(const String&) override;
+  void setFontForTesting(const String& new_font) override;
 
   String direction() const;
   void setDirection(const String&);
@@ -242,7 +242,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void WillOverwriteCanvas() override;
   void TryRestoreContextEvent(TimerBase*) override;
 
-  void WillUseCurrentFont() const override;
+  void WillUseCurrentFont() const final;
+  bool WillSetFont() const final;
+  bool CurrentFontResolvedAndUpToDate() const final;
+  bool ResolveFont(const String& new_font) final;
 
  private:
   friend class CanvasRenderingContext2DAutoRestoreSkCanvas;

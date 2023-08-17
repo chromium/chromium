@@ -2538,4 +2538,40 @@ String BaseRenderingContext2D::font() const {
   return serialized_font.ToString();
 }
 
+bool BaseRenderingContext2D::WillSetFont() const {
+  return true;
+}
+
+bool BaseRenderingContext2D::CurrentFontResolvedAndUpToDate() const {
+  return GetState().HasRealizedFont();
+}
+
+bool BaseRenderingContext2D::ResolveFont(const String& new_font) {
+  // PaintRenderingContext2D does not override and should not call this method.
+  NOTREACHED_NORETURN();
+}
+
+void BaseRenderingContext2D::setFont(const String& new_font) {
+  if (UNLIKELY(!WillSetFont())) {
+    return;
+  }
+
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kSetFont, IdentifiabilityBenignStringToken(new_font));
+  }
+
+  if (new_font == GetState().UnparsedFont() &&
+      CurrentFontResolvedAndUpToDate()) {
+    return;
+  }
+
+  if (!ResolveFont(new_font)) {
+    return;
+  }
+
+  // The parse succeeded.
+  GetState().SetUnparsedFont(new_font);
+}
+
 }  // namespace blink

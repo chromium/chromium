@@ -252,11 +252,12 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void ClearRect(double x, double y, double width, double height) {}
   virtual void DidSetSurfaceSize() {}
   virtual void SetShouldAntialias(bool) {}
-  virtual void setFont(const String&) {}
   virtual void StyleDidChange(const ComputedStyle* old_style,
                               const ComputedStyle& new_style) {}
   virtual String GetIdFromControl(const Element* element) { return String(); }
   virtual void ResetUsageTracking() {}
+
+  virtual void setFontForTesting(const String&) { NOTREACHED(); }
 
   // WebGL-specific interface
   virtual bool UsingSwapChain() const { return false; }

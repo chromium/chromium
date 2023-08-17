@@ -321,6 +321,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   String fontVariantCaps() const;
 
   String font() const;
+  void setFont(const String& new_font);
 
   void Trace(Visitor*) const override;
 
@@ -418,6 +419,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
  protected:
   virtual void WillUseCurrentFont() const;
+  virtual bool WillSetFont() const;
+  virtual bool ResolveFont(const String& new_font);
+  virtual bool CurrentFontResolvedAndUpToDate() const;
 
   explicit BaseRenderingContext2D(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);

@@ -464,27 +464,34 @@ void CanvasRenderingContext2D::WillUseCurrentFont() const {
   canvas()->GetDocument().GetCanvasFontCache()->WillUseCurrentFont();
 }
 
-void CanvasRenderingContext2D::setFont(const String& new_font) {
+bool CanvasRenderingContext2D::WillSetFont() const {
   // The style resolution required for fonts is not available in frame-less
   // documents.
-  if (!canvas()->GetDocument().GetFrame())
-    return;
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kSetFont, IdentifiabilityBenignStringToken(new_font));
+  if (!canvas()->GetDocument().GetFrame()) {
+    return false;
   }
 
   canvas()->GetDocument().UpdateStyleAndLayoutTreeForNode(
       canvas(), DocumentUpdateReason::kCanvas);
+  return true;
+}
 
-  // The following early exit is dependent on the cache not being empty
-  // because an empty cache may indicate that a style change has occured
+bool CanvasRenderingContext2D::CurrentFontResolvedAndUpToDate() const {
+  // An empty cache may indicate that a style change has occurred
   // which would require that the font be re-resolved. This check has to
-  // come after the layout tree update to flush pending style changes.
-  if (new_font == GetState().UnparsedFont() && GetState().HasRealizedFont() &&
-      fonts_resolved_using_current_style_.size() > 0)
-    return;
+  // come after the layout tree update in WillSetFont() to flush pending
+  // style changes.
+  return GetState().HasRealizedFont() &&
+         fonts_resolved_using_current_style_.size() > 0;
+}
 
+void CanvasRenderingContext2D::setFontForTesting(const String& new_font) {
+  // Dependency inversion to allow BaseRenderingContext2D::setFont
+  // to be invoked from core unit tests.
+  setFont(new_font);
+}
+
+bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
   CanvasFontCache* canvas_font_cache =
       canvas()->GetDocument().GetCanvasFontCache();
 
@@ -501,7 +508,7 @@ void CanvasRenderingContext2D::setFont(const String& new_font) {
       MutableCSSPropertyValueSet* parsed_style =
           canvas_font_cache->ParseFont(new_font);
       if (!parsed_style)
-        return;
+        return false;
       ComputedStyleBuilder font_style_builder =
           canvas()
               ->GetDocument()
@@ -539,7 +546,7 @@ void CanvasRenderingContext2D::setFont(const String& new_font) {
     Font resolved_font;
     if (!canvas_font_cache->GetFontUsingDefaultStyle(*canvas(), new_font,
                                                      resolved_font))
-      return;
+      return false;
 
     // We need to reset Computed and Adjusted size so we skip zoom and
     // minimum font size for detached canvas.
@@ -548,11 +555,7 @@ void CanvasRenderingContext2D::setFont(const String& new_font) {
     final_description.SetAdjustedSize(final_description.SpecifiedSize());
     GetState().SetFont(final_description, Host()->GetFontSelector());
   }
-
-  // The parse succeeded.
-  String new_font_safe_copy(new_font);  // Create a string copy since newFont
-                                        // can be deleted inside realizeSaves.
-  GetState().SetUnparsedFont(new_font_safe_copy);
+  return true;
 }
 
 void CanvasRenderingContext2D::DidProcessTask(

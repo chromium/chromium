@@ -367,24 +367,17 @@ void OffscreenCanvasRenderingContext2D::WillOverwriteCanvas() {
   GetCanvasResourceProvider()->SkipQueuedDrawCommands();
 }
 
-void OffscreenCanvasRenderingContext2D::setFont(const String& new_font) {
-  if (GetState().HasRealizedFont() && new_font == GetState().UnparsedFont())
-    return;
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kSetFont, IdentifiabilityBenignStringToken(new_font));
-  }
-
+bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
   OffscreenFontCache& font_cache = GetOffscreenFontCache();
-
   FontDescription* cached_font = font_cache.GetFont(new_font);
   if (cached_font) {
     GetState().SetFont(*cached_font, Host()->GetFontSelector());
   } else {
     auto* style =
         CSSParser::ParseFont(new_font, Host()->GetTopExecutionContext());
-    if (!style)
-      return;
+    if (!style) {
+      return false;
+    }
 
     FontDescription desc =
         FontStyleResolver::ComputeFont(*style, Host()->GetFontSelector());
@@ -392,7 +385,7 @@ void OffscreenCanvasRenderingContext2D::setFont(const String& new_font) {
     font_cache.AddFont(new_font, desc);
     GetState().SetFont(desc, Host()->GetFontSelector());
   }
-  GetState().SetUnparsedFont(new_font);
+  return true;
 }
 
 static inline TextDirection ToTextDirection(
