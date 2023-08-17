@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
 import android.app.Activity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -16,14 +21,12 @@ import android.widget.LinearLayout;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -127,37 +130,37 @@ public class BookmarkSearchBoxRowTest {
     public void testQueryCallback() {
         String query = "foo";
         TestThreadUtils.runOnUiThreadBlocking(() -> mEditText.setText(query));
-        Mockito.verify(mQueryCallback).onResult(Mockito.eq(query));
+        verify(mQueryCallback).onResult(eq(query));
     }
 
     @Test
     @MediumTest
     public void testFocusChangeCallback() {
         TestThreadUtils.runOnUiThreadBlocking(() -> mBookmarkSearchBoxRow.setHasFocus(true));
-        Mockito.verify(mFocusChangeCallback).onResult(true);
+        verify(mFocusChangeCallback).onResult(true);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mBookmarkSearchBoxRow.setHasFocus(false));
-        Mockito.verify(mFocusChangeCallback).onResult(true);
+        verify(mFocusChangeCallback).onResult(true);
     }
 
     @Test
     @MediumTest
     public void testShoppingChipVisibility() {
-        Assert.assertFalse(mShoppingFilterChip.isShown());
+        assertFalse(mShoppingFilterChip.isShown());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPropertyModel.set(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, true);
         });
-        Assert.assertTrue(mShoppingFilterChip.isShown());
+        assertTrue(mShoppingFilterChip.isShown());
     }
 
     @Test
     @MediumTest
     public void testShoppingChipToggle() {
         TestThreadUtils.runOnUiThreadBlockingNoException(mShoppingFilterChip::performClick);
-        Mockito.verify(mToggleCallback).onResult(true);
+        verify(mToggleCallback).onResult(true);
 
         TestThreadUtils.runOnUiThreadBlockingNoException(mShoppingFilterChip::performClick);
-        Mockito.verify(mToggleCallback).onResult(false);
+        verify(mToggleCallback).onResult(false);
     }
 }
