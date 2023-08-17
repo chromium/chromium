@@ -299,7 +299,11 @@ class CORE_EXPORT CSSParserImpl {
   // directly in @media, @supports or similar (which cannot hold properties
   // by themselves, only rules; see
   // https://github.com/w3c/csswg-drafts/issues/7850).
-  StyleRule* CreateImplicitNestedRule(StyleRule* parent_rule_for_nesting);
+  //
+  // If CSSNestingType::kScope is provided, an implicit :scope {} rule
+  // is created instead.
+  StyleRule* CreateImplicitNestedRule(CSSNestingType,
+                                      StyleRule* parent_rule_for_nesting);
 
   // FIXME: Can we build CSSPropertyValueSets directly?
   HeapVector<CSSPropertyValue, 64> parsed_properties_;

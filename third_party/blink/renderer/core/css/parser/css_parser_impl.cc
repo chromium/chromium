@@ -988,14 +988,38 @@ StyleRuleNamespace* CSSParserImpl::ConsumeNamespaceRule(
 }
 
 StyleRule* CSSParserImpl::CreateImplicitNestedRule(
+    CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting) {
-  constexpr bool kNotExplicit =
-      false;  // The rule is implicit, but the & is not.
-  CSSSelector parent_selector(parent_rule_for_nesting, kNotExplicit);
-  parent_selector.SetLastInComplexSelector(true);
-  parent_selector.SetLastInSelectorList(true);
+  constexpr bool kNotImplicit =
+      false;  // The rule is implicit, but the &/:scope is not.
+
+  HeapVector<CSSSelector, 2> selectors;
+
+  switch (nesting_type) {
+    case CSSNestingType::kNone:
+      NOTREACHED();
+      break;
+    case CSSNestingType::kNesting:
+      // kPseudoParent
+      selectors.push_back(CSSSelector(parent_rule_for_nesting, kNotImplicit));
+      break;
+    case CSSNestingType::kScope: {
+      // See CSSSelector::RelationType::kScopeActivation.
+      CSSSelector selector;
+      selector.SetTrue();
+      selector.SetRelation(CSSSelector::kScopeActivation);
+      selectors.push_back(selector);
+      selectors.push_back(CSSSelector(AtomicString("scope"), kNotImplicit));
+      break;
+    }
+  }
+
+  CHECK(!selectors.empty());
+  selectors.back().SetLastInComplexSelector(true);
+  selectors.back().SetLastInSelectorList(true);
+
   return StyleRule::Create(
-      base::span<CSSSelector>{&parent_selector, 1u},
+      base::span<CSSSelector>{selectors.data(), selectors.size()},
       CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
 }
 
@@ -2182,7 +2206,7 @@ void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
                            parent_rule_for_nesting, child_rules);
     if (!parsed_properties_.empty()) {
       child_rules->push_front(
-          CreateImplicitNestedRule(parent_rule_for_nesting));
+          CreateImplicitNestedRule(nesting_type, parent_rule_for_nesting));
     }
   } else {
     ConsumeRuleList(stream, kRegularRuleList, nesting_type,
