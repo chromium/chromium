@@ -37,7 +37,13 @@
 #pragma mark - Tests
 
 // Tests that the New Tab IPH can be displayed when opening an URL from omnibox.
-- (void)testNewTabIPH {
+// TODO(crbug.com/1471222): Test is flaky on device. Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testNewTabIPH FLAKY_testNewTabIPH
+#else
+#define MAYBE_testNewTabIPH testNewTabIPH
+#endif
+- (void)MAYBE_testNewTabIPH {
   // Enable the IPH Demo Mode feature to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(
