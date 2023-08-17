@@ -55,6 +55,10 @@ class NoSuchFrameException(BidiException):
     error_code = "no such frame"
 
 
+class NoSuchInterceptException(BidiException):
+    error_code = "no such intercept"
+
+
 class NoSuchHandleException(BidiException):
     error_code = "no such handle"
 
