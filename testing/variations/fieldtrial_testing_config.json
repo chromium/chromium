@@ -367,10 +367,9 @@
             ],
             "experiments": [
                 {
-                    "name": "All_Enabled",
+                    "name": "CacheSuggestionResources_WarmPool",
                     "enable_features": [
                         "OmniboxCacheSuggestionResources",
-                        "OmniboxIgnoreIntermediateResults",
                         "OmniboxWarmRecycledViewPool"
                     ]
                 }
