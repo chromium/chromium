@@ -34,6 +34,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/user_education/user_education_class_properties.h"
+#include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
@@ -392,6 +393,11 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
       base::RecordAction(base::UserMetricsAction("AppList_SearchQueryStarted"));
       // Set 'user_initiated_model_update_time_' when initiating a new query.
       user_initiated_model_update_time_ = current_time;
+
+      if (features::IsWelcomeTourEnabled()) {
+        welcome_tour_metrics::RecordInteraction(
+            welcome_tour_metrics::Interaction::kSearch);
+      }
     } else if (!current_query_.empty() && query.empty()) {
       base::RecordAction(base::UserMetricsAction("AppList_LeaveSearch"));
       // Reset 'user_initiated_model_update_time_' when clearing the search_box.
