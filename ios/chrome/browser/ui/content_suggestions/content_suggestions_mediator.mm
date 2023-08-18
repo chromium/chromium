@@ -315,53 +315,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   _mostVisitedSites->Refresh();
 }
 
-- (void)reloadAllData {
-  if (!self.consumer) {
-    return;
-  }
-  if (IsMagicStackEnabled()) {
-    if (base::FeatureList::IsEnabled(
-            segmentation_platform::features::
-                kSegmentationPlatformIosModuleRanker)) {
-      [self fetchMagicStackModuleRankingFromSegmentationPlatform];
-    } else {
-      [self.consumer setMagicStackOrder:[self magicStackOrder]];
-    }
-  }
-  if (self.returnToRecentTabItem) {
-    [self.consumer
-        showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
-  }
-  if ([self.mostVisitedItems count] && !ShouldHideMVT()) {
-    [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
-  }
-  if ([self shouldShowSetUpList]) {
-    self.setUpList.delegate = self;
-    NSArray<SetUpListItemViewData*>* items = [self setUpListItems];
-    if (IsMagicStackEnabled() && [self.setUpList allItemsComplete]) {
-      SetUpListItemViewData* allSetItem =
-          [[SetUpListItemViewData alloc] initWithType:SetUpListItemType::kAllSet
-                                             complete:NO];
-      [self.consumer showSetUpListWithItems:@[ allSetItem ]];
-    } else {
-      [self.consumer showSetUpListWithItems:items];
-    }
-    [self.contentSuggestionsMetricsRecorder recordSetUpListShown];
-    for (SetUpListItemViewData* item in items) {
-      [self.contentSuggestionsMetricsRecorder
-          recordSetUpListItemShown:item.type];
-    }
-  }
-  // Show shorcuts if:
-  // 1) Magic Stack is enabled (always show shortcuts in Magic Stack).
-  // 2) The Set Up List and Magic Stack are not enabled (Set Up List replaced
-  // Shortcuts).
-  if (!ShouldHideShortcuts() &&
-      (IsMagicStackEnabled() || ![self shouldShowSetUpList])) {
-    [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
-  }
-}
-
 - (void)blockMostVisitedURL:(GURL)URL {
   _mostVisitedSites->AddOrRemoveBlockedUrl(URL, true);
   [self useFreshMostVisited];
@@ -375,7 +328,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)setConsumer:(id<ContentSuggestionsConsumer>)consumer {
   _consumer = consumer;
   self.faviconMediator.consumer = consumer;
-  [self reloadAllData];
+  [self configureConsumer];
 }
 
 + (NSUInteger)maxSitesShown {
@@ -668,6 +621,53 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 }
 #pragma mark - Private
+
+- (void)configureConsumer {
+  if (!self.consumer) {
+    return;
+  }
+  if (IsMagicStackEnabled()) {
+    if (base::FeatureList::IsEnabled(
+            segmentation_platform::features::
+                kSegmentationPlatformIosModuleRanker)) {
+      [self fetchMagicStackModuleRankingFromSegmentationPlatform];
+    } else {
+      [self.consumer setMagicStackOrder:[self magicStackOrder]];
+    }
+  }
+  if (self.returnToRecentTabItem) {
+    [self.consumer
+        showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
+  }
+  if ([self.mostVisitedItems count] && !ShouldHideMVT()) {
+    [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
+  }
+  if ([self shouldShowSetUpList]) {
+    self.setUpList.delegate = self;
+    NSArray<SetUpListItemViewData*>* items = [self setUpListItems];
+    if (IsMagicStackEnabled() && [self.setUpList allItemsComplete]) {
+      SetUpListItemViewData* allSetItem =
+          [[SetUpListItemViewData alloc] initWithType:SetUpListItemType::kAllSet
+                                             complete:NO];
+      [self.consumer showSetUpListWithItems:@[ allSetItem ]];
+    } else {
+      [self.consumer showSetUpListWithItems:items];
+    }
+    [self.contentSuggestionsMetricsRecorder recordSetUpListShown];
+    for (SetUpListItemViewData* item in items) {
+      [self.contentSuggestionsMetricsRecorder
+          recordSetUpListItemShown:item.type];
+    }
+  }
+  // Show shorcuts if:
+  // 1) Magic Stack is enabled (always show shortcuts in Magic Stack).
+  // 2) The Set Up List and Magic Stack are not enabled (Set Up List replaced
+  // Shortcuts).
+  if (!ShouldHideShortcuts() &&
+      (IsMagicStackEnabled() || ![self shouldShowSetUpList])) {
+    [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
+  }
+}
 
 // Updates `prefs::kIosSyncSegmentsNewTabPageDisplayCount` with the number of
 // remaining New Tab Page displays that include synced history in the Most

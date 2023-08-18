@@ -323,10 +323,6 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   return self.contentSuggestionsViewController.view;
 }
 
-- (void)reload {
-  [self.contentSuggestionsMediator reloadAllData];
-}
-
 #pragma mark - ContentSuggestionsMenuProvider
 
 - (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
