@@ -289,7 +289,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "ui/compositor/throughput_tracker.h"
 #else
-#include "chrome/browser/ui/signin_view_controller.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)

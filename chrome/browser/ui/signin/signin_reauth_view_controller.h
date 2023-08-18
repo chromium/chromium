@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_SIGNIN_REAUTH_VIEW_CONTROLLER_H_
-#define CHROME_BROWSER_UI_SIGNIN_REAUTH_VIEW_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_SIGNIN_SIGNIN_REAUTH_VIEW_CONTROLLER_H_
+#define CHROME_BROWSER_UI_SIGNIN_SIGNIN_REAUTH_VIEW_CONTROLLER_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -12,8 +12,8 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/signin_modal_dialog.h"
-#include "chrome/browser/ui/signin_view_controller_delegate.h"
+#include "chrome/browser/ui/signin/signin_modal_dialog.h"
+#include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -211,4 +211,4 @@ class SigninReauthViewController
   base::WeakPtrFactory<SigninReauthViewController> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_SIGNIN_REAUTH_VIEW_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_SIGNIN_SIGNIN_REAUTH_VIEW_CONTROLLER_H_

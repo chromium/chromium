@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_SIGNIN_MODAL_DIALOG_H_
-#define CHROME_BROWSER_UI_SIGNIN_MODAL_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_SIGNIN_SIGNIN_MODAL_DIALOG_H_
+#define CHROME_BROWSER_UI_SIGNIN_SIGNIN_MODAL_DIALOG_H_
 
 #include "base/functional/callback.h"
 
@@ -46,4 +46,4 @@ class SigninModalDialog {
   base::OnceClosure on_close_callback_;
 };
 
-#endif  // CHROME_BROWSER_UI_SIGNIN_MODAL_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_SIGNIN_SIGNIN_MODAL_DIALOG_H_

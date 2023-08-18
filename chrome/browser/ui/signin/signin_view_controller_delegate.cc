@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/signin_view_controller_delegate.h"
+#include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 
 #include "base/observer_list.h"
 
@@ -17,6 +17,7 @@ void SigninViewControllerDelegate::RemoveObserver(Observer* observer) {
 }
 
 void SigninViewControllerDelegate::NotifyModalDialogClosed() {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnModalDialogClosed();
+  }
 }

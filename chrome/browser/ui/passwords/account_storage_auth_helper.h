@@ -8,7 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/signin_view_controller.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/signin/public/base/signin_buildflags.h"
 

@@ -23,7 +23,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/managed_ui.h"
-#include "chrome/browser/ui/signin_view_controller.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"

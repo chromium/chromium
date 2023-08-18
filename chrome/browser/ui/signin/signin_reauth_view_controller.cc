@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/signin_reauth_view_controller.h"
+#include "chrome/browser/ui/signin/signin_reauth_view_controller.h"
 
 #include <memory>
 #include <string>
@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/signin_modal_dialog.h"
+#include "chrome/browser/ui/signin/signin_modal_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_reauth_ui.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -57,8 +57,9 @@ ReauthWebContentsObserver::ReauthWebContentsObserver(
 
 void ReauthWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
+  }
   delegate_->OnGaiaReauthPageNavigated();
 }
 
@@ -103,8 +104,9 @@ SigninReauthViewController::SigninReauthViewController(
 }
 
 SigninReauthViewController::~SigninReauthViewController() {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnReauthControllerDestroyed();
+  }
 }
 
 void SigninReauthViewController::CloseModalDialog() {
@@ -118,8 +120,9 @@ void SigninReauthViewController::ResizeNativeView(int height) {
 content::WebContents*
 SigninReauthViewController::GetModalDialogWebContentsForTesting() {
   // If the dialog is displayed, return its WebContents.
-  if (dialog_delegate_)
+  if (dialog_delegate_) {
     return dialog_delegate_->GetWebContents();
+  }
 
   // Return contents of the SAML flow, if exist.
   return raw_reauth_web_contents_;
@@ -143,8 +146,9 @@ void SigninReauthViewController::OnModalDialogClosed() {
 
 void SigninReauthViewController::OnReauthConfirmed(
     sync_pb::UserConsentTypes::AccountPasswordsConsent consent) {
-  if (user_confirmed_reauth_)
+  if (user_confirmed_reauth_) {
     return;
+  }
 
   // Cache the consent. It will be actually recorded later, in CompleteReauth(),
   // if the user successfully completed the reauth.
@@ -160,8 +164,9 @@ void SigninReauthViewController::OnReauthDismissed() {
 }
 
 void SigninReauthViewController::OnGaiaReauthPageNavigated() {
-  if (gaia_reauth_page_state_ >= GaiaReauthPageState::kNavigated)
+  if (gaia_reauth_page_state_ >= GaiaReauthPageState::kNavigated) {
     return;
+  }
 
   signin::ReauthTabHelper* tab_helper = GetReauthTabHelper();
   DCHECK(tab_helper);
@@ -179,8 +184,9 @@ void SigninReauthViewController::OnGaiaReauthPageComplete(
   DCHECK(!gaia_reauth_page_result_);
   // |kNavigated| state will be skipped if the first navigation completes Gaia
   // reauth.
-  if (gaia_reauth_page_state_ < GaiaReauthPageState::kNavigated)
+  if (gaia_reauth_page_state_ < GaiaReauthPageState::kNavigated) {
     OnGaiaReauthTypeDetermined(GaiaReauthType::kAutoApproved);
+  }
   gaia_reauth_page_state_ = GaiaReauthPageState::kDone;
   gaia_reauth_page_result_ = result;
 
@@ -233,8 +239,9 @@ void SigninReauthViewController::CompleteReauth(signin::ReauthResult result) {
   }
 
   if (raw_reauth_web_contents_) {
-    if (!raw_reauth_web_contents_->IsBeingDestroyed())
+    if (!raw_reauth_web_contents_->IsBeingDestroyed()) {
       raw_reauth_web_contents_->ClosePage();
+    }
     raw_reauth_web_contents_ = nullptr;
   }
 
@@ -245,8 +252,9 @@ void SigninReauthViewController::CompleteReauth(signin::ReauthResult result) {
   }
 
   signin_ui_util::RecordTransactionalReauthResult(access_point_, result);
-  if (reauth_callback_)
+  if (reauth_callback_) {
     std::move(reauth_callback_).Run(result);
+  }
 
   // NotifyModalDialogClosed() will destroy the current instance.
   // We cannot destroy `reauth_web_contents_` right now because this function
@@ -279,13 +287,15 @@ void SigninReauthViewController::OnGaiaReauthTypeDetermined(
   DCHECK_EQ(gaia_reauth_type_, GaiaReauthType::kUnknown);
   DCHECK_NE(reauth_type, GaiaReauthType::kUnknown);
   gaia_reauth_type_ = reauth_type;
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnGaiaReauthTypeDetermined(reauth_type);
+  }
 }
 
 void SigninReauthViewController::RecordClickOnce(UserAction click_action) {
-  if (has_recorded_click_)
+  if (has_recorded_click_) {
     return;
+  }
 
   signin_ui_util::RecordTransactionalReauthUserAction(access_point_,
                                                       click_action);
@@ -296,8 +306,9 @@ signin::ReauthTabHelper* SigninReauthViewController::GetReauthTabHelper() {
   content::WebContents* web_contents = reauth_web_contents_
                                            ? reauth_web_contents_.get()
                                            : raw_reauth_web_contents_.get();
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   return signin::ReauthTabHelper::FromWebContents(web_contents);
 }
@@ -326,8 +337,9 @@ void SigninReauthViewController::ShowGaiaReauthPage() {
     ShowGaiaReauthPageInNewTab();
   }
 
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnGaiaReauthPageShown();
+  }
 }
 
 void SigninReauthViewController::ShowGaiaReauthPageInDialog() {

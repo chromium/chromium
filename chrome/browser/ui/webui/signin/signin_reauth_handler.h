@@ -8,7 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/signin_reauth_view_controller.h"
+#include "chrome/browser/ui/signin/signin_reauth_view_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 // WebUI message handler for the signin reauth dialog.

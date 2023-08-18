@@ -10,8 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/profiles/profile_customization_synced_theme_waiter.h"
-#include "chrome/browser/ui/signin_modal_dialog.h"
-#include "chrome/browser/ui/signin_view_controller_delegate.h"
+#include "chrome/browser/ui/signin/signin_modal_dialog.h"
+#include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "google_apis/gaia/core_account_id.h"
 

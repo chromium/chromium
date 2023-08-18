@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/signin_reauth_view_controller.h"
+#include "chrome/browser/ui/signin/signin_reauth_view_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_reauth_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"

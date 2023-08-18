@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/signin_view_controller.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 
 #include <memory>
 #include <utility>
@@ -17,9 +17,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/profiles/signin_intercept_first_run_experience_dialog.h"
-#include "chrome/browser/ui/signin_modal_dialog.h"
-#include "chrome/browser/ui/signin_modal_dialog_impl.h"
-#include "chrome/browser/ui/signin_view_controller_delegate.h"
+#include "chrome/browser/ui/signin/signin_modal_dialog.h"
+#include "chrome/browser/ui/signin/signin_modal_dialog_impl.h"
+#include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/consent_level.h"
@@ -39,7 +39,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/signin_reauth_view_controller.h"
+#include "chrome/browser/ui/signin/signin_reauth_view_controller.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
@@ -299,15 +299,17 @@ bool SigninViewController::ShowsModalDialog() {
 }
 
 void SigninViewController::CloseModalSignin() {
-  if (dialog_)
+  if (dialog_) {
     dialog_->CloseModalDialog();
+  }
 
   DCHECK(!dialog_);
 }
 
 void SigninViewController::SetModalSigninHeight(int height) {
-  if (dialog_)
+  if (dialog_) {
     dialog_->ResizeNativeView(height);
+  }
 }
 
 void SigninViewController::OnModalDialogClosed() {
@@ -442,8 +444,9 @@ void SigninViewController::ShowGaiaLogoutTab(
   // a menu, ensure the web contents (and therefore the page that is about to be
   // shown) is focused. (See crbug/926492 for motivation.)
   auto* const contents = browser_->tab_strip_model()->GetActiveWebContents();
-  if (contents)
+  if (contents) {
     contents->Focus();
+  }
 
   // Do not use a singleton tab. A new tab should be opened even if there is
   // already a logout tab.

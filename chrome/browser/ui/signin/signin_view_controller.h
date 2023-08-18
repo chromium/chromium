@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_H_
-#define CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_SIGNIN_SIGNIN_VIEW_CONTROLLER_H_
+#define CHROME_BROWSER_UI_SIGNIN_SIGNIN_VIEW_CONTROLLER_H_
 
 #include <string>
 
@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/profiles/profile_chooser_constants.h"
-#include "chrome/browser/ui/signin_modal_dialog.h"
+#include "chrome/browser/ui/signin/signin_modal_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -223,4 +223,4 @@ class SigninViewController {
   base::WeakPtrFactory<SigninViewController> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_SIGNIN_SIGNIN_VIEW_CONTROLLER_H_

@@ -4900,7 +4900,7 @@ if (!is_android) {
         # Tests for non mobile and non CrOS (includes Linux, Win, Mac).
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
         "../browser/profiles/profile_statistics_browsertest.cc",
-        "../browser/ui/signin_reauth_view_controller_browsertest.cc",
+        "../browser/ui/signin/signin_reauth_view_controller_browsertest.cc",
         "../browser/ui/webui/signin/turn_sync_on_helper_browsertest.cc",
       ]
 
@@ -10202,7 +10202,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/search/instant_test_base.h",
       "../browser/ui/search/third_party_ntp_uitest.cc",
       "../browser/ui/side_search/side_search_tab_contents_helper_interactive_uitest.cc",
-      "../browser/ui/signin_view_controller_interactive_uitest.cc",
+      "../browser/ui/signin/signin_view_controller_interactive_uitest.cc",
       "../browser/ui/startup/invalid_user_data_dir_interactive_uitest.cc",
       "../browser/ui/startup/startup_browser_creator_interactive_uitest.cc",
       "../browser/ui/test/popup_multiscreen_interactive_uitest.cc",
@@ -10661,8 +10661,9 @@ if (!is_android && !is_chromeos_device) {
       ]
 
       # These tests are not applicable on Chrome OS.
-      sources -=
-          [ "../browser/ui/signin_view_controller_interactive_uitest.cc" ]
+      sources -= [
+        "../browser/ui/signin/signin_view_controller_interactive_uitest.cc",
+      ]
     } else {  # ! is_chromeos_ash
       # Non-ChromeOS notifications tests.
       sources += [

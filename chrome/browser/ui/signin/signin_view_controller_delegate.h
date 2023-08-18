@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_DELEGATE_H_
-#define CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_SIGNIN_SIGNIN_VIEW_CONTROLLER_DELEGATE_H_
+#define CHROME_BROWSER_UI_SIGNIN_SIGNIN_VIEW_CONTROLLER_DELEGATE_H_
 
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
@@ -121,4 +121,4 @@ class SigninViewControllerDelegate {
   base::ObserverList<Observer, true> observer_list_;
 };
 
-#endif  // CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_SIGNIN_SIGNIN_VIEW_CONTROLLER_DELEGATE_H_
