@@ -144,8 +144,14 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndAttemptUndo) {
   histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);
 }
 
+// TODO(crbug.com/1474001): Re-enable test that flakily fails
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_LaunchAndUndo DISABLED_LaunchAndUndo
+#else
+#define MAYBE_LaunchAndUndo LaunchAndUndo
+#endif
 // Tests launch and removal of a desk. Tries to undo the removal.
-IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndUndo) {
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, MAYBE_LaunchAndUndo) {
   // Launch a desk.
   auto launch_desk_function =
       base::MakeRefCounted<WmDesksPrivateLaunchDeskFunction>();
