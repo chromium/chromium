@@ -348,10 +348,9 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
 
     /** @see UrlTextChangeListener */
     @Override
-    public void onTextChanged(String textWithoutAutocomplete, String textWithAutocomplete) {
+    public void onTextChanged(String textWithoutAutocomplete) {
         for (int i = 0; i < mUrlTextChangeListeners.size(); i++) {
-            mUrlTextChangeListeners.get(i).onTextChanged(
-                    textWithoutAutocomplete, textWithAutocomplete);
+            mUrlTextChangeListeners.get(i).onTextChanged(textWithoutAutocomplete);
         }
     }
 }

@@ -730,7 +730,7 @@ public class LocationBarMediatorTest {
                 .setUrlBarData(argThat(matchesUrlBarDataForQuery("pastedText")),
                         eq(UrlBar.ScrollType.NO_SCROLL),
                         eq(UrlBarCoordinator.SelectionState.SELECT_END));
-        verify(mAutocompleteCoordinator).onTextChanged("text", "textWith");
+        verify(mAutocompleteCoordinator).onTextChanged("text");
     }
 
     @Test

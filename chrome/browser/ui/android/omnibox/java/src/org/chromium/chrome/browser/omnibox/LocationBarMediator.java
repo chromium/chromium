@@ -905,7 +905,7 @@ class LocationBarMediator
     /* package */ void forceOnTextChanged() {
         String textWithoutAutocomplete = mUrlCoordinator.getTextWithoutAutocomplete();
         String textWithAutocomplete = mUrlCoordinator.getTextWithAutocomplete();
-        mAutocompleteCoordinator.onTextChanged(textWithoutAutocomplete, textWithAutocomplete);
+        mAutocompleteCoordinator.onTextChanged(textWithoutAutocomplete);
     }
 
     /* package */ boolean shouldClearOmniboxOnFocus() {
@@ -1253,7 +1253,7 @@ class LocationBarMediator
               the restored omnibox text input.
              */
             if (reason == OmniboxFocusReason.FOLD_TRANSITION_RESTORATION) {
-                mAutocompleteCoordinator.onTextChanged(pastedText, pastedText);
+                mAutocompleteCoordinator.onTextChanged(pastedText);
             } else {
                 forceOnTextChanged();
             }

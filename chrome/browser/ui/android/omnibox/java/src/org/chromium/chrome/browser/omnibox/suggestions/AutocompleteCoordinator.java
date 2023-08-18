@@ -389,8 +389,8 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     }
 
     @Override
-    public void onTextChanged(String textWithoutAutocomplete, String textWithAutocomplete) {
-        mMediator.onTextChanged(textWithoutAutocomplete, textWithAutocomplete);
+    public void onTextChanged(String textWithoutAutocomplete) {
+        mMediator.onTextChanged(textWithoutAutocomplete);
     }
 
     /**

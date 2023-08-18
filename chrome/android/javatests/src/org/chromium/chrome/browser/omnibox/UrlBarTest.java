@@ -184,7 +184,7 @@ public class UrlBarTest {
         final CallbackHelper autocompleteHelper = new CallbackHelper();
         final AtomicReference<String> requestedAutocompleteText = new AtomicReference<String>();
         final AtomicBoolean didPreventInlineAutocomplete = new AtomicBoolean();
-        mUrlBar.setUrlTextChangeListener((textWithoutAutocomplete, textWithAutocomplete) -> {
+        mUrlBar.setUrlTextChangeListener((textWithoutAutocomplete) -> {
             autocompleteHelper.notifyCalled();
             requestedAutocompleteText.set(textWithoutAutocomplete);
             didPreventInlineAutocomplete.set(!mUrlBar.shouldAutocomplete());
@@ -259,7 +259,7 @@ public class UrlBarTest {
     public void testSendCursorPosition() throws TimeoutException {
         final CallbackHelper autocompleteHelper = new CallbackHelper();
         final AtomicInteger cursorPositionUsed = new AtomicInteger();
-        mUrlBar.setUrlTextChangeListener((textWithoutAutocomplete, textWithAutocomplete) -> {
+        mUrlBar.setUrlTextChangeListener((textWithoutAutocomplete) -> {
             int cursorPosition = mUrlBar.getSelectionEnd() == mUrlBar.getSelectionStart()
                     ? mUrlBar.getSelectionStart()
                     : -1;
@@ -325,7 +325,7 @@ public class UrlBarTest {
 
         final CallbackHelper autocompleteHelper = new CallbackHelper();
         final AtomicBoolean didPreventInlineAutocomplete = new AtomicBoolean();
-        mUrlBar.setUrlTextChangeListener((textWithoutAutocomplete, textWithAutocomplete) -> {
+        mUrlBar.setUrlTextChangeListener((textWithoutAutocomplete) -> {
             if (!TextUtils.equals(textToBeEntered, mUrlBar.getTextWithoutAutocomplete())) return;
             didPreventInlineAutocomplete.set(!mUrlBar.shouldAutocomplete());
             autocompleteHelper.notifyCalled();
@@ -350,7 +350,7 @@ public class UrlBarTest {
 
         final CallbackHelper autocompleteHelper = new CallbackHelper();
         final AtomicBoolean didPreventInlineAutocomplete = new AtomicBoolean();
-        mUrlBar.setUrlTextChangeListener((textWithoutAutocomplete, textWithAutocomplete) -> {
+        mUrlBar.setUrlTextChangeListener((textWithoutAutocomplete) -> {
             if (!TextUtils.equals("test", mUrlBar.getTextWithoutAutocomplete())) return;
             didPreventInlineAutocomplete.set(!mUrlBar.shouldAutocomplete());
             autocompleteHelper.notifyCalled();
@@ -491,13 +491,13 @@ public class UrlBarTest {
         mUrlBar.setUrlTextChangeListener(listener);
 
         mOmnibox.setText("onomatop");
-        Mockito.verify(listener).onTextChanged("onomatop", "onomatop");
+        Mockito.verify(listener).onTextChanged("onomatop");
 
         // Setting autocomplete does not send a change update.
         mOmnibox.setAutocompleteText("oeia");
 
         mOmnibox.setText("");
-        Mockito.verify(listener).onTextChanged("", "");
+        Mockito.verify(listener).onTextChanged("");
     }
 
     @Test

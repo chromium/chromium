@@ -339,7 +339,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                 postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
             } else {
                 String text = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
-                onTextChanged(text, text);
+                onTextChanged(text);
             }
         } else {
             stopMeasuringSuggestionRequestToUiModelTime();
@@ -449,8 +449,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         if (isSearchSuggestion) refineText = TextUtils.concat(refineText, " ").toString();
 
         mDelegate.setOmniboxEditingText(refineText);
-        onTextChanged(mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                mUrlBarEditingTextProvider.getTextWithAutocomplete());
+        onTextChanged(mUrlBarEditingTextProvider.getTextWithoutAutocomplete());
 
         if (isSearchSuggestion) {
             // Note: the logic below toggles assumes individual values to be represented by
@@ -691,7 +690,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      * Notifies the autocomplete system that the text has changed that drives autocomplete and the
      * autocomplete suggestions should be updated.
      */
-    public void onTextChanged(String textWithoutAutocomplete, String textWithAutocomplete) {
+    public void onTextChanged(String textWithoutAutocomplete) {
         if (mShouldPreventOmniboxAutocomplete) return;
 
         mIgnoreOmniboxItemSelection = true;

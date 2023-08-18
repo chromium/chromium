@@ -373,7 +373,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 
         mMediator.onNativeInitialized();
-        mMediator.onTextChanged("", "");
+        mMediator.onTextChanged("");
         verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
     }
 
@@ -391,7 +391,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getSelectionEnd()).thenReturn(4);
 
         mMediator.onNativeInitialized();
-        mMediator.onTextChanged("test", "testing");
+        mMediator.onTextChanged("test");
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mAutocompleteController).start(url, pageClassification, "test", 4, false);
     }
@@ -410,8 +410,8 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getSelectionEnd()).thenReturn(4);
 
         mMediator.onNativeInitialized();
-        mMediator.onTextChanged("test", "testing");
-        mMediator.onTextChanged("nottest", "nottesting");
+        mMediator.onTextChanged("test");
+        mMediator.onTextChanged("nottest");
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mAutocompleteController, times(1))
                 .start(url, pageClassification, "nottest", 4, false);
@@ -490,9 +490,9 @@ public class AutocompleteMediatorUnitTest {
 
         // Simulate URL being focus changes, and that user typed text and deleted it.
         mMediator.onUrlFocusChange(true);
-        mMediator.onTextChanged("A", "Abc");
-        mMediator.onTextChanged("", "");
-        mMediator.onTextChanged("A", "Abc");
+        mMediator.onTextChanged("A");
+        mMediator.onTextChanged("");
+        mMediator.onTextChanged("A");
 
         ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never())
@@ -523,8 +523,8 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 
         // Simulate URL being focus changes, and that user typed text and deleted it.
-        mMediator.onTextChanged("A", "Abc");
-        mMediator.onTextChanged("", "");
+        mMediator.onTextChanged("A");
+        mMediator.onTextChanged("");
 
         ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never())
@@ -653,7 +653,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.onUrlFocusChange(true);
         Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
-        mMediator.onTextChanged("n", "news");
+        mMediator.onTextChanged("n");
         Assert.assertEquals(
                 mMediator.getEditSessionStateForTest(), EditSessionState.ACTIVATED_BY_USER_INPUT);
 
@@ -931,7 +931,7 @@ public class AutocompleteMediatorUnitTest {
 
         // No change on key press. No unexpected recordings.
         // Need to run looper here to flush the pending operation.
-        mMediator.onTextChanged("a", "a");
+        mMediator.onTextChanged("a");
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifySuggestionRequestToUiModelHistograms(1, 150, 0, null);
 
