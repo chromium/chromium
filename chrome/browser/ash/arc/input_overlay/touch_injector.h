@@ -129,7 +129,7 @@ class TouchInjector : public ui::EventRewriter {
   // Create a new action with guidance from the reference action, and delete
   // the reference action.
   void ChangeActionType(Action* reference_action, ActionType action_type);
-  void ChangeActionName(Action* action, std::u16string name);
+  void ChangeActionName(Action* action, int index);
 
   void AddObserver(TouchInjectorObserver* observer);
   void RemoveObserver(TouchInjectorObserver* observer);

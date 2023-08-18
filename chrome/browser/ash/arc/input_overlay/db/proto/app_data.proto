@@ -66,6 +66,8 @@ message ActionProto {
   // This action is deleted or not. It is deprecated because "restore to
   // default" function is no longer needed.
   optional bool deleted = 5 [deprecated = true];
+  // The index of the name for this action.
+  optional int32 name_index = 6 [default = -1];
 }
 
 message AppDataProto {

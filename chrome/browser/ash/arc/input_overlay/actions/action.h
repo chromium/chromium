@@ -162,8 +162,10 @@ class Action {
   bool support_modifier_key() const { return support_modifier_key_; }
   ActionView* action_view() const { return action_view_; }
   void set_action_view(ActionView* action_view) { action_view_ = action_view; }
-  void set_name_label(std::u16string name_label) { name_label_ = name_label; }
-  absl::optional<std::u16string> name_label() { return name_label_; }
+  void set_name_label_index(int name_label_index) {
+    name_label_index_ = name_label_index;
+  }
+  int name_label_index() { return name_label_index_; }
 
  protected:
   // `touch_injector` must be non-NULL and own this Action.
@@ -199,9 +201,9 @@ class Action {
   absl::optional<ActionType> original_type_;
   // name_ is basically for debugging and not visible to users.
   std::string name_;
-  // name_label is the user-defined label for the action; by default,
-  // unassigned.
-  absl::optional<std::u16string> name_label_ = absl::nullopt;
+  // `name_label_index` is the index of the user-defined label for the action.
+  // An negative index means that the action label name is unassigned.
+  int name_label_index_ = -1;
   // Position take turns for each key press if there are more than
   // one positions. This is for original default positions.
   std::vector<Position> original_positions_;

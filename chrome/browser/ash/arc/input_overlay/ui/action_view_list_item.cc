@@ -33,9 +33,9 @@ void ActionViewListItem::OnActionInputBindingUpdated() {
 }
 
 void ActionViewListItem::OnActionNameUpdated() {
-  if (action_->name_label()) {
-    name_tag_->SetTitle(*(action_->name_label()));
-  }
+  auto action_name = GetActionNameAtIndex(controller_->action_name_list(),
+                                          action_->name_label_index());
+  name_tag_->SetTitle(action_name);
 }
 
 void ActionViewListItem::Init() {
@@ -58,7 +58,9 @@ void ActionViewListItem::Init() {
       .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize);
 
   // TODO(b/270969479): Replace the hardcoded string.
-  name_tag_ = container->AddChildView(NameTag::CreateNameTag(u"title"));
+  auto title_string = GetActionNameAtIndex(controller_->action_name_list(),
+                                           action_->name_label_index());
+  name_tag_ = container->AddChildView(NameTag::CreateNameTag(title_string));
   labels_view_ = container->AddChildView(EditLabels::CreateEditLabels(
       controller_, action_, name_tag_, /*set_title=*/true));
 }

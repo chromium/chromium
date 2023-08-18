@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -986,10 +987,9 @@ void TouchInjector::ChangeActionType(Action* action, ActionType action_type) {
   NotifyActionTypeChanged(action, new_action_raw);
 }
 
-void TouchInjector::ChangeActionName(Action* action, std::u16string name) {
+void TouchInjector::ChangeActionName(Action* action, int index) {
   DCHECK(IsBeta());
-  action->set_name_label(name);
-
+  action->set_name_label_index(index);
   NotifyActionNameUpdated(*action);
 }
 

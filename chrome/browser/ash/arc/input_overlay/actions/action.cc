@@ -240,6 +240,7 @@ bool Action::ParseUserAddedActionFromProto(const ActionProto& proto) {
     original_positions_ = positions;
     current_positions_ = std::move(positions);
   }
+  name_label_index_ = proto.name_index();
   return true;
 }
 
@@ -256,6 +257,7 @@ void Action::OverwriteDefaultActionFromProto(const ActionProto& proto) {
     current_positions_[0] = *position;
     position.reset();
   }
+  name_label_index_ = proto.name_index();
 }
 
 bool Action::InitByAddingNewAction() {
@@ -553,6 +555,7 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
       if (*original_type_ != GetType()) {
         customized = true;
       }
+      proto->set_name_index(name_label_index_);
     }
 
     if (*original_input_ != *current_input_) {
@@ -579,6 +582,7 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
     auto pos_proto = current_positions_[0].ConvertToProto();
     *proto->add_positions() = *pos_proto;
     pos_proto.reset();
+    proto->set_name_index(name_label_index_);
   } else {
     // Disregard the user-added actions if the beta flag is off.
   }

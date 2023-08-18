@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -180,8 +181,8 @@ void ButtonOptionsMenu::AddActionNameLabel() {
       l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
   // TODO(b/274690042): Replace placeholder text with localized strings.
   action_name_tile_->SetLabel(u"Button label");
-  action_name_tile_->SetSubLabel(
-      action_->name_label() ? *(action_->name_label()) : u"Unassigned");
+  action_name_tile_->SetSubLabel(GetActionNameAtIndex(
+      controller_->action_name_list(), action_->name_label_index()));
   action_name_tile_->SetSubLabelVisibility(true);
   action_name_tile_->CreateDecorativeDrillInArrow();
   action_name_tile_->SetBackground(
@@ -227,10 +228,8 @@ void ButtonOptionsMenu::OnActionInputBindingUpdated(const Action& action) {
 
 void ButtonOptionsMenu::OnActionNameUpdated(const Action& action) {
   if (action_ == &action) {
-    auto name_label = action_->name_label();
-    if (name_label) {
-      action_name_tile_->SetSubLabel(*name_label);
-    }
+    action_name_tile_->SetSubLabel(GetActionNameAtIndex(
+        controller_->action_name_list(), action_->name_label_index()));
   }
 }
 

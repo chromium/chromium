@@ -5,8 +5,10 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/table_layout.h"
@@ -63,10 +65,8 @@ void EditLabels::OnActionInputBindingUpdated() {
 }
 
 void EditLabels::UpdateNameTagTitle() {
-  auto name_label = action_->name_label();
-  if (name_label) {
-    name_tag_->SetTitle(*name_label);
-  }
+  name_tag_->SetTitle(GetActionNameAtIndex(controller_->action_name_list(),
+                                           action_->name_label_index()));
 }
 
 void EditLabels::SetNameTagState(bool is_error,
