@@ -19031,7 +19031,8 @@
           "dimensions": {
             "os": "Windows-10-19045"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "gcp_unittests",
         "test_id_prefix": "ninja://chrome/credential_provider/test:gcp_unittests/"

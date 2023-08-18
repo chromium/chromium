@@ -2704,6 +2704,16 @@
       },
     },
   },
+  'gcp_unittests': {
+    'modifications': {
+      # Flakily times out with only a single shard due to slow runtime.
+      'win-asan': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
+    },
+  },
   'gfx_unittests': {
     'modifications': {
       'fuchsia-code-coverage': {
