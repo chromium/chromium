@@ -502,3 +502,38 @@ TEST_F(ManageSyncSettingsMediatorTest,
       l10n_util::GetNSString(
           IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON));
 }
+
+// Tests the account state transition on sign out.
+// This test to ensure the UI does not crash on sign out because of a missing
+// section in that state. Reference bug crbug.com/1456446.
+TEST_F(ManageSyncSettingsMediatorTest, TestAccountStateTransitionOnSignOut) {
+  // Create mediator with a signed-in account.
+  CreateManageSyncSettingsMediator(SyncSettingsAccountState::kSignedIn);
+  SimulateFirstSetupSyncOffWithSignedInAccount();
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // Verify the sign out section exists.
+  ASSERT_TRUE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
+                                         SignOutSectionIdentifier]);
+  // Verify the number of section shown in the kSignedIn state.
+  ASSERT_EQ(4, [mediator_.consumer.tableViewModel numberOfSections]);
+
+  // Set sign out expectation with empty account info.
+  ON_CALL(*sync_service_mock_, GetAccountInfo())
+      .WillByDefault(Return(CoreAccountInfo()));
+
+  // Sign out.
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+  authentication_service->SignOut(signin_metrics::ProfileSignout::kTest,
+                                  /*force_clear_browsing_data=*/true, nil);
+
+  // Reload the Sync page.
+  [mediator_ onSyncStateChanged];
+
+  // Expected sections from the previous kSignedIn state should be showing and
+  // no new sections are added in the kSignedOut state.
+  EXPECT_EQ(4, [mediator_.consumer.tableViewModel numberOfSections]);
+}
