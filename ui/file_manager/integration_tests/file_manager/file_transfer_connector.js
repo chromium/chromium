@@ -249,13 +249,8 @@ Object.freeze(TRANSFER_LOCATIONS);
 
 // TODO(crbug.com/1361898): Remove these ones proper error details are
 // displayed.
-const COPY_FAIL_MESSAGE =
-    'Copy operation failed. The file could not be accessed ' +
-    'for security reasons.';
-const MOVE_FAIL_DIRECTORY_MESSAGE =
-    `Move failed. The file could not be modified.`;
-const MOVE_FAIL_FILE_MESSAGE = 'Move failed. The file could not be accessed ' +
-    'for security reasons.';
+const COPY_FAIL_MESSAGE = 'File blocked from copying';
+const MOVE_FAIL_MESSAGE = `File blocked from moving`;
 
 /**
  * Opens a Files app's main window and creates the source and destination
@@ -672,7 +667,7 @@ testcase.transferConnectorFromDriveToDownloadsMoveDeep = () => {
         isMove: true,
       }),
       CONNECTOR_ENTRIES_DEEP,
-      MOVE_FAIL_DIRECTORY_MESSAGE,
+      MOVE_FAIL_MESSAGE,
   );
 };
 testcase.transferConnectorFromDriveToDownloadsMoveFlat = () => {
@@ -683,7 +678,7 @@ testcase.transferConnectorFromDriveToDownloadsMoveFlat = () => {
         isMove: true,
       }),
       CONNECTOR_ENTRIES_FLAT,
-      MOVE_FAIL_FILE_MESSAGE,
+      MOVE_FAIL_MESSAGE,
   );
 };
 
