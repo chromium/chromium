@@ -8,15 +8,17 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
@@ -36,6 +38,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+constexpr base::TimeDelta kDefaultBrowserCheckTimeout = base::Seconds(2);
 
 const signin_metrics::AccessPoint kAccessPoint =
     signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE;
@@ -359,6 +363,34 @@ void FirstRunFlowControllerDice::HandleIntroSigninChoice(IntroChoice choice) {
       /*step_switch_finished_callback=*/base::DoNothing());
 }
 
+void FirstRunFlowControllerDice::OnDefaultBrowserCheckFinished(
+    shell_integration::DefaultWebClientState state) {
+  if (!maybe_show_default_browser_callback_) {
+    return;
+  }
+
+  // Cancel timeout.
+  default_browser_check_timeout_closure_.Cancel();
+
+  bool should_show_default_browser_step =
+      state == shell_integration::NOT_DEFAULT ||
+      state == shell_integration::OTHER_MODE_IS_DEFAULT;
+
+  std::move(maybe_show_default_browser_callback_)
+      .Run(should_show_default_browser_step);
+}
+
+void FirstRunFlowControllerDice::OnDefaultBrowserCheckTimeout() {
+  if (!maybe_show_default_browser_callback_) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration("ProfilePicker.FirstRun.DefaultBrowser",
+                                DefaultBrowserChoice::kNotShownOnTimeout);
+  std::move(maybe_show_default_browser_callback_)
+      .Run(/*should_show_default_browser_step=*/false);
+}
+
 void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
     PostHostClearedCallback post_host_cleared_callback,
     bool is_continue_callback) {
@@ -366,21 +398,7 @@ void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
 
   post_host_cleared_callback_ = std::move(post_host_cleared_callback);
 
-  // If the feature is enabled, the default browser step should be shown only on
-  // Windows. If it's forced, it should be shown on the other platforms for
-  // testing.
   bool should_show_default_browser_step =
-#if BUILDFLAG(IS_WIN)
-      kForYouFreWithDefaultBrowserStep.Get() != WithDefaultBrowserStep::kNo;
-#else
-      // Non-Windows platforms should not show this unless forced (e.g. command
-      // line)
-      kForYouFreWithDefaultBrowserStep.Get() == WithDefaultBrowserStep::kForced;
-#endif  // BUILDFLAG(IS_WIN)
-
-  // TODO(crbug.com/1465822): Also check the current default state.
-  should_show_default_browser_step =
-      should_show_default_browser_step &&
       // Proceed with the callback  directly instead of showing the default
       // browser prompt.
       !is_continue_callback &&
@@ -389,6 +407,57 @@ void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
       // Some releases cannot be set as default browser.
       shell_integration::CanSetAsDefaultBrowser();
 
+  bool force_default_browser_step =
+      kForYouFreWithDefaultBrowserStep.Get() == WithDefaultBrowserStep::kForced;
+
+  // If the feature is enabled, the default browser step should be shown only on
+  // Windows. If it's forced, it should be shown on the other platforms for
+  // testing.
+  should_show_default_browser_step =
+      should_show_default_browser_step &&
+#if BUILDFLAG(IS_WIN)
+      kForYouFreWithDefaultBrowserStep.Get() != WithDefaultBrowserStep::kNo;
+#else
+      // Non-Windows platforms should not show this unless forced (e.g. command
+      // line)
+      force_default_browser_step;
+#endif  // BUILDFLAG(IS_WIN)
+
+  if (!should_show_default_browser_step) {
+    MaybeShowDefaultBrowserStep(/*should_show_default_browser_step=*/false);
+    return;
+  }
+
+  // If the feature is set to forced, show the step even if it's already the
+  // default browser.
+  if (force_default_browser_step) {
+    MaybeShowDefaultBrowserStep(/*should_show_default_browser_step=*/true);
+    return;
+  }
+
+  maybe_show_default_browser_callback_ =
+      base::BindOnce(&FirstRunFlowControllerDice::MaybeShowDefaultBrowserStep,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  // Set up the timeout closure, in clase checking if the browser is already set
+  // as default isn't completed before the timeout.
+  default_browser_check_timeout_closure_.Reset(
+      base::BindOnce(&FirstRunFlowControllerDice::OnDefaultBrowserCheckTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, default_browser_check_timeout_closure_.callback(),
+      kDefaultBrowserCheckTimeout);
+
+  // Check if browser is already set as default. If it isn't, show default
+  // browser step.
+  base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
+      ->StartCheckIsDefault(base::BindOnce(
+          &FirstRunFlowControllerDice::OnDefaultBrowserCheckFinished,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FirstRunFlowControllerDice::MaybeShowDefaultBrowserStep(
+    bool should_show_default_browser_step) {
   if (!should_show_default_browser_step) {
     FinishFlowAndRunInBrowser(profile_, std::move(post_host_cleared_callback_));
     return;
