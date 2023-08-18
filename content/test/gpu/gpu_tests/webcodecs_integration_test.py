@@ -6,7 +6,7 @@ import os
 import sys
 import json
 import itertools
-from typing import Any, List
+from typing import Any, List, Set
 import unittest
 
 import gpu_path_util
@@ -33,6 +33,20 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def Name(cls) -> str:
     return 'webcodecs'
+
+  @classmethod
+  def _SuiteSupportsParallelTests(cls) -> bool:
+    return True
+
+  def _GetSerialGlobs(self) -> Set[str]:
+    serial_globs = set()
+    if sys.platform == 'win32':
+      serial_globs |= {
+          # crbug.com/1473480. Windows + NVIDIA has a maximum parallel encode
+          # limit of 2, so serialize hardware encoding tests on Windows.
+          'WebCodecs_*prefer-hardware*',
+      }
+    return serial_globs
 
 # pylint: disable=too-many-branches
 

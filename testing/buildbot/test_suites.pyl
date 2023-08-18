@@ -3806,6 +3806,9 @@
 
     'gpu_webcodecs_telemetry_test': {
       'webcodecs': {
+        'args': [
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
+        ],
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
         ],
@@ -3830,6 +3833,7 @@
       'webcodecs': {
         'args': [
           '--extra-browser-args=--use-cmd-decoder=validating',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
