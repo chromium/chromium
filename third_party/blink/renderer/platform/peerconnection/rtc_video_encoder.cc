@@ -1722,10 +1722,9 @@ int32_t RTCVideoEncoder::InitEncode(
   if (profile_ >= media::H264PROFILE_MIN &&
       profile_ <= media::H264PROFILE_MAX &&
       (codec_settings->width % 2 != 0 || codec_settings->height % 2 != 0)) {
-    DLOG(ERROR)
-        << "Input video size is " << codec_settings->width << "x"
-        << codec_settings->height << ", "
-        << "but hardware H.264 encoder only supports even sized frames.";
+    LOG(ERROR) << "Input video size is " << codec_settings->width << "x"
+               << codec_settings->height << ", "
+               << "but hardware H.264 encoder only supports even sized frames.";
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
   }
 
@@ -1734,8 +1733,8 @@ int32_t RTCVideoEncoder::InitEncode(
   uint32_t bitrate_bps = 0;
   // Check for overflow converting bitrate (kilobits/sec) to bits/sec.
   if (!ConvertKbpsToBps(codec_settings->startBitrate, &bitrate_bps)) {
-    DLOG(ERROR) << "Overflow converting bitrate from kbps to bps: bps="
-                << codec_settings->startBitrate;
+    LOG(ERROR) << "Overflow converting bitrate from kbps to bps: bps="
+               << codec_settings->startBitrate;
     return WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
   }
 
@@ -1760,10 +1759,10 @@ int32_t RTCVideoEncoder::InitEncode(
            input_visible_size.height() > vea_profile.max_resolution.height() ||
            input_visible_size.width() < vea_profile.min_resolution.width() ||
            input_visible_size.height() < vea_profile.min_resolution.height())) {
-        DLOG(ERROR) << "Requested dimensions (" << input_visible_size.ToString()
-                    << ") beyond accelerator limits ("
-                    << vea_profile.min_resolution.ToString() << " - "
-                    << vea_profile.max_resolution.ToString() << ")";
+        LOG(ERROR) << "Requested dimensions (" << input_visible_size.ToString()
+                   << ") beyond accelerator limits ("
+                   << vea_profile.min_resolution.ToString() << " - "
+                   << vea_profile.max_resolution.ToString() << ")";
         return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
       }
     }
