@@ -158,8 +158,9 @@ std::u16string FailStateDescription(FailState fail_state) {
 // did not, we should call it "unverified" rather than "suspicious".
 bool WasSafeBrowsingVerdictObtained(const download::DownloadItem* item) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  return safe_browsing::DownloadProtectionService::HasDownloadProtectionVerdict(
-      item);
+  return item &&
+         safe_browsing::DownloadProtectionService::HasDownloadProtectionVerdict(
+             item);
 #else
   return false;
 #endif
