@@ -15,62 +15,56 @@
 
 namespace autofill {
 
-const int kContentCopyIconSizePx = 24;
-const int kFontSizeIncreasePx = 3;
-const int kHorizontalPaddingPx = 10;
+namespace {
+
+constexpr int kContentCopyIconSizePx = 24;
+constexpr int kFontSizeIncreasePx = 3;
+constexpr int kHorizontalPaddingPx = 10;
+
+}  // namespace
 
 PromoCodeLabelButton::PromoCodeLabelButton(PressedCallback callback,
                                            const std::u16string& text)
-    : views::LabelButton(std::move(callback), text) {}
-
-PromoCodeLabelButton::~PromoCodeLabelButton() = default;
-
-void PromoCodeLabelButton::OnThemeChanged() {
-  Button::OnThemeChanged();
-
-  const auto* const color_provider = GetColorProvider();
-  SetTextColor(views::Button::STATE_NORMAL,
-               color_provider->GetColor(kColorPaymentsPromoCodeForeground));
-  SetTextColor(
-      views::Button::STATE_HOVERED,
-      color_provider->GetColor(kColorPaymentsPromoCodeForegroundHovered));
-  SetTextColor(
-      views::Button::STATE_PRESSED,
-      color_provider->GetColor(kColorPaymentsPromoCodeForegroundPressed));
-  SetImageModel(views::Button::STATE_NORMAL,
+    : views::LabelButton(std::move(callback), text) {
+  SetTextColorId(ButtonState::STATE_NORMAL, kColorPaymentsPromoCodeForeground);
+  SetTextColorId(ButtonState::STATE_HOVERED,
+                 kColorPaymentsPromoCodeForegroundHovered);
+  SetTextColorId(ButtonState::STATE_PRESSED,
+                 kColorPaymentsPromoCodeForegroundPressed);
+  SetImageModel(ButtonState::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
                     vector_icons::kContentCopyIcon,
                     kColorPaymentsPromoCodeForeground, kContentCopyIconSizePx));
   SetImageModel(
-      views::Button::STATE_HOVERED,
+      ButtonState::STATE_HOVERED,
       ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon,
                                      kColorPaymentsPromoCodeForegroundHovered,
                                      kContentCopyIconSizePx));
   SetImageModel(
-      views::Button::STATE_PRESSED,
+      ButtonState::STATE_PRESSED,
       ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon,
                                      kColorPaymentsPromoCodeForegroundPressed,
                                      kContentCopyIconSizePx));
-  SetBackground(views::CreateRoundedRectBackground(
-      color_provider->GetColor(kColorPaymentsPromoCodeBackground),
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      kColorPaymentsPromoCodeBackground,
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kMedium)));
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(this)->SetBaseColor(
-      color_provider->GetColor(kColorPaymentsPromoCodeInkDrop));
+  views::InkDrop::Get(this)->SetBaseColorId(kColorPaymentsPromoCodeInkDrop);
   SetHasInkDropActionOnClick(true);
 
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label()->SetFontList(views::Label::GetDefaultFontList().Derive(
       kFontSizeIncreasePx, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
 
-  gfx::Insets insets = ChromeLayoutProvider::Get()->GetInsetsMetric(
-      views::InsetsMetric::INSETS_LABEL_BUTTON);
-  insets.set_left(kHorizontalPaddingPx);
-  insets.set_right(kHorizontalPaddingPx);
-  SetBorder(views::CreateEmptyBorder(insets));
+  SetBorder(views::CreateEmptyBorder(
+      ChromeLayoutProvider::Get()
+          ->GetInsetsMetric(views::InsetsMetric::INSETS_LABEL_BUTTON)
+          .set_left_right(kHorizontalPaddingPx, kHorizontalPaddingPx)));
 }
+
+PromoCodeLabelButton::~PromoCodeLabelButton() = default;
 
 BEGIN_METADATA(PromoCodeLabelButton, views::LabelButton)
 END_METADATA
