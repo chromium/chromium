@@ -11,11 +11,13 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "location_system_permission_status.h"
+#include "services/device/public/cpp/geolocation/buildflags.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace device {
 
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_APPLE) && \
+    !BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #error This file should be compiled only on Apple and ChromeOS\
   (i.e. platforms where we support system-based geolocation permissions)
 #endif

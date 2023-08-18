@@ -1,0 +1,12 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+
+# Generated args.
+declare_args() {
+  # Specifies if we support the OS level global geolocation permission for the current platform.
+  # This is exposed with the macro OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED.
+  os_level_geolocation_permission_supported = is_chromeos || is_mac
+}

@@ -11,8 +11,9 @@
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "services/device/public/cpp/geolocation/buildflags.h"
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
@@ -38,11 +39,12 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   void TrackGeolocationRelinquished();
   void RequestSystemPermission();
 
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_CHROMEOS)
-// Default empty implementation of Geolocation Manager. It is used on operation
-// systems for which we don't support system-level geolocation. A separate class
-// (as opposed to nullptr) makes sure no unsupported calls are made in such
-// context.
+#if !BUILDFLAG(IS_APPLE) && \
+    !BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+  // Default empty implementation of Geolocation Manager. It is used on
+  // operation systems for which we don't support system-level geolocation. A
+  // separate class (as opposed to nullptr) makes sure no unsupported calls are
+  // made in such context.
 };  // class GeolocationManager
 
 #else
