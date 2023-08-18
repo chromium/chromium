@@ -144,15 +144,15 @@ String HTMLOptionElement::DisplayLabel() const {
   Document& document = GetDocument();
   String text;
 
-  // WinIE does not use the label attribute, so as a quirk, we ignore it.
   String label_attr = String(FastGetAttribute(html_names::kLabelAttr))
     .StripWhiteSpace(IsHTMLSpace<UChar>).SimplifyWhiteSpace(IsHTMLSpace<UChar>);
   String inner_text = CollectOptionInnerText()
     .StripWhiteSpace(IsHTMLSpace<UChar>).SimplifyWhiteSpace(IsHTMLSpace<UChar>);
-  if (!document.InQuirksMode()) {
-    text = label_attr;
-  } else if (!label_attr.empty() && label_attr != inner_text) {
+  if (document.InQuirksMode() && !label_attr.empty() && label_attr != inner_text) {
     UseCounter::Count(GetDocument(), WebFeature::kOptionLabelInQuirksMode);
+  }
+  if (RuntimeEnabledFeatures::OptionElementAlwaysUseLabelEnabled() || !document.InQuirksMode()) {
+    text = label_attr;
   }
 
   // FIXME: The following treats an element with the label attribute set to

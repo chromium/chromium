@@ -2497,6 +2497,14 @@
       name: "OptimizedNodeCloneOrder",
       status: "stable",
     },
+    // This flag is a killswitch. It was only exists as a way for us to turn
+    // the feature off in the emergency that it breaks websites.
+    // TODO(http://crbug.com/1473340): Delete internal web_tests which are
+    // redundant with existing WPTs when we delete this flag.
+    {
+      name: "OptionElementAlwaysUseLabel",
+      status: "stable",
+    },
     {
       name: "OrientationEvent",
       status: {"Android": "stable"},

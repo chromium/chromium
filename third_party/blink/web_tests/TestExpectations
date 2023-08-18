@@ -1741,7 +1741,6 @@ crbug.com/1172023 external/wpt/html/rendering/non-replaced-elements/tables/table
 crbug.com/1172023 external/wpt/html/rendering/non-replaced-elements/tables/table-border-3q.html [ Failure ]
 crbug.com/962936 external/wpt/html/rendering/widgets/button-layout/anonymous-button-content-box.html [ Failure ]
 crbug.com/962936 external/wpt/html/rendering/widgets/button-layout/inline-level.html [ Failure ]
-crbug.com/1403735 external/wpt/html/rendering/widgets/the-select-element/option-add-label-quirks.html [ Failure ]
 crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1i.html [ Failure ]
 crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1j.html [ Failure ]
 crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1k.html [ Failure ]

@@ -2223,6 +2223,19 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "option-label-only-in-no-quirks",
+    "platforms": ["Linux"],
+    "bases": [
+      "fast/forms/select/HTMLOptionElement_label01.html",
+      "fast/forms/select/HTMLOptionElement_label03.html",
+      "fast/forms/select/HTMLOptionElement_label05.html",
+      "fast/forms/select/HTMLOptionElement_label06.html",
+      "fast/forms/select/HTMLOptionElement_label07.html"
+    ],
+    "args": ["--disable-features=OptionElementAlwaysUseLabel"],
+    "expires": "Jul 1, 2024"
+  },
+  {
     "prefix": "date-input-inline-block-disabled",
     "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux"],
