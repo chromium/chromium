@@ -175,6 +175,13 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   private onSettingsChanged(): void {
     // TODO(yyhyyh@): Update remapping settings.
   }
+
+  /**
+   * Pops out the dialog to edit button label.
+   */
+  private onEditButtonLabelClicked_(): void {
+    // TODO(yyhyyh@): Implement edit icon clicked function.
+  }
 }
 
 declare global {

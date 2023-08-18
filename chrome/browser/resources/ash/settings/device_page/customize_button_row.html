@@ -3,9 +3,24 @@
     display: flex;
   }
 
+  .edit-button {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-fill-color: var(--cros-sys-on_surface);
+    --cr-icon-button-icon-start-offset: 3px;
+    opacity: 0;
+    padding-top: 3px;
+    transition: opacity 300ms, transform 100ms;
+  }
+
+  /* Show edit-button when user hover on the row container. */
+  #container:hover .edit-button,
+  .edit-button:focus-visible {
+    opacity: 1;
+  }
+
   .settings-box {
+    align-self: stretch;
     height: 64px;
-    justify-content: space-between;
     padding-inline-start: 0;
   }
 
@@ -17,11 +32,28 @@
     padding-inline-end: 12px;
     padding-inline-start: 16px;
   }
+
+  .edit-icon-container {
+    align-items: center;
+    flex: auto;
+    margin-inline-start: 6px;
+    size: 48px;
+  }
+
+  #buttonLabelContainer {
+    padding-inline-end: 6px;
+  }
 </style>
-<div class="settings-box">
-  <div id="buttonLabelContainer" class="start button-container">
+<div id="container" class="settings-box">
+  <div id="buttonLabelContainer">
     <div id="buttonLabel"
         aria-hidden="true">[[buttonRemapping_.name]]</div>
+  </div>
+  <div class="edit-icon-container">
+    <cr-icon-button class="edit-button"
+      iron-icon="os-settings:edit"
+      on-click="onEditButtonLabelClicked_">
+    </cr-icon-button>
   </div>
   <div id="dropdownContainer" class="text-field-container">
     <select id="remappingActionDropdown" class="md-select">
@@ -38,5 +70,5 @@
         $i18n{keyCombinationOptionLabel}
       </option>
     </select>
-    </div>
+  </div>
 </div>
