@@ -35,7 +35,6 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -416,12 +415,8 @@ class ASH_EXPORT WallpaperControllerImpl
   }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(WallpaperControllerTest, BasicReparenting);
-  FRIEND_TEST_ALL_PREFIXES(WallpaperControllerTest,
-                           WallpaperMovementDuringUnlock);
   friend class WallpaperControllerTestBase;
   friend class WallpaperControllerTestApi;
-  friend class KeyboardBacklightColorControllerTest;
 
   enum WallpaperMode { WALLPAPER_NONE, WALLPAPER_IMAGE };
 
