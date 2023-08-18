@@ -507,7 +507,7 @@ void FloatingWorkspaceService::LaunchFloatingWorkspaceTemplate(
   VLOG(1) << "Combining Floating Workspace apps to current desk.";
   std::unique_ptr<DeskTemplate> template_copy = desk_template->Clone();
   // Open the apps from the floating workspace on top of existing windows.
-  saved_desk_util::UpdateTemplateActivationIndices(*template_copy);
+  saved_desk_util::UpdateTemplateActivationIndicesRelativeOrder(*template_copy);
   GetDesksClient()->LaunchAppsFromTemplate(std::move(template_copy));
   RecordLaunchSavedDeskHistogram(DeskTemplateType::kFloatingWorkspace);
 }

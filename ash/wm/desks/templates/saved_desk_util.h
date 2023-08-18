@@ -49,6 +49,13 @@ bool IsWindowOnTopForTemplate(aura::Window* window);
 // defined, while also stacking on top of any existing windows.
 ASH_EXPORT void UpdateTemplateActivationIndices(DeskTemplate& saved_desk);
 
+// This function updates the activation indices of all the windows in a
+// template so that windows launched from it will stack in the order that they
+// were stacked upon saving as a template, while also stacking on top of any
+// existing windows.
+ASH_EXPORT void UpdateTemplateActivationIndicesRelativeOrder(
+    DeskTemplate& saved_desk);
+
 }  // namespace saved_desk_util
 }  // namespace ash
 

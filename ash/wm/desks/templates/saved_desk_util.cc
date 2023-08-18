@@ -128,5 +128,26 @@ void UpdateTemplateActivationIndices(DeskTemplate& saved_desk) {
   }
 }
 
+void UpdateTemplateActivationIndicesRelativeOrder(DeskTemplate& saved_desk) {
+  auto& app_id_to_launch_list =
+      saved_desk.mutable_desk_restore_data()->mutable_app_id_to_launch_list();
+  std::vector<app_restore::AppRestoreData*> relative_window_stack_order;
+  for (auto& [app_id, launch_list] : app_id_to_launch_list) {
+    for (auto& [window_id, app_restore_data] : launch_list) {
+      relative_window_stack_order.push_back(app_restore_data.get());
+    }
+  }
+  // Sort in descending order so that we maintain the relative window
+  // stacking order.
+  base::ranges::sort(relative_window_stack_order,
+                     [](auto* window1, auto* window2) {
+                       return window1->activation_index.value_or(0) >
+                              window2->activation_index.value_or(0);
+                     });
+  for (auto* app_restore_data : relative_window_stack_order) {
+    app_restore_data->activation_index = g_template_next_activation_index--;
+  }
+}
+
 }  // namespace saved_desk_util
 }  // namespace ash
