@@ -19,8 +19,11 @@ Usually you need a policy when
 -   Deprecating an old feature. Create a policy to give enterprise users more
     time to migrate away from the feature.
 
-**To read more about best practices for shipping enterprise friendly features
-read [this article](https://www.chromium.org/developers/enterprise-changes/).**
+**To read more about best practices for shipping enterprise friendly features,
+please read [this article](https://www.chromium.org/developers/enterprise-changes/).**
+
+**This article covers lots of technical details. More information about policy
+design can be found at [policy_design.md](./policy_design.md).**
 
 ## Adding a new policy
 
@@ -125,6 +128,7 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
         -   The setting needs an
             [indicator](https://cs.chromium.org/chromium/src/ui/webui/resources/images/business.svg)
             to tell users that the setting is enforced by the administrator.
+        -   There are more information and util functions can be found [here](https://source.chromium.org/chromium/chromium/src/+/main:ui/webui/resources/cr_elements/policy/).
 8.  Support `dynamic_refresh` if possible.
     -   We strongly encourage developers to make their policies support this
         attribute. It means the admin can change the policy value and Chrome
