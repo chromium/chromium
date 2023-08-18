@@ -575,7 +575,7 @@ void ToggleButton::PaintButtonContents(gfx::Canvas* canvas) {
   if (!GetIsOn() && features::IsChromeRefresh2023()) {
     track_flags.setColor(
         GetColorProvider()->GetColor(ui::kColorToggleButtonShadow));
-    track_flags.setStrokeWidth(0.5f);
+    track_flags.setStrokeWidth(0.5f * dsf);
     track_flags.setStyle(cc::PaintFlags::kStroke_Style);
     canvas->DrawRoundRect(track_rect, radius, track_flags);
   }
