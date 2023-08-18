@@ -7,7 +7,7 @@
 #import <map>
 #import <memory>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/browser_container/edit_menu_app_interface.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
@@ -145,7 +145,7 @@ NSArray* ExtractMenuElements(UIView* view,
   NSMutableArray* menuElements = [NSMutableArray array];
   for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
     UIWindowScene* windowScene =
-        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
     for (UIWindow* window in windowScene.windows) {
       if ([window isKindOfClass:NSClassFromString(@"ChromeOverlayWindow")]) {
         continue;

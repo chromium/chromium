@@ -5,8 +5,8 @@
 #import <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 
+#import "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
-#import "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #import "content/browser/cocoa/system_hotkey_map.h"
 #include "content/public/common/content_paths.h"
@@ -26,7 +26,7 @@ class SystemHotkeyMapTest : public ::testing::Test {
 
     base::FilePath test_path = test_data_dir.AppendASCII(file);
     return [NSDictionary
-        dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(test_path)
+        dictionaryWithContentsOfURL:base::apple::FilePathToNSURL(test_path)
                               error:nil];
   }
 

@@ -6,8 +6,8 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -36,7 +36,7 @@ class SyncEncryptionTableViewControllerTest
 
   void TearDown() override {
     SyncEncryptionTableViewController* controller_ =
-        base::mac::ObjCCastStrict<SyncEncryptionTableViewController>(
+        base::apple::ObjCCastStrict<SyncEncryptionTableViewController>(
             controller());
     if ([controller_ respondsToSelector:@selector(settingsWillBeDismissed)]) {
       [controller_ performSelector:@selector(settingsWillBeDismissed)];

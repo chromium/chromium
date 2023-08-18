@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -437,7 +437,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 - (void)loadVoiceSearch:(id)sender {
   DCHECK(self.voiceSearchIsEnabled);
   [self.NTPMetricsRecorder recordVoiceSearchTapped];
-  UIView* voiceSearchButton = base::mac::ObjCCastStrict<UIView>(sender);
+  UIView* voiceSearchButton = base::apple::ObjCCastStrict<UIView>(sender);
   [self.layoutGuideCenter referenceView:voiceSearchButton
                               underName:kVoiceSearchButtonGuide];
   [self.dispatcher startVoiceSearch];

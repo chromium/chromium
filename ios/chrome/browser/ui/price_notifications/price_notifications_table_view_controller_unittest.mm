@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -31,7 +31,7 @@ template <typename T>
 // Returns the TableViewHeaderFooterItem `T` from `section_id`.
 T* GetHeaderItemFromSection(ChromeTableViewController* controller,
                             NSUInteger section_id) {
-  return base::mac::ObjCCastStrict<T>([controller.tableViewModel
+  return base::apple::ObjCCastStrict<T>([controller.tableViewModel
       headerForSectionIndex:[controller.tableViewModel
                                 sectionForSectionIdentifier:section_id]]);
 }
@@ -70,7 +70,7 @@ TEST_F(PriceNotificationsTableViewControllerTest,
       [model indexPathForItemType:ItemTypeListItem
                 sectionIdentifier:SectionIdentifierTrackableItemsOnCurrentSite];
   PriceNotificationsTableViewItem* trackableItemPlaceholder =
-      base::mac::ObjCCast<PriceNotificationsTableViewItem>(
+      base::apple::ObjCCast<PriceNotificationsTableViewItem>(
           [model itemAtIndexPath:trackableItemPlaceholderIndexPath]);
 
   EXPECT_EQ(trackableItemPlaceholder.loading, true);
@@ -85,10 +85,10 @@ TEST_F(PriceNotificationsTableViewControllerTest,
       [model indexPathsForItemType:ItemTypeListItem
                  sectionIdentifier:SectionIdentifierTrackedItems];
   PriceNotificationsTableViewItem* firstTrackedItemPlacholder =
-      base::mac::ObjCCast<PriceNotificationsTableViewItem>(
+      base::apple::ObjCCast<PriceNotificationsTableViewItem>(
           [model itemAtIndexPath:placeholders[0]]);
   PriceNotificationsTableViewItem* secondTrackedItemPlaceholder =
-      base::mac::ObjCCast<PriceNotificationsTableViewItem>(
+      base::apple::ObjCCast<PriceNotificationsTableViewItem>(
           [model itemAtIndexPath:placeholders[1]]);
 
   EXPECT_EQ(placeholders.count, 2u);
@@ -101,7 +101,8 @@ TEST_F(PriceNotificationsTableViewControllerTest,
 TEST_F(PriceNotificationsTableViewControllerTest,
        DisplayTrackableSectionEmptyStateWhenProductPageIsNotTrackable) {
   id<PriceNotificationsConsumer> consumer =
-      base::mac::ObjCCast<PriceNotificationsTableViewController>(controller());
+      base::apple::ObjCCast<PriceNotificationsTableViewController>(
+          controller());
 
   [consumer setTrackableItem:nil currentlyTracking:NO];
   TableViewTextHeaderFooterItem* item =
@@ -147,7 +148,8 @@ TEST_F(PriceNotificationsTableViewControllerTest,
 TEST_F(PriceNotificationsTableViewControllerTest,
        DisplayTrackableItemWhenAvailable) {
   id<PriceNotificationsConsumer> consumer =
-      base::mac::ObjCCast<PriceNotificationsTableViewController>(controller());
+      base::apple::ObjCCast<PriceNotificationsTableViewController>(
+          controller());
   PriceNotificationsTableViewItem* item =
       [[PriceNotificationsTableViewItem alloc] initWithType:ItemTypeListItem];
   item.title = @"Test Title";
@@ -167,7 +169,8 @@ TEST_F(PriceNotificationsTableViewControllerTest,
 // Simulates that a tracked item exists and is displayed
 TEST_F(PriceNotificationsTableViewControllerTest, DisplayUsersTrackedItems) {
   id<PriceNotificationsConsumer> consumer =
-      base::mac::ObjCCast<PriceNotificationsTableViewController>(controller());
+      base::apple::ObjCCast<PriceNotificationsTableViewController>(
+          controller());
   PriceNotificationsTableViewItem* item =
       [[PriceNotificationsTableViewItem alloc] initWithType:ItemTypeListItem];
   item.title = @"Test Title";
@@ -188,7 +191,7 @@ TEST_F(PriceNotificationsTableViewControllerTest, DisplayUsersTrackedItems) {
 TEST_F(PriceNotificationsTableViewControllerTest,
        DisplayUsersTrackedItemsWhenViewingTrackedItemWebpage) {
   PriceNotificationsTableViewController* tableViewController =
-      base::mac::ObjCCastStrict<PriceNotificationsTableViewController>(
+      base::apple::ObjCCastStrict<PriceNotificationsTableViewController>(
           controller());
   PriceNotificationsTableViewItem* item =
       [[PriceNotificationsTableViewItem alloc] initWithType:ItemTypeListItem];
@@ -217,7 +220,8 @@ TEST_F(PriceNotificationsTableViewControllerTest,
 TEST_F(PriceNotificationsTableViewControllerTest,
        TrackableItemMovedToTrackedSectionOnStartTracking) {
   id<PriceNotificationsConsumer> consumer =
-      base::mac::ObjCCast<PriceNotificationsTableViewController>(controller());
+      base::apple::ObjCCast<PriceNotificationsTableViewController>(
+          controller());
   PriceNotificationsTableViewItem* item =
       [[PriceNotificationsTableViewItem alloc] initWithType:ItemTypeListItem];
   TableViewModel* model = controller().tableViewModel;
@@ -253,7 +257,7 @@ TEST_F(PriceNotificationsTableViewControllerTest,
 TEST_F(PriceNotificationsTableViewControllerTest,
        RedirectToTrackedItemsWebpageOnSelection) {
   PriceNotificationsTableViewController* tableViewController =
-      base::mac::ObjCCastStrict<PriceNotificationsTableViewController>(
+      base::apple::ObjCCastStrict<PriceNotificationsTableViewController>(
           controller());
   PriceNotificationsTableViewItem* item =
       [[PriceNotificationsTableViewItem alloc] initWithType:ItemTypeListItem];
@@ -297,7 +301,8 @@ TEST_F(PriceNotificationsTableViewControllerTest,
 TEST_F(PriceNotificationsTableViewControllerTest,
        UntrackItemWhenTrackableItemSectionIsEmpty) {
   id<PriceNotificationsConsumer> consumer =
-      base::mac::ObjCCast<PriceNotificationsTableViewController>(controller());
+      base::apple::ObjCCast<PriceNotificationsTableViewController>(
+          controller());
   PriceNotificationsTableViewItem* item =
       [[PriceNotificationsTableViewItem alloc] initWithType:ItemTypeListItem];
 
@@ -319,7 +324,8 @@ TEST_F(PriceNotificationsTableViewControllerTest,
 TEST_F(PriceNotificationsTableViewControllerTest,
        UntrackItemFromCurrentlyViewedWebpageWhenTrackableItemSectionIsEmpty) {
   id<PriceNotificationsConsumer> consumer =
-      base::mac::ObjCCast<PriceNotificationsTableViewController>(controller());
+      base::apple::ObjCCast<PriceNotificationsTableViewController>(
+          controller());
   PriceNotificationsTableViewItem* item =
       [[PriceNotificationsTableViewItem alloc] initWithType:ItemTypeListItem];
 
@@ -341,7 +347,8 @@ TEST_F(PriceNotificationsTableViewControllerTest,
 TEST_F(PriceNotificationsTableViewControllerTest,
        UntrackItemRemainingTrackedItemWhenTrackableItemSectionIsNotEmpty) {
   id<PriceNotificationsConsumer> consumer =
-      base::mac::ObjCCast<PriceNotificationsTableViewController>(controller());
+      base::apple::ObjCCast<PriceNotificationsTableViewController>(
+          controller());
   PriceNotificationsTableViewItem* trackable_item =
       [[PriceNotificationsTableViewItem alloc] initWithType:ItemTypeListItem];
   PriceNotificationsTableViewItem* tracked_item =
@@ -367,7 +374,8 @@ TEST_F(
     PriceNotificationsTableViewControllerTest,
     UntrackItemWithMultipleTrackedItemsRemainingWhenTrackableItemSectionIsNotEmpty) {
   id<PriceNotificationsConsumer> consumer =
-      base::mac::ObjCCast<PriceNotificationsTableViewController>(controller());
+      base::apple::ObjCCast<PriceNotificationsTableViewController>(
+          controller());
   PriceNotificationsTableViewItem* trackable_item =
       [[PriceNotificationsTableViewItem alloc] initWithType:ItemTypeListItem];
   PriceNotificationsTableViewItem* tracked_item;
@@ -395,7 +403,8 @@ TEST_F(
 TEST_F(PriceNotificationsTableViewControllerTest,
        UntrackCrossMerchantItemWithItemOnCurrentPageNotTracked) {
   id<PriceNotificationsConsumer> consumer =
-      base::mac::ObjCCast<PriceNotificationsTableViewController>(controller());
+      base::apple::ObjCCast<PriceNotificationsTableViewController>(
+          controller());
   PriceNotificationsTableViewItem* trackable_item =
       [[PriceNotificationsTableViewItem alloc] initWithType:ItemTypeListItem];
   [consumer setTrackableItem:trackable_item currentlyTracking:NO];

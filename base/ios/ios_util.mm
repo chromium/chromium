@@ -8,8 +8,8 @@
 #import <UIKit/UIKit.h>
 #include <stddef.h>
 
+#include "base/apple/foundation_util.h"
 #import "base/ios/device_util.h"
-#include "base/mac/foundation_util.h"
 #include "base/system/sys_info.h"
 
 namespace {

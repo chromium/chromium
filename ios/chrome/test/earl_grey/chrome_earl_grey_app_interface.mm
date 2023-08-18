@@ -6,13 +6,13 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/command_line.h"
 #import "base/containers/contains.h"
 #import "base/files/file.h"
 #import "base/files/file_util.h"
 #import "base/ios/ios_util.h"
 #import "base/json/json_string_value_serializer.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
@@ -559,7 +559,7 @@ NSString* SerializedValue(const base::Value* value) {
   NSSet<UIScene*>* scenes = UIApplication.sharedApplication.connectedScenes;
   for (UIScene* scene in scenes) {
     UIWindowScene* windowScene =
-        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
 
     for (UIWindow* window in windowScene.windows) {
       if (window.isKeyWindow) {
@@ -744,7 +744,7 @@ NSString* SerializedValue(const base::Value* value) {
   // Attempt to deflake WebKit sometimes still holding on to the browser cache
   // with a larger hammer.
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath library_dir = base::mac::GetUserLibraryPath();
+  base::FilePath library_dir = base::apple::GetUserLibraryPath();
   base::FilePath webkit_cache_dir = library_dir.Append("WebKit");
   DeletePathRecursively(webkit_cache_dir);
 
@@ -1395,7 +1395,7 @@ int watchRunNumber = 0;
           for (UIScene* scene in UIApplication.sharedApplication
                    .connectedScenes) {
             UIWindowScene* windowScene =
-                base::mac::ObjCCastStrict<UIWindowScene>(scene);
+                base::apple::ObjCCastStrict<UIWindowScene>(scene);
             [windows addObjectsFromArray:windowScene.windows];
           }
 

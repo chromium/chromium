@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <Foundation/Foundation.h>
@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
-namespace base::mac {
+namespace base::apple {
 
 TEST(FoundationUtilTest, CFCast) {
   // Build out the CF types to be tested as empty containers.
@@ -418,4 +418,4 @@ TEST(FoundationLoggingTest, NSRange) {
   EXPECT_LOG_EQ("{0, 100}", NSMakeRange(0, 100));
 }
 
-}  // namespace base::mac
+}  // namespace base::apple

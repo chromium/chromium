@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -255,7 +255,7 @@ TEST_F(SettingsTableViewControllerTest, SyncPasswordError) {
   // Verify that the account item does not hold the error when done through the
   // sync item.
   TableViewAccountItem* identityAccountItem =
-      base::mac::ObjCCast<TableViewAccountItem>(account_items[0]);
+      base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
   EXPECT_FALSE(identityAccountItem.shouldDisplayError);
 
   // Check that there is no sign-in promo when there is a sync error.
@@ -419,7 +419,7 @@ TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
 
   // Verify that the account item is in an error state.
   TableViewAccountItem* identityAccountItem =
-      base::mac::ObjCCast<TableViewAccountItem>(account_items[0]);
+      base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
   EXPECT_TRUE(identityAccountItem.shouldDisplayError);
 }
 
@@ -444,7 +444,7 @@ TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
 
   // Verify that the account item is in an error state.
   TableViewAccountItem* identityAccountItem =
-      base::mac::ObjCCast<TableViewAccountItem>(account_items[0]);
+      base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
   ASSERT_TRUE(identityAccountItem.shouldDisplayError);
 
   // Resolve the account error.
@@ -459,7 +459,7 @@ TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
                                        SettingsSectionIdentifierAccount];
   ASSERT_NE(0U, account_items.count);
   identityAccountItem =
-      base::mac::ObjCCast<TableViewAccountItem>(account_items[0]);
+      base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
   ASSERT_TRUE(identityAccountItem != nil);
   EXPECT_FALSE(identityAccountItem.shouldDisplayError);
 }
@@ -488,7 +488,7 @@ TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenIneligible) {
 
   // Verify that the account item is not in an error state.
   TableViewAccountItem* identityAccountItem =
-      base::mac::ObjCCast<TableViewAccountItem>(account_items[0]);
+      base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
   ASSERT_TRUE(identityAccountItem != nil);
   EXPECT_FALSE(identityAccountItem.shouldDisplayError);
 }
@@ -513,7 +513,7 @@ TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenNoError) {
 
   // Verify that the account item is not in an error state.
   TableViewAccountItem* identityAccountItem =
-      base::mac::ObjCCast<TableViewAccountItem>(account_items[0]);
+      base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
   ASSERT_TRUE(identityAccountItem != nil);
   EXPECT_FALSE(identityAccountItem.shouldDisplayError);
 }

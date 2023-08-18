@@ -7,11 +7,11 @@
 #import <memory>
 #import <set>
 
+#import "base/apple/foundation_util.h"
 #import "base/apple/scoped_cftyperef.h"
 #import "base/auto_reset.h"
 #import "base/check_op.h"
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -406,7 +406,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   if (section ==
       [self.tableViewModel sectionForSectionIdentifier:SectionIdentifierInfo]) {
     UITableViewHeaderFooterView* headerFooterView =
-        base::mac::ObjCCastStrict<UITableViewHeaderFooterView>(footerView);
+        base::apple::ObjCCastStrict<UITableViewHeaderFooterView>(footerView);
     headerFooterView.textLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
     headerFooterView.textLabel.textColor = [UIColor colorNamed:kRedColor];

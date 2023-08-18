@@ -4,7 +4,7 @@
 
 #import <XCTest/XCTest.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/field_trial.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"

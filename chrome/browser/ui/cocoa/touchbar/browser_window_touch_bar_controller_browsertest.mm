@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/apple/foundation_util.h"
 #include "base/apple/scoped_objc_class_swizzler.h"
-#import "base/mac/foundation_util.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
   auto* current_touch_bar = [native_window() touchBar];
   EXPECT_TRUE(current_touch_bar);
   BrowserWindowDefaultTouchBar* touch_bar_delegate =
-      base::mac::ObjCCastStrict<BrowserWindowDefaultTouchBar>(
+      base::apple::ObjCCastStrict<BrowserWindowDefaultTouchBar>(
           [current_touch_bar delegate]);
   EXPECT_FALSE([touch_bar_delegate isStarred]);
 

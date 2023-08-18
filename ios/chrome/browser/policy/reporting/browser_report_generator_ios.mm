@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/policy/reporting/browser_report_generator_ios.h"
 
 #import "base/apple/bundle_locations.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/proto/device_management_backend.pb.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

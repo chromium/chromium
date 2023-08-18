@@ -6,7 +6,7 @@
 
 #import <Carbon/Carbon.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 
 #pragma mark - NSDictionary Helper Functions
 

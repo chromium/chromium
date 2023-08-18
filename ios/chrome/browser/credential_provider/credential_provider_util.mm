@@ -6,7 +6,7 @@
 
 #import <CommonCrypto/CommonDigest.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
@@ -153,7 +153,7 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
 // Gets the last sync date for favicons in the app group storage.
 base::Time GetFaviconsLastSyncDate() {
   NSDate* last_sync_date =
-      base::mac::ObjCCast<NSDate>([[NSUserDefaults standardUserDefaults]
+      base::apple::ObjCCast<NSDate>([[NSUserDefaults standardUserDefaults]
           objectForKey:kFaviconsLastSyncDatePrefKey]);
   // If no value stored in the NSUserDefaults, consider that the last sync
   // happened forever ago.

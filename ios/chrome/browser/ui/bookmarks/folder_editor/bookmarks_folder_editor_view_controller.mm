@@ -6,10 +6,10 @@
 #import <memory>
 #import <set>
 
+#import "base/apple/foundation_util.h"
 #import "base/auto_reset.h"
 #import "base/check_op.h"
 #import "base/i18n/rtl.h"
-#import "base/mac/foundation_util.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"

@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
 
 #import "base/apple/bundle_locations.h"
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 
 @interface IncognitoBlockerSceneAgent () <SceneStateObserver>
 
@@ -105,7 +105,7 @@
                                            owner:self
                                          options:nil];
   UIViewController* launchScreenController =
-      base::mac::ObjCCastStrict<UIViewController>([topObjects lastObject]);
+      base::apple::ObjCCastStrict<UIViewController>([topObjects lastObject]);
   launchScreenController.view.autoresizingMask =
       UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
   return launchScreenController;

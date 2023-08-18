@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/cells/target_account_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -27,7 +27,7 @@ TEST_F(TargetAccountItemTest, ItemProperties) {
   ASSERT_TRUE([cell isMemberOfClass:[TargetAccountCell class]]);
 
   TargetAccountCell* targetAccountCell =
-      base::mac::ObjCCastStrict<TargetAccountCell>(cell);
+      base::apple::ObjCCastStrict<TargetAccountCell>(cell);
   EXPECT_FALSE(targetAccountCell.emailLabel.text);
   EXPECT_FALSE(targetAccountCell.avatarBadge.image);
 

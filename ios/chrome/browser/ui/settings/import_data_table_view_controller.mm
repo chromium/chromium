@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"

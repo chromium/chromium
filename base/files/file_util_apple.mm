@@ -9,9 +9,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
 
@@ -45,14 +45,14 @@ bool GetTempDir(base::FilePath* path) {
   if (tmp == nil) {
     return false;
   }
-  *path = base::mac::NSStringToFilePath(tmp);
+  *path = base::apple::NSStringToFilePath(tmp);
   return true;
 }
 
 FilePath GetHomeDir() {
   NSString* tmp = NSHomeDirectory();
   if (tmp != nil) {
-    FilePath mac_home_dir = base::mac::NSStringToFilePath(tmp);
+    FilePath mac_home_dir = base::apple::NSStringToFilePath(tmp);
     if (!mac_home_dir.empty()) {
       return mac_home_dir;
     }

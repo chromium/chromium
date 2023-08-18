@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/base_paths.h"
 #import "base/containers/contains.h"
 #import "base/files/file_enumerator.h"
@@ -13,7 +14,6 @@
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/observer_list.h"
 #import "base/path_service.h"
 #import "base/sequence_checker.h"
@@ -71,7 +71,7 @@ void WriteSessionData(NSData* session_data, base::FilePath file_path) {
       NSDataWritingAtomic |
       NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
 
-  NSString* file_path_string = base::mac::FilePathToNSString(file_path);
+  NSString* file_path_string = base::apple::FilePathToNSString(file_path);
   NSError* error = nil;
   if (![session_data writeToFile:file_path_string
                          options:options
@@ -162,7 +162,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
   const base::FilePath filePath =
       _cacheDirectory.Append(SessionIdentifierForWebState(webState));
   NSData* data =
-      [NSData dataWithContentsOfFile:base::mac::FilePathToNSString(filePath)];
+      [NSData dataWithContentsOfFile:base::apple::FilePathToNSString(filePath)];
 
   if (!data) {
     // Until M-115, the file name was derived from GetStableIdentifier()
@@ -177,7 +177,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
     const base::FilePath alternateFilePath = _cacheDirectory.Append(
         base::SysNSStringToUTF8(webState->GetStableIdentifier()));
 
-    data = [NSData dataWithContentsOfFile:base::mac::FilePathToNSString(
+    data = [NSData dataWithContentsOfFile:base::apple::FilePathToNSString(
                                               alternateFilePath)];
     if (data && _taskRunner) {
       _taskRunner->PostTask(FROM_HERE,

@@ -7,7 +7,7 @@
 #import <CoreSpotlight/CoreSpotlight.h>
 #import <memory>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/elapsed_timer.h"

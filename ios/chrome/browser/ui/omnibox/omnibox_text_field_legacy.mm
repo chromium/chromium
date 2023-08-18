@@ -6,10 +6,10 @@
 
 #import <CoreText/CoreText.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/command_line.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/grit/components_scaled_resources.h"

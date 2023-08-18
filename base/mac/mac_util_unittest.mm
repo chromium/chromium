@@ -10,11 +10,11 @@
 #include <stdint.h>
 #include <sys/xattr.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/mac/foundation_util.h"
 #include "base/system/sys_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -28,21 +28,21 @@ using MacUtilTest = PlatformTest;
 TEST_F(MacUtilTest, GetUserDirectoryTest) {
   // Try a few keys, make sure they come back with non-empty paths.
   FilePath caches_dir;
-  EXPECT_TRUE(GetUserDirectory(NSCachesDirectory, &caches_dir));
+  EXPECT_TRUE(apple::GetUserDirectory(NSCachesDirectory, &caches_dir));
   EXPECT_FALSE(caches_dir.empty());
 
   FilePath application_support_dir;
-  EXPECT_TRUE(GetUserDirectory(NSApplicationSupportDirectory,
-                               &application_support_dir));
+  EXPECT_TRUE(apple::GetUserDirectory(NSApplicationSupportDirectory,
+                                      &application_support_dir));
   EXPECT_FALSE(application_support_dir.empty());
 
   FilePath library_dir;
-  EXPECT_TRUE(GetUserDirectory(NSLibraryDirectory, &library_dir));
+  EXPECT_TRUE(apple::GetUserDirectory(NSLibraryDirectory, &library_dir));
   EXPECT_FALSE(library_dir.empty());
 }
 
 TEST_F(MacUtilTest, TestLibraryPath) {
-  FilePath library_dir = GetUserLibraryPath();
+  FilePath library_dir = apple::GetUserLibraryPath();
   // Make sure the string isn't empty.
   EXPECT_FALSE(library_dir.value().empty());
 }
@@ -51,7 +51,7 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
   FilePath out;
 
   // Make sure it doesn't crash.
-  out = GetAppBundlePath(FilePath());
+  out = apple::GetAppBundlePath(FilePath());
   EXPECT_TRUE(out.empty());
 
   // Some more invalid inputs.
@@ -60,7 +60,7 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
     "foo/bar./bazquux", "foo/.app", "//foo",
   };
   for (size_t i = 0; i < std::size(invalid_inputs); i++) {
-    out = GetAppBundlePath(FilePath(invalid_inputs[i]));
+    out = apple::GetAppBundlePath(FilePath(invalid_inputs[i]));
     EXPECT_TRUE(out.empty()) << "loop: " << i;
   }
 
@@ -84,7 +84,7 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
         "/Applications/Google Foo.app" },
   };
   for (size_t i = 0; i < std::size(valid_inputs); i++) {
-    out = GetAppBundlePath(FilePath(valid_inputs[i].in));
+    out = apple::GetAppBundlePath(FilePath(valid_inputs[i].in));
     EXPECT_FALSE(out.empty()) << "loop: " << i;
     EXPECT_STREQ(valid_inputs[i].expected_out,
         out.value().c_str()) << "loop: " << i;
@@ -95,7 +95,7 @@ TEST_F(MacUtilTest, TestGetInnermostAppBundlePath) {
   FilePath out;
 
   // Make sure it doesn't crash.
-  out = GetInnermostAppBundlePath(FilePath());
+  out = apple::GetInnermostAppBundlePath(FilePath());
   EXPECT_TRUE(out.empty());
 
   // Some more invalid inputs.
@@ -113,7 +113,7 @@ TEST_F(MacUtilTest, TestGetInnermostAppBundlePath) {
   for (size_t i = 0; i < std::size(invalid_inputs); i++) {
     SCOPED_TRACE(testing::Message()
                  << "case #" << i << ", input: " << invalid_inputs[i]);
-    out = GetInnermostAppBundlePath(FilePath(invalid_inputs[i]));
+    out = apple::GetInnermostAppBundlePath(FilePath(invalid_inputs[i]));
     EXPECT_TRUE(out.empty());
   }
 
@@ -139,7 +139,7 @@ TEST_F(MacUtilTest, TestGetInnermostAppBundlePath) {
   for (size_t i = 0; i < std::size(valid_inputs); i++) {
     SCOPED_TRACE(testing::Message()
                  << "case #" << i << ", input " << valid_inputs[i].in);
-    out = GetInnermostAppBundlePath(FilePath(valid_inputs[i].in));
+    out = apple::GetInnermostAppBundlePath(FilePath(valid_inputs[i].in));
     EXPECT_FALSE(out.empty());
     EXPECT_STREQ(valid_inputs[i].expected_out, out.value().c_str());
   }

@@ -8,10 +8,10 @@
 #include <stddef.h>
 
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -46,7 +46,7 @@ base::FilePath GetResourcesPakFilePath(NSString* name, NSString* mac_locale) {
     return base::FilePath(base::SysNSStringToUTF8(name) + ".pak");
   }
 
-  return base::mac::NSStringToFilePath(resource_path);
+  return base::apple::NSStringToFilePath(resource_path);
 }
 
 }  // namespace

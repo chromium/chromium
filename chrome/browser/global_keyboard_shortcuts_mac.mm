@@ -7,9 +7,9 @@
 #import <AppKit/AppKit.h>
 #include <Carbon/Carbon.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"

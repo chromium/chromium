@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
@@ -354,7 +354,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     case ItemTypeAutofillCardSwitch: {
       TableViewSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(autofillCardSwitchChanged:)
                       forControlEvents:UIControlEventValueChanged];
@@ -362,7 +362,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
     case ItemTypeAutofillCardManaged: {
       TableViewInfoButtonCell* managedCell =
-          base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+          base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
       [managedCell.trailingButton
                  addTarget:self
                     action:@selector(didTapManagedUIInfoButton:)
@@ -391,7 +391,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.tableViewModel indexPathForItemType:switchItemType
                               sectionIdentifier:SectionIdentifierSwitches];
   TableViewSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<TableViewSwitchItem>(
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
   switchItem.on = on;
 }
@@ -410,7 +410,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [model indexPathForItemType:switchItemType
                 sectionIdentifier:SectionIdentifierSwitches];
   TableViewSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<TableViewSwitchItem>(
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [model itemAtIndexPath:switchPath]);
   [switchItem setEnabled:enabled];
   [self reconfigureCellsForItems:@[ switchItem ]];
@@ -472,7 +472,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   if ([item isKindOfClass:[AutofillCardItem class]]) {
     AutofillCardItem* autofillItem =
-        base::mac::ObjCCastStrict<AutofillCardItem>(item);
+        base::apple::ObjCCastStrict<AutofillCardItem>(item);
     return [autofillItem isDeletable];
   }
   return NO;
@@ -497,7 +497,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   self.deletionInProgress = YES;
   for (NSIndexPath* indexPath in indexPaths) {
-    AutofillCardItem* item = base::mac::ObjCCastStrict<AutofillCardItem>(
+    AutofillCardItem* item = base::apple::ObjCCastStrict<AutofillCardItem>(
         [self.tableViewModel itemAtIndexPath:indexPath]);
     _personalDataManager->RemoveByGUID(item.GUID);
   }

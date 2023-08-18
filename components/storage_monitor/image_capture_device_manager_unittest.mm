@@ -6,10 +6,10 @@
 #import <ImageCaptureCore/ImageCaptureCore.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/storage_monitor/image_capture_device.h"
@@ -91,7 +91,7 @@ const char kTestFileContents[] = "test";
         didDownloadSelector:(SEL)selector
                 contextInfo:(void*)contextInfo {
   base::FilePath saveDir =
-      base::mac::NSURLToFilePath(options[ICDownloadsDirectoryURL]);
+      base::apple::NSURLToFilePath(options[ICDownloadsDirectoryURL]);
   std::string saveAsFilename =
       base::SysNSStringToUTF8(options[ICSaveAsFilename]);
   // It appears that the ImageCapture library adds an extension to the requested

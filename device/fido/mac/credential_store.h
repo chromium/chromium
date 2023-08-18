@@ -12,9 +12,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_metadata.h"

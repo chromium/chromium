@@ -8,9 +8,9 @@
 #import <Foundation/Foundation.h>
 #import <ImageCaptureCore/ImageCaptureCore.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"

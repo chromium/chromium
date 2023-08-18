@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"

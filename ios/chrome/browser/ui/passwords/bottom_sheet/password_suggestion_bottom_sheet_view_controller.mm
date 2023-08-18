@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/shared_password_controller.h"
@@ -278,7 +278,8 @@
                        forCell:(UITableViewCell*)cell {
   DCHECK(cell);
 
-  TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+  TableViewURLCell* URLCell =
+      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
   auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
     DCHECK(attributes);
     // It doesn't matter which cell the user sees here, all the credentials

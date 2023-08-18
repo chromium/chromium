@@ -8,8 +8,8 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -352,11 +352,11 @@ TEST_F(RecentTabsTableCoordinatorTest, TestLoadFaviconAfterDisconnect) {
   CreateController();
 
   UINavigationController* navigation_controller =
-      base::mac::ObjCCastStrict<UINavigationController>(
+      base::apple::ObjCCastStrict<UINavigationController>(
           base_view_controller_.presentedViewController);
 
   RecentTabsTableViewController* view_controller =
-      base::mac::ObjCCastStrict<RecentTabsTableViewController>(
+      base::apple::ObjCCastStrict<RecentTabsTableViewController>(
           navigation_controller.topViewController);
 
   [coordinator_ stop];

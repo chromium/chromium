@@ -4,8 +4,8 @@
 
 #import "ios/web/common/annotations_utils.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -54,7 +54,7 @@ NSString* EncodeNSTextCheckingResultData(NSTextCheckingResult* match) {
     }
   } else if (match.resultType == TCTextCheckingTypeParcelTracking) {
     CustomTextCheckingResult* custom_match =
-        base::mac::ObjCCastStrict<CustomTextCheckingResult>(match);
+        base::apple::ObjCCastStrict<CustomTextCheckingResult>(match);
     [dict setObject:@"parcel" forKey:@"type"];
     if (custom_match.carrier) {
       [dict setObject:[NSNumber numberWithInt:custom_match.carrier]
@@ -65,7 +65,7 @@ NSString* EncodeNSTextCheckingResultData(NSTextCheckingResult* match) {
     }
   } else if (match.resultType == TCTextCheckingTypeMeasurement) {
     CustomTextCheckingResult* custom_match =
-        base::mac::ObjCCastStrict<CustomTextCheckingResult>(match);
+        base::apple::ObjCCastStrict<CustomTextCheckingResult>(match);
     [dict setObject:@"measurement" forKey:@"type"];
     if (custom_match.measurement) {
       [dict setObject:custom_match.measurement forKey:@"measurement"];

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
@@ -63,8 +63,8 @@ class AutofillProfileTableViewControllerTest
   }
 
   void TearDown() override {
-    [base::mac::ObjCCastStrict<AutofillProfileTableViewController>(controller())
-        settingsWillBeDismissed];
+    [base::apple::ObjCCastStrict<AutofillProfileTableViewController>(
+        controller()) settingsWillBeDismissed];
     ChromeTableViewControllerTest::TearDown();
   }
 

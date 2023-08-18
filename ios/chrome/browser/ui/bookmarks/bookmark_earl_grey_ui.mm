@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "build/build_config.h"
 #import "components/strings/grit/components_strings.h"

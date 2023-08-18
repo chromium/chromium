@@ -51,7 +51,7 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include <AvailabilityMacros.h>
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -690,7 +690,7 @@ bool CreateTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
 
 FilePath FormatTemporaryFileName(FilePath::StringPieceType identifier) {
 #if BUILDFLAG(IS_APPLE)
-  StringPiece prefix = base::mac::BaseBundleID();
+  StringPiece prefix = base::apple::BaseBundleID();
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
   StringPiece prefix = "com.google.Chrome";
 #else

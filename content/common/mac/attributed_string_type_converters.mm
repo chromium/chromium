@@ -7,8 +7,8 @@
 #include <AppKit/AppKit.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/common/common_param_traits.h"

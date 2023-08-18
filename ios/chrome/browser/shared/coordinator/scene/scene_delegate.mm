@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
-#import "base/mac/foundation_util.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
@@ -49,7 +49,7 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
 - (SceneState*)sceneState {
   if (!_sceneState) {
     MainApplicationDelegate* appDelegate =
-        base::mac::ObjCCastStrict<MainApplicationDelegate>(
+        base::apple::ObjCCastStrict<MainApplicationDelegate>(
             UIApplication.sharedApplication.delegate);
     _sceneState = [[SceneState alloc] initWithAppState:appDelegate.appState];
     _sceneController = [[SceneController alloc] initWithSceneState:_sceneState];
@@ -93,7 +93,7 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
 - (void)scene:(UIScene*)scene
     willConnectToSession:(UISceneSession*)session
                  options:(UISceneConnectionOptions*)connectionOptions {
-  self.sceneState.scene = base::mac::ObjCCastStrict<UIWindowScene>(scene);
+  self.sceneState.scene = base::apple::ObjCCastStrict<UIWindowScene>(scene);
   self.sceneState.currentOrigin = [self originFromSession:session
                                                   options:connectionOptions];
   self.sceneState.activationLevel = SceneActivationLevelBackground;

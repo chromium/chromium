@@ -8,12 +8,12 @@
 #import <Foundation/Foundation.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/mac/foundation_util.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -44,7 +44,7 @@ class QuarantineMacTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(
         base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &test_file_));
-    file_url_ = base::mac::FilePathToNSURL(test_file_);
+    file_url_ = base::apple::FilePathToNSURL(test_file_);
 
     NSDictionary* properties = @{
       static_cast<NSString*>(kLSQuarantineAgentBundleIdentifierKey) :
@@ -162,7 +162,7 @@ TEST_F(QuarantineMacTest, NoWhereFromsKeyIfNoURLs) {
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
   base::RunLoop().RunUntilIdle();
 
-  NSString* file_path = base::mac::FilePathToNSString(test_file_);
+  NSString* file_path = base::apple::FilePathToNSString(test_file_);
   ASSERT_NE(nullptr, file_path);
   base::ScopedCFTypeRef<MDItemRef> md_item(
       MDItemCreate(kCFAllocatorDefault, base::apple::NSToCFPtrCast(file_path)));

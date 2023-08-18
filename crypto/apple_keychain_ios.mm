@@ -7,8 +7,8 @@
 #import <Foundation/Foundation.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/mac/foundation_util.h"
 
 namespace {
 
@@ -166,7 +166,7 @@ OSStatus AppleKeychain::FindGenericPassword(
   }
 
   if (passwordData) {
-    CFDataRef data = base::mac::CFCast<CFDataRef>(result);
+    CFDataRef data = base::apple::CFCast<CFDataRef>(result);
     NSUInteger length = CFDataGetLength(data);
     *passwordData = malloc(length * sizeof(UInt8));
     CFDataGetBytes(data, CFRangeMake(0, length), (UInt8*)*passwordData);

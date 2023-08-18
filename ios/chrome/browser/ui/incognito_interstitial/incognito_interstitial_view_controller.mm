@@ -6,9 +6,9 @@
 
 #import <algorithm>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"

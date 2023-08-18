@@ -8,9 +8,9 @@
 
 #include <memory>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/check.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 
 static id __strong g_swizzled_main_bundle = nil;
@@ -33,7 +33,7 @@ static id __strong g_swizzled_main_bundle = nil;
 
 - (instancetype)initWithRealBundle:(NSBundle*)bundle {
   _mainBundle = bundle;
-  _bundleID = base::SysUTF8ToNSString(base::mac::BaseBundleID());
+  _bundleID = base::SysUTF8ToNSString(base::apple::BaseBundleID());
   return self;
 }
 

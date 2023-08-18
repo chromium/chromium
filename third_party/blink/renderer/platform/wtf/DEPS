@@ -9,7 +9,7 @@ include_rules = [
     "+base/compiler_specific.h",
     "+base/functional/bind.h",
     "+base/logging.h",
-    "+base/mac/foundation_util.h",
+    "+base/apple/foundation_util.h",
     "+base/memory/ptr_util.h",
     "+base/memory/ref_counted.h",
     "+base/memory/weak_ptr.h",

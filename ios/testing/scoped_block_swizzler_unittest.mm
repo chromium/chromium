@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/testing/scoped_block_swizzler.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -56,7 +56,7 @@ TEST_F(ScopedBlockSwizzlerTest, SwizzlingInstanceMethod) {
 
   {
     id block = ^NSString*(id self) {
-      return base::mac::ObjCCastStrict<ScopedBlockSwizzlerTestClass>(self)
+      return base::apple::ObjCCastStrict<ScopedBlockSwizzlerTestClass>(self)
           .value;
     };
     ScopedBlockSwizzler swizzler([ScopedBlockSwizzlerTestClass class],

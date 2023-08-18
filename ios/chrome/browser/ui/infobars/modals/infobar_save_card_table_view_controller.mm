@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -275,7 +275,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
     case ItemTypeCardHolderName: {
       TableViewTextEditCell* editCell =
-          base::mac::ObjCCast<TableViewTextEditCell>(cell);
+          base::apple::ObjCCast<TableViewTextEditCell>(cell);
       [editCell.textField addTarget:self
                              action:@selector(nameEditDidBegin)
                    forControlEvents:UIControlEventEditingDidBegin];
@@ -289,7 +289,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
     case ItemTypeCardExpireMonth: {
       TableViewTextEditCell* editCell =
-          base::mac::ObjCCast<TableViewTextEditCell>(cell);
+          base::apple::ObjCCast<TableViewTextEditCell>(cell);
       [editCell.textField addTarget:self
                              action:@selector(monthEditDidBegin)
                    forControlEvents:UIControlEventEditingDidBegin];
@@ -303,7 +303,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
     case ItemTypeCardExpireYear: {
       TableViewTextEditCell* editCell =
-          base::mac::ObjCCast<TableViewTextEditCell>(cell);
+          base::apple::ObjCCast<TableViewTextEditCell>(cell);
       [editCell.textField addTarget:self
                              action:@selector(yearEditDidBegin)
                    forControlEvents:UIControlEventEditingDidBegin];
@@ -317,7 +317,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
     case ItemTypeCardLegalMessage: {
       TableViewTextLinkCell* linkCell =
-          base::mac::ObjCCast<TableViewTextLinkCell>(cell);
+          base::apple::ObjCCast<TableViewTextLinkCell>(cell);
       linkCell.delegate = self;
       linkCell.separatorInset =
           UIEdgeInsetsMake(0, self.tableView.bounds.size.width, 0, 0);
@@ -325,7 +325,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
     case ItemTypeCardSave: {
       TableViewTextButtonCell* tableViewTextButtonCell =
-          base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+          base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
       [tableViewTextButtonCell.button
                  addTarget:self
                     action:@selector(saveCardButtonWasPressed:)

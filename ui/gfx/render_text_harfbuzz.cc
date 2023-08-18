@@ -55,7 +55,7 @@
 #include "ui/gfx/utf16_indexing.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "third_party/skia/include/ports/SkTypeface_mac.h"
 #endif

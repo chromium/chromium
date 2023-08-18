@@ -9,10 +9,10 @@
 
 #include <memory>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -30,8 +30,8 @@ namespace {
 bool GetBoolFromDictionary(CFDictionaryRef dict,
                            CFStringRef key,
                            bool default_value) {
-  CFNumberRef number = base::mac::GetValueFromDictionary<CFNumberRef>(dict,
-                                                                      key);
+  CFNumberRef number =
+      base::apple::GetValueFromDictionary<CFNumberRef>(dict, key);
   if (!number)
     return default_value;
 
@@ -63,7 +63,7 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
   if (GetBoolFromDictionary(config_dict.get(),
                             kSCPropNetProxiesProxyAutoConfigEnable,
                             false)) {
-    CFStringRef pac_url_ref = base::mac::GetValueFromDictionary<CFStringRef>(
+    CFStringRef pac_url_ref = base::apple::GetValueFromDictionary<CFStringRef>(
         config_dict.get(), kSCPropNetProxiesProxyAutoConfigURLString);
     if (pac_url_ref)
       proxy_config.set_pac_url(GURL(base::SysCFStringRefToUTF8(pac_url_ref)));
@@ -126,12 +126,12 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
 
   // proxy bypass list
 
-  CFArrayRef bypass_array_ref = base::mac::GetValueFromDictionary<CFArrayRef>(
+  CFArrayRef bypass_array_ref = base::apple::GetValueFromDictionary<CFArrayRef>(
       config_dict.get(), kSCPropNetProxiesExceptionsList);
   if (bypass_array_ref) {
     CFIndex bypass_array_count = CFArrayGetCount(bypass_array_ref);
     for (CFIndex i = 0; i < bypass_array_count; ++i) {
-      CFStringRef bypass_item_ref = base::mac::CFCast<CFStringRef>(
+      CFStringRef bypass_item_ref = base::apple::CFCast<CFStringRef>(
           CFArrayGetValueAtIndex(bypass_array_ref, i));
       if (!bypass_item_ref) {
         LOG(WARNING) << "Expected value for item " << i

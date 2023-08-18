@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "build/branding_buildflags.h"
 #import "components/signin/public/base/signin_metrics.h"

@@ -9,10 +9,10 @@
 
 #include <utility>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
 #include "base/containers/buffer_iterator.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -140,7 +140,7 @@ MachPortRendezvousServer::ClientData::~ClientData() = default;
 
 MachPortRendezvousServer::MachPortRendezvousServer() {
   std::string bootstrap_name =
-      StringPrintf(kBootstrapNameFormat, mac::BaseBundleID(), getpid());
+      StringPrintf(kBootstrapNameFormat, apple::BaseBundleID(), getpid());
   kern_return_t kr = bootstrap_check_in(
       bootstrap_port, bootstrap_name.c_str(),
       apple::ScopedMachReceiveRight::Receiver(server_port_).get());
@@ -301,7 +301,7 @@ size_t MachPortRendezvousClient::GetPortCount() {
 
 // static
 std::string MachPortRendezvousClient::GetBootstrapName() {
-  return StringPrintf(kBootstrapNameFormat, mac::BaseBundleID(), getppid());
+  return StringPrintf(kBootstrapNameFormat, apple::BaseBundleID(), getppid());
 }
 
 bool MachPortRendezvousClient::AcquirePorts() {

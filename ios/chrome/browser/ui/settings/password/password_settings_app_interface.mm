@@ -6,7 +6,7 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -157,7 +157,7 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
 + (MockReauthenticationModule*)mockModule {
   DCHECK(_scopedReauthOverride);
 
-  return base::mac::ObjCCastStrict<MockReauthenticationModule>(
+  return base::apple::ObjCCastStrict<MockReauthenticationModule>(
       _scopedReauthOverride->module);
 }
 

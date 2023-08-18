@@ -11,8 +11,8 @@
 #include <CoreText/CoreText.h>
 
 #include "base/apple/bridging.h"
+#import "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#import "base/mac/foundation_util.h"
 #include "base/memory/scoped_policy.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -96,7 +96,7 @@ Weight GetFontWeightFromCTFont(CTFontRef font) {
 
   base::ScopedCFTypeRef<CFDictionaryRef> traits(CTFontCopyTraits(font));
   DCHECK(traits);
-  CFNumberRef cf_weight = base::mac::GetValueFromDictionary<CFNumberRef>(
+  CFNumberRef cf_weight = base::apple::GetValueFromDictionary<CFNumberRef>(
       traits, kCTFontWeightTrait);
   // A missing weight attribute just means 0 -> NORMAL.
   if (!cf_weight)
@@ -105,7 +105,7 @@ Weight GetFontWeightFromCTFont(CTFontRef font) {
   // macOS 13.0 bug: For non-system fonts with 0-valued traits,
   // `kCFBooleanFalse` is used instead of a `CFNumberRef` of 0. See
   // https://crbug.com/1372420. Filed as FB11673021, fixed in macOS 13.1. In
-  // this code path, the `base::mac::GetValueFromDictionary` call above will
+  // this code path, the `base::apple::GetValueFromDictionary` call above will
   // DLOG for this case and return a null `CFNumberRef`, which will cause this
   // function to return `Weight::NORMAL`, which happens to be the correct thing
   // to do for a trait with value 0.

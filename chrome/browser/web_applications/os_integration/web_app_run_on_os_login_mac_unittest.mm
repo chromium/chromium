@@ -11,10 +11,10 @@
 
 #include <memory>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
@@ -77,7 +77,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
  public:
   void SetUp() override {
     WebAppTest::SetUp();
-    base::mac::SetBaseBundleID(kFakeChromeBundleId);
+    base::apple::SetBaseBundleID(kFakeChromeBundleId);
 
     override_registration_ =
         OsIntegrationTestOverrideImpl::OverrideForTesting();

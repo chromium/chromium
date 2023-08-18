@@ -8,7 +8,7 @@
 
 #include <tuple>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #import "base/mac/mac_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -44,7 +44,7 @@ class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
   // Convenience function to get the BrowserNativeWidgetWindow from the browser
   // window.
   BrowserNativeWidgetWindow* browser_window() {
-    return base::mac::ObjCCastStrict<BrowserNativeWidgetWindow>(
+    return base::apple::ObjCCastStrict<BrowserNativeWidgetWindow>(
         browser()->window()->GetNativeWindow().GetNativeNSWindow());
   }
 
@@ -58,7 +58,7 @@ class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
 
   bool SecondBrowserWindowIsOnTheActiveSpace() {
     NSWindow* second_browser_ns_window =
-        base::mac::ObjCCastStrict<BrowserNativeWidgetWindow>(
+        base::apple::ObjCCastStrict<BrowserNativeWidgetWindow>(
             second_browser_->window()->GetNativeWindow().GetNativeNSWindow());
 
     return [second_browser_ns_window isOnActiveSpace];
@@ -157,7 +157,7 @@ class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
 
   bool WidgetWindowHasDeferredWindowOrderingCommands() {
     NativeWidgetMacNSWindow* widgetWindow =
-        base::mac::ObjCCastStrict<NativeWidgetMacNSWindow>(
+        base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>(
             widget_->GetNativeWindow().GetNativeNSWindow());
 
     return [widgetWindow hasDeferredChildWindowOrderingCommandsForTesting];

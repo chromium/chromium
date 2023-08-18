@@ -8,8 +8,8 @@
 #import <Intents/Intents.h>
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics_action.h"
@@ -129,7 +129,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
       [userActivity.activityType
           isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     // App was launched by iOS as a result of Handoff.
-    NSString* originString = base::mac::ObjCCast<NSString>(
+    NSString* originString = base::apple::ObjCCast<NSString>(
         userActivity.userInfo[handoff::kOriginKey]);
     handoff::Origin origin = handoff::OriginFromString(originString);
     UMA_HISTOGRAM_ENUMERATION("IOS.Handoff.Origin", origin,
@@ -205,7 +205,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     }
 
     SearchInChromeIntent* intent =
-        base::mac::ObjCCastStrict<SearchInChromeIntent>(
+        base::apple::ObjCCastStrict<SearchInChromeIntent>(
             userActivity.interaction.intent);
 
     if (!intent) {
@@ -233,8 +233,9 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     base::UmaHistogramEnumeration(kAppLaunchSource,
                                   AppLaunchSource::SIRI_SHORTCUT);
     base::RecordAction(UserMetricsAction("IOSLaunchedByOpenInChromeIntent"));
-    OpenInChromeIntent* intent = base::mac::ObjCCastStrict<OpenInChromeIntent>(
-        userActivity.interaction.intent);
+    OpenInChromeIntent* intent =
+        base::apple::ObjCCastStrict<OpenInChromeIntent>(
+            userActivity.interaction.intent);
 
     if (!intent.url) {
       return NO;
@@ -245,7 +246,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     if ([intent.url isKindOfClass:[NSURL class]]) {
       // Old intent version where `url` is of type NSURL rather than an array.
       GURL webpageGURL(
-          net::GURLWithNSURL(base::mac::ObjCCastStrict<NSURL>(intent.url)));
+          net::GURLWithNSURL(base::apple::ObjCCastStrict<NSURL>(intent.url)));
       if (!webpageGURL.is_valid())
         return NO;
       URLs.push_back(webpageGURL);
@@ -276,7 +277,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                                   AppLaunchSource::SIRI_SHORTCUT);
     base::RecordAction(UserMetricsAction("IOSLaunchedByOpenInIncognitoIntent"));
     OpenInChromeIncognitoIntent* intent =
-        base::mac::ObjCCastStrict<OpenInChromeIncognitoIntent>(
+        base::apple::ObjCCastStrict<OpenInChromeIncognitoIntent>(
             userActivity.interaction.intent);
 
     if (!intent.url || intent.url.count == 0) {

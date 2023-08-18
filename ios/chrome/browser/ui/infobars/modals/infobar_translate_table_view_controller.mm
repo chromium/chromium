@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/infobar_translate_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
@@ -341,7 +341,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemType itemType = static_cast<ItemType>(
       [self.tableViewModel itemTypeForIndexPath:indexPath]);
   TableViewTextButtonCell* tableViewTextButtonCell =
-      base::mac::ObjCCast<TableViewTextButtonCell>(cell);
+      base::apple::ObjCCast<TableViewTextButtonCell>(cell);
   // Clear the existing targets before adding the new ones.
   [tableViewTextButtonCell.button removeTarget:nil
                                         action:nil

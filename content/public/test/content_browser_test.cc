@@ -27,7 +27,7 @@
 #include "ui/events/platform/platform_event_source.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
@@ -52,7 +52,7 @@ ContentBrowserTest::ContentBrowserTest() {
   // uses this same function to change the ContentBrowserClient.
   ContentClient::SetCanChangeContentBrowserClientForTesting(false);
 #if BUILDFLAG(IS_MAC)
-  base::mac::SetOverrideAmIBundled(true);
+  base::apple::SetOverrideAmIBundled(true);
 
   // See comment in InProcessBrowserTest::InProcessBrowserTest().
   base::FilePath content_shell_path;

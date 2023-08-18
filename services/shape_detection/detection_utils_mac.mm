@@ -8,10 +8,10 @@
 
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/sys_string_conversions.h"
@@ -85,7 +85,7 @@ VisionAPIAsyncRequestMac::VisionAPIAsyncRequestMac(
   // Pass symbology hints to request. Only valid for VNDetectBarcodesRequest.
   if ([symbology_hints count] > 0) {
     VNDetectBarcodesRequest* barcode_request =
-        base::mac::ObjCCastStrict<VNDetectBarcodesRequest>(request_);
+        base::apple::ObjCCastStrict<VNDetectBarcodesRequest>(request_);
     barcode_request.symbologies = symbology_hints;
   }
 }

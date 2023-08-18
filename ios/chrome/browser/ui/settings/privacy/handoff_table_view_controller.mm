@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/handoff_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/handoff/pref_names_ios.h"
@@ -108,7 +108,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (itemType == ItemTypeSwitch) {
     TableViewSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(switchChanged:)
                     forControlEvents:UIControlEventValueChanged];

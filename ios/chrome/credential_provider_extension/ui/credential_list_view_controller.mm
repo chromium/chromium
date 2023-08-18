@@ -4,7 +4,7 @@
 
 #import "ios/chrome/credential_provider_extension/ui/credential_list_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/numerics/safe_conversions.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
@@ -210,7 +210,7 @@ UIColor* BackgroundColor() {
     }
 
     CredentialListCell* credentialCell =
-        base::mac::ObjCCastStrict<CredentialListCell>(cell);
+        base::apple::ObjCCastStrict<CredentialListCell>(cell);
 
     credentialCell.textLabel.text = credential.serviceName;
     credentialCell.detailTextLabel.text = credential.user;
@@ -246,7 +246,7 @@ UIColor* BackgroundColor() {
   DCHECK(credential);
   DCHECK(cell);
   CredentialListCell* credentialCell =
-      base::mac::ObjCCastStrict<CredentialListCell>(cell);
+      base::apple::ObjCCastStrict<CredentialListCell>(cell);
   NSString* serviceIdentifier = credential.serviceIdentifier;
 
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
@@ -375,9 +375,9 @@ UIColor* BackgroundColor() {
 
 // Called when info icon is tapped.
 - (void)infoIconButtonTapped:(id)sender event:(id)event {
-  CGPoint hitPoint =
-      [base::mac::ObjCCastStrict<UIButton>(sender) convertPoint:CGPointZero
-                                                         toView:self.tableView];
+  CGPoint hitPoint = [base::apple::ObjCCastStrict<UIButton>(sender)
+      convertPoint:CGPointZero
+            toView:self.tableView];
   NSIndexPath* indexPath = [self.tableView indexPathForRowAtPoint:hitPoint];
   id<Credential> credential = [self credentialForIndexPath:indexPath];
   if (!credential) {

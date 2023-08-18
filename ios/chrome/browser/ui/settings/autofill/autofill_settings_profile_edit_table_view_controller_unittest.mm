@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller.h"
 
 #import <memory>
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"

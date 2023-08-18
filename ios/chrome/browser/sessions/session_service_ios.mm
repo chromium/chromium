@@ -6,13 +6,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/format_macros.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/memory/ref_counted.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -161,17 +161,17 @@ const base::FilePath::CharType kSessionFileName[] =
   // object as the root object (pre-M-59).
   if ([rootObject isKindOfClass:[SessionWindowIOS class]]) {
     return [[SessionIOS alloc] initWithWindows:@[
-      base::mac::ObjCCastStrict<SessionWindowIOS>(rootObject)
+      base::apple::ObjCCastStrict<SessionWindowIOS>(rootObject)
     ]];
   }
 
-  return base::mac::ObjCCastStrict<SessionIOS>(rootObject);
+  return base::apple::ObjCCastStrict<SessionIOS>(rootObject);
 }
 
 - (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
                               completion:(base::OnceClosure)callback {
   NSString* sessionsDirectory =
-      base::mac::FilePathToNSString(directory.Append(kSessions));
+      base::apple::FilePathToNSString(directory.Append(kSessions));
   NSArray<NSString*>* allSessionIDs = [[NSFileManager defaultManager]
       contentsOfDirectoryAtPath:sessionsDirectory
                           error:nil];
@@ -196,7 +196,7 @@ const base::FilePath::CharType kSessionFileName[] =
 + (NSString*)sessionPathForSessionID:(NSString*)sessionID
                            directory:(const base::FilePath&)directory {
   DCHECK(sessionID.length != 0);
-  return base::mac::FilePathToNSString(
+  return base::apple::FilePathToNSString(
       directory.Append(kSessions)
           .Append(base::SysNSStringToUTF8(sessionID))
           .Append(kSessionFileName));

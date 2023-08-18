@@ -6,8 +6,8 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -163,7 +163,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
           [self.tableViewModel sectionIdentifierForSectionIndex:section] &&
       [self.tableViewModel footerForSectionIndex:section]) {
     TableViewLinkHeaderFooterView* footer =
-        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(footerView);
+        base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(footerView);
     footer.delegate = self;
   }
   return footerView;

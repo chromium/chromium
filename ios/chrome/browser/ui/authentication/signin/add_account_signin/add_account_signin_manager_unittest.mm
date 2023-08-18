@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
@@ -44,7 +44,7 @@ class AddAccountSigninManagerTest : public PlatformTest {
         identityWithEmail:[NSString stringWithUTF8String:kTestEmail]
                    gaiaID:[NSString stringWithUTF8String:kTestGaiaID]
                      name:@"Foo"];
-    return base::mac::ObjCCastStrict<FakeSystemIdentityInteractionManager>(
+    return base::apple::ObjCCastStrict<FakeSystemIdentityInteractionManager>(
         fake_system_identity_manager()->CreateInteractionManager());
   }
 

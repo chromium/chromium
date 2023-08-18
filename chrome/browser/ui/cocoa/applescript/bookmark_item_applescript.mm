@@ -4,7 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/applescript/bookmark_item_applescript.h"
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "chrome/browser/app_controller_mac.h"
 #import "chrome/browser/ui/cocoa/applescript/apple_event_util.h"

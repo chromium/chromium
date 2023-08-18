@@ -6,7 +6,7 @@
 
 #import <string>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
@@ -173,7 +173,7 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissNewPrompt) {
   EXPECT_TRUE([base_view_controller.presentedViewController
       isMemberOfClass:[UINavigationController class]]);
   UINavigationController* navigation_controller =
-      base::mac::ObjCCast<UINavigationController>(
+      base::apple::ObjCCast<UINavigationController>(
           base_view_controller.presentedViewController);
 
   EXPECT_TRUE([navigation_controller.topViewController

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_mediator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
@@ -577,7 +577,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   for (TableViewItem* item in items) {
     if (item.type == BookmarksHomeItemTypeBookmark) {
       BookmarksHomeNodeItem* nodeItem =
-          base::mac::ObjCCastStrict<BookmarksHomeNodeItem>(item);
+          base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
       if (nodeItem.bookmarkNode == bookmarkNode) {
         return nodeItem;
       }

@@ -10,13 +10,13 @@
 #import <Security/Security.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
@@ -66,8 +66,8 @@ void FilterKeychainItemsByCreationDate(
         // If the creation date is missing for some obscure reason, treat as if
         // the date is inside the interval, i.e. keep it in the list.
         CFDateRef creation_date_cf =
-            base::mac::GetValueFromDictionary<CFDateRef>(attributes,
-                                                         kSecAttrCreationDate);
+            base::apple::GetValueFromDictionary<CFDateRef>(
+                attributes, kSecAttrCreationDate);
         if (!creation_date_cf) {
           return false;
         }
@@ -115,7 +115,7 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
   }
 
   for (CFIndex i = 0; i < CFArrayGetCount(keychain_items); ++i) {
-    CFDictionaryRef attributes = base::mac::CFCast<CFDictionaryRef>(
+    CFDictionaryRef attributes = base::apple::CFCast<CFDictionaryRef>(
         CFArrayGetValueAtIndex(keychain_items, i));
     if (!attributes) {
       DLOG(ERROR) << "unexpected result type";
@@ -125,8 +125,8 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
     // Skip items that don't belong to the correct keychain access group
     // because the kSecAttrAccessGroup filter is broken.
     CFStringRef attr_access_group =
-        base::mac::GetValueFromDictionary<CFStringRef>(attributes,
-                                                       kSecAttrAccessGroup);
+        base::apple::GetValueFromDictionary<CFStringRef>(attributes,
+                                                         kSecAttrAccessGroup);
     if (!attr_access_group || base::SysCFStringRefToUTF8(attr_access_group) !=
                                   keychain_access_group) {
       DVLOG(1) << "missing/invalid access group";
@@ -136,8 +136,9 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
     // If the RP ID, stored encrypted in the item's label, cannot be decrypted
     // with the given metadata secret, then the credential belongs to a
     // different profile and must be ignored.
-    CFStringRef sec_attr_label = base::mac::GetValueFromDictionary<CFStringRef>(
-        attributes, kSecAttrLabel);
+    CFStringRef sec_attr_label =
+        base::apple::GetValueFromDictionary<CFStringRef>(attributes,
+                                                         kSecAttrLabel);
     if (!sec_attr_label) {
       DLOG(ERROR) << "missing label";
       continue;
@@ -455,8 +456,9 @@ bool TouchIdCredentialStore::DeleteCredentialsSync(
   for (const base::ScopedCFTypeRef<CFDictionaryRef>& attributes :
        *keychain_items) {
     // kSecAttrApplicationLabel stores the credential ID.
-    CFDataRef credential_id_data = base::mac::GetValueFromDictionary<CFDataRef>(
-        attributes.get(), kSecAttrApplicationLabel);
+    CFDataRef credential_id_data =
+        base::apple::GetValueFromDictionary<CFDataRef>(
+            attributes.get(), kSecAttrApplicationLabel);
     if (!credential_id_data) {
       DLOG(ERROR) << "missing application label";
       continue;
@@ -534,7 +536,7 @@ TouchIdCredentialStore::FindCredentialsImpl(
   // empty in which case all credentials should be returned.
   std::list<Credential> credentials;
   for (CFIndex i = 0; i < CFArrayGetCount(keychain_items); ++i) {
-    CFDictionaryRef attributes = base::mac::CFCast<CFDictionaryRef>(
+    CFDictionaryRef attributes = base::apple::CFCast<CFDictionaryRef>(
         CFArrayGetValueAtIndex(keychain_items, i));
     if (!attributes) {
       FIDO_LOG(ERROR) << "credential with missing attributes";
@@ -543,16 +545,16 @@ TouchIdCredentialStore::FindCredentialsImpl(
     // Skip items that don't belong to the correct keychain access group
     // because the kSecAttrAccessGroup filter is broken.
     CFStringRef attr_access_group =
-        base::mac::GetValueFromDictionary<CFStringRef>(attributes,
-                                                       kSecAttrAccessGroup);
+        base::apple::GetValueFromDictionary<CFStringRef>(attributes,
+                                                         kSecAttrAccessGroup);
     if (!attr_access_group) {
       continue;
     }
     std::string rp_id_value;
     if (!rp_id) {
       CFStringRef sec_attr_label =
-          base::mac::GetValueFromDictionary<CFStringRef>(attributes,
-                                                         kSecAttrLabel);
+          base::apple::GetValueFromDictionary<CFStringRef>(attributes,
+                                                           kSecAttrLabel);
       if (!sec_attr_label) {
         FIDO_LOG(ERROR) << "credential with missing kSecAttrLabel_data";
         continue;
@@ -567,8 +569,9 @@ TouchIdCredentialStore::FindCredentialsImpl(
     } else {
       rp_id_value = *rp_id;
     }
-    CFDataRef application_label = base::mac::GetValueFromDictionary<CFDataRef>(
-        attributes, kSecAttrApplicationLabel);
+    CFDataRef application_label =
+        base::apple::GetValueFromDictionary<CFDataRef>(
+            attributes, kSecAttrApplicationLabel);
     if (!application_label) {
       FIDO_LOG(ERROR) << "credential with missing application label";
       return absl::nullopt;
@@ -585,8 +588,8 @@ TouchIdCredentialStore::FindCredentialsImpl(
     // for V3 credentials, or from the credential ID for version <= 2.
     absl::optional<CredentialMetadata> metadata;
     CFDataRef application_tag_ref =
-        base::mac::GetValueFromDictionary<CFDataRef>(attributes,
-                                                     kSecAttrApplicationTag);
+        base::apple::GetValueFromDictionary<CFDataRef>(attributes,
+                                                       kSecAttrApplicationTag);
     // On version < 3 credentials, kSecAttrApplicationTag is a CFStringRef,
     // which means `application_tag_ref` would be nullptr.
     if (application_tag_ref) {
@@ -605,8 +608,8 @@ TouchIdCredentialStore::FindCredentialsImpl(
       return absl::nullopt;
     }
 
-    SecKeyRef key =
-        base::mac::GetValueFromDictionary<SecKeyRef>(attributes, kSecValueRef);
+    SecKeyRef key = base::apple::GetValueFromDictionary<SecKeyRef>(
+        attributes, kSecValueRef);
     if (!key) {
       FIDO_LOG(ERROR) << "credential with missing value ref";
       return absl::nullopt;

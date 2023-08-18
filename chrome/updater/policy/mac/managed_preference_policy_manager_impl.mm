@@ -6,8 +6,8 @@
 
 #include <Foundation/Foundation.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/enterprise_util.h"
-#include "base/mac/foundation_util.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/manager.h"
 
@@ -108,7 +108,7 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
 - (instancetype)initWithDictionary:(CRUAppPolicyDictionary*)policyDict {
   if (([super init])) {
     _downloadPreference =
-        base::mac::ObjCCast<NSString>(policyDict[kDownloadPreferenceKey]);
+        base::apple::ObjCCast<NSString>(policyDict[kDownloadPreferenceKey]);
     _defaultUpdatePolicy = updater::TranslateUpdatePolicyValue(
         updater::ReadPolicyInteger(policyDict[kUpdateDefaultKey]));
     _updatesSuppressed.start_hour_ =
@@ -171,9 +171,9 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
     _updatePolicy = updater::TranslateUpdatePolicyValue(
         updater::ReadPolicyInteger(policyDict[kUpdateDefaultKey]));
     _targetChannel =
-        base::mac::ObjCCast<NSString>(policyDict[kTargetChannelKey]);
+        base::apple::ObjCCast<NSString>(policyDict[kTargetChannelKey]);
     _targetVersionPrefix =
-        base::mac::ObjCCast<NSString>(policyDict[kTargetVersionPrefixKey]);
+        base::apple::ObjCCast<NSString>(policyDict[kTargetVersionPrefixKey]);
     _rollbackToTargetVersion =
         updater::ReadPolicyInteger(policyDict[kRollbackToTargetVersionKey]);
   }

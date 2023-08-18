@@ -6,7 +6,7 @@
 
 #import "chrome/browser/ui/views/frame/browser_frame_mac.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
@@ -413,7 +413,7 @@ void BrowserFrameMac::OnWindowDestroying(gfx::NativeWindow native_window) {
   // Clear delegates set in CreateNSWindow() to prevent objects with a reference
   // to |window| attempting to validate commands by looking for a Browser*.
   NativeWidgetMacNSWindow* ns_window =
-      base::mac::ObjCCastStrict<NativeWidgetMacNSWindow>(
+      base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>(
           native_window.GetNativeNSWindow());
   [ns_window setWindowTouchBarDelegate:nil];
 }

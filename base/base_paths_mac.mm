@@ -8,11 +8,11 @@
 #import <Foundation/Foundation.h>
 
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
 #include "base/base_paths_apple.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 
@@ -28,7 +28,7 @@ bool PathProviderMac(int key, base::FilePath* result) {
           result, reinterpret_cast<const void*>(&base::PathProviderMac));
     case base::DIR_APP_DATA: {
       bool success =
-          base::mac::GetUserDirectory(NSApplicationSupportDirectory, result);
+          base::apple::GetUserDirectory(NSApplicationSupportDirectory, result);
       return success;
     }
     case base::DIR_SRC_TEST_DATA_ROOT:
@@ -40,7 +40,7 @@ bool PathProviderMac(int key, base::FilePath* result) {
       // Start with the executable's directory.
       *result = result->DirName();
 
-      if (base::mac::AmIBundled()) {
+      if (base::apple::AmIBundled()) {
         // The bundled app executables (Chromium, TestShell, etc) live five
         // levels down, eg:
         // src/xcodebuild/{Debug|Release}/Chromium.app/Contents/MacOS/Chromium
@@ -52,16 +52,16 @@ bool PathProviderMac(int key, base::FilePath* result) {
       }
       return true;
     case base::DIR_USER_DESKTOP:
-      return base::mac::GetUserDirectory(NSDesktopDirectory, result);
+      return base::apple::GetUserDirectory(NSDesktopDirectory, result);
     case base::DIR_ASSETS:
-      if (!base::mac::AmIBundled()) {
+      if (!base::apple::AmIBundled()) {
         return PathService::Get(base::DIR_MODULE, result);
       }
       *result = base::apple::FrameworkBundlePath().Append(
           FILE_PATH_LITERAL("Resources"));
       return true;
     case base::DIR_CACHE:
-      return base::mac::GetUserDirectory(NSCachesDirectory, result);
+      return base::apple::GetUserDirectory(NSCachesDirectory, result);
     default:
       return false;
   }

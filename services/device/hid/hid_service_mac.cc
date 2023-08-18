@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -31,7 +31,7 @@ namespace {
 bool TryGetHidDataProperty(io_service_t service,
                            CFStringRef key,
                            std::vector<uint8_t>* result) {
-  base::ScopedCFTypeRef<CFDataRef> ref(base::mac::CFCast<CFDataRef>(
+  base::ScopedCFTypeRef<CFDataRef> ref(base::apple::CFCast<CFDataRef>(
       IORegistryEntryCreateCFProperty(service, key, kCFAllocatorDefault, 0)));
   if (!ref)
     return false;

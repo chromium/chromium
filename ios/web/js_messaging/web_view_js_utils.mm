@@ -7,8 +7,8 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <WebKit/WebKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
@@ -45,7 +45,7 @@ std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result,
   } else if (result_type == CFDictionaryGetTypeID()) {
     base::Value::Dict dictionary;
     for (id key in wk_result) {
-      NSString* obj_c_string = base::mac::ObjCCast<NSString>(key);
+      NSString* obj_c_string = base::apple::ObjCCast<NSString>(key);
       const std::string path = base::SysNSStringToUTF8(obj_c_string);
       std::unique_ptr<base::Value> value =
           ValueResultFromWKResult(wk_result[obj_c_string], max_depth - 1);

@@ -8,11 +8,11 @@
 
 #include <deque>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
@@ -175,7 +175,7 @@ class DownloadTaskInfo {
   // service's target directory. This must happen immediately on the current
   // thread or iOS may delete the file.
   const base::FilePath tempPath =
-      base::mac::NSStringToFilePath([location path]);
+      base::apple::NSStringToFilePath([location path]);
   if (!base::Move(tempPath, it->second->download_path_)) {
     LOG(ERROR) << "Failed to move file from:" << tempPath
                << ", to:" << it->second->download_path_;

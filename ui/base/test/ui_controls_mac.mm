@@ -8,10 +8,10 @@
 
 #include <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#import "base/mac/foundation_util.h"
 #include "base/task/current_thread.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"

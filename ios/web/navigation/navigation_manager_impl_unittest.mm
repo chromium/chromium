@@ -7,8 +7,8 @@
 #import <array>
 #import <string>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -3047,7 +3047,7 @@ class NavigationManagerSerialisationTest : public PlatformTest {
   ~NavigationManagerSerialisationTest() override {}
 
   CRWFakeWebViewNavigationProxy* fake_web_view() {
-    return base::mac::ObjCCastStrict<CRWFakeWebViewNavigationProxy>(
+    return base::apple::ObjCCastStrict<CRWFakeWebViewNavigationProxy>(
         web_state_->GetWebViewNavigationProxy());
   }
 

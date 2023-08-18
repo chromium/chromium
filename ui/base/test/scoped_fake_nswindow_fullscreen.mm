@@ -6,9 +6,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"

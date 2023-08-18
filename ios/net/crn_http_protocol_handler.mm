@@ -10,11 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -278,7 +278,7 @@ void HttpProtocolHandlerCore::HandleStreamEvent(NSStream* stream,
       // TODO(crbug.com/738025): Dynamically change the size of the read buffer
       // to improve the read (POST) performance, see AllocateReadBuffer(), &
       // avoid unnecessary data copy.
-      length = [base::mac::ObjCCastStrict<NSInputStream>(stream)
+      length = [base::apple::ObjCCastStrict<NSInputStream>(stream)
                read:reinterpret_cast<unsigned char*>(read_buffer_.get())
           maxLength:read_buffer_size_];
       if (length > 0) {

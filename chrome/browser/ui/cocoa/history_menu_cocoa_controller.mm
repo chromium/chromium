@@ -4,7 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/history_menu_cocoa_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"  // IDC_HISTORY_MENU

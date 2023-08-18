@@ -4,7 +4,7 @@
 
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/session/proto/session.pb.h"
 #import "ios/web/session/hash_util.h"
@@ -133,7 +133,7 @@ size_t GetCertPolicyBytesEncoded() {
 
 - (BOOL)isEqual:(NSObject*)object {
   CRWSessionCertificateStorage* other =
-      base::mac::ObjCCast<CRWSessionCertificateStorage>(object);
+      base::apple::ObjCCast<CRWSessionCertificateStorage>(object);
 
   return [other cr_isEqualSameClass:self];
 }
@@ -237,7 +237,7 @@ size_t GetCertPolicyBytesEncoded() {
 
 - (BOOL)isEqual:(NSObject*)object {
   CRWSessionCertificatePolicyCacheStorage* other =
-      base::mac::ObjCCast<CRWSessionCertificatePolicyCacheStorage>(object);
+      base::apple::ObjCCast<CRWSessionCertificatePolicyCacheStorage>(object);
 
   return [other cr_isEqualSameClass:self];
 }

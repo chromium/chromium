@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
@@ -137,7 +137,7 @@
   TableViewTextEditCell* settingsCell = nil;
   for (UIView* view = textField; view; view = [view superview]) {
     TableViewTextEditCell* cell =
-        base::mac::ObjCCast<TableViewTextEditCell>(view);
+        base::apple::ObjCCast<TableViewTextEditCell>(view);
     if (cell) {
       settingsCell = cell;
       break;
@@ -201,7 +201,7 @@
 
   if (nextCellPath) {
     TableViewTextEditCell* nextCell =
-        base::mac::ObjCCastStrict<TableViewTextEditCell>(
+        base::apple::ObjCCastStrict<TableViewTextEditCell>(
             [self.tableView cellForRowAtIndexPath:nextCellPath]);
     [nextCell.textField becomeFirstResponder];
   } else {

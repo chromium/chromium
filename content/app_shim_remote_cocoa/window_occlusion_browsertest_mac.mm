@@ -4,8 +4,8 @@
 
 #include <memory>
 
+#import "base/apple/foundation_util.h"
 #include "base/apple/scoped_objc_class_swizzler.h"
-#import "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -94,7 +94,7 @@ struct Version {
 - (void)updateWebContentsVisibility:
     (remote_cocoa::mojom::Visibility)windowVisibility {
   WebContentsHostWindowForOcclusionTesting* hostWindow =
-      base::mac::ObjCCast<WebContentsHostWindowForOcclusionTesting>(
+      base::apple::ObjCCast<WebContentsHostWindowForOcclusionTesting>(
           [self window]);
 
   EXPECT_FALSE([hostWindow modifyingChildWindowList]);

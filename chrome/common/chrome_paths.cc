@@ -27,7 +27,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -113,7 +113,7 @@ bool GetInternalPluginsDirectory(base::FilePath* result) {
 #if BUILDFLAG(IS_MAC)
   // If called from Chrome, get internal plugins from a subdirectory of the
   // framework.
-  if (base::mac::AmIBundled()) {
+  if (base::apple::AmIBundled()) {
     *result = chrome::GetFrameworkBundlePath();
     DCHECK(!result->empty());
     *result = result->Append("Internet Plug-Ins");
@@ -136,7 +136,7 @@ bool GetInternalPluginsDirectory(base::FilePath* result) {
 bool GetComponentDirectory(base::FilePath* result) {
 #if BUILDFLAG(IS_MAC)
   // If called from Chrome, return the framework's Libraries directory.
-  if (base::mac::AmIBundled()) {
+  if (base::apple::AmIBundled()) {
     *result = chrome::GetFrameworkBundlePath();
     DCHECK(!result->empty());
     *result = result->Append("Libraries");
@@ -165,7 +165,7 @@ bool PathProvider(int key, base::FilePath* result) {
       // TODO(crbug.com/1262330): implement workable solution for Fuchsia.
 #if BUILDFLAG(IS_MAC)
       // Apps may not write into their own bundle.
-      if (base::mac::AmIBundled()) {
+      if (base::apple::AmIBundled()) {
         return base::PathService::Get(chrome::DIR_USER_DATA, result);
       }
 #endif  // BUILDFLAG(IS_MAC)
@@ -357,7 +357,7 @@ bool PathProvider(int key, base::FilePath* result) {
       if (!base::PathService::Get(base::DIR_EXE, &cur)) {
         return false;
       }
-      if (base::mac::AmIBundled()) {
+      if (base::apple::AmIBundled()) {
         // If we're called from chrome, it's beside the app (outside the
         // app bundle), if we're called from a unittest, we'll already be
         // outside the bundle so use the exe dir.

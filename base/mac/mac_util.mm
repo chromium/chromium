@@ -17,11 +17,11 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_aedesc.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/strings/string_number_conversions.h"
@@ -163,7 +163,7 @@ void AddToLoginItems(const FilePath& app_bundle_file_path,
     return;
   }
 
-  NSURL* app_bundle_url = base::mac::FilePathToNSURL(app_bundle_file_path);
+  NSURL* app_bundle_url = base::apple::FilePathToNSURL(app_bundle_file_path);
   base::ScopedCFTypeRef<LSSharedFileListItemRef> item =
       login_items.GetLoginItemForApp(app_bundle_url);
 
@@ -204,7 +204,7 @@ void RemoveFromLoginItems(const FilePath& app_bundle_file_path) {
     return;
   }
 
-  NSURL* app_bundle_url = base::mac::FilePathToNSURL(app_bundle_file_path);
+  NSURL* app_bundle_url = base::apple::FilePathToNSURL(app_bundle_file_path);
   base::ScopedCFTypeRef<LSSharedFileListItemRef> item =
       login_items.GetLoginItemForApp(app_bundle_url);
   if (!item.get()) {
@@ -261,7 +261,7 @@ bool WasLaunchedAsLoginItemRestoreState() {
     return true;
   }
 
-  if (CFBooleanRef restore_state = base::mac::CFCast<CFBooleanRef>(plist)) {
+  if (CFBooleanRef restore_state = base::apple::CFCast<CFBooleanRef>(plist)) {
     return CFBooleanGetValue(restore_state);
   }
 
@@ -467,7 +467,7 @@ std::string GetPlatformSerialNumber() {
                                       CFSTR(kIOPlatformSerialNumberKey),
                                       kCFAllocatorDefault, 0));
   CFStringRef serial_number_cfstring =
-      base::mac::CFCast<CFStringRef>(serial_number);
+      base::apple::CFCast<CFStringRef>(serial_number);
   if (!serial_number_cfstring) {
     DLOG(ERROR) << "Error retrieving the machine serial number.";
     return std::string();

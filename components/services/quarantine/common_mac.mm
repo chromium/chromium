@@ -7,18 +7,18 @@
 #import <ApplicationServices/ApplicationServices.h>
 #include <Foundation/Foundation.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 
 namespace quarantine {
 
 NSDictionary* GetQuarantineProperties(const base::FilePath& file) {
-  NSURL* file_url = base::mac::FilePathToNSURL(file);
+  NSURL* file_url = base::apple::FilePathToNSURL(file);
   if (!file_url) {
     return nil;
   }
@@ -40,7 +40,7 @@ NSDictionary* GetQuarantineProperties(const base::FilePath& file) {
   }
 
   NSDictionary* quarantine_properties_dict =
-      base::mac::ObjCCast<NSDictionary>(quarantine_properties);
+      base::apple::ObjCCast<NSDictionary>(quarantine_properties);
   if (!quarantine_properties_dict) {
     LOG(WARNING) << "Quarantine properties have wrong class: "
                  << base::SysNSStringToUTF8(

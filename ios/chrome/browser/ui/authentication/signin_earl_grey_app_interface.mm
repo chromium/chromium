@@ -7,8 +7,8 @@
 #import <map>
 #import <string>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/callback_helpers.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"

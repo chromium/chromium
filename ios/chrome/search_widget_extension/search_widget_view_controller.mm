@@ -4,7 +4,7 @@
 
 #import "ios/chrome/search_widget_extension/search_widget_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/open_from_clipboard/clipboard_recent_content_impl_ios.h"

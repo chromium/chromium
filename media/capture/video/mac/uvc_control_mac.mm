@@ -7,10 +7,10 @@
 #include <IOKit/IOCFPlugIn.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/strings/string_number_conversions.h"

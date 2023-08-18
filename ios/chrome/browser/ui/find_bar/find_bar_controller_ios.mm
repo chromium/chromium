@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 
 #import "base/apple/bundle_locations.h"
+#import "base/apple/foundation_util.h"
 #import "base/format_macros.h"
 #import "base/i18n/rtl.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/find_in_page/constants.h"

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/bandwidth/bandwidth_management_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -120,7 +120,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (SectionIdentifierActions ==
       [self.tableViewModel sectionIdentifierForSectionIndex:section]) {
     TableViewLinkHeaderFooterView* footer =
-        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(footerView);
+        base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(footerView);
     footer.delegate = self;
   }
   return footerView;

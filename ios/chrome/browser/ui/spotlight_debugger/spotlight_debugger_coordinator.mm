@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/spotlight_debugger/spotlight_debugger_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

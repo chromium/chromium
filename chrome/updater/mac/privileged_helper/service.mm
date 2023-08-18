@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
@@ -21,7 +22,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -193,7 +193,7 @@ bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
   base::ScopedCFTypeRef<SecStaticCodeRef> code;
   base::ScopedCFTypeRef<CFErrorRef> errors;
   if (SecStaticCodeCreateWithPath(
-          base::mac::FilePathToCFURL(updater_app_bundle), kSecCSDefaultFlags,
+          base::apple::FilePathToCFURL(updater_app_bundle), kSecCSDefaultFlags,
           code.InitializeInto()) != errSecSuccess) {
     return false;
   }

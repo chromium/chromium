@@ -8,9 +8,9 @@
 #include <IOKit/IOBSD.h>
 #include <IOKit/storage/IOMedia.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/strings/sys_string_conversions.h"
 
@@ -62,22 +62,23 @@ bool IsSuitableRemovableStorageDevice(io_object_t disk_obj,
 
   // Do not allow Core Storage volumes, even though they are marked as "whole
   // media", as they are entirely contained on a different volume.
-  CFBooleanRef cf_corestorage = base::mac::GetValueFromDictionary<CFBooleanRef>(
-      dict, CFSTR("CoreStorage"));
+  CFBooleanRef cf_corestorage =
+      base::apple::GetValueFromDictionary<CFBooleanRef>(dict,
+                                                        CFSTR("CoreStorage"));
   if (cf_corestorage && CFBooleanGetValue(cf_corestorage))
     return false;
 
   // Do not allow APFS containers, even though they are marked as "whole
   // media", as they are entirely contained on a different volume.
   CFStringRef cf_content =
-      base::mac::GetValueFromDictionary<CFStringRef>(dict, CFSTR("Content"));
+      base::apple::GetValueFromDictionary<CFStringRef>(dict, CFSTR("Content"));
   if (cf_content &&
       CFStringCompare(cf_content, CFSTR("EF57347C-0000-11AA-AA11-00306543ECAC"),
                       0) == kCFCompareEqualTo) {
     return false;
   }
 
-  CFBooleanRef cf_removable = base::mac::GetValueFromDictionary<CFBooleanRef>(
+  CFBooleanRef cf_removable = base::apple::GetValueFromDictionary<CFBooleanRef>(
       dict, CFSTR(kIOMediaRemovableKey));
   bool removable = CFBooleanGetValue(cf_removable);
   bool is_usb = IsUsbDevice(disk_obj);
@@ -86,8 +87,9 @@ bool IsSuitableRemovableStorageDevice(io_object_t disk_obj,
     return false;
 
   if (out_size_in_bytes) {
-    CFNumberRef cf_media_size = base::mac::GetValueFromDictionary<CFNumberRef>(
-        dict, CFSTR(kIOMediaSizeKey));
+    CFNumberRef cf_media_size =
+        base::apple::GetValueFromDictionary<CFNumberRef>(
+            dict, CFSTR(kIOMediaSizeKey));
     if (cf_media_size)
       CFNumberGetValue(cf_media_size, kCFNumberLongLongType, out_size_in_bytes);
     else
@@ -95,7 +97,7 @@ bool IsSuitableRemovableStorageDevice(io_object_t disk_obj,
   }
 
   if (out_bsd_name) {
-    CFStringRef cf_bsd_name = base::mac::GetValueFromDictionary<CFStringRef>(
+    CFStringRef cf_bsd_name = base::apple::GetValueFromDictionary<CFStringRef>(
         dict, CFSTR(kIOBSDNameKey));
     if (out_bsd_name)
       *out_bsd_name = base::SysCFStringRefToUTF8(cf_bsd_name);

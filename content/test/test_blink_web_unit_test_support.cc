@@ -43,8 +43,8 @@
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(IS_APPLE)
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_nsautorelease_pool.h"
-#include "base/mac/foundation_util.h"
 #endif
 
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA

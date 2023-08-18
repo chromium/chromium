@@ -4,8 +4,8 @@
 
 #import "chrome/browser/ui/cocoa/browser_window_command_handler.h"
 
+#import "base/apple/foundation_util.h"
 #include "base/check.h"
-#import "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -22,8 +22,8 @@
 namespace {
 
 void SetToggleState(bool toggled, id item) {
-  NSMenuItem* menuItem = base::mac::ObjCCast<NSMenuItem>(item);
-  NSButton* buttonItem = base::mac::ObjCCast<NSButton>(item);
+  NSMenuItem* menuItem = base::apple::ObjCCast<NSMenuItem>(item);
+  NSButton* buttonItem = base::apple::ObjCCast<NSButton>(item);
   if (menuItem) {
     NSControlStateValue old_state = [menuItem state];
     NSControlStateValue new_state =
@@ -87,7 +87,7 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
   if (result->set_toggle_state)
     SetToggleState(result->new_toggle_state, item);
 
-  if (NSMenuItem* menuItem = base::mac::ObjCCast<NSMenuItem>(item)) {
+  if (NSMenuItem* menuItem = base::apple::ObjCCast<NSMenuItem>(item)) {
     if (result->disable_if_has_no_key_equivalent)
       result->enable &= !![[menuItem keyEquivalent] length];
 

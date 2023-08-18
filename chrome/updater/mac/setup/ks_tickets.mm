@@ -6,9 +6,9 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 
@@ -94,7 +94,7 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
 
 - (instancetype)initWithFilePath:(const base::FilePath&)filePath {
   if ((self = [super init])) {
-    path_ = base::mac::FilePathToNSString(filePath);
+    path_ = base::apple::FilePathToNSString(filePath);
   }
   return self;
 }
@@ -279,15 +279,16 @@ NSString* const kKSTicketVersionKeyKey = @"versionKey";
     if (!ecp.empty()) {
       existenceChecker_ = [[KSPathExistenceChecker alloc] initWithFilePath:ecp];
 
-      tagPath_ = [NSString stringWithFormat:@"%@/Contents/Info.plist",
-                                            base::mac::FilePathToNSString(ecp)];
+      tagPath_ =
+          [NSString stringWithFormat:@"%@/Contents/Info.plist",
+                                     base::apple::FilePathToNSString(ecp)];
       tagKey_ = kCRUTicketTagKey;
     }
     tag_ = tag;
 
     brandCode_ = brandCode;
     if (!brandPath.empty()) {
-      brandPath_ = base::mac::FilePathToNSString(brandPath);
+      brandPath_ = base::apple::FilePathToNSString(brandPath);
       brandKey_ = kCRUTicketBrandKey;
     }
     serverURL_ =

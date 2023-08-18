@@ -9,11 +9,11 @@
 
 #include <string>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerReplaceNTPBrowserTest,
 IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AppController* ac =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+      base::apple::ObjCCastStrict<AppController>([NSApp delegate]);
   ASSERT_TRUE(ac);
   // Create an incognito browser and make it the last active browser.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
@@ -830,7 +830,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
                        OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AppController* ac =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+      base::apple::ObjCCastStrict<AppController>([NSApp delegate]);
   ASSERT_TRUE(ac);
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   // Close the current browser.
@@ -874,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlInGuestBrowser) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AppController* ac =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+      base::apple::ObjCCastStrict<AppController>([NSApp delegate]);
   ASSERT_TRUE(ac);
   // Create a guest browser and make it the last active browser.
   Browser* guest_browser = CreateGuestBrowser();

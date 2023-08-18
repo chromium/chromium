@@ -7,7 +7,7 @@ include_rules = [
     "+base/memory/values_equivalent.h",
     "+base/files/file.h",
     "+base/files/file_path.h",
-    "+base/mac/foundation_util.h",
+    "+base/apple/foundation_util.h",
     "+base/memory/scoped_refptr.h",
     "+base/profiler/sample_metadata.h",
     "+base/strings/stringprintf.h",

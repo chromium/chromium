@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_mediator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -359,7 +359,7 @@ using base::UserMetricsAction;
   auto lensCompletion =
       ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
         dispatch_async(dispatch_get_main_queue(), ^{
-          UIImage* image = base::mac::ObjCCast<UIImage>(providedItem);
+          UIImage* image = base::apple::ObjCCast<UIImage>(providedItem);
           if (image) {
             [weakSelf lensImage:image];
           }

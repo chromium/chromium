@@ -11,10 +11,10 @@
 #include <tuple>
 #include <utility>
 
+#import "base/apple/foundation_util.h"
 #include "base/apple/owned_objc.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
-#import "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
@@ -1800,7 +1800,7 @@ void ExtractUnderlines(NSAttributedString* string,
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item {
   if (item.action == @selector(orderFrontSubstitutionsPanel:))
     return YES;
-  if (NSMenuItem* menuItem = base::mac::ObjCCast<NSMenuItem>(item)) {
+  if (NSMenuItem* menuItem = base::apple::ObjCCast<NSMenuItem>(item)) {
     if (item.action == @selector(toggleAutomaticQuoteSubstitution:)) {
       menuItem.state = self.automaticQuoteSubstitutionEnabled;
       return !!(self.allowedTextCheckingTypes & NSTextCheckingTypeQuote);

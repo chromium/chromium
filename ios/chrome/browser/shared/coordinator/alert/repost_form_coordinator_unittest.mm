@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_timeouts.h"
@@ -45,7 +45,7 @@ class RepostFormCoordinatorTest : public PlatformTest {
   }
 
   UIAlertController* GetAlertController() const {
-    return base::mac::ObjCCastStrict<UIAlertController>(
+    return base::apple::ObjCCastStrict<UIAlertController>(
         view_controller_.presentedViewController);
   }
 

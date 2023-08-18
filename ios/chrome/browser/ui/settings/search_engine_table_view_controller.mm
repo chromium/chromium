@@ -6,7 +6,7 @@
 
 #import <memory>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -311,7 +311,7 @@ const char kUmaSelectDefaultSearchEngine[] =
 
   // Do nothing if the tapped engine was already the default.
   SearchEngineItem* selectedTextItem =
-      base::mac::ObjCCastStrict<SearchEngineItem>(selectedItem);
+      base::apple::ObjCCastStrict<SearchEngineItem>(selectedItem);
   if (selectedTextItem.accessoryType == UITableViewCellAccessoryCheckmark) {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     return;
@@ -322,7 +322,7 @@ const char kUmaSelectDefaultSearchEngine[] =
     for (TableViewItem* item in
          [model itemsInSectionWithIdentifier:SectionIdentifierFirstList]) {
       SearchEngineItem* textItem =
-          base::mac::ObjCCastStrict<SearchEngineItem>(item);
+          base::apple::ObjCCastStrict<SearchEngineItem>(item);
       if (textItem.accessoryType == UITableViewCellAccessoryCheckmark) {
         textItem.accessoryType = UITableViewCellAccessoryNone;
         UITableViewCell* cell =
@@ -336,7 +336,7 @@ const char kUmaSelectDefaultSearchEngine[] =
          [model itemsInSectionWithIdentifier:SectionIdentifierSecondList]) {
       DCHECK(item.type == ItemTypeCustomEngine);
       SearchEngineItem* textItem =
-          base::mac::ObjCCastStrict<SearchEngineItem>(item);
+          base::apple::ObjCCastStrict<SearchEngineItem>(item);
       if (textItem.accessoryType == UITableViewCellAccessoryCheckmark) {
         textItem.accessoryType = UITableViewCellAccessoryNone;
         UITableViewCell* cell =
@@ -349,7 +349,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   // Show the checkmark on the new default engine.
 
   SearchEngineItem* newDefaultEngine =
-      base::mac::ObjCCastStrict<SearchEngineItem>(
+      base::apple::ObjCCastStrict<SearchEngineItem>(
           [model itemAtIndexPath:indexPath]);
   newDefaultEngine.accessoryType = UITableViewCellAccessoryCheckmark;
   UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
@@ -392,8 +392,9 @@ const char kUmaSelectDefaultSearchEngine[] =
   DCHECK(item.type == ItemTypePrepopulatedEngine ||
          item.type == ItemTypeCustomEngine);
   SearchEngineItem* engineItem =
-      base::mac::ObjCCastStrict<SearchEngineItem>(item);
-  TableViewURLCell* urlCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+      base::apple::ObjCCastStrict<SearchEngineItem>(item);
+  TableViewURLCell* urlCell =
+      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
 
   if (item.type == ItemTypePrepopulatedEngine) {
     _faviconLoader->FaviconForPageUrl(
@@ -605,7 +606,7 @@ const char kUmaSelectDefaultSearchEngine[] =
                                                       inSection:firstSection];
           TableViewItem* item = [model itemAtIndexPath:indexPath];
           SearchEngineItem* engineItem =
-              base::mac::ObjCCastStrict<SearchEngineItem>(item);
+              base::apple::ObjCCastStrict<SearchEngineItem>(item);
           engineItem.accessoryType = UITableViewCellAccessoryCheckmark;
           [strongSelf.tableView
               reloadRowsAtIndexPaths:@[ indexPath ]
@@ -651,7 +652,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   for (NSIndexPath* indexPath in indexPaths) {
     TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
     SearchEngineItem* engineItem =
-        base::mac::ObjCCastStrict<SearchEngineItem>(item);
+        base::apple::ObjCCastStrict<SearchEngineItem>(item);
     engineItem.enabled = !editing;
     if (!editing && _firstList[indexPath.item] ==
                         _templateURLService->GetDefaultSearchProvider()) {

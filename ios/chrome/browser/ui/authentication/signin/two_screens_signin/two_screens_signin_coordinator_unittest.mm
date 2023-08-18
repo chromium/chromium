@@ -6,8 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -67,7 +67,7 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   // Returns the presented navigation controller's topViewController.
   UIViewController* TopViewController() {
     UIViewController* presented = PresentedViewController();
-    return base::mac::ObjCCast<UINavigationController>(presented)
+    return base::apple::ObjCCast<UINavigationController>(presented)
         .topViewController;
   }
 

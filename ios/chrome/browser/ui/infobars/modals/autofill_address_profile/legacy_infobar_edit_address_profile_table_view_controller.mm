@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/legacy_infobar_edit_address_profile_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -159,12 +159,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (itemType == ItemTypeTextField) {
     TableViewTextEditCell* editCell =
-        base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+        base::apple::ObjCCastStrict<TableViewTextEditCell>(cell);
     editCell.textField.delegate = self;
     editCell.selectionStyle = UITableViewCellSelectionStyleNone;
   } else if (itemType == ItemTypeSaveButton) {
     TableViewTextButtonCell* tableViewTextButtonCell =
-        base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
     [tableViewTextButtonCell.button addTarget:self
                                        action:@selector(didTapSaveButton)
                              forControlEvents:UIControlEventTouchUpInside];
@@ -228,7 +228,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
     NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
                                             inSection:section];
-    AutofillEditItem* item = base::mac::ObjCCastStrict<AutofillEditItem>(
+    AutofillEditItem* item = base::apple::ObjCCastStrict<AutofillEditItem>(
         [model itemAtIndexPath:path]);
     self.profileData[[NSNumber numberWithInt:item.autofillUIType]] =
         item.textFieldValue;

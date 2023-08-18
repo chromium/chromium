@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 
 namespace {
@@ -126,7 +126,7 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
     return YES;
   }
 
-  FakeSystemIdentity* other = base::mac::ObjCCast<FakeSystemIdentity>(object);
+  FakeSystemIdentity* other = base::apple::ObjCCast<FakeSystemIdentity>(object);
   if (!other) {
     return NO;
   }

@@ -6,9 +6,9 @@
 
 #import <utility>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/feature_list.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/features.h"
@@ -176,7 +176,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (itemType == ItemTypeSend) {
     TableViewTextButtonCell* tableViewTextButtonCell =
-        base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
     [tableViewTextButtonCell.button addTarget:self
                                        action:@selector(sendTabWhenPressed:)
                              forControlEvents:UIControlEventTouchUpInside];
@@ -199,7 +199,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(item);
   if (item.type == ItemTypeDevice) {
     SendTabToSelfImageDetailTextItem* imageDetailTextItem =
-        base::mac::ObjCCastStrict<SendTabToSelfImageDetailTextItem>(item);
+        base::apple::ObjCCastStrict<SendTabToSelfImageDetailTextItem>(item);
     if (imageDetailTextItem == self.selectedItem) {
       [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
       return;

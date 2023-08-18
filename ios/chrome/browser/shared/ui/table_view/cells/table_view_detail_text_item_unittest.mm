@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -36,7 +36,7 @@ TEST_F(TableViewDetailTextItemTest, ItemProperties) {
   ASSERT_TRUE([cell isMemberOfClass:[TableViewDetailTextCell class]]);
 
   TableViewDetailTextCell* detailCell =
-      base::mac::ObjCCastStrict<TableViewDetailTextCell>(cell);
+      base::apple::ObjCCastStrict<TableViewDetailTextCell>(cell);
 
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   styler.cellTitleColor = UIColor.redColor;

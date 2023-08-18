@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/field_types.h"
@@ -153,7 +153,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       continue;
     }
 
-    AutofillEditItem* item = base::mac::ObjCCastStrict<AutofillEditItem>(
+    AutofillEditItem* item = base::apple::ObjCCastStrict<AutofillEditItem>(
         [model itemAtIndexPath:path]);
     [self.delegate updateProfileMetadataWithValue:item.textFieldValue
                                 forAutofillUIType:item.autofillUIType];
@@ -211,7 +211,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
   if (itemType == AutofillProfileDetailsItemTypeSaveButton) {
     TableViewTextButtonCell* tableViewTextButtonCell =
-        base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
     [tableViewTextButtonCell.button addTarget:self
                                        action:@selector(didTapSaveButton)
                              forControlEvents:UIControlEventTouchUpInside];
@@ -220,14 +220,14 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
   if (itemType == AutofillProfileDetailsItemTypeCountry) {
     TableViewMultiDetailTextCell* multiDetailTextCell =
-        base::mac::ObjCCastStrict<TableViewMultiDetailTextCell>(cell);
+        base::apple::ObjCCastStrict<TableViewMultiDetailTextCell>(cell);
     multiDetailTextCell.accessibilityIdentifier =
         multiDetailTextCell.textLabel.text;
     return multiDetailTextCell;
   }
 
   TableViewTextEditCell* textFieldCell =
-      base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+      base::apple::ObjCCastStrict<TableViewTextEditCell>(cell);
   textFieldCell.accessibilityIdentifier = textFieldCell.textLabel.text;
   textFieldCell.textField.delegate = delegate;
   return textFieldCell;
@@ -245,7 +245,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       UITableViewCell* cell =
           [self.controller.tableView cellForRowAtIndexPath:indexPath];
       TableViewTextEditCell* textFieldCell =
-          base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+          base::apple::ObjCCastStrict<TableViewTextEditCell>(cell);
       [textFieldCell.textField becomeFirstResponder];
     }
   }
@@ -739,7 +739,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       footerForSectionWithIdentifier:
           AutofillProfileDetailsSectionIdentifierErrorFooter];
   TableViewAttributedStringHeaderFooterItem* attributedFooterItem =
-      base::mac::ObjCCastStrict<TableViewAttributedStringHeaderFooterItem>(
+      base::apple::ObjCCastStrict<TableViewAttributedStringHeaderFooterItem>(
           currentFooter);
   NSAttributedString* newFooter = [self errorAndFooterMessage];
   return ![attributedFooterItem.attributedString
@@ -824,14 +824,14 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
                AutofillProfileDetailsSectionIdentifierFields]) {
     if (item.type == AutofillProfileDetailsItemTypeCountry) {
       TableViewMultiDetailTextItem* multiDetailTextItem =
-          base::mac::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
+          base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
       multiDetailTextItem.trailingDetailText = self.homeAddressCountry;
     } else if ([self isItemTypeTextEditCell:item.type]) {
       // No requirement checks for local profiles.
       if (self.accountProfile || self.migrationPrompt ||
           self.moveToAccountFromSettings) {
         TableViewTextEditItem* tableViewTextEditItem =
-            base::mac::ObjCCastStrict<TableViewTextEditItem>(item);
+            base::apple::ObjCCastStrict<TableViewTextEditItem>(item);
         [self computeErrorIfRequiredTextField:tableViewTextEditItem];
       }
     }

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_transition_driver.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_animator.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_presentation_controller.h"
 

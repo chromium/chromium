@@ -7,16 +7,16 @@
 #include <Foundation/Foundation.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
-#include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #include "build/branding_buildflags.h"
 
 namespace test {
 
 bool RegisterAppWithLaunchServices() {
-  NSURL* bundleURL = base::mac::FilePathToNSURL(GuessAppBundlePath());
+  NSURL* bundleURL = base::apple::FilePathToNSURL(GuessAppBundlePath());
 
   if (![bundleURL checkResourceIsReachableAndReturnError:nil]) {
     return false;
@@ -38,7 +38,7 @@ base::FilePath GuessAppBundlePath() {
   // .app directory:
   NSURL* bundleURL = NSBundle.mainBundle.bundleURL;
   if ([bundleURL.lastPathComponent hasSuffix:@".app"]) {
-    return base::mac::NSURLToFilePath(bundleURL);
+    return base::apple::NSURLToFilePath(bundleURL);
   }
 
   base::FilePath exe_path;

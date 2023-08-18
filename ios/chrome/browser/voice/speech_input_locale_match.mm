@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/voice/speech_input_locale_match.h"
 
 #import "base/apple/bundle_locations.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 
 namespace {
 
@@ -35,16 +35,16 @@ NSString* const kMatchingLanguagesKey = @"MatchingLanguages";
 
 - (instancetype)initWithDictionary:(NSDictionary*)dict {
   NSString* matchedLocale =
-      base::mac::ObjCCastStrict<NSString>(dict[kMatchedLocaleKey]);
+      base::apple::ObjCCastStrict<NSString>(dict[kMatchedLocaleKey]);
 
   NSArray* matchingLocales =
-      base::mac::ObjCCastStrict<NSArray>(dict[kMatchingLocalesKey]);
+      base::apple::ObjCCastStrict<NSArray>(dict[kMatchingLocalesKey]);
   for (id machingLocale : matchingLocales) {
     DCHECK([machingLocale isKindOfClass:[NSString class]]);
   }
 
   NSArray* machingLanguages =
-      base::mac::ObjCCastStrict<NSArray>(dict[kMatchingLanguagesKey]);
+      base::apple::ObjCCastStrict<NSArray>(dict[kMatchingLanguagesKey]);
   for (id machingLanguage : machingLanguages) {
     DCHECK([machingLanguage isKindOfClass:[NSString class]]);
   }
@@ -64,7 +64,7 @@ NSArray<SpeechInputLocaleMatch*>* LoadSpeechInputLocaleMatches() {
 
   NSMutableArray<SpeechInputLocaleMatch*>* matches = [NSMutableArray array];
   for (id item in [NSArray arrayWithContentsOfFile:path]) {
-    NSDictionary* dict = base::mac::ObjCCastStrict<NSDictionary>(item);
+    NSDictionary* dict = base::apple::ObjCCastStrict<NSDictionary>(item);
     SpeechInputLocaleMatch* match =
         [[SpeechInputLocaleMatch alloc] initWithDictionary:dict];
     [matches addObject:match];

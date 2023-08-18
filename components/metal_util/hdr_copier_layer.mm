@@ -10,8 +10,8 @@
 #include <MetalKit/MetalKit.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/metal_util/device.h"
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -405,7 +405,7 @@ void UpdateHDRCopierLayer(
     id<MTLDevice> device,
     const gfx::ColorSpace& color_space,
     const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
-  if (auto* hdr_copier_layer = base::mac::ObjCCast<HDRCopierLayer>(layer)) {
+  if (auto* hdr_copier_layer = base::apple::ObjCCast<HDRCopierLayer>(layer)) {
     [hdr_copier_layer setHDRContents:buffer
                               device:device
                           colorSpace:color_space

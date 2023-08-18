@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_unittest_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +40,7 @@ class BubbleViewControllerTest : public PlatformTest {
                                BOOL expectImage,
                                BOOL expectSnoozeButton) {
     BubbleView* bubbleView =
-        base::mac::ObjCCastStrict<BubbleView>(bubbleViewController.view);
+        base::apple::ObjCCastStrict<BubbleView>(bubbleViewController.view);
     EXPECT_TRUE(bubbleView);
     UIView* closeButton = GetCloseButtonFromBubbleView(bubbleView);
     UIView* titleView = GetTitleLabelFromBubbleView(bubbleView);

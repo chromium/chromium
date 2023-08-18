@@ -6,11 +6,11 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/json/string_escape.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -1329,7 +1329,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
           web::NavigationItem* item = [weakSelf currentNavItem];
           if (item && item->GetUniqueID() == itemID) {
             web::PageViewportState viewportState(
-                base::mac::ObjCCast<NSString>(viewportContent));
+                base::apple::ObjCCast<NSString>(viewportContent));
             completion(&viewportState);
           } else {
             completion(nullptr);

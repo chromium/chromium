@@ -20,7 +20,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #endif
 
 using blink::WebURL;
@@ -110,7 +110,7 @@ void ExportWebTestSpecificPreferences(const TestPreferences& from,
 
 static base::FilePath GetBuildDirectory() {
 #if BUILDFLAG(IS_MAC)
-  if (base::mac::AmIBundled()) {
+  if (base::apple::AmIBundled()) {
     // If this is a bundled Content Shell.app, go up one from the outer bundle
     // directory.
     return base::apple::OuterBundlePath().DirName();

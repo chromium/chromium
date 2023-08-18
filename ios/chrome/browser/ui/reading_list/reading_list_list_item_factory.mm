@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_factory.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/url_formatter/url_formatter.h"

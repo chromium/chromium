@@ -6,9 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -204,7 +204,7 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
   unarchiver.requiresSecureCoding = NO;
 
   id entryID = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
-  NSDictionary* entry = base::mac::ObjCCast<NSDictionary>(entryID);
+  NSDictionary* entry = base::apple::ObjCCast<NSDictionary>(entryID);
   if (!entry) {
     if (completion) {
       completion();
@@ -212,7 +212,7 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
     return NO;
   }
 
-  NSNumber* cancelled = base::mac::ObjCCast<NSNumber>(
+  NSNumber* cancelled = base::apple::ObjCCast<NSNumber>(
       [entry objectForKey:app_group::kShareItemCancel]);
   if (!cancelled) {
     if (completion) {
@@ -231,11 +231,11 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
   NSURL* entryURL = [entry objectForKey:app_group::kShareItemURL];
   GURL entryGURL = net::GURLWithNSURL(entryURL);
   NSString* entryTitle = [entry objectForKey:app_group::kShareItemTitle];
-  NSDate* entryDate = base::mac::ObjCCast<NSDate>(
+  NSDate* entryDate = base::apple::ObjCCast<NSDate>(
       [entry objectForKey:app_group::kShareItemDate]);
-  NSNumber* entryType = base::mac::ObjCCast<NSNumber>(
+  NSNumber* entryType = base::apple::ObjCCast<NSNumber>(
       [entry objectForKey:app_group::kShareItemType]);
-  NSString* entrySource = base::mac::ObjCCast<NSString>(
+  NSString* entrySource = base::apple::ObjCCast<NSString>(
       [entry objectForKey:app_group::kShareItemSource]);
 
   if (!entryGURL.is_valid() || !entrySource || !entryDate || !entryType ||

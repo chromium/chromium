@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -77,7 +77,7 @@ void CreateTestApp(const base::FilePath& test_dir) {
   };
 
   ASSERT_TRUE([launchd_plist
-      writeToURL:base::mac::FilePathToNSURL(test_app_info_plist_path)
+      writeToURL:base::apple::FilePathToNSURL(test_app_info_plist_path)
       atomically:YES]);
 }
 

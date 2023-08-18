@@ -10,8 +10,8 @@
 #import <memory>
 
 #import "base/apple/bridging.h"
+#import "base/apple/foundation_util.h"
 #import "base/apple/scoped_cftyperef.h"
-#import "base/mac/foundation_util.h"
 #import "crypto/rsa_private_key.h"
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
@@ -134,7 +134,7 @@ TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
     if (@available(iOS 15.0, *)) {
       base::ScopedCFTypeRef<CFArrayRef> certificateChain(
           SecTrustCopyCertificateChain(server_trust.get()));
-      secCertificate = base::mac::CFCastStrict<SecCertificateRef>(
+      secCertificate = base::apple::CFCastStrict<SecCertificateRef>(
           CFArrayGetValueAtIndex(certificateChain, static_cast<CFIndex>(i)));
     }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0

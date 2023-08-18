@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_util.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -177,7 +177,7 @@ void SafariImporter::ParseBookmarks(
   DCHECK(bookmarks);
 
   // Construct ~/Library/Safari/Bookmarks.plist path
-  NSURL* library_dir = base::mac::FilePathToNSURL(library_dir_);
+  NSURL* library_dir = base::apple::FilePathToNSURL(library_dir_);
   NSURL* safari_dir = [library_dir URLByAppendingPathComponent:@"Safari"];
   NSURL* bookmarks_plist =
       [safari_dir URLByAppendingPathComponent:@"Bookmarks.plist"];

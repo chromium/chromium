@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "components/strings/grit/components_strings.h"
@@ -561,7 +561,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   // When we're about to display the CVC form or expiration date form for
   // the first time focus the textField on the right cell.
   TableViewTextEditCell* rowCell =
-      base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+      base::apple::ObjCCastStrict<TableViewTextEditCell>(cell);
 
   ItemType rowItemType = static_cast<ItemType>(
       [self.tableViewModel itemTypeForIndexPath:indexPath]);
@@ -587,7 +587,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   // Update Card link.
   if (sectionIdentifier == SectionIdentifierInputs) {
     TableViewLinkHeaderFooterView* footerView =
-        base::mac::ObjCCast<TableViewLinkHeaderFooterView>(view);
+        base::apple::ObjCCast<TableViewLinkHeaderFooterView>(view);
     footerView.delegate = self;
   }
 
@@ -604,7 +604,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
   if (rowItemType == ItemTypeCVCInput) {
     TableViewTextEditCell* rowCell =
-        base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+        base::apple::ObjCCastStrict<TableViewTextEditCell>(cell);
     rowCell.textField.delegate = self;
     // Hide the icon from Voice Over.
     rowCell.identifyingIconButton.isAccessibilityElement = NO;

@@ -4,12 +4,12 @@
 
 #include "content/browser/child_process_task_port_provider_mac.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -57,7 +57,7 @@ ChildProcessTaskPortProvider::ChildProcessTaskPortProvider() {
   CHECK(base::apple::CreateMachPort(&notification_port_, nullptr));
 
   const std::string dispatch_name = base::StringPrintf(
-      "%s.ChildProcessTaskPortProvider.%p", base::mac::BaseBundleID(), this);
+      "%s.ChildProcessTaskPortProvider.%p", base::apple::BaseBundleID(), this);
   notification_source_ = std::make_unique<base::DispatchSourceMach>(
       dispatch_name.c_str(), notification_port_.get(), ^{
         OnTaskPortDied();

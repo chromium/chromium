@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -261,7 +261,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
     return nil;
   }
   SettingsNavigationController* navigationController =
-      base::mac::ObjCCast<SettingsNavigationController>(
+      base::apple::ObjCCast<SettingsNavigationController>(
           self.navigationController);
   UIBarButtonItem* doneButton = [navigationController doneButton];
   if (_shouldDisableDoneButtonOnEdit) {

@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -289,7 +289,7 @@ TEST_F(ManageSyncSettingsMediatorTest,
       footerForSectionWithIdentifier:SyncSettingsSectionIdentifier::
                                          SignOutSectionIdentifier];
   TableViewLinkHeaderFooterItem* footerTextItem =
-      base::mac::ObjCCastStrict<TableViewLinkHeaderFooterItem>(footer);
+      base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(footer);
   EXPECT_GT([footerTextItem.text length], 0UL);
 }
 
@@ -343,7 +343,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceMultipleErrors) {
                                        SyncErrorsSectionIdentifier];
   ASSERT_EQ(1UL, error_items.count);
   TableViewDetailIconItem* error_item =
-      base::mac::ObjCCastStrict<TableViewDetailIconItem>(error_items[0]);
+      base::apple::ObjCCastStrict<TableViewDetailIconItem>(error_items[0]);
   EXPECT_NSEQ(
       error_item.detailText,
       l10n_util::GetNSString(
@@ -380,7 +380,7 @@ TEST_F(ManageSyncSettingsMediatorTest,
       continue;
     }
     SyncSwitchItem* switch_item =
-        base::mac::ObjCCastStrict<SyncSwitchItem>(item);
+        base::apple::ObjCCastStrict<SyncSwitchItem>(item);
     if (switch_item.type == PaymentsDataTypeItemType) {
       EXPECT_FALSE(switch_item.enabled);
     } else {
@@ -430,7 +430,7 @@ TEST_F(ManageSyncSettingsMediatorTest,
   EXPECT_EQ(1UL, account_item.count);
 
   TableViewCentralAccountItem* account_details =
-      base::mac::ObjCCastStrict<TableViewCentralAccountItem>(account_item[0]);
+      base::apple::ObjCCastStrict<TableViewCentralAccountItem>(account_item[0]);
 
   EXPECT_EQ(account_details.type,
             SyncSettingsItemType::IdentityAccountItemType);
@@ -454,21 +454,21 @@ TEST_F(ManageSyncSettingsMediatorTest,
       itemsInSectionWithIdentifier:SignOutSectionIdentifier];
 
   EXPECT_EQ(ManageGoogleAccountItemType,
-            base::mac::ObjCCastStrict<TableViewItem>(items[0]).type);
+            base::apple::ObjCCastStrict<TableViewItem>(items[0]).type);
   EXPECT_EQ(ManageAccountsItemType,
-            base::mac::ObjCCastStrict<TableViewItem>(items[1]).type);
+            base::apple::ObjCCastStrict<TableViewItem>(items[1]).type);
   EXPECT_EQ(SignOutItemType,
-            base::mac::ObjCCastStrict<TableViewItem>(items[2]).type);
+            base::apple::ObjCCastStrict<TableViewItem>(items[2]).type);
 
   EXPECT_NSEQ(l10n_util::GetNSString(
                   IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM),
-              base::mac::ObjCCastStrict<TableViewTextItem>(items[0]).text);
+              base::apple::ObjCCastStrict<TableViewTextItem>(items[0]).text);
   EXPECT_NSEQ(l10n_util::GetNSString(
                   IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM),
-              base::mac::ObjCCastStrict<TableViewTextItem>(items[1]).text);
+              base::apple::ObjCCastStrict<TableViewTextItem>(items[1]).text);
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM),
-      base::mac::ObjCCastStrict<TableViewTextItem>(items[2]).text);
+      base::apple::ObjCCastStrict<TableViewTextItem>(items[2]).text);
 }
 
 // Tests that Sync errors display as a text button at the top of the page for a
@@ -493,11 +493,12 @@ TEST_F(ManageSyncSettingsMediatorTest,
 
   EXPECT_EQ(2UL, error_items.count);
   EXPECT_NSEQ(
-      base::mac::ObjCCastStrict<SettingsImageDetailTextItem>(error_items[0])
+      base::apple::ObjCCastStrict<SettingsImageDetailTextItem>(error_items[0])
           .detailText,
       l10n_util::GetNSString(
           IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE));
-  EXPECT_NSEQ(base::mac::ObjCCastStrict<TableViewTextItem>(error_items[1]).text,
-              l10n_util::GetNSString(
-                  IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON));
+  EXPECT_NSEQ(
+      base::apple::ObjCCastStrict<TableViewTextItem>(error_items[1]).text,
+      l10n_util::GetNSString(
+          IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON));
 }

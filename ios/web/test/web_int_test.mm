@@ -4,8 +4,8 @@
 
 #import "ios/web/test/web_int_test.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
@@ -86,7 +86,7 @@ void WebIntTest::TearDown() {
   // network process via private APIs.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-  WKWebView* web_view = base::mac::ObjCCast<WKWebView>(
+  WKWebView* web_view = base::apple::ObjCCast<WKWebView>(
       web::WebStateImpl::FromWebState(web_state())
           ->GetWebViewNavigationProxy());
   [web_view performSelector:@selector(_close)];

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/signin/fake_refresh_access_token_error.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 
 @implementation FakeRefreshAccessTokenError
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/cocoa/renderer_context_menu/render_view_context_menu_mac_cocoa.h"
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
@@ -90,7 +90,8 @@ IN_PROC_BROWSER_TEST_F(RenderViewContextMenuMacCocoaBrowserTest,
 
   // Bring up the contextual menu from the textfield (actually its field
   // editor).
-  NSView* firstResponder = base::mac::ObjCCast<NSView>([window firstResponder]);
+  NSView* firstResponder =
+      base::apple::ObjCCast<NSView>([window firstResponder]);
   [NSMenu popUpContextMenu:popupMenu
                  withEvent:[NSApp currentEvent]
                    forView:firstResponder];

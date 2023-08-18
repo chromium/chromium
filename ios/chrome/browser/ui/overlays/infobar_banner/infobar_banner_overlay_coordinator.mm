@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
@@ -180,7 +180,7 @@
 // Called when the dismissal of the banner UI is finished.
 - (void)finishDismissal {
   InfobarBannerOverlayMediator* mediator =
-      base::mac::ObjCCast<InfobarBannerOverlayMediator>(self.mediator);
+      base::apple::ObjCCast<InfobarBannerOverlayMediator>(self.mediator);
   [mediator finishDismissal];
   self.bannerViewController = nil;
   self.mediator = nil;
@@ -204,7 +204,7 @@
   }
 
   InfobarBannerOverlayMediator* mediator =
-      base::mac::ObjCCast<InfobarBannerOverlayMediator>(GetMediatorForRequest(
+      base::apple::ObjCCast<InfobarBannerOverlayMediator>(GetMediatorForRequest(
           [self class].supportedMediatorClasses, self.request));
   DCHECK(mediator) << "None of the supported mediator classes support request.";
   return mediator;

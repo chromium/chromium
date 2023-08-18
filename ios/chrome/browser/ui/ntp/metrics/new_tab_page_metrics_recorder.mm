@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -74,7 +74,7 @@
   }
   // Find/Set first NTP impression ever.
   NSDate* firstImpressionRecordedTileAblationExperiment =
-      base::mac::ObjCCast<NSDate>(
+      base::apple::ObjCCast<NSDate>(
           [defaults objectForKey:kFirstImpressionRecordedTileAblationKey]);
   int impressions = [defaults integerForKey:kNumberOfNTPImpressionsRecordedKey];
   // Record first NTP impression.
@@ -85,7 +85,7 @@
     [defaults setInteger:1 forKey:kNumberOfNTPImpressionsRecordedKey];
     return;
   }
-  NSDate* lastImpressionTileAblation = base::mac::ObjCCast<NSDate>(
+  NSDate* lastImpressionTileAblation = base::apple::ObjCCast<NSDate>(
       [defaults objectForKey:kLastNTPImpressionRecordedKey]);
   // Check when the last impression happened.
   if (now - base::Time::FromNSDate(lastImpressionTileAblation) >=

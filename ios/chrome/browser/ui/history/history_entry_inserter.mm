@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/history/history_entry_inserter.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -47,9 +47,9 @@
 
   NSComparator objectComparator = ^(id obj1, id obj2) {
     ListItem<HistoryEntryItemInterface>* firstObject =
-        base::mac::ObjCCastStrict<ListItem<HistoryEntryItemInterface>>(obj1);
+        base::apple::ObjCCastStrict<ListItem<HistoryEntryItemInterface>>(obj1);
     ListItem<HistoryEntryItemInterface>* secondObject =
-        base::mac::ObjCCastStrict<ListItem<HistoryEntryItemInterface>>(obj2);
+        base::apple::ObjCCastStrict<ListItem<HistoryEntryItemInterface>>(obj2);
     if ([firstObject isEqual:secondObject])
       return NSOrderedSame;
 

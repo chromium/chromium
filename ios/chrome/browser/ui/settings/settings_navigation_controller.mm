@@ -6,8 +6,8 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
@@ -1055,7 +1055,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     [self.currentPresentedViewController
         performSelector:@selector(reportBackUserAction)];
   }
-  self.currentPresentedViewController = base::mac::ObjCCast<
+  self.currentPresentedViewController = base::apple::ObjCCast<
       UIViewController<UIAdaptivePresentationControllerDelegate>>(
       viewController);
 }

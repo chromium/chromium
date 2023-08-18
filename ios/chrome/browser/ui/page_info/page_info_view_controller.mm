@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/page_info/page_info_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -206,7 +206,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
   switch (sectionIdentifier) {
     case SectionIdentifierSecurityContent: {
       TableViewLinkHeaderFooterView* linkView =
-          base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+          base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
       linkView.delegate = self;
     } break;
   }
@@ -225,7 +225,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
     case ItemTypePermissionsCamera:
     case ItemTypePermissionsMicrophone: {
       TableViewSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
       switchCell.switchView.tag = itemType;
       [switchCell.switchView addTarget:self
                                 action:@selector(permissionSwitchToggled:)
@@ -347,10 +347,10 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
                             withRowAnimation:UITableViewRowAnimationAutomatic];
     } else {
       TableViewSwitchItem* currentItem =
-          base::mac::ObjCCastStrict<TableViewSwitchItem>(
+          base::apple::ObjCCastStrict<TableViewSwitchItem>(
               [self.tableViewModel itemAtIndexPath:index]);
       TableViewSwitchCell* currentCell =
-          base::mac::ObjCCastStrict<TableViewSwitchCell>(
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(
               [self.tableView cellForRowAtIndexPath:index]);
       currentItem.on = state == web::PermissionStateAllowed;
       // Reload the switch cell if its value is outdated.

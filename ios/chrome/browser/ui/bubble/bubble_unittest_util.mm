@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/bubble/bubble_unittest_util.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 
 UIView* GetViewOfClassWithIdentifier(Class uiClass,
                                      NSString* accessibilityIdentifier,
@@ -19,22 +19,22 @@ UIView* GetViewOfClassWithIdentifier(Class uiClass,
 }
 
 UIButton* GetCloseButtonFromBubbleView(BubbleView* bubbleView) {
-  return base::mac::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
+  return base::apple::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
       [UIButton class], kBubbleViewCloseButtonIdentifier, bubbleView));
 }
 
 UILabel* GetTitleLabelFromBubbleView(BubbleView* bubbleView) {
-  return base::mac::ObjCCastStrict<UILabel>(GetViewOfClassWithIdentifier(
+  return base::apple::ObjCCastStrict<UILabel>(GetViewOfClassWithIdentifier(
       [UILabel class], kBubbleViewTitleLabelIdentifier, bubbleView));
 }
 
 UIImageView* GetImageViewFromBubbleView(BubbleView* bubbleView) {
-  return base::mac::ObjCCastStrict<UIImageView>(GetViewOfClassWithIdentifier(
+  return base::apple::ObjCCastStrict<UIImageView>(GetViewOfClassWithIdentifier(
       [UIImageView class], kBubbleViewImageViewIdentifier, bubbleView));
 }
 
 UIButton* GetSnoozeButtonFromBubbleView(BubbleView* bubbleView) {
-  return base::mac::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
+  return base::apple::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
       [UIButton class], kBubbleViewSnoozeButtonIdentifier, bubbleView));
 }
 

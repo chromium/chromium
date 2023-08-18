@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -161,7 +161,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   cell.selectionStyle = UITableViewCellSelectionStyleBlue;
 
   TableViewInfoButtonCell* infoCell =
-      base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+      base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
   [infoCell.trailingButton addTarget:self
                               action:@selector(didTapUIInfoButton:)
                     forControlEvents:UIControlEventTouchUpInside];

@@ -7,14 +7,14 @@
 #import <Foundation/Foundation.h>
 
 #include "base/apple/bundle_locations.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 
 namespace google_apis {
 
 std::string GetAPIKeyFromInfoPlist(const std::string& key_name) {
   NSString* keyName = base::SysUTF8ToNSString(key_name);
-  NSString* keyValue = base::mac::ObjCCast<NSString>(
+  NSString* keyValue = base::apple::ObjCCast<NSString>(
       [base::apple::FrameworkBundle() objectForInfoDictionaryKey:keyName]);
   return base::SysNSStringToUTF8(keyValue);
 }

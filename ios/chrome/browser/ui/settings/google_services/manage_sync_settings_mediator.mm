@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_mediator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/auto_reset.h"
 #import "base/check_op.h"
 #import "base/containers/fixed_flat_map.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -299,7 +299,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       BOOL shouldSyncEverythingItemBeOn =
           self.syncSetupService->IsSyncEverythingEnabled();
       SyncSwitchItem* syncEverythingItem =
-          base::mac::ObjCCastStrict<SyncSwitchItem>(self.syncEverythingItem);
+          base::apple::ObjCCastStrict<SyncSwitchItem>(self.syncEverythingItem);
       BOOL needsUpdate =
           (syncEverythingItem.on != shouldSyncEverythingItemBeOn) ||
           (syncEverythingItem.enabled != shouldSyncEverythingBeEditable);
@@ -323,7 +323,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       indexPathForItemType:IdentityAccountItemType
          sectionIdentifier:AccountSectionIdentifier];
   TableViewCentralAccountItem* identityAccountItem =
-      base::mac::ObjCCast<TableViewCentralAccountItem>(
+      base::apple::ObjCCast<TableViewCentralAccountItem>(
           [self.consumer.tableViewModel itemAtIndexPath:accountCellIndexPath]);
   CHECK(identityAccountItem);
   CHECK(_signedInIdentity);
@@ -342,7 +342,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
     if ([item isKindOfClass:[TableViewInfoButtonItem class]])
       continue;
 
-    SyncSwitchItem* syncSwitchItem = base::mac::ObjCCast<SyncSwitchItem>(item);
+    SyncSwitchItem* syncSwitchItem =
+        base::apple::ObjCCast<SyncSwitchItem>(item);
     syncer::UserSelectableType dataType =
         static_cast<syncer::UserSelectableType>(syncSwitchItem.dataType);
     BOOL isDataTypeSynced =
@@ -863,7 +864,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
     // Notifications are sent by SyncObserverModelBridge while changing
     // settings.
     base::AutoReset<BOOL> autoReset(&_ignoreSyncStateChanges, YES);
-    SyncSwitchItem* syncSwitchItem = base::mac::ObjCCast<SyncSwitchItem>(item);
+    SyncSwitchItem* syncSwitchItem =
+        base::apple::ObjCCast<SyncSwitchItem>(item);
     syncSwitchItem.on = value;
     SyncSettingsItemType itemType =
         static_cast<SyncSettingsItemType>(item.type);

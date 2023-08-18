@@ -6,8 +6,8 @@
 
 #import <LocalAuthentication/LocalAuthentication.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -474,7 +474,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   UIView* footerView = [super tableView:tableView
                  viewForFooterInSection:section];
   TableViewLinkHeaderFooterView* footer =
-      base::mac::ObjCCast<TableViewLinkHeaderFooterView>(footerView);
+      base::apple::ObjCCast<TableViewLinkHeaderFooterView>(footerView);
   if (footer) {
     footer.delegate = self;
   }
@@ -518,33 +518,33 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   if (itemType == ItemTypeIncognitoReauth) {
     TableViewSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(switchTapped:)
                     forControlEvents:UIControlEventTouchUpInside];
   } else if (itemType == ItemTypeIncognitoReauthDisabled) {
     TableViewInfoButtonCell* managedCell =
-        base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
     [managedCell.trailingButton
                addTarget:self
                   action:@selector(didTapIncognitoReauthDisabledInfoButton:)
         forControlEvents:UIControlEventTouchUpInside];
   } else if (itemType == ItemTypeHTTPSOnlyMode) {
     TableViewSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(HTTPSOnlyModeTapped:)
                     forControlEvents:UIControlEventTouchUpInside];
   } else if (itemType == ItemTypeIncognitoInterstitial) {
     TableViewSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView
                addTarget:self
                   action:@selector(incognitoInterstitialSwitchTapped:)
         forControlEvents:UIControlEventTouchUpInside];
   } else if (itemType == ItemTypeIncognitoInterstitialDisabled) {
     TableViewInfoButtonCell* managedCell =
-        base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
     [managedCell.trailingButton
                addTarget:self
                   action:@selector

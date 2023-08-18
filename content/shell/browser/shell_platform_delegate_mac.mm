@@ -8,9 +8,9 @@
 
 #include <algorithm>
 
+#import "base/apple/foundation_util.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#import "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
@@ -56,7 +56,7 @@
 // the various global lists. By returning YES, we allow the window to be
 // removed from the screen.
 - (BOOL)windowShouldClose:(id)sender {
-  CHECK_EQ(base::mac::ObjCCastStrict<NSWindow>(sender), _window);
+  CHECK_EQ(base::apple::ObjCCastStrict<NSWindow>(sender), _window);
   // Don't leave a dangling pointer if the window lives beyond
   // this method. See crbug.com/719830.
   _window.delegate = nil;

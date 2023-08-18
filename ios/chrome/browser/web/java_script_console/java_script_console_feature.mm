@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_delegate.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_message.h"

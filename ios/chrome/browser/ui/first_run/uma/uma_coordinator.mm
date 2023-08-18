@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/first_run/uma/uma_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/first_run/uma/uma_table_view_controller.h"
 

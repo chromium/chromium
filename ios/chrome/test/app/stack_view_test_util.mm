@@ -4,7 +4,7 @@
 
 #import "ios/chrome/test/app/stack_view_test_util.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/app/main_controller_private.h"
 #import "ios/chrome/browser/ui/stack_view/stack_view_controller.h"
@@ -22,7 +22,7 @@ StackViewController* GetStackViewController() {
     return nil;
   MainController* mainController = chrome_test_util::GetMainController();
   DCHECK(mainController);
-  return base::mac::ObjCCastStrict<StackViewController>(
+  return base::apple::ObjCCastStrict<StackViewController>(
       mainController.tabSwitcher);
 }
 

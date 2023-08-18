@@ -6,7 +6,7 @@
 
 #import <map>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/infobars/badge_state.h"
 #import "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
@@ -245,7 +245,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 }
 
 - (void)passwordsBadgeButtonTapped:(id)sender {
-  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
+  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
   DCHECK(badgeButton.badgeType == kBadgeTypePasswordSave ||
          badgeButton.badgeType == kBadgeTypePasswordUpdate);
 
@@ -253,28 +253,28 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 }
 
 - (void)saveAddressProfileBadgeButtonTapped:(id)sender {
-  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
+  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
   DCHECK_EQ(badgeButton.badgeType, kBadgeTypeSaveAddressProfile);
 
   [self handleTappedBadgeButton:badgeButton];
 }
 
 - (void)saveCardBadgeButtonTapped:(id)sender {
-  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
+  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
   DCHECK_EQ(badgeButton.badgeType, kBadgeTypeSaveCard);
 
   [self handleTappedBadgeButton:badgeButton];
 }
 
 - (void)translateBadgeButtonTapped:(id)sender {
-  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
+  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
   DCHECK_EQ(badgeButton.badgeType, kBadgeTypeTranslate);
 
   [self handleTappedBadgeButton:badgeButton];
 }
 
 - (void)permissionsBadgeButtonTapped:(id)sender {
-  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
+  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
   DCHECK_EQ(InfobarTypeForBadgeType(badgeButton.badgeType),
             InfobarType::kInfobarTypePermissions);
 

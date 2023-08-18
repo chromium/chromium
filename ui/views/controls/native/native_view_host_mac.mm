@@ -6,7 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/compositor/layer.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"

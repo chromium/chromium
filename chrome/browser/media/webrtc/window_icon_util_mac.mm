@@ -6,8 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/mac/foundation_util.h"
 #include "third_party/libyuv/include/libyuv/convert_argb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -24,10 +24,10 @@ gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
     return gfx::ImageSkia();
   }
 
-  CFDictionaryRef window = base::mac::CFCastStrict<CFDictionaryRef>(
+  CFDictionaryRef window = base::apple::CFCastStrict<CFDictionaryRef>(
       CFArrayGetValueAtIndex(window_array, 0));
-  CFNumberRef pid_ref =
-      base::mac::GetValueFromDictionary<CFNumberRef>(window, kCGWindowOwnerPID);
+  CFNumberRef pid_ref = base::apple::GetValueFromDictionary<CFNumberRef>(
+      window, kCGWindowOwnerPID);
 
   int pid;
   CFNumberGetValue(pid_ref, kCFNumberIntType, &pid);

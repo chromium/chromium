@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
@@ -61,7 +61,8 @@ class ImportDataTableViewControllerTest : public ChromeTableViewControllerTest {
 
   void SelectRowAtIndex(NSInteger itemIndex) {
     ImportDataTableViewController* import_data_controller =
-        base::mac::ObjCCastStrict<ImportDataTableViewController>(controller());
+        base::apple::ObjCCastStrict<ImportDataTableViewController>(
+            controller());
     NSIndexPath* itemPath = [NSIndexPath indexPathForItem:itemIndex
                                                 inSection:1];
     [import_data_controller tableView:[import_data_controller tableView]
@@ -107,17 +108,17 @@ TEST_F(ImportDataTableViewControllerTest, TestUniqueBoxChecked) {
   CreateController();
 
   ImportDataTableViewController* import_data_controller =
-      base::mac::ObjCCastStrict<ImportDataTableViewController>(controller());
+      base::apple::ObjCCastStrict<ImportDataTableViewController>(controller());
   NSIndexPath* importIndexPath =
       [NSIndexPath indexPathForItem:kImportDataItemIndex inSection:1];
   NSIndexPath* keepSeparateIndexPath =
       [NSIndexPath indexPathForItem:kKeepDataSeparateItemIndex inSection:1];
   SettingsImageDetailTextItem* importItem =
-      base::mac::ObjCCastStrict<SettingsImageDetailTextItem>(
+      base::apple::ObjCCastStrict<SettingsImageDetailTextItem>(
           [import_data_controller.tableViewModel
               itemAtIndexPath:importIndexPath]);
   SettingsImageDetailTextItem* keepSeparateItem =
-      base::mac::ObjCCastStrict<SettingsImageDetailTextItem>(
+      base::apple::ObjCCastStrict<SettingsImageDetailTextItem>(
           [import_data_controller.tableViewModel
               itemAtIndexPath:keepSeparateIndexPath]);
   EXPECT_EQ(UITableViewCellAccessoryNone, importItem.accessoryType);

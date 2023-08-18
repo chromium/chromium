@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_util.h"
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
@@ -69,7 +69,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   NSString* temporary_directory_path = GetTemporaryDocumentDirectory();
   base::File::Error error;
   if (!CreateDirectoryAndGetError(
-          base::mac::NSStringToFilePath(temporary_directory_path), &error)) {
+          base::apple::NSStringToFilePath(temporary_directory_path), &error)) {
     DLOG(ERROR) << "Error creating destination dir: " << error;
     return NO;
   }

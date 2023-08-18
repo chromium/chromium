@@ -6,7 +6,7 @@
 
 #import <ScreenTime/ScreenTime.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
@@ -53,7 +53,7 @@ void HistoryDeleterImpl::DeleteHistoryForURL(const GURL& url) {
 HistoryDeleterImpl::HistoryDeleterImpl() {
   if (@available(macOS 12.1, *)) {
     NSError* error = nil;
-    NSString* bundle_id = base::SysUTF8ToNSString(base::mac::BaseBundleID());
+    NSString* bundle_id = base::SysUTF8ToNSString(base::apple::BaseBundleID());
     platform_deleter_ = [[STWebHistory alloc] initWithBundleIdentifier:bundle_id
                                                                  error:&error];
     DCHECK(!error);

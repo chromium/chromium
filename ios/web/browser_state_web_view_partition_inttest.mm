@@ -7,7 +7,7 @@
 #import <memory>
 #import <string>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/browser_state.h"
@@ -74,7 +74,7 @@ class BrowserStateWebViewPartitionTest : public WebIntTest {
   // Returns a csv list of all cookies from `web_view`.
   NSString* GetCookies(WKWebView* web_view) {
     id result = web::test::ExecuteJavaScript(web_view, @"document.cookie");
-    return base::mac::ObjCCastStrict<NSString>(result);
+    return base::apple::ObjCCastStrict<NSString>(result);
   }
 
   // Sets a localstorage key, value pair on `web_view`.

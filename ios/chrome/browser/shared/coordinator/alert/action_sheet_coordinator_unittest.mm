@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -45,7 +45,7 @@ class ActionSheetCoordinatorTest : public PlatformTest {
   UIAlertController* GetAlertController() {
     EXPECT_TRUE([base_view_controller_.presentedViewController
         isKindOfClass:[UIAlertController class]]);
-    return base::mac::ObjCCastStrict<UIAlertController>(
+    return base::apple::ObjCCastStrict<UIAlertController>(
         base_view_controller_.presentedViewController);
   }
 

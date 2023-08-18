@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -41,7 +41,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
   [super configureCell:tableCell withStyler:styler];
 
   TableViewURLCell* cell =
-      base::mac::ObjCCastStrict<TableViewURLCell>(tableCell);
+      base::apple::ObjCCastStrict<TableViewURLCell>(tableCell);
   cell.titleLabel.text = [self titleLabelText];
   cell.URLLabel.text = [self URLLabelText];
   cell.thirdRowLabel.text = self.thirdRowText;

@@ -6,9 +6,9 @@
 
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"

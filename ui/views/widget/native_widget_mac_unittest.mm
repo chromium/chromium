@@ -6,10 +6,10 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -111,7 +111,7 @@ class BridgedNativeWidgetTestApi {
   }
 
   NSAnimation* show_animation() {
-    return base::mac::ObjCCastStrict<NSAnimation>(bridge_->show_animation_);
+    return base::apple::ObjCCastStrict<NSAnimation>(bridge_->show_animation_);
   }
 
   bool HasWindowRestorationData() {
@@ -193,7 +193,7 @@ class NativeWidgetMacTest : public WidgetTest {
     params.native_widget = new TestWindowNativeWidgetMac(widget);
     widget->Init(std::move(params));
     widget->Show();
-    *window = base::mac::ObjCCastStrict<NativeWidgetMacTestWindow>(
+    *window = base::apple::ObjCCastStrict<NativeWidgetMacTestWindow>(
         widget->GetNativeWindow().GetNativeNSWindow());
     EXPECT_TRUE(*window);
     return widget;
@@ -2335,7 +2335,7 @@ NSArray* ExtractTouchBarGroupIdentifiers(NSView* view) {
   NSTouchBar* touch_bar = [view touchBar];
   NSTouchBarItemIdentifier principal = [touch_bar principalItemIdentifier];
   EXPECT_TRUE(principal);
-  NSGroupTouchBarItem* group = base::mac::ObjCCastStrict<NSGroupTouchBarItem>(
+  NSGroupTouchBarItem* group = base::apple::ObjCCastStrict<NSGroupTouchBarItem>(
       [[touch_bar delegate] touchBar:touch_bar
                makeItemForIdentifier:principal]);
   EXPECT_TRUE(group);

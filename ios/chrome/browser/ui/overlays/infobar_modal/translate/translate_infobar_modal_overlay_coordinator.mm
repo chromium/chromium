@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/translate/translate_infobar_modal_overlay_coordinator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -78,7 +78,7 @@
 #pragma mark - Private
 
 - (TranslateInfobarModalOverlayMediator*)translateModalOverlayMediator {
-  return base::mac::ObjCCastStrict<TranslateInfobarModalOverlayMediator>(
+  return base::apple::ObjCCastStrict<TranslateInfobarModalOverlayMediator>(
       self.modalMediator);
 }
 

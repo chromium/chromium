@@ -96,7 +96,7 @@ storage_monitor::ImageCaptureDeviceManager* g_image_capture_device_manager =
     return;
 
   ICCameraDevice* cameraDevice =
-      base::mac::ObjCCastStrict<ICCameraDevice>(addedDevice);
+      base::apple::ObjCCastStrict<ICCameraDevice>(addedDevice);
 
   [_cameras addObject:addedDevice];
 

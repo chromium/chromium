@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
@@ -119,7 +119,7 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
 
     case ManualFallbackItemTypeHeader: {
       TableViewTextLinkCell* linkCell =
-          base::mac::ObjCCastStrict<TableViewTextLinkCell>(cell);
+          base::apple::ObjCCastStrict<TableViewTextLinkCell>(cell);
       linkCell.delegate = self;
       break;
     }
@@ -183,13 +183,13 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
   DCHECK(cell);
 
   ManualFillCredentialItem* passwordItem =
-      base::mac::ObjCCastStrict<ManualFillCredentialItem>(item);
+      base::apple::ObjCCastStrict<ManualFillCredentialItem>(item);
   if (passwordItem.isConnectedToPreviousItem) {
     return;
   }
 
   ManualFillPasswordCell* passwordCell =
-      base::mac::ObjCCastStrict<ManualFillPasswordCell>(cell);
+      base::apple::ObjCCastStrict<ManualFillPasswordCell>(cell);
 
   NSString* itemIdentifier = passwordItem.uniqueIdentifier;
   CrURL* crurl = [[CrURL alloc] initWithGURL:passwordItem.faviconURL];

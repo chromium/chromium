@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/cells/target_account_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "build/branding_buildflags.h"
 #import "components/grit/components_scaled_resources.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
@@ -37,7 +37,7 @@ const CGFloat kAccountCellSpacing = 7;
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   TargetAccountCell* accountCell =
-      base::mac::ObjCCastStrict<TargetAccountCell>(cell);
+      base::apple::ObjCCastStrict<TargetAccountCell>(cell);
   accountCell.avatarBadge.image = self.avatar;
   accountCell.emailLabel.text = self.email;
 }

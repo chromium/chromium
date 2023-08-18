@@ -6,10 +6,10 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
-#import "base/mac/foundation_util.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"
 #import "base/task/sequenced_task_runner.h"
@@ -97,7 +97,7 @@ class SessionServiceTest : public PlatformTest {
     if (!base::PathExists(session_path))
       return nil;
 
-    return base::mac::FilePathToNSString(session_path);
+    return base::apple::FilePathToNSString(session_path);
   }
 
   SessionServiceIOS* session_service() { return session_service_; }
@@ -105,7 +105,7 @@ class SessionServiceTest : public PlatformTest {
   const base::FilePath& directory() const { return directory_; }
 
   NSString* directory_as_nsstring() const {
-    return base::mac::FilePathToNSString(directory());
+    return base::apple::FilePathToNSString(directory());
   }
 
  private:

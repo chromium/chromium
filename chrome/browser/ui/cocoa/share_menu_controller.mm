@@ -4,7 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/share_menu_controller.h"
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
@@ -189,7 +189,7 @@ bool CanShare() {
   NSString* title = base::SysUTF16ToNSString(contents->GetTitle());
 
   NSSharingService* service =
-      base::mac::ObjCCastStrict<NSSharingService>([sender representedObject]);
+      base::apple::ObjCCastStrict<NSSharingService>([sender representedObject]);
   service.delegate = self;
   service.subject = title;
 

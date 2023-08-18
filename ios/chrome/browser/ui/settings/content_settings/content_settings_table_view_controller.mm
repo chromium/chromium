@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/feature_list.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -372,7 +372,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (itemType == ItemTypeSettingsShowLinkPreview) {
     TableViewSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(showLinkPreviewSwitchToggled:)
                     forControlEvents:UIControlEventValueChanged];
@@ -380,7 +380,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (itemType == ItemTypeSettingsDetectAddresses) {
     TableViewSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(detectAddressesSwitchToggled:)
                     forControlEvents:UIControlEventValueChanged];

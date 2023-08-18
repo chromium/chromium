@@ -11,13 +11,13 @@
 #include <string>
 #include <utility>
 
+#import "base/apple/foundation_util.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#import "base/mac/foundation_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
@@ -231,7 +231,7 @@ using DownloadToFileCompleteCallback =
     return;
 
   const base::FilePath tempPath =
-      base::mac::NSStringToFilePath([location path]);
+      base::apple::NSStringToFilePath([location path]);
   _moveTempFileSuccessful = base::Move(tempPath, _filePath);
   if (!_moveTempFileSuccessful) {
     DPLOG(ERROR)

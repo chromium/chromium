@@ -6,10 +6,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/apple/foundation_util.h"
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#import "base/mac/foundation_util.h"
 #include "components/device_signals/test/test_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

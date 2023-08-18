@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/autofill/branding/branding_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"

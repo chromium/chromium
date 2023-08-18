@@ -4,8 +4,8 @@
 
 #include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/functional/callback_forward.h"
-#include "base/mac/foundation_util.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
 
@@ -43,7 +43,7 @@ ImmersiveModeTabbedController::~ImmersiveModeTabbedController() {
 void ImmersiveModeTabbedController::Enable() {
   ImmersiveModeController::Enable();
   BridgedContentView* tab_content_view =
-      base::mac::ObjCCastStrict<BridgedContentView>(tab_window_.contentView);
+      base::apple::ObjCCastStrict<BridgedContentView>(tab_window_.contentView);
   [tab_content_view removeFromSuperview];
   tab_content_view_ = tab_content_view;
 

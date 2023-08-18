@@ -6,10 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/location.h"
-#import "base/mac/foundation_util.h"
 #import "base/path_service.h"
 #import "base/strings/stringprintf.h"
 #import "base/task/thread_pool.h"
@@ -47,8 +47,8 @@ void GetSnapshotsPaths(std::vector<base::FilePath>* snapshots_paths) {
   base::PathService::Get(base::DIR_CACHE, &snapshots_dir);
   // Snapshots are located in a path with the bundle ID used twice.
   snapshots_dir = snapshots_dir.Append("Snapshots")
-                      .Append(base::mac::BaseBundleID())
-                      .Append(base::mac::BaseBundleID());
+                      .Append(base::apple::BaseBundleID())
+                      .Append(base::apple::BaseBundleID());
   const char* retina_suffix = "";
   CGFloat scale = [UIScreen mainScreen].scale;
   if (scale == 2) {

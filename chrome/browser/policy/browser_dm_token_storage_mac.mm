@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base64url.h"
 #include "base/files/file_util.h"
@@ -14,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/metrics/histogram_functions.h"
@@ -116,7 +116,7 @@ bool GetEnrollmentTokenFromPolicy(std::string* enrollment_token) {
       !CFPreferencesAppValueIsForced(kEnrollmentTokenPolicyName, kBundleId)) {
     return false;
   }
-  CFStringRef value_string = base::mac::CFCast<CFStringRef>(value);
+  CFStringRef value_string = base::apple::CFCast<CFStringRef>(value);
   if (!value_string)
     return false;
 
@@ -146,7 +146,7 @@ absl::optional<bool> IsEnrollmentMandatoryByPolicy() {
     return absl::optional<bool>();
   }
 
-  CFBooleanRef value_bool = base::mac::CFCast<CFBooleanRef>(value);
+  CFBooleanRef value_bool = base::apple::CFCast<CFBooleanRef>(value);
   if (!value_bool)
     return absl::optional<bool>();
   return value_bool == kCFBooleanTrue;

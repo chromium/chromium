@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/i18n/message_formatter.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -160,7 +160,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   if (itemType == ItemType::kSwitch) {
     TableViewSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(switchChanged:)
                     forControlEvents:UIControlEventValueChanged];
@@ -175,7 +175,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   UIView* headerView = [super tableView:tableView
                  viewForHeaderInSection:section];
   TableViewLinkHeaderFooterView* header =
-      base::mac::ObjCCast<TableViewLinkHeaderFooterView>(headerView);
+      base::apple::ObjCCast<TableViewLinkHeaderFooterView>(headerView);
   if (header) {
     header.delegate = self;
   }

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -56,7 +56,7 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
   TableViewTextButtonCell* cell =
-      base::mac::ObjCCastStrict<TableViewTextButtonCell>(tableCell);
+      base::apple::ObjCCastStrict<TableViewTextButtonCell>(tableCell);
   [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 
   cell.textLabel.text = self.text;

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/credential_provider_extension/ui/new_password_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -224,7 +224,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   if (section == SectionIdentifierNote &&
       [view isKindOfClass:[PasswordNoteFooterView class]]) {
     PasswordNoteFooterView* footer =
-        base::mac::ObjCCastStrict<PasswordNoteFooterView>(view);
+        base::apple::ObjCCastStrict<PasswordNoteFooterView>(view);
     footer.textLabel.text = [self noteFooterText];
 
     [tableView beginUpdates];
@@ -319,7 +319,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   UITableViewHeaderFooterView* footerView =
       [self.tableView footerViewForSection:SectionIdentifierNote];
   PasswordNoteFooterView* noteFooter =
-      base::mac::ObjCCastStrict<PasswordNoteFooterView>(footerView);
+      base::apple::ObjCCastStrict<PasswordNoteFooterView>(footerView);
   noteFooter.textLabel.text = [self noteFooterText];
 
   // Refresh the cell's height to make the note fully visible while typing or to

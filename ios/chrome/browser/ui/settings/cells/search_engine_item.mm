@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
@@ -42,7 +42,7 @@
   self.uniqueIdentifier = base::SysUTF8ToNSString(self.URL.host());
 
   TableViewURLCell* cell =
-      base::mac::ObjCCastStrict<TableViewURLCell>(tableCell);
+      base::apple::ObjCCastStrict<TableViewURLCell>(tableCell);
   cell.titleLabel.text = self.text;
   cell.URLLabel.text = self.detailText;
   cell.cellUniqueIdentifier = self.uniqueIdentifier;

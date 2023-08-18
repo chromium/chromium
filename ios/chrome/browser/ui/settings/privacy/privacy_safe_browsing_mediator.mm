@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_mediator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/auto_reset.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -274,7 +274,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)updatePrivacySafeBrowsingSectionAndNotifyConsumer:(BOOL)notifyConsumer {
   for (TableViewItem* item in self.safeBrowsingItems) {
     TableViewInfoButtonItem* infoButtonItem =
-        base::mac::ObjCCast<TableViewInfoButtonItem>(item);
+        base::apple::ObjCCast<TableViewInfoButtonItem>(item);
     ItemType type = static_cast<ItemType>(item.type);
     infoButtonItem.iconTintColor = [self shouldItemTypeHaveCheckmark:type]
                                        ? [UIColor colorNamed:kBlueColor]

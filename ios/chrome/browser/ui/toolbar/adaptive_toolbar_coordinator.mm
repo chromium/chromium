@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"

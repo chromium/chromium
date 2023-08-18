@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"

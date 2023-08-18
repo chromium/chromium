@@ -7,10 +7,10 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/format_macros.h"
 #import "base/json/json_string_value_serializer.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

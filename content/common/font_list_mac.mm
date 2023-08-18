@@ -10,9 +10,9 @@
 #include <utility>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 
@@ -81,13 +81,13 @@ class FontFamilyResolver {
     CFIndex descriptor_count = descriptors ? CFArrayGetCount(descriptors) : 0;
     for (CFIndex i = 0; i < descriptor_count; ++i) {
       CTFontDescriptorRef descriptor =
-          base::mac::CFCastStrict<CTFontDescriptorRef>(
+          base::apple::CFCastStrict<CTFontDescriptorRef>(
               CFArrayGetValueAtIndex(descriptors, i));
       DCHECK(descriptor != nullptr)
           << "The descriptors array has a null element.";
 
       base::ScopedCFTypeRef<CFStringRef> descriptor_family_name(
-          base::mac::CFCastStrict<CFStringRef>(CTFontDescriptorCopyAttribute(
+          base::apple::CFCastStrict<CFStringRef>(CTFontDescriptorCopyAttribute(
               descriptor, kCTFontFamilyNameAttribute)));
       if (CFStringCompare(family_name, descriptor_family_name,
                           /*compareOptions=*/0) == kCFCompareEqualTo) {
@@ -124,7 +124,7 @@ class FontFamilyResolver {
     }
 
     base::ScopedCFTypeRef<CFStringRef> localized_family_name(
-        base::mac::CFCastStrict<CFStringRef>(
+        base::apple::CFCastStrict<CFStringRef>(
             CTFontDescriptorCopyLocalizedAttribute(descriptor,
                                                    kCTFontFamilyNameAttribute,
                                                    /*language=*/nullptr)));

@@ -4,7 +4,7 @@
 
 #import "device/bluetooth/test/mock_bluetooth_central_manager_mac.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "device/bluetooth/test/bluetooth_test_mac.h"
 #import "device/bluetooth/test/mock_bluetooth_cbperipheral_mac.h"
 
@@ -68,7 +68,7 @@
   // When cancelPeripheralConnection is called macOS marks the device as
   // disconnected.
   MockCBPeripheral* mock_peripheral =
-      base::mac::ObjCCastStrict<MockCBPeripheral>(peripheral);
+      base::apple::ObjCCastStrict<MockCBPeripheral>(peripheral);
   [mock_peripheral setState:CBPeripheralStateDisconnected];
 }
 

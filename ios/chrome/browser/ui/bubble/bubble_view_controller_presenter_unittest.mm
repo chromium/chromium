@@ -4,7 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_unittest_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
@@ -194,7 +194,7 @@ TEST_F(BubbleViewControllerPresenterTest,
       presentInViewController:parentViewController_
                          view:parentViewController_.view
                   anchorPoint:anchorPoint_];
-  BubbleView* bubbleView = base::mac::ObjCCastStrict<BubbleView>(
+  BubbleView* bubbleView = base::apple::ObjCCastStrict<BubbleView>(
       bubbleViewControllerPresenter_.bubbleViewController.view);
   EXPECT_TRUE(bubbleView);
   UIButton* closeButton = GetCloseButtonFromBubbleView(bubbleView);
@@ -214,7 +214,7 @@ TEST_F(BubbleViewControllerPresenterTest,
       presentInViewController:parentViewController_
                          view:parentViewController_.view
                   anchorPoint:anchorPoint_];
-  BubbleView* bubbleView = base::mac::ObjCCastStrict<BubbleView>(
+  BubbleView* bubbleView = base::apple::ObjCCastStrict<BubbleView>(
       bubbleViewControllerPresenter_.bubbleViewController.view);
   EXPECT_TRUE(bubbleView);
   UIButton* snoozeButton = GetSnoozeButtonFromBubbleView(bubbleView);

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -74,7 +74,7 @@ CGFloat kSectionFooterHeight = 8.;
   switch ((ItemType)item.type) {
     case IdentityItemType: {
       TableViewIdentityItem* identityItem =
-          base::mac::ObjCCastStrict<TableViewIdentityItem>(item);
+          base::apple::ObjCCastStrict<TableViewIdentityItem>(item);
       DCHECK(identityItem);
       [self.actionDelegate
           consistencyAccountChooserTableViewController:self
@@ -162,7 +162,7 @@ CGFloat kSectionFooterHeight = 8.;
   switch (sectionIdentifier) {
     case IdentitySectionIdentifier: {
       TableViewLinkHeaderFooterView* linkView =
-          base::mac::ObjCCast<TableViewLinkHeaderFooterView>(view);
+          base::apple::ObjCCast<TableViewLinkHeaderFooterView>(view);
       linkView.delegate = self;
     } break;
     case AddAccountSectionIdentifier:
@@ -203,7 +203,7 @@ CGFloat kSectionFooterHeight = 8.;
     NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
                                             inSection:section];
     TableViewIdentityItem* item =
-        base::mac::ObjCCastStrict<TableViewIdentityItem>(
+        base::apple::ObjCCastStrict<TableViewIdentityItem>(
             [model itemAtIndexPath:path]);
     if ([item.gaiaID isEqualToString:configurator.gaiaID]) {
       [configurator configureIdentityChooser:item];

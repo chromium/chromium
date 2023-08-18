@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -166,7 +166,7 @@ TEST_F(FamilyPickerViewControllerTest, TestAccessoryViewOfEligibleRecipient) {
       DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize), 0, 0);
 
   FamilyPickerViewController* family_controller =
-      base::mac::ObjCCastStrict<FamilyPickerViewController>(controller());
+      base::apple::ObjCCastStrict<FamilyPickerViewController>(controller());
   [family_controller tableView:family_controller.tableView
        didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
   CheckCellAccessoryViewImage(
@@ -191,7 +191,7 @@ TEST_F(FamilyPickerViewControllerTest, TestShareButtonEnabledWithSelectedRows) {
   EXPECT_EQ(NumberOfItemsInSection(0), 2);
 
   FamilyPickerViewController* family_controller =
-      base::mac::ObjCCastStrict<FamilyPickerViewController>(controller());
+      base::apple::ObjCCastStrict<FamilyPickerViewController>(controller());
   EXPECT_FALSE(family_controller.navigationItem.rightBarButtonItem.isEnabled);
 
   NSIndexPath* indexPath1 = [NSIndexPath indexPathForRow:0 inSection:0];

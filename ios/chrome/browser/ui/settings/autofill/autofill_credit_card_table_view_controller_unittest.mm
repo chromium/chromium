@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/uuid.h"
@@ -49,7 +49,7 @@ class AutofillCreditCardTableViewControllerTest
   }
 
   void TearDown() override {
-    [base::mac::ObjCCastStrict<AutofillCreditCardTableViewController>(
+    [base::apple::ObjCCastStrict<AutofillCreditCardTableViewController>(
         controller()) settingsWillBeDismissed];
     ChromeTableViewControllerTest::TearDown();
   }
@@ -82,7 +82,7 @@ class AutofillCreditCardTableViewControllerTest
   // timeout.
   bool deleteItemAndWait(int section, int row, ConditionBlock condition) {
     AutofillCreditCardTableViewController* view_controller =
-        base::mac::ObjCCastStrict<AutofillCreditCardTableViewController>(
+        base::apple::ObjCCastStrict<AutofillCreditCardTableViewController>(
             controller());
     [view_controller deleteItems:@[ [NSIndexPath indexPathForRow:row
                                                        inSection:section] ]];

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -33,7 +33,7 @@ TEST_F(WhatsNewTableViewItemTest, ItemProperties) {
   ASSERT_TRUE([cell isMemberOfClass:[WhatsNewTableViewCell class]]);
 
   WhatsNewTableViewCell* whats_new_cell =
-      base::mac::ObjCCastStrict<WhatsNewTableViewCell>(cell);
+      base::apple::ObjCCastStrict<WhatsNewTableViewCell>(cell);
 
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:cell withStyler:styler];
@@ -61,7 +61,7 @@ TEST_F(WhatsNewTableViewItemTest, ItemProperties) {
 
   // Check that the main background is set properly.
   UIImageView* main_background_image_view =
-      base::mac::ObjCCastStrict<UIImageView>(
+      base::apple::ObjCCastStrict<UIImageView>(
           whats_new_cell.contentView.subviews[0]);
   EXPECT_NSEQ([[UIImage imageNamed:@"whats_new_icon_tile"]
                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate],
@@ -95,7 +95,7 @@ TEST_F(WhatsNewTableViewItemTest, ItemWithoutBackgroundImageView) {
   ASSERT_TRUE([cell isMemberOfClass:[WhatsNewTableViewCell class]]);
 
   WhatsNewTableViewCell* whats_new_cell =
-      base::mac::ObjCCastStrict<WhatsNewTableViewCell>(cell);
+      base::apple::ObjCCastStrict<WhatsNewTableViewCell>(cell);
 
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:cell withStyler:styler];
@@ -124,7 +124,7 @@ TEST_F(WhatsNewTableViewItemTest, ItemWithoutBackgroundImageView) {
 
   // Check that the main background is set properly.
   UIImageView* main_background_image_view =
-      base::mac::ObjCCastStrict<UIImageView>(
+      base::apple::ObjCCastStrict<UIImageView>(
           whats_new_cell.contentView.subviews[0]);
   EXPECT_NSEQ([[UIImage imageNamed:@"whats_new_icon_tile"]
                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate],

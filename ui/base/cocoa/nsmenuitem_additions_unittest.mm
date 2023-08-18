@@ -10,8 +10,8 @@
 #include <ostream>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
@@ -546,7 +546,7 @@ TEST(NSMenuItemAdditionsTest, TestCmdCapsLockOnPersianStandardLayout) {
   // The layout generates an event with a capital W. We have to force the
   // characters because the regular NSEvent machinery insists on converting
   // the string to lower case.
-  [base::mac::ObjCCastStrict<NSEventForTesting>(cmdWWithCapsLock)
+  [base::apple::ObjCCastStrict<NSEventForTesting>(cmdWWithCapsLock)
       setCharacters:capitalW];
   ExpectKeyFiresItem(cmdWWithCapsLock, closeTabItem, /*compare_cocoa=*/false);
 
@@ -554,7 +554,7 @@ TEST(NSMenuItemAdditionsTest, TestCmdCapsLockOnPersianStandardLayout) {
   NSEvent* shiftCmdW =
       KeyEvent(NSEventModifierFlagCommand | NSEventModifierFlagShift, capitalW,
                @"\u1612", kVK_ANSI_W);
-  [base::mac::ObjCCastStrict<NSEventForTesting>(shiftCmdW)
+  [base::apple::ObjCCastStrict<NSEventForTesting>(shiftCmdW)
       setCharacters:capitalW];
   ExpectKeyFiresItem(shiftCmdW, closeWindowItem, /*compare_cocoa=*/false);
 
@@ -563,7 +563,7 @@ TEST(NSMenuItemAdditionsTest, TestCmdCapsLockOnPersianStandardLayout) {
       KeyEvent(NSEventModifierFlagCommand | NSEventModifierFlagShift |
                    NSEventModifierFlagCapsLock,
                capitalW, @"\u1612", kVK_ANSI_W);
-  [base::mac::ObjCCastStrict<NSEventForTesting>(shiftCmdWWithCapsLock)
+  [base::apple::ObjCCastStrict<NSEventForTesting>(shiftCmdWWithCapsLock)
       setCharacters:capitalW];
   ExpectKeyFiresItem(shiftCmdWWithCapsLock, closeWindowItem,
                      /*compare_cocoa=*/false);
@@ -606,7 +606,7 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
 
     // On a few layouts, "m" has a different key code.
     NSString* layout_id =
-        base::apple::CFToNSPtrCast(base::mac::CFCast<CFStringRef>(
+        base::apple::CFToNSPtrCast(base::apple::CFCast<CFStringRef>(
             TISGetInputSourceProperty(ref, kTISPropertyInputSourceID)));
     ASSERT_TRUE(layout_id);
     if ([layout_id isEqualToString:@"com.apple.keylayout.Belgian"] ||

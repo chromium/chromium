@@ -6,8 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/path_service.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
@@ -121,7 +121,7 @@ TEST_F(WebSessionStateCacheTest, MigrateSessionPreM116) {
   NSError* error = nil;
   NSData* data = [NSData dataWithBytes:data_str length:strlen(data_str)];
   NSString* legacy_file_path =
-      base::mac::FilePathToNSString(session_cache_directory_.Append(
+      base::apple::FilePathToNSString(session_cache_directory_.Append(
           base::SysNSStringToUTF8(web_state_->GetStableIdentifier())));
   NSDataWritingOptions options =
       NSDataWritingAtomic |

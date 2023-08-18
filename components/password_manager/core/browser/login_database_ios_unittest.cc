@@ -10,9 +10,9 @@
 
 #include <tuple>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -84,7 +84,7 @@ size_t LoginDatabaseIOSTest::GetKeychainSize() {
   }
   EXPECT_EQ(errSecSuccess, status);
 
-  return CFArrayGetCount(base::mac::CFCast<CFArrayRef>(result));
+  return CFArrayGetCount(base::apple::CFCast<CFArrayRef>(result));
 }
 
 TEST_F(LoginDatabaseIOSTest, KeychainStorage) {

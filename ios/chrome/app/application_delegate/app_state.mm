@@ -6,12 +6,12 @@
 
 #import <utility>
 
+#import "base/apple/foundation_util.h"
 #import "base/critical_closure.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
@@ -506,7 +506,7 @@ void FlushCookieStoreOnIOThread(
     }
 
     SceneDelegate* sceneDelegate =
-        base::mac::ObjCCastStrict<SceneDelegate>(scene.delegate);
+        base::apple::ObjCCastStrict<SceneDelegate>(scene.delegate);
     [sceneStates addObject:sceneDelegate.sceneState];
   }
   return sceneStates;
@@ -635,9 +635,9 @@ void FlushCookieStoreOnIOThread(
 
 - (void)sceneWillConnect:(NSNotification*)notification {
   UIWindowScene* scene =
-      base::mac::ObjCCastStrict<UIWindowScene>(notification.object);
+      base::apple::ObjCCastStrict<UIWindowScene>(notification.object);
   SceneDelegate* sceneDelegate =
-      base::mac::ObjCCastStrict<SceneDelegate>(scene.delegate);
+      base::apple::ObjCCastStrict<SceneDelegate>(scene.delegate);
 
   // Under some iOS 15 betas, Chrome gets scene connection events for some
   // system scene connections. To handle this, early return if the connecting

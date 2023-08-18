@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/scanner/camera_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/stringprintf.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"

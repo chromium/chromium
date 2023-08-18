@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/i18n/message_formatter.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -131,9 +131,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   CHECK(item);
   CHECK(cell);
   TabListFromAndroidTableViewItem* tabListItem =
-      base::mac::ObjCCastStrict<TabListFromAndroidTableViewItem>(item);
+      base::apple::ObjCCastStrict<TabListFromAndroidTableViewItem>(item);
   TabListFromAndroidTableViewCell* tabListCell =
-      base::mac::ObjCCastStrict<TabListFromAndroidTableViewCell>(cell);
+      base::apple::ObjCCastStrict<TabListFromAndroidTableViewCell>(cell);
 
   NSString* itemIdentifier = tabListItem.uniqueIdentifier;
   [_faviconDataSource

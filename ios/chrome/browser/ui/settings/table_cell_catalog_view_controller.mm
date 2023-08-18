@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/table_cell_catalog_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
@@ -759,28 +759,28 @@ typedef NS_ENUM(NSInteger, ItemType) {
       itemType == ItemTypeTableViewInfoButtonWithDetailText ||
       itemType == ItemTypeTableViewInfoButtonWithImage) {
     TableViewInfoButtonCell* managedCell =
-        base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
     [managedCell.trailingButton addTarget:self
                                    action:@selector(didTapManagedUIInfoButton:)
                          forControlEvents:UIControlEventTouchUpInside];
   } else if (itemType == ItemTypeCheck6) {
     SettingsCheckCell* checkCell =
-        base::mac::ObjCCastStrict<SettingsCheckCell>(cell);
+        base::apple::ObjCCastStrict<SettingsCheckCell>(cell);
     [checkCell.infoButton addTarget:self
                              action:@selector(didTapCheckInfoButton:)
                    forControlEvents:UIControlEventTouchUpInside];
   } else if (itemType == ItemTypeSearchHistorySuggestedItem) {
     TableViewTabsSearchSuggestedHistoryCell* searchHistoryCell =
-        base::mac::ObjCCastStrict<TableViewTabsSearchSuggestedHistoryCell>(
+        base::apple::ObjCCastStrict<TableViewTabsSearchSuggestedHistoryCell>(
             cell);
     [searchHistoryCell updateHistoryResultsCount:7];
   } else if (itemType == ItemTypeURLWithActivityIndicator) {
     TableViewURLCell* URLCell =
-        base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+        base::apple::ObjCCastStrict<TableViewURLCell>(cell);
     [URLCell startAnimatingActivityIndicator];
   } else if (itemType == ItemTypeURLWithActivityIndicatorStopped) {
     TableViewURLCell* URLCell =
-        base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+        base::apple::ObjCCastStrict<TableViewURLCell>(cell);
     [URLCell startAnimatingActivityIndicator];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC),
                    dispatch_get_main_queue(), ^{

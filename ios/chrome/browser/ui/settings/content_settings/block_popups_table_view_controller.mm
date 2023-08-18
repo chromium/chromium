@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/content_settings/block_popups_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -178,7 +178,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     case ItemTypeMainSwitch: {
       TableViewSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(blockPopupsSwitchChanged:)
                       forControlEvents:UIControlEventValueChanged];
@@ -186,7 +186,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
     case ItemTypeManaged: {
       TableViewInfoButtonCell* managedCell =
-          base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+          base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
       [managedCell.trailingButton
                  addTarget:self
                     action:@selector(didTapManagedUIInfoButton:)

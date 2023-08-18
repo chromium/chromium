@@ -6,7 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "components/download/public/common/download_item.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/widget/widget.h"
@@ -53,7 +53,7 @@ void DragDownloadItem(const download::DownloadItem* download,
   if (widget)
     widget->ReleaseCapture();
 
-  NSURL* file_url = base::mac::FilePathToNSURL(download->GetTargetFilePath());
+  NSURL* file_url = base::apple::FilePathToNSURL(download->GetTargetFilePath());
   NSDraggingItem* file_item =
       [[NSDraggingItem alloc] initWithPasteboardWriter:file_url];
   if (icon) {

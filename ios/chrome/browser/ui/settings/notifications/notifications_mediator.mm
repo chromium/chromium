@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/notifications/notifications_mediator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_id.h"
@@ -114,7 +114,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                    withClientID:(PushNotificationClientId)clientID {
   DCHECK(item);
   TableViewDetailIconItem* iconItem =
-      base::mac::ObjCCastStrict<TableViewDetailIconItem>(item);
+      base::apple::ObjCCastStrict<TableViewDetailIconItem>(item);
   notifications_settings::ClientPermissionState permissionState =
       notifications_settings::GetClientPermissionState(clientID, _gaiaID,
                                                        _prefService);

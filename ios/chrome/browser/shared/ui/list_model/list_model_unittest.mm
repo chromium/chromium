@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/string_piece.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item.h"
 #import "testing/gtest/include/gtest/gtest.h"

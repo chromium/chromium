@@ -11,8 +11,8 @@
 #include <algorithm>
 #include <string>
 
+#include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
@@ -134,7 +134,7 @@ AVSpeechUtterance* MakeUtterance(int utterance_id,
 }
 
 int GetUtteranceId(AVSpeechUtterance* utterance) {
-  NSNumber* identifier = base::mac::ObjCCast<NSNumber>(
+  NSNumber* identifier = base::apple::ObjCCast<NSNumber>(
       objc_getAssociatedObject(utterance, @selector(identifier)));
   if (identifier) {
     return identifier.intValue;

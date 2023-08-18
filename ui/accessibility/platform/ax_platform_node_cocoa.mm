@@ -7,8 +7,8 @@
 #import <Cocoa/Cocoa.h>
 #include <Foundation/Foundation.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
@@ -1362,15 +1362,16 @@ void CollectAncestorRoles(
   if ([attribute isEqualToString:NSAccessibilityValueAttribute]) {
     [self setAccessibilityValue:value];
   } else if ([attribute isEqualToString:NSAccessibilitySelectedTextAttribute]) {
-    [self setAccessibilitySelectedText:base::mac::ObjCCastStrict<NSString>(
+    [self setAccessibilitySelectedText:base::apple::ObjCCastStrict<NSString>(
                                            value)];
   } else if ([attribute
                  isEqualToString:NSAccessibilitySelectedTextRangeAttribute]) {
-    [self setAccessibilitySelectedTextRange:base::mac::ObjCCastStrict<NSValue>(
-                                                value)
-                                                .rangeValue];
+    [self
+        setAccessibilitySelectedTextRange:base::apple::ObjCCastStrict<NSValue>(
+                                              value)
+                                              .rangeValue];
   } else if ([attribute isEqualToString:NSAccessibilityFocusedAttribute]) {
-    [self setAccessibilityFocused:base::mac::ObjCCastStrict<NSNumber>(value)
+    [self setAccessibilityFocused:base::apple::ObjCCastStrict<NSNumber>(value)
                                       .boolValue];
   }
 }

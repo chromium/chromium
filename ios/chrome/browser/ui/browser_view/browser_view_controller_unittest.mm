@@ -10,7 +10,7 @@
 
 #import <memory>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
@@ -406,7 +406,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   id OCMArgWithContentView(UIView* (^expected_view)()) {
     return [OCMArg checkWithBlock:^(UIView* view) {
       UIView* content_view =
-          base::mac::ObjCCast<ForegroundTabAnimationView>(view).contentView;
+          base::apple::ObjCCast<ForegroundTabAnimationView>(view).contentView;
       return content_view == expected_view();
     }];
   }

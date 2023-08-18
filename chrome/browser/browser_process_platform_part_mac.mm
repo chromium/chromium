@@ -4,7 +4,7 @@
 
 #include "chrome/browser/browser_process_platform_part_mac.h"
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #import "chrome/browser/app_controller_mac.h"

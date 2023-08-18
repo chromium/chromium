@@ -4,8 +4,8 @@
 
 #include "base/apple/bundle_locations.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 
 namespace base::apple {
@@ -26,7 +26,7 @@ NSURL* MainBundleURL() {
 }
 
 FilePath MainBundlePath() {
-  return mac::NSStringToFilePath(MainBundle().bundlePath);
+  return apple::NSStringToFilePath(MainBundle().bundlePath);
 }
 
 NSBundle* OuterBundle() {
@@ -41,7 +41,7 @@ NSURL* OuterBundleURL() {
 }
 
 FilePath OuterBundlePath() {
-  return mac::NSStringToFilePath(OuterBundle().bundlePath);
+  return apple::NSStringToFilePath(OuterBundle().bundlePath);
 }
 
 NSBundle* FrameworkBundle() {
@@ -52,7 +52,7 @@ NSBundle* FrameworkBundle() {
 }
 
 FilePath FrameworkBundlePath() {
-  return mac::NSStringToFilePath(FrameworkBundle().bundlePath);
+  return apple::NSStringToFilePath(FrameworkBundle().bundlePath);
 }
 
 namespace {
@@ -62,7 +62,7 @@ NSBundle* BundleFromPath(const FilePath& file_path) {
     return nil;
   }
 
-  NSBundle* bundle = [NSBundle bundleWithURL:mac::FilePathToNSURL(file_path)];
+  NSBundle* bundle = [NSBundle bundleWithURL:apple::FilePathToNSURL(file_path)];
   CHECK(bundle) << "Failed to load the bundle at " << file_path.value();
 
   return bundle;

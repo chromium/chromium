@@ -4,7 +4,7 @@
 
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 @interface GradientView ()
@@ -49,7 +49,7 @@
 }
 
 - (CAGradientLayer*)gradientLayer {
-  return base::mac::ObjCCastStrict<CAGradientLayer>(self.layer);
+  return base::apple::ObjCCastStrict<CAGradientLayer>(self.layer);
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {

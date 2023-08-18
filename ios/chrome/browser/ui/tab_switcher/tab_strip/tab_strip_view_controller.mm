@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_controller.h"
 
 #import "base/allocator/partition_allocator/partition_alloc.h"
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/numerics/safe_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -149,7 +149,7 @@ const CGFloat kSymbolSize = 18;
     itemIndex = self.items.count - 1;
 
   TabSwitcherItem* item = self.items[itemIndex];
-  TabStripCell* cell = base::mac::ObjCCastStrict<TabStripCell>([collectionView
+  TabStripCell* cell = base::apple::ObjCCastStrict<TabStripCell>([collectionView
       dequeueReusableCellWithReuseIdentifier:kReuseIdentifier
                                 forIndexPath:indexPath]);
 

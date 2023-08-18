@@ -10,13 +10,13 @@
 #include <utility>
 
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/hash/md5.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
@@ -314,7 +314,7 @@ void AppShimController::PollForChromeReady(
   {
     mojo::PlatformChannelEndpoint endpoint;
     NSString* browser_bundle_id =
-        base::mac::ObjCCast<NSString>([NSBundle.mainBundle
+        base::apple::ObjCCast<NSString>([NSBundle.mainBundle
             objectForInfoDictionaryKey:app_mode::kBrowserBundleIDKey]);
     CHECK(browser_bundle_id);
     const std::string server_name = base::StringPrintf(

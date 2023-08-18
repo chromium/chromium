@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
@@ -96,8 +96,8 @@
 #pragma mark - Getters
 
 - (BOOL)isDaysInPastWeekRequirementMet {
-  NSArray* activeDaysInPastWeek =
-      base::mac::ObjCCastStrict<NSArray>([[NSUserDefaults standardUserDefaults]
+  NSArray* activeDaysInPastWeek = base::apple::ObjCCastStrict<NSArray>(
+      [[NSUserDefaults standardUserDefaults]
           objectForKey:kAppStoreRatingActiveDaysInPastWeekKey]);
   const NSUInteger appStoreRatingTotalDaysOnChromeRequirement =
       (GetChannel() == version_info::Channel::DEV ||
@@ -149,8 +149,8 @@
 // Returns an array of user's active days in the past week, not including the
 // current session.
 - (std::vector<base::Time>)activeDaysInPastWeek {
-  NSArray* storedActiveDaysInPastWeek =
-      base::mac::ObjCCastStrict<NSArray>([[NSUserDefaults standardUserDefaults]
+  NSArray* storedActiveDaysInPastWeek = base::apple::ObjCCastStrict<NSArray>(
+      [[NSUserDefaults standardUserDefaults]
           objectForKey:kAppStoreRatingActiveDaysInPastWeekKey]);
 
   std::vector<base::Time> activeDaysInPastWeek;
@@ -218,7 +218,7 @@
 // 365 days.
 - (BOOL)promoShownOver365DaysAgo {
   NSDate* lastShown =
-      base::mac::ObjCCastStrict<NSDate>([[NSUserDefaults standardUserDefaults]
+      base::apple::ObjCCastStrict<NSDate>([[NSUserDefaults standardUserDefaults]
           objectForKey:kAppStoreRatingLastShownPromoDayKey]);
   if (!lastShown) {
     return YES;

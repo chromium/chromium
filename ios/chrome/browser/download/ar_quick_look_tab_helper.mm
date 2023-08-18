@@ -7,10 +7,10 @@
 #import <memory>
 #import <string>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/escape.h"
 #import "base/task/thread_pool.h"
@@ -196,7 +196,7 @@ void ARQuickLookTabHelper::DidFinishDownload() {
   }
 
   NSURL* file_url =
-      base::mac::FilePathToNSURL(download_task_->GetResponsePath());
+      base::apple::FilePathToNSURL(download_task_->GetResponsePath());
   [delegate_ presentUSDZFileWithURL:file_url
                        canonicalURL:canonical_url
                            webState:web_state_

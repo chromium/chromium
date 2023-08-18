@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/shared/ui/util/terms_util.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"

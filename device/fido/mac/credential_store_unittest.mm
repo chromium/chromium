@@ -5,7 +5,7 @@
 #include <Foundation/Foundation.h>
 #include <Security/Security.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/fake_keychain.h"

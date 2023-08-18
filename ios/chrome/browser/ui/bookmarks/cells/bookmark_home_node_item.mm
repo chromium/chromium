@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/url_formatter/elide_url.h"
@@ -35,7 +35,7 @@
   [super configureCell:cell withStyler:styler];
   if (_bookmarkNode->is_folder()) {
     TableViewBookmarksFolderCell* bookmarkCell =
-        base::mac::ObjCCastStrict<TableViewBookmarksFolderCell>(cell);
+        base::apple::ObjCCastStrict<TableViewBookmarksFolderCell>(cell);
     bookmarkCell.folderTitleTextField.text =
         bookmark_utils_ios::TitleForBookmarkNode(_bookmarkNode);
     bookmarkCell.folderImageView.image =
@@ -48,7 +48,7 @@
     bookmarkCell.cloudSlashedView.hidden = !self.shouldDisplayCloudSlashIcon;
   } else {
     TableViewURLCell* urlCell =
-        base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+        base::apple::ObjCCastStrict<TableViewURLCell>(cell);
     urlCell.titleLabel.text =
         bookmark_utils_ios::TitleForBookmarkNode(_bookmarkNode);
     urlCell.URLLabel.text = base::SysUTF16ToNSString(

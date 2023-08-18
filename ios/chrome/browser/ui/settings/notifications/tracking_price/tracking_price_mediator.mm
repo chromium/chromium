@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/notifications/tracking_price/tracking_price_mediator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/pref_names.h"

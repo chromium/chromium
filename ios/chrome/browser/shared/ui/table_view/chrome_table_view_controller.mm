@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
@@ -232,7 +232,7 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
       // `cell` may be nil if the row is not currently on screen.
       if (cell) {
         TableViewCell* tableViewCell =
-            base::mac::ObjCCastStrict<TableViewCell>(cell);
+            base::apple::ObjCCastStrict<TableViewCell>(cell);
         [item configureCell:tableViewCell withStyler:self.styler];
       }
     }
@@ -267,7 +267,8 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
   UITableViewCell* cell =
       [self.tableView dequeueReusableCellWithIdentifier:reuseIdentifier
                                            forIndexPath:indexPath];
-  TableViewCell* tableViewCell = base::mac::ObjCCastStrict<TableViewCell>(cell);
+  TableViewCell* tableViewCell =
+      base::apple::ObjCCastStrict<TableViewCell>(cell);
   [item configureCell:tableViewCell withStyler:self.styler];
 
   if (base::FeatureList::IsEnabled(kBlockSimultaneousCellSelectionKillSwitch)) {

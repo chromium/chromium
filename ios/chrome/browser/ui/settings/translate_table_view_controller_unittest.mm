@@ -6,8 +6,8 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
-#import "base/mac/foundation_util.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/task_environment.h"
 #import "components/language/core/browser/language_prefs.h"
@@ -64,7 +64,7 @@ class TranslateTableViewControllerTest : public ChromeTableViewControllerTest {
   }
 
   void TearDown() override {
-    [base::mac::ObjCCastStrict<TranslateTableViewController>(controller())
+    [base::apple::ObjCCastStrict<TranslateTableViewController>(controller())
         settingsWillBeDismissed];
     ChromeTableViewControllerTest::TearDown();
   }

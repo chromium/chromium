@@ -9,7 +9,7 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h> // macOS 11
 
 #include "base/apple/bridging.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"

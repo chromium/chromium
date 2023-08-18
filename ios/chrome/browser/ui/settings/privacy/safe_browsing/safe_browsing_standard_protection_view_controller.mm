@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -114,7 +114,7 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
                      cellForRowAtIndexPath:indexPath];
   if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
     TableViewSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(switchAction:)
                     forControlEvents:UIControlEventValueChanged];
@@ -122,7 +122,7 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
     switchCell.switchView.tag = item.type;
   } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
     TableViewInfoButtonCell* infoCell =
-        base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
     [infoCell.trailingButton addTarget:self
                                 action:@selector(didTapManagedUIInfoButton:)
                       forControlEvents:UIControlEventTouchUpInside];

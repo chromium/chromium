@@ -4,7 +4,7 @@
 
 #import "ios/chrome/credential_provider_extension/ui/tooltip_view.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
@@ -162,7 +162,7 @@ static __weak TooltipView* _active;
 }
 
 - (CAShapeLayer*)backgroundLayer {
-  return base::mac::ObjCCastStrict<CAShapeLayer>(self.layer);
+  return base::apple::ObjCCastStrict<CAShapeLayer>(self.layer);
 }
 
 @end

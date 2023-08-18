@@ -4,7 +4,7 @@
 
 #import "ios/chrome/test/app/password_test_util.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 
 namespace chrome_test_util {

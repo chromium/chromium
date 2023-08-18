@@ -6,9 +6,9 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -228,7 +228,7 @@ id<GREYAction> WebViewScrollElementToVisible(WebState* state,
          constraints:WebViewInWebState(state)
         performBlock:^BOOL(id element, __strong NSError** error_or_nil) {
           // Checks that the element is indeed a WKWebView.
-          WKWebView* web_view = base::mac::ObjCCast<WKWebView>(element);
+          WKWebView* web_view = base::apple::ObjCCast<WKWebView>(element);
           if (!web_view) {
             *error_or_nil = error_block(@"WebView not found.");
             return NO;

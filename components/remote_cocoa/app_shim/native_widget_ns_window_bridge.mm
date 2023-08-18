@@ -11,10 +11,10 @@
 #include <cmath>
 #include <memory>
 
+#import "base/apple/foundation_util.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -229,7 +229,7 @@ NSUInteger CountBridgedWindows(NSArray* child_windows) {
 
   for (NSWindow* child in child_windows) {
     NativeWidgetMacNSWindow* parentWindow =
-        base::mac::ObjCCast<NativeWidgetMacNSWindow>([child parentWindow]);
+        base::apple::ObjCCast<NativeWidgetMacNSWindow>([child parentWindow]);
 
     // The child may be in an intermediary state where it's been removed from
     // Views but not from the childWindow list (see the description of
@@ -282,7 +282,7 @@ NativeWidgetNSWindowBridge* NativeWidgetNSWindowBridge::GetFromNativeWindow(
     gfx::NativeWindow native_window) {
   NSWindow* window = native_window.GetNativeNSWindow();
   if (NativeWidgetMacNSWindow* widget_window =
-          base::mac::ObjCCast<NativeWidgetMacNSWindow>(window)) {
+          base::apple::ObjCCast<NativeWidgetMacNSWindow>(window)) {
     return GetFromId([widget_window bridgedNativeWidgetId]);
   }
   return nullptr;
@@ -771,7 +771,7 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     [window_ orderOut:nil];
 
     NativeWidgetMacNSWindow* parentWindow =
-        base::mac::ObjCCast<NativeWidgetMacNSWindow>([window_ parentWindow]);
+        base::apple::ObjCCast<NativeWidgetMacNSWindow>([window_ parentWindow]);
     DCHECK(!window_visible_ ||
            [parentWindow willRemoveChildWindowOnActivation:window_]);
     return;
@@ -1108,7 +1108,7 @@ void NativeWidgetNSWindowBridge::OnPositionChanged() {
 
 void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
   NativeWidgetMacNSWindow* parentWindow =
-      base::mac::ObjCCast<NativeWidgetMacNSWindow>([window_ parentWindow]);
+      base::apple::ObjCCast<NativeWidgetMacNSWindow>([window_ parentWindow]);
   const bool window_visible =
       [window_ isVisible] &&
       ![parentWindow willRemoveChildWindowOnActivation:window_];
@@ -1713,7 +1713,7 @@ void NativeWidgetNSWindowBridge::NotifyVisibilityChangeDown() {
         [childWindow orderOut:nil];
       }
       NativeWidgetMacNSWindow* parentWindow =
-          base::mac::ObjCCast<NativeWidgetMacNSWindow>(
+          base::apple::ObjCCast<NativeWidgetMacNSWindow>(
               [childWindow parentWindow]);
 
       DCHECK(!child->window_visible_ ||

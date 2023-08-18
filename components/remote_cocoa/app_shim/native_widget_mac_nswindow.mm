@@ -4,9 +4,9 @@
 
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/auto_reset.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/trace_event.h"
@@ -364,7 +364,7 @@ struct ChildWindowOrderingCommand {
 // Private methods.
 
 - (ViewsNSWindowDelegate*)viewsNSWindowDelegate {
-  return base::mac::ObjCCastStrict<ViewsNSWindowDelegate>([self delegate]);
+  return base::apple::ObjCCastStrict<ViewsNSWindowDelegate>([self delegate]);
 }
 
 - (BOOL)hasViewsMenuActive {
@@ -605,7 +605,7 @@ struct ChildWindowOrderingCommand {
   // arrange for our removal after our parent becomes the active window
   // to avoid triggering a Space switch.
   NativeWidgetMacNSWindow* parentWindow =
-      base::mac::ObjCCast<NativeWidgetMacNSWindow>([self parentWindow]);
+      base::apple::ObjCCast<NativeWidgetMacNSWindow>([self parentWindow]);
   if (parentWindow != nil && ![parentWindow isOnActiveSpace]) {
     [parentWindow removeChildWindowOnActivation:self];
   } else {
@@ -857,7 +857,7 @@ struct ChildWindowOrderingCommand {
 
   for (NSWindow* childWindow in self.childWindows) {
     NativeWidgetMacNSWindow* nativeWidgetMacNSWindow =
-        base::mac::ObjCCast<NativeWidgetMacNSWindow>(childWindow);
+        base::apple::ObjCCast<NativeWidgetMacNSWindow>(childWindow);
 
     [nativeWidgetMacNSWindow
         performSelector:@selector(processChildWindowOrderingCommands)

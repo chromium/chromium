@@ -11,8 +11,8 @@
 #include <string>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
-#include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -50,7 +50,7 @@ namespace {
 // Reads the "WebKitWebURLsWithTitles" type put onto the pasteboard by Safari
 // and returns the URLs/titles found within.
 NSArray<URLAndTitle*>* ReadWebURLsWithTitlesPboardType(NSPasteboard* pboard) {
-  NSArray* bookmark_pairs = base::mac::ObjCCast<NSArray>(
+  NSArray* bookmark_pairs = base::apple::ObjCCast<NSArray>(
       [pboard propertyListForType:kUTTypeWebKitWebURLsWithTitles]);
   if (!bookmark_pairs) {
     return [NSArray array];
@@ -60,9 +60,9 @@ NSArray<URLAndTitle*>* ReadWebURLsWithTitlesPboardType(NSPasteboard* pboard) {
   }
 
   NSArray<NSString*>* urls_array =
-      base::mac::ObjCCast<NSArray>(bookmark_pairs[0]);
+      base::apple::ObjCCast<NSArray>(bookmark_pairs[0]);
   NSArray<NSString*>* titles_array =
-      base::mac::ObjCCast<NSArray>(bookmark_pairs[1]);
+      base::apple::ObjCCast<NSArray>(bookmark_pairs[1]);
 
   if (!urls_array || !titles_array) {
     return [NSArray array];
@@ -429,8 +429,8 @@ std::vector<FileInfo> FilesFromPasteboard(NSPasteboard* pboard) {
     // filename because deep in Blink it's used to determine the file's type.
     // See https://crbug.com/1412205.
     results.emplace_back(
-        base::mac::NSURLToFilePath(file_url),
-        base::mac::NSStringToFilePath(file_url.lastPathComponent));
+        base::apple::NSURLToFilePath(file_url),
+        base::apple::NSStringToFilePath(file_url.lastPathComponent));
   }
 
   return results;
@@ -445,7 +445,7 @@ void WriteFilesToPasteboard(NSPasteboard* pboard,
   NSMutableArray<NSPasteboardItem*>* items =
       [NSMutableArray arrayWithCapacity:files.size()];
   for (const auto& file : files) {
-    NSURL* url = base::mac::FilePathToNSURL(file.path);
+    NSURL* url = base::apple::FilePathToNSURL(file.path);
     NSPasteboardItem* item = [[NSPasteboardItem alloc] init];
     [item setString:url.absoluteString forType:NSPasteboardTypeFileURL];
     [items addObject:item];

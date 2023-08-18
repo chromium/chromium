@@ -4,7 +4,7 @@
 
 #import "ios/public/provider/chrome/browser/keyboard/keyboard_api.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 
 namespace ios {
 namespace provider {
@@ -13,7 +13,7 @@ UIWindow* GetKeyboardWindow() {
   UIWindow* lastWindow = nil;
   for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
     UIWindowScene* windowScene =
-        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
     UIWindow* window = [windowScene.windows lastObject];
     if (window) {
       lastWindow = window;

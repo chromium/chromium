@@ -10,8 +10,8 @@
 #include <string>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
@@ -175,7 +175,7 @@ void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
       if (types) {
         for (CFIndex i = 0; i < CFArrayGetCount(types); i++) {
           base::ScopedCFTypeRef<CFArrayRef> extensions_list(
-              UTTypeCopyAllTagsWithClass(base::mac::CFCast<CFStringRef>(
+              UTTypeCopyAllTagsWithClass(base::apple::CFCast<CFStringRef>(
                                              CFArrayGetValueAtIndex(types, i)),
                                          kUTTagClassFilenameExtension));
           if (!extensions_list) {

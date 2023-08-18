@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -32,7 +32,7 @@ extern "C" {
 CFTypeID SecKeyGetTypeID();
 }  // extern "C"
 
-namespace base::mac {
+namespace base::apple {
 
 namespace {
 
@@ -46,8 +46,9 @@ bool UncachedAmIBundled() {
   // All apps are bundled on iOS.
   return true;
 #else
-  if (g_override_am_i_bundled)
+  if (g_override_am_i_bundled) {
     return g_override_am_i_bundled_value;
+  }
 
   // Yes, this is cheap.
   return [apple::OuterBundle().bundlePath hasSuffix:@".app"];
@@ -74,8 +75,9 @@ bool AmIBundled() {
 void SetOverrideAmIBundled(bool value) {
 #if BUILDFLAG(IS_IOS)
   // It doesn't make sense not to be bundled on iOS.
-  if (!value)
+  if (!value) {
     NOTREACHED();
+  }
 #endif
   g_override_am_i_bundled = true;
   g_override_am_i_bundled_value = value;
@@ -110,8 +112,9 @@ OSType CreatorCodeForCFBundleRef(CFBundleRef bundle) {
 
 OSType CreatorCodeForApplication() {
   CFBundleRef bundle = CFBundleGetMainBundle();
-  if (!bundle)
+  if (!bundle) {
     return kUnknownType;
+  }
 
   return CreatorCodeForCFBundleRef(bundle);
 }
@@ -166,8 +169,9 @@ FilePath GetAppBundlePath(const FilePath& exec_name) {
   std::vector<std::string> components = exec_name.GetComponents();
 
   // It's an error if we don't get any components.
-  if (components.empty())
+  if (components.empty()) {
     return FilePath();
+  }
 
   // Don't prepend '/' to the first component.
   std::vector<std::string>::const_iterator it = components.begin();
@@ -175,13 +179,15 @@ FilePath GetAppBundlePath(const FilePath& exec_name) {
   DCHECK_GT(it->length(), 0U);
   // If the first component ends in ".app", we're already done.
   if (it->length() > kExtLength &&
-      !it->compare(it->length() - kExtLength, kExtLength, kExt, kExtLength))
+      !it->compare(it->length() - kExtLength, kExtLength, kExt, kExtLength)) {
     return FilePath(bundle_name);
+  }
 
   // The first component may be "/" or "//", etc. Only append '/' if it doesn't
   // already end in '/'.
-  if (bundle_name.back() != '/')
+  if (bundle_name.back() != '/') {
     bundle_name += '/';
+  }
 
   // Go through the remaining components.
   for (++it; it != components.end(); ++it) {
@@ -191,8 +197,9 @@ FilePath GetAppBundlePath(const FilePath& exec_name) {
 
     // If the current component ends in ".app", we're done.
     if (it->length() > kExtLength &&
-        !it->compare(it->length() - kExtLength, kExtLength, kExt, kExtLength))
+        !it->compare(it->length() - kExtLength, kExtLength, kExt, kExtLength)) {
       return FilePath(bundle_name);
+    }
 
     // Separate this component from the next one.
     bundle_name += '/';
@@ -246,10 +253,10 @@ FilePath GetInnermostAppBundlePath(const FilePath& exec_name) {
   return FilePath(bundle_path);
 }
 
-#define TYPE_NAME_FOR_CF_TYPE_DEFN(TypeCF) \
-std::string TypeNameForCFType(TypeCF##Ref) { \
-  return #TypeCF; \
-}
+#define TYPE_NAME_FOR_CF_TYPE_DEFN(TypeCF)     \
+  std::string TypeNameForCFType(TypeCF##Ref) { \
+    return #TypeCF;                            \
+  }
 
 TYPE_NAME_FOR_CF_TYPE_DEFN(CFArray)
 TYPE_NAME_FOR_CF_TYPE_DEFN(CFBag)
@@ -299,24 +306,24 @@ void SetBaseBundleID(const char* new_base_bundle_id) {
   }
 }
 
-#define CF_CAST_DEFN(TypeCF) \
-template<> TypeCF##Ref \
-CFCast<TypeCF##Ref>(const CFTypeRef& cf_val) { \
-  if (cf_val == NULL) { \
-    return NULL; \
-  } \
-  if (CFGetTypeID(cf_val) == TypeCF##GetTypeID()) { \
-    return (TypeCF##Ref)(cf_val); \
-  } \
-  return NULL; \
-} \
-\
-template<> TypeCF##Ref \
-CFCastStrict<TypeCF##Ref>(const CFTypeRef& cf_val) { \
-  TypeCF##Ref rv = CFCast<TypeCF##Ref>(cf_val); \
-  DCHECK(cf_val == NULL || rv); \
-  return rv; \
-}
+#define CF_CAST_DEFN(TypeCF)                                       \
+  template <>                                                      \
+  TypeCF##Ref CFCast<TypeCF##Ref>(const CFTypeRef& cf_val) {       \
+    if (cf_val == NULL) {                                          \
+      return NULL;                                                 \
+    }                                                              \
+    if (CFGetTypeID(cf_val) == TypeCF##GetTypeID()) {              \
+      return (TypeCF##Ref)(cf_val);                                \
+    }                                                              \
+    return NULL;                                                   \
+  }                                                                \
+                                                                   \
+  template <>                                                      \
+  TypeCF##Ref CFCastStrict<TypeCF##Ref>(const CFTypeRef& cf_val) { \
+    TypeCF##Ref rv = CFCast<TypeCF##Ref>(cf_val);                  \
+    DCHECK(cf_val == NULL || rv);                                  \
+    return rv;                                                     \
+  }
 
 CF_CAST_DEFN(CFArray)
 CF_CAST_DEFN(CFBag)
@@ -347,8 +354,9 @@ CF_CAST_DEFN(SecPolicy)
 
 #undef CF_CAST_DEFN
 
-std::string GetValueFromDictionaryErrorMessage(
-    CFStringRef key, const std::string& expected_type, CFTypeRef value) {
+std::string GetValueFromDictionaryErrorMessage(CFStringRef key,
+                                               const std::string& expected_type,
+                                               CFTypeRef value) {
   ScopedCFTypeRef<CFStringRef> actual_type_ref(
       CFCopyTypeIDDescription(CFGetTypeID(value)));
   return "Expected value for key " + SysCFStringRefToUTF8(key) + " to be " +
@@ -357,14 +365,16 @@ std::string GetValueFromDictionaryErrorMessage(
 }
 
 NSURL* FilePathToNSURL(const FilePath& path) {
-  if (NSString* path_string = FilePathToNSString(path))
+  if (NSString* path_string = FilePathToNSString(path)) {
     return [NSURL fileURLWithPath:path_string];
+  }
   return nil;
 }
 
 NSString* FilePathToNSString(const FilePath& path) {
-  if (path.empty())
+  if (path.empty()) {
     return nil;
+  }
   return @(path.value().c_str());  // @() does UTF8 conversion.
 }
 
@@ -393,8 +403,9 @@ ScopedCFTypeRef<CFURLRef> FilePathToCFURL(const FilePath& path) {
       kCFAllocatorDefault, reinterpret_cast<const UInt8*>(path_string.data()),
       checked_cast<CFIndex>(path_string.length()), kCFStringEncodingUTF8,
       /*isExternalRepresentation=*/FALSE));
-  if (!path_cfstring)
+  if (!path_cfstring) {
     return ScopedCFTypeRef<CFURLRef>();
+  }
 
   return ScopedCFTypeRef<CFURLRef>(CFURLCreateWithFileSystemPath(
       kCFAllocatorDefault, path_cfstring, kCFURLPOSIXPathStyle,
@@ -414,7 +425,7 @@ bool CFRangeToNSRange(CFRange range, NSRange* range_out) {
   return false;
 }
 
-}  // namespace base::mac
+}  // namespace base::apple
 
 std::ostream& operator<<(std::ostream& o, const CFStringRef string) {
   return o << base::SysCFStringRefToUTF8(string);
@@ -428,10 +439,9 @@ std::ostream& operator<<(std::ostream& o, const CFErrorRef err) {
     errorDesc = reinterpret_cast<CFStringRef>(
         CFDictionaryGetValue(user_info.get(), kCFErrorDescriptionKey));
   }
-  o << "Code: " << CFErrorGetCode(err)
-    << " Domain: " << CFErrorGetDomain(err)
+  o << "Code: " << CFErrorGetCode(err) << " Domain: " << CFErrorGetDomain(err)
     << " Desc: " << desc.get();
-  if(errorDesc) {
+  if (errorDesc) {
     o << "(" << errorDesc << ")";
   }
   return o;

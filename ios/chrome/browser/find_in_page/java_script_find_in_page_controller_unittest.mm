@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/find_in_page/java_script_find_in_page_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"

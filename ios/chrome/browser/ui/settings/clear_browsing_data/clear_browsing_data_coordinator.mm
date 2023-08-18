@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -76,7 +76,7 @@
 - (void)clearBrowsingDataTableViewControllerWantsDismissal:
     (ClearBrowsingDataTableViewController*)controller {
   SettingsNavigationController* navigationController =
-      base::mac::ObjCCastStrict<SettingsNavigationController>(
+      base::apple::ObjCCastStrict<SettingsNavigationController>(
           self.viewController.navigationController);
   CHECK_EQ(controller, self.viewController);
   // The user tapped the "done" button, so the entire settings should be

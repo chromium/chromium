@@ -7,10 +7,10 @@
 #import <memory>
 
 #import "base/apple/bundle_locations.h"
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/functional/callback.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/path_service.h"
@@ -428,7 +428,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   DCHECK(self.appState.initStage > InitStageSafeMode);
 
   NSBundle* baseBundle = base::apple::OuterBundle();
-  base::mac::SetBaseBundleID(
+  base::apple::SetBaseBundleID(
       base::SysNSStringToUTF8([baseBundle bundleIdentifier]).c_str());
 
   // Register default values for experimental settings (Application Preferences)
@@ -1243,7 +1243,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   }
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSDate* lastLogged = base::mac::ObjCCast<NSDate>(
+  NSDate* lastLogged = base::apple::ObjCCast<NSDate>(
       [defaults objectForKey:kLastApplicationStorageMetricsLogTime]);
   if (lastLogged && [[NSDate date] timeIntervalSinceDate:lastLogged] <
                         kMinimumTimeBetweenDocumentsSizeLogging) {

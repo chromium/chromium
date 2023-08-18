@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/shared/ui/util/terms_util.h"
 
 #import "base/apple/bundle_locations.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"

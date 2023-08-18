@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/lockdown_mode/lockdown_mode_mediator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

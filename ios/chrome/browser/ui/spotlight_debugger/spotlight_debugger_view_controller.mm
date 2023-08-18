@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/spotlight_debugger/spotlight_debugger_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
 #import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
@@ -261,7 +261,7 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
 + (NSString*)timeSinceLastReindexAsString {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
-  NSDate* date = base::mac::ObjCCast<NSDate>(
+  NSDate* date = base::apple::ObjCCast<NSDate>(
       [userDefaults objectForKey:@(spotlight::kSpotlightLastIndexingDateKey)]);
   if (!date) {
     return @"Never";

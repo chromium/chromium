@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_menu_coordinator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -100,7 +100,7 @@ class FeedMenuCoordinatorTest : public PlatformTest {
   UIAlertController* GetAlertController() {
     EXPECT_TRUE([base_view_controller_.presentedViewController
         isKindOfClass:[UIAlertController class]]);
-    return base::mac::ObjCCastStrict<UIAlertController>(
+    return base::apple::ObjCCastStrict<UIAlertController>(
         base_view_controller_.presentedViewController);
   }
 

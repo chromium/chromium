@@ -7,9 +7,9 @@
 #include <mach/port.h>
 #include <servers/bootstrap.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
-#include "base/mac/foundation_util.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -20,7 +20,7 @@ namespace {
 
 std::string GetBootstrapName(const std::string& name) {
   if (name.empty()) {
-    return base::StringPrintf("%s.mojo.%llu", base::mac::BaseBundleID(),
+    return base::StringPrintf("%s.mojo.%llu", base::apple::BaseBundleID(),
                               base::RandUint64());
   }
   return name;

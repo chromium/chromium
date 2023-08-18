@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -181,12 +181,13 @@ DeviceUserDomainJoinState AreDeviceAndUserJoinedToDomain() {
       }
 
       for (id element in results) {
-        ODRecord* record = mac::ObjCCastStrict<ODRecord>(element);
+        ODRecord* record = base::apple::ObjCCastStrict<ODRecord>(element);
         NSArray* attributes =
             [record valuesForAttribute:kODAttributeTypeMetaRecordName
                                  error:nil];
         for (id attribute in attributes) {
-          NSString* attribute_value = mac::ObjCCastStrict<NSString>(attribute);
+          NSString* attribute_value =
+              base::apple::ObjCCastStrict<NSString>(attribute);
           // Example: "uid=johnsmith,ou=People,dc=chromium,dc=org
           NSRange domain_controller =
               [attribute_value rangeOfString:@"(^|,)\\s*dc="
@@ -201,7 +202,8 @@ DeviceUserDomainJoinState AreDeviceAndUserJoinedToDomain() {
             [record valuesForAttribute:kODAttributeTypeAltSecurityIdentities
                                  error:nil];
         for (id attribute in attributes) {
-          NSString* attribute_value = mac::ObjCCastStrict<NSString>(attribute);
+          NSString* attribute_value =
+              base::apple::ObjCCastStrict<NSString>(attribute);
           NSRange icloud =
               [attribute_value rangeOfString:@"CN=com.apple.idms.appleid.prd"
                                      options:NSCaseInsensitiveSearch];

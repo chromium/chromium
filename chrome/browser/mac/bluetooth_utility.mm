@@ -9,7 +9,7 @@
 #include <IOKit/IOKitLib.h>
 
 #include "base/apple/bridging.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_ioobject.h"
 
@@ -42,7 +42,7 @@ BluetoothAvailability GetBluetoothAvailability() {
 
     NSDictionary* objc_dict = base::apple::CFToNSPtrCast(dict.get());
     NSNumber* lmp_version =
-        base::mac::ObjCCast<NSNumber>(objc_dict[@"LMPVersion"]);
+        base::apple::ObjCCast<NSNumber>(objc_dict[@"LMPVersion"]);
     if (!lmp_version)
       continue;
 
@@ -51,7 +51,7 @@ BluetoothAvailability GetBluetoothAvailability() {
       continue;
 
     NSData* data =
-        base::mac::ObjCCast<NSData>(objc_dict[@"HCISupportedFeatures"]);
+        base::apple::ObjCCast<NSData>(objc_dict[@"HCISupportedFeatures"]);
 
     NSUInteger supported_features_index = 4;
     NSUInteger length = [data length];

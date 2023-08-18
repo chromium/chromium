@@ -7,13 +7,13 @@
 #include <sys/select.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -53,7 +53,7 @@ void ReadLaunchEventsFromFifo(
       while ((end_of_plist = data.find("</plist>")) != std::string::npos) {
         std::string plist = data.substr(0, end_of_plist + 8);
         data = data.substr(plist.length());
-        NSDictionary* event = ObjCCastStrict<NSDictionary>(
+        NSDictionary* event = apple::ObjCCastStrict<NSDictionary>(
             SysUTF8ToNSString(TrimWhitespaceASCII(plist, TRIM_ALL))
                 .propertyList);
         callback.Run(event);
@@ -107,7 +107,7 @@ class LaunchApplicationTest : public testing::Test {
     // base::CreateDirectory() routine forces mode 0700.
     NSError* error = nil;
     ASSERT_TRUE([NSFileManager.defaultManager
-               createDirectoryAtURL:base::mac::FilePathToNSURL(
+               createDirectoryAtURL:base::apple::FilePathToNSURL(
                                         destination_executable_path)
         withIntermediateDirectories:YES
                          attributes:@{
@@ -138,16 +138,16 @@ class LaunchApplicationTest : public testing::Test {
     // Generate the Plist file
     NSDictionary* plist = @{
       @"CFBundleExecutable" :
-          FilePathToNSString(helper_app_executable.BaseName()),
+          apple::FilePathToNSString(helper_app_executable.BaseName()),
       @"CFBundleIdentifier" : helper_bundle_id_,
     };
     ASSERT_TRUE([plist
-        writeToURL:FilePathToNSURL(
+        writeToURL:apple::FilePathToNSURL(
                        destination_contents_path.AppendASCII("Info.plist"))
              error:nil]);
 
     // Register the app with LaunchServices.
-    LSRegisterURL(base::mac::FilePathToCFURL(helper_app_bundle_path_), true);
+    LSRegisterURL(base::apple::FilePathToCFURL(helper_app_bundle_path_), true);
 
     // Ensure app was registered with LaunchServices. Sometimes it takes a
     // little bit of time for this to happen, and some tests might fail if the
@@ -193,7 +193,8 @@ class LaunchApplicationTest : public testing::Test {
       NSArray<NSRunningApplication*>* apps =
           NSWorkspace.sharedWorkspace.runningApplications;
       for (NSRunningApplication* app in apps) {
-        if (temp_dir_.GetPath().IsParent(NSURLToFilePath(app.bundleURL)) ||
+        if (temp_dir_.GetPath().IsParent(
+                apple::NSURLToFilePath(app.bundleURL)) ||
             [app.bundleIdentifier isEqualToString:helper_bundle_id_]) {
           [app forceTerminate];
         }
@@ -256,13 +257,13 @@ class LaunchApplicationTest : public testing::Test {
     if (i >= launch_events_.count) {
       return nil;
     }
-    return ObjCCastStrict<NSString>(launch_events_[i][@"name"]);
+    return apple::ObjCCastStrict<NSString>(launch_events_[i][@"name"]);
   }
   NSDictionary* LaunchEventData(unsigned i) {
     if (i >= launch_events_.count) {
       return nil;
     }
-    return ObjCCastStrict<NSDictionary>(launch_events_[i][@"data"]);
+    return apple::ObjCCastStrict<NSDictionary>(launch_events_[i][@"data"]);
   }
 
  protected:
@@ -295,7 +296,7 @@ TEST_F(LaunchApplicationTest, Basic) {
       helper_app_bundle_path_, command_line_args, {}, {});
   ASSERT_TRUE(app);
   EXPECT_NSEQ(app.bundleIdentifier, helper_bundle_id_);
-  EXPECT_EQ(NSURLToFilePath(app.bundleURL), helper_app_bundle_path_);
+  EXPECT_EQ(apple::NSURLToFilePath(app.bundleURL), helper_app_bundle_path_);
 
   WaitForLaunchEvents(1);
   EXPECT_NSEQ(LaunchEventName(0), @"applicationDidFinishLaunching");
@@ -303,7 +304,7 @@ TEST_F(LaunchApplicationTest, Basic) {
               @(NSApplicationActivationPolicyRegular));
   EXPECT_EQ(app.activationPolicy, NSApplicationActivationPolicyRegular);
   EXPECT_NSEQ(LaunchEventData(0)[@"commandLine"],
-              (@[ FilePathToNSString(helper_app_executable_path_) ]));
+              (@[ apple::FilePathToNSString(helper_app_executable_path_) ]));
   EXPECT_NSEQ(LaunchEventData(0)[@"processIdentifier"],
               @(app.processIdentifier));
 }
@@ -340,10 +341,10 @@ TEST_F(LaunchApplicationTest, CommandLineArgs_StringVector) {
 
   WaitForLaunchEvents(1);
   EXPECT_NSEQ(LaunchEventName(0), @"applicationDidFinishLaunching");
-  EXPECT_NSEQ(
-      LaunchEventData(0)[@"commandLine"], (@[
-        FilePathToNSString(helper_app_executable_path_), @"--foo", @"bar", @"-v"
-      ]));
+  EXPECT_NSEQ(LaunchEventData(0)[@"commandLine"], (@[
+                apple::FilePathToNSString(helper_app_executable_path_),
+                @"--foo", @"bar", @"-v"
+              ]));
 }
 
 TEST_F(LaunchApplicationTest, CommandLineArgs_BaseCommandLine) {
@@ -359,8 +360,8 @@ TEST_F(LaunchApplicationTest, CommandLineArgs_BaseCommandLine) {
   WaitForLaunchEvents(1);
   EXPECT_NSEQ(LaunchEventName(0), @"applicationDidFinishLaunching");
   EXPECT_NSEQ(LaunchEventData(0)[@"commandLine"], (@[
-                FilePathToNSString(helper_app_executable_path_), @"--foo=bar",
-                @"--v", @"--path=/tmp"
+                apple::FilePathToNSString(helper_app_executable_path_),
+                @"--foo=bar", @"--v", @"--path=/tmp"
               ]));
 }
 
@@ -381,12 +382,12 @@ TEST_F(LaunchApplicationTest, UrlSpecs) {
     // macOS 11 (and only macOS 11) appears to sometimes trigger the openURLs
     // calls in reverse order.
     std::vector<std::string> received_urls;
-    for (NSString* url in ObjCCastStrict<NSArray>(
+    for (NSString* url in apple::ObjCCastStrict<NSArray>(
              LaunchEventData(0)[@"urls"])) {
       received_urls.push_back(SysNSStringToUTF8(url));
     }
     EXPECT_EQ(received_urls.size(), 1u);
-    for (NSString* url in ObjCCastStrict<NSArray>(
+    for (NSString* url in apple::ObjCCastStrict<NSArray>(
              LaunchEventData(2)[@"urls"])) {
       received_urls.push_back(SysNSStringToUTF8(url));
     }
@@ -436,17 +437,17 @@ TEST_F(LaunchApplicationTest, HiddenInBackground) {
       {.hidden_in_background = true});
   ASSERT_TRUE(app);
   EXPECT_NSEQ(app.bundleIdentifier, helper_bundle_id_);
-  EXPECT_EQ(helper_app_bundle_path_, NSURLToFilePath(app.bundleURL));
+  EXPECT_EQ(helper_app_bundle_path_, apple::NSURLToFilePath(app.bundleURL));
 
   WaitForLaunchEvents(1);
   EXPECT_NSEQ(LaunchEventName(0), @"applicationDidFinishLaunching");
   EXPECT_NSEQ(LaunchEventData(0)[@"activationPolicy"],
               @(NSApplicationActivationPolicyProhibited));
   EXPECT_EQ(app.activationPolicy, NSApplicationActivationPolicyProhibited);
-  EXPECT_NSEQ(
-      LaunchEventData(0)[@"commandLine"], (@[
-        FilePathToNSString(helper_app_executable_path_), @"--test", @"--foo"
-      ]));
+  EXPECT_NSEQ(LaunchEventData(0)[@"commandLine"], (@[
+                apple::FilePathToNSString(helper_app_executable_path_),
+                @"--test", @"--foo"
+              ]));
   EXPECT_NSEQ(LaunchEventData(0)[@"processIdentifier"],
               @(app.processIdentifier));
 
@@ -484,17 +485,17 @@ TEST_F(LaunchApplicationTest,
       {.hidden_in_background = true});
   ASSERT_TRUE(app);
   EXPECT_NSEQ(app.bundleIdentifier, helper_bundle_id_);
-  EXPECT_EQ(helper_app_bundle_path_, NSURLToFilePath(app.bundleURL));
+  EXPECT_EQ(helper_app_bundle_path_, apple::NSURLToFilePath(app.bundleURL));
 
   WaitForLaunchEvents(1);
   EXPECT_NSEQ(LaunchEventName(0), @"applicationDidFinishLaunching");
   EXPECT_NSEQ(LaunchEventData(0)[@"activationPolicy"],
               @(NSApplicationActivationPolicyProhibited));
   EXPECT_EQ(app.activationPolicy, NSApplicationActivationPolicyProhibited);
-  EXPECT_NSEQ(
-      LaunchEventData(0)[@"commandLine"], (@[
-        FilePathToNSString(helper_app_executable_path_), @"--test", @"--foo"
-      ]));
+  EXPECT_NSEQ(LaunchEventData(0)[@"commandLine"], (@[
+                apple::FilePathToNSString(helper_app_executable_path_),
+                @"--test", @"--foo"
+              ]));
   EXPECT_NSEQ(LaunchEventData(0)[@"processIdentifier"],
               @(app.processIdentifier));
 

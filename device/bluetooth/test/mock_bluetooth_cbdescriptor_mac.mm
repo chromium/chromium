@@ -4,10 +4,10 @@
 
 #include "device/bluetooth/test/mock_bluetooth_cbdescriptor_mac.h"
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 
-using base::mac::ObjCCast;
+using base::apple::ObjCCast;
 
 @interface MockCBDescriptor () {
   // Owner of this instance.

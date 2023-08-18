@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/bandwidth/dataplan_usage_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/prerender/prerender_pref.h"

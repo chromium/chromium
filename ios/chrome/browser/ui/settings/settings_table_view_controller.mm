@@ -7,8 +7,8 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -1217,7 +1217,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   if ([cell isKindOfClass:[TableViewDetailIconCell class]]) {
     TableViewDetailIconCell* detailCell =
-        base::mac::ObjCCastStrict<TableViewDetailIconCell>(cell);
+        base::apple::ObjCCastStrict<TableViewDetailIconCell>(cell);
     [detailCell setUserInteractionEnabled:YES];
     detailCell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   }
@@ -1225,7 +1225,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   switch (itemType) {
     case SettingsItemTypeMemoryDebugging: {
       TableViewSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(memorySwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
@@ -1233,7 +1233,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     }
     case SettingsItemTypeArticlesForYou: {
       TableViewSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(articlesForYouSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
@@ -1242,7 +1242,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     case SettingsItemTypeViewSource: {
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
       TableViewSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(viewSourceSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
@@ -1253,7 +1253,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     }
     case SettingsItemTypeManagedDefaultSearchEngine: {
       TableViewInfoButtonCell* managedCell =
-          base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+          base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
       [managedCell.trailingButton
                  addTarget:self
                     action:@selector(didTapManagedUIInfoButton:)
@@ -1264,7 +1264,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       // Adds a trailing button with more information when the sign-in policy
       // has been enabled by the organization.
       TableViewInfoButtonCell* managedCell =
-          base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+          base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
       [managedCell.trailingButton
                  addTarget:self
                     action:@selector(didTapSigninDisabledInfoButton:)
@@ -1273,7 +1273,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     }
     case SettingsItemTypeManagedArticlesForYou: {
       TableViewInfoButtonCell* managedCell =
-          base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+          base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
       [managedCell.trailingButton
                  addTarget:self
                     action:@selector(didTapManagedUIInfoButton:)
@@ -1284,7 +1284,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       if (![self isSyncDisabledByPolicy])
         break;
       TableViewInfoButtonCell* managedCell =
-          base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+          base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
       [managedCell.trailingButton
                  addTarget:self
                     action:@selector(didTapSyncDisabledInfoButton:)
@@ -1562,7 +1562,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                               sectionIdentifier:SettingsSectionIdentifierDebug];
 
   TableViewSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<TableViewSwitchItem>(
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
 
   BOOL newSwitchValue = sender.isOn;
@@ -1576,7 +1576,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
          sectionIdentifier:SettingsSectionIdentifierAdvanced];
 
   TableViewSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<TableViewSwitchItem>(
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
 
   BOOL newSwitchValue = sender.isOn;
@@ -1591,7 +1591,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                               sectionIdentifier:SettingsSectionIdentifierDebug];
 
   TableViewSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<TableViewSwitchItem>(
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
 
   BOOL newSwitchValue = sender.isOn;
@@ -1795,7 +1795,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       indexPathForItemType:SettingsItemTypeAccount
          sectionIdentifier:SettingsSectionIdentifierAccount];
   TableViewAccountItem* identityAccountItem =
-      base::mac::ObjCCast<TableViewAccountItem>(
+      base::apple::ObjCCast<TableViewAccountItem>(
           [self.tableViewModel itemAtIndexPath:accountCellIndexPath]);
   if (identityAccountItem) {
     [self updateIdentityAccountItem:identityAccountItem];
@@ -2330,7 +2330,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
          sectionIdentifier:SettingsSectionIdentifierSignIn];
   DCHECK(signinPromoCellIndexPath.item != NSNotFound);
   TableViewSigninPromoItem* signinPromoItem =
-      base::mac::ObjCCast<TableViewSigninPromoItem>(
+      base::apple::ObjCCast<TableViewSigninPromoItem>(
           [self.tableViewModel itemAtIndexPath:signinPromoCellIndexPath]);
   if (signinPromoItem) {
     signinPromoItem.configurator = configurator;

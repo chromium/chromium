@@ -9,8 +9,8 @@
 #include <simd/simd.h>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/scoped_policy.h"
 #include "base/no_destructor.h"
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -26,7 +26,7 @@ template <typename IdType, typename StringIdPair>
 bool GetImageBufferProperty(CFTypeRef value_untyped,
                             const std::vector<StringIdPair>& cfstr_id_pairs,
                             IdType* value_as_id) {
-  CFStringRef value_as_string = base::mac::CFCast<CFStringRef>(value_untyped);
+  CFStringRef value_as_string = base::apple::CFCast<CFStringRef>(value_untyped);
   if (!value_as_string)
     return false;
 
@@ -166,7 +166,7 @@ gfx::ColorSpace::TransferID GetCoreVideoTransferFn(CFTypeRef transfer_untyped,
   if (transfer_id != gfx::ColorSpace::TransferID::CUSTOM)
     return transfer_id;
 
-  CFNumberRef gamma_number = base::mac::CFCast<CFNumberRef>(gamma_untyped);
+  CFNumberRef gamma_number = base::apple::CFCast<CFNumberRef>(gamma_untyped);
   if (!gamma_number) {
     DLOG(ERROR) << "Failed to get gamma level.";
     return gfx::ColorSpace::TransferID::INVALID;

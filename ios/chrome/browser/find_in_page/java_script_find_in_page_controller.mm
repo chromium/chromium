@@ -9,8 +9,8 @@
 #import <cmath>
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/find_in_page/constants.h"

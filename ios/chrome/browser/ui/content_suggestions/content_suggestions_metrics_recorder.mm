@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -203,7 +203,7 @@
   favicon_base::IconType icon_type = favicon_base::IconType::kInvalid;
   if (attributes.faviconImage) {
     FaviconAttributesWithPayload* favicon_attributes =
-        base::mac::ObjCCastStrict<FaviconAttributesWithPayload>(attributes);
+        base::apple::ObjCCastStrict<FaviconAttributesWithPayload>(attributes);
     icon_type = favicon_attributes.iconType;
   }
   return icon_type;

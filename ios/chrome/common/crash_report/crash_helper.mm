@@ -6,8 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/crash/core/app/crashpad.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -42,10 +42,10 @@ base::FilePath CrashpadDumpLocation() {
     NSArray* cachesDirectories = NSSearchPathForDirectoriesInDomains(
         NSCachesDirectory, NSUserDomainMask, YES);
     NSString* cachePath = [cachesDirectories objectAtIndex:0];
-    return base::mac::NSStringToFilePath(cachePath).Append(
+    return base::apple::NSStringToFilePath(cachePath).Append(
         kCrashpadNoAppGroupFolder);
   }
-  return base::mac::NSStringToFilePath(path);
+  return base::apple::NSStringToFilePath(path);
 }
 
 bool StartCrashpad() {

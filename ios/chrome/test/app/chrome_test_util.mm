@@ -4,9 +4,9 @@
 
 #import "ios/chrome/test/app/chrome_test_util.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -124,7 +124,7 @@ UIViewController* GetActiveViewController() {
   if ([active_view_controller
           isKindOfClass:[BVCContainerViewController class]]) {
     active_view_controller =
-        base::mac::ObjCCastStrict<BVCContainerViewController>(
+        base::apple::ObjCCastStrict<BVCContainerViewController>(
             active_view_controller)
             .currentBVC;
   }

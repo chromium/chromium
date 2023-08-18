@@ -5,8 +5,8 @@
 #include <AppKit/AppKit.h>
 #include <MediaAccessibility/MediaAccessibility.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "skia/ext/skia_utils_mac.h"
@@ -132,13 +132,13 @@ void GetMAFontAsCSSFontSpecifiers(std::string* font_family,
           kUserDomain, nullptr, kMACaptionAppearanceFontStyleDefault));
 
   base::ScopedCFTypeRef<CFStringRef> ct_font_family_name(
-      base::mac::CFCast<CFStringRef>(CTFontDescriptorCopyAttribute(
+      base::apple::CFCast<CFStringRef>(CTFontDescriptorCopyAttribute(
           ct_font_desc, kCTFontFamilyNameAttribute)));
   if (ct_font_family_name)
     *font_family = base::SysCFStringRefToUTF8(ct_font_family_name);
 
   base::ScopedCFTypeRef<CFStringRef> ct_font_face_name(
-      base::mac::CFCast<CFStringRef>(
+      base::apple::CFCast<CFStringRef>(
           CTFontDescriptorCopyAttribute(ct_font_desc, kCTFontNameAttribute)));
   if (ct_font_face_name)
     *font_variant = base::SysCFStringRefToUTF8(ct_font_face_name);

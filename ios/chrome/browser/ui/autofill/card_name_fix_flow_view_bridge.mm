@@ -5,7 +5,7 @@
 #import <memory>
 #import <string>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/strings/grit/components_strings.h"

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
@@ -503,7 +503,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
                forSection:(NSInteger)section {
   if ([view isKindOfClass:[TableViewTextHeaderFooterView class]]) {
     TableViewTextHeaderFooterView* footer =
-        base::mac::ObjCCastStrict<TableViewTextHeaderFooterView>(view);
+        base::apple::ObjCCastStrict<TableViewTextHeaderFooterView>(view);
     NSString* footerText =
         self.passwordDetailsInfoItems[section].isNoteFooterShown
             ? l10n_util::GetNSStringF(
@@ -531,7 +531,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
         UITableViewCell* cell =
             [self.tableView cellForRowAtIndexPath:indexPath];
         TableViewTextEditCell* textFieldCell =
-            base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+            base::apple::ObjCCastStrict<TableViewTextEditCell>(cell);
         [textFieldCell.textField becomeFirstResponder];
       } else {
         [self ensureContextMenuShownForItemType:itemType
@@ -545,7 +545,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
         UITableViewCell* cell =
             [self.tableView cellForRowAtIndexPath:indexPath];
         TableViewTextEditCell* textFieldCell =
-            base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+            base::apple::ObjCCastStrict<TableViewTextEditCell>(cell);
         [textFieldCell.textField becomeFirstResponder];
       } else {
         [self ensureContextMenuShownForItemType:itemType
@@ -574,7 +574,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     case PasswordDetailsItemTypeNote: {
       UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
       TableViewMultiLineTextEditCell* textFieldCell =
-          base::mac::ObjCCastStrict<TableViewMultiLineTextEditCell>(cell);
+          base::apple::ObjCCastStrict<TableViewMultiLineTextEditCell>(cell);
       [textFieldCell.textView becomeFirstResponder];
       break;
     }
@@ -681,7 +681,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   switch (itemType) {
     case PasswordDetailsItemTypeUsername: {
       TableViewTextEditCell* textFieldCell =
-          base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+          base::apple::ObjCCastStrict<TableViewTextEditCell>(cell);
       textFieldCell.textField.delegate = self;
       [textFieldCell.identifyingIconButton
                  addTarget:self
@@ -692,7 +692,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     }
     case PasswordDetailsItemTypePassword: {
       TableViewTextEditCell* textFieldCell =
-          base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+          base::apple::ObjCCastStrict<TableViewTextEditCell>(cell);
       textFieldCell.textField.delegate = self;
       [textFieldCell.identifyingIconButton
                  addTarget:self
@@ -849,7 +849,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     UITableViewHeaderFooterView* footer =
         [self.tableView footerViewForSection:indexPath.section];
     TableViewTextHeaderFooterView* textFooter =
-        base::mac::ObjCCastStrict<TableViewTextHeaderFooterView>(footer);
+        base::apple::ObjCCastStrict<TableViewTextHeaderFooterView>(footer);
     NSString* footerText =
         shouldDisplayNoteFooter
             ? l10n_util::GetNSStringF(
@@ -1362,9 +1362,10 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 // success/failure.
 - (void)copyPasswordDetails:(id)sender {
   [self setOrExtendAuthValidityTimer];
-  UIMenuController* menu = base::mac::ObjCCastStrict<UIMenuController>(sender);
+  UIMenuController* menu =
+      base::apple::ObjCCastStrict<UIMenuController>(sender);
   PasswordDetailsMenuItem* menuItem =
-      base::mac::ObjCCastStrict<PasswordDetailsMenuItem>(
+      base::apple::ObjCCastStrict<PasswordDetailsMenuItem>(
           menu.menuItems.firstObject);
 
   NSString* message = nil;

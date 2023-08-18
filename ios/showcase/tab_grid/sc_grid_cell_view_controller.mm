@@ -4,7 +4,7 @@
 
 #import "ios/showcase/tab_grid/sc_grid_cell_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/numerics/safe_conversions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
@@ -61,7 +61,7 @@ NSString* const kCellIdentifier = @"GridCellIdentifier";
 
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
                  cellForItemAtIndexPath:(NSIndexPath*)indexPath {
-  GridCell* cell = base::mac::ObjCCastStrict<GridCell>([collectionView
+  GridCell* cell = base::apple::ObjCCastStrict<GridCell>([collectionView
       dequeueReusableCellWithReuseIdentifier:kCellIdentifier
                                 forIndexPath:indexPath]);
   cell.delegate = static_cast<id<GridCellDelegate>>(self.alerter);

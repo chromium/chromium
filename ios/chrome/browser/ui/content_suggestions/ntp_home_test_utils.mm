@@ -6,8 +6,8 @@
 
 #import <string>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/callback.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -40,8 +40,9 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
 
 // Returns the SetUpListView, if present.
 SetUpListView* GetSetUpListView() {
-  return base::mac::ObjCCast<SetUpListView>(SubviewWithAccessibilityIdentifier(
-      set_up_list::kAccessibilityID, GetAnyKeyWindow()));
+  return base::apple::ObjCCast<SetUpListView>(
+      SubviewWithAccessibilityIdentifier(set_up_list::kAccessibilityID,
+                                         GetAnyKeyWindow()));
 }
 
 }  // namespace
@@ -49,13 +50,13 @@ SetUpListView* GetSetUpListView() {
 namespace ntp_home {
 
 UICollectionView* CollectionView() {
-  return base::mac::ObjCCast<UICollectionView>(
+  return base::apple::ObjCCast<UICollectionView>(
       SubviewWithAccessibilityIdentifier(kNTPCollectionViewIdentifier,
                                          GetAnyKeyWindow()));
 }
 
 UICollectionView* ContentSuggestionsCollectionView() {
-  return base::mac::ObjCCast<UICollectionView>(
+  return base::apple::ObjCCast<UICollectionView>(
       SubviewWithAccessibilityIdentifier(
           kContentSuggestionsCollectionIdentifier, GetAnyKeyWindow()));
 }
@@ -66,13 +67,13 @@ UIView* FakeOmnibox() {
 }
 
 UILabel* DiscoverHeaderLabel() {
-  return base::mac::ObjCCast<UILabel>(SubviewWithAccessibilityIdentifier(
+  return base::apple::ObjCCast<UILabel>(SubviewWithAccessibilityIdentifier(
       DiscoverHeaderTitleAccessibilityID(), GetAnyKeyWindow()));
 }
 
 SetUpListItemView* SetUpListItemViewWithAccessibilityId(
     NSString* accessibility_id) {
-  return base::mac::ObjCCast<SetUpListItemView>(
+  return base::apple::ObjCCast<SetUpListItemView>(
       SubviewWithAccessibilityIdentifier(accessibility_id, GetSetUpListView()));
 }
 

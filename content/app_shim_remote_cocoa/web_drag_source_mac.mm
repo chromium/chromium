@@ -12,10 +12,10 @@
 #include <utility>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/mac/foundation_util.h"
 #include "base/pickle.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -272,14 +272,14 @@
     }
 
     base::FilePath filePath =
-        base::mac::NSURLToFilePath([NSURL URLWithString:dropDestination]);
+        base::apple::NSURLToFilePath([NSURL URLWithString:dropDestination]);
     filePath = filePath.Append(_downloadFileName);
     _host->DragPromisedFileTo(filePath, _dropData, _downloadURL, &filePath);
 
     // The process of writing the file may have altered the value of
     // `filePath` if, say, an existing file at the drop site already had that
     // name. Return the actual URL to the file that was written.
-    return base::mac::FilePathToNSURL(filePath).absoluteString;
+    return base::apple::FilePathToNSURL(filePath).absoluteString;
   }
 
   // Plain text.

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/cells/autofill_profile_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -29,7 +29,7 @@ TEST_F(AutofillProfileItemTest, ItemProperties) {
   ASSERT_TRUE([cell isMemberOfClass:[AutofillProfileCell class]]);
 
   AutofillProfileCell* imageCell =
-      base::mac::ObjCCastStrict<AutofillProfileCell>(cell);
+      base::apple::ObjCCastStrict<AutofillProfileCell>(cell);
   EXPECT_FALSE(imageCell.textLabel.text);
   EXPECT_FALSE(imageCell.detailTextLabel.text);
   EXPECT_FALSE(imageCell.imageView.image);
@@ -51,7 +51,7 @@ TEST_F(AutofillProfileItemTest, ItemImageViewHidden) {
   ASSERT_TRUE([cell isMemberOfClass:[AutofillProfileCell class]]);
 
   AutofillProfileCell* imageCell =
-      base::mac::ObjCCastStrict<AutofillProfileCell>(cell);
+      base::apple::ObjCCastStrict<AutofillProfileCell>(cell);
   EXPECT_FALSE(item.image);
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
   EXPECT_FALSE(item.image);

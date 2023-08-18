@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/infobar_password_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -227,7 +227,7 @@ const CGFloat kSymbolSize = 15;
   switch (itemType) {
     case ItemTypeSaveCredentials: {
       TableViewTextButtonCell* tableViewTextButtonCell =
-          base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+          base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
       [tableViewTextButtonCell.button
                  addTarget:self
                     action:@selector(saveCredentialsButtonWasPressed:)
@@ -238,7 +238,7 @@ const CGFloat kSymbolSize = 15;
     }
     case ItemTypeCancel: {
       TableViewTextButtonCell* tableViewTextButtonCell =
-          base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+          base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
       [tableViewTextButtonCell.button
                  addTarget:self
                     action:@selector(neverSaveCredentialsForCurrentSite)
@@ -247,7 +247,7 @@ const CGFloat kSymbolSize = 15;
     }
     case ItemTypeUsername: {
       TableViewTextEditCell* editCell =
-          base::mac::ObjCCast<TableViewTextEditCell>(cell);
+          base::apple::ObjCCast<TableViewTextEditCell>(cell);
       [editCell.textField addTarget:self
                              action:@selector(usernameEditDidBegin)
                    forControlEvents:UIControlEventEditingDidBegin];
@@ -260,7 +260,7 @@ const CGFloat kSymbolSize = 15;
     }
     case ItemTypePassword: {
       TableViewTextEditCell* editCell =
-          base::mac::ObjCCast<TableViewTextEditCell>(cell);
+          base::apple::ObjCCast<TableViewTextEditCell>(cell);
       [editCell.textField addTarget:self
                              action:@selector(updateSaveCredentialsButtonState)
                    forControlEvents:UIControlEventEditingChanged];

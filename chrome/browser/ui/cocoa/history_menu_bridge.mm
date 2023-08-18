@@ -7,8 +7,8 @@
 #include <stddef.h>
 #include <string>
 
+#include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"

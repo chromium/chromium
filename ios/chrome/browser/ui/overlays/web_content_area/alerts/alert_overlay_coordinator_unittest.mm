@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/overlays/web_content_area/alerts/alert_overlay_coordinator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
 #import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
@@ -73,7 +73,7 @@ TEST_F(AlertOverlayCoordinatorTest, ViewSetup) {
   ASSERT_FALSE(delegate_.HasUIBeenPresented(request_.get()));
   [coordinator_ startAnimated:NO];
   AlertViewController* view_controller =
-      base::mac::ObjCCast<AlertViewController>(coordinator_.viewController);
+      base::apple::ObjCCast<AlertViewController>(coordinator_.viewController);
   EXPECT_TRUE(view_controller);
   EXPECT_EQ(view_controller.parentViewController, root_view_controller_);
   EXPECT_TRUE(

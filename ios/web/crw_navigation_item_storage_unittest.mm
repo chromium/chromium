@@ -9,7 +9,7 @@
 
 #import <utility>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -135,7 +135,7 @@ TEST_F(CRWNavigationItemStorageTest, EncodeDecodeSameVirtualURL) {
     unarchiver.requiresSecureCoding = NO;
 
     CRWNavigationItemStorage* item_storage =
-        base::mac::ObjCCast<CRWNavigationItemStorage>(
+        base::apple::ObjCCast<CRWNavigationItemStorage>(
             [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey]);
     ASSERT_TRUE(item_storage);
 

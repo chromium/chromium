@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/cells/table_view_clear_browsing_data_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -33,7 +33,7 @@ const CGFloat kImageHeight = 30;
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
   TableViewClearBrowsingDataCell* cell =
-      base::mac::ObjCCastStrict<TableViewClearBrowsingDataCell>(tableCell);
+      base::apple::ObjCCastStrict<TableViewClearBrowsingDataCell>(tableCell);
   [cell setImage:self.image];
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;

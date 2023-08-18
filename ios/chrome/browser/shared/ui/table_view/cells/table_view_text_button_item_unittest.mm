@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -32,7 +32,7 @@ TEST_F(TableViewTextButtonItemTest, SetProperties) {
   ASSERT_TRUE([cell isMemberOfClass:[TableViewTextButtonCell class]]);
 
   TableViewTextButtonCell* textButtonCell =
-      base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+      base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
   EXPECT_FALSE(textButtonCell.textLabel.text);
   EXPECT_FALSE(textButtonCell.button.titleLabel.text);
 

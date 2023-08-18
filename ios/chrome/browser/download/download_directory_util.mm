@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/download/download_directory_util.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "ios/web/common/features.h"
@@ -34,7 +34,7 @@ bool GetTempDownloadsDirectory(base::FilePath* directory_path) {
 
 void GetDownloadsDirectory(base::FilePath* directory_path) {
   *directory_path =
-      base::mac::NSStringToFilePath([NSSearchPathForDirectoriesInDomains(
+      base::apple::NSStringToFilePath([NSSearchPathForDirectoriesInDomains(
           NSDocumentDirectory, NSAllDomainsMask, YES) firstObject]);
 }
 

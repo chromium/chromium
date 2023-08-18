@@ -8,8 +8,8 @@
 #import <string>
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/callback.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"

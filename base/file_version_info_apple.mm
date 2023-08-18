@@ -8,8 +8,8 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 

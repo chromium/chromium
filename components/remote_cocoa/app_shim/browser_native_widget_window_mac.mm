@@ -32,7 +32,7 @@
   bool overrideTitlebarHeight = false;
   float titlebarHeight = 0;
 
-  auto* window = base::mac::ObjCCast<NativeWidgetMacNSWindow>([self window]);
+  auto* window = base::apple::ObjCCast<NativeWidgetMacNSWindow>([self window]);
   remote_cocoa::NativeWidgetNSWindowBridge* bridge = [window bridge];
   if (!bridge) {
     return [super _titlebarHeight];

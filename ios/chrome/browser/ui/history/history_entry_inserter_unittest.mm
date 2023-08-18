@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/history/history_entry_inserter.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/i18n/time_formatting.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
@@ -95,7 +95,7 @@ TEST_F(HistoryEntryInserterTest, AddItems) {
   EXPECT_EQ(3, [model_ numberOfItemsInSection:1]);
 
   NSArray<HistoryEntryItem*>* section_1 =
-      base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
+      base::apple::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
           [model_ itemsInSectionWithIdentifier:kSectionIdentifierEnumZero + 1]);
   EXPECT_NSEQ(@"entry1", section_1[0].text);
   EXPECT_NSEQ(@"entry2", section_1[1].text);
@@ -129,7 +129,7 @@ TEST_F(HistoryEntryInserterTest, AddSections) {
   EXPECT_EQ(0, [model_ numberOfItemsInSection:0]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:1]);
   NSArray<HistoryEntryItem*>* section_1 =
-      base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
+      base::apple::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
           [model_ itemsInSectionWithIdentifier:day2_identifier]);
   EXPECT_NSEQ(@"day2_entry2", section_1[0].text);
   EXPECT_OCMOCK_VERIFY(mock_delegate);
@@ -145,11 +145,11 @@ TEST_F(HistoryEntryInserterTest, AddSections) {
   EXPECT_EQ(0, [model_ numberOfItemsInSection:0]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:1]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:2]);
-  section_1 = base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
+  section_1 = base::apple::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
       [model_ itemsInSectionWithIdentifier:day1_identifier]);
   EXPECT_NSEQ(@"day1", section_1[0].text);
   NSArray<HistoryEntryItem*>* section_2 =
-      base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
+      base::apple::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
           [model_ itemsInSectionWithIdentifier:day2_identifier]);
   EXPECT_NSEQ(@"day2_entry2", section_2[0].text);
   EXPECT_OCMOCK_VERIFY(mock_delegate);
@@ -166,14 +166,14 @@ TEST_F(HistoryEntryInserterTest, AddSections) {
   EXPECT_EQ(1, [model_ numberOfItemsInSection:1]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:2]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:3]);
-  section_1 = base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
+  section_1 = base::apple::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
       [model_ itemsInSectionWithIdentifier:day1_identifier]);
   EXPECT_NSEQ(@"day1", section_1[0].text);
-  section_2 = base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
+  section_2 = base::apple::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
       [model_ itemsInSectionWithIdentifier:day2_identifier]);
   EXPECT_NSEQ(@"day2_entry2", section_2[0].text);
   NSArray<HistoryEntryItem*>* section_3 =
-      base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
+      base::apple::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
           [model_ itemsInSectionWithIdentifier:day3_identifier]);
   EXPECT_NSEQ(@"day3", section_3[0].text);
   EXPECT_OCMOCK_VERIFY(mock_delegate);
@@ -187,14 +187,14 @@ TEST_F(HistoryEntryInserterTest, AddSections) {
   EXPECT_EQ(1, [model_ numberOfItemsInSection:1]);
   EXPECT_EQ(2, [model_ numberOfItemsInSection:2]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:3]);
-  section_1 = base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
+  section_1 = base::apple::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
       [model_ itemsInSectionWithIdentifier:day1_identifier]);
   EXPECT_NSEQ(@"day1", section_1[0].text);
-  section_2 = base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
+  section_2 = base::apple::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
       [model_ itemsInSectionWithIdentifier:day2_identifier]);
   EXPECT_NSEQ(@"day2_entry1", section_2[0].text);
   EXPECT_NSEQ(@"day2_entry2", section_2[1].text);
-  section_3 = base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
+  section_3 = base::apple::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
       [model_ itemsInSectionWithIdentifier:day3_identifier]);
   EXPECT_NSEQ(@"day3", section_3[0].text);
   EXPECT_OCMOCK_VERIFY(mock_delegate);
@@ -220,7 +220,7 @@ TEST_F(HistoryEntryInserterTest, AddDuplicateItems) {
   EXPECT_EQ(1, [model_ numberOfItemsInSection:1]);
 
   NSArray<HistoryEntryItem*>* section_1 =
-      base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
+      base::apple::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
           [model_ itemsInSectionWithIdentifier:kSectionIdentifierEnumZero + 1]);
   EXPECT_NSEQ(@"entry", section_1[0].text);
   EXPECT_OCMOCK_VERIFY(mock_delegate);

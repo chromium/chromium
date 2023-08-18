@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/default_browser/utils.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/command_line.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -204,7 +204,7 @@ T* GetObjectFromStorageForKey(NSString* key) {
   }
 
   DCHECK(storage);
-  return base::mac::ObjCCast<T>(storage[key]);
+  return base::apple::ObjCCast<T>(storage[key]);
 }
 
 // Helper function to update storage with `dict`. If a key in `dict` maps
@@ -264,7 +264,7 @@ void LoadActiveDatesForKey(NSString* key,
 
   const base::Time now = base::Time::Now();
   for (NSObject* object : dates) {
-    NSDate* date = base::mac::ObjCCast<NSDate>(object);
+    NSDate* date = base::apple::ObjCCast<NSDate>(object);
     if (!date) {
       continue;
     }
@@ -292,7 +292,7 @@ std::vector<base::Time> LoadActiveTimestampsForKey(NSString* key,
 
   const base::Time now = base::Time::Now();
   for (NSObject* object : dates) {
-    NSDate* date = base::mac::ObjCCast<NSDate>(object);
+    NSDate* date = base::apple::ObjCCast<NSDate>(object);
     if (!date) {
       continue;
     }

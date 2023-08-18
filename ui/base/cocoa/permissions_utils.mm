@@ -8,8 +8,8 @@
 #include <Foundation/Foundation.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/wrap_cg_display.h"
 #include "base/task/thread_pool.h"

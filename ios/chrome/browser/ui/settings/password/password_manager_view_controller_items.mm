@@ -6,9 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/containers/span.h"
-#import "base/mac/foundation_util.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -219,7 +219,7 @@
   [super configureCell:tableCell withStyler:styler];
 
   PasswordFormContentCell* cell =
-      base::mac::ObjCCastStrict<PasswordFormContentCell>(tableCell);
+      base::apple::ObjCCastStrict<PasswordFormContentCell>(tableCell);
   cell.titleLabel.text = self.title;
   // Title might be a URL, use "...oo.bar.com", not "fooooooooo..." if too big.
   cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingHead;
@@ -265,7 +265,7 @@
   [super configureCell:tableCell withStyler:styler];
 
   PasswordFormContentCell* cell =
-      base::mac::ObjCCastStrict<PasswordFormContentCell>(tableCell);
+      base::apple::ObjCCastStrict<PasswordFormContentCell>(tableCell);
   cell.titleLabel.text = self.title;
   // Title is a URL, use "...oo.bar.com", not "fooooooooo..." if too big.
   cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingHead;

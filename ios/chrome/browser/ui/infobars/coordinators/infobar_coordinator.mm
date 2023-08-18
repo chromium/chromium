@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_coordinator.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_coordinator+subclassing.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/timer/timer.h"
@@ -111,7 +111,8 @@
   if ([self.bannerViewController
           conformsToProtocol:@protocol(InfobarBannerInteractable)]) {
     UIViewController<InfobarBannerInteractable>* interactableBanner =
-        base::mac::ObjCCastStrict<UIViewController<InfobarBannerInteractable>>(
+        base::apple::ObjCCastStrict<
+            UIViewController<InfobarBannerInteractable>>(
             self.bannerViewController);
     interactableBanner.interactionDelegate = self.bannerTransitionDriver;
   }

@@ -6,7 +6,7 @@
 
 #include <Foundation/Foundation.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 
 @implementation ElementAppleScript
 
@@ -19,7 +19,7 @@
 // you can call this method.
 - (NSScriptObjectSpecifier*)objectSpecifier {
   return [[NSUniqueIDSpecifier alloc]
-      initWithContainerClassDescription:base::mac::ObjCCast<
+      initWithContainerClassDescription:base::apple::ObjCCast<
                                             NSScriptClassDescription>(
                                             self.container.classDescription)
                      containerSpecifier:self.container.objectSpecifier

@@ -6,10 +6,10 @@
 
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -44,7 +44,7 @@ void ShowNetworkProxySettings(content::WebContents* web_contents) {
 void ShowManageSSLCertificates(content::WebContents* web_contents) {
   NSURL* keychain_app = [NSWorkspace.sharedWorkspace
       URLForApplicationWithBundleIdentifier:@"com.apple.keychainaccess"];
-  base::mac::LaunchApplication(base::mac::NSURLToFilePath(keychain_app),
+  base::mac::LaunchApplication(base::apple::NSURLToFilePath(keychain_app),
                                /*command_line_args=*/{}, /*url_specs=*/{},
                                /*options=*/{}, base::DoNothing());
 }

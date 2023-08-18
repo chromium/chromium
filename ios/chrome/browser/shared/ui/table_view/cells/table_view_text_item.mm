@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -29,7 +29,7 @@
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
   TableViewTextCell* cell =
-      base::mac::ObjCCastStrict<TableViewTextCell>(tableCell);
+      base::apple::ObjCCastStrict<TableViewTextCell>(tableCell);
   cell.isAccessibilityElement = YES;
 
   if (self.masked) {

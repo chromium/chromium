@@ -9,11 +9,11 @@
 #include <ostream>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/scoped_policy.h"
 #include "base/strings/pattern.h"
 #include "base/strings/sys_string_conversions.h"
@@ -146,10 +146,10 @@ std::pair<base::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
           kCGNullWindowID));
 
   for (NSDictionary* window_info in windows) {
-    int pid = base::mac::ObjCCast<NSNumber>(window_info[@"kCGWindowOwnerPID"])
+    int pid = base::apple::ObjCCast<NSNumber>(window_info[@"kCGWindowOwnerPID"])
                   .intValue;
     std::string window_name = base::SysNSStringToUTF8(
-        base::mac::ObjCCast<NSString>(window_info[@"kCGWindowOwnerName"]));
+        base::apple::ObjCCast<NSString>(window_info[@"kCGWindowOwnerName"]));
 
     base::ScopedCFTypeRef<AXUIElementRef> node;
 

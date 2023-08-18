@@ -8,8 +8,8 @@
 
 #include <utility>
 
+#include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/weak_ptr.h"
 #import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
@@ -119,7 +119,7 @@ void MacFileChooserOnUiThread::Show() {
         RunCallback(protocol::MakeFileTransferError(
             FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));
       }
-      RunCallback(base::mac::NSStringToFilePath([url path]));
+      RunCallback(base::apple::NSStringToFilePath([url path]));
     } else {
       RunCallback(protocol::MakeFileTransferError(
           FROM_HERE, protocol::FileTransfer_Error_Type_CANCELED));

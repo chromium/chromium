@@ -12,10 +12,10 @@
 #include <memory>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
@@ -130,7 +130,7 @@ class WebAppShortcutCreatorTest : public testing::Test {
   WebAppShortcutCreatorTest() = default;
 
   void SetUp() override {
-    base::mac::SetBaseBundleID(kFakeChromeBundleId);
+    base::apple::SetBaseBundleID(kFakeChromeBundleId);
 
     override_registration_ =
         OsIntegrationTestOverrideImpl::OverrideForTesting();
@@ -232,7 +232,7 @@ TEST_F(WebAppShortcutCreatorTest, CreateShortcuts) {
   base::FilePath plist_path =
       shim_path_.Append("Contents").Append("Info.plist");
   NSDictionary* plist = [NSDictionary
-      dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(plist_path)
+      dictionaryWithContentsOfURL:base::apple::FilePathToNSURL(plist_path)
                             error:nil];
   EXPECT_NSEQ(base::SysUTF8ToNSString(info_->app_id),
               plist[app_mode::kCrAppModeShortcutIDKey]);
@@ -249,8 +249,9 @@ TEST_F(WebAppShortcutCreatorTest, CreateShortcuts) {
   // Make sure all values in the plist are actually filled in.
   for (id key in plist) {
     id value = [plist valueForKey:key];
-    if (!base::mac::ObjCCast<NSString>(value))
+    if (!base::apple::ObjCCast<NSString>(value)) {
       continue;
+    }
 
     EXPECT_EQ(static_cast<NSUInteger>(NSNotFound),
               [value rangeOfString:@"@APP_"].location)
@@ -271,7 +272,7 @@ TEST_F(WebAppShortcutCreatorTest, FileHandlers) {
                                                ShortcutLocations()));
   {
     NSDictionary* plist = [NSDictionary
-        dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(plist_path)
+        dictionaryWithContentsOfURL:base::apple::FilePathToNSURL(plist_path)
                               error:nil];
     NSArray* doc_types_array = plist[app_mode::kCFBundleDocumentTypesKey];
     EXPECT_EQ(doc_types_array, nil);
@@ -288,7 +289,7 @@ TEST_F(WebAppShortcutCreatorTest, FileHandlers) {
                                                ShortcutLocations()));
   {
     NSDictionary* plist = [NSDictionary
-        dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(plist_path)
+        dictionaryWithContentsOfURL:base::apple::FilePathToNSURL(plist_path)
                               error:nil];
     NSArray* doc_types_array = plist[app_mode::kCFBundleDocumentTypesKey];
     EXPECT_NE(doc_types_array, nil);
@@ -316,7 +317,7 @@ TEST_F(WebAppShortcutCreatorTest, FileHandlers) {
                                                ShortcutLocations()));
   {
     NSDictionary* plist = [NSDictionary
-        dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(plist_path)
+        dictionaryWithContentsOfURL:base::apple::FilePathToNSURL(plist_path)
                               error:nil];
     NSArray* doc_types_array = plist[app_mode::kCFBundleDocumentTypesKey];
     EXPECT_NE(doc_types_array, nil);
@@ -344,7 +345,7 @@ TEST_F(WebAppShortcutCreatorTest, FileHandlers) {
                                                ShortcutLocations()));
   {
     NSDictionary* plist = [NSDictionary
-        dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(plist_path)
+        dictionaryWithContentsOfURL:base::apple::FilePathToNSURL(plist_path)
                               error:nil];
     NSArray* doc_types_array = plist[app_mode::kCFBundleDocumentTypesKey];
     EXPECT_NE(doc_types_array, nil);
@@ -378,7 +379,7 @@ TEST_F(WebAppShortcutCreatorTest, FileHandlers) {
                                                ShortcutLocations()));
   {
     NSDictionary* plist = [NSDictionary
-        dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(plist_path)
+        dictionaryWithContentsOfURL:base::apple::FilePathToNSURL(plist_path)
                               error:nil];
     NSArray* doc_types_array = plist[app_mode::kCFBundleDocumentTypesKey];
     EXPECT_NE(doc_types_array, nil);
@@ -411,7 +412,7 @@ TEST_F(WebAppShortcutCreatorTest, ProtocolHandlers) {
                                                ShortcutLocations()));
   {
     NSDictionary* plist = [NSDictionary
-        dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(plist_path)
+        dictionaryWithContentsOfURL:base::apple::FilePathToNSURL(plist_path)
                               error:nil];
     NSArray* protocol_types_value = plist[app_mode::kCFBundleURLTypesKey];
     EXPECT_EQ(protocol_types_value, nil);
@@ -425,7 +426,7 @@ TEST_F(WebAppShortcutCreatorTest, ProtocolHandlers) {
                                                ShortcutLocations()));
   {
     NSDictionary* plist = [NSDictionary
-        dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(plist_path)
+        dictionaryWithContentsOfURL:base::apple::FilePathToNSURL(plist_path)
                               error:nil];
     NSArray* protocol_types_value = plist[app_mode::kCFBundleURLTypesKey];
     EXPECT_NE(protocol_types_value, nil);
@@ -435,7 +436,7 @@ TEST_F(WebAppShortcutCreatorTest, ProtocolHandlers) {
 
     // Verify CFBundleURLName is set.
     EXPECT_NSEQ(protocol_types_dict[app_mode::kCFBundleURLNameKey],
-                base::SysUTF8ToNSString(base::mac::BaseBundleID() +
+                base::SysUTF8ToNSString(base::apple::BaseBundleID() +
                                         std::string(".app.") + info_->app_id));
 
     // Verify CFBundleURLSchemes is set, and contains the expected values.
@@ -459,7 +460,7 @@ TEST_F(WebAppShortcutCreatorTest, ProtocolHandlers) {
                                                ShortcutLocations()));
   {
     NSDictionary* plist = [NSDictionary
-        dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(plist_path)
+        dictionaryWithContentsOfURL:base::apple::FilePathToNSURL(plist_path)
                               error:nil];
     NSArray* protocol_types_value = plist[app_mode::kCFBundleURLTypesKey];
     EXPECT_NE(protocol_types_value, nil);
@@ -469,7 +470,7 @@ TEST_F(WebAppShortcutCreatorTest, ProtocolHandlers) {
 
     // Verify CFBundleURLName is set.
     EXPECT_NSEQ(protocol_types_dict[app_mode::kCFBundleURLNameKey],
-                base::SysUTF8ToNSString(base::mac::BaseBundleID() +
+                base::SysUTF8ToNSString(base::apple::BaseBundleID() +
                                         std::string(".app.") + info_->app_id));
 
     // Verify CFBundleURLSchemes is set, and contains the expected values.
@@ -616,7 +617,7 @@ TEST_F(WebAppShortcutCreatorTest, UpdateShortcutsWithTitleChange) {
                                   .Append("Info.plist");
   EXPECT_TRUE(base::PathExists(plist_path));
   NSDictionary* plist = [NSDictionary
-      dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(plist_path)
+      dictionaryWithContentsOfURL:base::apple::FilePathToNSURL(plist_path)
                             error:nil];
   EXPECT_NSEQ(@"Shortcut Title",
               plist[base::apple::CFToNSPtrCast(kCFBundleNameKey)]);
@@ -629,9 +630,9 @@ TEST_F(WebAppShortcutCreatorTest, UpdateShortcutsWithTitleChange) {
                                           .Append(locale_dir_name)
                                           .Append("InfoPlist.strings");
   EXPECT_TRUE(base::PathExists(resource_file_path));
-  NSDictionary* resources =
-      [NSDictionary dictionaryWithContentsOfFile:base::mac::FilePathToNSString(
-                                                     resource_file_path)];
+  NSDictionary* resources = [NSDictionary
+      dictionaryWithContentsOfFile:base::apple::FilePathToNSString(
+                                       resource_file_path)];
   EXPECT_NSEQ(@"Shortcut Title", resources[app_mode::kCFBundleDisplayNameKey]);
 
   // UpdateShortcuts does this as well, but clear the app bundle contents to
@@ -656,7 +657,7 @@ TEST_F(WebAppShortcutCreatorTest, UpdateShortcutsWithTitleChange) {
                    .Append("Info.plist");
   EXPECT_TRUE(base::PathExists(plist_path));
   plist = [NSDictionary
-      dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
+      dictionaryWithContentsOfFile:base::apple::FilePathToNSString(plist_path)];
   EXPECT_NSEQ(@"Shortcut Title",
               plist[base::apple::CFToNSPtrCast(kCFBundleNameKey)]);
 
@@ -666,9 +667,9 @@ TEST_F(WebAppShortcutCreatorTest, UpdateShortcutsWithTitleChange) {
                            .Append(locale_dir_name)
                            .Append("InfoPlist.strings");
   EXPECT_TRUE(base::PathExists(resource_file_path));
-  resources =
-      [NSDictionary dictionaryWithContentsOfFile:base::mac::FilePathToNSString(
-                                                     resource_file_path)];
+  resources = [NSDictionary
+      dictionaryWithContentsOfFile:base::apple::FilePathToNSString(
+                                       resource_file_path)];
   EXPECT_NSEQ(@"Shortcut Title", resources[app_mode::kCFBundleDisplayNameKey]);
 
   // Now simulate an update with a different title.
@@ -700,7 +701,7 @@ TEST_F(WebAppShortcutCreatorTest, UpdateShortcutsWithTitleChange) {
                    .Append("Info.plist");
   EXPECT_TRUE(base::PathExists(plist_path));
   plist = [NSDictionary
-      dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
+      dictionaryWithContentsOfFile:base::apple::FilePathToNSString(plist_path)];
   EXPECT_NSEQ(@"Shortcut Title",
               plist[base::apple::CFToNSPtrCast(kCFBundleNameKey)]);
 
@@ -711,9 +712,9 @@ TEST_F(WebAppShortcutCreatorTest, UpdateShortcutsWithTitleChange) {
                            .Append(locale_dir_name)
                            .Append("InfoPlist.strings");
   EXPECT_TRUE(base::PathExists(resource_file_path));
-  resources =
-      [NSDictionary dictionaryWithContentsOfFile:base::mac::FilePathToNSString(
-                                                     resource_file_path)];
+  resources = [NSDictionary
+      dictionaryWithContentsOfFile:base::apple::FilePathToNSString(
+                                       resource_file_path)];
   EXPECT_NSEQ(@"New App Title", resources[app_mode::kCFBundleDisplayNameKey]);
 }
 
@@ -773,7 +774,7 @@ TEST_F(WebAppShortcutCreatorTest, NormalizeColonsInDisplayName) {
                                   .Append("Info.plist");
   EXPECT_TRUE(base::PathExists(plist_path));
   NSDictionary* plist = [NSDictionary
-      dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(plist_path)
+      dictionaryWithContentsOfURL:base::apple::FilePathToNSURL(plist_path)
                             error:nil];
   EXPECT_NSEQ(@"App Title: New",
               plist[base::apple::CFToNSPtrCast(kCFBundleNameKey)]);
@@ -786,9 +787,9 @@ TEST_F(WebAppShortcutCreatorTest, NormalizeColonsInDisplayName) {
                                           .Append(locale_dir_name)
                                           .Append("InfoPlist.strings");
   EXPECT_TRUE(base::PathExists(resource_file_path));
-  NSDictionary* resources =
-      [NSDictionary dictionaryWithContentsOfFile:base::mac::FilePathToNSString(
-                                                     resource_file_path)];
+  NSDictionary* resources = [NSDictionary
+      dictionaryWithContentsOfFile:base::apple::FilePathToNSString(
+                                       resource_file_path)];
   EXPECT_NSEQ(@"App Title New", resources[app_mode::kCFBundleDisplayNameKey]);
 }
 
@@ -927,7 +928,7 @@ TEST_F(WebAppShortcutCreatorTest, UpdateIcon) {
   info_->favicon.Add(product_logo_32);
   ASSERT_TRUE(shortcut_creator.UpdateIcon(shim_path_));
   NSImage* image = [[NSImage alloc]
-      initWithContentsOfFile:base::mac::FilePathToNSString(icon_path)];
+      initWithContentsOfFile:base::apple::FilePathToNSString(icon_path)];
   EXPECT_TRUE(image);
   EXPECT_EQ(product_logo_32.Width(), image.size.width);
   EXPECT_EQ(product_logo_32.Height(), image.size.height);
@@ -936,7 +937,7 @@ TEST_F(WebAppShortcutCreatorTest, UpdateIcon) {
   info_->favicon_maskable.Add(product_logo_16);
   ASSERT_TRUE(shortcut_creator.UpdateIcon(shim_path_));
   image = [[NSImage alloc]
-      initWithContentsOfFile:base::mac::FilePathToNSString(icon_path)];
+      initWithContentsOfFile:base::apple::FilePathToNSString(icon_path)];
   EXPECT_TRUE(image);
   EXPECT_EQ(product_logo_16.Width(), image.size.width);
   EXPECT_EQ(product_logo_16.Height(), image.size.height);

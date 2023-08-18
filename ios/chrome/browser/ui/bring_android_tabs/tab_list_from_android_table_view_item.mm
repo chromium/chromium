@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_table_view_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -28,7 +28,7 @@
   [super configureCell:tableCell withStyler:styler];
 
   TabListFromAndroidTableViewCell* cell =
-      base::mac::ObjCCastStrict<TabListFromAndroidTableViewCell>(tableCell);
+      base::apple::ObjCCastStrict<TabListFromAndroidTableViewCell>(tableCell);
   cell.titleLabel.text = [self titleLabelText];
   cell.URLLabel.text = [self URLLabelText];
   cell.cellUniqueIdentifier = self.uniqueIdentifier;

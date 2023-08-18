@@ -1,0 +1,6 @@
+include_rules = [
+  # base/apple is a base on which base/mac and base/ios build, so don't allow
+  # dependencies on them.
+  "-mac",
+  "-ios",
+]

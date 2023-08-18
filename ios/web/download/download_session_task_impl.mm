@@ -4,8 +4,8 @@
 
 #import "ios/web/download/download_session_task_impl.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
@@ -51,7 +51,7 @@ class TaskInfo {
   static TaskInfo FromTask(NSURLSessionTask* task) {
     int http_code = -1;
     if ([task.response isKindOfClass:[NSHTTPURLResponse class]]) {
-      http_code = base::mac::ObjCCastStrict<NSHTTPURLResponse>(task.response)
+      http_code = base::apple::ObjCCastStrict<NSHTTPURLResponse>(task.response)
                       .statusCode;
     }
 

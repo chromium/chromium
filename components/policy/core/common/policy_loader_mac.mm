@@ -8,13 +8,13 @@
 
 #include <Foundation/Foundation.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/enterprise_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -162,8 +162,9 @@ base::FilePath PolicyLoaderMac::GetManagedPolicyPath(CFStringRef bundle_id) {
   // missed the change.
 
   base::FilePath path;
-  if (!base::mac::GetLocalDirectory(NSLibraryDirectory, &path))
+  if (!base::apple::GetLocalDirectory(NSLibraryDirectory, &path)) {
     return base::FilePath();
+  }
   path = path.Append(FILE_PATH_LITERAL("Managed Preferences"));
   char* login = getlogin();
   if (!login)

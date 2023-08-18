@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/first_run/uma/uma_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/feature_list.h"
-#import "base/mac/foundation_util.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
@@ -95,7 +95,7 @@ NSMutableAttributedString* AddIndentAttributes(NSString* string,
   NSIndexPath* indexPath = [model indexPathForItemType:sender.tag];
   DCHECK(indexPath);
   TableViewSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<TableViewSwitchItem>(
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [model itemAtIndexPath:indexPath]);
   DCHECK(switchItem);
   self.UMAReportingUserChoice = sender.isOn;
@@ -109,7 +109,7 @@ NSMutableAttributedString* AddIndentAttributes(NSString* string,
                      cellForRowAtIndexPath:indexPath];
   if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
     TableViewSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(switchAction:)
                     forControlEvents:UIControlEventValueChanged];

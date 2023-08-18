@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -230,7 +230,7 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
     case ItemTypeSavePasswordsSwitch: {
       TableViewSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(savePasswordsSwitchChanged:)
                       forControlEvents:UIControlEventValueChanged];
@@ -238,7 +238,7 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
     }
     case ItemTypeAccountStorageSwitch: {
       TableViewSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(accountStorageSwitchChanged:)
                       forControlEvents:UIControlEventValueChanged];
@@ -273,7 +273,7 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
     }
     case ItemTypeManagedSavePasswords: {
       TableViewInfoButtonCell* managedCell =
-          base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+          base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
       [managedCell.trailingButton
                  addTarget:self
                     action:@selector(didTapManagedUIInfoButton:)

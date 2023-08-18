@@ -8,7 +8,7 @@
 
 #import <CoreSpotlight/CoreSpotlight.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -247,7 +247,7 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
 - (BOOL)shouldReindex {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
-  NSDate* date = base::mac::ObjCCast<NSDate>(
+  NSDate* date = base::apple::ObjCCast<NSDate>(
       [userDefaults objectForKey:@(spotlight::kSpotlightLastIndexingDateKey)]);
   if (!date) {
     return YES;
@@ -257,7 +257,7 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
   if (timeSinceLastIndexing >= kDelayBetweenTwoIndexing) {
     return YES;
   }
-  NSNumber* lastIndexedVersion = base::mac::ObjCCast<NSNumber>([userDefaults
+  NSNumber* lastIndexedVersion = base::apple::ObjCCast<NSNumber>([userDefaults
       objectForKey:@(spotlight::kSpotlightLastIndexingVersionKey)]);
   if (!lastIndexedVersion) {
     return YES;

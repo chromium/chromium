@@ -6,10 +6,10 @@
 
 #import <AppKit/AppKit.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
-#include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -42,7 +42,7 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizes() {
 
   base::FilePath local_library;
   bool success =
-      base::mac::GetUserDirectory(NSLibraryDirectory, &local_library);
+      base::apple::GetUserDirectory(NSLibraryDirectory, &local_library);
   DCHECK(success);
 
   base::FilePath plist = local_library.Append("Preferences")
@@ -69,7 +69,7 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizesFromFile(
     base::ScopedBlockingCall scoped_block(FROM_HERE,
                                           base::BlockingType::MAY_BLOCK);
     custom_papers_dict = [[NSDictionary alloc]
-        initWithContentsOfURL:base::mac::FilePathToNSURL(path)
+        initWithContentsOfURL:base::apple::FilePathToNSURL(path)
                         error:nil];
     if (!custom_papers_dict) {
       return custom_paper_sizes;
@@ -77,7 +77,7 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizesFromFile(
   }
 
   for (id key in custom_papers_dict) {
-    NSDictionary* paper = base::mac::ObjCCast<NSDictionary>(
+    NSDictionary* paper = base::apple::ObjCCast<NSDictionary>(
         [custom_papers_dict objectForKey:key]);
     if (!paper) {
       continue;

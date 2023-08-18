@@ -10,9 +10,9 @@
 
 #import <WebKit/WebKit.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
-#include "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
@@ -139,7 +139,7 @@ NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
   DCHECK(success) << "Failed to convert base::Value to JSON";
 
   NSData* json_data = [NSData dataWithBytes:json.c_str() length:json.length()];
-  NSDictionary* ns_dictionary = base::mac::ObjCCastStrict<NSDictionary>(
+  NSDictionary* ns_dictionary = base::apple::ObjCCastStrict<NSDictionary>(
       [NSJSONSerialization JSONObjectWithData:json_data
                                       options:kNilOptions
                                         error:nil]);
@@ -308,10 +308,11 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   // To support partial rollout and roll back of the feature, try to load
   // the data from `coder` in either the legacy or optimised format. This
   // also allow migrating the storage in-place.
-  _cachedProtobufStorage = base::mac::ObjCCastStrict<CWVWebViewProtobufStorage>(
-      [coder decodeObjectForKey:kProtobufStorageKey]);
+  _cachedProtobufStorage =
+      base::apple::ObjCCastStrict<CWVWebViewProtobufStorage>(
+          [coder decodeObjectForKey:kProtobufStorageKey]);
 
-  _cachedSessionStorage = base::mac::ObjCCastStrict<CRWSessionStorage>(
+  _cachedSessionStorage = base::apple::ObjCCastStrict<CRWSessionStorage>(
       [coder decodeObjectForKey:kSessionStorageKey]);
 
   // If data can't be loaded in either format, return a brand new WebState.

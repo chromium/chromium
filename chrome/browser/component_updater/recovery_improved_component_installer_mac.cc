@@ -4,10 +4,10 @@
 
 #include "chrome/browser/component_updater/recovery_improved_component_installer.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/update_client.h"
@@ -44,7 +44,7 @@ base::CommandLine RecoveryComponentActionHandlerMac::MakeCommandLine(
   command_line.AppendSwitchASCII("browser-version",
                                  version_info::GetVersion().GetString());
   command_line.AppendSwitchASCII("sessionid", session_id());
-  command_line.AppendSwitchASCII("appguid", base::mac::BaseBundleID());
+  command_line.AppendSwitchASCII("appguid", base::apple::BaseBundleID());
   command_line.AppendSwitch("enable-logging");
   command_line.AppendSwitchASCII(
       "vmodule", "*/components/update_client/*=2,*/chrome/updater/*=2");

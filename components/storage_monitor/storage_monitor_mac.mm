@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -32,7 +32,7 @@ const char16_t kDiskImageModelName[] = u"Disk Image";
 std::u16string GetUTF16FromDictionary(CFDictionaryRef dictionary,
                                       CFStringRef key) {
   CFStringRef value =
-      base::mac::GetValueFromDictionary<CFStringRef>(dictionary, key);
+      base::apple::GetValueFromDictionary<CFStringRef>(dictionary, key);
   if (!value)
     return std::u16string();
   return base::SysCFStringRefToUTF16(value);
@@ -60,16 +60,17 @@ StorageInfo BuildStorageInfo(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  CFStringRef device_bsd_name = base::mac::GetValueFromDictionary<CFStringRef>(
-      dict, kDADiskDescriptionMediaBSDNameKey);
+  CFStringRef device_bsd_name =
+      base::apple::GetValueFromDictionary<CFStringRef>(
+          dict, kDADiskDescriptionMediaBSDNameKey);
   if (device_bsd_name && bsd_name)
     *bsd_name = base::SysCFStringRefToUTF8(device_bsd_name);
 
-  CFURLRef url = base::mac::GetValueFromDictionary<CFURLRef>(
+  CFURLRef url = base::apple::GetValueFromDictionary<CFURLRef>(
       dict, kDADiskDescriptionVolumePathKey);
   base::FilePath location =
-      base::mac::NSURLToFilePath(base::apple::CFToNSPtrCast(url));
-  CFNumberRef size_number = base::mac::GetValueFromDictionary<CFNumberRef>(
+      base::apple::NSURLToFilePath(base::apple::CFToNSPtrCast(url));
+  CFNumberRef size_number = base::apple::GetValueFromDictionary<CFNumberRef>(
       dict, kDADiskDescriptionMediaSizeKey);
   uint64_t size_in_bytes = 0;
   if (size_number)
@@ -82,7 +83,7 @@ StorageInfo BuildStorageInfo(
   std::u16string label =
       GetUTF16FromDictionary(dict, kDADiskDescriptionVolumeNameKey);
 
-  CFUUIDRef uuid = base::mac::GetValueFromDictionary<CFUUIDRef>(
+  CFUUIDRef uuid = base::apple::GetValueFromDictionary<CFUUIDRef>(
       dict, kDADiskDescriptionVolumeUUIDKey);
   std::string unique_id;
   if (uuid) {
@@ -101,7 +102,7 @@ StorageInfo BuildStorageInfo(
   }
 
   CFBooleanRef is_removable_ref =
-      base::mac::GetValueFromDictionary<CFBooleanRef>(
+      base::apple::GetValueFromDictionary<CFBooleanRef>(
           dict, kDADiskDescriptionMediaRemovableKey);
   bool is_removable = is_removable_ref && CFBooleanGetValue(is_removable_ref);
   // Checking for DCIM only matters on removable devices.

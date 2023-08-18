@@ -4,7 +4,7 @@
 
 #import "content/app_shim_remote_cocoa/web_drag_source_mac.h"
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest_mac.h"
@@ -24,7 +24,7 @@ TEST_F(WebDragSourceMacTest, DragInvalidlyEscapedBookmarklet) {
   // Test that asking for the data of an invalidly-escaped URL doesn't throw any
   // exceptions. http://crbug.com/128371
   id result = [source pasteboardPropertyListForType:NSPasteboardTypeURL];
-  NSString* result_string = base::mac::ObjCCast<NSString>(result);
+  NSString* result_string = base::apple::ObjCCast<NSString>(result);
   EXPECT_NSEQ(@"javascript:%25", result_string);
 }
 

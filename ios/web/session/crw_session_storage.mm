@@ -4,7 +4,7 @@
 
 #import "ios/web/public/session/crw_session_storage.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -162,14 +162,14 @@ NSString* const kTabIdKey = @"TabId";
     id<NSCoding, NSObject> userData =
         [decoder decodeObjectForKey:kSerializedUserDataKey];
     if ([userData isKindOfClass:[CRWSessionUserData class]]) {
-      _userData = base::mac::ObjCCastStrict<CRWSessionUserData>(userData);
+      _userData = base::apple::ObjCCastStrict<CRWSessionUserData>(userData);
     } else if ([userData isKindOfClass:[NSDictionary class]]) {
       // Before M99, the user data was serialized by a C++ class that did
       // serialize a NSDictionary<NSString*, id<NSCoding>>* directly.
       // TODO(crbug.com/1278308): Remove this deprecated logic when we remove
       // support for loading legacy sessions.
       NSDictionary<NSString*, id<NSCoding>>* dictionary =
-          base::mac::ObjCCastStrict<NSDictionary>(userData);
+          base::apple::ObjCCastStrict<NSDictionary>(userData);
 
       _userData = [[CRWSessionUserData alloc] init];
       for (NSString* key in dictionary) {
@@ -204,7 +204,7 @@ NSString* const kTabIdKey = @"TabId";
 
         // If the value is not an NSString or is empty, a random identifier
         // will be generated below.
-        _stableIdentifier = base::mac::ObjCCast<NSString>(tabIdValue);
+        _stableIdentifier = base::apple::ObjCCast<NSString>(tabIdValue);
       }
     }
 

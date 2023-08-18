@@ -6,9 +6,9 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
-#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"
@@ -329,7 +329,7 @@ TEST_F(WebViewJsUtilsTest, NSObjectFromDictValueResult) {
   EXPECT_TRUE([wk_result isKindOfClass:[NSDictionary class]]);
 
   NSDictionary* wk_result_dictionary =
-      base::mac::ObjCCastStrict<NSDictionary>(wk_result);
+      base::apple::ObjCCastStrict<NSDictionary>(wk_result);
   EXPECT_NSEQ(@"Value1", wk_result_dictionary[@"Key1"]);
 
   NSDictionary* inner_dictionary = wk_result_dictionary[@"Key2"];
@@ -353,7 +353,7 @@ TEST_F(WebViewJsUtilsTest, NSObjectFromListValueResult) {
   EXPECT_TRUE(wk_result);
   EXPECT_TRUE([wk_result isKindOfClass:[NSArray class]]);
 
-  NSArray* wk_result_array = base::mac::ObjCCastStrict<NSArray>(wk_result);
+  NSArray* wk_result_array = base::apple::ObjCCastStrict<NSArray>(wk_result);
 
   EXPECT_EQ(3UL, wk_result_array.count);
   EXPECT_NSEQ(@"Value1", wk_result_array[0]);

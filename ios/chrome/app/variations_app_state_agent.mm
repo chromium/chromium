@@ -5,7 +5,7 @@
 #import "ios/chrome/app/variations_app_state_agent.h"
 #import "ios/chrome/app/variations_app_state_agent+testing.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/field_trial.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/rand_util.h"

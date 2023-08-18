@@ -4,7 +4,7 @@
 
 #import "ios/chrome/content_widget_extension/content_widget_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/app_group/app_group_command.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"

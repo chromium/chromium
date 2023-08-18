@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -547,7 +547,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     case SectionIdentifierSignOut: {
       // Might be a different type of footer.
       TableViewLinkHeaderFooterView* linkView =
-          base::mac::ObjCCast<TableViewLinkHeaderFooterView>(view);
+          base::apple::ObjCCast<TableViewLinkHeaderFooterView>(view);
       linkView.delegate = self;
       break;
     }
@@ -572,7 +572,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   switch (itemType) {
     case ItemTypeAccount: {
       TableViewAccountItem* item =
-          base::mac::ObjCCastStrict<TableViewAccountItem>(
+          base::apple::ObjCCastStrict<TableViewAccountItem>(
               [self.tableViewModel itemAtIndexPath:indexPath]);
       DCHECK(item.identity);
 
@@ -827,7 +827,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   _isBeingDismissed = YES;
   __weak __typeof(self) weakSelf = self;
   void (^popAccountsTableViewController)() = ^() {
-    [base::mac::ObjCCastStrict<SettingsNavigationController>(
+    [base::apple::ObjCCastStrict<SettingsNavigationController>(
         weakSelf.navigationController)
         popViewControllerOrCloseSettingsAnimated:YES];
   };
@@ -882,8 +882,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  TableViewAccountItem* item = base::mac::ObjCCastStrict<TableViewAccountItem>(
-      [_identityMap objectForKey:identity.gaiaID]);
+  TableViewAccountItem* item =
+      base::apple::ObjCCastStrict<TableViewAccountItem>(
+          [_identityMap objectForKey:identity.gaiaID]);
   if (!item) {
     return;
   }

@@ -6,8 +6,8 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -286,9 +286,9 @@ const int kMainIntentCheckDelay = 1;
 
 - (void)sceneWillConnect:(NSNotification*)notification {
   UIWindowScene* scene =
-      base::mac::ObjCCastStrict<UIWindowScene>(notification.object);
+      base::apple::ObjCCastStrict<UIWindowScene>(notification.object);
   SceneDelegate* sceneDelegate =
-      base::mac::ObjCCastStrict<SceneDelegate>(scene.delegate);
+      base::apple::ObjCCastStrict<SceneDelegate>(scene.delegate);
 
   // Under some iOS 15 betas, Chrome gets scene connection events for some
   // system scene connections. To handle this, early return if the connecting
@@ -391,13 +391,13 @@ const int kMainIntentCheckDelay = 1;
 #pragma mark - Testing methods
 
 + (AppState*)sharedAppState {
-  return base::mac::ObjCCast<MainApplicationDelegate>(
+  return base::apple::ObjCCast<MainApplicationDelegate>(
              [[UIApplication sharedApplication] delegate])
       .appState;
 }
 
 + (MainController*)sharedMainController {
-  return base::mac::ObjCCast<MainApplicationDelegate>(
+  return base::apple::ObjCCast<MainApplicationDelegate>(
              [[UIApplication sharedApplication] delegate])
       .mainController;
 }

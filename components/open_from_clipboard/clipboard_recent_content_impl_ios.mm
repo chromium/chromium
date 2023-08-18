@@ -7,8 +7,8 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -675,7 +675,7 @@ NSString* const kDefaultScheme = @"https";
 - (void)loadFromUserDefaults {
   self.lastPasteboardChangeCount =
       [self.sharedUserDefaults integerForKey:kPasteboardChangeCountKey];
-  self.lastPasteboardChangeDate = base::mac::ObjCCastStrict<NSDate>(
+  self.lastPasteboardChangeDate = base::apple::ObjCCastStrict<NSDate>(
       [self.sharedUserDefaults objectForKey:kPasteboardChangeDateKey]);
 }
 

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"

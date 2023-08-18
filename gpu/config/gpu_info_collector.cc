@@ -44,7 +44,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -750,7 +750,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   std::string dawn_search_path;
   base::FilePath module_path;
 #if BUILDFLAG(IS_MAC)
-  if (base::mac::AmIBundled()) {
+  if (base::apple::AmIBundled()) {
     dawn_search_path = base::apple::FrameworkBundlePath()
                            .Append("Libraries")
                            .AsEndingWithSeparator()

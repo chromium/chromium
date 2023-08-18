@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "ui/base/cocoa/nsmenuitem_additions.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 
 #include <Carbon/Carbon.h>
 
@@ -107,7 +107,7 @@ NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
   base::ScopedCFTypeRef<TISInputSourceRef> inputSource(
       TISCopyCurrentKeyboardInputSource());
   NSString* layoutId = base::apple::CFToNSPtrCast(
-      base::mac::CFCast<CFStringRef>(TISGetInputSourceProperty(
+      base::apple::CFCast<CFStringRef>(TISGetInputSourceProperty(
           inputSource.get(), kTISPropertyInputSourceID)));
   ui::cocoa::g_is_input_source_command_qwerty =
       ui::cocoa::IsKeyboardLayoutCommandQwerty(layoutId);

@@ -48,7 +48,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
 #elif BUILDFLAG(IS_MAC)
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #endif
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
 
@@ -125,7 +125,7 @@ void GetV8FilePath(const char* file_name, base::FilePath* path_out) {
   *path_out =
       base::FilePath(FILE_PATH_LITERAL("assets")).AppendASCII(file_name);
 #elif BUILDFLAG(IS_MAC)
-  *path_out = base::mac::PathForFrameworkBundleResource(file_name);
+  *path_out = base::apple::PathForFrameworkBundleResource(file_name);
 #else
   base::FilePath data_path;
   bool r = base::PathService::Get(base::DIR_ASSETS, &data_path);

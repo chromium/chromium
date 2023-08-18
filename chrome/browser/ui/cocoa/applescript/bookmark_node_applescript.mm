@@ -4,9 +4,9 @@
 
 #import "chrome/browser/ui/cocoa/applescript/bookmark_node_applescript.h"
 
+#import "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/uuid.h"
 #import "chrome/browser/app_controller_mac.h"

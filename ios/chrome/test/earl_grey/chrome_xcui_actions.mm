@@ -4,7 +4,7 @@
 
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 

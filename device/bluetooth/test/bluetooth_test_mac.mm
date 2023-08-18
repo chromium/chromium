@@ -9,8 +9,8 @@
 
 #include <memory>
 
+#import "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
@@ -33,7 +33,7 @@
 #import "device/bluetooth/bluetooth_adapter_mac.h"
 #endif
 
-using base::mac::ObjCCast;
+using base::apple::ObjCCast;
 
 namespace device {
 
@@ -663,7 +663,7 @@ void BluetoothTestMac::SetMockControllerPowerState(int powered) {
               return;
 
             auto* mock_central_manager =
-                base::mac::ObjCCastStrict<MockCentralManager>(
+                base::apple::ObjCCastStrict<MockCentralManager>(
                     adapter_mac->GetCentralManager());
             [mock_central_manager setState:powered ? CBManagerStatePoweredOn
                                                    : CBManagerStatePoweredOff];

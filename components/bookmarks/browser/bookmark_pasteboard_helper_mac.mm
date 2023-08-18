@@ -10,8 +10,8 @@
 
 #include <memory>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -52,8 +52,8 @@ BookmarkNode::MetaInfoMap MetaInfoMapFromDictionary(NSDictionary* dictionary) {
 
   [dictionary
       enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop) {
-        NSString* key_ns = base::mac::ObjCCast<NSString>(key);
-        NSString* value_ns = base::mac::ObjCCast<NSString>(value);
+        NSString* key_ns = base::apple::ObjCCast<NSString>(key);
+        NSString* value_ns = base::apple::ObjCCast<NSString>(value);
         if (key_ns && value_ns) {
           meta_info_map[base::SysNSStringToUTF8(key_ns)] =
               base::SysNSStringToUTF8(value_ns);
@@ -80,7 +80,7 @@ void ConvertNSArrayToElements(
     std::vector<BookmarkNodeData::Element>* elements) {
   for (NSDictionary* bookmark_dict in input) {
     NSString* type =
-        base::mac::ObjCCast<NSString>(bookmark_dict[kWebBookmarkTypeKey]);
+        base::apple::ObjCCast<NSString>(bookmark_dict[kWebBookmarkTypeKey]);
     if (!type)
       continue;
 
@@ -89,7 +89,7 @@ void ConvertNSArrayToElements(
     GURL url = GURL();
     if (!is_folder) {
       NSString* url_string =
-          base::mac::ObjCCast<NSString>(bookmark_dict[kURLStringKey]);
+          base::apple::ObjCCast<NSString>(bookmark_dict[kURLStringKey]);
       if (!url_string)
         continue;
       url = GURL(base::SysNSStringToUTF8(url_string));
@@ -99,16 +99,16 @@ void ConvertNSArrayToElements(
         /*id=*/0, base::Uuid::GenerateRandomV4(), url);
 
     NSNumber* node_id =
-        base::mac::ObjCCast<NSNumber>(bookmark_dict[kChromiumBookmarkIdKey]);
+        base::apple::ObjCCast<NSNumber>(bookmark_dict[kChromiumBookmarkIdKey]);
     if (node_id)
       new_node->set_id(node_id.longLongValue);
 
-    NSDictionary* meta_info = base::mac::ObjCCast<NSDictionary>(
+    NSDictionary* meta_info = base::apple::ObjCCast<NSDictionary>(
         bookmark_dict[kChromiumBookmarkMetaInfoKey]);
     if (meta_info)
       new_node->SetMetaInfoMap(MetaInfoMapFromDictionary(meta_info));
 
-    NSString* title = base::mac::ObjCCast<NSString>(bookmark_dict[kTitleKey]);
+    NSString* title = base::apple::ObjCCast<NSString>(bookmark_dict[kTitleKey]);
     new_node->SetTitle(base::SysNSStringToUTF16(title));
 
     BookmarkNodeData::Element e = BookmarkNodeData::Element(new_node.get());
@@ -133,7 +133,7 @@ bool ReadChromiumBookmarks(NSPasteboard* pb,
   if (!bookmarks)
     return false;
 
-  NSArray* bookmarks_array = base::mac::ObjCCast<NSArray>(bookmarks);
+  NSArray* bookmarks_array = base::apple::ObjCCast<NSArray>(bookmarks);
   if (!bookmarks_array)
     return false;
 

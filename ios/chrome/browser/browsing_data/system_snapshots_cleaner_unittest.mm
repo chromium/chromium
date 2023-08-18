@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +44,7 @@ TEST_F(SnapshotsUtilTest, TestSnapshotList) {
   if (scale > 1) {
     scaleModifier = [NSString stringWithFormat:@"@%.0fx", scale];
   }
-  NSString* path = base::SysUTF8ToNSString(base::mac::BaseBundleID());
+  NSString* path = base::SysUTF8ToNSString(base::apple::BaseBundleID());
   NSString* filename = @"UIApplicationAutomaticSnapshotDefault-LandscapeRight";
   NSString* regex = [NSString
       stringWithFormat:@".*/%@/%@%@.png$", path, filename, scaleModifier];

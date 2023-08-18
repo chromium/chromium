@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/strcat.h"
 #import "base/time/time.h"

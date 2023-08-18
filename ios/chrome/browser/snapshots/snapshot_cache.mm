@@ -10,6 +10,7 @@
 #import <set>
 
 #import "base/apple/backup_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/base_paths.h"
 #import "base/containers/contains.h"
 #import "base/files/file_enumerator.h"
@@ -18,7 +19,6 @@
 #import "base/functional/bind.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
 #import "base/sequence_checker.h"
@@ -148,7 +148,7 @@ UIImage* ReadImageForSnapshotIDFromDisk(NSString* snapshot_id,
   // are fixed.
   base::FilePath file_path =
       ImagePath(snapshot_id, image_type, image_scale, cache_directory);
-  NSString* path = base::mac::FilePathToNSString(file_path);
+  NSString* path = base::apple::FilePathToNSString(file_path);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   return [UIImage imageWithData:[NSData dataWithContentsOfFile:path]
@@ -173,7 +173,7 @@ void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
     }
   }
 
-  NSString* path = base::mac::FilePathToNSString(file_path);
+  NSString* path = base::apple::FilePathToNSString(file_path);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   NSData* data = UIImageJPEGRepresentation(image, kJPEGImageQuality);

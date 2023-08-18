@@ -22,10 +22,10 @@
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_IOS)
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "ui/gfx/image/image_skia_util_ios.h"
 #elif BUILDFLAG(IS_MAC)
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 #endif

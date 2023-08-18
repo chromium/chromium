@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/format_macros.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/time/time.h"
 #import "components/favicon/core/large_icon_service.h"

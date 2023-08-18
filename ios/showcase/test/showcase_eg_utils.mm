@@ -4,7 +4,7 @@
 
 #import "ios/showcase/test/showcase_eg_utils.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/showcase/test/showcase_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/uikit_ui_util.h"
@@ -31,7 +31,7 @@ id<GREYMatcher> SearchBar() {
 // Returns the Showcase navigation controller.
 UINavigationController* ShowcaseNavigationController() {
   UINavigationController* showcaseNavigationController =
-      base::mac::ObjCCastStrict<UINavigationController>(
+      base::apple::ObjCCastStrict<UINavigationController>(
           [GetAnyKeyWindow() rootViewController]);
   return showcaseNavigationController;
 }

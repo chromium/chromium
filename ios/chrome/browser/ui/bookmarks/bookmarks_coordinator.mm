@@ -8,8 +8,8 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -373,7 +373,7 @@ enum class PresentedState {
   for (UIViewController* controller in self.bookmarkNavigationController
            .viewControllers) {
     BookmarksHomeViewController* bookmarksHomeViewController =
-        base::mac::ObjCCastStrict<BookmarksHomeViewController>(controller);
+        base::apple::ObjCCastStrict<BookmarksHomeViewController>(controller);
     [bookmarksHomeViewController shutdown];
   }
   // TODO(crbug.com/940856): Make sure navigaton
@@ -748,7 +748,7 @@ enum class PresentedState {
   for (UIViewController* controller in self.bookmarkNavigationController
            .viewControllers) {
     BookmarksHomeViewController* bookmarksHomeViewController =
-        base::mac::ObjCCastStrict<BookmarksHomeViewController>(controller);
+        base::apple::ObjCCastStrict<BookmarksHomeViewController>(controller);
     [bookmarksHomeViewController willDismissBySwipeDown];
   }
 }
@@ -775,7 +775,7 @@ enum class PresentedState {
                    toViewController:(UIViewController*)toVC {
   if (operation == UINavigationControllerOperationPop) {
     BookmarksHomeViewController* poppedHome =
-        base::mac::ObjCCastStrict<BookmarksHomeViewController>(fromVC);
+        base::apple::ObjCCastStrict<BookmarksHomeViewController>(fromVC);
     // `shutdown` must wait for the next run of the main loop, so that
     // methods such as `textFieldDidEndEditing` have time to be run.
     dispatch_async(dispatch_get_main_queue(), ^{

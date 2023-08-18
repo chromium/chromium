@@ -6,9 +6,9 @@
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
+#import "base/apple/foundation_util.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
-#import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -414,7 +414,7 @@ TEST_F(SelectFileDialogMacTest, SelectionType) {
     EXPECT_EQ(test_cases[i].prompt, base::SysNSStringToUTF8([panel prompt]));
 
     if (args.type != SelectFileDialog::SELECT_SAVEAS_FILE) {
-      NSOpenPanel* open_panel = base::mac::ObjCCast<NSOpenPanel>(panel);
+      NSOpenPanel* open_panel = base::apple::ObjCCast<NSOpenPanel>(panel);
       // Verify that for types other than save file dialogs, an NSOpenPanel is
       // created.
       ASSERT_TRUE(open_panel);
@@ -474,9 +474,9 @@ TEST_F(SelectFileDialogMacTest, DefaultPath) {
   panel.extensionHidden = NO;
 
   EXPECT_EQ(args.default_path.DirName(),
-            base::mac::NSStringToFilePath(panel.directoryURL.path));
+            base::apple::NSStringToFilePath(panel.directoryURL.path));
   EXPECT_EQ(args.default_path.BaseName(),
-            base::mac::NSStringToFilePath(panel.nameFieldStringValue));
+            base::apple::NSStringToFilePath(panel.nameFieldStringValue));
 }
 
 // Verify that the file dialog does not hide extension for filenames with

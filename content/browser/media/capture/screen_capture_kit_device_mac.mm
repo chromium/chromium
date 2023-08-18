@@ -7,7 +7,7 @@
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
 #include "base/apple/bridging.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/task/bind_post_task.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -63,16 +63,16 @@ API_AVAILABLE(macos(12.3))
   CFArrayRef attachmentsArray = CMSampleBufferGetSampleAttachmentsArray(
       sampleBuffer, /*createIfNecessary=*/false);
   if (attachmentsArray && CFArrayGetCount(attachmentsArray) > 0) {
-    CFDictionaryRef attachment = base::mac::CFCast<CFDictionaryRef>(
+    CFDictionaryRef attachment = base::apple::CFCast<CFDictionaryRef>(
         CFArrayGetValueAtIndex(attachmentsArray, 0));
     if (attachment) {
-      CFDictionaryRef contentRectValue = base::mac::CFCast<CFDictionaryRef>(
+      CFDictionaryRef contentRectValue = base::apple::CFCast<CFDictionaryRef>(
           CFDictionaryGetValue(attachment, base::apple::NSToCFPtrCast(
                                                SCStreamFrameInfoContentRect)));
-      CFNumberRef scaleFactorValue = base::mac::CFCast<CFNumberRef>(
+      CFNumberRef scaleFactorValue = base::apple::CFCast<CFNumberRef>(
           CFDictionaryGetValue(attachment, base::apple::NSToCFPtrCast(
                                                SCStreamFrameInfoScaleFactor)));
-      CFNumberRef contentScaleValue = base::mac::CFCast<CFNumberRef>(
+      CFNumberRef contentScaleValue = base::apple::CFCast<CFNumberRef>(
           CFDictionaryGetValue(attachment, base::apple::NSToCFPtrCast(
                                                SCStreamFrameInfoContentScale)));
 

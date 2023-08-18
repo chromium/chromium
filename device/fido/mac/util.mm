@@ -10,10 +10,10 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/functional/bind.h"
-#include "base/mac/foundation_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/branding_buildflags.h"

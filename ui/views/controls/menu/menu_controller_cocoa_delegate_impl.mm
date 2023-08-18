@@ -5,8 +5,8 @@
 #import "ui/views/controls/menu/menu_controller_cocoa_delegate_impl.h"
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #import "base/message_loop/message_pump_apple.h"
 #import "skia/ext/skia_utils_mac.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"

@@ -12,6 +12,7 @@
 
 #include "apps/app_lifetime_monitor_factory.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/barrier_closure.h"
 #include "base/debug/dump_without_crashing.h"
@@ -22,7 +23,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
@@ -115,7 +115,7 @@ CreateAppShimRequirement() {
   // validating. We are only interested in discovering if the framework bundle
   // is code-signed, and if so what the designated requirement is.
   base::ScopedCFTypeRef<CFURLRef> framework_url =
-      base::mac::FilePathToCFURL(base::apple::FrameworkBundlePath());
+      base::apple::FilePathToCFURL(base::apple::FrameworkBundlePath());
   base::ScopedCFTypeRef<SecStaticCodeRef> framework_code;
   OSStatus status = SecStaticCodeCreateWithPath(
       framework_url, kSecCSDefaultFlags, framework_code.InitializeInto());
@@ -150,8 +150,8 @@ CreateAppShimRequirement() {
   // unsigned. This decision is consistent with the StaticCode source:
   // https://github.com/apple-oss-distributions/Security/blob/Security-60157.40.30.0.1/OSX/libsecurity_codesigning/lib/StaticCode.cpp#L2270
   CFNumberRef framework_signing_info_flags =
-      base::mac::GetValueFromDictionary<CFNumberRef>(framework_signing_info,
-                                                     kSecCodeInfoFlags);
+      base::apple::GetValueFromDictionary<CFNumberRef>(framework_signing_info,
+                                                       kSecCodeInfoFlags);
   if (!framework_signing_info_flags) {
     return absl::nullopt;  // has_value() == false
   }

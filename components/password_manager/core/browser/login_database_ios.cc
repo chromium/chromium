@@ -10,11 +10,11 @@
 
 #include <memory>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base64.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/common/passwords_directory_util_ios.h"
@@ -106,7 +106,7 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
       return ENCRYPTION_RESULT_SERVICE_FAILURE;
   }
 
-  CFDataRef data = base::mac::CFCast<CFDataRef>(data_cftype);
+  CFDataRef data = base::apple::CFCast<CFDataRef>(data_cftype);
   const size_t size = CFDataGetLength(data);
   std::unique_ptr<UInt8[]> buffer(new UInt8[size]);
   CFDataGetBytes(data, CFRangeMake(0, size), buffer.get());

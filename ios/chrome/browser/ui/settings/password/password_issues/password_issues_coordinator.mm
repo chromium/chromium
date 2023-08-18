@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"

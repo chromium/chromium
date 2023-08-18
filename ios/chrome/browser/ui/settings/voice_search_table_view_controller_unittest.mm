@@ -6,8 +6,8 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
-#import "base/mac/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -50,7 +50,7 @@ class VoiceSearchTableViewControllerTest
   }
 
   TableViewSwitchCell* GetSwitchCell() {
-    return base::mac::ObjCCastStrict<TableViewSwitchCell>(
+    return base::apple::ObjCCastStrict<TableViewSwitchCell>(
         [controller().tableView
             cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0
                                                       inSection:0]]);

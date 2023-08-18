@@ -6,12 +6,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 
 UIWindow* GetAnyKeyWindow() {
   for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
     UIWindowScene* windowScene =
-        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
     // Find a key window if it exists.
     for (UIWindow* window in windowScene.windows) {
       if (window.isKeyWindow)

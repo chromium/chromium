@@ -7,9 +7,9 @@
 #include <tuple>
 #include <utility>
 
+#include "base/apple/foundation_util.h"
 #include "base/base64.h"
 #include "base/containers/contains.h"
-#include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -232,7 +232,7 @@ NSWindow* OriginalHostingWindowFromFullScreenWindow(
     NSWindow* full_screen_window) {
   if ([full_screen_window.delegate
           conformsToProtocol:@protocol(ImmersiveModeDelegate)]) {
-    return base::mac::ObjCCastStrict<NSObject<ImmersiveModeDelegate>>(
+    return base::apple::ObjCCastStrict<NSObject<ImmersiveModeDelegate>>(
                full_screen_window.delegate)
         .originalHostingWindow;
   }
@@ -247,7 +247,7 @@ NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeWindow(
   NSWindow* window = native_window.GetNativeNSWindow();
 
   if (NativeWidgetMacNSWindow* widget_window =
-          base::mac::ObjCCast<NativeWidgetMacNSWindow>(window)) {
+          base::apple::ObjCCast<NativeWidgetMacNSWindow>(window)) {
     return GetFromId([widget_window bridgedNativeWidgetId]);
   }
 
@@ -258,7 +258,7 @@ NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeWindow(
   if (remote_cocoa::IsNSToolbarFullScreenWindow(window)) {
     NSWindow* original = OriginalHostingWindowFromFullScreenWindow(window);
     if (NativeWidgetMacNSWindow* widget_window =
-            base::mac::ObjCCast<NativeWidgetMacNSWindow>(original)) {
+            base::apple::ObjCCast<NativeWidgetMacNSWindow>(original)) {
       return GetFromId([widget_window bridgedNativeWidgetId]);
     }
   }

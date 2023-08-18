@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -93,7 +93,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
     for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
       UIWindowScene* windowScene =
-          base::mac::ObjCCastStrict<UIWindowScene>(scene);
+          base::apple::ObjCCastStrict<UIWindowScene>(scene);
       UIWindow* window = [windowScene.windows firstObject];
       if (window) {
         scene_state_.window = window;

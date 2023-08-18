@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator.h"
 
 #import "base/apple/bundle_locations.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -374,7 +374,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // No-op if the BVC isn't being presented.
   if (!self.bvcContainer)
     return;
-  [base::mac::ObjCCast<TabGridViewController>(self.baseViewController)
+  [base::apple::ObjCCast<TabGridViewController>(self.baseViewController)
       prepareForAppearance];
 }
 

@@ -8,12 +8,12 @@
 
 #include <string>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/memory/scoped_refptr.h"
@@ -37,7 +37,7 @@ bool LoadEnrollmentTokenFromPolicy(std::string* enrollment_token) {
     return false;
   }
 
-  CFStringRef value_string = base::mac::CFCast<CFStringRef>(token_value);
+  CFStringRef value_string = base::apple::CFCast<CFStringRef>(token_value);
   if (!value_string)
     return false;
 
@@ -56,7 +56,7 @@ void DeletePolicyEnrollmentToken() {
 //   /Library/Google/Chrome/CloudManagementEnrollmentToken.
 base::FilePath GetEnrollmentTokenFilePath() {
   base::FilePath lib_path;
-  if (!base::mac::GetLocalDirectory(NSLibraryDirectory, &lib_path)) {
+  if (!base::apple::GetLocalDirectory(NSLibraryDirectory, &lib_path)) {
     VLOG(1) << "Failed to get local library path.";
     return base::FilePath();
   }
@@ -70,7 +70,8 @@ base::FilePath GetEnrollmentTokenFilePath() {
 //   /Library/Application Support/Google/CloudManagement.
 base::FilePath GetDmTokenFilePath() {
   base::FilePath app_path;
-  if (!base::mac::GetLocalDirectory(NSApplicationSupportDirectory, &app_path)) {
+  if (!base::apple::GetLocalDirectory(NSApplicationSupportDirectory,
+                                      &app_path)) {
     VLOG(1) << "Failed to get Application support path.";
     return base::FilePath();
   }

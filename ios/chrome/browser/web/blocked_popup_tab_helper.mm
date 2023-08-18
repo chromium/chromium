@@ -10,8 +10,8 @@
 #import <utility>
 
 #import "base/apple/bundle_locations.h"
+#import "base/apple/foundation_util.h"
 #import "base/format_macros.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"

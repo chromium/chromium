@@ -6,7 +6,7 @@
 
 #import <memory>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"

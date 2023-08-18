@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/bookmarks/cells/table_view_bookmarks_folder_item.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/i18n/rtl.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -47,7 +47,7 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   TableViewBookmarksFolderCell* folderCell =
-      base::mac::ObjCCastStrict<TableViewBookmarksFolderCell>(cell);
+      base::apple::ObjCCastStrict<TableViewBookmarksFolderCell>(cell);
   switch (self.style) {
     case BookmarksFolderStyleNewFolder: {
       folderCell.folderTitleTextField.text =

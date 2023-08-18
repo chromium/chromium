@@ -8,7 +8,7 @@
 #import <Cocoa/Cocoa.h>
 #include <IOKit/hidsystem/ev_keymap.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_keys_listener_manager.h"
 #include "extensions/common/command.h"
@@ -173,7 +173,7 @@ bool GlobalShortcutListenerMac::RegisterHotKey(
   EventHotKeyID event_hot_key_id;
 
   // Signature uniquely identifies the application that owns this hot_key.
-  event_hot_key_id.signature = base::mac::CreatorCodeForApplication();
+  event_hot_key_id.signature = base::apple::CreatorCodeForApplication();
   event_hot_key_id.id = hot_key_id;
 
   // Translate ui::Accelerator modifiers to cmdKey, altKey, etc.

@@ -6,8 +6,8 @@
 
 #include <CoreMedia/CoreMedia.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/containers/span.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -20,28 +20,29 @@ namespace {
 
 std::string GetStrValue(CFDictionaryRef dict, CFStringRef key) {
   return base::SysCFStringRefToUTF8(
-      base::mac::CFCastStrict<CFStringRef>(CFDictionaryGetValue(dict, key)));
+      base::apple::CFCastStrict<CFStringRef>(CFDictionaryGetValue(dict, key)));
 }
 
 CFStringRef GetCFStrValue(CFDictionaryRef dict, CFStringRef key) {
-  return base::mac::CFCastStrict<CFStringRef>(CFDictionaryGetValue(dict, key));
+  return base::apple::CFCastStrict<CFStringRef>(
+      CFDictionaryGetValue(dict, key));
 }
 
 int GetIntValue(CFDictionaryRef dict, CFStringRef key) {
   CFNumberRef value =
-      base::mac::CFCastStrict<CFNumberRef>(CFDictionaryGetValue(dict, key));
+      base::apple::CFCastStrict<CFNumberRef>(CFDictionaryGetValue(dict, key));
   int result;
   return CFNumberGetValue(value, kCFNumberIntType, &result) ? result : -1;
 }
 
 bool GetBoolValue(CFDictionaryRef dict, CFStringRef key) {
   return CFBooleanGetValue(
-      base::mac::CFCastStrict<CFBooleanRef>(CFDictionaryGetValue(dict, key)));
+      base::apple::CFCastStrict<CFBooleanRef>(CFDictionaryGetValue(dict, key)));
 }
 
 base::span<const uint8_t> GetDataValue(CFDictionaryRef dict, CFStringRef key) {
   CFDataRef data =
-      base::mac::CFCastStrict<CFDataRef>(CFDictionaryGetValue(dict, key));
+      base::apple::CFCastStrict<CFDataRef>(CFDictionaryGetValue(dict, key));
   return data ? base::span<const uint8_t>(
                     reinterpret_cast<const uint8_t*>(CFDataGetBytePtr(data)),
                     base::checked_cast<size_t>(CFDataGetLength(data)))
@@ -51,7 +52,7 @@ base::span<const uint8_t> GetDataValue(CFDictionaryRef dict, CFStringRef key) {
 base::span<const uint8_t> GetNestedDataValue(CFDictionaryRef dict,
                                              CFStringRef key1,
                                              CFStringRef key2) {
-  CFDictionaryRef nested_dict = base::mac::CFCastStrict<CFDictionaryRef>(
+  CFDictionaryRef nested_dict = base::apple::CFCastStrict<CFDictionaryRef>(
       CFDictionaryGetValue(dict, key1));
   return GetDataValue(nested_dict, key2);
 }

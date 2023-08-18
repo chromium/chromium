@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/content_settings/web_inspector_state_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
@@ -56,7 +56,7 @@ TEST_F(WebInspectorStateTableViewControllerTest, TestSwitchItemAtLoad) {
 TEST_F(WebInspectorStateTableViewControllerTest, TestCheckmark) {
   ChromeTableViewController* chrome_controller = controller();
   WebInspectorStateTableViewController* controller =
-      base::mac::ObjCCastStrict<WebInspectorStateTableViewController>(
+      base::apple::ObjCCastStrict<WebInspectorStateTableViewController>(
           chrome_controller);
 
   [controller setWebInspectorEnabled:YES];

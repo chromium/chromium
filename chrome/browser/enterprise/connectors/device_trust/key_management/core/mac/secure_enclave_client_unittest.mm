@@ -10,9 +10,9 @@
 #include <memory>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/span.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -88,10 +88,10 @@ class SecureEnclaveClientTest : public testing::Test {
   }
 
   void VerifyQuery(CFDictionaryRef query, CFStringRef label) {
-    EXPECT_TRUE(CFEqual(label, base::mac::GetValueFromDictionary<CFStringRef>(
+    EXPECT_TRUE(CFEqual(label, base::apple::GetValueFromDictionary<CFStringRef>(
                                    query, kSecAttrLabel)));
     EXPECT_TRUE(CFEqual(kSecAttrKeyTypeECSECPrimeRandom,
-                        base::mac::GetValueFromDictionary<CFStringRef>(
+                        base::apple::GetValueFromDictionary<CFStringRef>(
                             query, kSecAttrKeyType)));
   }
 
@@ -119,22 +119,22 @@ TEST_F(SecureEnclaveClientTest, CreateKey_Success) {
       .WillOnce([this](CFDictionaryRef attributes, OSStatus* status) {
         EXPECT_TRUE(CFEqual(
             base::SysUTF8ToCFStringRef(constants::kDeviceTrustSigningKeyLabel),
-            base::mac::GetValueFromDictionary<CFStringRef>(attributes,
-                                                           kSecAttrLabel)));
+            base::apple::GetValueFromDictionary<CFStringRef>(attributes,
+                                                             kSecAttrLabel)));
         EXPECT_TRUE(CFEqual(kSecAttrKeyTypeECSECPrimeRandom,
-                            base::mac::GetValueFromDictionary<CFStringRef>(
+                            base::apple::GetValueFromDictionary<CFStringRef>(
                                 attributes, kSecAttrKeyType)));
         EXPECT_TRUE(CFEqual(kSecAttrTokenIDSecureEnclave,
-                            base::mac::GetValueFromDictionary<CFStringRef>(
+                            base::apple::GetValueFromDictionary<CFStringRef>(
                                 attributes, kSecAttrTokenID)));
         EXPECT_TRUE(CFEqual(base::apple::NSToCFPtrCast(@256),
-                            base::mac::GetValueFromDictionary<CFNumberRef>(
+                            base::apple::GetValueFromDictionary<CFNumberRef>(
                                 attributes, kSecAttrKeySizeInBits)));
         auto* private_key_attributes =
-            base::mac::GetValueFromDictionary<CFDictionaryRef>(
+            base::apple::GetValueFromDictionary<CFDictionaryRef>(
                 attributes, kSecPrivateKeyAttrs);
         EXPECT_TRUE(CFEqual(kCFBooleanTrue,
-                            base::mac::GetValueFromDictionary<CFBooleanRef>(
+                            base::apple::GetValueFromDictionary<CFBooleanRef>(
                                 private_key_attributes, kSecAttrIsPermanent)));
 
         *status = errSecSuccess;
@@ -257,7 +257,7 @@ TEST_F(SecureEnclaveClientTest,
             EXPECT_TRUE(
                 CFEqual(base::SysUTF8ToCFStringRef(
                             constants::kTemporaryDeviceTrustSigningKeyLabel),
-                        base::mac::GetValueFromDictionary<CFStringRef>(
+                        base::apple::GetValueFromDictionary<CFStringRef>(
                             attribute_to_update, kSecAttrLabel)));
             VerifyQuery(query, base::SysUTF8ToCFStringRef(
                                    constants::kDeviceTrustSigningKeyLabel));
@@ -324,8 +324,8 @@ TEST_F(SecureEnclaveClientTest,
                        CFDictionaryRef attribute_to_update) {
         EXPECT_TRUE(CFEqual(
             base::SysUTF8ToCFStringRef(constants::kDeviceTrustSigningKeyLabel),
-            base::mac::GetValueFromDictionary<CFStringRef>(attribute_to_update,
-                                                           kSecAttrLabel)));
+            base::apple::GetValueFromDictionary<CFStringRef>(
+                attribute_to_update, kSecAttrLabel)));
         VerifyQuery(query,
                     base::SysUTF8ToCFStringRef(
                         constants::kTemporaryDeviceTrustSigningKeyLabel));

@@ -4,8 +4,8 @@
 
 #import "ios/web/public/session/crw_session_storage.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
@@ -116,7 +116,7 @@ CRWSessionStorage* DecodeSessionStorage(NSData* data) {
   NSKeyedUnarchiver* unarchiver =
       [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
   unarchiver.requiresSecureCoding = NO;
-  return base::mac::ObjCCast<CRWSessionStorage>(
+  return base::apple::ObjCCast<CRWSessionStorage>(
       [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey]);
 }
 

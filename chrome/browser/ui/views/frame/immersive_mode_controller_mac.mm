@@ -8,8 +8,8 @@
 
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"

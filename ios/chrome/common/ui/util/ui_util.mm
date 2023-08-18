@@ -8,7 +8,7 @@
 #import <cmath>
 #import <limits>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ui/gfx/ios/uikit_util.h"
 
 CGFloat DeviceCornerRadius() {
@@ -17,7 +17,7 @@ CGFloat DeviceCornerRadius() {
   UIWindow* window = nil;
   for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
     UIWindowScene* windowScene =
-        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
     UIWindow* firstWindow = [windowScene.windows firstObject];
     if (firstWindow) {
       window = firstWindow;

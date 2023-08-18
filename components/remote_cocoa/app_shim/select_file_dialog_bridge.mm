@@ -11,10 +11,10 @@
 #include <stddef.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
-#include "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -557,7 +557,7 @@ void SelectFileDialogBridge::OnPanelEnded(bool did_cancel) {
     if (type_ == SelectFileDialogType::kSaveAsFile) {
       NSURL* url = [panel_ URL];
       if ([url isFileURL]) {
-        paths.push_back(base::mac::NSStringToFilePath([url path]));
+        paths.push_back(base::apple::NSStringToFilePath([url path]));
       }
 
       NSView* accessoryView = [panel_ accessoryView];
@@ -595,7 +595,7 @@ void SelectFileDialogBridge::OnPanelEnded(bool did_cancel) {
             continue;
         }
 
-        paths.push_back(base::mac::NSStringToFilePath(path));
+        paths.push_back(base::apple::NSStringToFilePath(path));
       }
     }
   }

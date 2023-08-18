@@ -8,12 +8,12 @@
 
 #include <numeric>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/path_service.h"
 #include "skia/ext/skia_utils_mac.h"
@@ -113,7 +113,7 @@ TEST(IcnsEncoderTest, RoundTrip) {
   // Now use Image I/O methods to load the .icns file back in.
   base::ScopedCFTypeRef<CFDictionaryRef> empty_dict(
       CFDictionaryCreate(nullptr, nullptr, nullptr, 0, nullptr, nullptr));
-  base::ScopedCFTypeRef<CFURLRef> url = base::mac::FilePathToCFURL(icon_path);
+  base::ScopedCFTypeRef<CFURLRef> url = base::apple::FilePathToCFURL(icon_path);
   base::ScopedCFTypeRef<CGImageSourceRef> source(
       CGImageSourceCreateWithURL(url, nullptr));
 

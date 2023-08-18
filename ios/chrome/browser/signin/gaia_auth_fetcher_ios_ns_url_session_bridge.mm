@@ -6,9 +6,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/core/browser/chrome_connected_header_helper.h"
 #import "ios/net/cookies/system_cookie_util.h"
@@ -76,7 +76,7 @@ GaiaAuthFetcherIOSNSURLSessionBridge::Request::Request(
   if (!self.bridge)
     return;
   NSHTTPURLResponse* responseWithHeaders =
-      base::mac::ObjCCastStrict<NSHTTPURLResponse>(response);
+      base::apple::ObjCCastStrict<NSHTTPURLResponse>(response);
   if (error) {
     VLOG(1) << "Fetch failed: "
             << base::SysNSStringToUTF8(error.localizedDescription);

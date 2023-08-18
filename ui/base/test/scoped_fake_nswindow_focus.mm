@@ -6,8 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/apple/scoped_objc_class_swizzler.h"
-#import "base/mac/foundation_util.h"
 
 using base::apple::ScopedObjCClassSwizzler;
 
@@ -47,17 +47,17 @@ void ClearFocus() {
 @implementation FakeNSWindowFocusDonor
 
 - (BOOL)isKeyWindow {
-  NSWindow* selfAsWindow = base::mac::ObjCCastStrict<NSWindow>(self);
+  NSWindow* selfAsWindow = base::apple::ObjCCastStrict<NSWindow>(self);
   return selfAsWindow == g_fake_focused_window;
 }
 
 - (BOOL)isMainWindow {
-  NSWindow* selfAsWindow = base::mac::ObjCCastStrict<NSWindow>(self);
+  NSWindow* selfAsWindow = base::apple::ObjCCastStrict<NSWindow>(self);
   return selfAsWindow == g_fake_focused_window;
 }
 
 - (void)makeKeyWindow {
-  NSWindow* selfAsWindow = base::mac::ObjCCastStrict<NSWindow>(self);
+  NSWindow* selfAsWindow = base::apple::ObjCCastStrict<NSWindow>(self);
   if (selfAsWindow == g_fake_focused_window ||
       ![selfAsWindow canBecomeKeyWindow])
     return;
@@ -71,7 +71,7 @@ void ClearFocus() {
 }
 
 - (void)orderOut:(id)sender {
-  NSWindow* selfAsWindow = base::mac::ObjCCastStrict<NSWindow>(self);
+  NSWindow* selfAsWindow = base::apple::ObjCCastStrict<NSWindow>(self);
   if (selfAsWindow == g_fake_focused_window)
     ClearFocus();
   g_order_out_swizzler->InvokeOriginal<void, id>(self, _cmd, sender);

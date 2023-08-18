@@ -7,7 +7,7 @@
 #import <LocalAuthentication/LAContext.h>
 #import <memory>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
@@ -101,7 +101,7 @@ class PrivacyTableViewControllerTest
       [[NSUserDefaults standardUserDefaults]
           removeObjectForKey:kSpdyProxyEnabled];
     }
-    [base::mac::ObjCCastStrict<PrivacyTableViewController>(controller())
+    [base::apple::ObjCCastStrict<PrivacyTableViewController>(controller())
         settingsWillBeDismissed];
     ChromeTableViewControllerTest::TearDown();
   }

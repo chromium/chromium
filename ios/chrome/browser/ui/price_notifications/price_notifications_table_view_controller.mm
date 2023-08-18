@@ -6,7 +6,7 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
@@ -113,7 +113,7 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 - (NSIndexPath*)tableView:(UITableView*)tableView
     willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   PriceNotificationsTableViewItem* item =
-      base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
+      base::apple::ObjCCastStrict<PriceNotificationsTableViewItem>(
           [self.tableViewModel itemAtIndexPath:indexPath]);
 
   if (!item.tracking) {
@@ -130,7 +130,7 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   }
 
   PriceNotificationsTableViewItem* item =
-      base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
+      base::apple::ObjCCastStrict<PriceNotificationsTableViewItem>(
           [self.tableViewModel itemAtIndexPath:indexPath]);
   [self.mutator navigateToWebpageForItem:item];
 }
@@ -138,7 +138,7 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 - (BOOL)tableView:(UITableView*)tableView
     canPerformPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
   PriceNotificationsTableViewItem* item =
-      base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
+      base::apple::ObjCCastStrict<PriceNotificationsTableViewItem>(
           [self.tableViewModel itemAtIndexPath:indexPath]);
 
   return item.tracking;
@@ -147,7 +147,7 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 - (void)tableView:(UITableView*)tableView
     performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
   PriceNotificationsTableViewItem* item =
-      base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
+      base::apple::ObjCCastStrict<PriceNotificationsTableViewItem>(
           [self.tableViewModel itemAtIndexPath:indexPath]);
   [self.mutator navigateToWebpageForItem:item];
 }
@@ -156,7 +156,7 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
     viewForHeaderInSection:(NSInteger)section {
   UIView* header = [super tableView:tableView viewForHeaderInSection:section];
   TableViewTextHeaderFooterView* link =
-      base::mac::ObjCCast<TableViewTextHeaderFooterView>(header);
+      base::apple::ObjCCast<TableViewTextHeaderFooterView>(header);
   if (link) {
     link.delegate = self;
   }
@@ -354,7 +354,7 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 - (void)trackItemForCell:(PriceNotificationsTableViewCell*)cell {
   NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
   PriceNotificationsTableViewItem* item =
-      base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
+      base::apple::ObjCCastStrict<PriceNotificationsTableViewItem>(
           [self.tableViewModel itemAtIndexPath:indexPath]);
   [self.mutator trackItem:item];
 }
@@ -362,7 +362,7 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 - (void)stopTrackingItemForCell:(PriceNotificationsTableViewCell*)cell {
   NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
   PriceNotificationsTableViewItem* item =
-      base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
+      base::apple::ObjCCastStrict<PriceNotificationsTableViewItem>(
           [self.tableViewModel itemAtIndexPath:indexPath]);
   [self.mutator stopTrackingItem:item];
 }

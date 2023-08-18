@@ -11,9 +11,9 @@
 #include <stdint.h>
 #include <sstream>
 
+#include "base/apple/foundation_util.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -1172,7 +1172,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 }
 
 - (void)onVideoError:(NSNotification*)errorNotification {
-  NSError* error = base::mac::ObjCCast<NSError>(
+  NSError* error = base::apple::ObjCCast<NSError>(
       errorNotification.userInfo[AVCaptureSessionErrorKey]);
   [self
       sendErrorString:[NSString stringWithFormat:@"%@: %@",

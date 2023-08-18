@@ -6,7 +6,7 @@
 
 #include <ScreenTime/ScreenTime.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/mac/url_conversions.h"
@@ -58,7 +58,7 @@ WebpageControllerImpl::WebpageControllerImpl(
             nativeController:platform_controller_]),
       blocked_changed_callback_(blocked_changed_callback) {
   NSError* error = nil;
-  NSString* bundle_id = base::SysUTF8ToNSString(base::mac::BaseBundleID());
+  NSString* bundle_id = base::SysUTF8ToNSString(base::apple::BaseBundleID());
   [platform_controller_ setBundleIdentifier:bundle_id error:&error];
 }
 

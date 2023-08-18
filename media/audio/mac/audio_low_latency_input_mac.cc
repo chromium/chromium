@@ -9,12 +9,12 @@
 #include <memory>
 #include <string>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_mach_port.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -146,7 +146,7 @@ static AudioDeviceID FindFirstOutputSubdevice(
   const CFIndex count = CFArrayGetCount(subdevices);
   for (CFIndex i = 0; i != count; ++i) {
     CFStringRef value =
-        base::mac::CFCast<CFStringRef>(CFArrayGetValueAtIndex(subdevices, i));
+        base::apple::CFCast<CFStringRef>(CFArrayGetValueAtIndex(subdevices, i));
     if (value) {
       std::string uid = base::SysCFStringRefToUTF8(value);
       output_subdevice_id = AudioManagerMac::GetAudioDeviceIdByUId(false, uid);

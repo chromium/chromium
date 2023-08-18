@@ -4,7 +4,7 @@
 
 #import "ios/web_view/internal/cwv_back_forward_list_item_internal.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "net/base/mac/url_conversions.h"
@@ -36,7 +36,7 @@
   }
 
   return self.uniqueID ==
-         base::mac::ObjCCastStrict<CWVBackForwardListItem>(other).uniqueID;
+         base::apple::ObjCCastStrict<CWVBackForwardListItem>(other).uniqueID;
 }
 
 - (NSUInteger)hash {

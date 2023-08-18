@@ -8,14 +8,15 @@
 
 #import <MaterialComponents/MaterialProgressView.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 
 @implementation ProgressIndicatorAppInterface
 
 + (id<GREYMatcher>)progressViewWithProgress:(CGFloat)progress {
   GREYMatchesBlock matches = ^BOOL(UIView* view) {
-    MDCProgressView* progressView = base::mac::ObjCCast<MDCProgressView>(view);
+    MDCProgressView* progressView =
+        base::apple::ObjCCast<MDCProgressView>(view);
     return progressView && progressView.progress == progress;
   };
 

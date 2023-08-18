@@ -4,7 +4,7 @@
 
 #import "ios/web/navigation/serializable_user_data_manager_impl.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/web/public/session/crw_session_user_data.h"
 #import "ios/web/public/web_state.h"
 

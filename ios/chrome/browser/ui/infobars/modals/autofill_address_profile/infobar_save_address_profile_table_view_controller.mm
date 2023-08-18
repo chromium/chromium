@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -209,7 +209,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 
   if (itemType == ItemTypeAddressProfileSaveUpdateButton) {
     TableViewTextButtonCell* tableViewTextButtonCell =
-        base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
     [tableViewTextButtonCell.button
                addTarget:self
                   action:@selector(saveAddressProfileButtonWasPressed:)
@@ -219,7 +219,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
         UIEdgeInsetsMake(0, 0, 0, self.tableView.bounds.size.width);
   } else if (itemType == ItemTypeAddressProfileNoThanksButton) {
     TableViewTextButtonCell* tableViewTextButtonCell =
-        base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
     [tableViewTextButtonCell.button
                addTarget:self
                   action:@selector(noThanksButtonWasPressed:)

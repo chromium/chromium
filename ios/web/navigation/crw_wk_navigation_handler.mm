@@ -4,9 +4,9 @@
 
 #import "ios/web/navigation/crw_wk_navigation_handler.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/ios/ns_error_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
@@ -1659,7 +1659,7 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
       base::ScopedCFTypeRef<CFArrayRef> certificateChain(
           SecTrustCopyCertificateChain(trust));
       SecCertificateRef secCertificate =
-          base::mac::CFCastStrict<SecCertificateRef>(
+          base::apple::CFCastStrict<SecCertificateRef>(
               CFArrayGetValueAtIndex(certificateChain, 0));
       leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
           base::ScopedCFTypeRef<SecCertificateRef>(secCertificate,

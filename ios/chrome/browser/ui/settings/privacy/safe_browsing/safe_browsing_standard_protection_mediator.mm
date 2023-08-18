@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_mediator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -309,14 +309,14 @@ const CGFloat kSymbolSize = 20;
         break;
       case ItemTypeSafeBrowsingExtendedReporting: {
         SyncSwitchItem* syncSwitchItem =
-            base::mac::ObjCCastStrict<SyncSwitchItem>(item);
+            base::apple::ObjCCastStrict<SyncSwitchItem>(item);
         syncSwitchItem.on =
             safe_browsing::IsExtendedReportingEnabled(*self.userPrefService);
         syncSwitchItem.enabled = self.inSafeBrowsingStandardProtection;
         break;
       }
       case ItemTypeSafeBrowsingManagedExtendedReporting:
-        base::mac::ObjCCastStrict<TableViewInfoButtonItem>(item).statusText =
+        base::apple::ObjCCastStrict<TableViewInfoButtonItem>(item).statusText =
             self.safeBrowsingExtendedReportingPreference.value
                 ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                 : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
@@ -342,7 +342,7 @@ const CGFloat kSymbolSize = 20;
 // state.
 - (void)configureLeakCheckItem:(TableViewItem*)item {
   TableViewSwitchItem* leakCheckItem =
-      base::mac::ObjCCastStrict<TableViewSwitchItem>(item);
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(item);
   leakCheckItem.enabled = self.inSafeBrowsingStandardProtection;
   leakCheckItem.on = [self passwordLeakCheckItemOnState];
   if (base::FeatureList::IsEnabled(
@@ -358,7 +358,7 @@ const CGFloat kSymbolSize = 20;
 #pragma mark - SafeBrowsingStandardProtectionViewControllerDelegate
 
 - (void)toggleSwitchItem:(TableViewItem*)item withValue:(BOOL)value {
-  SyncSwitchItem* syncSwitchItem = base::mac::ObjCCast<SyncSwitchItem>(item);
+  SyncSwitchItem* syncSwitchItem = base::apple::ObjCCast<SyncSwitchItem>(item);
   syncSwitchItem.on = value;
   ItemType type = static_cast<ItemType>(item.type);
   switch (type) {

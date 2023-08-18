@@ -8,8 +8,8 @@
 #import <StoreKit/StoreKit.h>
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -455,7 +455,7 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
         [invocation getArgument:&object atIndex:2];
         EXPECT_EQ([UIActivityViewController class], [object class]);
         UIActivityViewController* open_in_controller =
-            base::mac::ObjCCastStrict<UIActivityViewController>(object);
+            base::apple::ObjCCastStrict<UIActivityViewController>(object);
         EXPECT_EQ(open_in_controller.excludedActivityTypes.count, 2.0);
       });
 

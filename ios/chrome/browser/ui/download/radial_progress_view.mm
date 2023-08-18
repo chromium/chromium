@@ -6,7 +6,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 
 @interface RadialProgressView ()
 
@@ -98,7 +98,7 @@
 }
 
 - (CAShapeLayer*)trackLayer {
-  return base::mac::ObjCCastStrict<CAShapeLayer>(self.layer);
+  return base::apple::ObjCCastStrict<CAShapeLayer>(self.layer);
 }
 
 - (CAShapeLayer*)progressLayer {

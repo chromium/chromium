@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

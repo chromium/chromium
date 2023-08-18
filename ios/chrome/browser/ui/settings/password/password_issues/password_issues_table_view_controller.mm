@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_table_view_controller.h"
 
 #import <UIKit/UIKit.h>
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"
@@ -270,7 +270,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     case ItemTypePassword: {
       PasswordIssueContentItem* passwordIssue =
-          base::mac::ObjCCastStrict<PasswordIssueContentItem>(
+          base::apple::ObjCCastStrict<PasswordIssueContentItem>(
               [model itemAtIndexPath:indexPath]);
       [self.presenter presentPasswordIssueDetails:passwordIssue.password];
       break;
@@ -299,7 +299,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
     case ItemTypePassword: {
       TableViewURLCell* urlCell =
-          base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+          base::apple::ObjCCastStrict<TableViewURLCell>(cell);
       urlCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
       // Load the favicon from cache.
       [self loadFaviconAtIndexPath:indexPath forCell:cell];
@@ -316,7 +316,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (section == 0 && [self.tableViewModel headerForSectionIndex:0]) {
     // Attach self as delegate to handle clicks in page header.
     TableViewLinkHeaderFooterView* headerView =
-        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+        base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
     headerView.delegate = self;
   }
 
@@ -413,8 +413,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(item);
   DCHECK(cell);
 
-  TableViewURLItem* URLItem = base::mac::ObjCCastStrict<TableViewURLItem>(item);
-  TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+  TableViewURLItem* URLItem =
+      base::apple::ObjCCastStrict<TableViewURLItem>(item);
+  TableViewURLCell* URLCell =
+      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
 
   NSString* itemIdentifier = URLItem.uniqueIdentifier;
   [self.imageDataSource
@@ -468,7 +470,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // item in the given tableView section.
 - (CrURL*)changePasswordURLForPasswordInSection:(NSInteger)section {
   PasswordIssueContentItem* passwordIssueItem =
-      base::mac::ObjCCastStrict<PasswordIssueContentItem>([self.tableViewModel
+      base::apple::ObjCCastStrict<PasswordIssueContentItem>([self.tableViewModel
           itemAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]]);
 
   CHECK(passwordIssueItem.password.changePasswordURL.has_value());

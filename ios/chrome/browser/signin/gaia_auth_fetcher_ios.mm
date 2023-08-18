@@ -6,8 +6,8 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/signin/gaia_auth_fetcher_ios_ns_url_session_bridge.h"
 #import "ios/web/public/browser_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"

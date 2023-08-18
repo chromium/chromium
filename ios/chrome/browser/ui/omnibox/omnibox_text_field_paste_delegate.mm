@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_paste_delegate.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 
 @interface OmniboxTextFieldPasteDelegate ()
 
@@ -25,7 +25,7 @@
         completionHandler:^(id<NSItemProviderReading> _Nullable object,
                             NSError* _Nullable error) {
           if (!error) {
-            self.URL = base::mac::ObjCCast<NSURL>(object);
+            self.URL = base::apple::ObjCCast<NSURL>(object);
           }
           [item setDefaultResult];
         }];

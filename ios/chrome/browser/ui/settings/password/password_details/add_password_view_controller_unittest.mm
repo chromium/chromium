@@ -6,8 +6,8 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -145,7 +145,7 @@ TEST_F(AddPasswordViewControllerTest, TestShowHidePassword) {
   indexOfPassword = [NSIndexPath indexPathForRow:1 inSection:2];
 
   TableViewTextEditCell* textFieldCell =
-      base::mac::ObjCCastStrict<TableViewTextEditCell>([controller()
+      base::apple::ObjCCastStrict<TableViewTextEditCell>([controller()
                       tableView:controller().tableView
           cellForRowAtIndexPath:indexOfPassword]);
   EXPECT_TRUE(textFieldCell);

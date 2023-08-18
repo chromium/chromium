@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "components/google/core/common/google_util.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
@@ -125,7 +125,7 @@ using signin_metrics::PromoAction;
 }
 
 - (GoogleServicesSettingsViewController*)googleServicesSettingsViewController {
-  return base::mac::ObjCCast<GoogleServicesSettingsViewController>(
+  return base::apple::ObjCCast<GoogleServicesSettingsViewController>(
       self.viewController);
 }
 

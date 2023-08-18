@@ -13,9 +13,9 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/launchd.h"
 #include "build/branding_buildflags.h"
 
@@ -53,7 +53,7 @@ NSDictionary* DockFileDataDictionaryForURL(NSURL* url) {
   base::ScopedCFTypeRef<CFPropertyListRef> property_list(
       _CFURLCopyPropertyListRepresentation(base::apple::NSToCFPtrCast(url)));
   CFDictionaryRef dictionary =
-      base::mac::CFCast<CFDictionaryRef>(property_list);
+      base::apple::CFCast<CFDictionaryRef>(property_list);
   if (!dictionary)
     return nil;
 
@@ -128,7 +128,7 @@ BOOL IsAppAtPathAWebBrowser(NSString* app_path) {
   if (!app_bundle)
     return NO;
 
-  NSArray* activities = base::mac::ObjCCast<NSArray>(
+  NSArray* activities = base::apple::ObjCCast<NSArray>(
       [app_bundle objectForInfoDictionaryKey:@"NSUserActivityTypes"]);
   if (!activities)
     return NO;

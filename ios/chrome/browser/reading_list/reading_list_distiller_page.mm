@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"

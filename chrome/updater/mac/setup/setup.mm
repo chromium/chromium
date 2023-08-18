@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
@@ -17,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -129,7 +129,7 @@ bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
     return false;
   }
   @autoreleasepool {
-    NSURL* const url = base::mac::FilePathToNSURL(*path);
+    NSURL* const url = base::apple::FilePathToNSURL(*path);
 
     // If the file is unchanged, avoid a spammy notification by not touching it.
     if (previousPlistExists &&
@@ -172,7 +172,7 @@ bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
         GetInstallDirectory(scope);
     if (install_path) {
       OSStatus ls_result = LSRegisterURL(
-          base::mac::FilePathToCFURL(
+          base::apple::FilePathToCFURL(
               install_path->Append("Current").Append(base::StrCat(
                   {PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}))),
           true);

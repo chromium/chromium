@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_suggestion_view.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/i18n/rtl.h"
-#import "base/mac/foundation_util.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"

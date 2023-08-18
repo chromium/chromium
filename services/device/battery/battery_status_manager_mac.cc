@@ -11,8 +11,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/mac/foundation_util.h"
 #include "base/time/time.h"
 
 namespace device {
@@ -28,7 +28,7 @@ SInt64 GetValueAsSInt64(CFDictionaryRef description,
                         CFStringRef key,
                         SInt64 default_value) {
   CFNumberRef number =
-      base::mac::GetValueFromDictionary<CFNumberRef>(description, key);
+      base::apple::GetValueFromDictionary<CFNumberRef>(description, key);
   SInt64 value;
 
   if (number && CFNumberGetValue(number, kCFNumberSInt64Type, &value))
@@ -41,7 +41,7 @@ bool GetValueAsBoolean(CFDictionaryRef description,
                        CFStringRef key,
                        bool default_value) {
   CFBooleanRef boolean =
-      base::mac::GetValueFromDictionary<CFBooleanRef>(description, key);
+      base::apple::GetValueFromDictionary<CFBooleanRef>(description, key);
 
   return boolean ? CFBooleanGetValue(boolean) : default_value;
 }
@@ -54,7 +54,7 @@ bool CFStringsAreEqual(CFStringRef string1, CFStringRef string2) {
 
 void FetchBatteryStatus(CFDictionaryRef description,
                         mojom::BatteryStatus* status) {
-  CFStringRef current_state = base::mac::GetValueFromDictionary<CFStringRef>(
+  CFStringRef current_state = base::apple::GetValueFromDictionary<CFStringRef>(
       description, CFSTR(kIOPSPowerSourceStateKey));
 
   bool on_battery_power =
@@ -121,8 +121,9 @@ std::vector<mojom::BatteryStatus> GetInternalBatteriesStates() {
     if (!description)
       continue;
 
-    CFStringRef transport_type = base::mac::GetValueFromDictionary<CFStringRef>(
-        description, CFSTR(kIOPSTransportTypeKey));
+    CFStringRef transport_type =
+        base::apple::GetValueFromDictionary<CFStringRef>(
+            description, CFSTR(kIOPSTransportTypeKey));
 
     bool internal_source =
         CFStringsAreEqual(transport_type, CFSTR(kIOPSInternalType));

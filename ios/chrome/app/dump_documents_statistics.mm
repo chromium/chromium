@@ -5,12 +5,12 @@
 #import "ios/chrome/app/dump_documents_statistics.h"
 
 #import "base/apple/backup_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/files/file.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/json/json_writer.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
@@ -103,9 +103,9 @@ void WriteSandboxStatisticsToFile(base::FilePath root,
 
 // Dumps statistics in JSON format for the user's entire Document directory.
 void DumpSandboxFileStatistics() {
-  base::FilePath documents_path = base::mac::GetUserDocumentPath();
+  base::FilePath documents_path = base::apple::GetUserDocumentPath();
   base::FilePath file_stats_directory =
-      base::mac::GetUserDocumentPath().Append("sandboxFileStats");
+      base::apple::GetUserDocumentPath().Append("sandboxFileStats");
 
   // Go up one directory from documents to include all surrounding directories.
   base::FilePath root = documents_path.DirName();

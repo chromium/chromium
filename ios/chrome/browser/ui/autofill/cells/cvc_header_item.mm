@@ -4,7 +4,7 @@
 
 #import "cvc_header_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "build/branding_buildflags.h"
 #import "components/grit/components_scaled_resources.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"

@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
 IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest,
                        DISABLED_MenuCommandsFromChildWindow) {
   NativeWidgetMacNSWindow* window =
-      base::mac::ObjCCastStrict<NativeWidgetMacNSWindow>(
+      base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>(
           browser()->window()->GetNativeWindow().GetNativeNSWindow());
 
   // Create a child window.

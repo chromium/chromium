@@ -6,9 +6,9 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/containers/contains.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"

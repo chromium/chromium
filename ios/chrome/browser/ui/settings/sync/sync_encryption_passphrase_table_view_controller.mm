@@ -6,9 +6,9 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/i18n/time_formatting.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -285,7 +285,7 @@ const CGFloat kSpinnerButtonPadding = 18;
   if (SectionIdentifierPassphrase ==
       [self.tableViewModel sectionIdentifierForSectionIndex:section]) {
     TableViewLinkHeaderFooterView* linkView =
-        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+        base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
     linkView.delegate = self;
   }
   return view;
@@ -495,7 +495,7 @@ const CGFloat kSpinnerButtonPadding = 18;
        [self forDecryption])) {
     _syncObserver.reset();
     SettingsNavigationController* settingsNavigationController =
-        base::mac::ObjCCast<SettingsNavigationController>(
+        base::apple::ObjCCast<SettingsNavigationController>(
             self.navigationController);
     // During the sign-in flow it is possible for the Sync state to
     // change when the user is in the Advanced Settings (e.g., if the user
@@ -529,7 +529,7 @@ const CGFloat kSpinnerButtonPadding = 18;
           ->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     return;
   }
-  [base::mac::ObjCCastStrict<SettingsNavigationController>(
+  [base::apple::ObjCCastStrict<SettingsNavigationController>(
       self.navigationController) popViewControllerOrCloseSettingsAnimated:NO];
 }
 

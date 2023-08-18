@@ -4,11 +4,11 @@
 
 #include "device/bluetooth/test/mock_bluetooth_cbservice_mac.h"
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 #include "device/bluetooth/test/mock_bluetooth_cbcharacteristic_mac.h"
 
-using base::mac::ObjCCast;
+using base::apple::ObjCCast;
 
 @interface MockCBService () {
   // Owner of this instance.

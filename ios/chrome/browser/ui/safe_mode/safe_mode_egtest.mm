@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #import "base/apple/bundle_locations.h"
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_app_interface.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"

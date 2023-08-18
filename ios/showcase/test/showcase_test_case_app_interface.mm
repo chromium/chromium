@@ -4,13 +4,13 @@
 
 #import "ios/showcase/test/showcase_test_case_app_interface.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/showcase/core/app_delegate.h"
 
 @implementation ShowcaseTestCaseAppInterface
 
 + (void)setupUI {
-  AppDelegate* delegate = base::mac::ObjCCastStrict<AppDelegate>(
+  AppDelegate* delegate = base::apple::ObjCCastStrict<AppDelegate>(
       [UIApplication sharedApplication].delegate);
   [delegate setupUI];
 }

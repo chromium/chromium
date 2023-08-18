@@ -6,10 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
@@ -91,7 +91,7 @@ void DownloadManagerMediator::UpdateConsumer() {
   [consumer_ setProgress:GetDownloadManagerProgress()];
 
   base::FilePath filename = task_->GenerateFileName();
-  [consumer_ setFileName:base::mac::FilePathToNSString(filename)];
+  [consumer_ setFileName:base::apple::FilePathToNSString(filename)];
 
   int a11y_announcement = GetDownloadManagerA11yAnnouncement();
   if (a11y_announcement != -1) {

@@ -6,7 +6,7 @@
 
 #import <AppKit/AppKit.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -163,7 +163,7 @@ void SkiaUtilsMacTest::ShapeHelper(int width,
   EXPECT_TRUE(image.representations.count == 1);
   EXPECT_TRUE([image.representations.lastObject
       isKindOfClass:[NSBitmapImageRep class]]);
-  TestImageRep(base::mac::ObjCCastStrict<NSBitmapImageRep>(
+  TestImageRep(base::apple::ObjCCastStrict<NSBitmapImageRep>(
                    image.representations.lastObject),
                test_color);
 }
@@ -200,7 +200,7 @@ TEST_F(SkiaUtilsMacTest, NSImageRepToSkBitmap) {
 
   NSImage* image = CreateNSImage(width, height);
   EXPECT_EQ(1u, image.representations.count);
-  NSBitmapImageRep* imageRep = base::mac::ObjCCastStrict<NSBitmapImageRep>(
+  NSBitmapImageRep* imageRep = base::apple::ObjCCastStrict<NSBitmapImageRep>(
       image.representations.lastObject);
   SkBitmap bitmap(skia::NSImageRepToSkBitmapWithColorSpace(
       imageRep, image.size, false, base::mac::GetSRGBColorSpace()));

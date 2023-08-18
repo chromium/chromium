@@ -12,10 +12,10 @@
 #import <stdint.h>
 #import <cmath>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/numerics/math_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

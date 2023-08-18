@@ -40,7 +40,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -167,7 +167,7 @@ void LazyInitIcuDataFile() {
 
 #else  // !BUILDFLAG(IS_APPLE)
   // Assume it is in the framework bundle's Resources directory.
-  FilePath data_path = mac::PathForFrameworkBundleResource(kIcuDataFileName);
+  FilePath data_path = apple::PathForFrameworkBundleResource(kIcuDataFileName);
 #if BUILDFLAG(IS_IOS)
   FilePath override_data_path = ios::FilePathOfEmbeddedICU();
   if (!override_data_path.empty()) {

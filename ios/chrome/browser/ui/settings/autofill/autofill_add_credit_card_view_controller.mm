@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
@@ -225,7 +225,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Set the delegate and style for only `TableViewTextEditCell` type of cell
   // not other types.
   TableViewTextEditCell* editCell =
-      base::mac::ObjCCast<TableViewTextEditCell>(cell);
+      base::apple::ObjCCast<TableViewTextEditCell>(cell);
   editCell.textField.delegate = self;
   editCell.selectionStyle = UITableViewCellSelectionStyleNone;
 
@@ -291,7 +291,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSIndexPath* path =
       [self.tableViewModel indexPathForItemType:itemType
                               sectionIdentifier:sectionIdentifier];
-  AutofillEditItem* item = base::mac::ObjCCastStrict<AutofillEditItem>(
+  AutofillEditItem* item = base::apple::ObjCCastStrict<AutofillEditItem>(
       [self.tableViewModel itemAtIndexPath:path]);
   NSString* text = item.textFieldValue;
   return text;
@@ -305,7 +305,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSIndexPath* path =
       [self.tableViewModel indexPathForItemType:itemType
                               sectionIdentifier:sectionIdentifier];
-  AutofillEditItem* item = base::mac::ObjCCastStrict<AutofillEditItem>(
+  AutofillEditItem* item = base::apple::ObjCCastStrict<AutofillEditItem>(
       [self.tableViewModel itemAtIndexPath:path]);
   item.textFieldValue = text;
   [self reconfigureCellsForItems:@[ item ]];

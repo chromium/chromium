@@ -6,7 +6,7 @@
 
 #import <memory>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -197,10 +197,10 @@ TEST_F(BlockPopupsTableViewControllerTest, TestMultipleAllowedItemsDeleted) {
   NSIndexPath* first_index = [NSIndexPath indexPathForRow:0 inSection:1];
   NSIndexPath* second_index = [NSIndexPath indexPathForRow:1 inSection:1];
   TableViewDetailTextItem* first_item =
-      base::mac::ObjCCastStrict<TableViewDetailTextItem>(
+      base::apple::ObjCCastStrict<TableViewDetailTextItem>(
           [popups_controller.tableViewModel itemAtIndexPath:first_index]);
   TableViewDetailTextItem* second_item =
-      base::mac::ObjCCastStrict<TableViewDetailTextItem>(
+      base::apple::ObjCCastStrict<TableViewDetailTextItem>(
           [popups_controller.tableViewModel itemAtIndexPath:second_index]);
 
   std::set<std::string> deleted_patterns{

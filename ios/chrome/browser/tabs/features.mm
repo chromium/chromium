@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/tabs/features.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/field_trial_params.h"
 #import "ui/base/device_form_factor.h"
 

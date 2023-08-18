@@ -10,10 +10,10 @@
 #import <string>
 #import <utility>
 
+#import "base/apple/foundation_util.h"
 #import "base/format_macros.h"
 #import "base/json/json_reader.h"
 #import "base/json/json_writer.h"
-#import "base/mac/foundation_util.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/field_trial.h"
 #import "base/metrics/histogram_macros.h"

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/mac/font_platform_data_mac.h"
 
 #include "base/apple/bridging.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/mac/font_matcher_mac.h"

@@ -10,10 +10,10 @@
 
 #include <string>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/policy/policy_constants.h"
@@ -104,7 +104,7 @@ void CheckUserDataDirPolicy(base::FilePath* user_data_dir) {
   CFStringRef bundle_id = CFSTR("com.google.Chrome");
 #else
   base::ScopedCFTypeRef<CFStringRef> bundle_id(
-      base::SysUTF8ToCFStringRef(base::mac::BaseBundleID()));
+      base::SysUTF8ToCFStringRef(base::apple::BaseBundleID()));
 #endif
 
   base::ScopedCFTypeRef<CFStringRef> key(
@@ -114,7 +114,7 @@ void CheckUserDataDirPolicy(base::FilePath* user_data_dir) {
 
   if (!value || !CFPreferencesAppValueIsForced(key, bundle_id))
     return;
-  CFStringRef value_string = base::mac::CFCast<CFStringRef>(value);
+  CFStringRef value_string = base::apple::CFCast<CFStringRef>(value);
   if (!value_string)
     return;
 

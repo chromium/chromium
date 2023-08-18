@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"

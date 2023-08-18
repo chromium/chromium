@@ -7,7 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 #import "ui/base/cocoa/command_dispatcher.h"
 

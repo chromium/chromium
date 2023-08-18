@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/follow/followed_web_site_state.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
@@ -57,7 +57,7 @@
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
   FollowedWebChannelCell* cell =
-      base::mac::ObjCCastStrict<FollowedWebChannelCell>(tableCell);
+      base::apple::ObjCCastStrict<FollowedWebChannelCell>(tableCell);
   cell.followedWebChannel = self.followedWebChannel;
 }
 

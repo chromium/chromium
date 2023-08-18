@@ -8,9 +8,9 @@
 #import <Foundation/Foundation.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/i18n/char_iterator.h"
-#include "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
 #include "base/strings/string_piece.h"
 #import "base/strings/sys_string_conversions.h"
@@ -53,7 +53,7 @@ std::vector<Font> GetFallbackFonts(const Font& font) {
   const CFIndex fallback_count = CFArrayGetCount(cascade_list);
   for (CFIndex i = 0; i < fallback_count; ++i) {
     CTFontDescriptorRef descriptor =
-        base::mac::CFCastStrict<CTFontDescriptorRef>(
+        base::apple::CFCastStrict<CTFontDescriptorRef>(
             CFArrayGetValueAtIndex(cascade_list, i));
     base::ScopedCFTypeRef<CTFontRef> fallback_font(
         CTFontCreateWithFontDescriptor(descriptor, 0.0, nullptr));

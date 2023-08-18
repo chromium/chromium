@@ -4,7 +4,7 @@
 
 #import "ios/web/public/session/crw_session_user_data.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 
 @implementation CRWSessionUserData {
   NSMutableDictionary<NSString*, id<NSCoding>>* _data;
@@ -54,7 +54,7 @@
     return NO;
 
   CRWSessionUserData* other =
-      base::mac::ObjCCastStrict<CRWSessionUserData>(object);
+      base::apple::ObjCCastStrict<CRWSessionUserData>(object);
 
   return [_data isEqual:other->_data];
 }

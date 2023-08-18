@@ -8,12 +8,12 @@
 
 #include <memory>
 
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -140,9 +140,10 @@ TestShimClient::TestShimClient() {
   base::FilePath user_data_dir;
   CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
 
-  std::string name_fragment = base::StrCat(
-      {base::mac::BaseBundleID(), ".", app_mode::kAppShimBootstrapNameFragment,
-       ".", base::MD5String(user_data_dir.value())});
+  std::string name_fragment =
+      base::StrCat({base::apple::BaseBundleID(), ".",
+                    app_mode::kAppShimBootstrapNameFragment, ".",
+                    base::MD5String(user_data_dir.value())});
   mojo::PlatformChannelEndpoint endpoint = ConnectToBrowser(name_fragment);
 
   mojo::ScopedMessagePipeHandle message_pipe;

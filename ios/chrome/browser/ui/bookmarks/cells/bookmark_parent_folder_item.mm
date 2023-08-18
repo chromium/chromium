@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_parent_folder_item.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/i18n/rtl.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -38,7 +38,7 @@
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
   BookmarkParentFolderCell* cell =
-      base::mac::ObjCCastStrict<BookmarkParentFolderCell>(tableCell);
+      base::apple::ObjCCastStrict<BookmarkParentFolderCell>(tableCell);
   cell.parentFolderNameLabel.text = self.title;
   cell.cloudSlashedView.hidden = !self.shouldDisplayCloudSlashIcon;
 }

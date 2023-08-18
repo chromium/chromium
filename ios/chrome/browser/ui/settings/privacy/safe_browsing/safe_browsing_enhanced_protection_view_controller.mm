@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_enhanced_protection_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -224,7 +224,7 @@ const CGFloat kSymbolSize = 20;
   if (sectionIdentifier == SectionIdentifierThingsToConsider) {
     // Might be a different type of footer.
     TableViewLinkHeaderFooterView* linkView =
-        base::mac::ObjCCast<TableViewLinkHeaderFooterView>(view);
+        base::apple::ObjCCast<TableViewLinkHeaderFooterView>(view);
     linkView.delegate = self;
   }
   return view;

@@ -7,11 +7,11 @@
 #include <unistd.h>
 
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
@@ -108,7 +108,7 @@ void SetupCommonSandboxParameters(
       sandbox::policy::GetCanonicalPath(base::apple::MainBundlePath()).value();
   CHECK(compiler->SetParameter(sandbox::policy::kParamBundlePath, bundle_path));
 
-  std::string bundle_id = base::mac::BaseBundleID();
+  std::string bundle_id = base::apple::BaseBundleID();
   DCHECK(!bundle_id.empty()) << "base::apple::OuterBundle is unset";
   CHECK(compiler->SetParameter(sandbox::policy::kParamBundleId, bundle_id));
 
@@ -212,7 +212,7 @@ void SetupGpuSandboxParameters(sandbox::SandboxCompiler* compiler,
           sandbox::policy::switches::kDisableMetalShaderCache)));
 
   base::FilePath helper_bundle_path =
-      base::mac::GetInnermostAppBundlePath(command_line.GetProgram());
+      base::apple::GetInnermostAppBundlePath(command_line.GetProgram());
 
   // The helper may not be contained in an app bundle for unit tests.
   // In that case `kParamHelperBundleId` will remain unset.

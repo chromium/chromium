@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/web/shell/view_controller.h"
 
 namespace web {
@@ -15,7 +15,7 @@ namespace shell_test_util {
 UIWindow* GetAnyKeyWindow() {
   for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
     UIWindowScene* windowScene =
-        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
     // Find a key window if it exists.
     for (UIWindow* window in windowScene.windows) {
       if (window.isKeyWindow) {

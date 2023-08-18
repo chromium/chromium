@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestion_identifier.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 
 @implementation ContentSuggestionIdentifier
 
@@ -23,7 +23,7 @@
   }
 
   ContentSuggestionIdentifier* other =
-      base::mac::ObjCCastStrict<ContentSuggestionIdentifier>(object);
+      base::apple::ObjCCastStrict<ContentSuggestionIdentifier>(object);
 
   return self.sectionInfo == other.sectionInfo &&
          self.IDInSection == other.IDInSection;

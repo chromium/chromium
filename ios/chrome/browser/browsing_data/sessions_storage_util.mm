@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
-#import "base/mac/foundation_util.h"
 #import "base/path_service.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 
@@ -15,7 +15,7 @@ namespace {
 NSString* GetDiscardedSessionsFilePath() {
   base::FilePath directory_path;
   base::PathService::Get(ios::DIR_USER_DATA, &directory_path);
-  return base::mac::FilePathToNSString(
+  return base::apple::FilePathToNSString(
       directory_path.Append(FILE_PATH_LITERAL("DiscardedSessions")));
 }
 

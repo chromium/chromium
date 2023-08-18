@@ -9,8 +9,8 @@
 #import <utility>
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/ranges/algorithm.h"
@@ -564,7 +564,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
       if (itemType == ItemTypeSavedPassword) {
         password_manager::AffiliatedGroup affiliatedGroup =
-            base::mac::ObjCCastStrict<AffiliatedGroupTableViewItem>(
+            base::apple::ObjCCastStrict<AffiliatedGroupTableViewItem>(
                 [self.tableViewModel itemAtIndexPath:indexPath])
                 .affiliatedGroup;
         [origins addObject:base::SysUTF8ToNSString(
@@ -1483,7 +1483,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     // Remove affiliated group.
     if (itemType == ItemTypeSavedPassword) {
       password_manager::AffiliatedGroup affiliatedGroup =
-          base::mac::ObjCCastStrict<AffiliatedGroupTableViewItem>(item)
+          base::apple::ObjCCastStrict<AffiliatedGroupTableViewItem>(item)
               .affiliatedGroup;
 
       // Remove from local cache.
@@ -1497,7 +1497,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                                  affiliatedGroup.GetCredentials().end());
     } else if (itemType == ItemTypeBlocked) {
       password_manager::CredentialUIEntry credential =
-          base::mac::ObjCCastStrict<BlockedSiteTableViewItem>(item).credential;
+          base::apple::ObjCCastStrict<BlockedSiteTableViewItem>(item)
+              .credential;
 
       auto removeCredential =
           [](std::vector<password_manager::CredentialUIEntry>& credentials,
@@ -1872,7 +1873,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (void)showDetailedViewPageForItem:(TableViewItem*)item {
   [self.handler
-      showDetailedViewForAffiliatedGroup:base::mac::ObjCCastStrict<
+      showDetailedViewForAffiliatedGroup:base::apple::ObjCCastStrict<
                                              AffiliatedGroupTableViewItem>(item)
                                              .affiliatedGroup];
 }
@@ -1932,7 +1933,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       DCHECK_EQ(SectionIdentifierBlocked,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
       password_manager::CredentialUIEntry credential =
-          base::mac::ObjCCastStrict<BlockedSiteTableViewItem>(
+          base::apple::ObjCCastStrict<BlockedSiteTableViewItem>(
               [model itemAtIndexPath:indexPath])
               .credential;
       [self.handler showDetailedViewForCredential:credential];
@@ -1992,7 +1993,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     // This is the text at the top of the page with a link. Attach as a delegate
     // to ensure clicks on the link are handled.
     TableViewLinkHeaderFooterView* linkView =
-        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+        base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
     linkView.delegate = self;
   }
 
@@ -2035,7 +2036,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
     case ItemTypePasswordCheckStatus: {
       SettingsCheckCell* passwordCheckCell =
-          base::mac::ObjCCastStrict<SettingsCheckCell>(cell);
+          base::apple::ObjCCastStrict<SettingsCheckCell>(cell);
       [passwordCheckCell.infoButton
                  addTarget:self
                     action:@selector(didTapPasswordCheckInfoButton:)
@@ -2045,7 +2046,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     case ItemTypeSavedPassword:
     case ItemTypeBlocked: {
       // Load the favicon from cache.
-      [base::mac::ObjCCastStrict<PasswordFormContentCell>(cell)
+      [base::apple::ObjCCastStrict<PasswordFormContentCell>(cell)
           loadFavicon:self.imageDataSource];
       break;
     }

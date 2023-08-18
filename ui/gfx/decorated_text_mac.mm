@@ -8,7 +8,7 @@
 #include <CoreText/CoreText.h>
 
 #include "base/apple/bridging.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/gfx/decorated_text.h"
 

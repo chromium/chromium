@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/history/history_entry_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/history/core/browser/browsing_history_service.h"
 #import "components/strings/grit/components_strings.h"
@@ -47,7 +47,7 @@
   [super configureCell:tableCell withStyler:styler];
 
   TableViewURLCell* cell =
-      base::mac::ObjCCastStrict<TableViewURLCell>(tableCell);
+      base::apple::ObjCCastStrict<TableViewURLCell>(tableCell);
   cell.cellUniqueIdentifier = self.uniqueIdentifier;
   cell.titleLabel.text = self.text;
   cell.URLLabel.text = self.detailText;

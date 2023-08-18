@@ -4,7 +4,7 @@
 
 #import "ios/web/content/web_state/content_web_state.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "content/public/browser/navigation_entry.h"
 #import "content/public/browser/web_contents.h"
@@ -118,7 +118,7 @@ ContentWebState::ContentWebState(const CreateParams& params,
       this, params.browser_state, web_contents_->GetController());
   web_frames_manager_ = std::make_unique<ContentWebFramesManager>(this);
 
-  UIScrollView* web_contents_view = base::mac::ObjCCastStrict<UIScrollView>(
+  UIScrollView* web_contents_view = base::apple::ObjCCastStrict<UIScrollView>(
       web_contents_->GetNativeView().Get());
 
   web_view_ = [[CRCWebViewportContainerView alloc] init];
@@ -662,7 +662,7 @@ bool ContentWebState::DoBrowserControlsShrinkRendererSize(
   if (top_control_scroll_in_progress_) {
     return cached_shrink_controls_;
   }
-  UIScrollView* web_contents_view = base::mac::ObjCCastStrict<UIScrollView>(
+  UIScrollView* web_contents_view = base::apple::ObjCCastStrict<UIScrollView>(
       web_contents->GetNativeView().Get());
   if (web_contents_view.contentInset.top > [web_view_ minViewportInsets].top) {
     return true;

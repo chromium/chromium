@@ -4,10 +4,10 @@
 
 #include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/mac/foundation_util.h"
 #import "components/remote_cocoa/app_shim/immersive_mode_delegate_mac.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/gfx/geometry/rect.h"
@@ -191,7 +191,7 @@ ImmersiveModeController::ImmersiveModeController(
   // local strong reference. This view will be re-parented into the AppKit
   // created NSWindow.
   BridgedContentView* overlay_content_view =
-      base::mac::ObjCCastStrict<BridgedContentView>(
+      base::apple::ObjCCastStrict<BridgedContentView>(
           overlay_window_.contentView);
   overlay_content_view_ = overlay_content_view;
   [overlay_content_view removeFromSuperview];
@@ -353,7 +353,7 @@ void ImmersiveModeController::UpdateToolbarVisibility(
 void ImmersiveModeController::ObserveChildWindows(NSWindow* window) {
   // Watch the Widget for addition and removal of child Widgets.
   NativeWidgetMacNSWindow* widget_window =
-      base::mac::ObjCCastStrict<NativeWidgetMacNSWindow>(window);
+      base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>(window);
   widget_window.childWindowAddedHandler = ^(NSWindow* child) {
     OnChildWindowAdded(child);
   };
@@ -364,7 +364,7 @@ void ImmersiveModeController::ObserveChildWindows(NSWindow* window) {
 
 void ImmersiveModeController::StopObservingChildWindows(NSWindow* window) {
   NativeWidgetMacNSWindow* widget_window =
-      base::mac::ObjCCastStrict<NativeWidgetMacNSWindow>(window);
+      base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>(window);
   widget_window.childWindowAddedHandler = nil;
   widget_window.childWindowRemovedHandler = nil;
 }

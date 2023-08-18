@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"

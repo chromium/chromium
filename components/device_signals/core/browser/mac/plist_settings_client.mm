@@ -8,10 +8,10 @@
 
 #include <utility>
 
+#import "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
-#import "base/mac/foundation_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -36,7 +36,7 @@ id ParseArrays(id data_obj, NSString* path) {
   NSArray* indexes = [path componentsSeparatedByString:@"["];
 
   for (NSString* index_with_bracket in indexes) {
-    NSArray* data_array = base::mac::ObjCCast<NSArray>(data_obj);
+    NSArray* data_array = base::apple::ObjCCast<NSArray>(data_obj);
     if (!data_array) {
       return nil;
     }
@@ -134,7 +134,7 @@ std::vector<SettingsItem> GetSettingItems(
     }
 
     NSError* error = nil;
-    NSURL* url = base::mac::FilePathToNSURL(resolved_path);
+    NSURL* url = base::apple::FilePathToNSURL(resolved_path);
     NSDictionary* plist_dict =
         [[NSDictionary alloc] initWithContentsOfURL:url error:&error];
     if (error && error.code == NSFileReadNoPermissionError) {
@@ -161,7 +161,7 @@ std::vector<SettingsItem> GetSettingItems(
       continue;
     }
 
-    if (NSString* setting_str = base::mac::ObjCCast<NSString>(value_ptr)) {
+    if (NSString* setting_str = base::apple::ObjCCast<NSString>(value_ptr)) {
       if (setting_str.length <= kMaxStringSizeInBytes) {
         std::string setting_json_string;
         base::JSONWriter::Write(
@@ -169,7 +169,8 @@ std::vector<SettingsItem> GetSettingItems(
             &setting_json_string);
         item.setting_json_value = setting_json_string;
       }
-    } else if (NSNumber* value_num = base::mac::ObjCCast<NSNumber>(value_ptr)) {
+    } else if (NSNumber* value_num =
+                   base::apple::ObjCCast<NSNumber>(value_ptr)) {
       // Differentiating between integer and float types.
       const char* value_type = value_num.objCType;
       if (strcmp(value_type, "d") == 0 || strcmp(value_type, "f") == 0) {

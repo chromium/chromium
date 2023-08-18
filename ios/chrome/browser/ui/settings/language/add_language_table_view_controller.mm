@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/language/add_language_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
@@ -130,7 +130,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  LanguageItem* languageItem = base::mac::ObjCCastStrict<LanguageItem>(
+  LanguageItem* languageItem = base::apple::ObjCCastStrict<LanguageItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
 
   [self.delegate addLanguageTableViewController:self

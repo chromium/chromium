@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/history/history_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/i18n/time_formatting.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -515,7 +515,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   // Delete items from Browser History.
   std::vector<BrowsingHistoryService::HistoryEntry> entries;
   for (NSIndexPath* indexPath in toDeleteIndexPaths) {
-    HistoryEntryItem* object = base::mac::ObjCCastStrict<HistoryEntryItem>(
+    HistoryEntryItem* object = base::apple::ObjCCastStrict<HistoryEntryItem>(
         [self.tableViewModel itemAtIndexPath:indexPath]);
     BrowsingHistoryService::HistoryEntry entry;
     entry.url = object.URL;
@@ -580,7 +580,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
             base::UserMetricsAction("HistoryPage_EntryLinkClick"));
       }
       HistoryEntryItem* historyItem =
-          base::mac::ObjCCastStrict<HistoryEntryItem>(item);
+          base::apple::ObjCCastStrict<HistoryEntryItem>(item);
       [self openURL:historyItem.URL];
     }
   }
@@ -613,7 +613,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     return nil;
   }
 
-  HistoryEntryItem* entry = base::mac::ObjCCastStrict<HistoryEntryItem>(
+  HistoryEntryItem* entry = base::apple::ObjCCastStrict<HistoryEntryItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
   UIView* cell = [self.tableView cellForRowAtIndexPath:indexPath];
   return [self.menuProvider contextMenuConfigurationForItem:entry
@@ -631,7 +631,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     case kEntriesStatusSectionIdentifier: {
       // Might be a different type of header.
       TableViewLinkHeaderFooterView* linkView =
-          base::mac::ObjCCast<TableViewLinkHeaderFooterView>(view);
+          base::apple::ObjCCast<TableViewLinkHeaderFooterView>(view);
       linkView.delegate = self;
     } break;
     default:
@@ -648,9 +648,9 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   cellToReturn.userInteractionEnabled = !(item.type == ItemTypeEntriesStatus);
   if (item.type == ItemTypeHistoryEntry) {
     HistoryEntryItem* URLItem =
-        base::mac::ObjCCastStrict<HistoryEntryItem>(item);
+        base::apple::ObjCCastStrict<HistoryEntryItem>(item);
     TableViewURLCell* URLCell =
-        base::mac::ObjCCastStrict<TableViewURLCell>(cellToReturn);
+        base::apple::ObjCCastStrict<TableViewURLCell>(cellToReturn);
     CrURL* crurl = [[CrURL alloc] initWithGURL:URLItem.URL];
     [self.imageDataSource
         faviconForPageURL:crurl
@@ -724,7 +724,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   switch (item.type) {
     case ItemTypeHistoryEntry: {
       HistoryEntryItem* URLItem =
-          base::mac::ObjCCastStrict<HistoryEntryItem>(item);
+          base::apple::ObjCCastStrict<HistoryEntryItem>(item);
       return [[URLInfo alloc] initWithURL:URLItem.URL title:URLItem.text];
     }
     case ItemTypeEntriesStatus:
@@ -896,7 +896,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
           [self.tableViewModel itemsInSectionWithIdentifier:sectionIdentifier];
       for (id item in items) {
         HistoryEntryItem* historyItem =
-            base::mac::ObjCCastStrict<HistoryEntryItem>(item);
+            base::apple::ObjCCastStrict<HistoryEntryItem>(item);
         if (![entries containsObject:historyItem]) {
           NSIndexPath* indexPath =
               [self.tableViewModel indexPathForItem:historyItem];
@@ -1035,7 +1035,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
           isEqual:[NSIndexPath indexPathForItem:0 inSection:0]])
     return;
 
-  HistoryEntryItem* entry = base::mac::ObjCCastStrict<HistoryEntryItem>(
+  HistoryEntryItem* entry = base::apple::ObjCCastStrict<HistoryEntryItem>(
       [self.tableViewModel itemAtIndexPath:touchedItemIndexPath]);
 
   __weak HistoryTableViewController* weakSelf = self;

@@ -4,10 +4,10 @@
 
 #import "ios/web/download/download_native_task_bridge.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/files/file_util.h"
 #import "base/functional/callback.h"
-#import "base/mac/foundation_util.h"
 #import "base/task/thread_pool.h"
 #import "ios/web/download/download_result.h"
 #import "ios/web/web_view/error_translation_util.h"
@@ -119,7 +119,7 @@ void DownloadDidFinishWithSize(
   _progressCallback = std::move(progressCallback);
   _responseCallback = std::move(responseCallback);
   _completeCallback = std::move(completeCallback);
-  _urlForDownload = base::mac::FilePathToNSURL(path);
+  _urlForDownload = base::apple::FilePathToNSURL(path);
 
   if (_resumeData) {
     DCHECK(!_startDownloadBlock);
@@ -218,7 +218,7 @@ void DownloadDidFinishWithSize(
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
         base::BindOnce(&FileSizeForFileAtPath,
-                       base::mac::NSStringToFilePath(_urlForDownload.path)),
+                       base::apple::NSStringToFilePath(_urlForDownload.path)),
         base::BindOnce(&DownloadDidFinishWithSize, std::move(_progressCallback),
                        std::move(_completeCallback)));
   }
@@ -266,7 +266,7 @@ void DownloadDidFinishWithSize(
   int http_error = -1;
   if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
     http_error =
-        base::mac::ObjCCastStrict<NSHTTPURLResponse>(response).statusCode;
+        base::apple::ObjCCastStrict<NSHTTPURLResponse>(response).statusCode;
   }
 
   std::move(_responseCallback).Run(http_error, response.MIMEType);

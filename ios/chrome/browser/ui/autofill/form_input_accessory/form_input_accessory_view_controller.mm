@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -114,7 +114,7 @@
 
 // The custom view that should be shown in the input accessory view.
 - (FormInputAccessoryView*)formInputAccessoryView {
-  return base::mac::ObjCCastStrict<FormInputAccessoryView>(self.view);
+  return base::apple::ObjCCastStrict<FormInputAccessoryView>(self.view);
 }
 
 #pragma mark - Public

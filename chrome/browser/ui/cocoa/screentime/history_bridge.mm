@@ -6,7 +6,7 @@
 
 #import <ScreenTime/ScreenTime.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cocoa/screentime/history_deleter.h"

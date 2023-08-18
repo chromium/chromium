@@ -8,10 +8,10 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/base64.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/gmock_callback_support.h"
@@ -824,7 +824,7 @@ TEST_F(WebStateImplTest, UncommittedRestoreSession) {
                                   extracted_session_storage);
   web::SerializableUserDataManager* restored_user_data_manager =
       web::SerializableUserDataManager::FromWebState(&restored_web_state);
-  NSNumber* user_data_value = base::mac::ObjCCast<NSNumber>(
+  NSNumber* user_data_value = base::apple::ObjCCast<NSNumber>(
       restored_user_data_manager->GetValueForSerializationKey(
           @"user_data_key"));
   EXPECT_EQ(@(1), user_data_value);

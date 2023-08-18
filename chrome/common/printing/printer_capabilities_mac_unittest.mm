@@ -4,8 +4,8 @@
 
 #include "chrome/common/printing/printer_capabilities_mac.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -18,7 +18,7 @@ base::FilePath WriteOutCustomPapersPlist(const base::FilePath& dir,
                                          const char* name,
                                          NSDictionary* dict) {
   base::FilePath path = dir.Append(name);
-  if (![dict writeToURL:base::mac::FilePathToNSURL(path) error:nil]) {
+  if (![dict writeToURL:base::apple::FilePathToNSURL(path) error:nil]) {
     path.clear();
   }
   return path;

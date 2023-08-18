@@ -7,8 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/bundle_locations.h"
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -95,7 +95,7 @@ bool ShouldLoadUrlInDesktopMode(const GURL& url,
     for (NSDictionary* urlType in urlTypes) {
       DCHECK([urlType isKindOfClass:[NSDictionary class]]);
       NSArray* schemesForType =
-          base::mac::ObjCCastStrict<NSArray>(urlType[@"CFBundleURLSchemes"]);
+          base::apple::ObjCCastStrict<NSArray>(urlType[@"CFBundleURLSchemes"]);
       if (schemesForType.count) {
         [schemes addObjectsFromArray:schemesForType];
       }

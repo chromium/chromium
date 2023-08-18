@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/i18n/rtl.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -30,7 +30,7 @@
   [super configureCell:tableCell withStyler:styler];
 
   TableViewImageCell* cell =
-      base::mac::ObjCCastStrict<TableViewImageCell>(tableCell);
+      base::apple::ObjCCastStrict<TableViewImageCell>(tableCell);
   if (self.image) {
     cell.imageView.hidden = NO;
     cell.imageView.image = self.image;

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
@@ -65,7 +65,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
   TableViewModel* model = self.tableViewModel;
   NSIndexPath* indexPath = [model indexPathForItemType:sender.tag];
   DCHECK(indexPath);
-  SyncSwitchItem* syncSwitchItem = base::mac::ObjCCastStrict<SyncSwitchItem>(
+  SyncSwitchItem* syncSwitchItem = base::apple::ObjCCastStrict<SyncSwitchItem>(
       [model itemAtIndexPath:indexPath]);
   DCHECK(syncSwitchItem);
   [self.serviceDelegate toggleSwitchItem:syncSwitchItem withValue:sender.isOn];
@@ -79,7 +79,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
                      cellForRowAtIndexPath:indexPath];
   if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
     TableViewSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(switchAction:)
                     forControlEvents:UIControlEventValueChanged];
@@ -87,7 +87,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     switchCell.switchView.tag = item.type;
   } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
     TableViewInfoButtonCell* managedCell =
-        base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
     managedCell.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     [managedCell.trailingButton addTarget:self
                                    action:@selector(didTapManagedUIInfoButton:)
@@ -110,7 +110,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
   if (sectionIdentifier == SignOutSectionIdentifier) {
     TableViewLinkHeaderFooterView* linkView =
-        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+        base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
     linkView.delegate = self;
   }
 

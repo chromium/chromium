@@ -9,7 +9,7 @@
 #import <utility>
 
 #import "base/apple/bundle_locations.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -264,7 +264,7 @@ class UpgradeInfoBarDismissObserver
 
 - (BOOL)infoBarShownRecently {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSDate* lastDisplayDate = base::mac::ObjCCast<NSDate>(
+  NSDate* lastDisplayDate = base::apple::ObjCCast<NSDate>(
       [defaults objectForKey:kLastInfobarDisplayTimeKey]);
   if (!lastDisplayDate) {
     return NO;

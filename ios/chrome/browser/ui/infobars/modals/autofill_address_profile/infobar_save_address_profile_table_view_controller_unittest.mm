@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
@@ -115,7 +115,7 @@ TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
   CreateController();
   CheckController();
   InfobarSaveAddressProfileTableViewController* save_view_controller =
-      base::mac::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
+      base::apple::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
           controller());
   [save_view_controller
       setupModalViewControllerWithPrefs:GetDataForSaveModal()];
@@ -137,7 +137,7 @@ TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
   CreateController();
   CheckController();
   InfobarSaveAddressProfileTableViewController* update_view_controller =
-      base::mac::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
+      base::apple::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
           controller());
   [update_view_controller
       setupModalViewControllerWithPrefs:GetDataForUpdateModal()];
@@ -157,7 +157,7 @@ TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
   CreateController();
   CheckController();
   InfobarSaveAddressProfileTableViewController* save_view_controller =
-      base::mac::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
+      base::apple::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
           controller());
   [save_view_controller
       setupModalViewControllerWithPrefs:GetDataForSaveInAccountModal()];
@@ -184,7 +184,7 @@ TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
   CreateController();
   CheckController();
   InfobarSaveAddressProfileTableViewController* save_view_controller =
-      base::mac::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
+      base::apple::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
           controller());
   [save_view_controller
       setupModalViewControllerWithPrefs:GetDataForMigrationModal()];
@@ -212,7 +212,7 @@ TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
   CreateController();
   CheckController();
   InfobarSaveAddressProfileTableViewController* update_view_controller =
-      base::mac::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
+      base::apple::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
           controller());
   [update_view_controller
       setupModalViewControllerWithPrefs:GetDataForUpdateInAccountModal()];

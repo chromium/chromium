@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/bundle_locations.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/ui/voice/voice_search_notification_names.h"

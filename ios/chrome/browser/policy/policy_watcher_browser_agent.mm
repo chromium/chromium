@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/apple/backup_util.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"
@@ -159,7 +159,7 @@ void PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion() {
   // TODO(crbug.com/1303652): If multiple profiles are supported on iOS, update
   // this logic to work with multiple profiles having possibly-possibly
   // conflicting preference values.
-  base::FilePath storage_dir = base::mac::GetUserLibraryPath();
+  base::FilePath storage_dir = base::apple::GetUserLibraryPath();
   if (backup_allowed) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},

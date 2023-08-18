@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -70,9 +70,10 @@ class UserDefaultsInternalsSource : public web::URLDataSourceIOS {
       } else if ([value isKindOfClass:[NSData class]]) {
         valueString = [value description];
       } else if ([value isKindOfClass:[NSString class]]) {
-        valueString = base::mac::ObjCCastStrict<NSString>(value);
+        valueString = base::apple::ObjCCastStrict<NSString>(value);
       } else if ([value isKindOfClass:[NSNumber class]]) {
-        valueString = [base::mac::ObjCCastStrict<NSNumber>(value) stringValue];
+        valueString =
+            [base::apple::ObjCCastStrict<NSNumber>(value) stringValue];
       } else if ([value isKindOfClass:[NSDate class]]) {
         valueString = [value description];
       }

@@ -7,10 +7,10 @@
 #include <ImageCaptureCore/ImageCaptureCore.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -115,9 +115,9 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
     if (itemName == name) {
       // To create save options for ImageCapture, we need to split the target
       // filename into directory/name and encode the directory as a URL.
-      NSURL* saveDirectory = base::mac::FilePathToNSURL(localPath.DirName());
+      NSURL* saveDirectory = base::apple::FilePathToNSURL(localPath.DirName());
       NSString* saveFilename =
-          base::mac::FilePathToNSString(localPath.BaseName());
+          base::apple::FilePathToNSString(localPath.BaseName());
 
       NSDictionary* options = @{
         ICDownloadsDirectoryURL : saveDirectory,
@@ -125,12 +125,13 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
         ICOverwrite : @YES,
       };
 
-      [_camera requestDownloadFile:base::mac::ObjCCastStrict<ICCameraFile>(item)
-                           options:options
-                  downloadDelegate:self
-               didDownloadSelector:@selector
-               (didDownloadFile:error:options:contextInfo:)
-                       contextInfo:nullptr];
+      [_camera
+          requestDownloadFile:base::apple::ObjCCastStrict<ICCameraFile>(item)
+                      options:options
+             downloadDelegate:self
+          didDownloadSelector:@selector(didDownloadFile:
+                                                  error:options:contextInfo:)
+                  contextInfo:nullptr];
       return;
     }
   }
@@ -178,7 +179,7 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
     if ([item.UTI isEqualToString:base::apple::CFToNSPtrCast(kUTTypeFolder)]) {
       info.is_directory = true;
     } else {
-      info.size = base::mac::ObjCCastStrict<ICCameraFile>(item).fileSize;
+      info.size = base::apple::ObjCCastStrict<ICCameraFile>(item).fileSize;
     }
 
     base::FilePath path = storage_monitor::PathForCameraItem(item);

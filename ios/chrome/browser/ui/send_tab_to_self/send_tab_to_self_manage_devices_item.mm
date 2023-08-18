@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_manage_devices_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -132,7 +132,7 @@ const CGFloat kAvatarSize = 24;
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   SendTabtoSelfManageDevicesCell* accountCell =
-      base::mac::ObjCCastStrict<SendTabtoSelfManageDevicesCell>(cell);
+      base::apple::ObjCCastStrict<SendTabtoSelfManageDevicesCell>(cell);
 
   if (self.showManageDevicesLink) {
     NSString* text =

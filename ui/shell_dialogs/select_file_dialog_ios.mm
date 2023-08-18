@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -91,7 +91,7 @@
       continue;
     }
     NSString* path = url.path;
-    paths.push_back(base::mac::NSStringToFilePath(path));
+    paths.push_back(base::apple::NSStringToFilePath(path));
   }
   _dialog->FileWasSelected(_params, _allowMultipleFiles, false, paths, 0);
 }

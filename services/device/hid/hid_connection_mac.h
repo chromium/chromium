@@ -10,8 +10,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/containers/queue.h"
-#include "base/mac/foundation_util.h"
 #include "services/device/hid/hid_connection.h"
 
 namespace base {

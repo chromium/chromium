@@ -6,10 +6,10 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/apple/foundation_util.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#import "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -183,7 +183,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
     web::WebStatePolicyDecider::ResponseInfo response_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   NSHTTPURLResponse* http_response =
-      base::mac::ObjCCast<NSHTTPURLResponse>(response);
+      base::apple::ObjCCast<NSHTTPURLResponse>(response);
   if (!http_response) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;

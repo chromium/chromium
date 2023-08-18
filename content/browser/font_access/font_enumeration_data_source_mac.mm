@@ -23,13 +23,13 @@ namespace {
 base::ScopedCFTypeRef<CFStringRef> GetLocalizedString(CTFontDescriptorRef fd,
                                                       CFStringRef attribute) {
   return base::ScopedCFTypeRef<CFStringRef>(
-      base::mac::CFCast<CFStringRef>(CTFontDescriptorCopyLocalizedAttribute(
+      base::apple::CFCast<CFStringRef>(CTFontDescriptorCopyLocalizedAttribute(
           fd, attribute, /*language=*/nullptr)));
 }
 
 base::ScopedCFTypeRef<CFStringRef> GetString(CTFontDescriptorRef fd,
                                              CFStringRef attribute) {
-  return base::ScopedCFTypeRef<CFStringRef>(base::mac::CFCast<CFStringRef>(
+  return base::ScopedCFTypeRef<CFStringRef>(base::apple::CFCast<CFStringRef>(
       CTFontDescriptorCopyAttribute(fd, attribute)));
 }
 
@@ -88,7 +88,7 @@ blink::FontEnumerationTable FontEnumerationDataSourceMac::GetFonts(
     std::set<std::string> fonts_seen;
 
     for (CFIndex i = 0; i < CFArrayGetCount(font_descs); ++i) {
-      CTFontDescriptorRef fd = base::mac::CFCast<CTFontDescriptorRef>(
+      CTFontDescriptorRef fd = base::apple::CFCast<CTFontDescriptorRef>(
           CFArrayGetValueAtIndex(font_descs, i));
       if (!IsValidFontMac(fd)) {
         // Skip invalid fonts.

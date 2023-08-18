@@ -7,11 +7,11 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/apple/bundle_locations.h"
+#import "base/apple/foundation_util.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"

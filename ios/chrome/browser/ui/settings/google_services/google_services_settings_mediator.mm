@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_mediator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/auto_reset.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -233,7 +233,7 @@ bool GetStatusForSigninPolicy() {
     switch (type) {
       case AllowChromeSigninItemType: {
         SyncSwitchItem* signinDisabledItem =
-            base::mac::ObjCCast<SyncSwitchItem>(item);
+            base::apple::ObjCCast<SyncSwitchItem>(item);
         if (IsSigninControllableByUser(self.userPrefService)) {
           signinDisabledItem.on = self.allowChromeSigninPreference.value;
         } else {
@@ -243,37 +243,37 @@ bool GetStatusForSigninPolicy() {
         break;
       }
       case ImproveChromeItemType:
-        base::mac::ObjCCast<SyncSwitchItem>(item).on =
+        base::apple::ObjCCast<SyncSwitchItem>(item).on =
             self.sendDataUsagePreference.value;
         break;
       case ImproveChromeManagedItemType:
-        base::mac::ObjCCast<TableViewInfoButtonItem>(item).statusText =
+        base::apple::ObjCCast<TableViewInfoButtonItem>(item).statusText =
             self.sendDataUsagePreference.value
                 ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                 : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
         break;
       case BetterSearchAndBrowsingItemType:
-        base::mac::ObjCCast<SyncSwitchItem>(item).on =
+        base::apple::ObjCCast<SyncSwitchItem>(item).on =
             self.anonymizedDataCollectionPreference.value;
         break;
       case BetterSearchAndBrowsingManagedItemType:
-        base::mac::ObjCCast<TableViewInfoButtonItem>(item).statusText =
+        base::apple::ObjCCast<TableViewInfoButtonItem>(item).statusText =
             self.anonymizedDataCollectionPreference.value
                 ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                 : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
         break;
       case ImproveSearchSuggestionsItemType:
-        base::mac::ObjCCast<SyncSwitchItem>(item).on =
+        base::apple::ObjCCast<SyncSwitchItem>(item).on =
             self.improveSearchSuggestionsPreference.value;
         break;
       case ImproveSearchSuggestionsManagedItemType:
-        base::mac::ObjCCast<TableViewInfoButtonItem>(item).statusText =
+        base::apple::ObjCCast<TableViewInfoButtonItem>(item).statusText =
             self.improveSearchSuggestionsPreference.value
                 ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                 : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
         break;
       case TrackPricesOnTabsItemType:
-        base::mac::ObjCCast<SyncSwitchItem>(item).on =
+        base::apple::ObjCCast<SyncSwitchItem>(item).on =
             self.trackPricesOnTabsPreference.value;
         break;
     }
@@ -452,7 +452,7 @@ bool GetStatusForSigninPolicy() {
 - (void)toggleSwitchItem:(TableViewItem*)item
                withValue:(BOOL)value
               targetRect:(CGRect)targetRect {
-  SyncSwitchItem* syncSwitchItem = base::mac::ObjCCast<SyncSwitchItem>(item);
+  SyncSwitchItem* syncSwitchItem = base::apple::ObjCCast<SyncSwitchItem>(item);
   syncSwitchItem.on = value;
   ItemType type = static_cast<ItemType>(item.type);
   switch (type) {

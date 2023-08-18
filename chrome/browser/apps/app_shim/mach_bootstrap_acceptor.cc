@@ -10,8 +10,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/mac/app_mode_common.h"
@@ -21,7 +21,7 @@ namespace apps {
 MachBootstrapAcceptor::MachBootstrapAcceptor(const std::string& name_fragment,
                                              Delegate* delegate)
     : server_name_(base::StringPrintf("%s.%s",
-                                      base::mac::BaseBundleID(),
+                                      base::apple::BaseBundleID(),
                                       name_fragment.c_str())
                        .c_str()),
       delegate_(delegate) {

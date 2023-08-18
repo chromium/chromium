@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -206,7 +206,7 @@ void ChromeTableViewControllerTest::CheckInfoButtonCellStatusAndText(
     NSString* expected_title,
     int section,
     int item) {
-  id info_button_item = base::mac::ObjCCastStrict<TableViewInfoButtonItem>(
+  id info_button_item = base::apple::ObjCCastStrict<TableViewInfoButtonItem>(
       GetTableViewItem(section, item));
   EXPECT_TRUE([info_button_item respondsToSelector:@selector(text)]);
   EXPECT_NSEQ(expected_title, [info_button_item text]);

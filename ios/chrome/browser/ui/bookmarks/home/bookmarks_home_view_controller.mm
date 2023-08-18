@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/numerics/safe_conversions.h"
@@ -621,7 +621,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       return;
     }
     TableViewURLCell* URLCell =
-        base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+        base::apple::ObjCCastStrict<TableViewURLCell>(cell);
     [URLCell.faviconView configureWithAttributes:attributes];
   };
 
@@ -652,7 +652,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
             (SigninPromoViewConfigurator*)configurator
                                  atIndexPath:(NSIndexPath*)indexPath {
   TableViewSigninPromoItem* signinPromoItem =
-      base::mac::ObjCCast<TableViewSigninPromoItem>(
+      base::apple::ObjCCast<TableViewSigninPromoItem>(
           [self.tableViewModel itemAtIndexPath:indexPath]);
   if (!signinPromoItem) {
     return;
@@ -991,7 +991,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     [weakSelf.navigationController setViewControllers:stack animated:YES];
     for (UIViewController* controller in previousStack) {
       BookmarksHomeViewController* bookmarksHomeViewController =
-          base::mac::ObjCCastStrict<BookmarksHomeViewController>(controller);
+          base::apple::ObjCCastStrict<BookmarksHomeViewController>(controller);
       [bookmarksHomeViewController shutdown];
     }
   };
@@ -1449,7 +1449,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       itemsInSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
   for (TableViewItem* item in items) {
     BookmarksHomeNodeItem* nodeItem =
-        base::mac::ObjCCastStrict<BookmarksHomeNodeItem>(item);
+        base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
     const BookmarkNode* node = nodeItem.bookmarkNode;
     if (self.mediator.selectedNodesForEditMode.find(node) !=
         self.mediator.selectedNodesForEditMode.end()) {
@@ -1539,7 +1539,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   if (item.type == BookmarksHomeItemTypeBookmark) {
     BookmarksHomeNodeItem* nodeItem =
-        base::mac::ObjCCastStrict<BookmarksHomeNodeItem>(item);
+        base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
     return nodeItem.bookmarkNode;
   }
 
@@ -1873,7 +1873,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
           sectionIdentifier:BookmarksHomeSectionIdentifierBookmarks];
   for (id path in paths) {
     BookmarksHomeNodeItem* node =
-        base::mac::ObjCCastStrict<BookmarksHomeNodeItem>(
+        base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(
             [self.tableViewModel itemAtIndexPath:path]);
     if (node.bookmarkNode == _externalBookmark) {
       [self.tableView selectRowAtIndexPath:path
@@ -2367,11 +2367,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   if (item.type == BookmarksHomeItemTypeBookmark) {
     BookmarksHomeNodeItem* nodeItem =
-        base::mac::ObjCCastStrict<BookmarksHomeNodeItem>(item);
+        base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
     if (nodeItem.bookmarkNode->is_folder() &&
         nodeItem.bookmarkNode == self.mediator.editingFolderNode) {
       TableViewBookmarksFolderCell* tableCell =
-          base::mac::ObjCCastStrict<TableViewBookmarksFolderCell>(cell);
+          base::apple::ObjCCastStrict<TableViewBookmarksFolderCell>(cell);
       // Delay starting edit, so that the cell is fully created. This is
       // needed when scrolling away and then back into the editingCell,
       // without the delay the cell will resign first responder before its
@@ -2416,7 +2416,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   // nodes of type URL or Folder, but not the permanent ones. Only enable
   // swipe-to-delete if editing bookmarks is allowed.
   BookmarksHomeNodeItem* nodeItem =
-      base::mac::ObjCCastStrict<BookmarksHomeNodeItem>(item);
+      base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
   const BookmarkNode* node = nodeItem.bookmarkNode;
   return [self isEditBookmarksEnabled] && [self isUrlOrFolder:node] &&
          [self isNodeEditableByUser:node];
@@ -2433,7 +2433,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   if (editingStyle == UITableViewCellEditingStyleDelete) {
     BookmarksHomeNodeItem* nodeItem =
-        base::mac::ObjCCastStrict<BookmarksHomeNodeItem>(item);
+        base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
     const BookmarkNode* node = nodeItem.bookmarkNode;
     std::set<const BookmarkNode*> nodes;
     nodes.insert(node);

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"

@@ -4,9 +4,9 @@
 
 #include "gpu/ipc/service/built_in_shader_cache_loader.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
-#include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -59,9 +59,9 @@ class FileReader {
 
  private:
   static base::FilePath AdjustPath(const base::FilePath& path) {
-    return path.empty()
-               ? base::mac::PathForFrameworkBundleResource(kShaderCacheFileName)
-               : path;
+    return path.empty() ? base::apple::PathForFrameworkBundleResource(
+                              kShaderCacheFileName)
+                        : path;
   }
 
   bool ReadBytes(uint32_t size, char* data) {

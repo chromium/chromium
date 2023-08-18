@@ -4,8 +4,8 @@
 
 #import "ios/web_view/internal/cwv_download_task_internal.h"
 
+#import "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -55,7 +55,7 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
 @synthesize delegate = _delegate;
 
 - (NSString*)suggestedFileName {
-  return base::mac::FilePathToNSString(_internalTask->GenerateFileName());
+  return base::apple::FilePathToNSString(_internalTask->GenerateFileName());
 }
 
 - (NSString*)MIMEType {
@@ -96,7 +96,7 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
 }
 
 - (void)startDownloadToLocalFileAtPath:(NSString*)path {
-  _internalTask->Start(base::mac::NSStringToFilePath(path));
+  _internalTask->Start(base::apple::NSStringToFilePath(path));
 }
 
 - (void)cancel {

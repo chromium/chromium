@@ -8,9 +8,9 @@
 #import <functional>
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_util.h"

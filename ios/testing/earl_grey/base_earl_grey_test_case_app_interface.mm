@@ -7,8 +7,8 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 
 @interface UIApplication (Testing)
@@ -24,7 +24,7 @@
 + (void)enableFastAnimation {
   for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
     UIWindowScene* windowScene =
-        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
     for (UIWindow* window in windowScene.windows) {
       [[window layer] setSpeed:100];
     }

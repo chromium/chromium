@@ -96,7 +96,7 @@ void PopupMenuHelper::ShowPopupMenu(
   // Check if the underlying native window is headless and if so, return early
   // to avoid showing the popup menu.
   NativeWidgetMacNSWindow* ns_window =
-      base::mac::ObjCCastStrict<NativeWidgetMacNSWindow>([cocoa_view window]);
+      base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>([cocoa_view window]);
   if (ns_window && [ns_window isHeadless]) {
     return;
   }

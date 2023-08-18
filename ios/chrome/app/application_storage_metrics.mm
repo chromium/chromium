@@ -6,10 +6,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
@@ -48,7 +48,7 @@ int64_t CalculateTotalSize(base::FilePath root) {
 // Logs the "Documents" directory size. Accepts a task runner as a parameter in
 // order to keep it in scope throughout the execution.
 void LogDocumentsDirectorySize(scoped_refptr<base::SequencedTaskRunner>) {
-  base::FilePath documents_path = base::mac::GetUserDocumentPath();
+  base::FilePath documents_path = base::apple::GetUserDocumentPath();
   int total_size_bytes = CalculateTotalSize(documents_path);
   UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.DocumentsSize2",
                                  total_size_bytes / 1024 / 1024);
@@ -57,7 +57,7 @@ void LogDocumentsDirectorySize(scoped_refptr<base::SequencedTaskRunner>) {
 // Logs the "Library" directory size. Accepts a task runner as a parameter in
 // order to keep it in scope throughout the execution.
 void LogLibraryDirectorySize(scoped_refptr<base::SequencedTaskRunner>) {
-  base::FilePath library_path = base::mac::GetUserLibraryPath();
+  base::FilePath library_path = base::apple::GetUserLibraryPath();
   int total_size_bytes = CalculateTotalSize(library_path);
   UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.LibrarySize",
                                  total_size_bytes / 1024 / 1024);

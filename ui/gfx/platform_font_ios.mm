@@ -9,7 +9,7 @@
 #include <cmath>
 
 #include "base/apple/bridging.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"

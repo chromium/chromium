@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -83,7 +83,7 @@ TEST_F(AlertCoordinatorTest, ValidateIsVisible) {
   ASSERT_TRUE([view_controller.presentedViewController
       isKindOfClass:[UIAlertController class]]);
   UIAlertController* alert_controller =
-      base::mac::ObjCCastStrict<UIAlertController>(
+      base::apple::ObjCCastStrict<UIAlertController>(
           view_controller.presentedViewController);
   EXPECT_EQ(1LU, alert_controller.actions.count);
 }
@@ -124,7 +124,7 @@ TEST_F(AlertCoordinatorTest, TitleAndMessage) {
   ASSERT_TRUE([view_controller.presentedViewController
       isKindOfClass:[UIAlertController class]]);
   UIAlertController* alert_controller =
-      base::mac::ObjCCastStrict<UIAlertController>(
+      base::apple::ObjCCastStrict<UIAlertController>(
           view_controller.presentedViewController);
 
   // Test the results.
@@ -189,7 +189,7 @@ TEST_F(AlertCoordinatorTest, ValidateActions) {
   ASSERT_TRUE([view_controller.presentedViewController
       isKindOfClass:[UIAlertController class]]);
   UIAlertController* alert_controller =
-      base::mac::ObjCCastStrict<UIAlertController>(
+      base::apple::ObjCCastStrict<UIAlertController>(
           view_controller.presentedViewController);
 
   // Test the results.
@@ -297,7 +297,7 @@ TEST_F(AlertCoordinatorTest, AlertHasPreferredAction) {
   ASSERT_TRUE([view_controller.presentedViewController
       isKindOfClass:[UIAlertController class]]);
   UIAlertController* alert_controller =
-      base::mac::ObjCCastStrict<UIAlertController>(
+      base::apple::ObjCCastStrict<UIAlertController>(
           view_controller.presentedViewController);
 
   // Test the results.

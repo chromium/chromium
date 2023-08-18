@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/metrics/ios_feed_activity_metrics_provider.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 
 IOSFeedActivityMetricsProvider::IOSFeedActivityMetricsProvider() {}

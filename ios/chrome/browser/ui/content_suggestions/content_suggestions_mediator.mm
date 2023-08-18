@@ -7,9 +7,9 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -479,7 +479,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // tiles.
   if ([item isKindOfClass:[ContentSuggestionsMostVisitedActionItem class]]) {
     ContentSuggestionsMostVisitedActionItem* mostVisitedItem =
-        base::mac::ObjCCastStrict<ContentSuggestionsMostVisitedActionItem>(
+        base::apple::ObjCCastStrict<ContentSuggestionsMostVisitedActionItem>(
             item);
     if (mostVisitedItem.disabled) {
       return;
@@ -513,7 +513,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 
   ContentSuggestionsMostVisitedItem* mostVisitedItem =
-      base::mac::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(item);
+      base::apple::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(item);
 
   [self logMostVisitedOpening:mostVisitedItem atIndex:mostVisitedIndex];
 

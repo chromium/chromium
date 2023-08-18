@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -90,7 +90,7 @@ TEST_F(BrowserContainerCoordinatorTest,
   EXPECT_TRUE([coordinator.viewController.presentedViewController
       isKindOfClass:[UIAlertController class]]);
   UIAlertController* alert_controller =
-      base::mac::ObjCCastStrict<UIAlertController>(
+      base::apple::ObjCCastStrict<UIAlertController>(
           coordinator.viewController.presentedViewController);
   ASSERT_EQ(2LU, alert_controller.actions.count);
 

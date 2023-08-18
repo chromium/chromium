@@ -239,7 +239,7 @@
 #endif
 
 #if defined(ENABLE_IPC_FUZZER) && BUILDFLAG(IS_MAC)
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #endif
 
 #if BUILDFLAG(MOJO_RANDOM_DELAYS_ENABLED)
@@ -331,7 +331,7 @@ bool GetBuildDirectory(base::FilePath* result) {
     return false;
 
 #if BUILDFLAG(IS_MAC)
-  if (base::mac::AmIBundled()) {
+  if (base::apple::AmIBundled()) {
     // The bundled app executables (Chromium, TestShell, etc) live three
     // levels down from the build directory, eg:
     // Chromium.app/Contents/MacOS/Chromium

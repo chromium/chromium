@@ -31,7 +31,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #elif BUILDFLAG(IS_WIN)
 #include "base/path_service.h"
 #endif

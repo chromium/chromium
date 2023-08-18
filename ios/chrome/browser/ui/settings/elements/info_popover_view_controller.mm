@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/elements/info_popover_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/common/string_util.h"
@@ -71,7 +71,7 @@ NSAttributedString* PrimaryMessage(NSString* full_text) {
 - (void)popoverPresentationControllerDidDismissPopover:
     (UIPopoverPresentationController*)popoverPresentationController {
   if (_isPresentingFromButton) {
-    UIButton* buttonView = base::mac::ObjCCastStrict<UIButton>(
+    UIButton* buttonView = base::apple::ObjCCastStrict<UIButton>(
         popoverPresentationController.sourceView);
     buttonView.enabled = YES;
   }

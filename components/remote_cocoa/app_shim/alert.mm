@@ -4,9 +4,9 @@
 
 #include "components/remote_cocoa/app_shim/alert.h"
 
+#import "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
-#import "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
@@ -132,7 +132,7 @@ const int kMessageTextMaxSlots = 2000;
     // of the NSAlert, but it is safer (and more forward-compatible) to search
     // for them in the subviews.
     for (NSView* view in _alert.window.contentView.subviews) {
-      NSTextField* text_field = base::mac::ObjCCast<NSTextField>(view);
+      NSTextField* text_field = base::apple::ObjCCast<NSTextField>(view);
       if ([text_field.stringValue isEqualTo:message_text]) {
         message_text_field = text_field;
       } else if ([text_field.stringValue isEqualTo:informative_text]) {

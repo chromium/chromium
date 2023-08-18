@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/memory/scoped_policy.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
@@ -52,7 +52,7 @@ CrNSProgressUserData* CreateOrGetNSProgress(download::DownloadItem* download) {
     return progress_data;
 
   base::FilePath destination_path = download->GetFullPath();
-  NSURL* destination_url = base::mac::FilePathToNSURL(destination_path);
+  NSURL* destination_url = base::apple::FilePathToNSURL(destination_path);
 
   NSProgress* progress = [NSProgress progressWithTotalUnitCount:-1];
   progress.kind = NSProgressKindFile;
@@ -101,7 +101,7 @@ void UpdateNSProgress(download::DownloadItem* download) {
   base::FilePath download_path = download->GetFullPath();
   if (progress_data->target() != download_path) {
     progress_data->setTarget(download_path);
-    NSURL* download_url = base::mac::FilePathToNSURL(download_path);
+    NSURL* download_url = base::apple::FilePathToNSURL(download_path);
     progress.fileURL = download_url;
   }
 }
@@ -145,7 +145,7 @@ void DownloadStatusUpdater::UpdateAppIconDownloadProgress(
   if (download->GetState() != download::DownloadItem::IN_PROGRESS &&
       !download->GetTargetFilePath().empty()) {
     NSString* download_path =
-        base::mac::FilePathToNSString(download->GetTargetFilePath());
+        base::apple::FilePathToNSString(download->GetTargetFilePath());
     if (download->GetState() == download::DownloadItem::COMPLETE) {
       // Bounce the dock icon.
       [NSDistributedNotificationCenter.defaultCenter

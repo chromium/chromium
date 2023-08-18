@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/string_number_conversions.h"
 #import "components/google/core/common/google_util.h"
@@ -514,7 +514,7 @@ void SetUpTrailingIconAndAccessoryType(
       [self.tableViewModel footerForSectionIndex:section]) {
     // Attach self as delegate to handle clicks in page footer.
     TableViewLinkHeaderFooterView* footerView =
-        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+        base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
     footerView.delegate = self;
   }
 

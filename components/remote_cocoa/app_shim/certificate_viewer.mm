@@ -9,8 +9,8 @@
 #import <SecurityInterface/SecurityInterface.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "net/cert/x509_util_apple.h"
 

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/callback_helpers.h"
-#import "base/mac/foundation_util.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
@@ -111,7 +111,7 @@ class AccountsTableViewControllerTest : public ChromeTableViewControllerTest {
   }
 
   void TearDown() override {
-    [base::mac::ObjCCast<AccountsTableViewController>(controller())
+    [base::apple::ObjCCast<AccountsTableViewController>(controller())
         settingsWillBeDismissed];
     ChromeTableViewControllerTest::TearDown();
   }

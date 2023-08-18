@@ -5,7 +5,7 @@
 #import "ios/chrome/common/app_group/app_group_command.h"
 
 #import "base/apple/bundle_locations.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 
@@ -109,7 +109,7 @@ void PutCommandInNSUserDefault(NSDictionary* command) {
 
 - (void)executeInApp {
   NSString* scheme =
-      base::mac::ObjCCast<NSString>([base::apple::FrameworkBundle()
+      base::apple::ObjCCast<NSString>([base::apple::FrameworkBundle()
           objectForInfoDictionaryKey:@"KSChannelChromeScheme"]);
   if (!scheme)
     return;

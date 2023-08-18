@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"

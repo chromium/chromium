@@ -8,9 +8,9 @@
 #import <memory>
 #import <utility>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/metrics_util.h"
@@ -219,7 +219,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 - (CGFloat)modalHeightForWidth:(CGFloat)width {
   UIView* view = self.sendTabToSelfViewController.view;
   CGSize contentSize = CGSizeZero;
-  if (UIScrollView* scrollView = base::mac::ObjCCast<UIScrollView>(view)) {
+  if (UIScrollView* scrollView = base::apple::ObjCCast<UIScrollView>(view)) {
     CGRect layoutFrame = self.baseViewController.view.bounds;
     layoutFrame.size.width = width;
     scrollView.frame = layoutFrame;

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -49,7 +49,7 @@
   if (self.bubbleViewController) {
     [self.bubbleViewController dismissViewControllerAnimated:YES
                                                   completion:nil];
-    UIButton* buttonView = base::mac::ObjCCastStrict<UIButton>(
+    UIButton* buttonView = base::apple::ObjCCastStrict<UIButton>(
         self.bubbleViewController.popoverPresentationController.sourceView);
     buttonView.enabled = YES;
   }
@@ -114,7 +114,7 @@
     return cell;
   if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
     TableViewSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(switchAction:)
                     forControlEvents:UIControlEventValueChanged];
@@ -122,7 +122,7 @@
     switchCell.switchView.tag = item.type;
   } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
     TableViewInfoButtonCell* managedCell =
-        base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
     if ([self.modelDelegate
             isAllowChromeSigninItem:[self.tableViewModel
                                         itemAtIndexPath:indexPath]

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/scanner/scanner_view.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "base/numerics/math_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/ui/scanner/preview_overlay_view.h"

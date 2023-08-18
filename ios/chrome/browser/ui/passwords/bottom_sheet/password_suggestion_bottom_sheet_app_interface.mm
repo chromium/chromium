@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -30,7 +30,7 @@ static std::unique_ptr<ScopedPasswordSuggestionBottomSheetReauthModuleOverride>
     (ReauthenticationResult)expectedResult {
   CHECK(_scopedReauthOverride);
   MockReauthenticationModule* mockModule =
-      base::mac::ObjCCastStrict<MockReauthenticationModule>(
+      base::apple::ObjCCastStrict<MockReauthenticationModule>(
           _scopedReauthOverride->module);
   mockModule.expectedResult = expectedResult;
 }

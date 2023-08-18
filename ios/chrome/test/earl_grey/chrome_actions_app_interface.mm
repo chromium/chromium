@@ -4,7 +4,7 @@
 
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/test/app/tab_test_util.h"
@@ -70,7 +70,7 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
           __block BOOL success = NO;
           grey_dispatch_sync_on_main_thread(^{
             TableViewSwitchCell* switchCell =
-                base::mac::ObjCCast<TableViewSwitchCell>(collectionViewCell);
+                base::apple::ObjCCast<TableViewSwitchCell>(collectionViewCell);
             if (!switchCell) {
               NSString* description = @"The element isn't of the expected type "
                                       @"(TableViewSwitchCell).";
@@ -107,7 +107,7 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
   GREYPerformBlock scrollToTopBlock = ^BOOL(id element,
                                             __strong NSError** error) {
     grey_dispatch_sync_on_main_thread(^{
-      UIScrollView* view = base::mac::ObjCCast<UIScrollView>(element);
+      UIScrollView* view = base::apple::ObjCCast<UIScrollView>(element);
       if (!view) {
         *error = [NSError
             errorWithDomain:kChromeActionsErrorDomain

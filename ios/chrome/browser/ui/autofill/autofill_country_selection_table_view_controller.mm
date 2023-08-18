@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/autofill_country_selection_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
@@ -157,14 +157,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     return;
   }
 
-  CountryItem* item = base::mac::ObjCCastStrict<CountryItem>(
+  CountryItem* item = base::apple::ObjCCastStrict<CountryItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
   [self.delegate didSelectCountry:item];
 }
 
 - (void)tableView:(UITableView*)tableView
     performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
-  CountryItem* item = base::mac::ObjCCastStrict<CountryItem>(
+  CountryItem* item = base::apple::ObjCCastStrict<CountryItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
   [self.delegate didSelectCountry:item];
 }

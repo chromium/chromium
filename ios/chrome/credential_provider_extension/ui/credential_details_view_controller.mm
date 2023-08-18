@@ -6,7 +6,7 @@
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"

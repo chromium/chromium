@@ -6,7 +6,7 @@
 
 #import <MobileCoreServices/MobileCoreServices.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/string_number_conversions.h"

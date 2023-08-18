@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/net/crurl.h"

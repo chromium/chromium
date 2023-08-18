@@ -8,9 +8,9 @@
 #import <string>
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/json/string_escape.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"

@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/ios/ios_util.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -176,7 +176,7 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
       return YES;
 
     case ContentVisibility::kUnknown: {
-      const BOOL incognitoContentVisible = [base::mac::ObjCCast<NSNumber>(
+      const BOOL incognitoContentVisible = [base::apple::ObjCCast<NSNumber>(
           [self sessionObjectForKey:kIncognitoCurrentKey]) boolValue];
 
       _contentVisibility =

@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/i18n/message_formatter.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -360,7 +360,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
 
-  AutofillProfileItem* item = base::mac::ObjCCastStrict<AutofillProfileItem>(
+  AutofillProfileItem* item = base::apple::ObjCCastStrict<AutofillProfileItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
   [self
       showAddressProfileDetailsPageForProfile:_personalDataManager
@@ -439,7 +439,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     case ItemTypeAutofillAddressSwitch: {
       TableViewSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(autofillAddressSwitchChanged:)
                       forControlEvents:UIControlEventValueChanged];
@@ -447,7 +447,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
     case ItemTypeAutofillAddressManaged: {
       TableViewInfoButtonCell* managedCell =
-          base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+          base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
       [managedCell.trailingButton
                  addTarget:self
                     action:@selector(didTapManagedUIInfoButton:)
@@ -476,7 +476,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.tableViewModel indexPathForItemType:switchItemType
                               sectionIdentifier:SectionIdentifierSwitches];
   TableViewSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<TableViewSwitchItem>(
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
   switchItem.on = on;
 }
@@ -495,7 +495,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [model indexPathForItemType:switchItemType
                 sectionIdentifier:SectionIdentifierSwitches];
   TableViewSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<TableViewSwitchItem>(
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [model itemAtIndexPath:switchPath]);
   [switchItem setEnabled:enabled];
   [self reconfigureCellsForItems:@[ switchItem ]];
@@ -578,8 +578,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   _deletionInProgress = YES;
   for (NSIndexPath* indexPath in indexPaths) {
-    AutofillProfileItem* item = base::mac::ObjCCastStrict<AutofillProfileItem>(
-        [self.tableViewModel itemAtIndexPath:indexPath]);
+    AutofillProfileItem* item =
+        base::apple::ObjCCastStrict<AutofillProfileItem>(
+            [self.tableViewModel itemAtIndexPath:indexPath]);
     _personalDataManager->RemoveByGUID([item GUID]);
   }
 
@@ -655,8 +656,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
       continue;
     }
     profileCount++;
-    AutofillProfileItem* item = base::mac::ObjCCastStrict<AutofillProfileItem>(
-        [self.tableViewModel itemAtIndexPath:indexPath]);
+    AutofillProfileItem* item =
+        base::apple::ObjCCastStrict<AutofillProfileItem>(
+            [self.tableViewModel itemAtIndexPath:indexPath]);
     switch (item.autofillProfileSource) {
       case AutofillAccountProfile:
         accountProfiles = YES;

@@ -8,8 +8,8 @@
 #include <IOKit/IOKitLib.h>
 #include <IOKit/ps/IOPSKeys.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_ioobject.h"
 
 namespace base {
@@ -21,7 +21,7 @@ namespace {
 absl::optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
                                         CFStringRef key) {
   CFNumberRef number_ref =
-      base::mac::GetValueFromDictionary<CFNumberRef>(description, key);
+      base::apple::GetValueFromDictionary<CFNumberRef>(description, key);
 
   SInt64 value;
   if (number_ref && CFNumberGetValue(number_ref, kCFNumberSInt64Type, &value))
@@ -33,7 +33,7 @@ absl::optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
 absl::optional<bool> GetValueAsBoolean(CFDictionaryRef description,
                                        CFStringRef key) {
   CFBooleanRef boolean =
-      base::mac::GetValueFromDictionary<CFBooleanRef>(description, key);
+      base::apple::GetValueFromDictionary<CFBooleanRef>(description, key);
   if (!boolean)
     return absl::nullopt;
   return CFBooleanGetValue(boolean);

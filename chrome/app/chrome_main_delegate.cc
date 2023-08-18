@@ -117,7 +117,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/message_loop/message_pump_apple.h"
 #include "base/message_loop/message_pump_default.h"
 #include "base/message_loop/message_pump_kqueue.h"
@@ -1263,15 +1263,15 @@ void ChromeMainDelegate::InitMacCrashReporter(
   // the helper should always have a --type switch.
   //
   // This check is done this late so there is already a call to
-  // base::mac::IsBackgroundOnlyProcess(), so there is no change in
+  // base::apple::IsBackgroundOnlyProcess(), so there is no change in
   // startup/initialization order.
 
   // The helper's Info.plist marks it as a background only app.
-  if (base::mac::IsBackgroundOnlyProcess()) {
+  if (base::apple::IsBackgroundOnlyProcess()) {
     CHECK(command_line.HasSwitch(switches::kProcessType) &&
           !process_type.empty())
         << "Helper application requires --type.";
-  } else if (base::mac::AmIBundled()) {
+  } else if (base::apple::AmIBundled()) {
     CHECK(!command_line.HasSwitch(switches::kProcessType) &&
           process_type.empty())
         << "Main application forbids --type, saw " << process_type;
