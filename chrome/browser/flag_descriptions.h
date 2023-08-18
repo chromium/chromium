@@ -2910,6 +2910,12 @@ extern const char kUseWaitableSwapChainDescription[];
 extern const char kUseWinrtMidiApiName[];
 extern const char kUseWinrtMidiApiDescription[];
 
+extern const char kWebRtcAllowWgcScreenCapturerName[];
+extern const char kWebRtcAllowWgcScreenCapturerDescription[];
+
+extern const char kWebRtcAllowWgcWindowCapturerName[];
+extern const char kWebRtcAllowWgcWindowCapturerDescription[];
+
 extern const char kWindows11MicaTitlebarName[];
 extern const char kWindows11MicaTitlebarDescription[];
 

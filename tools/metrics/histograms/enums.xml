@@ -62487,6 +62487,7 @@ from previous Chrome versions.
   <int value="-970067535" label="BackgroundTaskComponentUpdate:disabled"/>
   <int value="-969332901" label="stop-non-timers-in-background:disabled"/>
   <int value="-969028093" label="FullRestore:disabled"/>
+  <int value="-968896078" label="AllowWgcScreenCapturer:enabled"/>
   <int value="-968675274" label="Rar2Fs:enabled"/>
   <int value="-968010468" label="SharedArrayBuffer:disabled"/>
   <int value="-967825290" label="WebViewConnectionlessSafeBrowsing:disabled"/>
@@ -62603,6 +62604,7 @@ from previous Chrome versions.
   <int value="-902125579" label="ImmersiveUiMode:disabled"/>
   <int value="-900871741" label="DesktopPWAsNotificationIconAndTitle:disabled"/>
   <int value="-899915066" label="ImprovedKeyboardShortcuts:disabled"/>
+  <int value="-899799867" label="AllowWgcScreenCapturer:disabled"/>
   <int value="-899393472" label="enable-new-app-menu-icon"/>
   <int value="-899334103" label="disable-fast-text-autosizing"/>
   <int value="-899265865" label="DismissNtpPromos:disabled"/>
@@ -66232,6 +66234,7 @@ from previous Chrome versions.
   <int value="952558794" label="enable-remote-assistance"/>
   <int value="952625847"
       label="AboutThisSitePersistentSidePanelEntry:disabled"/>
+  <int value="954368502" label="AllowWgcWindowCapturer:enabled"/>
   <int value="955340765" label="ChromeHomeOptOutSnackbar:enabled"/>
   <int value="955425932" label="EnterpriseReportingInChromeOS:enabled"/>
   <int value="955901619" label="EmojiSuggestAddition:disabled"/>
@@ -67060,6 +67063,7 @@ from previous Chrome versions.
   <int value="1365857480" label="WebUITabStripNewTabButtonInTabStrip:enabled"/>
   <int value="1366396538" label="GlanceablesV2:disabled"/>
   <int value="1367406392" label="VaapiVideoDecoder:disabled"/>
+  <int value="1367415672" label="AllowWgcWindowCapturer:disabled"/>
   <int value="1367467733" label="AutoplayIgnoreWebAudio:enabled"/>
   <int value="1367487214" label="VaapiJpegImageDecodeAcceleration:enabled"/>
   <int value="1367529437" label="NTPAssetDownloadSuggestions:enabled"/>

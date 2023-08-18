@@ -5212,6 +5212,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"use-winrt-midi-api", flag_descriptions::kUseWinrtMidiApiName,
      flag_descriptions::kUseWinrtMidiApiDescription, kOsWin,
      FEATURE_VALUE_TYPE(midi::features::kMidiManagerWinrt)},
+    {"webrtc-allow-wgc-screen-capturer",
+     flag_descriptions::kWebRtcAllowWgcScreenCapturerName,
+     flag_descriptions::kWebRtcAllowWgcScreenCapturerDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kWebRtcAllowWgcScreenCapturer)},
+    {"webrtc-allow-wgc-window-capturer",
+     flag_descriptions::kWebRtcAllowWgcWindowCapturerName,
+     flag_descriptions::kWebRtcAllowWgcWindowCapturerDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kWebRtcAllowWgcWindowCapturer)},
 #endif  // BUILDFLAG(IS_WIN)
 #if defined(TOOLKIT_VIEWS) || BUILDFLAG(IS_ANDROID)
     {"enable-autofill-credit-card-upload",

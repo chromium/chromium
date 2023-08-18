@@ -5026,6 +5026,24 @@ const char kUseWinrtMidiApiDescription[] =
     "Use Windows Runtime MIDI API for WebMIDI (effective only on Windows 10 or "
     "later).";
 
+const char kWebRtcAllowWgcScreenCapturerName[] =
+    "Use Windows WGC API for screen capture";
+const char kWebRtcAllowWgcScreenCapturerDescription[] =
+    "Use Windows.Graphics.Capture API based screen capturer in combination "
+    "with the WebRTC based Web API getDisplayMedia. Requires  Windows 10, "
+    "version 1803 or higher. Adds a thin yellow border around the captured "
+    "screen area. The DXGI API is used as screen capture API when this flag is "
+    "disabled.";
+
+const char kWebRtcAllowWgcWindowCapturerName[] =
+    "Use Windows WGC API for window capture";
+const char kWebRtcAllowWgcWindowCapturerDescription[] =
+    "Use Windows.Graphics.Capture API based windows capturer in combination "
+    "with the WebRTC based Web API getDisplayMedia. Requires  Windows 10, "
+    "version 1803 or higher. Adds a thin yellow border around the captured "
+    "window area. The GDI API is used as window capture API when this flag is "
+    "disabled.";
+
 const char kWindows11MicaTitlebarName[] = "Windows 11 Mica titlebar";
 const char kWindows11MicaTitlebarDescription[] =
     "Use the DWM system-drawn Mica titlebar on Windows 11, version 22H2 (build "

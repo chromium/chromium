@@ -8295,6 +8295,16 @@
     "expiry_milestone": 120
   },
   {
+    "name": "webrtc-allow-wgc-screen-capturer",
+    "owners": [ "henrika@google.com", "video-cmi-mpp@google.com" ],
+    "expiry_milestone": 129
+  },
+  {
+    "name": "webrtc-allow-wgc-window-capturer",
+    "owners": [ "henrika@google.com", "video-cmi-mpp@google.com" ],
+    "expiry_milestone": 129
+  },
+  {
     "name": "webtransport-developer-mode",
     "owners": [ "//net/quic/OWNERS" ],
     // This flag is used by developers to debug applications
