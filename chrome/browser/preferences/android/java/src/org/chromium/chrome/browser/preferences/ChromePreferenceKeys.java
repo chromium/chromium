@@ -444,6 +444,8 @@ public final class ChromePreferenceKeys {
     public static final String LOCALE_MANAGER_PROMO_SHOWN = "LocaleManager_PREF_PROMO_SHOWN";
     public static final String LOCALE_MANAGER_PROMO_V2_CHECKED =
             "LocaleManager_PREF_PROMO_VER2_CHECKED";
+    public static final String LOCALE_MANAGER_PROMO_V3_CHECKED =
+            "Chrome.SearchEngineChoice.LocaleManagerPromoV3Checked";
     public static final String LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE =
             "com.android.chrome.SEARCH_ENGINE_PROMO_SHOWN";
     public static final String LOCALE_MANAGER_SEARCH_WIDGET_PRESENT_FIRST_START =
@@ -1033,6 +1035,7 @@ public final class ChromePreferenceKeys {
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,
                 LAST_SESSION_BROWSER_PID,
                 LAST_SESSION_APPLICATION_STATE,
+                LOCALE_MANAGER_PROMO_V3_CHECKED,
                 MULTI_WINDOW_START_TIME,
                 MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM,
                 MULTI_INSTANCE_IS_INCOGNITO_SELECTED.pattern(),
