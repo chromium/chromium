@@ -43,12 +43,7 @@ shouldBeTrue("endsWith(iframe.contentDocument.querySelector('base').href, 'foo/b
 var newWindow = window.open('about:blank');
 base = newWindow.document.head.appendChild(newWindow.document.createElement('base'));
 base.setAttribute('href', 'foo/bar/');
-// TODO(1356658, 751329): This expectation will need to be changed when
-// the feature NewBaseUrlInheritanceBehavior is enabled by default. At present,
-// base.href is empty because attempting to append a relative url to the baseURI
-// about:blank will fail, but when NewBaseUrlInheritanceBehavior is enabled the
-// baseURI will end in '/' and so appending the relative URL will succeed.
-shouldBeEqualToString("newWindow.document.querySelector('base').href", '');
+shouldBeTrue("endsWith(iframe.contentDocument.querySelector('base').href, 'foo/bar/')");
 newWindow.close();
 
 </script>
