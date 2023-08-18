@@ -88,7 +88,11 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
 
   void AddSafeBrowsingResponse(
       const GURL& url,
+      const SafeBrowsingApiLookupResult& returned_lookup_result,
       const SafeBrowsingJavaThreatType& returned_threat_type,
+      const std::vector<SafeBrowsingJavaThreatAttribute>&
+          returned_threat_attributes,
+      const SafeBrowsingJavaResponseStatus& returned_response_status,
       const std::vector<SafeBrowsingJavaThreatType>& expected_threat_types,
       const SafeBrowsingJavaProtocol& expected_protocol) {
     ScopedJavaLocalRef<jstring> j_url =
@@ -98,13 +102,20 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
     for (auto expected_threat_type : expected_threat_types) {
       *itr++ = static_cast<int>(expected_threat_type);
     }
-    Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setExpectedSafeBrowsingApiHandlerThreatTypes(
+    int int_threat_attributes[returned_threat_attributes.size()];
+    itr = &int_threat_attributes[0];
+    for (auto returned_threat_attribute : returned_threat_attributes) {
+      *itr++ = static_cast<int>(returned_threat_attribute);
+    }
+    Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafeBrowsingApiHandlerResponse(
         env_, j_url,
-        ToJavaIntArray(env_, int_threat_types, expected_threat_types.size()));
-    Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setExpectedSafeBrowsingApiHandlerProtocol(
-        env_, j_url, static_cast<int>(expected_protocol));
-    Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafeBrowsingApiHandlerThreatType(
-        env_, j_url, static_cast<int>(returned_threat_type));
+        ToJavaIntArray(env_, int_threat_types, expected_threat_types.size()),
+        static_cast<int>(expected_protocol),
+        static_cast<int>(returned_lookup_result),
+        static_cast<int>(returned_threat_type),
+        ToJavaIntArray(env_, int_threat_attributes,
+                       returned_threat_attributes.size()),
+        static_cast<int>(returned_response_status));
   }
 
   void RunHashDatabaseUrlCheck(
@@ -296,9 +307,11 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, CsdAllowlistCheck) {
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest, HashRealTimeUrlCheck_Safe) {
   GURL url("https://example.com");
-  AddSafeBrowsingResponse(url, SafeBrowsingJavaThreatType::NO_THREAT,
-                          GetAllSafeBrowsingThreatTypes(),
-                          SafeBrowsingJavaProtocol::REAL_TIME);
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::NO_THREAT, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME,
+      GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
 
   RunHashRealTimeUrlCheck(url,
                           /*threat_types=*/GetAllThreatTypes(),
@@ -307,13 +320,117 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashRealTimeUrlCheck_Safe) {
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest, HashRealTimeUrlCheck_ThreatMatch) {
   GURL url("https://example.com");
-  AddSafeBrowsingResponse(url, SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE,
-                          GetAllSafeBrowsingThreatTypes(),
-                          SafeBrowsingJavaProtocol::REAL_TIME);
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME,
+      GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
 
   RunHashRealTimeUrlCheck(url,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       HashRealTimeUrlCheck_InvalidLookupResult) {
+  GURL url("https://example.com");
+  int invalid_lookup_result = 100;
+  AddSafeBrowsingResponse(
+      url, static_cast<SafeBrowsingApiLookupResult>(invalid_lookup_result),
+      SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME,
+      GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
+
+  // Although the returned threat type is POTENTIALLY_HARMFUL_APPLICATION, the
+  // expected threat type is SAFE because the lookup result is invalid.
+  RunHashRealTimeUrlCheck(url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       HashRealTimeUrlCheck_InvalidThreatType) {
+  GURL url("https://example.com");
+  int invalid_threat_type = 100;
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::SUCCESS,
+      static_cast<SafeBrowsingJavaThreatType>(invalid_threat_type), {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME,
+      GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
+
+  // Default to safe if the threat type is unrecognized.
+  RunHashRealTimeUrlCheck(url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       HashRealTimeUrlCheck_InvalidThreatAttributes) {
+  GURL url("https://example.com");
+  int invalid_attribute = 0;
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION,
+      {static_cast<SafeBrowsingJavaThreatAttribute>(invalid_attribute)},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME,
+      GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
+
+  // Although the returned threat type is POTENTIALLY_HARMFUL_APPLICATION, the
+  // expected threat type is SAFE because the threat attributes contain invalid
+  // value.
+  RunHashRealTimeUrlCheck(url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       HashRealTimeUrlCheck_InvalidResponseStatus) {
+  GURL url("https://example.com");
+  int invalid_response_status = 100;
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION, {},
+      static_cast<SafeBrowsingJavaResponseStatus>(invalid_response_status),
+      GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
+
+  // Although the response status is invalid, the returned threat type should
+  // still be sent. This is to avoid the API adding a new success
+  // response_status while we haven't integrated the new value yet.
+  RunHashRealTimeUrlCheck(url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_MALWARE);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       HashRealTimeUrlCheck_UnsuccessfulLookupResult) {
+  GURL url("https://example.com");
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::FAILURE,
+      SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME,
+      GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
+
+  // Although the returned threat type is POTENTIALLY_HARMFUL_APPLICATION, the
+  // expected threat type is SAFE because the lookup result is failure.
+  RunHashRealTimeUrlCheck(url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       HashRealTimeUrlCheck_UnsuccessfulResponseStatus) {
+  GURL url("https://example.com");
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION, {},
+      SafeBrowsingJavaResponseStatus::FAILURE_NETWORK_UNAVAILABLE,
+      GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
+
+  // Although the returned threat type is POTENTIALLY_HARMFUL_APPLICATION, the
+  // expected threat type is SAFE because the response status is failure.
+  RunHashRealTimeUrlCheck(url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
 }
 
 // Verifies that the callback_id counters are accumulated correctly.
@@ -331,10 +448,14 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, MultipleRequestsWithDifferentApis) {
   AddSafetyNetBlocklistResponse(safetynet_safe_url, metadata_safe,
                                 GetAllSafetyNetThreatsOfInterest());
   AddSafeBrowsingResponse(
-      safebrowsing_unsafe_url, SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE,
+      safebrowsing_unsafe_url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME,
       GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
   AddSafeBrowsingResponse(
-      safebrowsing_safe_url, SafeBrowsingJavaThreatType::NO_THREAT,
+      safebrowsing_safe_url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::NO_THREAT, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME,
       GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
 
   RunHashDatabaseUrlCheck(safetynet_unsafe_url,

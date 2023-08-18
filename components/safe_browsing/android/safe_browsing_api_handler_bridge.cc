@@ -52,6 +52,94 @@ void ReportUmaResult(UmaRemoteCallResult result) {
                             UmaRemoteCallResult::MAX_VALUE);
 }
 
+// Validate the values returned from SafeBrowsing API are defined in enum. The
+// response can be out of range if there is version mismatch between Chrome and
+// the GMSCore APK, or the enums between c++ and java are not aligned.
+bool IsResponseFromJavaValid(SafeBrowsingApiLookupResult lookup_result,
+                             SafeBrowsingJavaThreatType threat_type,
+                             const std::vector<int>& threat_attributes) {
+  bool is_lookup_result_recognized = false;
+  switch (lookup_result) {
+    case SafeBrowsingApiLookupResult::SUCCESS:
+    case SafeBrowsingApiLookupResult::FAILURE:
+      is_lookup_result_recognized = true;
+      break;
+  }
+  if (!is_lookup_result_recognized) {
+    return false;
+  }
+
+  bool is_threat_type_recognized = false;
+  switch (threat_type) {
+    case SafeBrowsingJavaThreatType::NO_THREAT:
+    case SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE:
+    case SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION:
+    case SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING:
+    case SafeBrowsingJavaThreatType::SUBRESOURCE_FILTER:
+    case SafeBrowsingJavaThreatType::BILLING:
+      is_threat_type_recognized = true;
+      break;
+  }
+  if (!is_threat_type_recognized) {
+    return false;
+  }
+
+  for (int threat_attribute : threat_attributes) {
+    SafeBrowsingJavaThreatAttribute threat_attribute_enum =
+        static_cast<SafeBrowsingJavaThreatAttribute>(threat_attribute);
+    bool is_threat_attribute_recognized = false;
+    switch (threat_attribute_enum) {
+      case SafeBrowsingJavaThreatAttribute::CANARY:
+      case SafeBrowsingJavaThreatAttribute::FRAME_ONLY:
+        is_threat_attribute_recognized = true;
+        break;
+    }
+    if (!is_threat_attribute_recognized) {
+      return false;
+    }
+  }
+
+  // Not checking response_status here. This is to avoid the
+  // API adding a new success response_status while we haven't integrated the
+  // new value yet. In this case, we still want to return the threat_type.
+  // TODO(crbug.com/1444511): Add a histogram to track unrecognized status.
+  return true;
+}
+
+bool IsLookupSuccessful(SafeBrowsingApiLookupResult lookup_result,
+                        SafeBrowsingJavaResponseStatus response_status) {
+  bool is_lookup_result_success = false;
+  switch (lookup_result) {
+    case SafeBrowsingApiLookupResult::SUCCESS:
+      is_lookup_result_success = true;
+      break;
+    case SafeBrowsingApiLookupResult::FAILURE:
+      break;
+  }
+  if (!is_lookup_result_success) {
+    return false;
+  }
+
+  // Note that we check explicit failure statuses instead of success statuses.
+  // This is to avoid the API adding a new success response_status while we
+  // haven't integrated the new value yet. The impact of a missing failure
+  // status is smaller since the API is expected to return a safe threat type in
+  // a failure anyway.
+  bool is_response_status_success = true;
+  switch (response_status) {
+    case SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST:
+    case SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME:
+    case SafeBrowsingJavaResponseStatus::SUCCESS_FALLBACK_REAL_TIME_TIMEOUT:
+    case SafeBrowsingJavaResponseStatus::SUCCESS_FALLBACK_REAL_TIME_THROTTLED:
+      break;
+    case SafeBrowsingJavaResponseStatus::FAILURE_NETWORK_UNAVAILABLE:
+    case SafeBrowsingJavaResponseStatus::FAILURE_BLOCK_LIST_UNAVAILABLE:
+      is_response_status_success = false;
+      break;
+  }
+  return is_response_status_success;
+}
+
 // Convert a SBThreatType to a Java SafetyNet API threat type.  We only support
 // a few.
 SafetyNetJavaThreatType SBThreatTypeToSafetyNetJavaThreatType(
@@ -314,8 +402,23 @@ void OnUrlCheckDoneOnSBThreadBySafeBrowsingApi(
       std::move((pending_callbacks)[callback_id]);
   pending_callbacks.erase(callback_id);
 
-  // TODO(crbug.com/1444511): Consume other fields before returning the
-  // threat_type.
+  if (!IsResponseFromJavaValid(lookup_result, threat_type, threat_attributes)) {
+    std::move(*callback).Run(SB_THREAT_TYPE_SAFE, ThreatMetadata());
+    return;
+  }
+
+  if (!IsLookupSuccessful(lookup_result, response_status)) {
+    std::move(*callback).Run(SB_THREAT_TYPE_SAFE, ThreatMetadata());
+    return;
+  }
+
+  // The API currently doesn't have required threat types
+  // (ABUSIVE_EXPERIENCE_VIOLATION, BETTER_ADS_VIOLATION) to work with threat
+  // attributes, so threat attributes are currently disabled. It should not
+  // affect browse URL checks (mainframe and subresource URLs). However, this
+  // must be changed before it is used for subresource filter checks.
+  // Similarly, threat attributes must be consumed if we decide to use malware
+  // landing info on Android.
   std::move(*callback).Run(SafeBrowsingJavaToSBThreatType(threat_type),
                            ThreatMetadata());
 }
@@ -346,9 +449,6 @@ void JNI_SafeBrowsingApiBridge_OnUrlCheckDoneBySafeBrowsingApi(
           ? content::GetUIThreadTaskRunner({})
           : content::GetIOThreadTaskRunner({});
 
-  // TODO(crbug.com/1444511): Add a check that j_threat_type,
-  // j_threat_attributes and j_response_status are all defined values (in case
-  // that there is a mismatch between Clank and SafeBrowsing API).
   SafeBrowsingApiLookupResult lookup_result =
       static_cast<SafeBrowsingApiLookupResult>(j_lookup_result);
   SafeBrowsingJavaThreatType threat_type =

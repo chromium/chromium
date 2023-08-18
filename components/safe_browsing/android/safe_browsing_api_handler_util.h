@@ -43,23 +43,19 @@ enum class SafetyNetJavaThreatType {
 // TODO(crbug.com/1444511): Break down FAILURE into more granular buckets.
 enum class SafeBrowsingApiLookupResult { SUCCESS = 0, FAILURE = 1 };
 
-// Must match the definition in SafeBrowsing::ThreatType in SafeBrowsing
-// API.
+// Must match the definition in SafeBrowsing::ThreatType in SafeBrowsing API.
 enum class SafeBrowsingJavaThreatType {
   NO_THREAT = 0,
   UNWANTED_SOFTWARE = 3,
   POTENTIALLY_HARMFUL_APPLICATION = 4,
   SOCIAL_ENGINEERING = 5,
   SUBRESOURCE_FILTER = 13,
-  BILLING = 15,
+  BILLING = 15
 };
 
-// Must match the definition in SafeBrowsing::ThreatAttribute in
-// SafeBrowsing API.
-enum class SafeBrowsingJavaThreatAttribute {
-  CANARY = 1,
-  FRAME_ONLY = 2,
-};
+// Must match the definition in SafeBrowsing::ThreatAttribute in SafeBrowsing
+// API.
+enum class SafeBrowsingJavaThreatAttribute { CANARY = 1, FRAME_ONLY = 2 };
 
 // Must match the definition in SafeBrowsing::Protocol in the SafeBrowsing
 // API.
