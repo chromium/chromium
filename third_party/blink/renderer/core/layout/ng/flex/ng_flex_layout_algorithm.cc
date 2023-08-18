@@ -2413,10 +2413,11 @@ NGFlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
 
   largest_inline_size_contributions += BorderScrollbarPadding().InlineSum();
 
-  // This always depends on block constraints because if block constraints
-  // change, this flexbox could get a different number of columns.
+  // TODO(crbug.com/1272533): depends_on_block_constraints should be true.
+  // However we need more cache slots to handle the performance degradation we
+  // currently experience. See bug for more details.
   return {largest_inline_size_contributions,
-          /* depends_on_block_constraints */ true};
+          /* depends_on_block_constraints */ false};
 }
 
 MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {

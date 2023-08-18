@@ -3474,6 +3474,7 @@ crbug.com/1335889 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-gr
 
 # Simple to fix - but blocked on performance regression requiring cache logic change.
 crbug.com/1272533 external/wpt/css/css-grid/layout-algorithm/grid-intrinsic-size-dynamic-block-size.html [ Failure ]
+crbug.com/1272533 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-009.html [ Failure ]
 
 # Baseline Content-Alignment is not implemented yet for CSS Grid Layout
 crbug.com/764235 external/wpt/css/css-grid/alignment/grid-item-content-baseline-001.html [ Crash Failure Pass Timeout ]
