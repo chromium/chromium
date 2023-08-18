@@ -728,7 +728,6 @@ template("test") {
                                "data",
                                "deps",
                                "executable_args",
-                               "output_name",
                                "retries",
                                "shards",
                              ])
