@@ -42,6 +42,7 @@
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/components/onc/onc_utils.h"
@@ -1485,6 +1486,50 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AllowCellularSimLock) {
   // Check ManagedNetworkConfigurationHandler policy accessors.
   EXPECT_TRUE(managed_handler()->AllowCellularHotspot());
   EXPECT_FALSE(managed_handler()->AllowCellularSimLock());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
+  EXPECT_TRUE(managed_handler()->GetBlockedHexSSIDs().empty());
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest, AllowTextMessages) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSuppressTextMessages);
+
+  EXPECT_TRUE(
+      SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                "policy/policy_empty_global_network_configuration.onc"));
+  // Check that the field returns Unset when it isn't set.
+  EXPECT_EQ(managed_handler()->GetAllowTextMessages(),
+            PolicyTextMessageSuppressionState::kUnset);
+
+  // Set 'AllowTextMessages' policy to Suppress.
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_allow_text_messages_suppress.onc"));
+
+  // Check that the field is updated to Suppress.
+  EXPECT_EQ(managed_handler()->GetAllowTextMessages(),
+            PolicyTextMessageSuppressionState::kSuppress);
+
+  // Set 'AllowTextMessages' policy to Unset.
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_allow_text_messages_unset.onc"));
+
+  // Check that the field is updated to Unset.
+  EXPECT_EQ(managed_handler()->GetAllowTextMessages(),
+            PolicyTextMessageSuppressionState::kUnset);
+
+  // Set 'AllowTextMessages' policy to Allow.
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_allow_text_messages_allow.onc"));
+
+  // Check that the field is updated to Allow.
+  EXPECT_EQ(managed_handler()->GetAllowTextMessages(),
+            PolicyTextMessageSuppressionState::kAllow);
+
+  // Check other ManagedNetworkConfigurationHandler policy accessors.
+  EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());

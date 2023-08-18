@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/network/network_profile_observer.h"
 #include "chromeos/ash/components/network/policy_applicator.h"
 #include "chromeos/ash/components/network/profile_policies.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 
 namespace base {
 class Value;
@@ -144,6 +145,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       const base::flat_set<std::string>& new_cellular_policy_guids);
   void OnCellularPoliciesApplied(const NetworkProfile& profile) override;
 
+  PolicyTextMessageSuppressionState GetAllowTextMessages() const override;
   bool AllowCellularSimLock() const override;
   bool AllowCellularHotspot() const override;
   bool AllowOnlyPolicyCellularNetworks() const override;

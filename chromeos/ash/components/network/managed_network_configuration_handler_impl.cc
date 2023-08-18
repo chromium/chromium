@@ -46,6 +46,7 @@
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/shill_property_util.h"
 #include "chromeos/ash/components/network/tether_constants.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/components/onc/onc_validator.h"
@@ -970,6 +971,33 @@ bool ManagedNetworkConfigurationHandlerImpl::CanRemoveNetworkConfig(
     const std::string& guid,
     const std::string& profile_path) const {
   return !IsNetworkConfiguredByPolicy(guid, profile_path);
+}
+
+PolicyTextMessageSuppressionState
+ManagedNetworkConfigurationHandlerImpl::GetAllowTextMessages() const {
+  CHECK(features::IsSuppressTextMessagesEnabled());
+  const base::Value::Dict* global_network_config = GetGlobalConfigFromPolicy(
+      std::string() /* no username hash, device policy */);
+
+  if (!global_network_config) {
+    return PolicyTextMessageSuppressionState::kUnset;
+  }
+
+  const std::string* managed_only_value = global_network_config->FindString(
+      ::onc::global_network_config::kAllowTextMessages);
+  if (!managed_only_value) {
+    return PolicyTextMessageSuppressionState::kUnset;
+  }
+
+  if (*managed_only_value == ::onc::cellular::kTextMessagesAllow) {
+    return PolicyTextMessageSuppressionState::kAllow;
+  }
+
+  if (*managed_only_value == ::onc::cellular::kTextMessagesSuppress) {
+    return PolicyTextMessageSuppressionState::kSuppress;
+  }
+
+  return PolicyTextMessageSuppressionState::kUnset;
 }
 
 bool ManagedNetworkConfigurationHandlerImpl::AllowCellularSimLock() const {

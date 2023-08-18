@@ -202,6 +202,7 @@ component("network") {
     "tether_constants.h",
     "text_message_provider.cc",
     "text_message_provider.h",
+    "text_message_suppression_state.h",
   ]
 }
 

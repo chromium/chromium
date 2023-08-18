@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "components/onc/onc_constants.h"
 
 namespace base {
@@ -242,6 +243,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
 
   // Return true if the AllowOnlyPolicyNetworksToAutoconnect policy is enabled.
   virtual bool AllowOnlyPolicyNetworksToAutoconnect() const = 0;
+
+  // Returns the value for the AllowTextMessages policy.
+  virtual PolicyTextMessageSuppressionState GetAllowTextMessages() const = 0;
 
   // Return the list of blocked WiFi networks (identified by HexSSIDs).
   virtual std::vector<std::string> GetBlockedHexSSIDs() const = 0;

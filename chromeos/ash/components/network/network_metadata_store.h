@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/network/network_metadata_observer.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -29,13 +30,6 @@ class TimeDelta;
 }
 
 namespace ash {
-
-enum class TextMessageSuppressionState : int {
-  // Text message notifications will be allowed.
-  kAllow = 0,
-  // Text message notifications will be suppressed.
-  kSuppress = 1,
-};
 
 class NetworkConfigurationHandler;
 class NetworkConnectionHandler;
@@ -170,12 +164,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   // Sets user suppression state to configure text message notifications.
   void SetUserTextMessageSuppressionState(
       const std::string& network_guid,
-      const TextMessageSuppressionState& state);
+      const UserTextMessageSuppressionState& state);
 
   // Returns the user set text message suppression state. When no user state has
   // been configured this will return |TextMessageSuppressionState::kAllow|
   // which will default to allowing text message notifications.
-  TextMessageSuppressionState GetUserTextMessageSuppressionState(
+  UserTextMessageSuppressionState GetUserTextMessageSuppressionState(
       const std::string& network_guid);
 
   // Sets whether the deviceReportXDREvents policy is enabled.

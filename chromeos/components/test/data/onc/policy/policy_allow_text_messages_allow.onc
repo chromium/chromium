@@ -1,0 +1,7 @@
+{
+  "NetworkConfigurations": [ ],
+  "GlobalNetworkConfiguration": {
+    "AllowTextMessages": "Allow"
+  },
+  "Type": "UnencryptedConfiguration"
+}

@@ -1630,13 +1630,13 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
                              cellular_device->iccid() == cellular->iccid &&
                              cellular_device->IsSimLocked();
       if (features::IsSuppressTextMessagesEnabled()) {
-        TextMessageSuppressionState state =
+        UserTextMessageSuppressionState state =
             NetworkHandler::Get()
                 ->network_metadata_store()
                 ->GetUserTextMessageSuppressionState(network_state->guid());
         cellular->allow_text_messages = mojom::ManagedBoolean::New();
         cellular->allow_text_messages->active_value =
-            state != TextMessageSuppressionState::kSuppress;
+            state != UserTextMessageSuppressionState::kSuppress;
 
         // TODO(b/293432140) Map the policy value from
         // |ManagedNetworkConfigurationHandler| to the policy_value of the
@@ -2522,9 +2522,9 @@ void CrosNetworkConfig::SetProperties(const std::string& guid,
     const bool allow_text_messages =
         properties->type_config->get_cellular()
             ->text_message_allow_state->allow_text_messages;
-    TextMessageSuppressionState state =
-        allow_text_messages ? TextMessageSuppressionState::kAllow
-                            : TextMessageSuppressionState::kSuppress;
+    UserTextMessageSuppressionState state =
+        allow_text_messages ? UserTextMessageSuppressionState::kAllow
+                            : UserTextMessageSuppressionState::kSuppress;
     NetworkHandler::Get()
         ->network_metadata_store()
         ->SetUserTextMessageSuppressionState(guid, state);

@@ -603,14 +603,14 @@ void NetworkMetadataStore::SetReportXdrEventsEnabled(bool enabled) {
 
 void NetworkMetadataStore::SetUserTextMessageSuppressionState(
     const std::string& network_guid,
-    const TextMessageSuppressionState& state) {
+    const UserTextMessageSuppressionState& state) {
   CHECK(features::IsSuppressTextMessagesEnabled());
 
   SetPref(network_guid, kUserTextMessageSuppressionState,
           base::Value(base::to_underlying(state)));
 }
 
-TextMessageSuppressionState
+UserTextMessageSuppressionState
 NetworkMetadataStore::GetUserTextMessageSuppressionState(
     const std::string& network_guid) {
   CHECK(features::IsSuppressTextMessagesEnabled());
@@ -618,18 +618,18 @@ NetworkMetadataStore::GetUserTextMessageSuppressionState(
   const base::Value* state_value =
       GetPref(network_guid, kUserTextMessageSuppressionState);
   if (!state_value || !state_value->is_int()) {
-    return TextMessageSuppressionState::kAllow;
+    return UserTextMessageSuppressionState::kAllow;
   }
 
-  if (base::to_underlying(TextMessageSuppressionState::kAllow) ==
+  if (base::to_underlying(UserTextMessageSuppressionState::kAllow) ==
       state_value->GetInt()) {
-    return TextMessageSuppressionState::kAllow;
-  } else if (base::to_underlying(TextMessageSuppressionState::kSuppress) ==
+    return UserTextMessageSuppressionState::kAllow;
+  } else if (base::to_underlying(UserTextMessageSuppressionState::kSuppress) ==
              state_value->GetInt()) {
-    return TextMessageSuppressionState::kSuppress;
+    return UserTextMessageSuppressionState::kSuppress;
   }
   NOTREACHED();
-  return TextMessageSuppressionState::kAllow;
+  return UserTextMessageSuppressionState::kAllow;
 }
 
 void NetworkMetadataStore::SetPref(const std::string& network_guid,
