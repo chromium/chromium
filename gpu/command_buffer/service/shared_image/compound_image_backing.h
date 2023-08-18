@@ -184,7 +184,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
       std::string debug_label,
       bool allow_shm_overlays,
       std::unique_ptr<SharedMemoryImageBacking> shm_backing,
-      base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory);
+      base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
+      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
 
   base::trace_event::MemoryAllocatorDump* OnMemoryDump(
       const std::string& dump_name,
