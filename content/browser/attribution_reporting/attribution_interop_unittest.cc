@@ -128,9 +128,10 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
 
   base::Value::Dict& expected_output_dict = expected_output->GetDict();
 
-  for (const char* key : {kEventLevelResultsKey, kDebugEventLevelResultsKey,
-                          kAggregatableResultsKey, kDebugAggregatableResultsKey,
-                          kVerboseDebugReportsKey}) {
+  for (const char* key :
+       {kEventLevelResultsKey, kDebugEventLevelResultsKey,
+        kAggregatableResultsKey, kDebugAggregatableResultsKey,
+        kVerboseDebugReportsKey, kUnparsableRegistrationsKey}) {
     ProcessReports(actual_output, key);
     ProcessReports(expected_output_dict, key);
   }

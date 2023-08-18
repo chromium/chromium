@@ -204,6 +204,16 @@ and triggers.
         // The body of the report.
         "payload": [...]
       }
+    ],
+
+    // Optional list of unparsable sources/triggers. Omitted if empty.
+    "unparsable_registrations": [
+      {
+        // Time of the input that failed to register.
+        "time": "123",
+
+        "type": "source" // or "trigger"
+      }
     ]
   }
 }

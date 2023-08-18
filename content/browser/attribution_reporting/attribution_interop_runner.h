@@ -19,6 +19,7 @@ constexpr char kDebugEventLevelResultsKey[] = "debug_event_level_results";
 constexpr char kAggregatableResultsKey[] = "aggregatable_results";
 constexpr char kDebugAggregatableResultsKey[] = "debug_aggregatable_results";
 constexpr char kVerboseDebugReportsKey[] = "verbose_debug_reports";
+constexpr char kUnparsableRegistrationsKey[] = "unparsable_registrations";
 
 // Simulates the Attribution Reporting API for a single user on sources and
 // triggers specified in `input`. Returns the generated reports.

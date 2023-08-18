@@ -264,12 +264,12 @@ class AttributionEventHandler : public AttributionObserver {
 
   ~AttributionEventHandler() override { manager_->RemoveObserver(this); }
 
-  // TODO(apaseltiner): Consider propagating early returns to output.
   void Handle(AttributionSimulationEvent event) {
     fake_cookie_checker_->set_debug_cookie_set(event.debug_permission);
 
     base::Value::Dict* dict = event.registration.GetIfDict();
     if (!dict) {
+      AddUnparsableRegistration(event);
       return;
     }
 
@@ -277,6 +277,7 @@ class AttributionEventHandler : public AttributionObserver {
       auto registration =
           attribution_reporting::SourceRegistration::Parse(std::move(*dict));
       if (!registration.has_value()) {
+        AddUnparsableRegistration(event);
         return;
       }
 
@@ -292,6 +293,7 @@ class AttributionEventHandler : public AttributionObserver {
     auto registration =
         attribution_reporting::TriggerRegistration::Parse(std::move(*dict));
     if (!registration.has_value()) {
+      AddUnparsableRegistration(event);
       return;
     }
 
@@ -330,6 +332,10 @@ class AttributionEventHandler : public AttributionObserver {
     if (!verbose_debug_reports_.empty()) {
       output.Set(kVerboseDebugReportsKey,
                  std::exchange(verbose_debug_reports_, {}));
+    }
+
+    if (!unparsable_.empty()) {
+      output.Set(kUnparsableRegistrationsKey, std::exchange(unparsable_, {}));
     }
 
     return output;
@@ -382,6 +388,13 @@ class AttributionEventHandler : public AttributionObserver {
     }
   }
 
+  void AddUnparsableRegistration(const AttributionSimulationEvent& event) {
+    base::Value::Dict dict;
+    dict.Set("time", json_converter_.FormatTime(event.time));
+    dict.Set("type", event.source_type.has_value() ? "source" : "trigger");
+    unparsable_.Append(std::move(dict));
+  }
+
   const std::unique_ptr<AttributionManagerImpl> manager_;
   const raw_ref<FakeCookieChecker> fake_cookie_checker_;
 
@@ -394,6 +407,7 @@ class AttributionEventHandler : public AttributionObserver {
   base::Value::List aggregatable_reports_;
   base::Value::List debug_aggregatable_reports_;
   base::Value::List verbose_debug_reports_;
+  base::Value::List unparsable_;
 };
 
 }  // namespace
