@@ -414,8 +414,10 @@ export class AppElement extends AppElementBase {
     this.showWebstoreToastListenerId_ =
         NewTabPageProxy.getInstance()
             .callbackRouter.showWebstoreToast.addListener(() => {
-              $$<CrToastElement>(this, '#webstoreToast')!.hidden = false;
-              $$<CrToastElement>(this, '#webstoreToast')!.show();
+              if (this.showCustomize_) {
+                $$<CrToastElement>(this, '#webstoreToast')!.hidden = false;
+                $$<CrToastElement>(this, '#webstoreToast')!.show();
+              }
             });
 
     // Open Customize Chrome if there are Customize Chrome URL params.
