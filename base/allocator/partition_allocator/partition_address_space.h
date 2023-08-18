@@ -62,14 +62,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #endif
     pool_handle pool = kNullPoolHandle;
     uintptr_t base = 0;
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    if (IsInBRPPool(address)) {
+      pool = kBRPPoolHandle;
+      base = setup_.brp_pool_base_address_;
+    } else
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (IsInRegularPool(address)) {
       pool = kRegularPoolHandle;
       base = setup_.regular_pool_base_address_;
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    } else if (IsInBRPPool(address)) {
-      pool = kBRPPoolHandle;
-      base = setup_.brp_pool_base_address_;
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     } else if (IsInConfigurablePool(address)) {
       PA_DCHECK(IsConfigurablePoolInitialized());
       pool = kConfigurablePoolHandle;
