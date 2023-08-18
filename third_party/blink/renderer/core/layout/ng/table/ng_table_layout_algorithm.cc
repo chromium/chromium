@@ -1420,8 +1420,10 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
         if (has_overlapping_repeated_header) {
           // The header was taken "out of flow" and placed on top of monolithic
-          // content. Now restore the offset.
-          child_block_offset = *offset_before_repeated_header;
+          // content. Now make sure that the offset is past the monolithic
+          // overflow again (AND past the header).
+          child_block_offset =
+              std::max(child_block_offset, *offset_before_repeated_header);
         }
       }
 
