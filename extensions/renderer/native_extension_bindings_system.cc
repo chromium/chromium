@@ -874,6 +874,8 @@ void NativeExtensionBindingsSystem::SendRequest(
   params->worker_thread_id = kMainThreadId;
   params->service_worker_version_id =
       blink::mojom::kInvalidServiceWorkerVersionId;
+  CHECK_NE(Feature::UNSPECIFIED_CONTEXT, script_context->context_type())
+      << script_context->GetDebugString();
 
   ipc_message_sender_->SendRequestIPC(script_context, std::move(params));
 }
