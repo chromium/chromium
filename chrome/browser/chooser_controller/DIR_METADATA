@@ -1,3 +1,1 @@
-monorail: {
-  component: "Internals>Permissions"
-}
+mixins: "//services/device/COMMON_METADATA"
