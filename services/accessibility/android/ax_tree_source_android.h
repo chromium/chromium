@@ -242,7 +242,7 @@ class AXTreeSourceAndroid
   absl::optional<std::string> notification_key_;
 
   // Window corresponding this tree.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_;
 
   // Cache of mapping from the *Android* window id to the last focused node id.
   std::map<int32_t, int32_t> window_id_to_last_focus_node_id_;

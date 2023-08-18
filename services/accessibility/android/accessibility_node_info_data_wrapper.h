@@ -87,8 +87,8 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
 
   ax::mojom::Role GetChromeRole() const;
 
-  raw_ptr<mojom::AccessibilityNodeInfoData, ExperimentalAsh> node_ptr_ =
-      nullptr;
+  raw_ptr<mojom::AccessibilityNodeInfoData, DanglingUntriaged | ExperimentalAsh>
+      node_ptr_ = nullptr;
 
   // Properties which should be checked for recursive text computation.
   // It's not clear whether labeled by should be taken into account here.

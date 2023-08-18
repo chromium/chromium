@@ -102,8 +102,9 @@ class AtpJSApiTest : public testing::Test {
   }
 
  private:
-  raw_ptr<AssistiveTechnologyControllerImpl, ExperimentalAsh> at_controller_ =
-      nullptr;
+  raw_ptr<AssistiveTechnologyControllerImpl,
+          DanglingUntriaged | ExperimentalAsh>
+      at_controller_ = nullptr;
   std::unique_ptr<OSAccessibilityService> service_;
   base::test::TaskEnvironment task_environment_;
   base::RunLoop test_waiter_;
