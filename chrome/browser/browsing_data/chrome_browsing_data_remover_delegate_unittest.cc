@@ -1715,7 +1715,7 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest, ClearData) {
           RemovalInfo{DATA_TYPE_SITE_DATA},
           RemovalInfo{DATA_TYPE_ON_STORAGE_PARTITION & DATA_TYPE_SITE_DATA,
                       iwa_url_info1.storage_partition_config(GetProfile())},
-          RemovalInfo{DATA_TYPE_ON_STORAGE_PARTITION,
+          RemovalInfo{DATA_TYPE_ON_STORAGE_PARTITION & DATA_TYPE_SITE_DATA,
                       controlled_frame_partition1},
           RemovalInfo{DATA_TYPE_ON_STORAGE_PARTITION & DATA_TYPE_SITE_DATA,
                       iwa_url_info2.storage_partition_config(GetProfile())}));
@@ -1794,33 +1794,6 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest, AppCookiesDeleted) {
 }
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
-       ControlledFramesIgnoreFilter) {
-  const GURL iwa_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp(iwa_url);
-  content::StoragePartitionConfig controlled_frame_partition =
-      CreateControlledFrameStoragePartition(iwa_url_info, "controlled_frame");
-
-  std::vector<RemovalInfo> removal_tasks =
-      ClearDataAndWait(base::Time(), base::Time::Max(),
-                       DATA_TYPE_INDEXED_DB | constants::DATA_TYPE_HISTORY |
-                           constants::DATA_TYPE_CONTROLLED_FRAME,
-                       BrowsingDataFilterBuilder::Create(
-                           BrowsingDataFilterBuilder::Mode::kPreserve));
-
-  EXPECT_THAT(
-      removal_tasks,
-      UnorderedElementsAre(
-          RemovalInfo{DATA_TYPE_INDEXED_DB | constants::DATA_TYPE_HISTORY |
-                      constants::DATA_TYPE_CONTROLLED_FRAME},
-          RemovalInfo{DATA_TYPE_INDEXED_DB,
-                      iwa_url_info.storage_partition_config(GetProfile())},
-          RemovalInfo{DATA_TYPE_ON_STORAGE_PARTITION,
-                      controlled_frame_partition}));
-}
-
-TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
        TimeRangeSpecified) {
   const GURL iwa_url(
       "isolated-app://"
@@ -1842,8 +1815,7 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
                       constants::DATA_TYPE_CONTROLLED_FRAME},
           RemovalInfo{DATA_TYPE_INDEXED_DB,
                       iwa_url_info.storage_partition_config(GetProfile())},
-          RemovalInfo{DATA_TYPE_ON_STORAGE_PARTITION,
-                      controlled_frame_partition}));
+          RemovalInfo{DATA_TYPE_INDEXED_DB, controlled_frame_partition}));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 

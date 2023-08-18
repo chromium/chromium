@@ -1291,10 +1291,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   // BrowsingDataRemover::Remove* calls for each StoragePartition of Isolated
   // Web Apps (IWA) that match the filter.
   //
-  // The data types specified in `remove_mask` will be removed from the
-  // primary StoragePartition of an IWA, but all data will be removed from
-  // Controlled Frame StoragePartitions if DATA_TYPE_CONTROLLED_FRAME is
-  // specified in `remove_mask`.
+  // The data types specified in `remove_mask` will be removed from the primary
+  // StoragePartition of an IWA, and all Controlled Frame StoragePartitions if
+  // DATA_TYPE_CONTROLLED_FRAME is specified in `remove_mask`.
   if (!filter_builder->GetStoragePartitionConfig().has_value() &&
       content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
     const web_app::WebAppRegistrar& web_app_registrar =
@@ -1310,20 +1309,16 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           web_app_registrar.GetIsolatedWebAppStoragePartitionConfigs(
               web_app.app_id());
       for (const content::StoragePartitionConfig& partition : partitions) {
-        // The filter specified a StoragePartition, so only delete data that
-        // lives in a StoragePartition.
-        uint64_t iwa_remove_mask =
-            content::BrowsingDataRemover::DATA_TYPE_ON_STORAGE_PARTITION;
-        bool is_primary_partition = partition.partition_name().empty();
-        if (is_primary_partition) {
-          iwa_remove_mask &= remove_mask;
-        } else {
-          if (!(remove_mask & constants::DATA_TYPE_CONTROLLED_FRAME)) {
-            continue;
-          }
-          // For Controlled Frame partitions, all data should be deleted, so
-          // |iwa_remove_mask| should stay DATA_TYPE_ON_STORAGE_PARTITION.
+        // Controlled frame StoragePartitions have non-empty partition_names.
+        if (!partition.partition_name().empty() &&
+            !(remove_mask & constants::DATA_TYPE_CONTROLLED_FRAME)) {
+          continue;
         }
+
+        // Only delete data types that live on a StoragePartition.
+        uint64_t iwa_remove_mask =
+            content::BrowsingDataRemover::DATA_TYPE_ON_STORAGE_PARTITION &
+            remove_mask;
 
         // COOKIES are a domain-scoped datatype. ISOLATED_WEB_APP_COOKIES are
         // attributed to the Isolated Web App's origin, so we're tracking them
