@@ -1504,25 +1504,37 @@ TEST_F(ResourceFetcherTest, BoostImagePriority) {
 }
 
 TEST_F(ResourceFetcherTest, IsPotentiallyLCPElement) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kBoostImagePriority);
-  auto& properties = *MakeGarbageCollected<TestResourceFetcherProperties>();
-  auto* fetcher = CreateFetcher(properties);
-  ResourceRequest request(KURL("https://www.example.com/"));
+  for (const auto& test_cases :
+       {std::make_pair("medium", ResourceLoadPriority::kMedium),
+        std::make_pair("high", ResourceLoadPriority::kHigh),
+        std::make_pair("very_high", ResourceLoadPriority::kVeryHigh)}) {
+    const char* kPrioritySetting = test_cases.first;
+    const ResourceLoadPriority kExpectedPriority = test_cases.second;
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{features::kLCPCriticalPathPredictor,
+          {{features::kLCPCriticalPathPredictorImageLoadPriority.name,
+            kPrioritySetting}}}},
+        {});
+    auto& properties = *MakeGarbageCollected<TestResourceFetcherProperties>();
+    auto* fetcher = CreateFetcher(properties);
+    ResourceRequest request(KURL("https://www.example.com/"));
 
-  // Resources for Potentially LCP Elements get VeryHigh priority.
-  {
-    properties.SetIsOutermostMainFrame(true);
-    properties.SetIsSubframeDeprioritizationEnabled(false);
-    const auto priority = fetcher->ComputeLoadPriorityForTesting(
-        ResourceType::kImage, request, ResourcePriority::kNotVisible,
-        FetchParameters::DeferOption::kNoDefer,
-        FetchParameters::SpeculativePreloadType::kInDocument,
-        RenderBlockingBehavior::kNonBlocking,
-        mojom::blink::ScriptType::kClassic, /* is_link_preload=*/false,
-        /* resource_width=*/10, /* resource_height=*/10,
-        /* is_potentially_lcp_element=*/true);
-    EXPECT_EQ(priority, ResourceLoadPriority::kVeryHigh);
+    // Resources for Potentially LCP Elements get a `kExpectedPriority`.
+    {
+      properties.SetIsOutermostMainFrame(true);
+      properties.SetIsSubframeDeprioritizationEnabled(false);
+      const auto priority = fetcher->ComputeLoadPriorityForTesting(
+          ResourceType::kImage, request, ResourcePriority::kNotVisible,
+          FetchParameters::DeferOption::kNoDefer,
+          FetchParameters::SpeculativePreloadType::kInDocument,
+          RenderBlockingBehavior::kNonBlocking,
+          mojom::blink::ScriptType::kClassic, /* is_link_preload=*/false,
+          /* resource_width=*/10, /* resource_height=*/10,
+          /* is_potentially_lcp_element=*/true);
+      EXPECT_EQ(priority, kExpectedPriority)
+          << "priority_setting: " << kPrioritySetting;
+    }
   }
 }
 
