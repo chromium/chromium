@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -30,8 +30,7 @@
 class ProfilePickerTest : public testing::Test {
  public:
   ProfilePickerTest()
-      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
-  }
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override { ASSERT_TRUE(testing_profile_manager_.SetUp()); }
 

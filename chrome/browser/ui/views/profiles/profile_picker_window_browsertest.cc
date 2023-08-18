@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/non_client_frame_view_base.h"

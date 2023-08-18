@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"

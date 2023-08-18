@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/signin/profile_customization_synced_theme_waiter.h"
+#include "chrome/browser/ui/profiles/profile_customization_synced_theme_waiter.h"
 
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -43,8 +43,9 @@ void ProfileCustomizationSyncedThemeWaiter::Run() {
   is_running_ = true;
 #endif  // DCHECK_IS_ON()
 
-  if (!CheckThemeSyncPreconditions())
+  if (!CheckThemeSyncPreconditions()) {
     return;
+  }
 
   absl::optional<ThemeSyncableService::ThemeSyncState> theme_state =
       theme_service_->GetThemeSyncableService()->GetThemeSyncStartState();
@@ -89,8 +90,9 @@ void ProfileCustomizationSyncedThemeWaiter::OnThemeChanged() {
 }
 
 void ProfileCustomizationSyncedThemeWaiter::OnTimeout() {
-  if (!callback_)
+  if (!callback_) {
     return;
+  }
 
   InvokeCallback(Outcome::kTimeout);
 }

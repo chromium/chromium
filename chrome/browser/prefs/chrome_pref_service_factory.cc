@@ -31,7 +31,7 @@
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
-#include "chrome/browser/ui/profile_error_dialog.h"
+#include "chrome/browser/ui/profiles/profile_error_dialog.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"

@@ -11,7 +11,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/signin/signin_promo.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/test/base/interactive_test_utils.h"

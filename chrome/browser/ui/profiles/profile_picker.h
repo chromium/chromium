@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PROFILE_PICKER_H_
-#define CHROME_BROWSER_UI_PROFILE_PICKER_H_
+#ifndef CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_
+#define CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -320,4 +320,4 @@ class ProfilePickerForceSigninDialog {
   static void DisplayErrorMessage();
 };
 
-#endif  // CHROME_BROWSER_UI_PROFILE_PICKER_H_
+#endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_

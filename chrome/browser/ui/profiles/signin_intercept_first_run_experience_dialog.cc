@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/signin_intercept_first_run_experience_dialog.h"
+#include "chrome/browser/ui/profiles/signin_intercept_first_run_experience_dialog.h"
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/signin/profile_customization_synced_theme_waiter.h"
+#include "chrome/browser/ui/profiles/profile_customization_synced_theme_waiter.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
@@ -98,8 +98,9 @@ void SigninInterceptFirstRunExperienceDialog::
         const SigninUIError& error) {
   // Do not display the sync error since the user hasn't asked for sync
   // explicitly. Skip to the next step.
-  if (dialog_)
+  if (dialog_) {
     dialog_->DoNextStep(Step::kTurnOnSync, Step::kProfileCustomization);
+  }
 }
 
 void SigninInterceptFirstRunExperienceDialog::
@@ -209,8 +210,9 @@ void SigninInterceptFirstRunExperienceDialog::
   }
 
   // This may delete `dialog_`.
-  if (dialog_)
+  if (dialog_) {
     dialog_->DoNextStep(Step::kSyncConfirmation, next_step);
+  }
 
   if (result == LoginUIService::UI_CLOSED) {
     // Sync must be aborted if the user didn't interact explicitly with the

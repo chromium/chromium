@@ -16,7 +16,7 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/signin_intercept_first_run_experience_dialog.h"
+#include "chrome/browser/ui/profiles/signin_intercept_first_run_experience_dialog.h"
 #include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin_modal_dialog_impl.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"

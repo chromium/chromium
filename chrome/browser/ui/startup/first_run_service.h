@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 

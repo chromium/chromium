@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/profile_view_utils.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"

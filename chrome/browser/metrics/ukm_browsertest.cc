@@ -79,8 +79,8 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/profile_ui_test_utils.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 namespace metrics {

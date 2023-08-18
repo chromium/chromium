@@ -4,7 +4,7 @@
 
 #include "base/run_loop.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
-#include "chrome/browser/ui/signin_intercept_first_run_experience_dialog.h"
+#include "chrome/browser/ui/profiles/signin_intercept_first_run_experience_dialog.h"
 
 #include "base/containers/enum_set.h"
 #include "base/test/bind.h"
@@ -191,8 +191,9 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
 
   void ExpectRecordedEvents(DialogEventSet events) {
     std::vector<base::Bucket> expected_buckets;
-    for (DialogEvent event : events)
+    for (DialogEvent event : events) {
       expected_buckets.emplace_back(static_cast<int>(event), 1);
+    }
     EXPECT_THAT(histogram_tester_.GetAllSamples("Signin.Intercept.FRE.Event"),
                 ::testing::ContainerEq(expected_buckets));
   }

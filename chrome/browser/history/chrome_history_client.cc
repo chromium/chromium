@@ -11,7 +11,7 @@
 #include "chrome/browser/history/chrome_history_backend_client.h"
 #include "chrome/browser/history/history_utils.h"
 #include "chrome/browser/profiles/sql_init_error_message_ids.h"
-#include "chrome/browser/ui/profile_error_dialog.h"
+#include "chrome/browser/ui/profiles/profile_error_dialog.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/model_loader.h"

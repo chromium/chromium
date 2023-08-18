@@ -75,7 +75,7 @@
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

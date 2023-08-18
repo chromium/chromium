@@ -49,7 +49,7 @@
 #include "ui/native_theme/native_theme.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/profiles/profile_colors_util.h"
 #endif
 
 using ::testing::Mock;

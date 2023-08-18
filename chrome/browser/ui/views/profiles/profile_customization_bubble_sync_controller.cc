@@ -183,7 +183,7 @@ void ProfileCustomizationBubbleSyncController::Abort() {
 }
 
 // Defined in
-// chrome/browser/ui/signin/profile_customization_bubble_sync_controller.h
+// chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h
 void ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
     Browser* browser,
     SkColor suggested_profile_color) {

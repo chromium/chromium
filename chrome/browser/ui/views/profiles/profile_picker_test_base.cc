@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 
 #include "chrome/browser/signin/signin_promo.h"
-#include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/profile_ui_test_utils.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"

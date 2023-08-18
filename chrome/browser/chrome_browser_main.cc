@@ -95,7 +95,7 @@
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/ui/color/chrome_color_mixers.h"
 #include "chrome/browser/ui/javascript_dialogs/chrome_javascript_app_modal_dialog_view_factory.h"
-#include "chrome/browser/ui/profile_error_dialog.h"
+#include "chrome/browser/ui/profiles/profile_error_dialog.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/webui/chrome_untrusted_web_ui_configs.h"

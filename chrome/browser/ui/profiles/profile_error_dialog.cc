@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/profile_error_dialog.h"
+#include "chrome/browser/ui/profiles/profile_error_dialog.h"
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -27,8 +27,9 @@ void OnProfileErrorDialogDismissed(const std::string& diagnostics,
                                    bool needs_feedback) {
   g_is_showing_profile_error_dialog = false;
 
-  if (!needs_feedback)
+  if (!needs_feedback) {
     return;
+  }
 
   std::string feedback_description =
       l10n_util::GetStringUTF8(IDS_PROFILE_ERROR_FEEDBACK_DESCRIPTION);
@@ -54,8 +55,9 @@ void ShowProfileErrorDialog(ProfileErrorType type,
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (g_is_showing_profile_error_dialog)
+  if (g_is_showing_profile_error_dialog) {
     return;
+  }
 
   g_is_showing_profile_error_dialog = true;
   chrome::ShowWarningMessageBoxWithCheckbox(

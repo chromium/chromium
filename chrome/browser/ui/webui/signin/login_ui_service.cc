@@ -14,7 +14,7 @@
 #include "chrome/common/url_constants.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 LoginUIService::LoginUIService(Profile* profile)

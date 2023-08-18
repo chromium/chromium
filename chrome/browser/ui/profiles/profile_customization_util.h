@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_SIGNIN_PROFILE_CUSTOMIZATION_UTIL_H_
-#define CHROME_BROWSER_UI_SIGNIN_PROFILE_CUSTOMIZATION_UTIL_H_
+#ifndef CHROME_BROWSER_UI_PROFILES_PROFILE_CUSTOMIZATION_UTIL_H_
+#define CHROME_BROWSER_UI_PROFILES_PROFILE_CUSTOMIZATION_UTIL_H_
 
 #include <string>
 
@@ -73,4 +73,4 @@ class ProfileNameResolver : public signin::IdentityManager::Observer {
   base::WeakPtrFactory<ProfileNameResolver> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_SIGNIN_PROFILE_CUSTOMIZATION_UTIL_H_
+#endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_CUSTOMIZATION_UTIL_H_

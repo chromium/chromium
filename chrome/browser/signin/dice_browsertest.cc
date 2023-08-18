@@ -39,7 +39,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/profile_chooser_constants.h"
+#include "chrome/browser/ui/profiles/profile_chooser_constants.h"
 #include "chrome/browser/ui/simple_message_box_internal.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"

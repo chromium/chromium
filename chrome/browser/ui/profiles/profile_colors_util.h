@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_SIGNIN_PROFILE_COLORS_UTIL_H_
-#define CHROME_BROWSER_UI_SIGNIN_PROFILE_COLORS_UTIL_H_
+#ifndef CHROME_BROWSER_UI_PROFILES_PROFILE_COLORS_UTIL_H_
+#define CHROME_BROWSER_UI_PROFILES_PROFILE_COLORS_UTIL_H_
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -79,4 +79,4 @@ chrome_colors::ColorInfo GenerateNewProfileColorWithGenerator(
 chrome_colors::ColorInfo GenerateNewProfileColor(
     ProfileAttributesEntry* current_profile = nullptr);
 
-#endif  // CHROME_BROWSER_UI_SIGNIN_PROFILE_COLORS_UTIL_H_
+#endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_COLORS_UTIL_H_

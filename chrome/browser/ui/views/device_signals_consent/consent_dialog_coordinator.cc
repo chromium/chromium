@@ -22,7 +22,7 @@
 #include "ui/views/widget/widget.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 using device_signals::prefs::kDeviceSignalsConsentReceived;

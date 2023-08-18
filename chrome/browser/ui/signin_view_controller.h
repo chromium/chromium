@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/profile_chooser_constants.h"
+#include "chrome/browser/ui/profiles/profile_chooser_constants.h"
 #include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/url_constants.h"

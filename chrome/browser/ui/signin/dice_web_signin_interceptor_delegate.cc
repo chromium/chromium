@@ -68,10 +68,12 @@ class ForcedEnterpriseSigninInterceptionHandle
   }
 
   ~ForcedEnterpriseSigninInterceptionHandle() override {
-    if (browser_)
+    if (browser_) {
       browser_->signin_view_controller()->CloseModalSignin();
-    if (callback_)
+    }
+    if (callback_) {
       std::move(callback_).Run(SigninInterceptionResult::kDeclined);
+    }
   }
 
  private:

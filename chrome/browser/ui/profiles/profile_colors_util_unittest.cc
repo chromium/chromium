@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/profiles/profile_colors_util.h"
 
 #include "base/containers/contains.h"
 #include "base/format_macros.h"
@@ -120,8 +120,9 @@ class ProfileColorsUtilTest : public testing::Test {
   std::set<int> GetAvailableColorsIds(ProfileAttributesEntry* entry = nullptr) {
     size_t count = GetAvailableColorCount(entry);
     std::set<int> colors;
-    for (size_t i = 0; i < count; i++)
+    for (size_t i = 0; i < count; i++) {
       colors.insert(GetAvailableColorId(i, entry));
+    }
     return colors;
   }
 
@@ -262,8 +263,9 @@ TEST_F(ProfileColorsUtilTest, GenerateNewProfileColorForCurrentProfile) {
 
 // Test that if all colors are taken, then again all are available.
 TEST_F(ProfileColorsUtilTest, GenerateNewProfileColorWithAllColorsTaken) {
-  for (size_t i = 0; i < kColorsCount - 1; i++)
+  for (size_t i = 0; i < kColorsCount - 1; i++) {
     AddProfile(GetColor(i).color);
+  }
 
   // Only the last color is available.
   EXPECT_EQ(GetAvailableColorId(0), GetColor(kColorsCount - 1).id);

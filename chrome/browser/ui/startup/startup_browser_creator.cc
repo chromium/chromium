@@ -105,7 +105,7 @@
 #include "components/user_manager/user_manager.h"
 #else
 #include "chrome/browser/extensions/api/messaging/native_messaging_launch_from_native.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

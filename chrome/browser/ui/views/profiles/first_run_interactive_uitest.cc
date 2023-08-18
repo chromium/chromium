@@ -16,7 +16,7 @@
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/startup/first_run_test_util.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"

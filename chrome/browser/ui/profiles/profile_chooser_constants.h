@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PROFILE_CHOOSER_CONSTANTS_H_
-#define CHROME_BROWSER_UI_PROFILE_CHOOSER_CONSTANTS_H_
+#ifndef CHROME_BROWSER_UI_PROFILES_PROFILE_CHOOSER_CONSTANTS_H_
+#define CHROME_BROWSER_UI_PROFILES_PROFILE_CHOOSER_CONSTANTS_H_
 
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -25,4 +25,4 @@ enum BubbleViewMode {
 
 }  // namespace profiles
 
-#endif  // CHROME_BROWSER_UI_PROFILE_CHOOSER_CONSTANTS_H_
+#endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_CHOOSER_CONSTANTS_H_

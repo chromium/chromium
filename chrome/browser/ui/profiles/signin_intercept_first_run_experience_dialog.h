@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE_DIALOG_H_
-#define CHROME_BROWSER_UI_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_PROFILES_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE_DIALOG_H_
+#define CHROME_BROWSER_UI_PROFILES_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE_DIALOG_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/signin/profile_customization_synced_theme_waiter.h"
+#include "chrome/browser/ui/profiles/profile_customization_synced_theme_waiter.h"
 #include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
@@ -128,4 +128,4 @@ class SigninInterceptFirstRunExperienceDialog
       weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_PROFILES_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE_DIALOG_H_

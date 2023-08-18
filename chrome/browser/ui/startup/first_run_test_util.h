@@ -8,7 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/signin_features.h"
-#include "chrome/browser/ui/signin/profile_customization_util.h"
+#include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/signin_buildflags.h"
 

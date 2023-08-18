@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PROFILE_ERROR_DIALOG_H_
-#define CHROME_BROWSER_UI_PROFILE_ERROR_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_PROFILES_PROFILE_ERROR_DIALOG_H_
+#define CHROME_BROWSER_UI_PROFILES_PROFILE_ERROR_DIALOG_H_
 
 #include <string>
 
@@ -39,4 +39,4 @@ void ShowProfileErrorDialog(ProfileErrorType type,
                             int message_id,
                             const std::string& diagnostics);
 
-#endif  // CHROME_BROWSER_UI_PROFILE_ERROR_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_ERROR_DIALOG_H_

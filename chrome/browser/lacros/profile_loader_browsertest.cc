@@ -6,7 +6,7 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/profile_ui_test_utils.h"
+#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"

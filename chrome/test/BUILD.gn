@@ -557,7 +557,7 @@ static_library("test_support") {
       "../browser/signin/signin_browser_test_base.h",
       "../browser/themes/test/theme_service_changed_waiter.cc",
       "../browser/themes/test/theme_service_changed_waiter.h",
-      "../browser/ui/profile_ui_test_utils.h",
+      "../browser/ui/profiles/profile_ui_test_utils.h",
       "../browser/ui/tabs/pinned_tab_test_utils.cc",
       "../browser/ui/tabs/pinned_tab_test_utils.h",
       "../browser/ui/test/pixel_test_configuration_mixin.cc",
@@ -2444,7 +2444,7 @@ if (!is_android) {
       "../browser/ui/prevent_close_test_base.cc",
       "../browser/ui/prevent_close_test_base.h",
       "../browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper_browsertest.cc",
-      "../browser/ui/profile_error_browsertest.cc",
+      "../browser/ui/profiles/profile_error_browsertest.cc",
       "../browser/ui/renderer_event_injection_browsertest.cc",
       "../browser/ui/safety_hub/unused_site_permissions_service_browsertest.cc",
       "../browser/ui/search/instant_test_base.cc",
@@ -3140,7 +3140,7 @@ if (!is_android) {
         "../browser/signin/dice_browsertest.cc",
         "../browser/signin/dice_web_signin_interceptor_browsertest.cc",
         "../browser/signin/signin_ui_util_browsertest.cc",
-        "../browser/ui/signin_intercept_first_run_experience_dialog_browsertest.cc",
+        "../browser/ui/profiles/signin_intercept_first_run_experience_dialog_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/unified_consent/unified_consent_browsertest.cc",
         "../browser/unified_consent/unified_consent_sync_to_signin_browsertest.cc",
@@ -8917,7 +8917,7 @@ test("unit_tests") {
       "../browser/lifetime/switch_utils_unittest.cc",
       "../browser/profiles/profile_list_desktop_unittest.cc",
       "../browser/profiles/profile_statistics_unittest.cc",
-      "../browser/ui/signin/profile_colors_util_unittest.cc",
+      "../browser/ui/profiles/profile_colors_util_unittest.cc",
     ]
   }
 
@@ -9363,7 +9363,7 @@ test("unit_tests") {
       "../browser/signin/signin_manager_unittest.cc",
       "../browser/signin/signin_ui_util_unittest.cc",
       "../browser/signin/signin_util_unittest.cc",
-      "../browser/ui/signin/profile_customization_synced_theme_waiter_unittest.cc",
+      "../browser/ui/profiles/profile_customization_synced_theme_waiter_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_contents_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_row_list_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_row_view_unittest.cc",
@@ -9670,8 +9670,8 @@ test("unit_tests") {
   if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     sources += [
       "../browser/ui/passwords/account_storage_auth_helper_unittest.cc",
-      "../browser/ui/profile_picker_unittest.cc",
-      "../browser/ui/signin/profile_customization_util_unittest.cc",
+      "../browser/ui/profiles/profile_customization_util_unittest.cc",
+      "../browser/ui/profiles/profile_picker_unittest.cc",
       "../browser/ui/webui/signin/enterprise_profile_welcome_handler_unittest.cc",
       "../browser/ui/webui/signin/turn_sync_on_helper_unittest.cc",
     ]
