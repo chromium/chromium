@@ -106,9 +106,6 @@ struct TrustTokenAccessDetails;
 //
 // Usually, observers should only care about the current RenderViewHost as
 // returned by GetRenderViewHost().
-//
-// TODO(creis): Hide the fact that there are several RenderViewHosts
-// from the WebContentsObserver API. http://crbug.com/173325
 class CONTENT_EXPORT WebContentsObserver {
  public:
   WebContentsObserver(const WebContentsObserver&) = delete;
