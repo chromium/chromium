@@ -54,11 +54,11 @@ LayoutUnit NGTableNode::ComputeTableInlineSize(
 
 LayoutUnit NGTableNode::ComputeCaptionBlockSize(
     const NGConstraintSpace& space) const {
-  LayoutUnit table_inline_size =
-      CalculateInitialFragmentGeometry(space, *this, /* break_token */ nullptr)
-          .border_box_size.inline_size;
-  return NGTableLayoutAlgorithm::ComputeCaptionBlockSize(*this, space,
-                                                         table_inline_size);
+  NGFragmentGeometry geometry =
+      CalculateInitialFragmentGeometry(space, *this, /* break_token */ nullptr);
+  NGLayoutAlgorithmParams params(*this, geometry, space);
+  NGTableLayoutAlgorithm algorithm(params);
+  return algorithm.ComputeCaptionBlockSize();
 }
 
 bool NGTableNode::AllowColumnPercentages(bool is_layout_pass) const {

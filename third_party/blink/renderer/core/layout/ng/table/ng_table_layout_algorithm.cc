@@ -564,16 +564,12 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
                   caption_constraint.min_size);
 }
 
-LayoutUnit NGTableLayoutAlgorithm::ComputeCaptionBlockSize(
-    const NGTableNode& node,
-    const NGConstraintSpace& space,
-    const LayoutUnit table_inline_size) {
-  NGTableGroupedChildren grouped_children(node);
+LayoutUnit NGTableLayoutAlgorithm::ComputeCaptionBlockSize() {
+  NGTableGroupedChildren grouped_children(Node());
   LayoutUnit captions_block_size;
-
-  ComputeCaptionFragments(space, node.Style(), grouped_children,
-                          table_inline_size, /* captions */ nullptr,
-                          captions_block_size);
+  ComputeCaptionFragments(ConstraintSpace(), Node().Style(), grouped_children,
+                          container_builder_.InlineSize(),
+                          /* captions */ nullptr, captions_block_size);
   return captions_block_size;
 }
 
