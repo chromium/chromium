@@ -12,23 +12,23 @@
 
 namespace blink {
 
-class LayoutBox;
+class LayoutReplaced;
 
-// Extra input data for laying out a LayoutBox. The object will automatically
-// associate itself with the specified LayoutBox upon creation, and dissociate
-// itself upon destruction.
+// Extra input data for laying out a LayoutReplaced. The object will
+// automatically associate itself with the specified LayoutBox upon creation
+// and dissociate itself upon destruction.
 struct BoxLayoutExtraInput {
   // BoxLayoutExtraInput is always allocated on the stack as it is scoped to
-  // layout, but DISALLOW_NEW is used here since LayoutBox has a raw pointer to
-  // it.
+  // layout, but DISALLOW_NEW is used here since LayoutReplaced has a raw
+  // pointer to it.
   DISALLOW_NEW();
 
-  explicit BoxLayoutExtraInput(LayoutBox&);
+  explicit BoxLayoutExtraInput(LayoutReplaced&);
   ~BoxLayoutExtraInput();
 
   void Trace(Visitor*) const;
 
-  Member<LayoutBox> box;
+  Member<LayoutReplaced> box;
 
   // The border-box size computed by NGReplacedLayoutAlgorithm.
   PhysicalSize size;

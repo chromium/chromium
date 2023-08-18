@@ -783,7 +783,7 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
     // a legacy "layout" so that paint invalidation flags are updated. But we
     // don't want to use the size that legacy calculates, so we force legacy to
     // use NG's size via BoxLayoutExtraInput's override fields.
-    BoxLayoutExtraInput input(*box_);
+    BoxLayoutExtraInput input(To<LayoutReplaced>(*box_));
     input.size = physical_fragment.Size();
     input.border_padding_for_replaced =
         physical_fragment.Borders() + physical_fragment.Padding();

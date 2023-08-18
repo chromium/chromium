@@ -59,7 +59,6 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
-#include "third_party/blink/renderer/core/layout/box_layout_extra_input.h"
 #include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -137,7 +136,7 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutUnit intrinsic_logical_widths_initial_block_size;
   Member<void*> result;
   HeapVector<Member<const NGLayoutResult>, 1> layout_results;
-  void* pointers[2];
+  void* pointers[1];
   wtf_size_t first_fragment_item_index_;
   Member<void*> rare_data;
 };
@@ -448,19 +447,6 @@ std::tuple<LogicalOffset, WritingMode> LogicalLocation(const LayoutBox& box) {
 }
 
 }  // namespace
-
-BoxLayoutExtraInput::BoxLayoutExtraInput(LayoutBox& layout_box)
-    : box(&layout_box) {
-  box->SetBoxLayoutExtraInput(this);
-}
-
-BoxLayoutExtraInput::~BoxLayoutExtraInput() {
-  box->SetBoxLayoutExtraInput(nullptr);
-}
-
-void BoxLayoutExtraInput::Trace(Visitor* visitor) const {
-  visitor->Trace(box);
-}
 
 LayoutBoxRareData::LayoutBoxRareData()
     : spanner_placeholder_(nullptr),

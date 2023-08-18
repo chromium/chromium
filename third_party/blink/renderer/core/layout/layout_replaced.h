@@ -33,6 +33,7 @@
 
 namespace blink {
 
+struct BoxLayoutExtraInput;
 struct IntrinsicSizingInfo;
 
 // LayoutReplaced is the base class for a replaced element as defined by CSS:
@@ -119,6 +120,15 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // Returns true if the content is guarenteed to be clipped to the element's
   // content box.
   bool ClipsToContentBox() const;
+
+  void SetBoxLayoutExtraInput(const BoxLayoutExtraInput* input) {
+    NOT_DESTROYED();
+    extra_input_ = input;
+  }
+  const BoxLayoutExtraInput* GetBoxLayoutExtraInput() const {
+    NOT_DESTROYED();
+    return extra_input_;
+  }
 
   // This returns a local rectangle excluding borders and padding from
   // FrameRect().
@@ -230,6 +240,11 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // The natural/intrinsic size for this replaced element based on the natural
   // size for the element's contents.
   mutable PhysicalSize intrinsic_size_;
+
+  // Extra layout input data. This one may be set during layout, and cleared
+  // afterwards. Always nullptr when this object isn't in the process of being
+  // laid out.
+  const BoxLayoutExtraInput* extra_input_ = nullptr;
 };
 
 template <>

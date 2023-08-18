@@ -544,4 +544,17 @@ bool LayoutReplaced::ClipsToContentBox() const {
          !overflow_clip_margin->GetMargin();
 }
 
+BoxLayoutExtraInput::BoxLayoutExtraInput(LayoutReplaced& layout_box)
+    : box(&layout_box) {
+  box->SetBoxLayoutExtraInput(this);
+}
+
+BoxLayoutExtraInput::~BoxLayoutExtraInput() {
+  box->SetBoxLayoutExtraInput(nullptr);
+}
+
+void BoxLayoutExtraInput::Trace(Visitor* visitor) const {
+  visitor->Trace(box);
+}
+
 }  // namespace blink

@@ -54,7 +54,6 @@ class NGLayoutResult;
 class ShapeOutsideInfo;
 class WritingModeConverter;
 enum class NGLayoutCacheStatus;
-struct BoxLayoutExtraInput;
 struct NGFragmentGeometry;
 struct NGPhysicalBoxStrut;
 struct NonOverflowingScrollRange;
@@ -743,15 +742,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const override;
   gfx::RectF LocalBoundingBoxRectForAccessibility() const override;
-
-  void SetBoxLayoutExtraInput(const BoxLayoutExtraInput* input) {
-    NOT_DESTROYED();
-    extra_input_ = input;
-  }
-  const BoxLayoutExtraInput* GetBoxLayoutExtraInput() const {
-    NOT_DESTROYED();
-    return extra_input_;
-  }
 
   void LayoutSubtreeRoot();
 
@@ -1674,11 +1664,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
  private:
   std::unique_ptr<BoxOverflowModel> overflow_;
-
-  // Extra layout input data. This one may be set during layout, and cleared
-  // afterwards. Always nullptr when this object isn't in the process of being
-  // laid out.
-  const BoxLayoutExtraInput* extra_input_ = nullptr;
 
   // The index of the first fragment item associated with this object in
   // |NGFragmentItems::Items()|. Zero means there are no such item.
