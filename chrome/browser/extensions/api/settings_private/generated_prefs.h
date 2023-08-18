@@ -22,11 +22,10 @@ class Value;
 }
 
 namespace extensions {
-namespace api {
-namespace settings_private {
+
+namespace api::settings_private {
 struct PrefObject;
-}  // namespace settings_private
-}  // namespace api
+}  // namespace api::settings_private
 
 namespace settings_private {
 
