@@ -48,11 +48,9 @@ import org.chromium.components.webauthn.CredManMetricsHelper.CredManGetRequestEn
 import org.chromium.components.webauthn.CredManMetricsHelper.CredManPrepareRequestEnum;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
 import org.chromium.content_public.browser.WebAuthenticationDelegate;
-import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
 import org.chromium.net.GURLUtils;
@@ -353,11 +351,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             }
         }
 
-        if (mFrameHost != null
-                && (options.isConditional
-                        || (ContentFeatureMap.isEnabled(
-                                    ContentFeatures.WEB_AUTHN_TOUCH_TO_FILL_CREDENTIAL_SELECTION)
-                                && !hasAllowCredentials))) {
+        if (mFrameHost != null && (options.isConditional || !hasAllowCredentials)) {
             // Enumerate credentials from Play Services so that we can show the
             // picker in Chrome UI.
             final byte[] finalClientDataHash = clientDataHash;

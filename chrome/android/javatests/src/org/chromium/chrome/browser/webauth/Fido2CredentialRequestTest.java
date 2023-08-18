@@ -66,8 +66,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2ApiCallHelper;
@@ -84,7 +82,6 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.content_public.browser.test.mock.MockRenderFrameHost;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -1531,7 +1528,6 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ContentFeatures.WEB_AUTHN_TOUCH_TO_FILL_CREDENTIAL_SELECTION})
     public void testGetAssertion_emptyAllowCredentials_success() {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
         mMockBrowserBridge.setExpectedCredentialDetailsList(Arrays.asList(
@@ -1548,24 +1544,6 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(Integer.valueOf(AuthenticatorStatus.SUCCESS), mCallback.getStatus());
         Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({ContentFeatures.WEB_AUTHN_TOUCH_TO_FILL_CREDENTIAL_SELECTION})
-    public void testGetAssertion_emptyAllowCredentialsTouchToFillDisabled_success() {
-        mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
-
-        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
-
-        mRequest.handleGetAssertionRequest(mContext, mRequestOptions, mFrameHost,
-                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
-                (responseStatus, response)
-                        -> mCallback.onSignResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
-        mCallback.blockUntilCalled();
-        Assert.assertEquals(Integer.valueOf(AuthenticatorStatus.SUCCESS), mCallback.getStatus());
-        Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
     }
 
     @Test
@@ -1989,7 +1967,7 @@ public class Fido2CredentialRequestTest {
         // class because it's tightly coupled with assumptions about using
         // ClassLoaders for deserialisation.
 
-        byte encodings[][] = new byte[2][];
+        byte[][] encodings = new byte[2][];
         for (int i = 0; i < encodings.length; i++) {
             Parcel parcel = Parcel.obtain();
             parcel.writeInt(16 /* VAL_PARCELABLEARRRAY */);
