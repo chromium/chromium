@@ -377,10 +377,26 @@ void DIPSService::RecordBounce(
     // These records indicate sites that could've had their state deleted
     // provided their grace period expired. But are at the moment excepted
     // following `Are3PCAllowed()` of either `initial_url` or `final_url`.
-    if ((features::kDIPSTriggeringAction.Get() ==
-                 content::DIPSTriggeringAction::kStatefulBounce
-             ? stateful
-             : true)) {
+    bool would_be_cleared = false;
+    switch (features::kDIPSTriggeringAction.Get()) {
+      case content::DIPSTriggeringAction::kNone: {
+        would_be_cleared = false;
+        break;
+      }
+      case content::DIPSTriggeringAction::kStorage: {
+        would_be_cleared = false;
+        break;
+      }
+      case content::DIPSTriggeringAction::kBounce: {
+        would_be_cleared = true;
+        break;
+      }
+      case content::DIPSTriggeringAction::kStatefulBounce: {
+        would_be_cleared = stateful;
+        break;
+      }
+    }
+    if (would_be_cleared) {
       // TODO(crbug.com/1447035): Investigate and fix the presence of empty
       // site(s) in the `site_to_clear` list. Once this is fixed remove this
       // escape.
