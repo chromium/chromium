@@ -5,7 +5,6 @@
 #include "services/accessibility/features/v8_manager.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -15,10 +14,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/types.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/features/mojo/test/js_test_interface.h"
-#include "services/accessibility/public/mojom/accessibility_service.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8_manager.h"
 

@@ -12,7 +12,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner_helpers.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -20,6 +19,7 @@
 #include "services/accessibility/features/bindings_isolate_holder.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom-forward.h"
 #include "services/accessibility/public/mojom/automation.mojom-forward.h"
+#include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-local-handle.h"
 
@@ -37,6 +37,7 @@ namespace ax {
 class AutomationInternalBindings;
 class InterfaceBinder;
 class V8Manager;
+class OSDevToolsAgent;
 
 // A V8Environment owns a V8 context within the Accessibility Service, the
 // bindings that belong to that context, as well as loading the Javascript that
@@ -49,6 +50,11 @@ class V8Manager;
 // TODO(dcheng): Move this into v8_environment.h.
 class V8Environment : public BindingsIsolateHolder {
  public:
+  // The default Context ID to use. We currently will have one context per
+  // isolate. In the future we may need to switch this to an incrementing
+  // system.
+  static const int kDefaultContextId = 1;
+
   // Creates a new V8Environment with its own isolate and context.
   static base::SequenceBound<V8Environment> Create(
       base::WeakPtr<V8Manager> manager);
@@ -58,6 +64,10 @@ class V8Environment : public BindingsIsolateHolder {
 
   V8Environment(const V8Environment&) = delete;
   V8Environment& operator=(const V8Environment&) = delete;
+
+  // Creates a devtools agent to debug javascript running in this environment.
+  void ConnectDevToolsAgent(
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent);
 
   // All of the APIs needed for this V8Manager (based on the AT type) should be
   // installed before adding V8 bindings.
@@ -99,6 +109,8 @@ class V8Environment : public BindingsIsolateHolder {
   // Holders for isolate and context.
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
   std::unique_ptr<gin::ContextHolder> context_holder_;
+
+  std::unique_ptr<OSDevToolsAgent> devtools_agent_;
 };
 
 // Owns the V8Environment and any Mojo interfaces exposed to that V8Environment.
@@ -122,6 +134,10 @@ class V8Manager {
       mojom::AccessibilityServiceClient* ax_service_client);
 
   void FinishContextSetUp();
+
+  // Instructs V8Environment to create a devtools agent.
+  void ConnectDevToolsAgent(
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent);
 
   // Called by V8Environment when JS wants to bind a Mojo interface.
   void BindInterface(const std::string& interface_name,
