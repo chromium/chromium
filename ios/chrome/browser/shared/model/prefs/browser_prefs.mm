@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 
+#import "base/containers/contains.h"
 #import "base/time/time.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -547,7 +548,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
     std::string account_id =
         prefs->GetString(prefs::kGoogleServicesLastAccountIdDeprecated);
     prefs->ClearPref(prefs::kGoogleServicesLastAccountIdDeprecated);
-    DCHECK_EQ(account_id.find('@'), std::string::npos)
+    DCHECK(!base::Contains(account_id, '@'))
         << "kGoogleServicesLastAccountId is not expected to be an email: "
         << account_id;
     if (!account_id.empty()) {

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/containers/contains.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -1451,8 +1452,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     BookmarksHomeNodeItem* nodeItem =
         base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
     const BookmarkNode* node = nodeItem.bookmarkNode;
-    if (self.mediator.selectedNodesForEditMode.find(node) !=
-        self.mediator.selectedNodesForEditMode.end()) {
+    if (base::Contains(self.mediator.selectedNodesForEditMode, node)) {
       newEditNodes.insert(node);
       // Reselect the row of this node.
       NSIndexPath* itemPath = [self.tableViewModel indexPathForItem:nodeItem];
@@ -1584,8 +1584,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   } else {
     // Create a vector of edit nodes in the same order as the nodes in folder.
     for (const auto& child : self.mediator.displayedNode->children()) {
-      if (self.mediator.selectedNodesForEditMode.find(child.get()) !=
-          self.mediator.selectedNodesForEditMode.end()) {
+      if (base::Contains(self.mediator.selectedNodesForEditMode, child.get())) {
         nodes.push_back(child.get());
       }
     }

@@ -4,6 +4,7 @@
 
 #import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 
+#import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
@@ -133,7 +134,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
 
   std::string breadcrumbs = BreadcrumbAnnotations();
   // 1 incognito
-  EXPECT_NE(breadcrumbs.find("I Breadcrumb Event"), std::string::npos);
+  EXPECT_TRUE(base::Contains(breadcrumbs, "I Breadcrumb Event"));
   // 3 total
   auto iter = breadcrumbs.find(event);
   int count = 0;

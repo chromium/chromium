@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/automation/automation_app_interface.h"
 
+#import "base/containers/contains.h"
 #import "base/json/json_reader.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -53,7 +54,7 @@ autofill::ServerFieldType ServerFieldTypeFromString(const std::string& str,
     }
   }
 
-  if (string_to_field_type_map.find(str) == string_to_field_type_map.end()) {
+  if (!base::Contains(string_to_field_type_map, str)) {
     NSString* error_description = [NSString
         stringWithFormat:@"Unable to recognize autofill field type %@!",
                          base::SysUTF8ToNSString(str)];

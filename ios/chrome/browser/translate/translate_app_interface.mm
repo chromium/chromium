@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/translate/translate_app_interface.h"
 
 #import "base/command_line.h"
+#import "base/containers/contains.h"
 #import "base/memory/singleton.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -157,7 +158,7 @@ class FakeJSTranslateWebFrameManagerFactory
   }
 
   JSTranslateWebFrameManager* FromWebFrame(web::WebFrame* web_frame) override {
-    if (managers_.find(web_frame->GetFrameId()) == managers_.end()) {
+    if (!base::Contains(managers_, web_frame->GetFrameId())) {
       managers_[web_frame->GetFrameId()] =
           std::make_unique<FakeJSTranslateWebFrameManager>(web_frame);
     }

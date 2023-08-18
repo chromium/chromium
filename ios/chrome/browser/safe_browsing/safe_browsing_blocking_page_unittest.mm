@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 
+#import "base/containers/contains.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -93,7 +94,7 @@ TEST_F(SafeBrowsingBlockingPageTest, HandleProceedCommand) {
 
   std::set<SBThreatType> allowed_threats;
   EXPECT_TRUE(allow_list->AreUnsafeNavigationsAllowed(url_, &allowed_threats));
-  EXPECT_NE(allowed_threats.find(resource_.threat_type), allowed_threats.end());
+  EXPECT_TRUE(base::Contains(allowed_threats, resource_.threat_type));
   EXPECT_TRUE(navigation_manager_->ReloadWasCalled());
 
   // Verify that metrics are recorded correctly.
@@ -153,7 +154,7 @@ TEST_F(SafeBrowsingBlockingPageTest, RemovePendingDecisionsUponDestruction) {
   ASSERT_TRUE(
       allow_list->IsUnsafeNavigationDecisionPending(url_, &pending_threats));
   ASSERT_EQ(1U, pending_threats.size());
-  ASSERT_NE(pending_threats.find(resource_.threat_type), pending_threats.end());
+  ASSERT_TRUE(base::Contains(pending_threats, resource_.threat_type));
 
   page_ = nullptr;
 

@@ -14,6 +14,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/check.h"
+#import "base/containers/contains.h"
 #import "base/containers/flat_map.h"
 #import "base/hash/hash.h"
 #import "base/i18n/string_compare.h"
@@ -221,7 +222,7 @@ void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
     DeleteBookmarks(bookmarks, model, node->children()[i - 1].get());
   }
 
-  if (bookmarks.find(node) != bookmarks.end()) {
+  if (base::Contains(bookmarks, node)) {
     model->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
   }
 }
