@@ -817,9 +817,6 @@ testcase.zipExtractRestrictedArchiveCheckContent = async () => {
  * restriction properly updates the task state and shows a correct panel item.
  */
 testcase.blockShowsPanelItem = async () => {
-  // Enable the new UX flow.
-  await sendTestMessage({name: 'enableNewFilesPolicyUX'});
-
   // Add entry to Downloads.
   const entry = ENTRIES.hello;
   await addEntries(['local'], [entry]);
@@ -869,9 +866,6 @@ testcase.blockShowsPanelItem = async () => {
  * properly updates the task state and shows a correct panel item.
  */
 testcase.warnShowsPanelItem = async () => {
-  // Enable the new UX flow.
-  await sendTestMessage({name: 'enableNewFilesPolicyUX'});
-
   // Add entry to Downloads.
   const entry = ENTRIES.hello;
   await addEntries(['local'], [entry]);

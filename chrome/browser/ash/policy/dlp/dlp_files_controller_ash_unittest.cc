@@ -48,6 +48,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 #include "chrome/browser/enterprise/data_controls/component.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/drive/drive_pref_names.h"
@@ -203,6 +204,9 @@ class DlpFilesControllerAshTest : public DlpFilesTestWithMounts {
 };
 
 TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_DiffFileSystem) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kNewFilesPolicyUX);
+
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, kCrtime1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1, kReferrerUrl1),
@@ -233,7 +237,6 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_DiffFileSystem) {
       blink::StorageKey(), "archive",
       base::FilePath("file.rar/path/in/archive"));
 
-  DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(/*is_enabled=*/true);
   EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
                           /*task_id=*/{1},
                           std::vector<base::FilePath>{files_urls[0].path(),
@@ -386,6 +389,9 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_ErrorResponse) {
 }
 
 TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_MultiFolder) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kNewFilesPolicyUX);
+
   base::ScopedTempDir sub_dir1;
   ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(my_files_dir_));
   base::ScopedTempDir sub_dir2;
@@ -428,7 +434,6 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_MultiFolder) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
       check_files_transfer_response);
 
-  DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(/*is_enabled=*/true);
   EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
                           /*task_id=*/{1},
                           std::vector<base::FilePath>{files_urls[1].path(),

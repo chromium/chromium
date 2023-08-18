@@ -131,13 +131,6 @@ DlpFilesController::DlpFilesController(const DlpRulesManager& rules_manager)
 
 DlpFilesController::~DlpFilesController() = default;
 
-bool DlpFilesController::kNewFilesPolicyUXEnabled = false;
-
-// static
-void DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(bool is_enabled) {
-  kNewFilesPolicyUXEnabled = is_enabled;
-}
-
 void DlpFilesController::RequestCopyAccess(
     const storage::FileSystemURL& source_file,
     const storage::FileSystemURL& destination,

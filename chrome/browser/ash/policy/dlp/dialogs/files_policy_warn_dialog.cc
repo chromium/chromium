@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/enterprise/data_controls/component.h"
+#include "chrome/common/chrome_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -113,7 +114,7 @@ std::u16string FilesPolicyWarnDialog::GetCancelButton() {
 }
 
 std::u16string FilesPolicyWarnDialog::GetTitle() {
-  if (DlpFilesController::kNewFilesPolicyUXEnabled) {
+  if (base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
     switch (action_) {
       case dlp::FileAction::kDownload:
         return l10n_util::GetStringUTF16(
@@ -167,7 +168,7 @@ std::u16string FilesPolicyWarnDialog::GetTitle() {
 }
 
 std::u16string FilesPolicyWarnDialog::GetMessage() {
-  if (DlpFilesController::kNewFilesPolicyUXEnabled) {
+  if (base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
     return base::ReplaceStringPlaceholders(
         l10n_util::GetPluralStringFUTF16(IDS_POLICY_DLP_FILES_WARN_MESSAGE,
                                          files_.size()),

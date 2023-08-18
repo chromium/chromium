@@ -17,12 +17,12 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/enterprise/data_controls/component.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -33,7 +33,9 @@ class FilesPolicyDialogBrowserTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<dlp::FileAction> {
  public:
-  FilesPolicyDialogBrowserTest() = default;
+  FilesPolicyDialogBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kNewFilesPolicyUX);
+  }
   FilesPolicyDialogBrowserTest(const FilesPolicyDialogBrowserTest&) = delete;
   FilesPolicyDialogBrowserTest& operator=(const FilesPolicyDialogBrowserTest&) =
       delete;
@@ -41,8 +43,6 @@ class FilesPolicyDialogBrowserTest
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(
-        /*is_enabled=*/true);
 
     // Setup the Files app.
     ash::SystemWebAppManager::GetForTest(browser()->profile())
@@ -71,6 +71,8 @@ class FilesPolicyDialogBrowserTest
     run_loop.Run();
     return ui_test_utils::WaitForBrowserToOpen();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class WarningDialogBrowserTest : public FilesPolicyDialogBrowserTest {

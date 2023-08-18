@@ -966,7 +966,7 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
 
   // If the new UX flow is enabled, return an empty list so the copy/move
   // operation can start.
-  if (policy::DlpFilesController::kNewFilesPolicyUXEnabled) {
+  if (base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
     return RespondNow(WithArguments(base::Value::List()));
   }
 

@@ -210,9 +210,6 @@ class CopyOrMoveIOTaskWithScansTest
             base::BindRepeating(&CopyOrMoveIOTaskWithScansTest::SetupMock,
                                 base::Unretained(this))));
 
-    policy::DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(
-        /*is_enabled=*/UseNewUI());
-
     if (UseNewUI()) {
       // Set FilesPolicyNotificationManager.
       policy::FilesPolicyNotificationManagerFactory::GetInstance()
@@ -1349,8 +1346,7 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
   }
 
   void SetUp() override {
-    policy::DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(
-        /*is_enabled=*/true);
+    scoped_feature_list_.InitAndEnableFeature(features::kNewFilesPolicyUX);
 
     AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
     profile_->SetIsNewProfile(true);
@@ -1392,6 +1388,7 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
         base::FilePath::FromUTF8Unsafe(path));
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   ash::disks::FakeDiskMountManager disk_mount_manager_;
   raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>

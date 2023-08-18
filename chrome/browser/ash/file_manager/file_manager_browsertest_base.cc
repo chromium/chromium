@@ -2164,6 +2164,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(features::kDataLeakPreventionFilesRestriction);
   }
 
+  if (options.enable_files_policy_new_ux) {
+    enabled_features.push_back(features::kNewFilesPolicyUX);
+  } else {
+    disabled_features.push_back(features::kNewFilesPolicyUX);
+  }
+
   if (options.enable_mirrorsync) {
     enabled_features.push_back(ash::features::kDriveFsMirroring);
   } else {

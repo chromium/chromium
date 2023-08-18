@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
@@ -1032,7 +1033,8 @@ void DlpFilesControllerAsh::ReturnDisallowedFiles(
     restricted_files_urls.push_back(files_map.at(file));
     restricted_files_paths.emplace_back(file);
   }
-  if (!restricted_files_paths.empty() && kNewFilesPolicyUXEnabled &&
+  if (!restricted_files_paths.empty() &&
+      base::FeatureList::IsEnabled(features::kNewFilesPolicyUX) &&
       task_id.has_value()) {
     ShowDlpBlockedFiles(std::move(task_id), std::move(restricted_files_paths),
                         file_action);

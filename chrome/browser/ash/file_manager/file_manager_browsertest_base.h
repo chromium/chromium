@@ -147,6 +147,9 @@ class FileManagerBrowserTestBase
     // feature.
     bool enable_dlp_files_restriction = false;
 
+    // Whether test should enable Files policy new UX feature.
+    bool enable_files_policy_new_ux = false;
+
     // Whether test should run with the Upload Office to Cloud feature.
     bool enable_upload_office_to_cloud = false;
 

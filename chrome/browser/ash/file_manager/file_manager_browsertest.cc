@@ -192,6 +192,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableFilesPolicyNewUX() {
+    options.enable_files_policy_new_ux = true;
+    return *this;
+  }
+
   TestCase& EnableDriveTrash() {
     options.enable_drive_trash = true;
     return *this;
@@ -704,10 +709,6 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
       chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(true);
       chromeos::DlpClient::Get()->GetTestInterface()->SetAddFilesMock(
           add_files_cb.Get());
-      return true;
-    }
-    if (name == "enableNewFilesPolicyUX") {
-      policy::DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(true);
       return true;
     }
     if (name == "setCheckFilesTransferMockToPause") {
@@ -1865,8 +1866,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 #endif
         TestCase("fileTasksDlpRestricted").EnableDlp(),
         TestCase("zipExtractRestrictedArchiveCheckContent").EnableDlp(),
-        TestCase("blockShowsPanelItem").EnableDlp(),
-        TestCase("warnShowsPanelItem").EnableDlp()));
+        TestCase("blockShowsPanelItem").EnableDlp().EnableFilesPolicyNewUX(),
+        TestCase("warnShowsPanelItem").EnableDlp().EnableFilesPolicyNewUX()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DriveSpecific, /* drive_specific.js */

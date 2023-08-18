@@ -924,6 +924,13 @@ BASE_FEATURE(kNewMacNotificationAPI,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Enables new UX for files policy restrictions on ChromeOS.
+BASE_FEATURE(kNewFilesPolicyUX,
+             "NewFilesPolicyUX",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // When kNoReferrers is enabled, most HTTP requests will provide empty
 // referrers instead of their ordinary behavior.
 BASE_FEATURE(kNoReferrers, "NoReferrers", base::FEATURE_DISABLED_BY_DEFAULT);

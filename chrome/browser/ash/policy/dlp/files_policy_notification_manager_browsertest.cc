@@ -33,7 +33,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -47,6 +46,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -153,7 +153,9 @@ class TestNotificationPlatformBridgeDelegator
 
 class FilesPolicyNotificationManagerBrowserTest : public InProcessBrowserTest {
  public:
-  FilesPolicyNotificationManagerBrowserTest() = default;
+  FilesPolicyNotificationManagerBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kNewFilesPolicyUX);
+  }
   FilesPolicyNotificationManagerBrowserTest(
       const FilesPolicyNotificationManagerBrowserTest&) = delete;
   FilesPolicyNotificationManagerBrowserTest& operator=(
@@ -183,9 +185,6 @@ class FilesPolicyNotificationManagerBrowserTest : public InProcessBrowserTest {
     fpnm_ = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
         browser()->profile());
     ASSERT_TRUE(fpnm_);
-
-    DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(
-        /*is_enabled=*/true);
   }
 
  protected:
@@ -197,6 +196,7 @@ class FilesPolicyNotificationManagerBrowserTest : public InProcessBrowserTest {
                                    ash::SystemWebAppType::FILE_MANAGER);
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<NotificationDisplayServiceImpl, ExperimentalAsh> display_service_;
   raw_ptr<TestNotificationPlatformBridgeDelegator, ExperimentalAsh> bridge_;
   std::unique_ptr<MockFilesPolicyDialogFactory> factory_;

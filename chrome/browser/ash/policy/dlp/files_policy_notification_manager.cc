@@ -29,7 +29,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -37,6 +36,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/chrome_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -1048,7 +1048,7 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
   const std::string notification_id = GetNotificationId(notification_count_++);
   std::unique_ptr<message_center::Notification> notification;
 
-  if (DlpFilesController::kNewFilesPolicyUXEnabled) {
+  if (base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
     // The notification should stay visible until actioned upon.
     message_center::RichNotificationData optional_fields;
     optional_fields.never_timeout = true;
@@ -1123,7 +1123,7 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
     std::vector<base::FilePath> warning_files,
     const DlpFileDestination& destination,
     dlp::FileAction action) {
-  if (DlpFilesController::kNewFilesPolicyUXEnabled) {
+  if (base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
     const std::string& notification_id =
         GetNotificationId(notification_count_++);
 

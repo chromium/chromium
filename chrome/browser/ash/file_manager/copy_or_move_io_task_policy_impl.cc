@@ -236,7 +236,7 @@ void CopyOrMoveIOTaskPolicyImpl::VerifyTransfer() {
 
   if (auto* files_controller =
           policy::DlpFilesControllerAsh::GetForPrimaryProfile();
-      policy::DlpFilesController::kNewFilesPolicyUXEnabled &&
+      base::FeatureList::IsEnabled(features::kNewFilesPolicyUX) &&
       files_controller) {
     std::vector<storage::FileSystemURL> transferred_urls;
     for (const auto& entry : progress_->sources) {

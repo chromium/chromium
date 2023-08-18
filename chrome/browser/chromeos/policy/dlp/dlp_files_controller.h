@@ -66,10 +66,6 @@ class DlpFilesController {
 
   virtual ~DlpFilesController();
 
-  static bool kNewFilesPolicyUXEnabled;
-
-  static void SetNewFilesPolicyUXEnabledForTesting(bool is_enabled);
-
  protected:
   explicit DlpFilesController(const DlpRulesManager& rules_manager);
 
