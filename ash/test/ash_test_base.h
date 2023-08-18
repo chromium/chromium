@@ -422,6 +422,8 @@ class NoSessionAshTestBase : public AshTestBase {
   NoSessionAshTestBase();
   explicit NoSessionAshTestBase(
       base::test::TaskEnvironment::TimeSource time_source);
+  explicit NoSessionAshTestBase(
+      std::unique_ptr<base::test::TaskEnvironment> task_environment);
 
   NoSessionAshTestBase(const NoSessionAshTestBase&) = delete;
   NoSessionAshTestBase& operator=(const NoSessionAshTestBase&) = delete;

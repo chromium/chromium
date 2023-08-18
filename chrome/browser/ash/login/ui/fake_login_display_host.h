@@ -84,8 +84,13 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   base::WeakPtr<ash::quick_start::TargetDeviceBootstrapController>
   GetQuickStartBootstrapController() final;
 
+  void SetOobeUI(raw_ptr<OobeUI> oobe_ui);
+  void SetWizardController(std::unique_ptr<WizardController> wizard_controller);
+
  private:
   class FakeBaseScreen;
+
+  raw_ptr<OobeUI> oobe_ui_;
 
   // SessionManager is required by the constructor of WizardController.
   std::unique_ptr<session_manager::SessionManager> session_manager_;

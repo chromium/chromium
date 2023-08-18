@@ -674,6 +674,12 @@ NoSessionAshTestBase::NoSessionAshTestBase(
   set_start_session(false);
 }
 
+NoSessionAshTestBase::NoSessionAshTestBase(
+    std::unique_ptr<base::test::TaskEnvironment> task_environment)
+    : AshTestBase(std::move(task_environment)) {
+  set_start_session(false);
+}
+
 NoSessionAshTestBase::~NoSessionAshTestBase() = default;
 
 }  // namespace ash

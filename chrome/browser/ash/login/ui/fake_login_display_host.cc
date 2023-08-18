@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace ash {
@@ -49,7 +50,7 @@ views::Widget* FakeLoginDisplayHost::GetLoginWindowWidget() const {
 }
 
 OobeUI* FakeLoginDisplayHost::GetOobeUI() const {
-  return nullptr;
+  return oobe_ui_;
 }
 
 content::WebContents* FakeLoginDisplayHost::GetOobeWebContents() const {
@@ -73,11 +74,15 @@ void FakeLoginDisplayHost::FinalizeImmediately() {}
 void FakeLoginDisplayHost::SetStatusAreaVisible(bool visible) {}
 
 void FakeLoginDisplayHost::StartWizard(OobeScreenId first_screen) {
-  wizard_controller_ =
-      std::make_unique<WizardController>(wizard_context_.get());
+  if (wizard_controller_) {
+    wizard_controller_->AdvanceToScreen(first_screen);
+  } else {
+    wizard_controller_ =
+        std::make_unique<WizardController>(wizard_context_.get());
 
-  fake_screen_ = std::make_unique<FakeBaseScreen>(first_screen);
-  wizard_controller_->SetCurrentScreenForTesting(fake_screen_.get());
+    fake_screen_ = std::make_unique<FakeBaseScreen>(first_screen);
+    wizard_controller_->SetCurrentScreenForTesting(fake_screen_.get());
+  }
 }
 
 WizardController* FakeLoginDisplayHost::GetWizardController() {
@@ -89,7 +94,7 @@ KioskLaunchController* FakeLoginDisplayHost::GetKioskLaunchController() {
 }
 
 WizardContext* FakeLoginDisplayHost::GetWizardContext() {
-  return nullptr;
+  return wizard_context_.get();
 }
 
 void FakeLoginDisplayHost::StartUserAdding(
@@ -97,7 +102,9 @@ void FakeLoginDisplayHost::StartUserAdding(
 
 void FakeLoginDisplayHost::CancelUserAdding() {}
 
-void FakeLoginDisplayHost::StartSignInScreen() {}
+void FakeLoginDisplayHost::StartSignInScreen() {
+  StartWizard(UserCreationView::kScreenId);
+}
 
 void FakeLoginDisplayHost::StartKiosk(const KioskAppId& kiosk_app_id,
                                       bool is_auto_launch) {}
@@ -191,6 +198,15 @@ bool FakeLoginDisplayHost::GetKeyboardRemappedPrefValue(
     const std::string& pref_name,
     int* value) const {
   return false;
+}
+
+void FakeLoginDisplayHost::SetOobeUI(raw_ptr<OobeUI> oobe_ui) {
+  oobe_ui_ = oobe_ui;
+}
+
+void FakeLoginDisplayHost::SetWizardController(
+    std::unique_ptr<WizardController> wizard_controller) {
+  wizard_controller_ = std::move(wizard_controller);
 }
 
 }  // namespace ash
