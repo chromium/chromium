@@ -270,7 +270,7 @@ source_set("allocator_core") {
     }
   }
   if (use_freelist_pool_offsets) {
-    # Freelist built from pool offsets header goes here.
+    sources += [ "pool_offset_freelist.h" ]
   } else {
     sources += [ "encoded_freelist.h" ]
   }
