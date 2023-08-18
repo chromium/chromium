@@ -212,10 +212,6 @@ class DropdownFieldView implements FieldView {
 
     @Override
     public boolean isValid() {
-        if (mValidator == null) {
-            return true;
-        }
-        mValidator.validate(mFieldModel);
         return mFieldModel.get(ERROR_MESSAGE) == null;
     }
 

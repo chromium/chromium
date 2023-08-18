@@ -267,6 +267,9 @@ class AddressEditorMediator {
             }
         });
 
+        if (mUserFlow != CREATE_NEW_ADDRESS_PROFILE) {
+            validateForm(mEditorModel);
+        }
         return mEditorModel;
     }
 
