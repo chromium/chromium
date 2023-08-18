@@ -4440,11 +4440,14 @@ WebAppIntegrationTest::~WebAppIntegrationTest() = default;
 void WebAppIntegrationTest::SetUp() {
   helper_.SetUp();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  StartUniqueAshChrome(
-      /*enabled_features=*/{}, /*disabled_features=*/{},
-      /*additional_cmdline_switches=*/{},
-      "crbug/1466885 switch to shared ash when WebAppIntegrationTest issue is "
-      "fixed");
+  // TODO(crbug.com/1466885): Remove when M117 reaches stable.
+  if (GetAshChromeVersion() < base::Version({117, 0, 5914})) {
+    StartUniqueAshChrome(
+        /*enabled_features=*/{}, /*disabled_features=*/{},
+        /*additional_cmdline_switches=*/{},
+        "crbug/1466885 switch to shared ash when WebAppIntegrationTest issue "
+        "is fixed");
+  }
 #endif
   InProcessBrowserTest::SetUp();
 }
