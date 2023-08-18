@@ -78,8 +78,8 @@
     padding-inline-start: var(--cr-section-padding);
   }
 
-  :host(:not([can-add-printer])) .add-printer-section,
-  :host(:not([can-add-printer])) .nearby-printers-section {
+  :host(:not([has-active-network-connection])) .add-printer-section,
+  :host(:not([has-active-network-connection])) .nearby-printers-section {
     opacity: var(--cr-disabled-opacity);
     pointer-events: none;
   }
@@ -171,7 +171,7 @@
   }
 </style>
 
-<template is="dom-if" if="[[!canAddPrinter]]">
+<template is="dom-if" if="[[!hasActiveNetworkConnection]]">
   <div id="noConnectivityContentContainer"
       class="layout horizontal padded">
     <iron-icon id="cloudOffIcon" icon="settings20:cloud-off"></iron-icon>
@@ -218,8 +218,9 @@
         localized-string="$i18n{nearbyPrintersListDescription}"
         link-url="$i18n{printingCUPSPrintLearnMoreUrl}">
     </localized-link>
-    <template is="dom-if" if="[[!addPrinterButtonActive_(canAddPrinter,
-      prefs.native_printing.user_native_printers_allowed.value)]]">
+    <template is="dom-if" if="[[!addPrinterButtonActive_(
+        hasActiveNetworkConnection,
+        prefs.native_printing.user_native_printers_allowed.value)]]">
       <cr-policy-pref-indicator
           pref="[[prefs.native_printing.user_native_printers_allowed]]"
           icon-aria-label="$i18n{printingPageTitle}">
@@ -227,7 +228,8 @@
     </template>
   </div>
   <div id="nearbyPrintersRevamp" class="padded first nearby-printers-section"
-      hidden="[[!isPrinterSettingsRevampEnabled_]]">
+      hidden="[[!showNearbyPrintersRevampSection_(
+          isPrinterSettingsRevampEnabled_, hasActiveNetworkConnection)]]">
     <div id="nearbyPrintersDescription"
         aria-hidden="[[isPrinterSettingsRevampEnabled_]]">
       <div id="availablePrintersReadyTitle"
@@ -267,7 +269,7 @@
           class="action-button add-manual-printer-icon"
           iron-icon="os-settings:printer-add"
           on-click="onAddPrinterClick_"
-          disabled="[[!addPrinterButtonActive_(canAddPrinter,
+          disabled="[[!addPrinterButtonActive_(hasActiveNetworkConnection,
               prefs.native_printing.user_native_printers_allowed.value)]]"
           title="$i18n{addCupsPrinter}"
           deep-link-focus-id$="[[Setting.kAddPrinter]]">
@@ -275,7 +277,7 @@
     </div>
   </div>
 
-  <template is="dom-if" if="[[canAddPrinter]]" restamp>
+  <template is="dom-if" if="[[hasActiveNetworkConnection]]" restamp>
     <div id="collapsibleSection"
         hidden="[[!nearbyPrintersExpanded_]]">
       <div id="helpSection" hidden="[[!isPrinterSettingsRevampEnabled_]]">
@@ -306,7 +308,7 @@
         <div id="addPrinterSectionRevampContainer"
             class="layout horizontal center custom-list-item-top">
           <cr-button class="prefix-icon" on-click="onAddPrinterClick_"
-              disabled="[[!addPrinterButtonActive_(canAddPrinter,
+              disabled="[[!addPrinterButtonActive_(hasActiveNetworkConnection,
                   prefs.native_printing.user_native_printers_allowed.value)]]"
               deep-link-focus-id$="[[Setting.kAddPrinter]]">
             <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>

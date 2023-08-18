@@ -5,7 +5,11 @@
 import {CupsPrintersBrowserProxyImpl, PrinterSettingsUserAction, PrinterType, SettingsCupsPrintersElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -18,12 +22,18 @@ import {TestCupsPrintersBrowserProxy} from './test_cups_printers_browser_proxy.j
 suite('<settings-cups-printers>', () => {
   let page: SettingsCupsPrintersElement;
   let cupsPrintersBrowserProxy: TestCupsPrintersBrowserProxy;
+  let wifi: NetworkStateProperties;
 
   async function resetPage(): Promise<void> {
     Router.getInstance().navigateTo(routes.CUPS_PRINTERS);
     page = document.createElement('settings-cups-printers');
     document.body.appendChild(page);
     assertTrue(!!page);
+
+    // Simulate internet connection.
+    wifi = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
+    wifi.connectionState = ConnectionStateType.kOnline;
+
     await flushTasks();
   }
 
@@ -73,8 +83,6 @@ suite('<settings-cups-printers>', () => {
 
   // Verify the Nearby printers section can be properly opened and closed.
   test('CollapsibleNearbyPrinterSection', () => {
-    page.canAddPrinter = true;
-
     // The Add printer section above the Nearby printers section should be
     // hidden.
     assertFalse(
@@ -153,7 +161,6 @@ suite('<settings-cups-printers>', () => {
         },
       },
     };
-    page.canAddPrinter = true;
 
     await flushTasks();
     const icon = page.shadowRoot!.querySelector<HTMLButtonElement>(
@@ -165,5 +172,20 @@ suite('<settings-cups-printers>', () => {
         fakeMetricsPrivate.countMetricValue(
             'Printing.CUPS.SettingsUserAction',
             PrinterSettingsUserAction.ADD_PRINTER_MANUALLY));
+  });
+
+  /**
+   * Test that available printers section is hidden when offline.
+   */
+  test('OfflineHideAvailablePrinters', async () => {
+    assertFalse(isVisible(
+        page.shadowRoot!.querySelector('#noConnectivityContentContainer')));
+
+    wifi.connectionState = ConnectionStateType.kNotConnected;
+    page.onActiveNetworksChanged([wifi]);
+    flush();
+
+    assertTrue(isVisible(
+        page.shadowRoot!.querySelector('#noConnectivityContentContainer')));
   });
 });

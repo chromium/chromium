@@ -140,7 +140,7 @@ export class SettingsCupsPrintersElement extends
       /**
        * This is also used as an attribute for css styling.
        */
-      canAddPrinter: {
+      hasActiveNetworkConnection: {
         type: Boolean,
         reflectToAttribute: true,
       },
@@ -239,7 +239,6 @@ export class SettingsCupsPrintersElement extends
   }
 
   activePrinter: CupsPrinterInfo;
-  canAddPrinter: boolean;
   prefs: Object;
   printers: CupsPrinterInfo[];
   searchTerm: string;
@@ -251,6 +250,7 @@ export class SettingsCupsPrintersElement extends
   private enterprisePrintersAriaLabel_: string;
   private enterprisePrinters_: PrinterListEntry[];
   private entryManager_: CupsPrintersEntryManager;
+  private hasActiveNetworkConnection: boolean;
   private nearbyPrinterCount_: number;
   private nearbyPrintersAriaLabel_: string;
   private networkConfig_: CrosNetworkConfigInterface;
@@ -381,7 +381,7 @@ export class SettingsCupsPrintersElement extends
    * CrosNetworkConfigObserver impl
    */
   override onActiveNetworksChanged(networks: NetworkStateProperties[]): void {
-    this.canAddPrinter = networks.some((network) => {
+    this.hasActiveNetworkConnection = networks.some((network) => {
       // Note: Check for kOnline rather than using
       // OncMojo.connectionStateIsConnected() since the latter could return true
       // for networks without connectivity (e.g., captive portals).
@@ -576,6 +576,11 @@ export class SettingsCupsPrintersElement extends
 
   private computeNearbyPrintersEmpty_(): boolean {
     return this.nearbyPrinterCount_ === 0;
+  }
+
+  private showNearbyPrintersRevampSection_(): boolean {
+    return this.isPrinterSettingsRevampEnabled_ &&
+        this.hasActiveNetworkConnection;
   }
 }
 
