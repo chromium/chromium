@@ -41,9 +41,11 @@ bool IsFedCmWithoutWellKnownEnforcementEnabled();
 // Whether the Web Identity MDocs API is enabled.
 bool IsWebIdentityMDocsEnabled();
 
+// Whether the AutoReauthnFlag feature is enabled.
+bool IsFedCmAutoReauthnFlagEnabled();
+
 // Whether the HostedDomain feature is enabled.
 bool IsFedCmHostedDomainEnabled();
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

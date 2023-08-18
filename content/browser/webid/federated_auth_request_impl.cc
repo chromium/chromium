@@ -73,6 +73,7 @@ std::string ComputeUrlEncodedTokenPostData(
     const std::string& nonce,
     const std::string& account_id,
     bool is_sign_in,
+    bool is_auto_reauthn,
     const std::vector<std::string>& scope,
     const std::vector<std::string>& responseType,
     const base::flat_map<std::string, std::string>& params) {
@@ -102,7 +103,19 @@ std::string ComputeUrlEncodedTokenPostData(
   // whether the user has been shown such disclosure text.
   std::string disclosure_text_shown = is_sign_in ? "false" : "true";
   if (!query.empty()) {
-    query += "&disclosure_text_shown=" + disclosure_text_shown;
+    query += "&";
+  }
+  query += "disclosure_text_shown=" + disclosure_text_shown;
+
+  if (IsFedCmAutoReauthnFlagEnabled()) {
+    // Shares with IdP that whether a user ha gone through the auto
+    // re-authentication flow. This could help developers to better
+    // comprehend the token request and segment metrics accordingly.
+    std::string is_auto_reauthn_string = is_auto_reauthn ? "true" : "false";
+    if (!query.empty()) {
+      query += "&";
+    }
+    query += "is_auto_reauthn=" + is_auto_reauthn_string;
   }
 
   if (IsFedCmAuthzEnabled()) {
@@ -526,16 +539,19 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
 void FederatedAuthRequestImpl::CompleteMDocRequest(std::string mdoc) {
   if (!mdoc_provider_) {
     std::move(mdoc_request_callback_)
-        .Run(RequestTokenStatus::kError, absl::nullopt, "");
+        .Run(RequestTokenStatus::kError, absl::nullopt, "",
+             /*is_auto_reauthn=*/false);
     return;
   }
 
   if (!mdoc.empty()) {
     std::move(mdoc_request_callback_)
-        .Run(RequestTokenStatus::kSuccess, absl::nullopt, mdoc);
+        .Run(RequestTokenStatus::kSuccess, absl::nullopt, mdoc,
+             /*is_auto_reauthn=*/false);
   } else {
     std::move(mdoc_request_callback_)
-        .Run(RequestTokenStatus::kError, absl::nullopt, "");
+        .Run(RequestTokenStatus::kError, absl::nullopt, "",
+             /*is_auto_reauthn=*/false);
   }
 }
 
@@ -560,7 +576,8 @@ void FederatedAuthRequestImpl::RequestToken(
   const bool is_multi_idp_input = idp_get_params_ptrs.size() > 1u ||
                                   idp_get_params_ptrs[0]->providers.size() > 1u;
   if (is_multi_idp_input && !IsFedCmMultipleIdentityProvidersEnabled()) {
-    std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "");
+    std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "",
+                            /*is_auto_reauthn=*/false);
     return;
   }
 
@@ -569,7 +586,8 @@ void FederatedAuthRequestImpl::RequestToken(
         IsFedCmMultipleIdentityProvidersEnabled()) {
       // TODO(https://crbug.com/1416939): Support calling the MDocs API with the
       // Multi IdP API support.
-      std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "");
+      std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "",
+                              /*is_auto_reauthn=*/false);
       return;
     }
 
@@ -578,7 +596,7 @@ void FederatedAuthRequestImpl::RequestToken(
       // TODO(https://crbug.com/1416939): Reconcile with federated identity
       // requests.
       std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
-                              absl::nullopt, "");
+                              absl::nullopt, "", /*is_auto_reauthn=*/false);
       return;
     }
 
@@ -590,7 +608,8 @@ void FederatedAuthRequestImpl::RequestToken(
     }
     if (!mdoc_provider_) {
       std::move(mdoc_request_callback_)
-          .Run(RequestTokenStatus::kError, absl::nullopt, "");
+          .Run(RequestTokenStatus::kError, absl::nullopt, "",
+               /*is_auto_reauthn=*/false);
       return;
     }
 
@@ -614,7 +633,8 @@ void FederatedAuthRequestImpl::RequestToken(
   // Check that providers are non-empty.
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
     if (idp_get_params_ptr->providers.size() == 0) {
-      std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "");
+      std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "",
+                              /*is_auto_reauthn=*/false);
       return;
     }
   }
@@ -638,7 +658,7 @@ void FederatedAuthRequestImpl::RequestToken(
     fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kTooManyRequests,
                                              requirement);
     std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
-                            absl::nullopt, "");
+                            absl::nullopt, "", /*is_auto_reauthn=*/false);
     return;
   }
 
@@ -1626,8 +1646,8 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
       idp_info.endpoints.token, account_id_,
       ComputeUrlEncodedTokenPostData(
           idp_info.provider->client_id, idp_info.provider->nonce, account_id,
-          is_sign_in, idp_info.provider->scope, idp_info.provider->responseType,
-          idp_info.provider->params),
+          is_sign_in, dialog_type_ == kAutoReauth, idp_info.provider->scope,
+          idp_info.provider->responseType, idp_info.provider->params),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()),
@@ -1958,6 +1978,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
     }
   }
 
+  bool is_auto_reauthn = dialog_type_ == kAutoReauth;
+
   CleanUp();
 
   if (!should_delay_callback || should_complete_request_immediately_) {
@@ -1967,7 +1989,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
     RequestTokenStatus status =
         FederatedAuthRequestResultToRequestTokenStatus(result);
     std::move(auth_request_token_callback_)
-        .Run(status, selected_idp_config_url, id_token);
+        .Run(status, selected_idp_config_url, id_token, is_auto_reauthn);
     auth_request_token_callback_.Reset();
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

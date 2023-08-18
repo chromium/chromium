@@ -8902,6 +8902,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmAuthzDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmAuthz)},
 
+    {"fedcm-auto-reauthn-flag", flag_descriptions::kFedCmAutoReauthnFlagName,
+     flag_descriptions::kFedCmAutoReauthnFlagDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmAutoReauthnFlag)},
+
     {"fedcm-error", flag_descriptions::kFedCmErrorName,
      flag_descriptions::kFedCmErrorDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmError)},

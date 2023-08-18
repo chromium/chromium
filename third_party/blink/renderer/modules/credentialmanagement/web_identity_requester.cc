@@ -20,7 +20,8 @@ WebIdentityRequester::WebIdentityRequester(ExecutionContext* context,
 void WebIdentityRequester::OnRequestToken(
     mojom::blink::RequestTokenStatus status,
     const absl::optional<KURL>& selected_idp_config_url,
-    const WTF::String& token) {
+    const WTF::String& token,
+    bool is_auto_reauthn) {
   for (const auto& provider_resolver_pair : provider_to_resolver_) {
     KURL provider = provider_resolver_pair.key;
     ScriptPromiseResolver* resolver = provider_resolver_pair.value;
@@ -50,7 +51,8 @@ void WebIdentityRequester::OnRequestToken(
               DOMExceptionCode::kNetworkError, "Error retrieving a token."));
           continue;
         }
-        IdentityCredential* credential = IdentityCredential::Create(token);
+        IdentityCredential* credential =
+            IdentityCredential::Create(token, is_auto_reauthn);
         resolver->Resolve(credential);
         continue;
       }
@@ -197,7 +199,7 @@ void WebIdentityRequester::AbortRequest(ScriptState* script_state) {
 
   if (!is_requesting_token_) {
     OnRequestToken(mojom::blink::RequestTokenStatus::kErrorCanceled,
-                   absl::nullopt, "");
+                   absl::nullopt, "", /*is_auto_reauthn=*/false);
     return;
   }
 

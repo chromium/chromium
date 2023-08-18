@@ -534,7 +534,8 @@ void OnRequestToken(ScriptPromiseResolver* resolver,
                     const CredentialRequestOptions* options,
                     RequestTokenStatus status,
                     const absl::optional<KURL>& selected_idp_config_url,
-                    const WTF::String& token) {
+                    const WTF::String& token,
+                    bool is_auto_reauthn) {
   switch (status) {
     case RequestTokenStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -562,7 +563,8 @@ void OnRequestToken(ScriptPromiseResolver* resolver,
       return;
     }
     case RequestTokenStatus::kSuccess: {
-      IdentityCredential* credential = IdentityCredential::Create(token);
+      IdentityCredential* credential =
+          IdentityCredential::Create(token, is_auto_reauthn);
       resolver->Resolve(credential);
       return;
     }

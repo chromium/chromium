@@ -157,11 +157,13 @@ interface FederatedAuthRequest {
   //   A null URL is returned if the token request failed or did not occur due
   //   to an error earlier in the flow.
   // - Raw content of the token.
+  // - Whether a user has gone through the auto re-authentication flow.
   RequestToken(array<IdentityProviderGetParameters> idp_get_params,
       CredentialMediationRequirement requirement) =>
       (RequestTokenStatus status,
       url.mojom.Url? selected_identity_provider_config_url,
-      string? token);
+      string? token,
+      bool is_auto_reauthn);
 
   // Requests user info to be generated, given an IDP config.
   // Returns an IdentityUserInfo for each of the user's accounts.

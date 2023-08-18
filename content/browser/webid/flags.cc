@@ -56,6 +56,10 @@ bool IsWebIdentityMDocsEnabled() {
   return base::FeatureList::IsEnabled(features::kWebIdentityMDocs);
 }
 
+bool IsFedCmAutoReauthnFlagEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmAutoReauthnFlag);
+}
+
 bool IsFedCmHostedDomainEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmHostedDomain);
 }
