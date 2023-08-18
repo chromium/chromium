@@ -207,23 +207,21 @@ ContentIndexProvider* ShellBrowserContext::GetContentIndexProvider() {
 
 FederatedIdentityApiPermissionContextDelegate*
 ShellBrowserContext::GetFederatedIdentityApiPermissionContext() {
-  if (!federated_permission_context_)
-    federated_permission_context_ =
-        std::make_unique<ShellFederatedPermissionContext>();
-  return federated_permission_context_.get();
+  return GetShellFederatedPermissionContext();
 }
 
 FederatedIdentityAutoReauthnPermissionContextDelegate*
 ShellBrowserContext::GetFederatedIdentityAutoReauthnPermissionContext() {
-  if (!federated_permission_context_) {
-    federated_permission_context_ =
-        std::make_unique<ShellFederatedPermissionContext>();
-  }
-  return federated_permission_context_.get();
+  return GetShellFederatedPermissionContext();
 }
 
 FederatedIdentityPermissionContextDelegate*
 ShellBrowserContext::GetFederatedIdentityPermissionContext() {
+  return GetShellFederatedPermissionContext();
+}
+
+ShellFederatedPermissionContext*
+ShellBrowserContext::GetShellFederatedPermissionContext() {
   if (!federated_permission_context_)
     federated_permission_context_ =
         std::make_unique<ShellFederatedPermissionContext>();
