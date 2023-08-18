@@ -21,6 +21,7 @@ import "components/sync/protocol/client_commands.proto";
 import "components/sync/protocol/client_debug_info.proto";
 import "components/sync/protocol/data_type_progress_marker.proto";
 import "components/sync/protocol/get_updates_caller_info.proto";
+import "components/sync/protocol/password_sharing_invitation_specifics.proto";
 import "components/sync/protocol/sync_entity.proto";
 import "components/sync/protocol/sync_enums.proto";
 import "components/sync/protocol/sharing_message_specifics.proto";
@@ -366,6 +367,8 @@ message CommitResponse {
     message DatatypeSpecificError {
       oneof datatype_error {
         SharingMessageCommitError sharing_message_error = 1;
+        OutgoingPasswordSharingInvitationCommitError
+            outgoing_password_sharing_invitation_error = 2;
       }
     }
     // Datatype specific error (if any).

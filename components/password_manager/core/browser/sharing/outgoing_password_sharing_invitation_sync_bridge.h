@@ -11,6 +11,7 @@
 
 #include "base/sequence_checker.h"
 #include "components/password_manager/core/browser/sharing/recipient_info.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
@@ -59,6 +60,13 @@ class OutgoingPasswordSharingInvitationSyncBridge
   bool SupportsGetStorageKey() const override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
+  void OnCommitAttemptErrors(
+      const syncer::FailedCommitResponseDataList& error_response_list) override;
+  CommitAttemptFailedBehavior OnCommitAttemptFailed(
+      syncer::SyncCommitError commit_error) override;
+
+  static syncer::ClientTagHash GetClientTagHashFromStorageKeyForTest(
+      const std::string& storage_key);
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -76,8 +84,8 @@ class OutgoingPasswordSharingInvitationSyncBridge
 
   // Last sent passwords are cached until they are committed to the server. This
   // is required to keep data in case of retries.
-  std::map<std::string, OutgoingInvitationWithEncryptionKey>
-      storage_key_to_outgoing_invitations_in_flight_;
+  std::map<syncer::ClientTagHash, OutgoingInvitationWithEncryptionKey>
+      outgoing_invitations_in_flight_;
 };
 
 }  // namespace password_manager

@@ -269,5 +269,30 @@ TEST_F(OutgoingPasswordSharingInvitationSyncBridgeTest,
   EXPECT_THAT(GetDataFromBridge(storage_key), IsNull());
 }
 
+TEST_F(OutgoingPasswordSharingInvitationSyncBridgeTest,
+       ShouldDropDataOnPermanentError) {
+  std::string storage_key;
+  EXPECT_CALL(*mock_processor(), Put).WillOnce(SaveArg<0>(&storage_key));
+  CreateBridge();
+  bridge()->SendPassword(MakePasswordForm(), /*recipient=*/{kRecipientUserId});
+
+  // Verify that the invitation is still in flight.
+  ASSERT_THAT(storage_key, Not(IsEmpty()));
+  std::unique_ptr<EntityData> get_data_result = GetDataFromBridge(storage_key);
+  ASSERT_THAT(get_data_result, NotNull());
+
+  // Simulate an invalid message error from the server.
+  syncer::FailedCommitResponseData error_response;
+  error_response.client_tag_hash = OutgoingPasswordSharingInvitationSyncBridge::
+      GetClientTagHashFromStorageKeyForTest(storage_key);
+  error_response.response_type = sync_pb::CommitResponse::INVALID_MESSAGE;
+  EXPECT_CALL(*mock_processor(),
+              UntrackEntityForClientTagHash(error_response.client_tag_hash));
+  bridge()->OnCommitAttemptErrors({error_response});
+
+  // Verify that the given storage key has been removed from the bridge.
+  EXPECT_THAT(GetDataFromBridge(storage_key), IsNull());
+}
+
 }  // namespace
 }  // namespace password_manager

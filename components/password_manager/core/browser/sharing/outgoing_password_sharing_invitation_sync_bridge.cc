@@ -97,16 +97,18 @@ void OutgoingPasswordSharingInvitationSyncBridge::SendPassword(
       CreateOutgoingPasswordSharingInvitationSpecifics(password, recipient);
   const std::string storage_key = GetStorageKeyFromSpecifics(specifics);
 
-  storage_key_to_outgoing_invitations_in_flight_.emplace(
-      storage_key, OutgoingInvitationWithEncryptionKey{std::move(specifics),
-                                                       recipient.public_key});
+  outgoing_invitations_in_flight_.emplace(
+      GetClientTagHashFromStorageKey(storage_key),
+      OutgoingInvitationWithEncryptionKey{std::move(specifics),
+                                          recipient.public_key});
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();
   change_processor()->Put(
       storage_key,
       ConvertToEntityData(
-          storage_key_to_outgoing_invitations_in_flight_[storage_key]),
+          outgoing_invitations_in_flight_[GetClientTagHashFromStorageKey(
+              storage_key)]),
       metadata_change_list.get());
 }
 
@@ -129,7 +131,8 @@ OutgoingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
     // For commit-only data type only |ACTION_DELETE| is expected.
     CHECK_EQ(syncer::EntityChange::ACTION_DELETE, change->type());
 
-    storage_key_to_outgoing_invitations_in_flight_.erase(change->storage_key());
+    outgoing_invitations_in_flight_.erase(
+        GetClientTagHashFromStorageKey(change->storage_key()));
   }
   return absl::nullopt;
 }
@@ -141,9 +144,9 @@ void OutgoingPasswordSharingInvitationSyncBridge::GetData(
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& storage_key : storage_keys) {
-    if (auto iter =
-            storage_key_to_outgoing_invitations_in_flight_.find(storage_key);
-        iter != storage_key_to_outgoing_invitations_in_flight_.end()) {
+    if (auto iter = outgoing_invitations_in_flight_.find(
+            GetClientTagHashFromStorageKey(storage_key));
+        iter != outgoing_invitations_in_flight_.end()) {
       batch->Put(storage_key, ConvertToEntityData(iter->second));
     }
   }
@@ -155,10 +158,10 @@ void OutgoingPasswordSharingInvitationSyncBridge::GetAllDataForDebugging(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const auto& storage_key_and_outgoing_invitation :
-       storage_key_to_outgoing_invitations_in_flight_) {
-    batch->Put(storage_key_and_outgoing_invitation.first,
-               ConvertToEntityData(storage_key_and_outgoing_invitation.second));
+  for (const auto& [client_tag_hash, outgoing_invitation] :
+       outgoing_invitations_in_flight_) {
+    batch->Put(GetStorageKeyFromSpecifics(outgoing_invitation.specifics),
+               ConvertToEntityData(outgoing_invitation));
   }
   std::move(callback).Run(std::move(batch));
 }
@@ -190,7 +193,48 @@ void OutgoingPasswordSharingInvitationSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  storage_key_to_outgoing_invitations_in_flight_.clear();
+  outgoing_invitations_in_flight_.clear();
+}
+
+void OutgoingPasswordSharingInvitationSyncBridge::OnCommitAttemptErrors(
+    const syncer::FailedCommitResponseDataList& error_response_list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Do not retry invalid messages and just remove them.
+  for (const syncer::FailedCommitResponseData& error_response :
+       error_response_list) {
+    if (error_response.response_type ==
+        sync_pb::CommitResponse::INVALID_MESSAGE) {
+      // TODO(crbug.com/1468524): record UMA metric for datatype-siecific
+      // errors.
+      change_processor()->UntrackEntityForClientTagHash(
+          error_response.client_tag_hash);
+      outgoing_invitations_in_flight_.erase(error_response.client_tag_hash);
+    }
+  }
+}
+
+syncer::ModelTypeSyncBridge::CommitAttemptFailedBehavior
+OutgoingPasswordSharingInvitationSyncBridge::OnCommitAttemptFailed(
+    syncer::SyncCommitError commit_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (commit_error) {
+    case syncer::SyncCommitError::kNetworkError:
+    case syncer::SyncCommitError::kAuthError:
+      // Ignore the auth error because it may be a temporary error and the
+      // message will be sent on the second attempt.
+      return CommitAttemptFailedBehavior::kShouldRetryOnNextCycle;
+    case syncer::SyncCommitError::kServerError:
+    case syncer::SyncCommitError::kBadServerResponse:
+      return CommitAttemptFailedBehavior::kDontRetryOnNextCycle;
+  }
+}
+
+// static
+syncer::ClientTagHash OutgoingPasswordSharingInvitationSyncBridge::
+    GetClientTagHashFromStorageKeyForTest(const std::string& storage_key) {
+  return GetClientTagHashFromStorageKey(storage_key);
 }
 
 // static
