@@ -603,7 +603,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_tests.js'],
  [
    'OsBluetoothPageOsBluetoothChangeDeviceNameDialog',
-   'os_bluetooth_page/os_bluetooth_change_device_name_dialog_tests.js',
+   'os_bluetooth_page/os_bluetooth_change_device_name_dialog_test.js',
  ],
  [
    'OsBluetoothPageOsBluetoothDeviceDetailSubpage',

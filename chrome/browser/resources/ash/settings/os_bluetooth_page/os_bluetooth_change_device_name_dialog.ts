@@ -22,14 +22,14 @@ import {getTemplate} from './os_bluetooth_change_device_name_dialog.html.js';
 
 const MAX_INPUT_LENGTH: number = 32;
 
-interface SettingsBluetoothChangeDeviceNameDialogElement {
+export interface SettingsBluetoothChangeDeviceNameDialogElement {
   $: {dialog: CrDialogElement};
 }
 
 const SettingsBluetoothChangeDeviceNameDialogElementBase =
     I18nMixin(PolymerElement);
 
-class SettingsBluetoothChangeDeviceNameDialogElement extends
+export class SettingsBluetoothChangeDeviceNameDialogElement extends
     SettingsBluetoothChangeDeviceNameDialogElementBase {
   static get is() {
     return 'os-settings-bluetooth-change-device-name-dialog' as const;
