@@ -7,8 +7,8 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -106,7 +106,7 @@ class WakeEventPage : public content::RenderThreadObserver {
 
   // All in-flight requests, keyed by request ID. Used on multiple threads, so
   // must be guarded by |requests_lock_|.
-  std::unordered_map<int, std::unique_ptr<RequestData>> requests_;
+  base::flat_map<int, std::unique_ptr<RequestData>> requests_;
 
   // Lock for |requests_|.
   base::Lock requests_lock_;

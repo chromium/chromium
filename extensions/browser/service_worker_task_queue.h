@@ -7,9 +7,9 @@
 
 #include <map>
 #include <set>
-#include <unordered_map>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
@@ -267,7 +267,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // for a regular profile.
   // TODO(crbug.com/939664): Make this better by passing in something that
   // will manage storing and retrieving this data.
-  std::unordered_map<ExtensionId, base::Version> off_the_record_registrations_;
+  base::flat_map<ExtensionId, base::Version> off_the_record_registrations_;
 
   // Current activation tokens for each activated extensions.
   std::map<ExtensionId, base::UnguessableToken> activation_tokens_;

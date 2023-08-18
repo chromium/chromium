@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/extensions/gfx_utils.h"
 
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/flat_map.h"
 #include "base/lazy_instance.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -102,8 +103,8 @@ const struct {
 class AppDualBadgeMap {
  public:
   using ArcAppToExtensionsMap =
-      std::unordered_map<std::string, std::vector<std::string>>;
-  using ExtensionToArcAppMap = std::unordered_map<std::string, std::string>;
+      base::flat_map<std::string, std::vector<std::string>>;
+  using ExtensionToArcAppMap = base::flat_map<std::string, std::string>;
 
   AppDualBadgeMap() {
     for (auto dual_badge : kDualBadgeMap) {

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include <cmath>
-#include <unordered_map>
 
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
@@ -54,7 +54,7 @@ constexpr char kEventSuffixFailRate[] = "FailRate";
 constexpr char kEventSuffixLatency[] = "Latency";
 constexpr char kEventCommitAndDrawCompositorFrame[] =
     "WidgetBase::DidCommitAndDrawCompositorFrame";
-const std::unordered_map<std::string, std::string> kEventToMetricMap(
+const base::flat_map<std::string, std::string> kEventToMetricMap(
     {{kEventCapture, kMetricCaptureMs},
      {std::string(kEventCapture) + kEventSuffixFailRate,
       kMetricCaptureFailRatePercent},
