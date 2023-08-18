@@ -921,6 +921,9 @@ void PinManager::OnSearchResult(const Id dir_id,
     LOG_IF(WARNING, progress_.time_spent_listing_items > Seconds(30))
         << "Listing files took a long time, found" << progress_.listed_items
         << " items in " << Quote(progress_.time_spent_listing_items);
+    base::UmaHistogramLongTimes(
+        "FileBrowser.GoogleDrive.BulkPinning.TimeSpentListing",
+        progress_.time_spent_listing_items);
     VLOG(1) << "Finished listing files in "
             << Quote(progress_.time_spent_listing_items);
     VLOG(1) << NiceNum << "Total queries: " << progress_.total_queries;

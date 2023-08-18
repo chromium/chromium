@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -33,6 +34,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
 namespace drivefs::pinning {
 namespace {
 
@@ -2426,6 +2428,7 @@ TEST_F(DriveFsPinManagerTest, CalculateRequiredSpace) {
 }
 
 TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
+  base::HistogramTester histogram_tester;
   CompletionCallback completion_callback;
   RunLoop run_loop;
 
@@ -2455,6 +2458,9 @@ TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
   EXPECT_EQ(progress.required_space, 512 << 20);
   EXPECT_EQ(progress.pinned_bytes, 0);
   EXPECT_EQ(progress.pinned_files, 0);
+  histogram_tester.ExpectUniqueTimeSample(
+      "FileBrowser.GoogleDrive.BulkPinning.TimeSpentListing",
+      progress.time_spent_listing_items, 1);
 }
 
 TEST_F(DriveFsPinManagerTest, WhenMoreResultsReturnedNextPageIsAttempted) {

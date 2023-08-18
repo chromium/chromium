@@ -665,6 +665,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.GoogleDrive.BulkPinning.TimeSpentListing"
+    units="ms" expires_after="2024-06-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time spent listing eligible files in a users Google Drive. The listing of
+    files happens when the user first goes through OOBE, when they open the
+    Google Drive settings page or when the click Get started on the bulk pinning
+    banner. For the first file listing it will typically make a query to the
+    cloud and can take a long time, subsequent queries are done on cached data
+    and happen relatively quickly. This is only emitted if the initial listing
+    finished successfully.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.GoogleDrive.BulkPinning.ToDownloadMiB" units="MiB"
     expires_after="2024-06-01">
   <owner>simmonsjosh@google.com</owner>
