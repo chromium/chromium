@@ -99,8 +99,6 @@ public abstract class UrlBar extends AutocompleteEditText {
     private final KeyboardHideHelper mKeyboardHideHelper;
 
     private boolean mFocused;
-    private boolean mSuppressingTouchMoveEventsForThisTouch;
-    private MotionEvent mSuppressedTouchDownEvent;
     private boolean mAllowFocus = true;
 
     private boolean mPendingScroll;
@@ -418,41 +416,8 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        // This method contains special logic to enable long presses to be handled correctly.
-
-        // One piece of the logic is to suppress all ACTION_DOWN events received while the UrlBar is
-        // not focused, and only pass them to super.onTouchEvent() if it turns out we're about to
-        // perform a long press. Long pressing will not behave properly without sending this event,
-        // but if we always send it immediately, it will cause the keyboard to show immediately,
-        // whereas we want to wait to show it until after the URL focus animation finishes, to avoid
-        // performance issues on slow devices.
-
-        // The other piece of the logic is to suppress ACTION_MOVE events received after an
-        // ACTION_DOWN received while the UrlBar is not focused. This is because the UrlBar moves to
-        // the side as it's focusing, and a finger held still on the screen would therefore be
-        // interpreted as a drag selection.
-
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            mSuppressingTouchMoveEventsForThisTouch = !mFocused;
-        }
-
         if (!mFocused) {
-            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                mSuppressedTouchDownEvent = MotionEvent.obtain(event);
-            }
             mGestureDetector.onTouchEvent(event);
-            return true;
-        }
-
-        if (event.getActionMasked() == MotionEvent.ACTION_UP
-                || event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
-            // Minor optimization to avoid unnecessarily holding onto a MotionEvent after the touch
-            // finishes.
-            mSuppressedTouchDownEvent = null;
-        }
-
-        if (mSuppressingTouchMoveEventsForThisTouch
-                && event.getActionMasked() == MotionEvent.ACTION_MOVE) {
             return true;
         }
 
@@ -465,13 +430,6 @@ public abstract class UrlBar extends AutocompleteEditText {
             // Work around crash of unknown origin (https://crbug.com/837419).
             Log.w(TAG, "Ignoring IndexOutOfBoundsException in UrlBar#onTouchEvent.", e);
             return true;
-        }
-    }
-
-    private void releaseSuppressedTouchDownEvent() {
-        if (mSuppressedTouchDownEvent != null) {
-            super.onTouchEvent(mSuppressedTouchDownEvent);
-            mSuppressedTouchDownEvent = null;
         }
     }
 
