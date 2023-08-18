@@ -10,8 +10,33 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/file_search_result.h"
 
 namespace app_list {
+
+std::vector<FileSearchResult> FindIntersection(
+    const std::vector<FileSearchResult>& vec1,
+    const std::vector<FileSearchResult>& vec2) {
+  std::vector<FileSearchResult> result;
+
+  auto it1 = vec1.begin();
+  auto it2 = vec2.begin();
+
+  while (it1 != vec1.end() && it2 != vec2.end()) {
+    if (it1->file_path < it2->file_path) {
+      ++it1;
+    } else if (it2->file_path < it1->file_path) {
+      ++it2;
+    } else {
+      result.emplace_back(FileSearchResult(it1->file_path, it1->last_modified,
+                                           it1->relevance + it2->relevance));
+      ++it1;
+      ++it2;
+    }
+  }
+
+  return result;
+}
 
 bool IsStopWord(const std::string& word) {
   DCHECK(!base::IsAsciiUpper(word[0]));

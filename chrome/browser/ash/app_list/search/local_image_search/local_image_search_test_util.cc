@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_test_util.h"
 
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/file_search_result.h"
 
 namespace app_list {
 

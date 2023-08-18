@@ -59,12 +59,13 @@ TEST_F(AnnotationStorageTest, EmptyStorage) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(AnnotationStorageTest, InsertOrReplace) {
+TEST_F(AnnotationStorageTest, Insert) {
   storage_->Initialize();
   task_environment_.RunUntilIdle();
 
-  ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"),
-                      base::Time::Now(), /*is_ignored=*/false);
+  auto time = base::Time::Now();
+  ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"), time,
+                      /*is_ignored=*/false);
 
   storage_->Insert(bar_image);
 
@@ -72,13 +73,23 @@ TEST_F(AnnotationStorageTest, InsertOrReplace) {
               testing::ElementsAreArray({bar_image}));
   task_environment_.RunUntilIdle();
 
+  ImageInfo bar_image1({"test1"}, test_directory_.AppendASCII("bar.jpg"),
+                       std::move(time), /*is_ignored=*/false);
+
+  storage_->Insert(bar_image1);
+
+  EXPECT_THAT(storage_->GetAllAnnotations(),
+              testing::ElementsAreArray({bar_image, bar_image1}));
+  task_environment_.RunUntilIdle();
+
   ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
                       base::Time::Now(), /*is_ignored=*/false);
 
   storage_->Insert(foo_image);
 
-  EXPECT_THAT(storage_->GetAllAnnotations(),
-              testing::UnorderedElementsAreArray({bar_image, foo_image}));
+  EXPECT_THAT(
+      storage_->GetAllAnnotations(),
+      testing::UnorderedElementsAreArray({bar_image, bar_image1, foo_image}));
   task_environment_.RunUntilIdle();
 }
 
@@ -86,22 +97,26 @@ TEST_F(AnnotationStorageTest, Remove) {
   storage_->Initialize();
   task_environment_.RunUntilIdle();
 
+  auto time = base::Time::Now();
   ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"),
                       base::Time::Now(), /*is_ignored=*/false);
-  ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
-                      base::Time::Now(), /*is_ignored=*/false);
+  ImageInfo foo_image({"test"}, test_directory_.AppendASCII("foo.png"), time,
+                      /*is_ignored=*/false);
+  ImageInfo foo_image1({"test1"}, test_directory_.AppendASCII("foo.png"),
+                       std::move(time), /*is_ignored=*/false);
   storage_->Insert(bar_image);
   storage_->Insert(foo_image);
+  storage_->Insert(foo_image1);
 
   storage_->Remove(test_directory_.AppendASCII("bar.jpg"));
 
   EXPECT_THAT(storage_->GetAllAnnotations(),
-              testing::ElementsAreArray({foo_image}));
+              testing::ElementsAreArray({foo_image, foo_image1}));
 
   storage_->Remove(test_directory_.AppendASCII("bar.jpg"));
 
   EXPECT_THAT(storage_->GetAllAnnotations(),
-              testing::ElementsAreArray({foo_image}));
+              testing::ElementsAreArray({foo_image, foo_image1}));
 
   storage_->Remove(test_directory_.AppendASCII("foo.png"));
   EXPECT_TRUE(storage_->GetAllAnnotations().empty());
@@ -153,13 +168,10 @@ TEST_F(AnnotationStorageTest, SearchAnnotations) {
                             /*is_ignored=*/false);
   ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
                       base::Time::Now(), /*is_ignored=*/false);
-  ImageInfo ignore_image({"test2"}, test_directory_.AppendASCII("remove.png"),
-                         base::Time::Now(), /*is_ignored=*/true);
   storage_->Insert(document_image1);
   storage_->Insert(document_image2);
   storage_->Insert(document_image3);
   storage_->Insert(foo_image);
-  storage_->Insert(ignore_image);
 
   EXPECT_THAT(
       storage_->Search(base::UTF8ToUTF16(std::string("bar tes")),

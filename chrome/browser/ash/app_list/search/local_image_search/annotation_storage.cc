@@ -9,7 +9,10 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/annotations_table.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/documents_table.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/inverted_index_table.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
@@ -24,47 +27,17 @@ using TokenizedString = ::ash::string_matching::TokenizedString;
 using Mode = ::ash::string_matching::TokenizedString::Mode;
 
 constexpr double kRelevanceThreshold = 0.79;
-constexpr int kVersionNumber = 3;
+constexpr int kVersionNumber = 4;
 
 // Initializes a new annotation table, returning a schema version number
-// on success. The table can be searched by label and image path.
-// The map between label and image is many-to-one.
+// on success. The database implements inverted index.
 // The table cannot exist when calling this function.
 int CreateNewSchema(SqlDatabase* db) {
   DVLOG(1) << "Making a table";
-  if (!db) {
-    return 0;
-  }
 
-  static constexpr char kQuery[] =
-      // clang-format off
-      "CREATE TABLE annotations("
-          "label TEXT NOT NULL,"
-          "image_path TEXT NOT NULL,"
-          "last_modified_time INTEGER NOT NULL,"
-          "is_ignored INTEGER NOT NULL)";
-  // clang-format on
-  std::unique_ptr<sql::Statement> statement =
-      db->GetStatementForQuery(SQL_FROM_HERE, kQuery);
-  if (!statement || !statement->Run()) {
-    return 0;
-  }
-
-  static constexpr char kQuery1[] =
-      "CREATE INDEX ind_annotations_label ON annotations(label)";
-
-  std::unique_ptr<sql::Statement> statement1 =
-      db->GetStatementForQuery(SQL_FROM_HERE, kQuery1);
-  if (!statement1 || !statement1->Run()) {
-    return 0;
-  }
-
-  static constexpr char kQuery2[] =
-      "CREATE INDEX ind_annotations_image_path ON annotations(image_path)";
-
-  std::unique_ptr<sql::Statement> statement2 =
-      db->GetStatementForQuery(SQL_FROM_HERE, kQuery2);
-  if (!statement2 || !statement2->Run()) {
+  if (!db || !AnnotationsTable::Create(db) || !DocumentsTable::Create(db) ||
+      !InvertedIndexTable::Create(db)) {
+    LOG(ERROR) << "Failed to create schema.";
     return 0;
   }
 
@@ -72,47 +45,17 @@ int CreateNewSchema(SqlDatabase* db) {
 }
 
 int MigrateSchema(SqlDatabase* db, int current_version_number) {
-  if (!db) {
-    return 0;
-  }
-
   if (current_version_number == kVersionNumber) {
     return current_version_number;
   }
 
-  static constexpr char kQuery[] = "DROP TABLE IF EXISTS annotations";
-  std::unique_ptr<sql::Statement> statement =
-      db->GetStatementForQuery(SQL_FROM_HERE, kQuery);
-  if (!statement || !statement->Run()) {
+  if (!db || !AnnotationsTable::Drop(db) || !DocumentsTable::Drop(db) ||
+      !InvertedIndexTable::Drop(db)) {
+    LOG(ERROR) << "Failed to drop schema.";
     return 0;
   }
 
   return CreateNewSchema(db);
-}
-
-// Returns sorted `FileSearchResult`s contained in both sorted arrays.
-std::vector<FileSearchResult> FindIntersection(
-    const std::vector<FileSearchResult>& vec1,
-    const std::vector<FileSearchResult>& vec2) {
-  std::vector<FileSearchResult> result;
-
-  auto it1 = vec1.begin();
-  auto it2 = vec2.begin();
-
-  while (it1 != vec1.end() && it2 != vec2.end()) {
-    if (it1->file_path < it2->file_path) {
-      ++it1;
-    } else if (it2->file_path < it1->file_path) {
-      ++it2;
-    } else {
-      result.emplace_back(FileSearchResult(it1->file_path, it1->last_modified,
-                                           it1->relevance + it2->relevance));
-      ++it1;
-      ++it2;
-    }
-  }
-
-  return result;
 }
 
 }  // namespace
@@ -128,18 +71,6 @@ ImageInfo::ImageInfo(const std::set<std::string>& annotations,
 
 ImageInfo::~ImageInfo() = default;
 ImageInfo::ImageInfo(const ImageInfo&) = default;
-
-FileSearchResult::FileSearchResult(const base::FilePath& file_path,
-                                   const base::Time& last_modified,
-                                   double relevance)
-    : file_path(file_path),
-      last_modified(last_modified),
-      relevance(relevance) {}
-
-FileSearchResult::~FileSearchResult() = default;
-FileSearchResult::FileSearchResult(const FileSearchResult&) = default;
-FileSearchResult& FileSearchResult::operator=(const FileSearchResult&) =
-    default;
 
 AnnotationStorage::AnnotationStorage(
     const base::FilePath& path_to_db,
@@ -181,49 +112,41 @@ void AnnotationStorage::Initialize() {
 
 void AnnotationStorage::Insert(const ImageInfo& image_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "Insert";
+  DVLOG(1) << "Insert " << image_info.path;
 
-  static constexpr char kQuery[] =
-      // clang-format off
-      "INSERT INTO annotations(label,image_path,last_modified_time,is_ignored) "
-          "VALUES(?,?,?,?)";
-  // clang-format on
+  int64_t document_id;
+  if (!DocumentsTable::InsertOrIgnore(sql_database_.get(), image_info.path,
+                                      image_info.last_modified,
+                                      DocumentType::kImage) ||
+      !DocumentsTable::GetDocumentId(sql_database_.get(), image_info.path,
+                                     document_id)) {
+    LOG(ERROR) << "Failed to insert into the db.";
+    return;
+  }
 
   for (const auto& annotation : image_info.annotations) {
-    std::unique_ptr<sql::Statement> statement =
-        sql_database_->GetStatementForQuery(SQL_FROM_HERE, kQuery);
-    if (!statement) {
-      return;
-    }
     DVLOG(1) << annotation;
-    statement->BindString(0, annotation);
-    statement->BindString(1, image_info.path.value());
-    statement->BindTime(2, image_info.last_modified);
-    statement->BindInt(3, image_info.is_ignored);
-
-    if (!statement->Run()) {
-      // TODO(b/260646344): log to UMA instead.
+    int64_t annotation_id;
+    if (!AnnotationsTable::InsertOrIgnore(sql_database_.get(), annotation) ||
+        !AnnotationsTable::GetTermId(sql_database_.get(), annotation,
+                                     annotation_id) ||
+        !InvertedIndexTable::Insert(sql_database_.get(), annotation_id,
+                                    document_id)) {
+      LOG(ERROR) << "Failed to insert into the db.";
       return;
     }
   }
-  return;
 }
 
 void AnnotationStorage::Remove(const base::FilePath& image_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "Remove";
+  DVLOG(1) << "Remove " << image_path;
 
-  static constexpr char kQuery[] = "DELETE FROM annotations WHERE image_path=?";
-
-  std::unique_ptr<sql::Statement> statement =
-      sql_database_->GetStatementForQuery(SQL_FROM_HERE, kQuery);
-  if (!statement) {
-    return;
+  if (!InvertedIndexTable::Remove(sql_database_.get(), image_path) ||
+      !DocumentsTable::Remove(sql_database_.get(), image_path) ||
+      !AnnotationsTable::Prune(sql_database_.get())) {
+    LOG(ERROR) << "Failed to remove from the db.";
   }
-
-  statement->BindString(0, image_path.value());
-
-  statement->Run();
 }
 
 std::vector<ImageInfo> AnnotationStorage::GetAllAnnotations() {
@@ -232,14 +155,17 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotations() {
 
   static constexpr char kQuery[] =
       // clang-format off
-      "SELECT label,image_path,last_modified_time,is_ignored "
-          "FROM annotations "
-          "ORDER BY label";
+      "SELECT a.term, d.file_path, d.last_modified_time "
+          "FROM annotations AS a "
+          "JOIN inverted_index AS ii ON a.term_id = ii.term_id "
+          "JOIN documents AS d ON ii.document_id = d.document_id "
+          "ORDER BY a.term, d.file_path";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, kQuery);
   if (!statement) {
+    LOG(ERROR) << "Couldn't create the statement";
     return {};
   }
 
@@ -247,13 +173,12 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotations() {
   while (statement->Step()) {
     const base::FilePath path = base::FilePath(statement->ColumnString(1));
     const base::Time time = statement->ColumnTime(2);
-    const bool is_ignored = statement->ColumnBool(3);
     DVLOG(1) << "Select find: " << statement->ColumnString(0) << ", " << path
              << ", " << time;
     matched_paths.push_back({{statement->ColumnString(0)},
                              std::move(path),
                              std::move(time),
-                             is_ignored});
+                             false});
   }
 
   return matched_paths;
@@ -267,15 +192,18 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
 
   static constexpr char kQuery[] =
       // clang-format off
-      "SELECT label,image_path,last_modified_time,is_ignored "
-          "FROM annotations "
-          "WHERE image_path=? "
-          "ORDER BY label";
+      "SELECT a.term, d.file_path, d.last_modified_time "
+          "FROM annotations AS a "
+          "JOIN inverted_index AS ii ON a.term_id = ii.term_id "
+          "JOIN documents AS d ON ii.document_id = d.document_id "
+          "WHERE d.file_path=? "
+          "ORDER BY a.term";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, kQuery);
   if (!statement) {
+    LOG(ERROR) << "Couldn't create the statement";
     return {};
   }
   statement->BindString(0, image_path.value());
@@ -284,13 +212,12 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
   while (statement->Step()) {
     const base::FilePath path = base::FilePath(statement->ColumnString(1));
     const base::Time time = statement->ColumnTime(2);
-    const bool is_ignored = statement->ColumnBool(3);
     DVLOG(1) << "Select find: " << statement->ColumnString(0) << ", " << path
              << ", " << time;
     matched_paths.push_back({{statement->ColumnString(0)},
                              std::move(path),
                              std::move(time),
-                             is_ignored});
+                             false});
   }
 
   return matched_paths;
@@ -301,19 +228,20 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "PrefixSearch " << query_term;
 
-  // LIKE is 10 times faster than the linear search.
   static constexpr char kQuery[] =
       // clang-format off
-      "SELECT label,image_path,last_modified_time,is_ignored "
-          "FROM annotations "
-          "WHERE is_ignored=0 "
-          "AND label LIKE ? "
-          "ORDER BY image_path";
+      "SELECT a.term, d.file_path, d.last_modified_time "
+          "FROM annotations AS a "
+          "JOIN inverted_index AS ii ON a.term_id = ii.term_id "
+          "JOIN documents AS d ON ii.document_id = d.document_id "
+          "WHERE a.term LIKE ? "
+          "ORDER BY d.file_path";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, kQuery);
   if (!statement) {
+    LOG(ERROR) << "Couldn't create the statement";
     return {};
   }
   statement->BindString(0, base::StrCat({base::UTF16ToUTF8(query_term), "%"}));

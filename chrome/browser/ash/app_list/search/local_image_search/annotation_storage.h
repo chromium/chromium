@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/file_search_result.h"
 
 namespace app_list {
 
@@ -38,25 +39,6 @@ struct ImageInfo {
   ~ImageInfo();
   ImageInfo(const ImageInfo&);
   ImageInfo& operator=(const ImageInfo&) = delete;
-};
-
-// A search result with `relevance` to the supplied query.
-struct FileSearchResult {
-  // The full path to the file.
-  base::FilePath file_path;
-  // The file's last modified time.
-  base::Time last_modified;
-  // The file's relevance on the scale from 0-1. It represents how closely a
-  // query matches the file's annotation.
-  double relevance;
-
-  FileSearchResult(const base::FilePath& file_path,
-                   const base::Time& last_modified,
-                   double relevance);
-
-  ~FileSearchResult();
-  FileSearchResult(const FileSearchResult&);
-  FileSearchResult& operator=(const FileSearchResult&);
 };
 
 // A persistent storage to efficiently store, retrieve and search annotations.
