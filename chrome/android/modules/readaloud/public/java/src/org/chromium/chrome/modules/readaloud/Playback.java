@@ -20,7 +20,7 @@ public interface Playback {
         String publisher();
         String author();
         String fullText();
-        TextPart[] paragraphs();
+        PlaybackTextPart[] paragraphs();
         long estimatedDurationSeconds();
         String canonicalUrl();
     }
@@ -29,7 +29,7 @@ public interface Playback {
      * Represents a single text part.
      * This might be a paragraph, a sentence or any semantic unit of the article.
      */
-    interface TextPart {
+    interface PlaybackTextPart {
         // The index of the text part's paragraph in the full article.
         int getParagraphIndex();
         // The offset of the text part in the full text.
@@ -37,18 +37,18 @@ public interface Playback {
         // The length of the text part, in characters.
         int getLength();
 
-        @TextType
+        @PlaybackTextType
         int getType();
     }
 
     /**
      * Type of a text portion.
      */
-    @IntDef({TextType.TEXT_TYPE_UNSPECIFIED, TextType.TEXT_TYPE_NORMAL, TextType.TEXT_TYPE_TITLE,
-            TextType.TEXT_TYPE_PUBLISHER_AND_AUTHOR, TextType.TEXT_TYPE_PUBLISHER,
-            TextType.TEXT_TYPE_AUTHOR})
+    @IntDef({PlaybackTextType.TEXT_TYPE_UNSPECIFIED, PlaybackTextType.TEXT_TYPE_NORMAL,
+            PlaybackTextType.TEXT_TYPE_TITLE, PlaybackTextType.TEXT_TYPE_PUBLISHER_AND_AUTHOR,
+            PlaybackTextType.TEXT_TYPE_PUBLISHER, PlaybackTextType.TEXT_TYPE_AUTHOR})
     @Retention(RetentionPolicy.SOURCE)
-    @interface TextType {
+    @interface PlaybackTextType {
         // Unspecified.
         int TEXT_TYPE_UNSPECIFIED = 0;
         // Normal text (without a particular role).
