@@ -451,6 +451,22 @@ suite('SafeBrowsingFragment', function() {
     assertEquals(result, expectedMetric);
   }
 
+  test('UpdatedEnhancedProtectionPrivacyGuide', function() {
+    const enhancedProtection =
+        fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
+            '#safeBrowsingRadioEnhanced');
+    assertTrue(!!enhancedProtection);
+    const epSubLabel =
+        loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
+    assertEquals(epSubLabel, enhancedProtection.subLabel);
+
+    fragment.shadowRoot!
+        .querySelector<HTMLElement>('#safeBrowsingRadioEnhanced')!.click();
+    flush();
+    // The updated description item container should be visible.
+    assertTrue(isChildVisible(fragment, '#updatedDescItemContainer'));
+  });
+
   test('UpdatedStandardProtectionPrivacyGuide', function() {
     const standardProtection =
         fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
@@ -534,6 +550,22 @@ suite('SafeBrowsingFragment', function() {
       assertFalse(standardProtection.noCollapse);
       assertTrue(isChildVisible(
           fragment, '#whenOnThingsToConsiderStandardProtection'));
+    });
+
+    test('NotUpdatedEnhancedProtectionPrivacyGuide', function() {
+      const enhancedProtection =
+          fragment.shadowRoot!
+              .querySelector<SettingsCollapseRadioButtonElement>(
+                  '#safeBrowsingRadioEnhanced');
+      assertTrue(!!enhancedProtection);
+      const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
+      assertEquals(epSubLabel, enhancedProtection.subLabel);
+
+      fragment.shadowRoot!
+          .querySelector<HTMLElement>('#safeBrowsingRadioEnhanced')!.click();
+      flush();
+      // The updated description item container should not be visible.
+      assertFalse(isChildVisible(fragment, '#updatedDescItemContainer'));
     });
   });
 

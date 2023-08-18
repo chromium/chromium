@@ -132,6 +132,13 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
     }
   }
 
+  private getSafeBrowsingEnhancedSubLabel_(): string {
+    return this.i18n(
+        this.enableFriendlierSafeBrowsingSettings_ ?
+            'safeBrowsingEnhancedDescUpdated' :
+            'safeBrowsingEnhancedDesc');
+  }
+
   private getSafeBrowsingStandardSubLabel_(): string {
     return this.i18n(
         this.enableFriendlierSafeBrowsingSettings_ ?
