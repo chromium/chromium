@@ -5258,10 +5258,16 @@ _ACCESSIBILITY_EVENTS_TEST_PATH = (
 )
 
 _ACCESSIBILITY_TREE_TEST_PATH = (
-    r"^content/test/data/accessibility/accname/.*\.html",
-    r"^content/test/data/accessibility/aria/.*\.html",
-    r"^content/test/data/accessibility/css/.*\.html",
-    r"^content/test/data/accessibility/html/.*\.html",
+    r"^content/test/data/accessibility/accname/"
+      ".*-expected-(mac|win|uia-win|auralinux).txt",
+    r"^content/test/data/accessibility/aria/"
+      ".*-expected-(mac|win|uia-win|auralinux).txt",
+    r"^content/test/data/accessibility/css/"
+      ".*-expected-(mac|win|uia-win|auralinux).txt",
+    r"^content/test/data/accessibility/event/"
+      ".*-expected-(mac|win|uia-win|auralinux).txt",
+    r"^content/test/data/accessibility/html/"
+      ".*-expected-(mac|win|uia-win|auralinux).txt",
 )
 
 _ACCESSIBILITY_ANDROID_EVENTS_TEST_PATH = (
@@ -5301,12 +5307,12 @@ def CheckAccessibilityEventsTestsAreIncludedForAndroid(input_api, output_api):
     message = []
     for f in input_api.AffectedFiles(include_deletes=True,
                                      file_filter=FilePathFilter):
-        if f.Action() == 'A' or f.Action() == 'D':
+        if f.Action() == 'A':
             message = (
-                "It appears that you are adding, renaming or deleting"
-                "\na dump_accessibility_events* test, but have not included"
+                "It appears that you are adding platform expectations for a"
+                "\ndump_accessibility_* test, but have not included"
                 "\na corresponding change for Android."
-                "\nPlease include (or remove) the test from:"
+                "\nPlease include the test from:"
                 "\n    content/public/android/javatests/src/org/chromium/"
                 "content/browser/accessibility/"
                 "WebContentsAccessibilityEventsTest.java"

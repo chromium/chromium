@@ -1081,7 +1081,8 @@ class AccessibilityEventsTestsAreIncludedForAndroidTest(unittest.TestCase):
     mock_input_api = MockInputApi()
 
     mock_input_api.files = [
-        MockAffectedFile('content/test/data/accessibility/event/foo.html',
+        MockAffectedFile(
+          'content/test/data/accessibility/event/foo-expected-mac.txt',
           [''], action='A'),
         MockAffectedFile(
           'accessibility/WebContentsAccessibilityEventsTest.java',
@@ -1093,21 +1094,6 @@ class AccessibilityEventsTestsAreIncludedForAndroidTest(unittest.TestCase):
     self.assertEqual(0, len(msgs),
                      'Expected %d messages, found %d: %s'
                      % (0, len(msgs), msgs))
-
-  # Test that a warning is raised when the Android file is not modified.
-  def testAndroidChangeMissing(self):
-    mock_input_api = MockInputApi()
-
-    mock_input_api.files = [
-        MockAffectedFile('content/test/data/accessibility/event/foo.html',
-          [''], action='A'),
-    ]
-
-    msgs = PRESUBMIT.CheckAccessibilityEventsTestsAreIncludedForAndroid(
-        mock_input_api, MockOutputApi())
-    self.assertEqual(1, len(msgs),
-                     'Expected %d messages, found %d: %s'
-                     % (1, len(msgs), msgs))
 
   # Test that Android change is not required when no html file is added/removed.
   def testIgnoreNonHtmlFiles(self):
@@ -1154,7 +1140,8 @@ class AccessibilityEventsTestsAreIncludedForAndroidTest(unittest.TestCase):
     mock_input_api = MockInputApi()
 
     mock_input_api.files = [
-        MockAffectedFile('content/test/data/accessibility/event/foo.html',
+        MockAffectedFile(
+          'content/test/data/accessibility/event/foo-expected-win.txt',
           [''], action='M')
     ]
 
@@ -1163,21 +1150,6 @@ class AccessibilityEventsTestsAreIncludedForAndroidTest(unittest.TestCase):
     self.assertEqual(0, len(msgs),
                      'Expected %d messages, found %d: %s'
                      % (0, len(msgs), msgs))
-
-  # Test that deleting an html file will trigger the warning.
-  def testAndroidChangeMissingOnDeletedFile(self):
-    mock_input_api = MockInputApi()
-
-    mock_input_api.files = [
-        MockAffectedFile('content/test/data/accessibility/event/foo.html',
-          [], action='D')
-    ]
-
-    msgs = PRESUBMIT.CheckAccessibilityEventsTestsAreIncludedForAndroid(
-        mock_input_api, MockOutputApi())
-    self.assertEqual(1, len(msgs),
-                     'Expected %d messages, found %d: %s'
-                     % (1, len(msgs), msgs))
 
 class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
   # Test that no warning is raised when the Android file is also modified.
@@ -1227,7 +1199,8 @@ class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
     mock_input_api = MockInputApi()
 
     mock_input_api.files = [
-        MockAffectedFile('content/test/data/accessibility/aria/foo.html',
+        MockAffectedFile(
+          'content/test/data/accessibility/aria/foo-expected-win.txt',
           [''], action='A'),
     ]
 
@@ -1237,12 +1210,17 @@ class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
                      'Expected %d messages, found %d: %s'
                      % (1, len(msgs), msgs))
 
-  # Test that Android change is not required when no html file is added/removed.
-  def testIgnoreNonHtmlFiles(self):
+  # Test that Android change is not required when no platform expectations files are changed.
+  def testAndroidChangNotMissing(self):
     mock_input_api = MockInputApi()
 
     mock_input_api.files = [
         MockAffectedFile('content/test/data/accessibility/accname/foo.txt',
+          [''], action='A'),
+        MockAffectedFile(
+          'content/test/data/accessibility/html/foo-expected-blink.txt',
+          [''], action='A'),
+        MockAffectedFile('content/test/data/accessibility/html/foo.html',
           [''], action='A'),
         MockAffectedFile('content/test/data/accessibility/aria/foo.cc',
           [''], action='A'),
@@ -1287,21 +1265,6 @@ class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
     self.assertEqual(0, len(msgs),
                      'Expected %d messages, found %d: %s'
                      % (0, len(msgs), msgs))
-
-  # Test that deleting an html file will trigger the warning.
-  def testAndroidChangeMissingOnDeletedFile(self):
-    mock_input_api = MockInputApi()
-
-    mock_input_api.files = [
-        MockAffectedFile('content/test/data/accessibility/accname/foo.html',
-          [], action='D')
-    ]
-
-    msgs = PRESUBMIT.CheckAccessibilityTreeTestsAreIncludedForAndroid(
-        mock_input_api, MockOutputApi())
-    self.assertEqual(1, len(msgs),
-                     'Expected %d messages, found %d: %s'
-                     % (1, len(msgs), msgs))
 
 class AndroidDeprecatedTestAnnotationTest(unittest.TestCase):
   def testCheckAndroidTestAnnotationUsage(self):
