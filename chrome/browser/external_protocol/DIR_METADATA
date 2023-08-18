@@ -1,3 +1,3 @@
 monorail: {
-  component: "UI>Browser>Permissions>Prompts"
+  component: "UI>Browser>WebAppInstalls>ProtocolHandling"
 }
