@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
@@ -209,6 +210,16 @@ void DIPSRedirectContext::ReportIssue(const GURL& final_url) {
   issue_handler_.Run(std::move(redirectors_));
 
   redirectors_.clear();
+}
+
+absl::optional<std::pair<size_t, DIPSRedirectInfo*>>
+DIPSRedirectContext::GetRedirectInfoFromChain(const std::string& site) const {
+  for (size_t ind = 0; ind < redirects_.size(); ind++) {
+    if (GetSiteForDIPS(redirects_.at(ind)->url) == site) {
+      return std::make_pair(ind, redirects_.at(ind).get());
+    }
+  }
+  return absl::nullopt;
 }
 
 void DIPSRedirectContext::HandleUncommitted(
@@ -677,40 +688,58 @@ void DIPSBounceDetector::OnServerCookiesAccessed(
 }
 
 void DIPSWebContentsObserver::MaybeRecordRedirectHeuristic(
-    const ukm::SourceId& source_id,
+    const ukm::SourceId& first_party_source_id,
     const content::CookieAccessDetails& details) {
   const std::string first_party_site = GetSiteForDIPS(details.first_party_url);
-  const std::string tracking_site = GetSiteForDIPS(details.url);
-
-  int first_party_site_index =
-      detector_.CommittedRedirectContext().GetRedirectChainIndex(
-          first_party_site);
-  // If the first-party site is not in the list of committed redirects, that
-  // must mean it's in an ongoing navigation.
-  if (first_party_site_index < 0) {
-    first_party_site_index = detector_.CommittedRedirectContext().size();
-  }
-  int tracking_site_index =
-      detector_.CommittedRedirectContext().GetRedirectChainIndex(tracking_site);
-  const int sites_passed_count = first_party_site_index - tracking_site_index;
-  // The redirect heuristic only applies when a main frame URL from earlier in
-  // the redirect chain is now attempting to access cookies as a tracker on the
-  // current main frame URL.
-  if (first_party_site == tracking_site || first_party_site_index < 0 ||
-      tracking_site_index < 0 || sites_passed_count < 0) {
+  const std::string third_party_site = GetSiteForDIPS(details.url);
+  if (first_party_site == third_party_site) {
+    // The redirect heuristic does not apply for first-party cookie access.
     return;
   }
+
+  auto first_party_site_info =
+      detector_.CommittedRedirectContext().GetRedirectInfoFromChain(
+          first_party_site);
+  size_t first_party_site_index;
+  if (first_party_site_info.has_value()) {
+    first_party_site_index = first_party_site_info->first;
+  } else {
+    // If the first-party site is not in the list of committed redirects, that
+    // must mean it's in an ongoing navigation.
+    first_party_site_index = detector_.CommittedRedirectContext().size();
+  }
+
+  auto third_party_site_info =
+      detector_.CommittedRedirectContext().GetRedirectInfoFromChain(
+          third_party_site);
+  if (!third_party_site_info.has_value()) {
+    // The redirect heuristic doesn't apply if the third party is not in the
+    // current redirect chain.
+    return;
+  }
+  size_t third_party_site_index = third_party_site_info->first;
+  ukm::SourceId third_party_source_id =
+      third_party_site_info->second->source_id;
+
+  if (first_party_site_index < third_party_site_index) {
+    // The redirect heuristic doesn't apply if the third party appears after the
+    // first party in the current redirect chain.
+    return;
+  }
+  const size_t sites_passed_count =
+      first_party_site_index - third_party_site_index;
 
   dips_service_->storage()
       ->AsyncCall(&DIPSStorage::LastInteractionTime)
       .WithArgs(details.url)
       .Then(base::BindOnce(&DIPSWebContentsObserver::RecordRedirectHeuristic,
-                           weak_factory_.GetWeakPtr(), source_id, details,
-                           sites_passed_count));
+                           weak_factory_.GetWeakPtr(), first_party_source_id,
+                           third_party_source_id, details, sites_passed_count));
 }
 
 void DIPSWebContentsObserver::RecordRedirectHeuristic(
-    const ukm::SourceId& source_id,
+    const ukm::SourceId& first_party_source_id,
+    const ukm::SourceId& third_party_source_id,
     const content::CookieAccessDetails& details,
     const size_t sites_passed_count,
     absl::optional<base::Time> last_user_interaction_time) {
@@ -733,12 +762,19 @@ void DIPSWebContentsObserver::RecordRedirectHeuristic(
   OptionalBool has_same_site_iframe = ToOptionalBool(
       HasSameSiteIframe(WebContentsObserver::web_contents(), details.url));
 
-  ukm::builders::RedirectHeuristic_CookieAccess(source_id)
+  int32_t access_id = base::RandUint64();
+
+  ukm::builders::RedirectHeuristic_CookieAccess(first_party_source_id)
+      .SetAccessId(access_id)
       .SetAccessAllowed(!details.blocked_by_policy)
       .SetHoursSinceLastInteraction(hours_since_last_interaction)
       .SetMillisecondsSinceRedirect(milliseconds_since_redirect)
       .SetOpenerHasSameSiteIframe(static_cast<int64_t>(has_same_site_iframe))
       .SetSitesPassedCount(sites_passed_count)
+      .Record(ukm::UkmRecorder::Get());
+
+  ukm::builders::RedirectHeuristic_CookieAccessThirdParty(third_party_source_id)
+      .SetAccessId(access_id)
       .Record(ukm::UkmRecorder::Get());
 }
 
