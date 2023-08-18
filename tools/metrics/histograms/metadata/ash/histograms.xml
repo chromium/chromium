@@ -7186,15 +7186,37 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wallpaper.{WallpaperType}.Result"
-    enum="SetWallpaperResult" expires_after="2024-06-01">
+    enum="SetWallpaperResult" expires_after="2023-08-31">
+  <obsolete>
+    Replaced Aug 2023 by Ash.Wallpaper.{WallpaperType}.Result2.
+  </obsolete>
   <owner>jasontt@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
     Tracks the result of user's attempt to set a wallpaper. Recorded when a user
-    selects a wallpaper from the personalization hub.
+    selects a wallpaper from the personalization hub. b/285387348: Add more
+    variants and fix incorrect metric recording for online wallpapers.
   </summary>
   <token key="WallpaperType">
     <variant name="Customized"/>
+    <variant name="OnceGooglePhotos"/>
+    <variant name="Online"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.Wallpaper.{WallpaperType}.Result2"
+    enum="SetWallpaperResult" expires_after="2024-08-15">
+  <owner>thuongphan@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Tracks the result of user's attempt to set a wallpaper of type
+    {WallpaperType}. Recorded when a user selects a {WallpaperType} wallpaper
+    from the personalization hub.
+  </summary>
+  <token key="WallpaperType">
+    <variant name="Customized"/>
+    <variant name="Daily"/>
+    <variant name="DailyGooglePhotos"/>
     <variant name="OnceGooglePhotos"/>
     <variant name="Online"/>
   </token>

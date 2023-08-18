@@ -819,11 +819,10 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   DVLOG(1) << __func__ << " params=" << params;
   if (!CanSetUserWallpaper(params.account_id)) {
-    // TODO(b/285387348): Add WallpaperType::kDaily metric.
-    if (!params.daily_refresh_enabled) {
-      wallpaper_metrics_manager_->LogWallpaperResult(
-          WallpaperType::kOnline, SetWallpaperResult::kPermissionDenied);
-    }
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        params.daily_refresh_enabled ? WallpaperType::kDaily
+                                     : WallpaperType::kOnline,
+        SetWallpaperResult::kPermissionDenied);
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -854,7 +853,9 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
   if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() ||
       !CanSetUserWallpaper(params.account_id)) {
     wallpaper_metrics_manager_->LogWallpaperResult(
-        WallpaperType::kOnceGooglePhotos,
+        params.daily_refresh_enabled && !params.id.empty()
+            ? WallpaperType::kDailyGooglePhotos
+            : WallpaperType::kOnceGooglePhotos,
         SetWallpaperResult::kPermissionDenied);
     std::move(callback).Run(/*success=*/false);
     return;
@@ -1934,6 +1935,10 @@ void WallpaperControllerImpl::OnWallpaperVariantsFetched(
   // Report that setting the wallpaper failed.
   std::move(callback).Run(/*success=*/false);
 
+  // Log setting wallpaper failure due to fetching request failure.
+  wallpaper_metrics_manager_->LogWallpaperResult(
+      type, SetWallpaperResult::kRequestFailure);
+
   // Daily wallpaper should schedule retry.
   if (type == WallpaperType::kDaily)
     OnFetchDailyWallpaperFailed();
@@ -1972,7 +1977,9 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
   }
   if (!success) {
     wallpaper_metrics_manager_->LogWallpaperResult(
-        WallpaperType::kOnline, SetWallpaperResult::kDecodingError);
+        params.daily_refresh_enabled ? WallpaperType::kDaily
+                                     : WallpaperType::kOnline,
+        SetWallpaperResult::kDecodingError);
     LOG(ERROR) << "Failed to decode online wallpaper.";
     return;
   } else {
@@ -1980,7 +1987,9 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
       observer.OnUserSetWallpaper(params.account_id);
     }
     wallpaper_metrics_manager_->LogWallpaperResult(
-        WallpaperType::kOnline, SetWallpaperResult::kSuccess);
+        params.daily_refresh_enabled ? WallpaperType::kDaily
+                                     : WallpaperType::kOnline,
+        SetWallpaperResult::kSuccess);
   }
 
   const bool is_active_user = IsActiveUser(params.account_id);
@@ -2141,11 +2150,17 @@ void WallpaperControllerImpl::OnDailyGooglePhotosPhotoFetched(
     if (GetUserWallpaperInfo(params.account_id, &info) &&
         info.collection_id == params.id) {
       if (success) {
+        wallpaper_metrics_manager_->LogWallpaperResult(
+            WallpaperType::kDailyGooglePhotos,
+            SetWallpaperResult::kFileNotFound);
         // If the request succeeded, but no photos came back, then the album is
         // empty or deleted. Reset to default as a fallback.
         SetDefaultWallpaper(params.account_id, /*show_wallpaper=*/true,
                             base::DoNothing());
       } else {
+        wallpaper_metrics_manager_->LogWallpaperResult(
+            WallpaperType::kDailyGooglePhotos,
+            SetWallpaperResult::kRequestFailure);
         // If the request simply failed, retry in an hour.
         StartUpdateWallpaperTimer(base::Hours(1));
       }
@@ -2172,12 +2187,16 @@ void WallpaperControllerImpl::OnDailyGooglePhotosWallpaperDecoded(
   DCHECK(callback);
   if (image.isNull()) {
     std::move(callback).Run(false);
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kDailyGooglePhotos, SetWallpaperResult::kDecodingError);
     return;
   }
   // Image returned successfully. We can reliably assume success from here, and
   // we need to call the callback before `ShowWallpaperImage()` to ensure proper
   // propagation of `CurrentWallpaper` to the WebUI.
   std::move(callback).Run(true);
+  wallpaper_metrics_manager_->LogWallpaperResult(
+      WallpaperType::kDailyGooglePhotos, SetWallpaperResult::kSuccess);
 
   WallpaperInfo wallpaper_info(
       {account_id, album_id, /*daily_refresh_enabled=*/true,
@@ -2203,7 +2222,7 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded(
   DCHECK(callback);
   if (image.isNull()) {
     wallpaper_metrics_manager_->LogWallpaperResult(
-        WallpaperType::kOnceGooglePhotos, SetWallpaperResult::kNetworkError);
+        WallpaperType::kOnceGooglePhotos, SetWallpaperResult::kDecodingError);
     std::move(callback).Run(false);
     return;
   }

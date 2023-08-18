@@ -22,11 +22,15 @@ namespace {
 std::string ToResultHistogram(WallpaperType type) {
   switch (type) {
     case WallpaperType::kOnline:
-      return "Ash.Wallpaper.Online.Result";
+      return "Ash.Wallpaper.Online.Result2";
     case WallpaperType::kCustomized:
-      return "Ash.Wallpaper.Customized.Result";
+      return "Ash.Wallpaper.Customized.Result2";
     case WallpaperType::kOnceGooglePhotos:
-      return "Ash.Wallpaper.OnceGooglePhotos.Result";
+      return "Ash.Wallpaper.OnceGooglePhotos.Result2";
+    case WallpaperType::kDaily:
+      return "Ash.Wallpaper.Daily.Result2";
+    case WallpaperType::kDailyGooglePhotos:
+      return "Ash.Wallpaper.DailyGooglePhotos.Result2";
     default:
       // TODO(b/285387348): Implement other WallpaperType.
       NOTIMPLEMENTED_LOG_ONCE();
