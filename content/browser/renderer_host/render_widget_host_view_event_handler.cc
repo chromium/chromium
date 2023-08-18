@@ -264,7 +264,7 @@ void RenderWidgetHostViewEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   // If the key has been reserved as part of the active KeyboardLock request,
   // then we want to mark it as such so it is not intercepted by the browser.
   if (IsKeyLocked(*event))
-    webkit_event.skip_in_browser = true;
+    webkit_event.skip_if_unhandled = true;
 
   bool mark_event_as_handled = true;
   delegate_->ForwardKeyboardEventWithLatencyInfo(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/native_web_keyboard_event.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 
 #import <AppKit/AppKit.h>
 
@@ -16,16 +16,21 @@ namespace {
 
 int modifiersForEvent(int modifiers) {
   int flags = 0;
-  if (modifiers & blink::WebInputEvent::kControlKey)
+  if (modifiers & blink::WebInputEvent::kControlKey) {
     flags |= NSEventModifierFlagControl;
-  if (modifiers & blink::WebInputEvent::kShiftKey)
+  }
+  if (modifiers & blink::WebInputEvent::kShiftKey) {
     flags |= NSEventModifierFlagShift;
-  if (modifiers & blink::WebInputEvent::kAltKey)
+  }
+  if (modifiers & blink::WebInputEvent::kAltKey) {
     flags |= NSEventModifierFlagOption;
-  if (modifiers & blink::WebInputEvent::kMetaKey)
+  }
+  if (modifiers & blink::WebInputEvent::kMetaKey) {
     flags |= NSEventModifierFlagCommand;
-  if (modifiers & blink::WebInputEvent::kCapsLockOn)
+  }
+  if (modifiers & blink::WebInputEvent::kCapsLockOn) {
     flags |= NSEventModifierFlagCapsLock;
+  }
   return flags;
 }
 
@@ -43,12 +48,12 @@ size_t WebKeyboardEventTextLength(const char16_t* text) {
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(blink::WebInputEvent::Type type,
                                                int modifiers,
                                                base::TimeTicks timestamp)
-    : WebKeyboardEvent(type, modifiers, timestamp), skip_in_browser(false) {}
+    : WebKeyboardEvent(type, modifiers, timestamp), skip_if_unhandled(false) {}
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(
     const blink::WebKeyboardEvent& web_event,
     gfx::NativeView native_view)
-    : WebKeyboardEvent(web_event), skip_in_browser(false) {
+    : WebKeyboardEvent(web_event), skip_if_unhandled(false) {
   NSEventType type = NSEventTypeKeyUp;
   int flags = modifiersForEvent(web_event.GetModifiers());
   if (web_event.GetType() == blink::WebInputEvent::Type::kChar ||
@@ -64,8 +69,9 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(
   // UnmodifiedTextFromEvent(). Avoid using text_length as the control key may
   // cause Mac to set [NSEvent characters] to "\0" which for us is
   // indistinguishable from "".
-  if (unmod_text_length == 0)
+  if (unmod_text_length == 0) {
     type = NSEventTypeFlagsChanged;
+  }
 
   NSString* text = [[NSString alloc]
       initWithCharacters:reinterpret_cast<const UniChar*>(web_event.text)
@@ -99,7 +105,7 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(gfx::NativeEvent native_event)
     : WebKeyboardEvent(WebKeyboardEventBuilder::Build(native_event.Get())),
       os_event(native_event),
-      skip_in_browser(false) {}
+      skip_if_unhandled(false) {}
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(const ui::KeyEvent& key_event)
     : NativeWebKeyboardEvent(
@@ -109,14 +115,14 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(
     const NativeWebKeyboardEvent& other)
     : WebKeyboardEvent(other),
       os_event(other.os_event),
-      skip_in_browser(other.skip_in_browser) {}
+      skip_if_unhandled(other.skip_if_unhandled) {}
 
 NativeWebKeyboardEvent& NativeWebKeyboardEvent::operator=(
     const NativeWebKeyboardEvent& other) {
   WebKeyboardEvent::operator=(other);
 
   os_event = other.os_event;
-  skip_in_browser = other.skip_in_browser;
+  skip_if_unhandled = other.skip_if_unhandled;
 
   return *this;
 }

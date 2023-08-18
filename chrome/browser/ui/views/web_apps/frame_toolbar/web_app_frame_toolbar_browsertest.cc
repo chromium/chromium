@@ -1305,7 +1305,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       blink::WebInputEvent::kControlKey,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   event.windows_key_code = ui::VKEY_F;
-  event.skip_in_browser = false;
+  event.skip_if_unhandled = false;
   browser_view->GetActiveWebContents()
       ->GetPrimaryMainFrame()
       ->GetRenderViewHost()

@@ -18,7 +18,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "content/public/browser/native_web_keyboard_event.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #endif
 
 #if BUILDFLAG(IS_APPLE)

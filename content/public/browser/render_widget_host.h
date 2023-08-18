@@ -14,8 +14,8 @@
 #include "base/i18n/rtl.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/common/drop_data.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_sender.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -99,7 +99,7 @@ class RenderWidgetHostView;
 // created along with the RenderWidgetHost on the first creation, before
 // the renderer process may exist. It is destroyed if the renderer process
 // exits, and not recreated at that time. Then it is recreated lazily when
-// the associated renderer frame/widget is recreated. 
+// the associated renderer frame/widget is recreated.
 class CONTENT_EXPORT RenderWidgetHost {
  public:
   // Returns the RenderWidgetHost given its ID and the ID of its render process.

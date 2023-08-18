@@ -23,7 +23,7 @@ include_rules = [
   "+content/common/render_widget_host_ns_view.mojom.h",
   "+content/common/web_contents_ns_view_bridge.mojom.h",
   "+content/public/browser/content_browser_client.h",
-  "+content/public/browser/native_web_keyboard_event.h",
+  "+content/public/common/input/native_web_keyboard_event.h",
   "+content/public/browser/remote_cocoa.h",
   "+content/public/browser/render_widget_host_view_mac_delegate.h",
   "+content/public/common/content_client.h",

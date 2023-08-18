@@ -4,7 +4,7 @@
 
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 
-#include "content/public/browser/native_web_keyboard_event.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/focus/focus_manager.h"

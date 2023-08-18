@@ -4,7 +4,7 @@
 
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 
-#include "content/public/browser/native_web_keyboard_event.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/events/event.h"
 #include "ui/views/focus/focus_manager.h"
 
@@ -14,8 +14,9 @@ namespace views {
 bool UnhandledKeyboardEventHandler::HandleNativeKeyboardEvent(
     const content::NativeWebKeyboardEvent& event,
     FocusManager* focus_manager) {
-  if (event.skip_in_browser)
+  if (event.skip_if_unhandled) {
     return false;
+  }
 
   return !focus_manager->OnKeyEvent(*(event.os_event->AsKeyEvent()));
 }

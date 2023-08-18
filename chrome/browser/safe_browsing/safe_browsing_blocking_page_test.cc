@@ -2858,7 +2858,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   event.windows_key_code = ui::VKEY_ESCAPE;
   // Browser expects a non-synthesized event to have an os_event. Make the
   // browser ignore this event instead.
-  event.skip_in_browser = true;
+  event.skip_if_unhandled = true;
   contents->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
@@ -2890,7 +2890,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   event.windows_key_code = ui::VKEY_A;
   // Browser expects a non-synthesized event to have an os_event. Make the
   // browser ignore this event instead.
-  event.skip_in_browser = true;
+  event.skip_if_unhandled = true;
   contents->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
@@ -2920,7 +2920,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   event.windows_key_code = ui::VKEY_C;
   event.native_key_code = ui::VKEY_C;
-  // We don't set event.skip_in_browser = true here because the event will be
+  // We don't set event.skip_if_unhandled = true here because the event will be
   // consumed by UserInteractionObserver and not passed to the browser.
   contents->GetPrimaryMainFrame()
       ->GetRenderViewHost()
@@ -2956,7 +2956,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   event.windows_key_code = ui::VKEY_ESCAPE;
   // Browser expects a non-synthesized event to have an os_event. Make the
   // browser ignore this event instead.
-  event.skip_in_browser = true;
+  event.skip_if_unhandled = true;
   contents->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()

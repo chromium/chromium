@@ -1126,7 +1126,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // If KeyboardLock has been requested for this keyCode, then mark the event
   // so it skips the pre-handler and is delivered straight to the website.
   if ([self isKeyLocked:theEvent])
-    event.skip_in_browser = true;
+    event.skip_if_unhandled = true;
 
   // Do not forward key up events unless preceded by a matching key down,
   // otherwise we might get an event from releasing the return key in the
@@ -1271,7 +1271,7 @@ void ExtractUnderlines(NSAttributedString* string,
   if (_hasMarkedText || oldHasMarkedText || _textToBeInserted.length() > 1) {
     NativeWebKeyboardEvent fakeEvent = event;
     fakeEvent.windows_key_code = 0xE5;  // VKEY_PROCESSKEY
-    fakeEvent.skip_in_browser = true;
+    fakeEvent.skip_if_unhandled = true;
     _hostHelper->ForwardKeyboardEvent(fakeEvent, latency_info);
     // If this key event was handled by the input method, but
     // -doCommandBySelector: (invoked by the call to -interpretKeyEvents: above)
@@ -1293,11 +1293,10 @@ void ExtractUnderlines(NSAttributedString* string,
   // Otherwise, if the text to be inserted only contains 1 character, then we
   // can just send a keypress event which is fabricated by changing the type of
   // the keydown event, so that we can retain all necessary information, such
-  // as unmodifiedText, etc. And we need to set event.skip_in_browser to true to
-  // prevent the browser from handling it again.
-  // Note that, |textToBeInserted_| is a UTF-16 string, but it's fine to only
-  // handle BMP characters here, as we can always insert non-BMP characters as
-  // text.
+  // as unmodifiedText, etc. And we need to set event.skip_if_unhandled to true
+  // to prevent the browser from handling it again. Note that,
+  // |textToBeInserted_| is a UTF-16 string, but it's fine to only handle BMP
+  // characters here, as we can always insert non-BMP characters as text.
   BOOL textInserted = NO;
   if (_textToBeInserted.length() >
       ((_hasMarkedText || oldHasMarkedText) ? 0u : 1u)) {
@@ -1343,7 +1342,7 @@ void ExtractUnderlines(NSAttributedString* string,
     // event to balance it.
     NativeWebKeyboardEvent fakeEvent = event;
     fakeEvent.SetType(blink::WebInputEvent::Type::kKeyUp);
-    fakeEvent.skip_in_browser = true;
+    fakeEvent.skip_if_unhandled = true;
     ui::LatencyInfo fake_event_latency_info = latency_info;
     fake_event_latency_info.set_source_event_type(ui::SourceEventType::OTHER);
     _hostHelper->ForwardKeyboardEvent(fakeEvent, fake_event_latency_info);
@@ -1361,7 +1360,7 @@ void ExtractUnderlines(NSAttributedString* string,
       event.SetType(blink::WebInputEvent::Type::kChar);
       event.text[0] = _textToBeInserted[0];
       event.text[1] = 0;
-      event.skip_in_browser = true;
+      event.skip_if_unhandled = true;
       _hostHelper->ForwardKeyboardEvent(event, latency_info);
     } else if ((!textInserted || delayEventUntilAfterImeComposition) &&
                event.text[0] != '\0' &&
@@ -1371,7 +1370,7 @@ void ExtractUnderlines(NSAttributedString* string,
       // generates an insert command. So synthesize a keypress event for these
       // cases, unless the key event generated any other command.
       event.SetType(blink::WebInputEvent::Type::kChar);
-      event.skip_in_browser = true;
+      event.skip_if_unhandled = true;
       _hostHelper->ForwardKeyboardEvent(event, latency_info);
     }
   }

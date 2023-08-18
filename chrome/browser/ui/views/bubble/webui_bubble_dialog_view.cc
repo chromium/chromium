@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 
 #include "content/public/browser/keyboard_event_processing_result.h"
-#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/visibility.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"

@@ -2713,7 +2713,7 @@ void RenderWidgetHostViewAura::ForwardKeyboardEventWithLatencyInfo(
 #if BUILDFLAG(IS_LINUX)
   auto* linux_ui = ui::LinuxUi::instance();
   std::vector<ui::TextEditCommandAuraLinux> commands;
-  if (!event.skip_in_browser && linux_ui && event.os_event &&
+  if (!event.skip_if_unhandled && linux_ui && event.os_event &&
       linux_ui->GetTextEditCommandsForEvent(*event.os_event, &commands)) {
     // Transform from ui/ types to content/ types.
     std::vector<blink::mojom::EditCommandPtr> edit_commands;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_NATIVE_WEB_KEYBOARD_EVENT_H_
-#define CONTENT_PUBLIC_BROWSER_NATIVE_WEB_KEYBOARD_EVENT_H_
+#ifndef CONTENT_PUBLIC_COMMON_INPUT_NATIVE_WEB_KEYBOARD_EVENT_H_
+#define CONTENT_PUBLIC_COMMON_INPUT_NATIVE_WEB_KEYBOARD_EVENT_H_
 
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -61,14 +61,14 @@ struct CONTENT_EXPORT NativeWebKeyboardEvent : public blink::WebKeyboardEvent {
 
   gfx::NativeEvent os_event;
 
-  // True if the browser should ignore this event if it's not handled by the
-  // renderer. This happens for RawKeyDown events that are created while IME is
-  // active and is necessary to prevent backspace from doing "history back" if
-  // it is hit in ime mode.
-  // Currently, it's only used by Linux and Mac ports.
-  bool skip_in_browser;
+  // True if this event should be ignored (e.g. in the browser) if it's not
+  // handled by the renderer. This happens for RawKeyDown events that are
+  // created while IME is active and is necessary to prevent backspace from
+  // doing "history back" if it is hit in ime mode. Currently, it's only used by
+  // Linux and Mac ports.
+  bool skip_if_unhandled;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_NATIVE_WEB_KEYBOARD_EVENT_H_
+#endif  // CONTENT_PUBLIC_COMMON_INPUT_NATIVE_WEB_KEYBOARD_EVENT_H_

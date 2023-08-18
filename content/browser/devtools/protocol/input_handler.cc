@@ -1152,7 +1152,7 @@ void InputHandler::DispatchKeyEvent(
   if (event.native_key_code && allow_sending_input_to_browser_)
     event.os_event = NativeInputEventBuilder::CreateEvent(event);
   else
-    event.skip_in_browser = true;
+    event.skip_if_unhandled = true;
 
   EnsureInjector(widget_host)
       ->InjectKeyboardEvent(event, std::move(commands), std::move(callback));

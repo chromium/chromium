@@ -88,7 +88,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
-#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/peak_gpu_memory_tracker.h"
@@ -101,6 +100,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/common/result_codes.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -1791,7 +1791,7 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
   bool is_shortcut = false;
 
   // Only pre-handle the key event if it's not handled by the input method.
-  if (delegate_ && !key_event.skip_in_browser) {
+  if (delegate_ && !key_event.skip_if_unhandled) {
     // We need to set |suppress_events_until_keydown_| to true if
     // PreHandleKeyboardEvent() handles the event, but |this| may already be
     // destroyed at that time. So set |suppress_events_until_keydown_| true
@@ -2557,7 +2557,8 @@ void RenderWidgetHostImpl::OnKeyboardEventAck(
   // We only send unprocessed key event upwards if we are not hidden,
   // because the user has moved away from us and no longer expect any effect
   // of this key event.
-  if (delegate_ && !processed && !is_hidden() && !event.event.skip_in_browser) {
+  if (delegate_ && !processed && !is_hidden() &&
+      !event.event.skip_if_unhandled) {
     delegate_->HandleKeyboardEvent(event.event);
   }
   // WARNING: This RenderWidgetHostImpl can be deallocated at this point
@@ -3146,7 +3147,7 @@ void RenderWidgetHostImpl::RequestForceRedraw(int snapshot_id) {
 
 bool RenderWidgetHostImpl::KeyPressListenersHandleEvent(
     const NativeWebKeyboardEvent& event) {
-  if (event.skip_in_browser ||
+  if (event.skip_if_unhandled ||
       event.GetType() != WebKeyboardEvent::Type::kRawKeyDown) {
     return false;
   }

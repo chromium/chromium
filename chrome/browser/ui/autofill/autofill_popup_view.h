@@ -10,7 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/common/aliases.h"
-#include "content/public/browser/native_web_keyboard_event.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {

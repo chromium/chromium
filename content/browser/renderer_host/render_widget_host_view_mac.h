@@ -354,7 +354,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void ForwardKeyboardEventWithCommands(
       std::unique_ptr<blink::WebCoalescedInputEvent> event,
       const std::vector<uint8_t>& native_event_data,
-      bool skip_in_browser,
+      bool skip_if_unhandled,
       std::vector<blink::mojom::EditCommandPtr> commands) override;
   void RouteOrProcessMouseEvent(
       std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
