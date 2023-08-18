@@ -88,6 +88,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragListener;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DraggabilityProvider;
+import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
@@ -604,6 +605,7 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testDrag() {
         finishLoading();
         mMediator.openFolder(mFolderId1);
@@ -620,6 +622,33 @@ public class BookmarkManagerMediatorTest {
         mDragListenerArgumentCaptor.getValue().onSwap();
         verify(mBookmarkModel)
                 .reorderBookmarks(mFolderId1, new long[] {mFolderId3.getId(), mFolderId2.getId()});
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testDrag_improvedBookmarks() {
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.MANUAL);
+
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        DraggabilityProvider draggabilityProvider = mMediator.getDraggabilityProvider();
+        assertTrue(draggabilityProvider.isPassivelyDraggable(mModelList.get(1).model));
+        assertTrue(draggabilityProvider.isActivelyDraggable(mModelList.get(1).model));
+        DragStateDelegate dragStateDelegate = mMediator.getDragStateDelegate();
+        assertTrue(dragStateDelegate.getDragEnabled());
+
+        when(mSelectionDelegate.isItemSelected(mFolderId2)).thenReturn(true);
+        assertTrue(draggabilityProvider.isActivelyDraggable(mModelList.get(1).model));
+
+        mModelList.move(1, 2);
+        verify(mDragReorderableRecyclerViewAdapter)
+                .addDragListener(mDragListenerArgumentCaptor.capture());
+        mDragListenerArgumentCaptor.getValue().onSwap();
+        verify(mBookmarkModel)
+                .reorderBookmarks(mFolderId1, new long[] {mFolderId3.getId(), mFolderId2.getId()});
+
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.CHRONOLOGICAL);
+        assertFalse(dragStateDelegate.getDragEnabled());
     }
 
     @Test

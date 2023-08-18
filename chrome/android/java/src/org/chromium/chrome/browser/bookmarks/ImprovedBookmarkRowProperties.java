@@ -63,7 +63,10 @@ public class ImprovedBookmarkRowProperties {
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey DRAG_ENABLED = new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey EDITABLE = new WritableBooleanPropertyKey();
+
     public static final WritableObjectPropertyKey<View.OnClickListener> ROW_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<View.OnLongClickListener> ROW_LONGCLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
     public static final WritableIntPropertyKey END_IMAGE_VISIBILITY = new WritableIntPropertyKey();
@@ -78,8 +81,8 @@ public class ImprovedBookmarkRowProperties {
             DESCRIPTION_VISIBLE, START_IMAGE_VISIBILITY, START_AREA_BACKGROUND_COLOR,
             START_ICON_TINT, START_ICON_DRAWABLE, ACCESSORY_VIEW, LIST_MENU_BUTTON_DELEGATE,
             POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED, EDITABLE, ROW_CLICK_LISTENER,
-            SHOPPING_ACCESSORY_COORDINATOR, FOLDER_COORDINATOR, END_IMAGE_VISIBILITY,
-            END_IMAGE_RES};
+            ROW_LONGCLICK_LISTENER, SHOPPING_ACCESSORY_COORDINATOR, FOLDER_COORDINATOR,
+            END_IMAGE_VISIBILITY, END_IMAGE_RES};
     public static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
             BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKMARK_ROW_PROPERTIES);
 }

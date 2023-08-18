@@ -94,8 +94,14 @@ class BookmarkManagerMediator
         // DragStateDelegate implementation
         @Override
         public boolean getDragEnabled() {
-            return !AccessibilityState.isPerformGesturesEnabled()
+            boolean enabled = !AccessibilityState.isPerformGesturesEnabled()
                     && mBookmarkDelegate.getCurrentUiMode() == BookmarkUiMode.FOLDER;
+            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                return enabled
+                        && mBookmarkUiPrefs.getBookmarkRowSortOrder()
+                        == BookmarkRowSortOrder.MANUAL;
+            }
+            return enabled;
         }
 
         @Override
@@ -107,7 +113,10 @@ class BookmarkManagerMediator
     private final BookmarkModelObserver mBookmarkModelObserver = new BookmarkModelObserver() {
         @Override
         public void bookmarkNodeChildrenReordered(BookmarkItem node) {
-            refresh();
+            if (!mIsBookmarkModelReorderingInProgress) {
+                refresh();
+            }
+            mIsBookmarkModelReorderingInProgress = false;
         }
 
         @Override
@@ -264,6 +273,7 @@ class BookmarkManagerMediator
     private final DragListener mDragListener = new DragListener() {
         @Override
         public void onSwap() {
+            mIsBookmarkModelReorderingInProgress = true;
             setOrder();
         }
     };
@@ -271,6 +281,10 @@ class BookmarkManagerMediator
     private final DraggabilityProvider mDraggabilityProvider = new DraggabilityProvider() {
         @Override
         public boolean isActivelyDraggable(PropertyModel propertyModel) {
+            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                return isPassivelyDraggable(propertyModel);
+            }
+
             BookmarkId bookmarkId = propertyModel.get(BookmarkManagerProperties.BOOKMARK_ID);
             return mSelectionDelegate.isItemSelected(bookmarkId)
                     && isPassivelyDraggable(propertyModel);
@@ -341,6 +355,8 @@ class BookmarkManagerMediator
     private BookmarkId mHighlightedBookmark;
     // If selection is currently enabled in the bookmarks manager.
     private boolean mIsSelectionEnabled;
+    // Track if we're the source of bookmark model reordering so the event can be ignored.
+    private boolean mIsBookmarkModelReorderingInProgress;
 
     BookmarkManagerMediator(Context context, BookmarkModel bookmarkModel,
             BookmarkOpener bookmarkOpener, SelectableListLayout<BookmarkId> selectableListLayout,
@@ -1164,10 +1180,13 @@ class BookmarkManagerMediator
         // TODO(crbug.com/1442044): Investigate caching ModelList for the menu.
         propertyModel.set(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
                 () -> createListMenuForBookmark(propertyModel));
-        propertyModel.set(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
-                (v) -> { bookmarkRowClicked(bookmarkId); });
         propertyModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, mIsSelectionEnabled);
         propertyModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
+
+        propertyModel.set(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
+                (v) -> { bookmarkRowClicked(bookmarkId); });
+        propertyModel.set(ImprovedBookmarkRowProperties.ROW_LONGCLICK_LISTENER,
+                (v) -> { return bookmarkRowLongClicked(bookmarkId); });
 
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
     }
@@ -1329,6 +1348,15 @@ class BookmarkManagerMediator
         }
     }
 
+    boolean bookmarkRowLongClicked(BookmarkId id) {
+        if (!mSelectionDelegate.isSelectionEnabled()) {
+            toggleSelectionForRow(id);
+        }
+
+        // Always consume the event, so it doesn't go to bookmarkRowClicked.
+        return true;
+    }
+
     private void onQueryCallback(String query) {
         query = query == null ? "" : query.trim();
         onSearchChange(query, getCurrentSearchPowerFilter());
@@ -1407,5 +1435,9 @@ class BookmarkManagerMediator
 
     BookmarkUndoController getUndoControllerForTesting() {
         return mBookmarkUndoController;
+    }
+
+    DragStateDelegate getDragStateDelegateForTesting() {
+        return mDragStateDelegate;
     }
 }

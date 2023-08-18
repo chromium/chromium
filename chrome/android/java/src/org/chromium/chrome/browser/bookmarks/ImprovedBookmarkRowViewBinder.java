@@ -51,6 +51,9 @@ public class ImprovedBookmarkRowViewBinder {
             row.setBookmarkIdEditable(model.get(ImprovedBookmarkRowProperties.EDITABLE));
         } else if (key == ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER) {
             row.setRowClickListener(model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER));
+        } else if (key == ImprovedBookmarkRowProperties.ROW_LONGCLICK_LISTENER) {
+            row.setRowLongClickListener(
+                    model.get(ImprovedBookmarkRowProperties.ROW_LONGCLICK_LISTENER));
         } else if (key == BookmarkManagerProperties.BOOKMARK_ID) {
             row.setItem(model.get(BookmarkManagerProperties.BOOKMARK_ID));
         } else if (key == ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY) {

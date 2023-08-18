@@ -216,10 +216,12 @@ public class BookmarkManagerCoordinator
         dragReorderableRecyclerViewAdapter.registerType(ViewType.SHOPPING_FILTER,
                 BookmarkManagerCoordinator::buildShoppingFilterView,
                 BookmarkManagerViewBinder::bindShoppingFilterView);
-        dragReorderableRecyclerViewAdapter.registerType(ViewType.IMPROVED_BOOKMARK_VISUAL,
-                this::buildAndInitVisualImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
-        dragReorderableRecyclerViewAdapter.registerType(ViewType.IMPROVED_BOOKMARK_COMPACT,
-                this::buildAndInitCompactImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
+        dragReorderableRecyclerViewAdapter.registerDraggableType(ViewType.IMPROVED_BOOKMARK_VISUAL,
+                this::buildAndInitVisualImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind,
+                (viewHolder, itemTouchHelper) -> {}, mMediator.getDraggabilityProvider());
+        dragReorderableRecyclerViewAdapter.registerDraggableType(ViewType.IMPROVED_BOOKMARK_COMPACT,
+                this::buildAndInitCompactImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind,
+                (viewHolder, itemTouchHelper) -> {}, mMediator.getDraggabilityProvider());
         dragReorderableRecyclerViewAdapter.registerType(
                 ViewType.SEARCH_BOX, this::buildSearchBoxRow, BookmarkSearchBoxRowViewBinder::bind);
 

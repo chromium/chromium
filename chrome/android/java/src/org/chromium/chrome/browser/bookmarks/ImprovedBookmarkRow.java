@@ -195,6 +195,10 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         setOnClickListener(listener);
     }
 
+    void setRowLongClickListener(View.OnLongClickListener listener) {
+        setOnLongClickListener(listener);
+    }
+
     void setEndImageVisible(boolean visible) {
         mEndImageView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
