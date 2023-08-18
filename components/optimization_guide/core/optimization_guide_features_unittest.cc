@@ -308,6 +308,24 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
   }
 }
 
+TEST(OptimizationGuideFeaturesTest, PredictionModelVersionInKillSwitch) {
+  EXPECT_TRUE(features::GetPredictionModelVersionsInKillSwitch().empty());
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kOptimizationGuidePredictionModelKillswitch,
+        {{"OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD", "1,3"},
+         {"OPTIMIZATION_TARGET_MODEL_VALIDATION", "5"}});
+
+    EXPECT_THAT(features::GetPredictionModelVersionsInKillSwitch(),
+                testing::ElementsAre(
+                    testing::Pair(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                  testing::ElementsAre(1, 3)),
+                    testing::Pair(proto::OPTIMIZATION_TARGET_MODEL_VALIDATION,
+                                  testing::ElementsAre(5))));
+  }
+}
+
 }  // namespace
 
 }  // namespace optimization_guide

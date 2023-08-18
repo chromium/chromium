@@ -182,6 +182,8 @@ ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(
                                prefs::localstate::kModelStoreMetadata);
   std::vector<std::pair<std::string, std::string>> entries_to_remove;
   std::vector<base::FilePath> inactive_model_dirs;
+  auto killswitch_model_versions =
+      features::GetPredictionModelVersionsInKillSwitch();
   for (auto optimization_target_entry : *updater) {
     if (!optimization_target_entry.second.is_dict()) {
       continue;
@@ -208,6 +210,15 @@ ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(
         RecordPredictionModelStoreModelRemovalVersionHistogram(
             *optimization_target,
             PredictionModelStoreModelRemovalReason::kModelExpired);
+      }
+      if (!should_remove_model && metadata.GetVersion() &&
+          IsPredictionModelVersionInKillSwitch(killswitch_model_versions,
+                                               *optimization_target,
+                                               *metadata.GetVersion())) {
+        should_remove_model = true;
+        RecordPredictionModelStoreModelRemovalVersionHistogram(
+            *optimization_target,
+            PredictionModelStoreModelRemovalReason::kModelInKillSwitchList);
       }
 
       if (should_remove_model) {

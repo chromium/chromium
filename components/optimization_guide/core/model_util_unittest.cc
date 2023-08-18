@@ -187,4 +187,34 @@ TEST(ModelUtilTest, ModelCacheKeyHash) {
                            [](char ch) { return base::IsHexDigit(ch); }));
 }
 
+TEST(ModelUtilTest, PredictionModelVersionInKillSwitch) {
+  const std::map<proto::OptimizationTarget, std::set<int64_t>>
+      test_killswitch_model_versions = {
+          {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, {1, 3}},
+          {proto::OPTIMIZATION_TARGET_MODEL_VALIDATION, {5}},
+      };
+
+  EXPECT_FALSE(IsPredictionModelVersionInKillSwitch(
+      {}, proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, 1));
+
+  EXPECT_TRUE(IsPredictionModelVersionInKillSwitch(
+      test_killswitch_model_versions,
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, 1));
+  EXPECT_TRUE(IsPredictionModelVersionInKillSwitch(
+      test_killswitch_model_versions,
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, 3));
+  EXPECT_TRUE(IsPredictionModelVersionInKillSwitch(
+      test_killswitch_model_versions,
+      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION, 5));
+  EXPECT_FALSE(IsPredictionModelVersionInKillSwitch(
+      test_killswitch_model_versions,
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, 2));
+  EXPECT_FALSE(IsPredictionModelVersionInKillSwitch(
+      test_killswitch_model_versions,
+      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION, 1));
+  EXPECT_FALSE(IsPredictionModelVersionInKillSwitch(
+      test_killswitch_model_versions, proto::OPTIMIZATION_TARGET_PAGE_TOPICS,
+      1));
+}
+
 }  // namespace optimization_guide

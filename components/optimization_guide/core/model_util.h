@@ -67,6 +67,14 @@ void RecordPredictionModelStoreModelRemovalVersionHistogram(
     proto::OptimizationTarget optimization_target,
     PredictionModelStoreModelRemovalReason model_removal_reason);
 
+// Returns whether the model for `opt_target` with `model_version` is in the
+// `killswitch_model_versions`.
+bool IsPredictionModelVersionInKillSwitch(
+    const std::map<proto::OptimizationTarget, std::set<int64_t>>&
+        killswitch_model_versions,
+    proto::OptimizationTarget opt_target,
+    int64_t model_version);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_UTIL_H_

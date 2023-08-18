@@ -79808,6 +79808,9 @@ Called by update_net_trust_anchors.py.-->
     Remote optimization guide service returned no model in the
     GetModelsResponse.
   </int>
+  <int value="8" label="ModelInKillSwitchList">
+    Model was in killswitch list of versions to be removed.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideProcessHintsResult">

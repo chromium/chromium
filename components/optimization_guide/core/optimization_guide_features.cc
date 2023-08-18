@@ -253,6 +253,14 @@ BASE_FEATURE(kQueryInMemoryTextEmbeddings,
              "QueryInMemoryTextEmbeddings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// An emergency kill switch feature to stop serving certain model versions per
+// optimization target. This is useful in exceptional situations when a bad
+// model version got served that lead to crashes or critical failures, and an
+// immediate remedy is needed to stop serving those versions.
+BASE_FEATURE(kOptimizationGuidePredictionModelKillswitch,
+             "OptimizationGuidePredictionModelKillswitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -788,6 +796,38 @@ bool ShouldDropFragmentsForURLKeyedHintCacheKey() {
 
 bool ShouldQueryEmbeddings() {
   return (base::FeatureList::IsEnabled(kQueryInMemoryTextEmbeddings));
+}
+
+std::map<proto::OptimizationTarget, std::set<int64_t>>
+GetPredictionModelVersionsInKillSwitch() {
+  if (!base::FeatureList::IsEnabled(
+          kOptimizationGuidePredictionModelKillswitch)) {
+    return {};
+  }
+  base::FieldTrialParams killswitch_params;
+  if (!GetFieldTrialParamsByFeature(kOptimizationGuidePredictionModelKillswitch,
+                                    &killswitch_params)) {
+    return {};
+  }
+  std::map<proto::OptimizationTarget, std::set<int64_t>>
+      killswitch_model_versions;
+  for (const auto& killswitch_param : killswitch_params) {
+    proto::OptimizationTarget opt_target;
+    if (!proto::OptimizationTarget_Parse(killswitch_param.first, &opt_target)) {
+      continue;
+    }
+    for (const std::string& opt_taget_killswitch_version :
+         base::SplitString(killswitch_param.second, ",", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY)) {
+      int64_t opt_taget_killswitch_version_num;
+      if (base::StringToInt64(opt_taget_killswitch_version,
+                              &opt_taget_killswitch_version_num)) {
+        killswitch_model_versions[opt_target].insert(
+            opt_taget_killswitch_version_num);
+      }
+    }
+  }
+  return killswitch_model_versions;
 }
 
 }  // namespace features

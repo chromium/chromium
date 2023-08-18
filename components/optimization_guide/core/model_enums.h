@@ -72,9 +72,11 @@ enum class PredictionModelStoreModelRemovalReason {
   // Remote optimization guide service returned no model in the
   // GetModelsResponse.
   kNoModelInGetModelsResponse = 7,
+  // Model was in killswitch list of versions to be removed.
+  kModelInKillSwitchList = 8,
 
   // Add new values above this line.
-  kMaxValue = kNoModelInGetModelsResponse,
+  kMaxValue = kModelInKillSwitchList,
 };
 
 }  // namespace optimization_guide

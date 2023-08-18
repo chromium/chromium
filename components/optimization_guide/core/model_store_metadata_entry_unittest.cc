@@ -5,7 +5,9 @@
 #include "components/optimization_guide/core/model_store_metadata_entry.h"
 
 #include "base/files/file_path.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -146,6 +148,51 @@ TEST_F(ModelStoreMetadataEntryTest, PurgeExpiredMetadata) {
       local_state(), kTestOptimizationTargetFoo, model_cache_key_bar));
   EXPECT_FALSE(ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
       local_state(), kTestOptimizationTargetBar, model_cache_key_bar));
+}
+
+TEST_F(ModelStoreMetadataEntryTest, PurgeMetadataInKillSwitch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuidePredictionModelKillswitch,
+      {{"OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD", "5"}});
+
+  auto model_cache_key_foo = CreateModelCacheKey(kTestLocaleFoo);
+  auto model_cache_key_bar = CreateModelCacheKey(kTestLocaleBar);
+  ModelStoreMetadataEntryUpdater::UpdateModelCacheKeyMapping(
+      local_state(), kTestOptimizationTargetFoo, model_cache_key_foo,
+      model_cache_key_foo);
+  ModelStoreMetadataEntryUpdater::UpdateModelCacheKeyMapping(
+      local_state(), kTestOptimizationTargetFoo, model_cache_key_bar,
+      model_cache_key_bar);
+
+  {
+    ModelStoreMetadataEntryUpdater updater(
+        local_state(), kTestOptimizationTargetFoo, model_cache_key_foo);
+    updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_foo")
+                                .AppendASCII("model_cache_key_foo"));
+    updater.SetVersion(5);
+  }
+  {
+    ModelStoreMetadataEntryUpdater updater(
+        local_state(), kTestOptimizationTargetFoo, model_cache_key_bar);
+    updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_foo")
+                                .AppendASCII("model_cache_key_bar"));
+    updater.SetVersion(6);
+  }
+  {
+    ModelStoreMetadataEntryUpdater updater(
+        local_state(), kTestOptimizationTargetBar, model_cache_key_foo);
+    updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_foo")
+                                .AppendASCII("model_cache_key_foo"));
+  }
+
+  ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(local_state());
+  EXPECT_FALSE(ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
+      local_state(), kTestOptimizationTargetFoo, model_cache_key_foo));
+  EXPECT_TRUE(ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
+      local_state(), kTestOptimizationTargetFoo, model_cache_key_bar));
+  EXPECT_TRUE(ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
+      local_state(), kTestOptimizationTargetBar, model_cache_key_foo));
 }
 
 }  // namespace optimization_guide

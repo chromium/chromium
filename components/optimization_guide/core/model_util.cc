@@ -264,4 +264,18 @@ void RecordPredictionModelStoreModelRemovalVersionHistogram(
       model_removal_reason);
 }
 
+bool IsPredictionModelVersionInKillSwitch(
+    const std::map<proto::OptimizationTarget, std::set<int64_t>>&
+        killswitch_model_versions,
+    proto::OptimizationTarget opt_target,
+    int64_t model_version) {
+  auto killswitch_model_versions_it =
+      killswitch_model_versions.find(opt_target);
+  if (killswitch_model_versions_it == killswitch_model_versions.end()) {
+    return false;
+  }
+  return killswitch_model_versions_it->second.find(model_version) !=
+         killswitch_model_versions_it->second.end();
+}
+
 }  // namespace optimization_guide

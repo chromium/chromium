@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/optimization_guide/core/model_util.h"
@@ -2501,6 +2502,48 @@ TEST_F(OptimizationGuideStoreTest, PurgeInactiveModels) {
   EXPECT_FALSE(base::PathExists(old_file_path));
 
   // Make sure pref gets cleaned up when file path gets deleted.
+  EXPECT_TRUE(IsStoreFilesToDeletePrefEmpty());
+}
+
+TEST_F(OptimizationGuideStoreTest, PurgeModelsInKillSwitch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuidePredictionModelKillswitch,
+      {{"OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD", "123"}});
+
+  SeedInitialData(MetadataSchemaState::kValid, 0);
+  CreateDatabase();
+  InitializeStore(MetadataSchemaState::kValid);
+
+  // Create a model with version in the killswitch list.
+  base::Time update_time =
+      base::Time().Now() + features::StoredModelsValidDuration();
+  std::unique_ptr<StoreUpdateData> update_data =
+      guide_store()->CreateUpdateDataForPredictionModels(update_time);
+  proto::ModelInfo info;
+  info.set_version(123);
+  base::FilePath model_file_path = temp_dir().AppendASCII("model_v1.tflite");
+  ASSERT_TRUE(base::WriteFile(model_file_path, "boo"));
+  SeedPredictionModelUpdateData(update_data.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                model_file_path, info, update_time);
+  UpdatePredictionModels(std::move(update_data));
+
+  PurgeInactiveModels();
+  RunUntilIdle();
+
+  // The model will be removed, and its files scheduled for deletion.
+  OptimizationGuideStore::EntryKey entry_key;
+  EXPECT_FALSE(guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key));
+  EXPECT_FALSE(IsStoreFilesToDeletePrefEmpty());
+
+  // Reset database to delete files.
+  CreateDatabase();
+  RunUntilIdle();
+
+  // The model will be deleted now.
+  EXPECT_FALSE(base::PathExists(model_file_path));
   EXPECT_TRUE(IsStoreFilesToDeletePrefEmpty());
 }
 

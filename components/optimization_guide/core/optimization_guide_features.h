@@ -53,6 +53,7 @@ BASE_DECLARE_FEATURE(kModelStoreUseRelativePath);
 BASE_DECLARE_FEATURE(kOptimizationGuidePersonalizedFetching);
 BASE_DECLARE_FEATURE(kOptimizationGuideHintsURLKeyedCacheDropFragments);
 BASE_DECLARE_FEATURE(kQueryInMemoryTextEmbeddings);
+BASE_DECLARE_FEATURE(kOptimizationGuidePredictionModelKillswitch);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -349,6 +350,11 @@ bool ShouldDropFragmentsForURLKeyedHintCacheKey();
 
 // Returns whether to query text embeddings coming from history service.
 bool ShouldQueryEmbeddings();
+
+// Returns whether the `model_version` for `opt_target` is part of emergency
+// killswitch, and this model should be stopped serving immediately.
+std::map<proto::OptimizationTarget, std::set<int64_t>>
+GetPredictionModelVersionsInKillSwitch();
 
 }  // namespace features
 }  // namespace optimization_guide
