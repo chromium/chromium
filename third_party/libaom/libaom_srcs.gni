@@ -469,7 +469,6 @@ aom_dsp_common_intrin_neon = [
   "//third_party/libaom/source/libaom/aom_dsp/arm/aom_convolve8_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/fwd_txfm_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/loopfilter_neon.c",
-  "//third_party/libaom/source/libaom/aom_dsp/arm/highbd_intrapred_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/intrapred_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/subtract_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/blend_a64_mask_neon.c",

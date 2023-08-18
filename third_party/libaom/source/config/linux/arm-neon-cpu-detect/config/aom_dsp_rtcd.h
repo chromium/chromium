@@ -38,7 +38,30 @@ void aom_blend_a64_hmask_neon(uint8_t *dst, uint32_t dst_stride, const uint8_t *
 RTCD_EXTERN void (*aom_blend_a64_hmask)(uint8_t *dst, uint32_t dst_stride, const uint8_t *src0, uint32_t src0_stride, const uint8_t *src1, uint32_t src1_stride, const uint8_t *mask, int w, int h);
 
 void aom_blend_a64_mask_c(uint8_t *dst, uint32_t dst_stride, const uint8_t *src0, uint32_t src0_stride, const uint8_t *src1, uint32_t src1_stride, const uint8_t *mask, uint32_t mask_stride, int w, int h, int subw, int subh);
-#define aom_blend_a64_mask aom_blend_a64_mask_c
+void aom_blend_a64_mask_neon(uint8_t* dst,
+                             uint32_t dst_stride,
+                             const uint8_t* src0,
+                             uint32_t src0_stride,
+                             const uint8_t* src1,
+                             uint32_t src1_stride,
+                             const uint8_t* mask,
+                             uint32_t mask_stride,
+                             int w,
+                             int h,
+                             int subw,
+                             int subh);
+RTCD_EXTERN void (*aom_blend_a64_mask)(uint8_t* dst,
+                                       uint32_t dst_stride,
+                                       const uint8_t* src0,
+                                       uint32_t src0_stride,
+                                       const uint8_t* src1,
+                                       uint32_t src1_stride,
+                                       const uint8_t* mask,
+                                       uint32_t mask_stride,
+                                       int w,
+                                       int h,
+                                       int subw,
+                                       int subh);
 
 void aom_blend_a64_vmask_c(uint8_t *dst, uint32_t dst_stride, const uint8_t *src0, uint32_t src0_stride, const uint8_t *src1, uint32_t src1_stride, const uint8_t *mask, int w, int h);
 void aom_blend_a64_vmask_neon(uint8_t *dst, uint32_t dst_stride, const uint8_t *src0, uint32_t src0_stride, const uint8_t *src1, uint32_t src1_stride, const uint8_t *mask, int w, int h);
@@ -811,100 +834,612 @@ RTCD_EXTERN void (*aom_dist_wtd_comp_avg_pred)(
     const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad128x128_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad128x128_avg aom_dist_wtd_sad128x128_avg_c
+unsigned int aom_dist_wtd_sad128x128_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad128x128_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad128x64_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad128x64_avg aom_dist_wtd_sad128x64_avg_c
+unsigned int aom_dist_wtd_sad128x64_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad128x64_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad16x16_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad16x16_avg aom_dist_wtd_sad16x16_avg_c
+unsigned int aom_dist_wtd_sad16x16_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad16x16_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad16x32_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad16x32_avg aom_dist_wtd_sad16x32_avg_c
+unsigned int aom_dist_wtd_sad16x32_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad16x32_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad16x8_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad16x8_avg aom_dist_wtd_sad16x8_avg_c
+unsigned int aom_dist_wtd_sad16x8_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad16x8_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad32x16_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad32x16_avg aom_dist_wtd_sad32x16_avg_c
+unsigned int aom_dist_wtd_sad32x16_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad32x16_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad32x32_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad32x32_avg aom_dist_wtd_sad32x32_avg_c
+unsigned int aom_dist_wtd_sad32x32_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad32x32_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad32x64_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad32x64_avg aom_dist_wtd_sad32x64_avg_c
+unsigned int aom_dist_wtd_sad32x64_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad32x64_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad4x4_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad4x4_avg aom_dist_wtd_sad4x4_avg_c
+unsigned int aom_dist_wtd_sad4x4_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad4x4_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad4x8_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad4x8_avg aom_dist_wtd_sad4x8_avg_c
+unsigned int aom_dist_wtd_sad4x8_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad4x8_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad64x128_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad64x128_avg aom_dist_wtd_sad64x128_avg_c
+unsigned int aom_dist_wtd_sad64x128_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad64x128_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad64x32_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad64x32_avg aom_dist_wtd_sad64x32_avg_c
+unsigned int aom_dist_wtd_sad64x32_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad64x32_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad64x64_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad64x64_avg aom_dist_wtd_sad64x64_avg_c
+unsigned int aom_dist_wtd_sad64x64_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad64x64_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad8x16_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad8x16_avg aom_dist_wtd_sad8x16_avg_c
+unsigned int aom_dist_wtd_sad8x16_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad8x16_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad8x4_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad8x4_avg aom_dist_wtd_sad8x4_avg_c
+unsigned int aom_dist_wtd_sad8x4_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad8x4_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 unsigned int aom_dist_wtd_sad8x8_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sad8x8_avg aom_dist_wtd_sad8x8_avg_c
+unsigned int aom_dist_wtd_sad8x8_avg_neon(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN unsigned int (*aom_dist_wtd_sad8x8_avg)(
+    const uint8_t* src_ptr,
+    int src_stride,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance128x128_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance128x128 aom_dist_wtd_sub_pixel_avg_variance128x128_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance128x128_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance128x128)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance128x64_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance128x64 aom_dist_wtd_sub_pixel_avg_variance128x64_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance128x64_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance128x64)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance16x16_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance16x16 aom_dist_wtd_sub_pixel_avg_variance16x16_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance16x16_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance16x16)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance16x32_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance16x32 aom_dist_wtd_sub_pixel_avg_variance16x32_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance16x32_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance16x32)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance16x8_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance16x8 aom_dist_wtd_sub_pixel_avg_variance16x8_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance16x8_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance16x8)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance32x16_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance32x16 aom_dist_wtd_sub_pixel_avg_variance32x16_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance32x16_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance32x16)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance32x32_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance32x32 aom_dist_wtd_sub_pixel_avg_variance32x32_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance32x32_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance32x32)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance32x64_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance32x64 aom_dist_wtd_sub_pixel_avg_variance32x64_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance32x64_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance32x64)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance4x4_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance4x4 aom_dist_wtd_sub_pixel_avg_variance4x4_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance4x4_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance4x4)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance4x8_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance4x8 aom_dist_wtd_sub_pixel_avg_variance4x8_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance4x8_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance4x8)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance64x128_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance64x128 aom_dist_wtd_sub_pixel_avg_variance64x128_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance64x128_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance64x128)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance64x32_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance64x32 aom_dist_wtd_sub_pixel_avg_variance64x32_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance64x32_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance64x32)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance64x64_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance64x64 aom_dist_wtd_sub_pixel_avg_variance64x64_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance64x64_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance64x64)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance8x16_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance8x16 aom_dist_wtd_sub_pixel_avg_variance8x16_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance8x16_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance8x16)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance8x4_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance8x4 aom_dist_wtd_sub_pixel_avg_variance8x4_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance8x4_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance8x4)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance8x8_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-#define aom_dist_wtd_sub_pixel_avg_variance8x8 aom_dist_wtd_sub_pixel_avg_variance8x8_c
+uint32_t aom_dist_wtd_sub_pixel_avg_variance8x8_neon(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
+RTCD_EXTERN uint32_t (*aom_dist_wtd_sub_pixel_avg_variance8x8)(
+    const uint8_t* src_ptr,
+    int source_stride,
+    int xoffset,
+    int yoffset,
+    const uint8_t* ref_ptr,
+    int ref_stride,
+    uint32_t* sse,
+    const uint8_t* second_pred,
+    const DIST_WTD_COMP_PARAMS* jcp_param);
 
 void aom_fdct4x4_c(const int16_t *input, tran_low_t *output, int stride);
 void aom_fdct4x4_neon(const int16_t *input, tran_low_t *output, int stride);
@@ -3389,6 +3924,10 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) aom_avg_8x8_quad = aom_avg_8x8_quad_neon;
     aom_blend_a64_hmask = aom_blend_a64_hmask_c;
     if (flags & HAS_NEON) aom_blend_a64_hmask = aom_blend_a64_hmask_neon;
+    aom_blend_a64_mask = aom_blend_a64_mask_c;
+    if (flags & HAS_NEON) {
+      aom_blend_a64_mask = aom_blend_a64_mask_neon;
+    }
     aom_blend_a64_vmask = aom_blend_a64_vmask_c;
     if (flags & HAS_NEON) aom_blend_a64_vmask = aom_blend_a64_vmask_neon;
     aom_comp_avg_pred = aom_comp_avg_pred_c;
@@ -3684,6 +4223,166 @@ static void setup_rtcd_internal(void)
     aom_dist_wtd_comp_avg_pred = aom_dist_wtd_comp_avg_pred_c;
     if (flags & HAS_NEON) {
       aom_dist_wtd_comp_avg_pred = aom_dist_wtd_comp_avg_pred_neon;
+    }
+    aom_dist_wtd_sad128x128_avg = aom_dist_wtd_sad128x128_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad128x128_avg = aom_dist_wtd_sad128x128_avg_neon;
+    }
+    aom_dist_wtd_sad128x64_avg = aom_dist_wtd_sad128x64_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad128x64_avg = aom_dist_wtd_sad128x64_avg_neon;
+    }
+    aom_dist_wtd_sad16x16_avg = aom_dist_wtd_sad16x16_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad16x16_avg = aom_dist_wtd_sad16x16_avg_neon;
+    }
+    aom_dist_wtd_sad16x32_avg = aom_dist_wtd_sad16x32_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad16x32_avg = aom_dist_wtd_sad16x32_avg_neon;
+    }
+    aom_dist_wtd_sad16x8_avg = aom_dist_wtd_sad16x8_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad16x8_avg = aom_dist_wtd_sad16x8_avg_neon;
+    }
+    aom_dist_wtd_sad32x16_avg = aom_dist_wtd_sad32x16_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad32x16_avg = aom_dist_wtd_sad32x16_avg_neon;
+    }
+    aom_dist_wtd_sad32x32_avg = aom_dist_wtd_sad32x32_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad32x32_avg = aom_dist_wtd_sad32x32_avg_neon;
+    }
+    aom_dist_wtd_sad32x64_avg = aom_dist_wtd_sad32x64_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad32x64_avg = aom_dist_wtd_sad32x64_avg_neon;
+    }
+    aom_dist_wtd_sad4x4_avg = aom_dist_wtd_sad4x4_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad4x4_avg = aom_dist_wtd_sad4x4_avg_neon;
+    }
+    aom_dist_wtd_sad4x8_avg = aom_dist_wtd_sad4x8_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad4x8_avg = aom_dist_wtd_sad4x8_avg_neon;
+    }
+    aom_dist_wtd_sad64x128_avg = aom_dist_wtd_sad64x128_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad64x128_avg = aom_dist_wtd_sad64x128_avg_neon;
+    }
+    aom_dist_wtd_sad64x32_avg = aom_dist_wtd_sad64x32_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad64x32_avg = aom_dist_wtd_sad64x32_avg_neon;
+    }
+    aom_dist_wtd_sad64x64_avg = aom_dist_wtd_sad64x64_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad64x64_avg = aom_dist_wtd_sad64x64_avg_neon;
+    }
+    aom_dist_wtd_sad8x16_avg = aom_dist_wtd_sad8x16_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad8x16_avg = aom_dist_wtd_sad8x16_avg_neon;
+    }
+    aom_dist_wtd_sad8x4_avg = aom_dist_wtd_sad8x4_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad8x4_avg = aom_dist_wtd_sad8x4_avg_neon;
+    }
+    aom_dist_wtd_sad8x8_avg = aom_dist_wtd_sad8x8_avg_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sad8x8_avg = aom_dist_wtd_sad8x8_avg_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance128x128 =
+        aom_dist_wtd_sub_pixel_avg_variance128x128_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance128x128 =
+          aom_dist_wtd_sub_pixel_avg_variance128x128_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance128x64 =
+        aom_dist_wtd_sub_pixel_avg_variance128x64_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance128x64 =
+          aom_dist_wtd_sub_pixel_avg_variance128x64_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance16x16 =
+        aom_dist_wtd_sub_pixel_avg_variance16x16_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance16x16 =
+          aom_dist_wtd_sub_pixel_avg_variance16x16_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance16x32 =
+        aom_dist_wtd_sub_pixel_avg_variance16x32_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance16x32 =
+          aom_dist_wtd_sub_pixel_avg_variance16x32_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance16x8 =
+        aom_dist_wtd_sub_pixel_avg_variance16x8_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance16x8 =
+          aom_dist_wtd_sub_pixel_avg_variance16x8_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance32x16 =
+        aom_dist_wtd_sub_pixel_avg_variance32x16_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance32x16 =
+          aom_dist_wtd_sub_pixel_avg_variance32x16_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance32x32 =
+        aom_dist_wtd_sub_pixel_avg_variance32x32_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance32x32 =
+          aom_dist_wtd_sub_pixel_avg_variance32x32_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance32x64 =
+        aom_dist_wtd_sub_pixel_avg_variance32x64_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance32x64 =
+          aom_dist_wtd_sub_pixel_avg_variance32x64_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance4x4 =
+        aom_dist_wtd_sub_pixel_avg_variance4x4_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance4x4 =
+          aom_dist_wtd_sub_pixel_avg_variance4x4_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance4x8 =
+        aom_dist_wtd_sub_pixel_avg_variance4x8_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance4x8 =
+          aom_dist_wtd_sub_pixel_avg_variance4x8_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance64x128 =
+        aom_dist_wtd_sub_pixel_avg_variance64x128_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance64x128 =
+          aom_dist_wtd_sub_pixel_avg_variance64x128_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance64x32 =
+        aom_dist_wtd_sub_pixel_avg_variance64x32_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance64x32 =
+          aom_dist_wtd_sub_pixel_avg_variance64x32_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance64x64 =
+        aom_dist_wtd_sub_pixel_avg_variance64x64_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance64x64 =
+          aom_dist_wtd_sub_pixel_avg_variance64x64_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance8x16 =
+        aom_dist_wtd_sub_pixel_avg_variance8x16_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance8x16 =
+          aom_dist_wtd_sub_pixel_avg_variance8x16_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance8x4 =
+        aom_dist_wtd_sub_pixel_avg_variance8x4_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance8x4 =
+          aom_dist_wtd_sub_pixel_avg_variance8x4_neon;
+    }
+    aom_dist_wtd_sub_pixel_avg_variance8x8 =
+        aom_dist_wtd_sub_pixel_avg_variance8x8_c;
+    if (flags & HAS_NEON) {
+      aom_dist_wtd_sub_pixel_avg_variance8x8 =
+          aom_dist_wtd_sub_pixel_avg_variance8x8_neon;
     }
     aom_fdct4x4 = aom_fdct4x4_c;
     if (flags & HAS_NEON) aom_fdct4x4 = aom_fdct4x4_neon;
