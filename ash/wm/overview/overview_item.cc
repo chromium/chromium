@@ -976,10 +976,18 @@ void OverviewItem::HandleGestureEventForTabletModeLayout(
 }
 
 void OverviewItem::HandleMouseEvent(const ui::MouseEvent& event) {
-  if (!overview_session_->CanProcessEvent(this, /*from_touch_gesture=*/false))
+  if (!overview_session_->CanProcessEvent(this, /*from_touch_gesture=*/false)) {
     return;
+  }
 
-  const gfx::PointF screen_location = event.target()->GetScreenLocationF(event);
+  // `event.target()` will be null if we use search+space on this item with
+  // chromevox on. Accessibility API will synthesize a mouse event in that case
+  // without a target. We just use the centerpoint of the item so that
+  // search+space will select the item, leaving overview.
+  const gfx::PointF screen_location =
+      event.target()
+          ? event.target()->GetScreenLocationF(event)
+          : gfx::PointF(overview_item_view_->GetBoundsInScreen().CenterPoint());
   switch (event.type()) {
     case ui::ET_MOUSE_PRESSED:
       HandlePressEvent(screen_location, /*from_touch_gesture=*/false);
