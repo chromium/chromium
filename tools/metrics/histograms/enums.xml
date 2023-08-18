@@ -38213,6 +38213,7 @@ Called by update_extension_permission.py.-->
   <int value="251" label="kImageLoaderPrivate"/>
   <int value="252" label="kAccessibilityServicePrivate"/>
   <int value="253" label="kUserScripts"/>
+  <int value="254" label="kChromeOSBluetoothPeripheralsInfo"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

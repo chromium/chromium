@@ -15,6 +15,13 @@
     ],
     "dependencies": [ "manifest:chromeos_system_extension" ]
   },
+  "os.bluetooth_peripherals_info": {
+    "channel": "stable",
+    "extension_types": [
+      "chromeos_system_extension"
+    ],
+    "dependencies": [ "manifest:chromeos_system_extension" ]
+  },
   "os.diagnostics": {
     "channel": "stable",
     "extension_types": [
