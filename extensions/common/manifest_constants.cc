@@ -589,7 +589,7 @@ const char16_t kInvalidURLHandlerPatternElement16[] =
 const char16_t kInvalidURLHandlerTitle[] =
     u"Invalid value for 'url_handlers[*].title'.";
 const char kInvalidURLHandlerPattern[] =
-    "Invalid value for 'url_handlers[*].matches[*]'.";
+    "Invalid value for 'url_handlers[*].matches'.";
 const char kInvalidURLPatternError[] =
     "Invalid url pattern '*'";
 const char16_t kInvalidVersion[] =
