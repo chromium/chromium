@@ -7,7 +7,6 @@
 
 #include "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace printing {
 
