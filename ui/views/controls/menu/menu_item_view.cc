@@ -107,6 +107,16 @@ MenuItemView::MenuItemView(MenuDelegate* delegate)
                    Type::kSubMenu,
                    delegate) {}
 
+MenuItemView::~MenuItemView() {
+  if (GetMenuController()) {
+    GetMenuController()->OnMenuItemDestroying(this);
+  }
+  delete submenu_;
+  for (auto* item : removed_items_) {
+    delete item;
+  }
+}
+
 void MenuItemView::ChildPreferredSizeChanged(View* child) {
   invalidate_dimensions();
   PreferredSizeChanged();
@@ -809,14 +819,6 @@ MenuItemView::MenuItemView(MenuItemView* parent,
                            int command,
                            MenuItemView::Type type)
     : MenuItemView(parent, command, type, /* delegate */ nullptr) {}
-
-MenuItemView::~MenuItemView() {
-  if (GetMenuController())
-    GetMenuController()->OnMenuItemDestroying(this);
-  delete submenu_;
-  for (auto* item : removed_items_)
-    delete item;
-}
 
 MenuItemView::MenuItemView(MenuItemView* parent,
                            int command,

@@ -43,8 +43,8 @@ class MenuRunnerImpl;
 }
 
 namespace test {
-class TestMenuItemViewShown;
-class TestMenuItemViewNotShown;
+class MenuControllerTest;
+class MenuControllerTest_RepostEventToEmptyMenuItem_Test;
 }  // namespace test
 
 class ImageView;
@@ -131,6 +131,8 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   MenuItemView(const MenuItemView&) = delete;
   MenuItemView& operator=(const MenuItemView&) = delete;
+
+  ~MenuItemView() override;
 
   // Overridden from View:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
@@ -419,9 +421,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Creates a MenuItemView. This is used by the various AddXXX methods.
   MenuItemView(MenuItemView* parent, int command, Type type);
 
-  // MenuRunner owns MenuItemView and should be the only one deleting it.
-  ~MenuItemView() override;
-
   // View:
   void ChildPreferredSizeChanged(View* child) override;
   void OnThemeChanged() override;
@@ -437,9 +436,10 @@ class VIEWS_EXPORT MenuItemView : public View {
 
  private:
   friend class MenuController;
-  friend class internal::MenuRunnerImpl;        // For access to ~MenuItemView.
-  friend class test::TestMenuItemViewShown;     // for access to |submenu_|;
-  friend class test::TestMenuItemViewNotShown;  // for access to |submenu_|;
+  friend class internal::MenuRunnerImpl;
+  friend class test::MenuControllerTest;
+  // TODO(pkasting): Use FRIEND_TEST_ALL_PREFIXES instead
+  friend class test::MenuControllerTest_RepostEventToEmptyMenuItem_Test;
   friend class TestMenuItemView;
 
   enum class PaintMode { kNormal, kForDrag };
