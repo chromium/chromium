@@ -235,6 +235,11 @@ class BrowserTestBase : public ::testing::Test {
   // Performs a bunch of setup, and then runs the browser test body.
   void ProxyRunTestOnMainThreadLoop();
 
+  // Sets `initialized_network_process_` to false and calls
+  // InitializeNetworkProcess(). Used when restarting the network service
+  // process.
+  void ForceInitializeNetworkProcess();
+
   // When using the network process, update the host resolver rules that were
   // added in SetUpOnMainThread.
   void InitializeNetworkProcess();

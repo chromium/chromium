@@ -17,6 +17,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_functions.h"
@@ -608,6 +609,11 @@ int64_t GetNetMaximumFileSizeFromCommandLine(
   return max_size_bytes;
 }
 
+base::RepeatingClosure& OnNetworkServiceRestartedCbStorage() {
+  static base::SequenceLocalStorageSlot<base::RepeatingClosure> restarted_cb;
+  return restarted_cb.GetOrCreateValue();
+}
+
 }  // namespace
 
 class NetworkServiceInstancePrivate {
@@ -870,6 +876,19 @@ void ShutDownNetworkService() {
     g_empty_network_service_remote->reset();
   }
 #endif
+}
+
+void RestartNetworkService() {
+  ShutDownNetworkService();
+  GetNetworkService();
+  if (OnNetworkServiceRestartedCbStorage()) {
+    OnNetworkServiceRestartedCbStorage().Run();
+  }
+}
+
+void OnRestartNetworkServiceForTesting(base::RepeatingClosure on_restart) {
+  DCHECK(!OnNetworkServiceRestartedCbStorage() || !on_restart);
+  OnNetworkServiceRestartedCbStorage() = std::move(on_restart);
 }
 
 namespace {
