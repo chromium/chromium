@@ -150,8 +150,7 @@ UpdateServiceInternalProxyImpl::UpdateServiceInternalProxyImpl(
 UpdateServiceInternalProxyImpl::~UpdateServiceInternalProxyImpl() {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UpdateServiceInternalProxyImplImpl::Destroy(impl_);
-  CHECK_EQ(impl_, nullptr);
+  UpdateServiceInternalProxyImplImpl::Destroy(std::move(impl_));
 }
 
 void UpdateServiceInternalProxyImpl::Run(

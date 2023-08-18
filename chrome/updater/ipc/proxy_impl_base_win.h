@@ -40,18 +40,12 @@ template <typename Derived,
 class ProxyImplBase {
  public:
   // Releases `impl` on `task_runner_`.
-  static void Destroy(scoped_refptr<Derived>& impl) {
-    scoped_refptr<Derived> this_impl;
-    this_impl.swap(impl);
+  static void Destroy(scoped_refptr<Derived> impl) {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        this_impl->task_runner_;
-    task_runner->PostTask(FROM_HERE, base::BindOnce(
-                                         [](scoped_refptr<Derived> impl) {
-                                           CHECK(impl);
-                                           impl = nullptr;
-                                         },
-                                         std::move(this_impl)));
-    CHECK(!this_impl);
+        impl->task_runner_;
+    task_runner->PostTask(FROM_HERE,
+                          base::BindOnce([](scoped_refptr<Derived> /*impl*/) {},
+                                         std::move(impl)));
   }
 
  protected:
@@ -59,7 +53,10 @@ class ProxyImplBase {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
-  ~ProxyImplBase() { VLOG(2) << __func__; }
+  ~ProxyImplBase() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    VLOG(2) << __func__;
+  }
 
   void PostRPCTask(base::OnceClosure task) {
     // TODO(crbug.com/1473487): replace with CHECK.

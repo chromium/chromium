@@ -890,8 +890,7 @@ UpdateServiceProxyImpl::UpdateServiceProxyImpl(UpdaterScope updater_scope)
 UpdateServiceProxyImpl::~UpdateServiceProxyImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  UpdateServiceProxyImplImpl::Destroy(impl_);
-  CHECK_EQ(impl_, nullptr);
+  UpdateServiceProxyImplImpl::Destroy(std::move(impl_));
 }
 
 void UpdateServiceProxyImpl::GetVersion(
