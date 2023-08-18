@@ -335,7 +335,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
 
   // Send GUID-based notification.
   AutofillProfileChange change(AutofillProfileChange::ADD, profile.guid(),
-                               &profile);
+                               profile);
   for (auto& db_observer : db_observer_list_)
     db_observer.AutofillProfileChanged(change);
 
@@ -371,7 +371,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
 
   // Send GUID-based notification.
   AutofillProfileChange change(AutofillProfileChange::UPDATE, profile.guid(),
-                               &profile);
+                               profile);
   for (auto& db_observer : db_observer_list_)
     db_observer.AutofillProfileChanged(change);
 
@@ -406,8 +406,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
   }
 
   // Send GUID-based notification.
-  AutofillProfileChange change(AutofillProfileChange::REMOVE, guid,
-                               profile.get());
+  AutofillProfileChange change(AutofillProfileChange::REMOVE, guid, *profile);
   for (auto& db_observer : db_observer_list_)
     db_observer.AutofillProfileChanged(change);
 
@@ -493,7 +492,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddCreditCard(
 
   for (auto& db_observer : db_observer_list_) {
     db_observer.CreditCardChanged(CreditCardChange(
-        CreditCardChange::ADD, credit_card.guid(), &credit_card));
+        CreditCardChange::ADD, credit_card.guid(), credit_card));
   }
   ReportResult(Result::kAddCreditCard_Success);
   return WebDatabase::COMMIT_NEEDED;
@@ -519,7 +518,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateCreditCard(
 
   for (auto& db_observer : db_observer_list_) {
     db_observer.CreditCardChanged(CreditCardChange(
-        CreditCardChange::UPDATE, credit_card.guid(), &credit_card));
+        CreditCardChange::UPDATE, credit_card.guid(), credit_card));
   }
   ReportResult(Result::kUpdateCreditCard_Success);
   return WebDatabase::COMMIT_NEEDED;
@@ -543,7 +542,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveCreditCard(
 
   for (auto& db_observer : db_observer_list_) {
     db_observer.CreditCardChanged(
-        CreditCardChange(CreditCardChange::REMOVE, guid, card.get()));
+        CreditCardChange(CreditCardChange::REMOVE, guid, *card));
   }
   ReportResult(Result::kRemoveCreditCard_Success);
   return WebDatabase::COMMIT_NEEDED;
@@ -561,7 +560,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddFullServerCreditCard(
 
   for (auto& db_observer : db_observer_list_) {
     db_observer.CreditCardChanged(CreditCardChange(
-        CreditCardChange::ADD, credit_card.guid(), &credit_card));
+        CreditCardChange::ADD, credit_card.guid(), credit_card));
   }
   ReportResult(Result::kAddFullServerCreditCard_Success);
   return WebDatabase::COMMIT_NEEDED;
@@ -625,7 +624,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateServerCardMetadata(
 
   for (auto& db_observer : db_observer_list_) {
     db_observer.CreditCardChanged(
-        CreditCardChange(CreditCardChange::UPDATE, card.server_id(), &card));
+        CreditCardChange(CreditCardChange::UPDATE, card.server_id(), card));
   }
 
   ReportResult(Result::kUpdateServerCardMetadata_Success);
@@ -651,7 +650,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddIban(const Iban& iban,
   }
 
   for (auto& db_observer : db_observer_list_) {
-    db_observer.IbanChanged(IbanChange(IbanChange::ADD, iban.guid(), &iban));
+    db_observer.IbanChanged(IbanChange(IbanChange::ADD, iban.guid(), iban));
   }
   ReportResult(Result::kAddIban_Success);
   return WebDatabase::COMMIT_NEEDED;
@@ -675,7 +674,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateIban(const Iban& iban,
   }
 
   for (auto& db_observer : db_observer_list_) {
-    db_observer.IbanChanged(IbanChange(IbanChange::UPDATE, iban.guid(), &iban));
+    db_observer.IbanChanged(IbanChange(IbanChange::UPDATE, iban.guid(), iban));
   }
   ReportResult(Result::kUpdateIban_Success);
   return WebDatabase::COMMIT_NEEDED;
@@ -698,7 +697,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveIban(
   }
 
   for (auto& db_observer : db_observer_list_) {
-    db_observer.IbanChanged(IbanChange(IbanChange::REMOVE, guid, iban.get()));
+    db_observer.IbanChanged(IbanChange(IbanChange::REMOVE, guid, *iban));
   }
   ReportResult(Result::kRemoveIban_Success);
   return WebDatabase::COMMIT_NEEDED;
@@ -717,7 +716,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateServerAddressMetadata(
 
   for (auto& db_observer : db_observer_list_) {
     db_observer.AutofillProfileChanged(AutofillProfileChange(
-        AutofillProfileChange::UPDATE, profile.server_id(), &profile));
+        AutofillProfileChange::UPDATE, profile.server_id(), profile));
   }
 
   ReportResult(Result::kUpdateServerAddressMetadata_Success);
@@ -877,13 +876,13 @@ AutofillWebDataBackendImpl::RemoveAutofillDataModifiedBetween(
     for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
       for (auto& db_observer : db_observer_list_) {
         db_observer.AutofillProfileChanged(AutofillProfileChange(
-            AutofillProfileChange::REMOVE, profile->guid(), profile.get()));
+            AutofillProfileChange::REMOVE, profile->guid(), *profile));
       }
     }
     for (const std::unique_ptr<CreditCard>& credit_card : credit_cards) {
       for (auto& db_observer : db_observer_list_) {
         db_observer.CreditCardChanged(CreditCardChange(
-            CreditCardChange::REMOVE, credit_card->guid(), credit_card.get()));
+            CreditCardChange::REMOVE, credit_card->guid(), *credit_card));
       }
     }
     // Note: It is the caller's responsibility to post notifications for any

@@ -206,10 +206,9 @@ void AutofillProfileSyncBridge::GetAllDataForDebugging(DataCallback callback) {
 
 void AutofillProfileSyncBridge::ActOnLocalChange(
     const AutofillProfileChange& change) {
-  DCHECK(change.data_model());
   if (!change_processor()->IsTrackingMetadata() ||
-      change.data_model()->record_type() != AutofillProfile::LOCAL_PROFILE ||
-      change.data_model()->source() !=
+      change.data_model().record_type() != AutofillProfile::LOCAL_PROFILE ||
+      change.data_model().source() !=
           AutofillProfile::Source::kLocalOrSyncable) {
     return;
   }
@@ -222,7 +221,7 @@ void AutofillProfileSyncBridge::ActOnLocalChange(
     case AutofillProfileChange::UPDATE:
       change_processor()->Put(
           change.key(),
-          CreateEntityDataFromAutofillProfile(*change.data_model()),
+          CreateEntityDataFromAutofillProfile(change.data_model()),
           metadata_change_list.get());
       break;
     case AutofillProfileChange::REMOVE:

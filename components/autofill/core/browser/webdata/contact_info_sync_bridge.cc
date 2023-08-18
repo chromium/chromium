@@ -179,9 +179,8 @@ std::string ContactInfoSyncBridge::GetStorageKey(
 void ContactInfoSyncBridge::AutofillProfileChanged(
     const AutofillProfileChange& change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(change.data_model());
   if (!change_processor()->IsTrackingMetadata() ||
-      change.data_model()->source() != AutofillProfile::Source::kAccount) {
+      change.data_model().source() != AutofillProfile::Source::kAccount) {
     return;
   }
 
@@ -193,7 +192,7 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
       change_processor()->Put(
           change.key(),
           CreateContactInfoEntityDataFromAutofillProfile(
-              *change.data_model(),
+              change.data_model(),
               GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(
                   change.key())),
           metadata_change_list.get());

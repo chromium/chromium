@@ -299,8 +299,8 @@ bool UpdateServerMetadata(AutofillTable* table,
   }
 }
 
-bool IsSyncedWalletAddress(const AutofillProfile* profile) {
-  switch (profile->record_type()) {
+bool IsSyncedWalletAddress(const AutofillProfile& profile) {
+  switch (profile.record_type()) {
     case AutofillProfile::LOCAL_PROFILE:
       return false;
     case AutofillProfile::SERVER_PROFILE:
@@ -308,8 +308,8 @@ bool IsSyncedWalletAddress(const AutofillProfile* profile) {
   }
 }
 
-bool IsSyncedWalletCard(const CreditCard* card) {
-  switch (card->record_type()) {
+bool IsSyncedWalletCard(const CreditCard& card) {
+  switch (card.record_type()) {
     case CreditCard::RecordType::kLocalCard:
       return false;
     case CreditCard::RecordType::kMaskedServerCard:
@@ -725,9 +725,7 @@ void AutofillWalletMetadataSyncBridge::LocalMetadataChanged(
       return;
     case AutofillProfileChange::ADD:
     case AutofillProfileChange::UPDATE:
-      DCHECK(change.data_model());
-
-      AutofillMetadata new_entry = change.data_model()->GetMetadata();
+      AutofillMetadata new_entry = change.data_model().GetMetadata();
       auto it = cache_.find(storage_key);
       absl::optional<AutofillMetadata> existing_entry = absl::nullopt;
       if (it != cache_.end()) {

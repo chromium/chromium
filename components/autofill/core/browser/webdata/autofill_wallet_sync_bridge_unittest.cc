@@ -199,8 +199,8 @@ MATCHER_P2(AddChange, key, data, "") {
     *result_listener << "key " << arg.key() << " does not match expected "
                      << key;
   }
-  if (*arg.data_model() != data) {
-    *result_listener << "data " << *arg.data_model()
+  if (arg.data_model() != data) {
+    *result_listener << "data " << arg.data_model()
                      << " does not match expected " << data;
   }
   return true;

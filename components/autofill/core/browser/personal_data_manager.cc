@@ -2490,7 +2490,7 @@ void PersonalDataManager::OnAutofillProfileChanged(
     const AutofillProfileDeepChange& change) {
   const auto& guid = change.key();
   const auto& change_type = change.type();
-  const auto& profile = *(change.profile());
+  const auto& profile = change.profile();
   DCHECK(guid == profile.guid());
   // Happens only in tests.
   if (!ProfileChangesAreOngoing(guid)) {
@@ -2627,7 +2627,7 @@ void PersonalDataManager::RemoveProfileFromDB(const std::string& guid) {
     if (AutofillProfile* profile = GetProfileByGUID(guid))
       return profile;
     if (ProfileChangesAreOngoing(guid))
-      return ongoing_profile_changes_[guid].back().profile();
+      return &ongoing_profile_changes_[guid].back().profile();
     return nullptr;
   }();
   if (!profile) {
@@ -2654,7 +2654,7 @@ void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
   const auto& change_type = change.type();
   const auto* existing_profile = GetProfileByGUID(guid);
   const bool profile_exists = (existing_profile != nullptr);
-  const auto& profile = *(ongoing_profile_changes_[guid].front().profile());
+  const auto& profile = ongoing_profile_changes_[guid].front().profile();
 
   DCHECK(guid == profile.guid());
 

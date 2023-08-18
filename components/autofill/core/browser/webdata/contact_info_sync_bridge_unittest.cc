@@ -271,7 +271,7 @@ TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Add) {
 
   const AutofillProfile profile = TestProfile(kGUID1);
   const AutofillProfileChange change(AutofillProfileChange::ADD, kGUID1,
-                                     &profile);
+                                     profile);
   EXPECT_CALL(mock_processor(),
               Put(kGUID1, ContactInfoSpecificsEqualsProfile(profile), _));
   // The bridge does not need to commit when reacting to a notification about a
@@ -287,7 +287,7 @@ TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Update) {
 
   const AutofillProfile profile = TestProfile(kGUID1);
   const AutofillProfileChange change(AutofillProfileChange::UPDATE, kGUID1,
-                                     &profile);
+                                     profile);
   EXPECT_CALL(mock_processor(),
               Put(kGUID1, ContactInfoSpecificsEqualsProfile(profile), _));
   EXPECT_CALL(backend(), CommitChanges()).Times(0);
@@ -299,9 +299,8 @@ TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Update) {
 TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Remove) {
   ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
 
-  const AutofillProfile profile = TestProfile(kGUID1);
   const AutofillProfileChange change(AutofillProfileChange::REMOVE, kGUID1,
-                                     &profile);
+                                     TestProfile(kGUID1));
   EXPECT_CALL(mock_processor(), Delete(kGUID1, _));
   EXPECT_CALL(backend(), CommitChanges()).Times(0);
 
