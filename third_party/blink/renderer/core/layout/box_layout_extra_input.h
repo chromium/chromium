@@ -6,35 +6,24 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BOX_LAYOUT_EXTRA_INPUT_H_
 
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
-#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class LayoutReplaced;
 
-// Extra input data for laying out a LayoutReplaced. The object will
-// automatically associate itself with the specified LayoutBox upon creation
-// and dissociate itself upon destruction.
+// Extra input data for laying out a LayoutReplaced. The object is associated
+// with a target LayoutReplaced by SetBoxLayoutExtraInput().
 struct BoxLayoutExtraInput {
   // BoxLayoutExtraInput is always allocated on the stack as it is scoped to
   // layout, but DISALLOW_NEW is used here since LayoutReplaced has a raw
   // pointer to it.
   DISALLOW_NEW();
 
-  explicit BoxLayoutExtraInput(LayoutReplaced&);
-  ~BoxLayoutExtraInput();
-
-  void Trace(Visitor*) const;
-
-  Member<LayoutReplaced> box;
-
   // The border-box size computed by NGReplacedLayoutAlgorithm.
   PhysicalSize size;
 
-  // Border and padding values. This field is set only for LayoutReplaced.
-  NGPhysicalBoxStrut border_padding_for_replaced;
+  // Border and padding values.
+  NGPhysicalBoxStrut border_padding;
 };
 
 }  // namespace blink

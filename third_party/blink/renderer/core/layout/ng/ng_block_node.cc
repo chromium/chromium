@@ -778,20 +778,21 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
   const auto& physical_fragment =
       To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
 
-  if (box_->IsLayoutReplaced()) {
+  if (auto* replaced = DynamicTo<LayoutReplaced>(*box_)) {
     // NG replaced elements are painted with legacy painters. We need to force
     // a legacy "layout" so that paint invalidation flags are updated. But we
     // don't want to use the size that legacy calculates, so we force legacy to
     // use NG's size via BoxLayoutExtraInput's override fields.
-    BoxLayoutExtraInput input(To<LayoutReplaced>(*box_));
-    input.size = physical_fragment.Size();
-    input.border_padding_for_replaced =
-        physical_fragment.Borders() + physical_fragment.Padding();
+    BoxLayoutExtraInput input = {
+        physical_fragment.Size(),
+        physical_fragment.Borders() + physical_fragment.Padding()};
     if (!box_->NeedsLayout()) {
       box_->SetNeedsLayout(layout_invalidation_reason::kSizeChanged,
                            kMarkOnlyThis);
     }
+    replaced->SetBoxLayoutExtraInput(&input);
     box_->LayoutIfNeeded();
+    replaced->SetBoxLayoutExtraInput(nullptr);
   }
 
   // If we miss the cache for one result (fragment), we need to clear the

@@ -386,7 +386,7 @@ PhysicalSize LayoutReplaced::SizeFromNG() const {
 
 NGPhysicalBoxStrut LayoutReplaced::BorderPaddingFromNG() const {
   if (GetBoxLayoutExtraInput()) {
-    return GetBoxLayoutExtraInput()->border_padding_for_replaced;
+    return GetBoxLayoutExtraInput()->border_padding;
   }
   return NGPhysicalBoxStrut(
       BorderTop() + PaddingTop(), BorderRight() + PaddingRight(),
@@ -542,19 +542,6 @@ bool LayoutReplaced::ClipsToContentBox() const {
          overflow_clip_margin->GetReferenceBox() ==
              StyleOverflowClipMargin::ReferenceBox::kContentBox &&
          !overflow_clip_margin->GetMargin();
-}
-
-BoxLayoutExtraInput::BoxLayoutExtraInput(LayoutReplaced& layout_box)
-    : box(&layout_box) {
-  box->SetBoxLayoutExtraInput(this);
-}
-
-BoxLayoutExtraInput::~BoxLayoutExtraInput() {
-  box->SetBoxLayoutExtraInput(nullptr);
-}
-
-void BoxLayoutExtraInput::Trace(Visitor* visitor) const {
-  visitor->Trace(box);
 }
 
 }  // namespace blink
