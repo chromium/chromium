@@ -96,8 +96,8 @@ void LayerTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
   lifetime_manager->AddObserver(holder.release());
 }
 
-void LayerTreeFrameSinkHolder::SubmitCompositorFrame(
-    viz::CompositorFrame frame) {
+void LayerTreeFrameSinkHolder::SubmitCompositorFrame(viz::CompositorFrame frame,
+                                                     bool submit_now) {
   if (!reactive_frame_submission_) {
     SubmitCompositorFrameToRemote(&frame);
     return;
@@ -107,7 +107,7 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrame(
 
   DiscardCachedFrame(&frame);
 
-  if (!ShouldSubmitFrameNow()) {
+  if (!ShouldSubmitFrameNow() && !submit_now) {
     cached_frame_ = std::move(frame);
     return;
   }
@@ -322,6 +322,10 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrameToRemote(
   frame_sink_->SubmitCompositorFrame(std::move(*frame),
                                      /*hit_test_data_changed=*/true);
 
+  // TODO(crbug.com/1473386): Push an object to
+  // `pending_discarded_frame_notifications_` instead of using the counter here,
+  // s.t. we don't have to wait until this counter drop to zero before
+  // `SendDiscardedFrameNotifications()`, and frame_acks are properly ordered.
   pending_submit_frames_++;
 }
 
@@ -434,11 +438,16 @@ void LayerTreeFrameSinkHolder::UpdateSubmitFrameTimer() {
 
 void LayerTreeFrameSinkHolder::ProcessFirstPendingBeginFrame(
     viz::CompositorFrame* frame) {
-  DCHECK(!pending_begin_frames_.empty());
+  if (!pending_begin_frames_.empty()) {
+    frame->metadata.begin_frame_ack =
+        pending_begin_frames_.front().begin_frame_ack;
+    pending_begin_frames_.pop();
+    return;
+  }
 
+  // Submit an unsolicited frame.
   frame->metadata.begin_frame_ack =
-      pending_begin_frames_.front().begin_frame_ack;
-  pending_begin_frames_.pop();
+      viz::BeginFrameAck::CreateManualAckWithDamage();
 }
 
 bool LayerTreeFrameSinkHolder::ShouldSubmitFrameNow() const {
