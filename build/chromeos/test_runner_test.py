@@ -271,9 +271,10 @@ class GTestTest(TestRunnerTest):
       test_runner.main()
       self.assertEqual(1, mock_popen.call_count)
       expected_cmd = [
-          test_runner.CROS_RUN_TEST_PATH, '--board', 'eve', '--cache-dir',
-          test_runner.DEFAULT_CROS_CACHE, '--remote-cmd', '--cwd',
-          'out_eve/Release', '--files', 'out_eve/Release/device_script.sh'
+          'vpython3', test_runner.CROS_RUN_TEST_PATH, '--board', 'eve',
+          '--cache-dir', test_runner.DEFAULT_CROS_CACHE, '--remote-cmd',
+          '--cwd', 'out_eve/Release', '--files',
+          'out_eve/Release/device_script.sh'
       ]
       if not stop_ui:
         expected_cmd.append('--as-chronos')

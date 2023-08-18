@@ -481,6 +481,7 @@ class GTestTest(RemoteTest):
   def __init__(self, args, unknown_args):
     super().__init__(args, unknown_args)
 
+    self._test_cmd = ['vpython3'] + self._test_cmd
     self._test_exe = args.test_exe
     self._runtime_deps_path = args.runtime_deps_path
     self._vpython_dir = args.vpython_dir
