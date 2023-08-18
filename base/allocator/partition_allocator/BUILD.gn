@@ -380,6 +380,8 @@ source_set("allocator_base") {
     "partition_alloc_base/strings/cstring_builder.h",
     "partition_alloc_base/strings/safe_sprintf.cc",
     "partition_alloc_base/strings/safe_sprintf.h",
+    "partition_alloc_base/strings/string_util.cc",
+    "partition_alloc_base/strings/string_util.h",
     "partition_alloc_base/strings/stringprintf.cc",
     "partition_alloc_base/strings/stringprintf.h",
     "partition_alloc_base/system/sys_info.h",

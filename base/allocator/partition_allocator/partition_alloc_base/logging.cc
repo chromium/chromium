@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/strings/string_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/strings/stringprintf.h"
 #include "build/build_config.h"
 
@@ -170,10 +171,8 @@ LogMessage::~LogMessage() {
 
 // writes the common header info to the stream
 void LogMessage::Init(const char* file, int line) {
-  std::string filename(file);
-  size_t last_slash_pos = filename.find_last_of("\\/");
-  if (last_slash_pos != std::string::npos)
-    filename.erase(0, last_slash_pos + 1);
+  const char* last_slash_pos = base::strings::FindLastOf(file, "\\/");
+  const char* filename = last_slash_pos ? last_slash_pos + 1 : file;
 
   {
     // TODO(darin): It might be nice if the columns were fixed width.
@@ -215,11 +214,10 @@ std::string SystemErrorCodeToString(SystemErrorCode error_code) {
                              std::size(msgbuf), nullptr);
   if (len) {
     // Messages returned by system end with line breaks.
-    std::string message(msgbuf);
-    size_t whitespace_pos = message.find_last_not_of("\n\r ");
-    if (whitespace_pos != std::string::npos)
-      message.erase(whitespace_pos + 1);
-    return message + base::TruncatingStringPrintf(" (0x%lX)", error_code);
+    const char* whitespace_pos = base::strings::FindLastNotOf(msgbuf, "\n\r ");
+    const char* message = whitespace_pos ? whitespace_pos + 1 : msgbuf;
+    return std::string(message) +
+           base::TruncatingStringPrintf(" (0x%lX)", error_code);
   }
   return base::TruncatingStringPrintf(
       "Error (0x%lX) while retrieving error. (0x%lX)", GetLastError(),
