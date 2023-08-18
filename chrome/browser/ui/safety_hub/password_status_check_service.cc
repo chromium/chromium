@@ -7,7 +7,6 @@
 #include "base/json/values_util.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/extensions/api/passwords_private/password_check_delegate.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -55,13 +54,17 @@ bool ShouldFindNewCheckTime(Profile* profile) {
 PasswordStatusCheckService::PasswordStatusCheckService(Profile* profile)
     : profile_(profile) {
   StartRepeatedUpdates();
+  UpdateInsecureCredentialCountAsync();
 }
 
 PasswordStatusCheckService::~PasswordStatusCheckService() = default;
 
 void PasswordStatusCheckService::Shutdown() {
   saved_passwords_presenter_observation_.Reset();
+  bulk_leak_check_observation_.Reset();
+  password_check_delegate_.reset();
   saved_passwords_presenter_.reset();
+  credential_id_generator_.reset();
 }
 
 void PasswordStatusCheckService::StartRepeatedUpdates() {
@@ -88,8 +91,91 @@ void PasswordStatusCheckService::StartRepeatedUpdates() {
 }
 
 void PasswordStatusCheckService::UpdateInsecureCredentialCountAsync() {
-  saved_passwords_presenter_observation_.Reset();
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  if (is_update_credential_count_pending_) {
+    return;
+  }
+
+  is_update_credential_count_pending_ = true;
+
+  InitializePasswordCheckInfrastructure();
+
+  CHECK(saved_passwords_presenter_);
+  if (!saved_passwords_presenter_observation_.IsObserving()) {
+    saved_passwords_presenter_observation_.Observe(
+        saved_passwords_presenter_.get());
+  }
+}
+
+void PasswordStatusCheckService::RunPasswordCheckAsync() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_password_check_running_) {
+    return;
+  }
+
+  is_password_check_running_ = true;
+
+  InitializePasswordCheckInfrastructure();
+
+  CHECK(password_check_delegate_);
+  if (!bulk_leak_check_observation_.IsObserving()) {
+    bulk_leak_check_observation_.Observe(
+        BulkLeakCheckServiceFactory::GetForProfile(profile_));
+  }
+
+  password_check_delegate_->StartPasswordCheck();
+}
+
+void PasswordStatusCheckService::OnSavedPasswordsChanged(
+    const password_manager::PasswordStoreChangeList& changes) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(IsInfrastructureReady());
+
+  is_update_credential_count_pending_ = false;
+  UpdateInsecureCredentialCount();
+  MaybeResetInfrastructureAsync();
+}
+
+void PasswordStatusCheckService::OnStateChanged(
+    password_manager::BulkLeakCheckService::State state) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(IsInfrastructureReady());
+
+  // TODO(crbug.com/1443466): Currently this logic only differentiates between
+  // running and not running and treats any non-running state as a successful
+  // run. Depending on the state some additional action may be warranted, such
+  // as changing re-run period on network error. Additionally, when connecting
+  // to the UI we'll likely need to keep the exit state for display.
+  switch (state) {
+    case password_manager::BulkLeakCheckServiceInterface::State::kRunning:
+      return;
+    case password_manager::BulkLeakCheckService::State::kServiceError:
+    case password_manager::BulkLeakCheckServiceInterface::State::kIdle:
+    case password_manager::BulkLeakCheckServiceInterface::State::kCanceled:
+    case password_manager::BulkLeakCheckServiceInterface::State::kSignedOut:
+    case password_manager::BulkLeakCheckServiceInterface::State::
+        kTokenRequestFailure:
+    case password_manager::BulkLeakCheckServiceInterface::State::
+        kHashingFailure:
+    case password_manager::BulkLeakCheckServiceInterface::State::kNetworkError:
+    case password_manager::BulkLeakCheckServiceInterface::State::kQuotaLimit:
+      is_password_check_running_ = false;
+      MaybeResetInfrastructureAsync();
+  }
+}
+
+void PasswordStatusCheckService::OnCredentialDone(
+    const password_manager::LeakCheckCredential& credential,
+    password_manager::IsLeaked is_leaked) {}
+
+void PasswordStatusCheckService::InitializePasswordCheckInfrastructure() {
+  if (IsInfrastructureReady()) {
+    return;
+  }
+
+  credential_id_generator_ = std::make_unique<extensions::IdGenerator>();
   saved_passwords_presenter_ =
       std::make_unique<password_manager::SavedPasswordsPresenter>(
           AffiliationServiceFactory::GetForProfile(profile_),
@@ -97,20 +183,17 @@ void PasswordStatusCheckService::UpdateInsecureCredentialCountAsync() {
               profile_, ServiceAccessType::IMPLICIT_ACCESS),
           AccountPasswordStoreFactory::GetForProfile(
               profile_, ServiceAccessType::IMPLICIT_ACCESS));
-  saved_passwords_presenter_observation_.Observe(
-      saved_passwords_presenter_.get());
   saved_passwords_presenter_->Init();
+  password_check_delegate_ =
+      std::make_unique<extensions::PasswordCheckDelegate>(
+          profile_, saved_passwords_presenter_.get(),
+          credential_id_generator_.get());
 }
 
-void PasswordStatusCheckService::OnSavedPasswordsChanged(
-    const password_manager::PasswordStoreChangeList& changes) {
-  extensions::IdGenerator credential_id_generator;
-  auto password_check_delegate =
-      std::make_unique<extensions::PasswordCheckDelegate>(
-          profile_, saved_passwords_presenter_.get(), &credential_id_generator);
-
-  std::vector<password_manager::CredentialUIEntry> insecure_credentials =
-      password_check_delegate->GetInsecureCredentialsManager()
+void PasswordStatusCheckService::UpdateInsecureCredentialCount() {
+  CHECK(IsInfrastructureReady());
+  auto insecure_credentials =
+      password_check_delegate_->GetInsecureCredentialsManager()
           ->GetInsecureCredentialEntries();
 
   compromised_credential_count_ = 0;
@@ -129,17 +212,38 @@ void PasswordStatusCheckService::OnSavedPasswordsChanged(
       reused_credential_count_++;
     }
   }
+}
 
-  password_check_delegate.reset();
-  saved_passwords_presenter_observation_.Reset();
-  saved_passwords_presenter_.reset();
+void PasswordStatusCheckService::MaybeResetInfrastructureAsync() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (on_passwords_changed_finished_callback_for_test_) {
-    on_passwords_changed_finished_callback_for_test_.Run();
+  if (!is_update_credential_count_pending_ && !is_password_check_running_) {
+    saved_passwords_presenter_observation_.Reset();
+    bulk_leak_check_observation_.Reset();
+
+    // The reset is done as a task rather than directly because when observers
+    // are notified that e.g. the password check is done, it may be too early to
+    // reset the infrastructure immediately. Synchronous operations may still be
+    // ongoing in `SavedPasswordsPresenter`.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(password_check_delegate_));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(saved_passwords_presenter_));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(credential_id_generator_));
   }
 }
 
-void PasswordStatusCheckService::RunPasswordCheck() {
-  // TODO(crbug.com/1443466)
-  NOTIMPLEMENTED();
+bool PasswordStatusCheckService::IsInfrastructureReady() const {
+  if (saved_passwords_presenter_ || password_check_delegate_ ||
+      credential_id_generator_) {
+    // `saved_passwords_presenter_`, `password_check_delegate_`, and
+    // `credential_id_generator_` should always be initialized at the same time.
+    CHECK(credential_id_generator_);
+    CHECK(saved_passwords_presenter_);
+    CHECK(password_check_delegate_);
+    return true;
+  }
+
+  return false;
 }
