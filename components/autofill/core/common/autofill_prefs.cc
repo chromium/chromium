@@ -276,21 +276,18 @@ void SetPaymentMethodsMandatoryReauthEnabled(PrefService* prefs, bool enabled) {
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 }
 
-bool ShouldShowPaymentMethodsMandatoryReauthPromo(const PrefService* prefs) {
+bool IsPaymentMethodsMandatoryReauthSetExplicitly(const PrefService* prefs) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsMandatoryReauth)) {
-    return false;
-  }
+  return prefs->GetUserPrefValue(kAutofillPaymentMethodsMandatoryReauth) !=
+         nullptr;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+}
 
-  // If the user has made a decision on this feature previously, then we should
-  // not show the opt-in promo.
-  if (prefs->GetUserPrefValue(kAutofillPaymentMethodsMandatoryReauth)) {
-    return false;
-  }
-
-  // We should only show the opt-in promo if we have not reached the maximum
-  // number of shows for the promo.
+bool IsPaymentMethodsMandatoryReauthPromoShownCounterBelowMaxCap(
+    const PrefService* prefs) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   return prefs->GetInteger(
              kAutofillPaymentMethodsMandatoryReauthPromoShownCounter) <
          kMaxValueForMandatoryReauthPromoShownCounter;

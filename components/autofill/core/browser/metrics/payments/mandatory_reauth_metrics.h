@@ -37,7 +37,11 @@ enum class MandatoryReauthOfferOptInDecision {
   kNoStoredCardForExtractedCard = 8,
   // Currently reauth opt-in is only supported for local and virtual cards.
   kUnsupportedCardType = 9,
-  kMaxValue = kUnsupportedCardType,
+  // Opt-in is never re-offered once the user has opted in or out.
+  kAlreadyOptedIn = 10,
+  kAlreadyOptedOut = 11,
+  kBlockedByStrikeDatabase = 12,
+  kMaxValue = kBlockedByStrikeDatabase,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
