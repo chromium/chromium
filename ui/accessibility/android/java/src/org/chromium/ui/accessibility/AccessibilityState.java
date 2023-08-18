@@ -185,6 +185,9 @@ public class AccessibilityState {
     private static boolean sIsInTestingMode;
     private static Boolean sPreInitCachedValuePerformGesturesEnabled;
 
+    private static boolean sExtraStateInitialized;
+    private static boolean sDisplayInversionEnabled;
+
     // Observers for various System, Activity, and Settings states relevant to accessibility.
     private static final ApplicationStatus.ActivityStateListener sActivityStateListener =
             AccessibilityState::onActivityStateChange;
@@ -192,6 +195,7 @@ public class AccessibilityState {
             AccessibilityState::onApplicationStateChange;
     private static ServicesObserver sAccessibilityServicesObserver;
     private static ServicesObserver sAnimationDurationScaleObserver;
+    private static ServicesObserver sDisplayInversionEnabledObserver;
     private static AccessibilityManager sAccessibilityManager;
 
     /**
@@ -312,6 +316,11 @@ public class AccessibilityState {
         return sState.isOnlyPasswordManagersEnabled;
     }
 
+    public static boolean isDisplayInversionEnabled() {
+        if (!sExtraStateInitialized) updateExtraState();
+        return sDisplayInversionEnabled;
+    }
+
     @Deprecated
     public static boolean isAccessibilitySpeakPasswordEnabled() {
         if (!sInitialized) updateAccessibilityServices();
@@ -397,6 +406,15 @@ public class AccessibilityState {
         sAccessibilityManager =
                 (AccessibilityManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.ACCESSIBILITY_SERVICE);
+    }
+
+    static void updateExtraState() {
+        sExtraStateInitialized = true;
+        Context context = ContextUtils.getApplicationContext();
+        int displayInversionEnabledSetting = Settings.Secure.getInt(context.getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED, 0);
+        boolean isDisplayInversionEnabled = displayInversionEnabledSetting == 1;
+        sDisplayInversionEnabled = isDisplayInversionEnabled;
     }
 
     static void updateAccessibilityServices() {
@@ -687,6 +705,8 @@ public class AccessibilityState {
                 () -> AccessibilityStateJni.get().onAnimatorDurationScaleChanged());
         sAccessibilityServicesObserver = new ServicesObserver(
                 ThreadUtils.getUiThreadHandler(), AccessibilityState::processServicesChange);
+        sDisplayInversionEnabledObserver = new ServicesObserver(ThreadUtils.getUiThreadHandler(),
+                AccessibilityState::processDisplayInversionChange);
 
         // We want to be notified whenever the user has updated the animator duration scale.
         contentResolver.registerContentObserver(
@@ -708,6 +728,11 @@ public class AccessibilityState {
         contentResolver.registerContentObserver(
                 Settings.System.getUriFor(Settings.System.TEXT_SHOW_PASSWORD), false,
                 sAccessibilityServicesObserver);
+
+        // We want to be notified if the user changes their display inversion settings.
+        contentResolver.registerContentObserver(
+                Settings.Secure.getUriFor(Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED),
+                false, sDisplayInversionEnabledObserver);
     }
 
     public static void initializeOnStartup() {
@@ -717,6 +742,9 @@ public class AccessibilityState {
         // in which case another update is not needed.
         if (!sInitialized) {
             updateAccessibilityServices();
+        }
+        if (!sExtraStateInitialized) {
+            updateExtraState();
         }
 
         // We want to be notified whenever an Activity or Application state changes.
@@ -748,14 +776,22 @@ public class AccessibilityState {
         ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
         contentResolver.unregisterContentObserver(sAccessibilityServicesObserver);
         contentResolver.unregisterContentObserver(sAnimationDurationScaleObserver);
+        contentResolver.unregisterContentObserver(sDisplayInversionEnabledObserver);
         sState = null;
         sInitialized = false;
+        sExtraStateInitialized = false;
+        sDisplayInversionEnabled = false;
         sAccessibilityManager = null;
     }
 
     private static void processServicesChange() {
         updateAccessibilityServices();
         AccessibilityStateJni.get().recordAccessibilityServiceInfoHistograms();
+    }
+
+    private static void processDisplayInversionChange() {
+        updateExtraState();
+        AccessibilityStateJni.get().onDisplayInversionEnabledChanged(isDisplayInversionEnabled());
     }
 
     private static class ServicesObserver extends ContentObserver {
@@ -780,6 +816,7 @@ public class AccessibilityState {
     @NativeMethods
     interface Natives {
         void onAnimatorDurationScaleChanged();
+        void onDisplayInversionEnabledChanged(boolean enabled);
         void recordAccessibilityServiceInfoHistograms();
     }
 

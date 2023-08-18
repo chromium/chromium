@@ -249,11 +249,11 @@ enum {
 }  // namespace
 
 BrowserAccessibilityStateImplAndroid::BrowserAccessibilityStateImplAndroid() {
-  ui::AccessibilityState::RegisterAnimatorDurationScaleDelegate(this);
+  ui::AccessibilityState::RegisterAccessibilityStateDelegate(this);
 }
 
 BrowserAccessibilityStateImplAndroid::~BrowserAccessibilityStateImplAndroid() {
-  ui::AccessibilityState::UnregisterAnimatorDurationScaleDelegate(this);
+  ui::AccessibilityState::UnregisterAccessibilityStateDelegate(this);
 }
 
 void BrowserAccessibilityStateImplAndroid::
@@ -404,6 +404,16 @@ void BrowserAccessibilityStateImplAndroid::OnAnimatorDurationScaleChanged() {
        content::WebContentsImpl::GetAllWebContents()) {
     wc->OnWebPreferencesChanged();
   }
+}
+
+void BrowserAccessibilityStateImplAndroid::OnDisplayInversionEnabledChanged(
+    bool enabled) {
+  // We need to call into GetInstanceForWeb on the UI thread,
+  // so ensure that we setup the notification on the correct thread.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
+  native_theme->set_inverted_colors(enabled);
+  native_theme->NotifyOnNativeThemeUpdated();
 }
 
 void BrowserAccessibilityStateImplAndroid::UpdateHistogramsOnOtherThread() {

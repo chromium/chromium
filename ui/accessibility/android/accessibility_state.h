@@ -15,23 +15,29 @@ class AccessibilityState {
  public:
   // Provides an interface for clients to listen to animator duration scale
   // changes.
-  class Delegate {
+  class AccessibilityStateDelegate {
    public:
     // Called when the animator duration scale changes.
     virtual void OnAnimatorDurationScaleChanged() = 0;
+
+    // Called when the display inversion state changes.
+    virtual void OnDisplayInversionEnabledChanged(bool enabled) = 0;
 
     // Called during browser startup and any time enabled services change.
     virtual void RecordAccessibilityServiceInfoHistograms() = 0;
   };
 
-  // Registers a delegate to listen to animator duration scale changes.
-  static void RegisterAnimatorDurationScaleDelegate(Delegate* delegate);
+  static void RegisterAccessibilityStateDelegate(
+      AccessibilityStateDelegate* delegate);
 
-  // Unregisters a delegate to listen to animator duration scale changes.
-  static void UnregisterAnimatorDurationScaleDelegate(Delegate* delegate);
+  static void UnregisterAccessibilityStateDelegate(
+      AccessibilityStateDelegate* delegate);
 
   // Notifies all delegates of an animator duration scale change.
   static void NotifyAnimatorDurationScaleObservers();
+
+  // Notifies all delegates of a display inversion state change.
+  static void NotifyDisplayInversionEnabledObservers(bool enabled);
 
   // Notifies all delegates to record service info histograms.
   static void NotifyRecordAccessibilityServiceInfoHistogram();
