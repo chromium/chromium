@@ -238,9 +238,16 @@ static bool IsLastOfType(const Element& element, const QualifiedName& type) {
   return !ElementTraversal::NextSibling(element, HasTagName(type));
 }
 
+static void DisallowMatchVisited(
+    SelectorChecker::SelectorCheckingContext& context) {
+  context.had_match_visited |= context.match_visited;
+  context.match_visited = false;
+}
+
 bool SelectorChecker::Match(const SelectorCheckingContext& context,
                             MatchResult& result) const {
   DCHECK(context.selector);
+  DCHECK(!context.had_match_visited);
 #if DCHECK_IS_ON()
   DCHECK(!inside_match_) << "Do not re-enter Match: use MatchSelector instead";
   base::AutoReset<bool> reset_inside_match(&inside_match_, true);
@@ -388,9 +395,11 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
   // Disable :visited matching when we see the first link or try to match
   // anything else than an ancestor.
   if ((!context.is_sub_selector || context.in_nested_complex_selector) &&
-      (context.element->IsLink() || (relation != CSSSelector::kDescendant &&
-                                     relation != CSSSelector::kChild))) {
-    next_context.match_visited = false;
+      (context.element->IsLink() ||
+       (relation != CSSSelector::kScopeActivation &&
+        relation != CSSSelector::kDescendant &&
+        relation != CSSSelector::kChild))) {
+    DisallowMatchVisited(next_context);
   }
 
   next_context.in_rightmost_compound = false;
@@ -423,7 +432,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
           return kSelectorFailsCompletely;
         }
         if (next_context.element->IsLink()) {
-          next_context.match_visited = false;
+          DisallowMatchVisited(next_context);
         }
       }
       return kSelectorFailsCompletely;
@@ -547,6 +556,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
           return kSelectorFailsCompletely;
         }
         for (const StyleScopeActivation& activation : activations) {
+          next_context.match_visited = context.match_visited;
           next_context.style_scope = nullptr;
           next_context.scope = activation.root;
           if (MatchSelector(next_context, result) == kSelectorMatches) {
@@ -2394,9 +2404,31 @@ const StyleScopeActivations& SelectorChecker::EnsureActivations(
       style_scope.Parent() ? &EnsureActivations(context, *style_scope.Parent())
                            : MakeGarbageCollected<StyleScopeActivations>(
                                  1, DefaultActivation(context.scope));
-  const StyleScopeActivations* activations =
-      CalculateActivations(context.style_scope_frame->element_, style_scope,
-                           *outer_activations, context.style_scope_frame);
+  // The `match_visited` flag may have been set to false e.g. due to a link
+  // having been encountered (see DisallowMatchVisited), but scope activations
+  // are calculated lazily when :scope is first seen in a compound selector,
+  // and the scoping limit needs to evaluate according to the original setting.
+  //
+  // Consider the following, which should not match, because the :visited link
+  // is a scoping limit:
+  //
+  //  @scope (#foo) to (:visited) { :scope a:visited { ... } }
+  //
+  // In the above selector, we first match a:visited, and set match_visited to
+  // false since a link was encountered. Then we encounter a compound
+  // with :scope, which causes scopes to be activated (kScopeActivation). At
+  // this point we try to find the scoping limit (:visited), but it wouldn't
+  // match anything because match_visited is set to false, so the selector
+  // would incorrectly match. For this reason we need to evaluate the scoping
+  // root and limits with the original match_visited setting.
+  bool match_visited = context.match_visited || context.had_match_visited;
+  // We only use the cache when matching normal/non-visited rules. Otherwise
+  // we'd need to double up the cache.
+  StyleScopeFrame* style_scope_frame =
+      match_visited ? nullptr : context.style_scope_frame;
+  const StyleScopeActivations* activations = CalculateActivations(
+      context.style_scope_frame->element_, style_scope, *outer_activations,
+      style_scope_frame, match_visited);
   DCHECK(activations);
   return *activations;
 }
@@ -2410,7 +2442,8 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
     Element& element,
     const StyleScope& style_scope,
     const StyleScopeActivations& outer_activations,
-    StyleScopeFrame* style_scope_frame) const {
+    StyleScopeFrame* style_scope_frame,
+    bool match_visited) const {
   Member<const StyleScopeActivations>* cached_activations_entry = nullptr;
   if (style_scope_frame) {
     auto entry = style_scope_frame->data_.insert(&style_scope, nullptr);
@@ -2439,8 +2472,12 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
         StyleScopeFrame* parent_frame =
             style_scope_frame ? style_scope_frame->GetParentFrameOrNull(*parent)
                               : nullptr;
-        parent_activations = CalculateActivations(
-            *parent, style_scope, outer_activations, parent_frame);
+        // Disable :visited matching when encountering the first link.
+        // This matches the behavior for regular child/descendant combinators.
+        bool parent_match_visited = match_visited && !element.IsLink();
+        parent_activations =
+            CalculateActivations(*parent, style_scope, outer_activations,
+                                 parent_frame, parent_match_visited);
       }
     }
 
@@ -2448,7 +2485,8 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
     // unless this element is a scoping limit.
     if (parent_activations) {
       for (const StyleScopeActivation& activation : *parent_activations) {
-        if (!ElementIsScopingLimit(style_scope, activation, element)) {
+        if (!ElementIsScopingLimit(style_scope, activation, element,
+                                   match_visited)) {
           activations->push_back(
               StyleScopeActivation{activation.root, activation.proximity + 1});
         }
@@ -2457,13 +2495,15 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
 
     // Check if we need to add a new activation for this element.
     for (const StyleScopeActivation& outer_activation : outer_activations) {
-      if (style_scope.From() ? MatchesWithScope(element, *style_scope.From(),
-                                                outer_activation.root)
-                             : style_scope.HasImplicitRoot(&element)) {
+      if (style_scope.From()
+              ? MatchesWithScope(element, *style_scope.From(),
+                                 outer_activation.root, match_visited)
+              : style_scope.HasImplicitRoot(&element)) {
         StyleScopeActivation activation{&element, 0};
         // It's possible for a newly created activation to be immediately
         // limited (e.g. @scope (.x) to (.x)).
-        if (!ElementIsScopingLimit(style_scope, activation, element)) {
+        if (!ElementIsScopingLimit(style_scope, activation, element,
+                                   match_visited)) {
           activations->push_back(activation);
         }
         break;
@@ -2482,9 +2522,11 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
 
 bool SelectorChecker::MatchesWithScope(Element& element,
                                        const CSSSelector& selector_list,
-                                       const ContainerNode* scope) const {
+                                       const ContainerNode* scope,
+                                       bool match_visited) const {
   SelectorCheckingContext context(&element);
   context.scope = scope;
+  context.match_visited = match_visited;
   // We are matching this selector list with the intent of storing the result
   // in a cache (StyleScopeFrame). The :scope pseudo-class which triggered
   // this call to MatchesWithScope, is either part of the subject compound
@@ -2506,11 +2548,13 @@ bool SelectorChecker::MatchesWithScope(Element& element,
 bool SelectorChecker::ElementIsScopingLimit(
     const StyleScope& style_scope,
     const StyleScopeActivation& activation,
-    Element& element) const {
+    Element& element,
+    bool match_visited) const {
   if (!style_scope.To()) {
     return false;
   }
-  return MatchesWithScope(element, *style_scope.To(), activation.root.Get());
+  return MatchesWithScope(element, *style_scope.To(), activation.root.Get(),
+                          match_visited);
 }
 
 }  // namespace blink

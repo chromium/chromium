@@ -164,6 +164,13 @@ class CORE_EXPORT SelectorChecker {
     // If true, elements that are links will match :visited. Otherwise,
     // they will match :link.
     bool match_visited = false;
+    // The `match_visited` flag can become false during selector matching
+    // for various reasons (see DisallowMatchVisited and its call sites).
+    // The `had_match_visited` flag tracks whether was initially true or not.
+    // This is needed by @scope (CalculateActivations), which needs to evaluate
+    // visited-dependent selectors according to the original `match_visited`
+    // setting.
+    bool had_match_visited = false;
     bool pseudo_has_in_rightmost_compound = true;
     bool is_inside_has_pseudo_class = false;
   };
@@ -341,14 +348,17 @@ class CORE_EXPORT SelectorChecker {
       Element&,
       const StyleScope&,
       const StyleScopeActivations& outer_activations,
-      StyleScopeFrame*) const;
+      StyleScopeFrame*,
+      bool match_visited) const;
   bool MatchesWithScope(Element&,
                         const CSSSelector& selector_list,
-                        const ContainerNode* scope) const;
+                        const ContainerNode* scope,
+                        bool match_visited) const;
   // https://drafts.csswg.org/css-cascade-6/#scoping-limit
   bool ElementIsScopingLimit(const StyleScope&,
                              const StyleScopeActivation&,
-                             Element& element) const;
+                             Element& element,
+                             bool match_visited) const;
 
   CustomScrollbar* scrollbar_;
   PartNames* part_names_;

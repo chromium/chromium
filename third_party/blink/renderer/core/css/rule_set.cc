@@ -97,9 +97,25 @@ static inline ValidPropertyFilter DetermineValidPropertyFilter(
   return ValidPropertyFilter::kNoFilter;
 }
 
+static bool SelectorListHasLinkOrVisited(const CSSSelector* selector_list) {
+  for (const CSSSelector* complex = selector_list; complex;
+       complex = CSSSelectorList::Next(*complex)) {
+    if (complex->HasLinkOrVisited()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static bool StyleScopeHasLinkOrVisited(const StyleScope* style_scope) {
+  return style_scope && (SelectorListHasLinkOrVisited(style_scope->From()) ||
+                         SelectorListHasLinkOrVisited(style_scope->To()));
+}
+
 static unsigned DetermineLinkMatchType(const AddRuleFlags add_rule_flags,
-                                       const CSSSelector& selector) {
-  if (selector.HasLinkOrVisited()) {
+                                       const CSSSelector& selector,
+                                       const StyleScope* style_scope) {
+  if (selector.HasLinkOrVisited() || StyleScopeHasLinkOrVisited(style_scope)) {
     return (add_rule_flags & kRuleIsVisitedDependent)
                ? CSSSelector::kMatchVisited
                : CSSSelector::kMatchLink;
@@ -116,7 +132,8 @@ RuleData::RuleData(StyleRule* rule,
       selector_index_(selector_index),
       position_(position),
       specificity_(Selector().Specificity()),
-      link_match_type_(DetermineLinkMatchType(add_rule_flags, Selector())),
+      link_match_type_(
+          DetermineLinkMatchType(add_rule_flags, Selector(), style_scope)),
       valid_property_filter_(
           static_cast<std::underlying_type_t<ValidPropertyFilter>>(
               DetermineValidPropertyFilter(add_rule_flags, Selector()))),
