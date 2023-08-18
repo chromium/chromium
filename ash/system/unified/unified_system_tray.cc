@@ -52,6 +52,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/user_education/user_education_class_properties.h"
+#include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -321,6 +322,12 @@ void UnifiedSystemTray::OnButtonPressed(const ui::Event& event) {
         /*restore_focus=*/true);
   } else {
     CloseBubble();
+    return;
+  }
+
+  if (features::IsWelcomeTourEnabled()) {
+    welcome_tour_metrics::RecordInteraction(
+        welcome_tour_metrics::Interaction::kQuickSettings);
   }
 }
 
