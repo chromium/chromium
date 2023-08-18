@@ -26,6 +26,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -335,7 +336,9 @@ public class AttributionOsLevelManager {
      * https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/java/measurement/MeasurementManagerFutures.
      */
     @CalledByNative
-    private void getMeasurementApiStatus() {
+    private static void getMeasurementApiStatus() {
+        ThreadUtils.assertOnBackgroundThread();
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
             return;
@@ -347,7 +350,8 @@ public class AttributionOsLevelManager {
             AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
             return;
         }
-        MeasurementManagerFutures mm = getManager();
+        MeasurementManagerFutures mm =
+                MeasurementManagerFutures.from(ContextUtils.getApplicationContext());
         if (mm == null) {
             AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
             return;

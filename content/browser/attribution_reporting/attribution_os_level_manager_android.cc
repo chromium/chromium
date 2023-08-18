@@ -18,16 +18,21 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
+#include "content/browser/browser_thread_impl.h"
 #include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -82,12 +87,31 @@ ApiState ConvertToApiState(int value) {
   }
 }
 
+void GetMeasurementApiStatus() {
+  base::ElapsedThreadTimer timer;
+  Java_AttributionOsLevelManager_getMeasurementApiStatus(
+      base::android::AttachCurrentThread());
+  if (timer.is_supported()) {
+    base::UmaHistogramTimes("Conversions.GetMeasurementStatusTime",
+                            timer.Elapsed());
+  }
+}
+
 }  // namespace
 
 static void JNI_AttributionOsLevelManager_OnMeasurementStateReturned(
     JNIEnv* env,
     jint state) {
-  AttributionOsLevelManager::SetApiState(ConvertToApiState(state));
+  ApiState api_state = ConvertToApiState(state);
+
+  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    AttributionOsLevelManager::SetApiState(api_state);
+    return;
+  }
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AttributionOsLevelManager::SetApiState, api_state));
 }
 
 AttributionOsLevelManagerAndroid::AttributionOsLevelManagerAndroid() {
@@ -95,13 +119,8 @@ AttributionOsLevelManagerAndroid::AttributionOsLevelManagerAndroid() {
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
 
   if (AttributionOsLevelManager::ShouldInitializeApiState()) {
-    base::ElapsedThreadTimer timer;
-    Java_AttributionOsLevelManager_getMeasurementApiStatus(
-        base::android::AttachCurrentThread(), jobj_);
-    if (timer.is_supported()) {
-      base::UmaHistogramTimes("Conversions.GetMeasurementStatusTime",
-                              timer.Elapsed());
-    }
+    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+        ->PostTask(FROM_HERE, base::BindOnce(&GetMeasurementApiStatus));
   }
 }
 
