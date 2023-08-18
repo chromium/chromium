@@ -136,6 +136,26 @@ TEST_P(AppServiceShortcutModelBuilderTest, BuildModel) {
   EXPECT_EQ(model_updater()->ItemAtForTest(3)->name(), "Test 4");
 }
 
+TEST_P(AppServiceShortcutModelBuilderTest, RemoveShortcut) {
+  CreateBuilder(GetParam());
+  // Confirm there are 2 launcher shortcut items.
+  EXPECT_EQ(model_updater()->ItemCount(), 2u);
+  EXPECT_EQ(model_updater()->ItemAtForTest(0)->id(),
+            apps::GenerateShortcutId("host_app_id_1", "local_id_1").value());
+  EXPECT_EQ(model_updater()->ItemAtForTest(0)->name(), "Test 1");
+  EXPECT_EQ(model_updater()->ItemAtForTest(1)->id(),
+            apps::GenerateShortcutId("host_app_id_1", "local_id_2").value());
+  EXPECT_EQ(model_updater()->ItemAtForTest(1)->name(), "Test 2");
+
+  cache()->RemoveShortcut(
+      apps::ShortcutId(model_updater()->ItemAtForTest(0)->id()));
+  EXPECT_EQ(model_updater()->ItemCount(), 1u);
+
+  cache()->RemoveShortcut(
+      apps::ShortcutId(model_updater()->ItemAtForTest(0)->id()));
+  EXPECT_EQ(model_updater()->ItemCount(), 0u);
+}
+
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
                          AppServiceShortcutModelBuilderTest,
                          testing::Values(true, false));

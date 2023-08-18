@@ -28,10 +28,24 @@ class ShortcutRegistryCacheTest : public testing::Test,
   }
   bool OnShortcutUpdatedCalled() { return on_shortcut_updated_called_; }
 
+  void ExpectShortcutRemoved(const ShortcutId& shortcut_id) {
+    expected_shortcut_id_ = shortcut_id;
+    if (!obs_.IsObserving()) {
+      obs_.Observe(&cache());
+    }
+    on_shortcut_removed_called_ = false;
+  }
+  bool OnShortcutRemovedCalled() { return on_shortcut_removed_called_; }
+
  private:
   void OnShortcutUpdated(const ShortcutUpdate& update) override {
     on_shortcut_updated_called_ = true;
     EXPECT_EQ(update, *expected_update_);
+  }
+
+  void OnShortcutRemoved(const ShortcutId& shortcut_id) override {
+    on_shortcut_removed_called_ = true;
+    EXPECT_EQ(shortcut_id, expected_shortcut_id_);
   }
 
   void OnShortcutRegistryCacheWillBeDestroyed(
@@ -40,7 +54,9 @@ class ShortcutRegistryCacheTest : public testing::Test,
   }
   ShortcutRegistryCache cache_;
   std::unique_ptr<ShortcutUpdate> expected_update_;
+  ShortcutId expected_shortcut_id_;
   bool on_shortcut_updated_called_ = false;
+  bool on_shortcut_removed_called_ = false;
   base::ScopedObservation<ShortcutRegistryCache,
                           ShortcutRegistryCache::Observer>
       obs_{this};
@@ -102,6 +118,24 @@ TEST_F(ShortcutRegistryCacheTest, UpdateShortcut) {
   EXPECT_EQ(stored_shortcut->local_id, local_id);
 }
 
+TEST_F(ShortcutRegistryCacheTest, RemoveShortcut) {
+  std::string host_app_id = "host_app_id";
+  std::string local_id = "local_id";
+  auto shortcut = std::make_unique<Shortcut>(host_app_id, local_id);
+  ShortcutId shortcut_id = shortcut->shortcut_id;
+  shortcut->name = "name";
+  shortcut->shortcut_source = ShortcutSource::kUser;
+
+  cache().UpdateShortcut(std::move(shortcut));
+  ASSERT_TRUE(cache().HasShortcut(shortcut_id));
+  ASSERT_EQ(cache().GetAllShortcuts().size(), 1u);
+
+  cache().RemoveShortcut(shortcut_id);
+
+  EXPECT_EQ(cache().GetAllShortcuts().size(), 0u);
+  EXPECT_FALSE(cache().HasShortcut(shortcut_id));
+}
+
 TEST_F(ShortcutRegistryCacheTest, Observer) {
   std::string host_app_id = "host_app_id";
   std::string local_id = "local_id";
@@ -130,5 +164,10 @@ TEST_F(ShortcutRegistryCacheTest, Observer) {
       current_state.get(), shortcut_nochange.get()));
   cache().UpdateShortcut(std::move(shortcut_nochange));
   EXPECT_TRUE(OnShortcutUpdatedCalled());
+
+  ExpectShortcutRemoved(shortcut_id);
+  cache().RemoveShortcut(shortcut_id);
+  EXPECT_TRUE(OnShortcutRemovedCalled());
 }
+
 }  // namespace apps

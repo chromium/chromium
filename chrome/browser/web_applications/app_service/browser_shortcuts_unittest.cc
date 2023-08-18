@@ -197,4 +197,26 @@ TEST_F(BrowserShortcutsTest, LaunchShortcut) {
   EXPECT_EQ(setting, LaunchWebAppWindowSetting::kUseLaunchParams);
 }
 
+TEST_F(BrowserShortcutsTest, RemoveShortcut) {
+  InitializeBrowserShortcutPublisher();
+  apps::ShortcutRegistryCache* cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->ShortcutRegistryCache();
+  ASSERT_EQ(cache->GetAllShortcuts().size(), 0u);
+
+  const std::string kShortcutName = "Shortcut";
+
+  auto local_shortcut_id = CreateShortcut(kShortcutName);
+  apps::ShortcutId expected_shortcut_id =
+      apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
+
+  ASSERT_EQ(cache->GetAllShortcuts().size(), 1u);
+  ASSERT_TRUE(cache->HasShortcut(expected_shortcut_id));
+
+  test::UninstallWebApp(profile(), local_shortcut_id);
+
+  EXPECT_EQ(cache->GetAllShortcuts().size(), 0u);
+  EXPECT_FALSE(cache->HasShortcut(expected_shortcut_id));
+}
+
 }  // namespace web_app

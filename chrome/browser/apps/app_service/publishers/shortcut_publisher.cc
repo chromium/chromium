@@ -25,4 +25,9 @@ void ShortcutPublisher::PublishShortcut(ShortcutPtr delta) {
   proxy_->ShortcutRegistryCache()->UpdateShortcut(std::move(delta));
 }
 
+void ShortcutPublisher::RemoveShortcut(const ShortcutId& id) {
+  CHECK(proxy_->ShortcutRegistryCache());
+  proxy_->ShortcutRegistryCache()->RemoveShortcut(id);
+}
+
 }  // namespace apps

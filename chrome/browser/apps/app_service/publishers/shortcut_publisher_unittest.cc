@@ -63,6 +63,10 @@ class FakeShortcutPublisher : public ShortcutPublisher {
     EXPECT_EQ(expected_display_id, display_id_);
   }
 
+  void RemoveShortcut(const ShortcutId& shortcut_id) {
+    ShortcutPublisher::RemoveShortcut(shortcut_id);
+  }
+
  private:
   bool shortcut_launched = false;
   std::string host_app_id_;
@@ -194,6 +198,39 @@ TEST_F(ShortcutPublisherTest, LaunchShortcut_CallsCorrectPublisher) {
   fake_web_app_publisher.VerifyShortcutLaunch(
       initial_web_app_shortcuts[0]->host_app_id,
       initial_web_app_shortcuts[0]->local_id, display_id);
+}
+
+TEST_F(ShortcutPublisherTest, RemoveShortcut) {
+  ShortcutPtr shortcut_1 = std::make_unique<Shortcut>("app_id_1", "local_id_1");
+  shortcut_1->name = "name1";
+
+  ShortcutPtr shortcut_2 = std::make_unique<Shortcut>("app_id_1", "local_id_2");
+  shortcut_2->name = "name2";
+  shortcut_2->shortcut_source = ShortcutSource::kDeveloper;
+
+  Shortcuts initial_chrome_shortcuts;
+  initial_chrome_shortcuts.push_back(std::move(shortcut_1));
+  initial_chrome_shortcuts.push_back(std::move(shortcut_2));
+
+  FakeShortcutPublisher fake_chrome_app_publisher(proxy(), AppType::kChromeApp,
+                                                  initial_chrome_shortcuts);
+
+  ShortcutRegistryCache* cache = proxy()->ShortcutRegistryCache();
+  ASSERT_TRUE(cache);
+
+  ASSERT_EQ(cache->GetAllShortcuts().size(), 2u);
+
+  EXPECT_TRUE(cache->HasShortcut(initial_chrome_shortcuts[0]->shortcut_id));
+  fake_chrome_app_publisher.RemoveShortcut(
+      initial_chrome_shortcuts[0]->shortcut_id);
+  EXPECT_EQ(cache->GetAllShortcuts().size(), 1u);
+  EXPECT_FALSE(cache->HasShortcut(initial_chrome_shortcuts[0]->shortcut_id));
+
+  EXPECT_TRUE(cache->HasShortcut(initial_chrome_shortcuts[1]->shortcut_id));
+  fake_chrome_app_publisher.RemoveShortcut(
+      initial_chrome_shortcuts[1]->shortcut_id);
+  EXPECT_EQ(cache->GetAllShortcuts().size(), 0u);
+  EXPECT_FALSE(cache->HasShortcut(initial_chrome_shortcuts[1]->shortcut_id));
 }
 
 }  // namespace apps

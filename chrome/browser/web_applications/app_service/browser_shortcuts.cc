@@ -122,4 +122,14 @@ void BrowserShortcuts::OnWebAppInstallManagerDestroyed() {
   install_manager_observation_.Reset();
 }
 
+void BrowserShortcuts::OnWebAppUninstalled(
+    const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source) {
+  if (!IsShortcut(app_id)) {
+    return;
+  }
+  apps::ShortcutPublisher::RemoveShortcut(
+      apps::GenerateShortcutId(app_constants::kChromeAppId, app_id));
+}
+
 }  // namespace web_app

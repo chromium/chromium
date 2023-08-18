@@ -33,6 +33,7 @@ class AppServiceShortcutModelBuilder
 
   // apps::ShortcutRegistryCache::Observer overrides:
   void OnShortcutUpdated(const apps::ShortcutUpdate& update) override;
+  void OnShortcutRemoved(const apps::ShortcutId& id) override;
   void OnShortcutRegistryCacheWillBeDestroyed(
       apps::ShortcutRegistryCache* cache) override;
 

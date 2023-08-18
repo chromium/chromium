@@ -33,7 +33,7 @@ void ShortcutRegistryCache::RemoveObserver(Observer* observer) {
 
 void ShortcutRegistryCache::UpdateShortcut(ShortcutPtr delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Do not allow notified observer updating shortcut cache again.
+  // Do not allow notified observer to modify shortcut cache again.
   DCHECK(!is_updating_);
   is_updating_ = true;
   const ShortcutId shortcut_id = delta->shortcut_id;
@@ -51,6 +51,18 @@ void ShortcutRegistryCache::UpdateShortcut(ShortcutPtr delta) {
     states_.emplace(shortcut_id, delta->Clone());
   }
 
+  is_updating_ = false;
+}
+
+void ShortcutRegistryCache::RemoveShortcut(const ShortcutId& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Do not allow notified observer to modify shortcut cache again.
+  CHECK(!is_updating_);
+  is_updating_ = true;
+  states_.erase(id);
+  for (auto& obs : observers_) {
+    obs.OnShortcutRemoved(id);
+  }
   is_updating_ = false;
 }
 

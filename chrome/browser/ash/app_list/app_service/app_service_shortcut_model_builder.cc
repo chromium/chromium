@@ -16,7 +16,6 @@
 
 namespace {
 bool ShouldShowInLauncher(const apps::ShortcutSource& shortcut_source) {
-  // TODO(crbug.com/1412708): Add logic for shortcut removed.
   return shortcut_source == apps::ShortcutSource::kUser;
 }
 }  // namespace
@@ -60,6 +59,11 @@ void AppServiceShortcutModelBuilder::OnShortcutUpdated(
         profile(), model_updater(), update);
     InsertApp(std::move(shortcut_item));
   }
+}
+
+void AppServiceShortcutModelBuilder::OnShortcutRemoved(
+    const apps::ShortcutId& id) {
+  RemoveApp(id.value(), false);
 }
 
 void AppServiceShortcutModelBuilder::OnShortcutRegistryCacheWillBeDestroyed(

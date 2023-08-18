@@ -47,6 +47,9 @@ class ShortcutPublisher {
   // been called before the first call to this method.
   void PublishShortcut(ShortcutPtr delta);
 
+  // Remove shortcut represented by shortcut id `id`.
+  void RemoveShortcut(const ShortcutId& id);
+
   AppServiceProxy* proxy() { return proxy_; }
 
  private:
