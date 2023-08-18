@@ -165,6 +165,9 @@ bool GetWindowsKeyCode(char ascii_character, int* key_code) {
     case ui::VKEY_BACK:
       *key_code = ui::VKEY_BACK;
       return true;
+    case ui::VKEY_END:
+      *key_code = ui::VKEY_END;
+      return true;
     default:
       return false;
   }
@@ -756,6 +759,7 @@ void RenderViewTest::SimulateUserInputChangeForElement(
   ASSERT_TRUE(base::IsStringASCII(new_value));
   while (!input->Focused())
     input->GetDocument().GetFrame()->View()->AdvanceFocus(false);
+  SimulateUserTypingASCIICharacter(ui::VKEY_END, false);
 
   size_t previous_length = input->Value().length();
   for (size_t i = 0; i < previous_length; ++i)

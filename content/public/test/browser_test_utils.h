@@ -341,7 +341,7 @@ void SimulateMouseClickAt(WebContents* web_contents,
 // TODO(https://crbug.com/1199644): Make the Simulate* methods more user
 // friendly by taking zooming into account.
 gfx::PointF GetCenterCoordinatesOfElementWithId(
-    content::WebContents* web_contents,
+    const ToRenderFrameHost& adapter,
     base::StringPiece id);
 
 // Retrieves the center coordinates of the element with id |id| and simulates a

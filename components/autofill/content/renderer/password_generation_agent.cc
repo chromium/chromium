@@ -493,23 +493,26 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
   return true;
 }
 
-bool PasswordGenerationAgent::HandleFocusChangeComplete(
+void PasswordGenerationAgent::NotifyFocusChangeComplete(
     const blink::WebNode& node) {
   if (node.IsNull() || !node.IsElementNode()) {
-    return false;
+    return;
   }
 
   const blink::WebElement web_element = node.To<blink::WebElement>();
   if (!web_element.GetDocument().GetFrame()) {
-    return false;
+    return;
   }
 
   const WebInputElement element = web_element.DynamicTo<WebInputElement>();
-  if (element.IsNull())
-    return false;
-
-  if (element.IsPasswordFieldForAutofill())
+  if (!element.IsNull() && element.IsPasswordFieldForAutofill()) {
     last_focused_password_element_ = element;
+  }
+}
+
+bool PasswordGenerationAgent::ShowPasswordGenerationSuggestions(
+    const WebInputElement& element) {
+  CHECK(!element.IsNull());
 
   auto it = generation_enabled_fields_.find(
       FieldRendererId(element.UniqueRendererFormControlId()));

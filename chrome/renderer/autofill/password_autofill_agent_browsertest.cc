@@ -2932,7 +2932,7 @@ TEST_F(PasswordAutofillAgentTest,
       /*new_password_id=*/"password", /*confirm_password_id=*/nullptr);
   // Simulate the user clicks on a password field, that leads to showing
   // generaiton pop-up. GeneratedPasswordAccepted can't be called without it.
-  FocusElement(kPasswordName);
+  SimulateElementClick(kPasswordName);
 
   std::u16string password = u"NewPass22";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
@@ -2953,7 +2953,7 @@ TEST_F(PasswordAutofillAgentTest,
       /*new_password_id=*/"password", /*confirm_password_id=*/nullptr);
   // Simulate the user clicks on a password field, that leads to showing
   // generaiton pop-up. GeneratedPasswordAccepted can't be called without it.
-  FocusElement(kPasswordName);
+  SimulateElementClick(kPasswordName);
   std::u16string password = u"NewPass22";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
@@ -3022,9 +3022,10 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
 
   // Simulate the field being clicked to start typing. This should trigger
   // generation but not password autofill.
-  SetFocused(password_element_);
-  EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_));
-  FocusElement("new_password");
+  SimulateElementClick("new_password");
+  // TODO(crbug.com/1473553): Expect the call precisely once.
+  EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_))
+      .Times(testing::AtLeast(1));
   base::RunLoop().RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(0);

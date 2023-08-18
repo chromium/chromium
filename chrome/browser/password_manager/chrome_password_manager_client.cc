@@ -1062,6 +1062,10 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
 
   generation_controller->OnAutomaticGenerationAvailable(
       base::AsWeakPtr(driver), ui_data, element_bounds_in_screen_space);
+  // Trigger password suggestions. This is a fallback case if the field was
+  // wrongly classified as new password field.
+  driver->GetPasswordAutofillManager()->MaybeShowPasswordSuggestions(
+      element_bounds_in_screen_space, ui_data.text_direction);
 #else
   password_manager::ContentPasswordManagerDriver* driver =
       GetDriverFactory()->GetDriverForFrame(rfh);

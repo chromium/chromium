@@ -973,18 +973,22 @@ void AutofillAgent::ShowSuggestions(
   }
 
   element_ = element;
-  if (form_util::IsAutofillableInputElement(input_element) &&
-      password_autofill_agent_->ShowSuggestions(
-          input_element,
-          ShowAll(ShouldShowFullSuggestionListForPasswordManager(trigger_source,
-                                                                 element)),
-          GenerationShowing(is_generation_popup_possibly_visible_))) {
-    is_popup_possibly_visible_ = true;
-    return;
+  if (form_util::IsAutofillableInputElement(input_element)) {
+    if (password_generation_agent_ &&
+        password_generation_agent_->ShowPasswordGenerationSuggestions(
+            input_element)) {
+      is_popup_possibly_visible_ = true;
+      return;
+    }
+    if (password_autofill_agent_->ShowSuggestions(
+            input_element,
+            ShowAll(ShouldShowFullSuggestionListForPasswordManager(
+                trigger_source, element)),
+            GenerationShowing(is_generation_popup_possibly_visible_))) {
+      is_popup_possibly_visible_ = true;
+      return;
+    }
   }
-
-  if (is_generation_popup_possibly_visible_)
-    return;
 
   // Password field elements should only have suggestions shown by the password
   // autofill agent.
@@ -1349,10 +1353,8 @@ void AutofillAgent::HandleFocusChangeComplete() {
 
   focused_node_was_last_clicked_ = false;
 
-  if (password_generation_agent_ &&
-      password_generation_agent_->HandleFocusChangeComplete(focused_element)) {
-    is_generation_popup_possibly_visible_ = true;
-    is_popup_possibly_visible_ = true;
+  if (password_generation_agent_) {
+    password_generation_agent_->NotifyFocusChangeComplete(focused_element);
   }
 
   SendPotentiallySubmittedFormToBrowser();

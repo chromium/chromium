@@ -948,22 +948,22 @@ void SimulateMouseClickAt(WebContents* web_contents,
 }
 
 gfx::PointF GetCenterCoordinatesOfElementWithId(
-    content::WebContents* web_contents,
+    const ToRenderFrameHost& adapter,
     base::StringPiece id) {
-  float x = EvalJs(web_contents,
-                   JsReplace("const bounds = "
-                             "document.getElementById($1)."
-                             "getBoundingClientRect();"
-                             "Math.floor(bounds.left + bounds.width / 2)",
-                             id))
-                .ExtractDouble();
-  float y = EvalJs(web_contents,
-                   JsReplace("const bounds = "
-                             "document.getElementById($1)."
-                             "getBoundingClientRect();"
-                             "Math.floor(bounds.top + bounds.height / 2)",
-                             id))
-                .ExtractDouble();
+  float x =
+      EvalJs(adapter, JsReplace("const bounds = "
+                                "document.getElementById($1)."
+                                "getBoundingClientRect();"
+                                "Math.floor(bounds.left + bounds.width / 2)",
+                                id))
+          .ExtractDouble();
+  float y =
+      EvalJs(adapter, JsReplace("const bounds = "
+                                "document.getElementById($1)."
+                                "getBoundingClientRect();"
+                                "Math.floor(bounds.top + bounds.height / 2)",
+                                id))
+          .ExtractDouble();
   return gfx::PointF(x, y);
 }
 
