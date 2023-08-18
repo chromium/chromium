@@ -123,7 +123,7 @@ Refer to README.md for content description and update process.
  <item id="lib_address_input" added_in_milestone="62" content_hash_code="0374aae8" os_list="linux,windows,chromeos,android" file_path="third_party/libaddressinput/chromium/chrome_metadata_source.cc" />
  <item id="load_autofill_gstatic_data" added_in_milestone="78" content_hash_code="07a1e952" os_list="linux,windows,chromeos,android" file_path="chrome/browser/autofill/autofill_gstatic_reader.cc" />
  <item id="logo_service" added_in_milestone="73" content_hash_code="013550c3" os_list="linux,windows,chromeos,android" file_path="components/search_provider_logos/logo_service_impl.cc" />
- <item id="lookup_single_password_leak" added_in_milestone="78" content_hash_code="00b98558" os_list="linux,windows,chromeos,android" file_path="components/password_manager/core/browser/leak_detection/leak_detection_request.cc" />
+ <item id="lookup_single_password_leak" added_in_milestone="78" content_hash_code="000d99a9" os_list="linux,windows,chromeos,android" file_path="components/password_manager/core/browser/leak_detection/leak_detection_request.cc" />
  <item id="managed_configuration_loader" added_in_milestone="89" content_hash_code="060dc999" os_list="linux,windows,chromeos" file_path="chrome/browser/device_api/managed_configuration_api.cc" />
  <item id="media_router_global_media_controls_image" added_in_milestone="81" content_hash_code="02e96911" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/global_media_controls/cast_media_notification_item.cc" />
  <item id="metrics_report_ukm" added_in_milestone="62" content_hash_code="008577eb" os_list="linux,windows,chromeos,android" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
