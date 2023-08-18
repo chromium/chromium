@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
@@ -194,9 +195,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // worklets it manages.
   AuctionWorkletManager auction_worklet_manager_;
 
-  // Auction nonces that have been created via CreateAuctionNonce, but not yet
-  // used by a subsequent call to RunAdAuction.
-  std::set<base::Uuid> pending_auction_nonces_;
+  // Manages auction nonces issued by prior calls to
+  // CreateAuctionNonce, which are used by subsequent calls to
+  // RunAdAuction.
+  AuctionNonceManager auction_nonce_manager_;
 
   // Use a map instead of a list so can remove entries without destroying them.
   // TODO(mmenke): Switch to std::set() and use extract() once that's allowed.

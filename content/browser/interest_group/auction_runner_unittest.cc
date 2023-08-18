@@ -35,6 +35,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
+#include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_result.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
@@ -1457,10 +1458,12 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     // Give off-thread things a chance to delete.
     task_environment()->RunUntilIdle();
 
-    // `interest_group_manager_` needs to be reset before the task environment
-    // is destroyed (in `RenderViewHostTestHarness::TearDown()`).
+    // `interest_group_manager_` and `auction_nonce_manager_` need to be reset
+    // before the task environment is destroyed (in
+    // `RenderViewHostTestHarness::TearDown()`).
     auction_runner_.reset();
     interest_group_manager_.reset();
+    auction_nonce_manager_.reset();
 
     RenderViewHostTestHarness::TearDown();
   }
@@ -1674,6 +1677,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     }
     auction_worklet_manager_ = std::make_unique<AuctionWorkletManager>(
         auction_process_manager_.get(), top_frame_origin_, frame_origin_, this);
+    auction_nonce_manager_ = std::make_unique<AuctionNonceManager>(GetFrame());
     interest_group_manager_->set_auction_process_manager_for_testing(
         std::move(auction_process_manager_));
 
@@ -1730,8 +1734,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
             base::Unretained(browser_context()));
 
     auction_runner_ = AuctionRunner::CreateAndStart(
-        auction_worklet_manager_.get(), interest_group_manager_.get(),
-        /*browser_context=*/browser_context(), &private_aggregation_manager_,
+        auction_worklet_manager_.get(), auction_nonce_manager_.get(),
+        interest_group_manager_.get(), /*browser_context=*/browser_context(),
+        &private_aggregation_manager_,
         private_aggregation_manager_.GetLogPrivateAggregationRequestsCallback(),
         std::move(auction_config), top_frame_origin_, frame_origin_, source_id_,
         GetClientSecurityState(), dummy_report_shared_url_loader_factory_,
@@ -2886,6 +2891,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
               nullptr);
 
   std::unique_ptr<AuctionWorkletManager> auction_worklet_manager_;
+  std::unique_ptr<AuctionNonceManager> auction_nonce_manager_;
+
   TestInterestGroupPrivateAggregationManager private_aggregation_manager_{
       top_frame_origin_};
 

@@ -1938,9 +1938,9 @@ bool CopyAuctionNonceFromIdlToMojo(const ExecutionContext& execution_context,
                                    const AuctionAdConfig& input,
                                    mojom::blink::AuctionAdConfig& output) {
   // We don't validate that the UUID parsed successfully here. If it failed,
-  // the returned Uuid is an empty string. When we look for it later in the
-  // pending_auction_nonces_, we won't find an empty string, and will fail
-  // the auction then.
+  // the returned Uuid is an empty string. When we look try to claim it from
+  // the AuctionNonceManager, we won't find an empty string, and will fail
+  // the auction or component auction then.
   if (input.hasAuctionNonce()) {
     output.auction_ad_config_non_shared_params->auction_nonce =
         base::Uuid::ParseLowercase(input.auctionNonce().Ascii());
@@ -2043,13 +2043,6 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
     // auctions.
     exception_state.ThrowTypeError(
         "Only top-level auctions may have 'serverResponse'.");
-    return mojom::blink::AuctionAdConfigPtr();
-  }
-
-  if (mojo_config->auction_ad_config_non_shared_params->auction_nonce &&
-      !is_top_level) {
-    exception_state.ThrowTypeError(
-        "Only top-level auctions may have 'auctionNonce'.");
     return mojom::blink::AuctionAdConfigPtr();
   }
 

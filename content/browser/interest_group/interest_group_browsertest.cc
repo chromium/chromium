@@ -15110,59 +15110,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       RunAuctionAndWait(auction_config));
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       AuctionNonceNotFromCreateAuctionNonce) {
-  GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
-
-  std::string auction_config = R"({
-    seller: "https://seller.example.com",
-    decisionLogicUrl: "https://seller.example.com/decision_logic.js",
-    interestGroupBuyers: ["https://buyer.example.com"],
-    auctionNonce: "00000000-0000-0000-0000-000000000000",
-  })";
-
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Monitor the console errors.
-  WebContentsConsoleObserver console_observer(web_contents());
-  console_observer.SetFilter(base::BindRepeating(IsErrorMessage));
-  console_observer.SetPattern(
-      "Invalid AuctionConfig passed to runAdAuction. The config provided "
-      "an auctionNonce value that was _not_ created by a previous call "
-      "to createAuctionNonce. Aborting the auction.");
-
-  EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
-
-  // Verify the expected error is logged to the console.
-  ASSERT_TRUE(console_observer.Wait());
-  EXPECT_EQ(console_observer.messages().size(), 1u);
-}
-
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       AuctionNonceOnComponentAuction) {
-  GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
-
-  std::string auction_config = R"({
-    seller: "https://seller.example.com",
-    decisionLogicUrl: "https://seller.example.com/decision_logic.js",
-    auctionNonce: "00000000-0000-0000-0000-000000000000",
-    componentAuctions: [{
-      seller: "https://seller2.example.com",
-      decisionLogicUrl: "https://seller2.example.com/decision_logic.js",
-      interestGroupBuyers: ["https://buyer2.example.com"],
-      auctionNonce: "00000000-0000-0000-0000-000000000000",
-    }]
-  })";
-
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
-  EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "Only top-level auctions may have 'auctionNonce'.",
-      RunAuctionAndWait(auction_config));
-}
-
-// This convouted way to validate the UUID is necessary because MatchesRegex
+// This convoluted way to validate the UUID is necessary because MatchesRegex
 // only support simple regular expressions, not PCRE.
 std::string ConvertUuidWithOnlyZeros(const std::string& uuid) {
   std::string all_zeros;
@@ -15203,6 +15151,141 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, AuctionNonceIsValid) {
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
       auction_nonce);
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       AuctionNonceOnComponentIsValid) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  std::string auction_nonce = CreateAuctionNonceAndWait().ExtractString();
+  EXPECT_EQ("00000000-0000-0000-0000-000000000000",
+            ConvertUuidWithOnlyZeros(auction_nonce));
+
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicUrl: $2,
+        // Signal to the top-level seller to allow participation in a component
+        // auction.
+        auctionSignals: "sellerAllowsComponentAuction",
+        componentAuctions: [{
+          seller: $1,
+          decisionLogicUrl: $2,
+          interestGroupBuyers: [$1],
+          // Signal to the bidder and component seller to allow participation in
+          // a component auction.
+          auctionSignals: "bidderAllowsComponentAuction,"+
+                          "sellerAllowsComponentAuction",
+          auctionNonce: $3,
+        }]
+      })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
+      auction_nonce);
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+}
+
+// TODO(https://crbug.com/1464874): When negative targeting is fully
+// implemented, we can directly observe that the auction or component auction
+// that specified the invalid nonce isn't eligible to participate in the
+// auction. Until then, we use the error emitted by the AuctionNonceManager to
+// infer that it caught the invalid nonce.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       AuctionNonceNotFromCreateAuctionNonce) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+
+  std::string auction_nonce = CreateAuctionNonceAndWait().ExtractString();
+  EXPECT_EQ("00000000-0000-0000-0000-000000000000",
+            ConvertUuidWithOnlyZeros(auction_nonce));
+
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicUrl: $2,
+        interestGroupBuyers: [$1],
+        auctionNonce: $3,
+      })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
+      ConvertUuidWithOnlyZeros(auction_nonce));
+
+  // Monitor the console errors.
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetFilter(base::BindRepeating(IsErrorMessage));
+  console_observer.SetPattern(
+      "Invalid AuctionConfig. The config provided an auctionNonce value "
+      "that was _not_ created by a previous call to createAuctionNonce.");
+
+  EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
+
+  // Verify the expected error is logged to the console.
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(console_observer.messages().size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       AuctionNonceOnComponentNotFromCreateAuctionNonce) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+
+  std::string auction_nonce = CreateAuctionNonceAndWait().ExtractString();
+  EXPECT_EQ("00000000-0000-0000-0000-000000000000",
+            ConvertUuidWithOnlyZeros(auction_nonce));
+
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicUrl: $2,
+        // Signal to the top-level seller to allow participation in a component
+        // auction.
+        auctionSignals: "sellerAllowsComponentAuction",
+        componentAuctions: [{
+          seller: $1,
+          decisionLogicUrl: $2,
+          interestGroupBuyers: [$1],
+          // Signal to the bidder and component seller to allow participation in
+          // a component auction.
+          auctionSignals: "bidderAllowsComponentAuction,"+
+                          "sellerAllowsComponentAuction",
+          auctionNonce: $3,
+        }]
+      })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
+      ConvertUuidWithOnlyZeros(auction_nonce));
+
+  // Monitor the console errors.
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetFilter(base::BindRepeating(IsErrorMessage));
+  console_observer.SetPattern(
+      "Invalid AuctionConfig. The config provided an auctionNonce value "
+      "that was _not_ created by a previous call to createAuctionNonce.");
+
+  EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
+
+  // Verify the expected error is logged to the console.
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(console_observer.messages().size(), 1u);
 }
 
 class InterestGroupKAnonmityEnforcedBrowserTest

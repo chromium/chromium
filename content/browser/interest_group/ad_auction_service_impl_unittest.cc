@@ -4403,6 +4403,41 @@ TEST_F(AdAuctionServiceImplNoNegativeTargetingTest, RunAdAuctionNonceDisabled) {
   run_loop.Run();
 }
 
+// Passing in a config with `auction_nonce` set while
+// `kFledgeNegativeTargeting` feature is disabled should not be possible.
+TEST_F(AdAuctionServiceImplNoNegativeTargetingTest,
+       RunAdAuctionNonceOnComponentDisabled) {
+  mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
+  AdAuctionServiceImpl::CreateMojoService(
+      main_rfh(), ad_auction_service.BindNewPipeAndPassReceiver());
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+
+  blink::AuctionConfig component_auction1;
+  component_auction1.seller = kOriginA;
+  component_auction1.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  component_auction1.non_shared_params.interest_group_buyers = {kOriginA};
+  component_auction1.non_shared_params.auction_nonce =
+      base::Uuid::GenerateRandomV4();
+  auction_config.non_shared_params.component_auctions.emplace_back(
+      std::move(component_auction1));
+
+  base::RunLoop run_loop;
+  ad_auction_service.set_disconnect_handler(run_loop.QuitClosure());
+  ad_auction_service->RunAdAuction(
+      auction_config, mojo::NullReceiver(),
+      base::BindOnce(
+          [](bool manually_aborted,
+             const absl::optional<
+                 blink::FencedFrame::RedactedFencedFrameConfig>& config) {
+            ADD_FAILURE() << "Callback unexpectedly invoked.";
+          }));
+  ad_auction_service.FlushForTesting();
+  run_loop.Run();
+}
+
 // Add an interest group, and run an ad auction.
 TEST_F(AdAuctionServiceImplTest, RunAdAuction) {
   constexpr char kBiddingScript[] = R"(

@@ -55,7 +55,11 @@ enum class AuctionResult {
   // invalid.
   kInvalidServerResponse = 12,
 
-  kMaxValue = kInvalidServerResponse
+  // The auction nonce passed into a call to runAdAuction didn't come from a
+  // prior call to createAuctionNonce.
+  kInvalidAuctionNonce = 13,
+
+  kMaxValue = kInvalidAuctionNonce
 };
 
 }  // namespace content

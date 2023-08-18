@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
+#include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -38,10 +39,12 @@ namespace {
 auction_worklet::mojom::KAnonymityBidMode DetermineKAnonMode() {
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeConsiderKAnonymity)) {
-    if (base::FeatureList::IsEnabled(blink::features::kFledgeEnforceKAnonymity))
+    if (base::FeatureList::IsEnabled(
+            blink::features::kFledgeEnforceKAnonymity)) {
       return auction_worklet::mojom::KAnonymityBidMode::kEnforce;
-    else
+    } else {
       return auction_worklet::mojom::KAnonymityBidMode::kSimulate;
+    }
   } else {
     return auction_worklet::mojom::KAnonymityBidMode::kNone;
   }
@@ -65,6 +68,7 @@ blink::AuctionConfig* LookupAuction(
 
 std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     AuctionWorkletManager* auction_worklet_manager,
+    AuctionNonceManager* auction_nonce_manager,
     InterestGroupManagerImpl* interest_group_manager,
     BrowserContext* browser_context,
     PrivateAggregationManager* private_aggregation_manager,
@@ -82,8 +86,8 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
-      auction_worklet_manager, interest_group_manager, browser_context,
-      private_aggregation_manager,
+      auction_worklet_manager, auction_nonce_manager, interest_group_manager,
+      browser_context, private_aggregation_manager,
       std::move(log_private_aggregation_requests_callback),
       DetermineKAnonMode(), std::move(auction_config), main_frame_origin,
       frame_origin, ukm_source_id, std::move(client_security_state),
@@ -449,6 +453,7 @@ void AuctionRunner::FailAuction(
 
 AuctionRunner::AuctionRunner(
     AuctionWorkletManager* auction_worklet_manager,
+    AuctionNonceManager* auction_nonce_manager,
     InterestGroupManagerImpl* interest_group_manager,
     BrowserContext* browser_context,
     PrivateAggregationManager* private_aggregation_manager,
@@ -488,10 +493,10 @@ AuctionRunner::AuctionRunner(
                owned_auction_config_.get(),
                /*parent=*/nullptr,
                auction_worklet_manager,
+               auction_nonce_manager,
                interest_group_manager,
                &auction_metrics_recorder_,
                /*auction_start_time=*/base::Time::Now(),
-               owned_auction_config_->non_shared_params.auction_nonce,
                std::move(log_private_aggregation_requests_callback)) {}
 
 void AuctionRunner::StartAuction() {

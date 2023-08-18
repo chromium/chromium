@@ -264,9 +264,8 @@ void AdAuctionServiceImpl::CreateAuctionNonce(
         "CreateAuctionNonce with FledgeNegativeTargeting off");
     return;
   }
-  base::Uuid token = base::Uuid::GenerateRandomV4();
-  pending_auction_nonces_.insert(token);
-  std::move(callback).Run(token);
+  std::move(callback).Run(
+      static_cast<base::Uuid>(auction_nonce_manager_.CreateAuctionNonce()));
 }
 
 void AdAuctionServiceImpl::RunAdAuction(
@@ -294,29 +293,19 @@ void AdAuctionServiceImpl::RunAdAuction(
     return;
   }
 
-  if (config.non_shared_params.auction_nonce) {
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kFledgeNegativeTargeting)) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgeNegativeTargeting)) {
+    if (config.non_shared_params.auction_nonce) {
       ReportBadMessageAndDeleteThis(
           "auction_nonce set with FledgeNegativeTargeting off");
       return;
     }
-
-    if (auto nonce_iter = pending_auction_nonces_.find(
-            *config.non_shared_params.auction_nonce);
-        nonce_iter != pending_auction_nonces_.end()) {
-      pending_auction_nonces_.erase(nonce_iter);
-    } else {
-      // No matching auction nonce from a prior call to CreateAuctionNonce.
-      devtools_instrumentation::LogWorkletMessage(
-          *GetFrame(), blink::mojom::ConsoleMessageLevel::kError,
-          "Invalid AuctionConfig passed to runAdAuction. The config provided "
-          "an auctionNonce value that was _not_ created by a previous call to "
-          "createAuctionNonce. Aborting the auction.");
-
-      std::move(callback).Run(/*manually_aborted=*/false,
-                              /*config=*/absl::nullopt);
-      return;
+    for (const auto& component : config.non_shared_params.component_auctions) {
+      if (component.non_shared_params.auction_nonce) {
+        ReportBadMessageAndDeleteThis(
+            "auction_nonce set with FledgeNegativeTargeting off");
+        return;
+      }
     }
   }
 
@@ -333,8 +322,9 @@ void AdAuctionServiceImpl::RunAdAuction(
   }
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
-      &auction_worklet_manager_, &GetInterestGroupManager(),
-      render_frame_host().GetBrowserContext(), private_aggregation_manager_,
+      &auction_worklet_manager_, &auction_nonce_manager_,
+      &GetInterestGroupManager(), render_frame_host().GetBrowserContext(),
+      private_aggregation_manager_,
       // Unlike other callbacks, this needs to be safe to call after destruction
       // of the AdAuctionServiceImpl, so that the reporter can outlive it.
       base::BindRepeating(
@@ -594,6 +584,7 @@ AdAuctionServiceImpl::AdAuctionServiceImpl(
           GetTopWindowOrigin(),
           origin(),
           this),
+      auction_nonce_manager_(GetFrame()),
       private_aggregation_manager_(PrivateAggregationManager::GetManager(
           *render_frame_host.GetBrowserContext())) {}
 

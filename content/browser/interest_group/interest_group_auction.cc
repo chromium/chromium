@@ -41,6 +41,7 @@
 #include "base/uuid.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
+#include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_result.h"
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
@@ -1849,16 +1850,17 @@ InterestGroupAuction::InterestGroupAuction(
     const blink::AuctionConfig* config,
     const InterestGroupAuction* parent,
     AuctionWorkletManager* auction_worklet_manager,
+    AuctionNonceManager* auction_nonce_manager,
     InterestGroupManagerImpl* interest_group_manager,
     AuctionMetricsRecorder* auction_metrics_recorder,
     base::Time auction_start_time,
-    base::optional_ref<base::Uuid> auction_nonce,
     base::RepeatingCallback<
         void(const PrivateAggregationRequests& private_aggregation_requests)>
         maybe_log_private_aggregation_web_features_callback)
     : trace_id_(base::trace_event::GetNextGlobalTraceId()),
       kanon_mode_(kanon_mode),
       auction_worklet_manager_(auction_worklet_manager),
+      auction_nonce_manager_(auction_nonce_manager),
       interest_group_manager_(interest_group_manager),
       auction_metrics_recorder_(auction_metrics_recorder),
       config_(config),
@@ -1866,7 +1868,6 @@ InterestGroupAuction::InterestGroupAuction(
       parent_(parent),
       auction_start_time_(auction_start_time),
       creation_time_(base::TimeTicks::Now()),
-      auction_nonce_(auction_nonce.CopyAsOptional()),
       maybe_log_private_aggregation_web_features_callback_(
           std::move(maybe_log_private_aggregation_web_features_callback)) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("fledge", "auction", *trace_id_,
@@ -1879,12 +1880,12 @@ InterestGroupAuction::InterestGroupAuction(
     // Nested component auctions are not supported.
     DCHECK(!parent_);
     component_auctions_.emplace(
-        child_pos,
-        std::make_unique<InterestGroupAuction>(
-            kanon_mode_, &component_auction_config, /*parent=*/this,
-            auction_worklet_manager, interest_group_manager,
-            auction_metrics_recorder_, auction_start_time, auction_nonce,
-            maybe_log_private_aggregation_web_features_callback_));
+        child_pos, std::make_unique<InterestGroupAuction>(
+                       kanon_mode_, &component_auction_config, /*parent=*/this,
+                       auction_worklet_manager, auction_nonce_manager,
+                       interest_group_manager, auction_metrics_recorder_,
+                       auction_start_time,
+                       maybe_log_private_aggregation_web_features_callback_));
     ++child_pos;
   }
 
@@ -1967,6 +1968,20 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
             &InterestGroupAuction::OnStartLoadInterestGroupsPhaseComplete,
             weak_ptr_factory_.GetWeakPtr(), AuctionResult::kSellerRejected));
     return;
+  }
+
+  if (config_->non_shared_params.auction_nonce) {
+    if (!auction_nonce_manager_->ClaimAuctionNonceIfAvailable(
+            static_cast<AuctionNonce>(
+                *config_->non_shared_params.auction_nonce))) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &InterestGroupAuction::OnStartLoadInterestGroupsPhaseComplete,
+              weak_ptr_factory_.GetWeakPtr(),
+              AuctionResult::kInvalidAuctionNonce));
+      return;
+    }
   }
 
   for (auto component_auction = component_auctions_.begin();
@@ -2661,6 +2676,7 @@ bool InterestGroupAuction::HasNonKAnonWinner() const {
     case AuctionResult::kSellerRejected:
     case AuctionResult::kComponentLostAuction:
     case AuctionResult::kInvalidServerResponse:
+    case AuctionResult::kInvalidAuctionNonce:
       return false;
   }
 }

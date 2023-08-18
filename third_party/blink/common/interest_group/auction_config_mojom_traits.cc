@@ -223,11 +223,6 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
     if (!component_auction.non_shared_params.component_auctions.empty()) {
       return false;
     }
-    // Component auctions must not specify an auctionNonce; it's only meaningful
-    // for the top-level auction.
-    if (component_auction.non_shared_params.auction_nonce) {
-      return false;
-    }
   }
 
   return true;

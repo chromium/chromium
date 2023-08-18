@@ -413,7 +413,7 @@ TEST(AuctionConfigMojomTraitsTest, ComponentAuctionWithNonce) {
       CreateBasicConfig());
   auction_config.non_shared_params.component_auctions[0]
       .non_shared_params.auction_nonce = base::Uuid::GenerateRandomV4();
-  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
+  EXPECT_TRUE(SerializeAndDeserialize(auction_config));
 }
 
 TEST(AuctionConfigMojomTraitsTest,
@@ -448,10 +448,6 @@ TEST(AuctionConfigMojomTraitsTest, ComponentAuctionSuccessMultipleFull) {
       CreateFullConfig());
   auction_config.non_shared_params.component_auctions.emplace_back(
       CreateFullConfig());
-  for (auto& component : auction_config.non_shared_params.component_auctions) {
-    // Component auctions cannot have auction_nonce set.
-    component.non_shared_params.auction_nonce.reset();
-  }
 
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
 

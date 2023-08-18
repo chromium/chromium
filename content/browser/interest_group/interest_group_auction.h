@@ -19,7 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/types/optional_ref.h"
+#include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_result.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_response.h"
@@ -443,10 +443,10 @@ class CONTENT_EXPORT InterestGroupAuction
       const blink::AuctionConfig* config,
       const InterestGroupAuction* parent,
       AuctionWorkletManager* auction_worklet_manager,
+      AuctionNonceManager* auction_nonce_manager,
       InterestGroupManagerImpl* interest_group_manager,
       AuctionMetricsRecorder* auction_metrics_recorder,
       base::Time auction_start_time,
-      base::optional_ref<base::Uuid> auction_nonce,
       base::RepeatingCallback<
           void(const PrivateAggregationRequests& private_aggregation_requests)>
           maybe_log_private_aggregation_web_features_callback);
@@ -1042,6 +1042,7 @@ class CONTENT_EXPORT InterestGroupAuction
   const auction_worklet::mojom::KAnonymityBidMode kanon_mode_;
 
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
+  const raw_ptr<AuctionNonceManager> auction_nonce_manager_;
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
   const raw_ptr<AuctionMetricsRecorder> auction_metrics_recorder_;
 
