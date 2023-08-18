@@ -3531,6 +3531,7 @@
     "ClientSideDetectionModelImageEmbedder": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
