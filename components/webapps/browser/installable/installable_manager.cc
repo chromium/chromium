@@ -509,10 +509,6 @@ void InstallableManager::CleanupAndStartNextTask() {
 void InstallableManager::RunCallback(
     InstallableTask task,
     std::vector<InstallableStatusCode> errors) {
-  const InstallableParams& params = task.params;
-
-  bool worker_check_passed = worker_->has_worker || !params.has_worker;
-
   InstallableData data = {
       std::move(errors),
       manifest_url(),
@@ -523,7 +519,6 @@ void InstallableManager::RunCallback(
       primary_icon_->purpose == IconPurpose::MASKABLE,
       screenshots_,
       valid_manifest_->is_valid,
-      worker_check_passed,
   };
 
   std::move(task.callback).Run(data);

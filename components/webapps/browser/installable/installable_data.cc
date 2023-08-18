@@ -29,8 +29,7 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
                                  const SkBitmap* primary_icon,
                                  bool has_maskable_primary_icon,
                                  const std::vector<Screenshot>& screenshots,
-                                 bool valid_manifest,
-                                 bool worker_check_passed)
+                                 bool valid_manifest)
     : errors(std::move(errors)),
       manifest_url(manifest_url),
       manifest(manifest),
@@ -39,8 +38,7 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
       primary_icon(primary_icon),
       has_maskable_primary_icon(has_maskable_primary_icon),
       screenshots(screenshots),
-      valid_manifest(valid_manifest),
-      worker_check_passed(worker_check_passed) {}
+      valid_manifest(valid_manifest) {}
 
 InstallableData::~InstallableData() = default;
 

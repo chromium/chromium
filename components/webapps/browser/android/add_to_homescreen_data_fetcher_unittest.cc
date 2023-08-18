@@ -157,14 +157,9 @@ class TestInstallableManager : public InstallableManager {
     } else if (params.valid_primary_icon && !primary_icon_) {
       code = NO_ACCEPTABLE_ICON;
       is_installable = false;
-    } else if (params.has_worker && !has_worker_) {
-      code = NOT_OFFLINE_CAPABLE;
-      is_installable = false;
     }
 
-    if (should_manifest_time_out_ ||
-        (params.valid_manifest && params.has_worker &&
-         should_service_worker_time_out_)) {
+    if (should_manifest_time_out_) {
       return;
     }
 
@@ -177,11 +172,8 @@ class TestInstallableManager : public InstallableManager {
          params.valid_primary_icon ? primary_icon_.get() : nullptr,
          params.prefer_maskable_icon,
          std::vector<webapps::Screenshot>() /* screenshots */,
-         params.valid_manifest ? is_installable : false,
-         params.has_worker ? is_installable : true});
+         params.valid_manifest ? is_installable : false});
   }
-
-  void SetHasServiceWorker(bool worker) { has_worker_ = worker; }
 
   void SetManifest(blink::mojom::ManifestPtr manifest) {
     DCHECK(manifest);
@@ -198,20 +190,13 @@ class TestInstallableManager : public InstallableManager {
     should_manifest_time_out_ = should_time_out;
   }
 
-  void SetShouldServiceWorkerTimeOut(bool should_time_out) {
-    should_service_worker_time_out_ = should_time_out;
-  }
-
  private:
   blink::mojom::ManifestPtr manifest_ = blink::mojom::Manifest::New();
   mojom::WebPageMetadataPtr metadata_ = mojom::WebPageMetadata::New();
   GURL primary_icon_url_;
   std::unique_ptr<SkBitmap> primary_icon_;
 
-  bool has_worker_ = true;
-
   bool should_manifest_time_out_ = false;
-  bool should_service_worker_time_out_ = false;
 };
 
 // Tests AddToHomescreenDataFetcher. These tests should be browser tests but
@@ -303,16 +288,8 @@ class AddToHomescreenDataFetcherTest
     installable_manager_->SetManifest(std::move(manifest));
   }
 
-  void SetHasServiceWorker(bool worker) {
-    installable_manager_->SetHasServiceWorker(worker);
-  }
-
   void SetShouldManifestTimeOut(bool should_time_out) {
     installable_manager_->SetShouldManifestTimeOut(should_time_out);
-  }
-
-  void SetShouldServiceWorkerTimeOut(bool should_time_out) {
-    installable_manager_->SetShouldServiceWorkerTimeOut(should_time_out);
   }
 
  private:
@@ -407,7 +384,6 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestFetchTimesOutPwa) {
 TEST_F(AddToHomescreenDataFetcherTest, ManifestFetchTimesOutNonPwa) {
   SetShouldManifestTimeOut(true);
   SetManifest(BuildDefaultManifest());
-  SetHasServiceWorker(false);
 
   // Check where InstallableManager finishes working after the time out and
   // determines non-PWA-ness.
@@ -425,7 +401,6 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestFetchTimesOutNonPwa) {
 
 TEST_F(AddToHomescreenDataFetcherTest, ManifestFetchTimesOutUnknown) {
   SetShouldManifestTimeOut(true);
-  SetShouldServiceWorkerTimeOut(true);
   SetManifest(BuildDefaultManifest());
 
   // Check where InstallableManager doesn't finish working after the time out.
@@ -443,7 +418,7 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestFetchTimesOutUnknown) {
 }
 
 TEST_F(AddToHomescreenDataFetcherTest, InstallableManifest) {
-  // Test a site that has an offline-capable service worker.
+  // Test a site that has valid manifest.
   SetManifest(BuildDefaultManifest());
 
   base::HistogramTester histograms;
@@ -473,7 +448,6 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNoNameNoShortName) {
   manifest->name = absl::nullopt;
   manifest->short_name = absl::nullopt;
 
-  // Check the case where we don't time out waiting for the service worker.
   SetManifest(std::move(manifest));
   ObserverWaiter waiter;
   std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);

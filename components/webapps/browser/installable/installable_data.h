@@ -48,8 +48,7 @@ struct InstallableData {
                   const SkBitmap* primary_icon,
                   bool has_maskable_primary_icon,
                   const std::vector<Screenshot>& screenshots,
-                  bool valid_manifest,
-                  bool worker_check_passed);
+                  bool valid_manifest);
 
   InstallableData(const InstallableData&) = delete;
   InstallableData& operator=(const InstallableData&) = delete;
@@ -91,13 +90,9 @@ struct InstallableData {
   const raw_ref<const std::vector<Screenshot>, DanglingUntriaged> screenshots;
 
   // true if the site has a valid, installable web app manifest. If
-  // |valid_manifest| or |worker_check_passed| was true and the site isn't
-  // installable, the reason will be in |errors|.
+  // |valid_manifest| was true and the site isn't installable, the reason will
+  // be in |errors|.
   const bool valid_manifest = false;
-
-  // true if the site has a service worker with a fetch handler or
-  // the service worker check was not requested when fetching this data.
-  const bool worker_check_passed = false;
 };
 
 using InstallableCallback = base::OnceCallback<void(const InstallableData&)>;

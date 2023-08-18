@@ -60,7 +60,6 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
   installable_manager->manifest_url_ = manifest_url;
   installable_manager->manifest_ = std::move(manifest);
 
-  const bool has_worker = true;
   std::vector<InstallableStatusCode> errors;
 
   // Not used:
@@ -73,7 +72,7 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
       std::move(errors), installable_manager->manifest_url_,
       *installable_manager->manifest_, *installable_manager->web_page_metadata_,
       GURL::EmptyGURL(), icon.get(), false, std::vector<Screenshot>(),
-      valid_manifest, has_worker);
+      valid_manifest);
 
   installable_manager->data_ = std::move(installable_data);
 
