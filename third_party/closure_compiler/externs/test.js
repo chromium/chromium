@@ -63,6 +63,13 @@ chrome.test.notifyPass = function(message) {};
 chrome.test.log = function(message) {};
 
 /**
+ * Open file: URLs for tests.
+ * @param {string} url
+ * @see https://developer.chrome.com/extensions/test#method-openFileUrl
+ */
+chrome.test.openFileUrl = function(url) {};
+
+/**
  * Sends a string message to the browser process, generating a Notification that
  * C++ test code can wait for.
  * @param {string} message

@@ -49,6 +49,8 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
                          bool clear_badge_text) override;
   void ClearActionCount(content::BrowserContext* context,
                         const Extension& extension) override;
+  void OpenFileUrl(const GURL& file_url,
+                   content::BrowserContext* browser_context) override;
   AppViewGuestDelegate* CreateAppViewGuestDelegate() const override;
   ExtensionOptionsGuestDelegate* CreateExtensionOptionsGuestDelegate(
       ExtensionOptionsGuest* guest) const override;

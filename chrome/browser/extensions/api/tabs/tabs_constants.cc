@@ -142,6 +142,8 @@ const char kCannotHighlightTabs[] =
     "progress.";
 const char kNotAllowedForDevToolsError[] =
     "Operation not allowed for DevTools windows";
+const char kFileUrlsNotAllowedInExtensionNavigations[] =
+    "Cannot navigate to a file URL without local file access.";
 
 }  // namespace tabs_constants
 }  // namespace extensions

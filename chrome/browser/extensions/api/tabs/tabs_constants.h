@@ -78,6 +78,7 @@ extern const char kWindowTypeValueDevTools[];
 
 // Error messages.
 extern const char kCannotZoomDisabledTabError[];
+extern const char kFileUrlsNotAllowedInExtensionNavigations[];
 extern const char kFrameNotFoundError[];
 extern const char kNoCrashBrowserError[];
 extern const char kNoCurrentWindowError[];

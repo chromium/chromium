@@ -117,6 +117,14 @@
         ]
       },
       {
+        "name": "openFileUrl",
+        "type": "function",
+        "description": "Open file: URLs for tests.",
+        "parameters": [
+          {"type": "string", "name": "url"}
+        ]
+      },
+      {
         "name": "sendMessage",
         "type": "function",
         "description": "Sends a string message to the browser process, generating a Notification that C++ test code can wait for.",

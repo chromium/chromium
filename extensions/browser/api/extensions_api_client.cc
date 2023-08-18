@@ -65,6 +65,10 @@ void ExtensionsAPIClient::UpdateActionCount(content::BrowserContext* context,
 void ExtensionsAPIClient::ClearActionCount(content::BrowserContext* context,
                                            const Extension& extension) {}
 
+void ExtensionsAPIClient::OpenFileUrl(
+    const GURL& file_url,
+    content::BrowserContext* browser_context) {}
+
 AppViewGuestDelegate* ExtensionsAPIClient::CreateAppViewGuestDelegate() const {
   return nullptr;
 }

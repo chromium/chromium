@@ -56,6 +56,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -862,6 +863,16 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
   // Don't let the extension navigate directly to chrome-untrusted scheme pages.
   if (url.SchemeIs(content::kChromeUIUntrustedScheme)) {
     return base::unexpected(tabs_constants::kCannotNavigateToChromeUntrusted);
+  }
+
+  // Don't let the extension navigate directly to file scheme pages, unless
+  // they have file access.
+  if (url.SchemeIsFile() &&
+      !util::AllowFileAccess(extension->id(), browser_context) &&
+      base::FeatureList::IsEnabled(
+          extensions_features::kRestrictFileURLNavigation)) {
+    return base::unexpected(
+        tabs_constants::kFileUrlsNotAllowedInExtensionNavigations);
   }
 
   if (extension && browser_context) {

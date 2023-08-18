@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -36,8 +37,12 @@
 #include "chrome/browser/guest_view/mime_handler_view/chrome_mime_handler_view_guest_delegate.h"
 #include "chrome/browser/guest_view/web_view/chrome_web_view_guest_delegate.h"
 #include "chrome/browser/guest_view/web_view/chrome_web_view_permission_helper_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/webui/devtools_ui.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
@@ -63,6 +68,8 @@
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -285,6 +292,20 @@ void ChromeExtensionsAPIClient::ClearActionCount(
     ExtensionActionAPI::Get(context)->NotifyChange(action, active_contents,
                                                    context);
   }
+}
+
+void ChromeExtensionsAPIClient::OpenFileUrl(
+    const GURL& file_url,
+    content::BrowserContext* browser_context) {
+  CHECK(file_url.is_valid());
+  CHECK(file_url.SchemeIsFile());
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  NavigateParams navigate_params(profile, file_url,
+                                 ui::PAGE_TRANSITION_FROM_API);
+  navigate_params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  navigate_params.browser =
+      chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/false);
+  Navigate(&navigate_params);
 }
 
 AppViewGuestDelegate* ChromeExtensionsAPIClient::CreateAppViewGuestDelegate()

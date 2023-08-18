@@ -36,6 +36,11 @@ BASE_FEATURE(kApiUserScripts,
              "ApiUserScripts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls the availability of navigation to file URLs.
+BASE_FEATURE(kRestrictFileURLNavigation,
+             "RestrictFileURLNavigation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features
 ///////////////////////////////////////////////////////////////////////////////

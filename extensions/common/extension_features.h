@@ -39,6 +39,7 @@ BASE_DECLARE_FEATURE(kApiReadingList);
 BASE_DECLARE_FEATURE(kApiRuntimeGetContexts);
 BASE_DECLARE_FEATURE(kApiSidePanelOpen);
 BASE_DECLARE_FEATURE(kApiUserScripts);
+BASE_DECLARE_FEATURE(kRestrictFileURLNavigation);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features
