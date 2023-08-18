@@ -63,7 +63,6 @@ ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
   }
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  SetFootnoteView(CreateFooterView());
   SetProperty(views::kElementIdentifierKey, kTopView);
 }
 
@@ -164,6 +163,8 @@ ManagePasswordsView::CreatePasswordDetailsView() {
             view->SetButtonLabel(
                 ui::DIALOG_BUTTON_OK,
                 l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_UPDATE));
+            view->GetBubbleFrameView()->SetFootnoteView(
+                view->CreateFooterView());
             view->PreferredSizeChanged();
             view->SizeToContents();
           },
@@ -224,14 +225,13 @@ std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
 
 void ManagePasswordsView::RecreateLayout() {
   views::BubbleFrameView* frame_view = GetBubbleFrameView();
-  DCHECK(frame_view);
-
+  CHECK(frame_view);
+  frame_view->SetFootnoteView(nullptr);
   if (controller_.get_currently_selected_password().has_value()) {
     frame_view->SetTitleView(ManagePasswordsDetailsView::CreateTitleView(
         controller_.get_currently_selected_password().value(),
         base::BindRepeating(&ManagePasswordsView::SwitchToListView,
                             base::Unretained(this))));
-    frame_view->SetFootnoteView(nullptr);
     std::unique_ptr<ManagePasswordsDetailsView> details_view =
         CreatePasswordDetailsView();
     password_details_view_ = details_view.get();
@@ -242,15 +242,14 @@ void ManagePasswordsView::RecreateLayout() {
                                      ->GetInsetsMetric(views::INSETS_DIALOG)
                                      .bottom()));
   } else {
+    password_details_view_ = nullptr;
     frame_view->SetTitleView(
         ManagePasswordsListView::CreateTitleView(controller_.GetTitle()));
-    frame_view->SetFootnoteView(CreateFooterView());
     page_container_->SwitchToPage(CreatePasswordListView());
     page_container_->SetProperty(
         views::kMarginsKey,
         gfx::Insets().set_bottom(ChromeLayoutProvider::Get()->GetDistanceMetric(
             DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)));
-    password_details_view_ = nullptr;
   }
   PreferredSizeChanged();
   SizeToContents();

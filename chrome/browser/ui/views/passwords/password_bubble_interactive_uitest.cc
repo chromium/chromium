@@ -515,15 +515,23 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_FALSE(IsBubbleShowing());
   ExecuteManagePasswordsCommand();
   ASSERT_TRUE(IsBubbleShowing());
+  // Navigate to the details view, and click on the Edit Note button to display
+  // the footer.
+  auto* bubble = PasswordBubbleViewBase::manage_password_bubble();
+  static_cast<ManagePasswordsView*>(bubble)->DisplayDetailsOfPasswordForTesting(
+      *test_form());
+  ClickOnView(bubble->GetViewByID(static_cast<int>(
+      password_manager::ManagePasswordsViewIDs::kEditNoteButton)));
 
   views::View* footnote_view = PasswordBubbleViewBase::manage_password_bubble()
                                    ->GetFootnoteViewForTesting();
+  ASSERT_TRUE(footnote_view);
   views::Link* link =
       static_cast<views::StyledLabel*>(footnote_view)->GetFirstLinkForTesting();
   ClickOnView(link);
   EXPECT_FALSE(IsBubbleShowing());
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectBucketCount(
       "PasswordManager.PasswordManagementBubble.UserAction",
       password_manager::metrics_util::PasswordManagementBubbleInteractions::
           kGooglePasswordManagerLinkClicked,
