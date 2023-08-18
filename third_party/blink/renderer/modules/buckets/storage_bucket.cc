@@ -151,9 +151,9 @@ ScriptPromise StorageBucket::expires(ScriptState* script_state) {
 IDBFactory* StorageBucket::indexedDB() {
   if (!idb_factory_) {
     idb_factory_ = MakeGarbageCollected<IDBFactory>(GetExecutionContext());
-    mojo::PendingRemote<mojom::blink::IDBFactory> factory;
-    remote_->GetIdbFactory(factory.InitWithNewPipeAndPassReceiver());
-    idb_factory_->SetFactory(std::move(factory), GetExecutionContext());
+    mojo::PendingRemote<mojom::blink::IDBFactory> remote_factory;
+    remote_->GetIdbFactory(remote_factory.InitWithNewPipeAndPassReceiver());
+    idb_factory_->SetRemote(std::move(remote_factory));
   }
   return idb_factory_;
 }

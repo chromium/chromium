@@ -871,9 +871,8 @@ void InspectorIndexedDBAgent::requestDatabaseNames(
                   protocol::Response::InternalError());
               return;
             }
-            idb_factory->GetDatabaseInfoForDevTools(
-                script_state, WTF::BindOnce(&OnGotDatabaseNames,
-                                            std::move(request_callback)));
+            idb_factory->GetDatabaseInfoForDevTools(WTF::BindOnce(
+                &OnGotDatabaseNames, std::move(request_callback)));
           },
           std::move(request_callback), WrapPersistent(frame)));
 }
