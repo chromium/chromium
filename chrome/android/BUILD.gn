@@ -269,11 +269,16 @@ if (current_toolchain == default_toolchain) {
     ]
   }
 
+  android_library("google_api_keys_java") {
+    srcjar_deps = [ ":chrome_android_java_google_api_keys_srcjar" ]
+  }
+
   android_library("chrome_java") {
     deps = [
       ":base_module_java",
       ":chrome_app_java_resources",
       ":chrome_public_apk_template_resources",
+      ":google_api_keys_java",
       ":update_proto_java",
       ":usage_stats_proto_java",
       "$google_play_services_package:google_play_services_auth_base_java",
@@ -645,7 +650,6 @@ if (current_toolchain == default_toolchain) {
 
     srcjar_deps = [
       ":chrome_android_java_enums_srcjar",
-      ":chrome_android_java_google_api_keys_srcjar",
       ":chrome_strict_mode_switch",
       ":resource_id_javagen",
       "//chrome:offline_pages_enum_javagen",
