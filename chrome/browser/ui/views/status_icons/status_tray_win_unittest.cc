@@ -7,14 +7,17 @@
 #include <commctrl.h>
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_icon_observer.h"
 #include "chrome/browser/ui/views/status_icons/status_icon_win.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/test/views_test_base.h"
 
 namespace {
 
@@ -60,70 +63,88 @@ class FakeStatusIconObserver : public StatusIconObserver {
   bool balloon_clicked_;
 };
 
-StatusIconWin* CreateStatusIcon(StatusTray* tray) {
-  return static_cast<StatusIconWin*>(tray->CreateStatusIcon(
+}  // namespace
+
+class StatusTrayWinTest : public ChromeViewsTestBase {
+ protected:
+  void SetUp() override {
+    set_native_widget_type(NativeWidgetType::kDesktop);
+    ChromeViewsTestBase::SetUp();
+  }
+};
+
+StatusIconWin* CreateStatusIcon(StatusTray& tray) {
+  return static_cast<StatusIconWin*>(tray.CreateStatusIcon(
       StatusTray::OTHER_ICON, gfx::test::CreateImageSkia(16, 16),
       std::u16string()));
 }
 
-}  // namespace
+void CreateContextMenu(StatusIconWin& icon) {
+  auto menu = std::make_unique<StatusIconMenuModel>(nullptr);
+  menu->AddItem(0, u"foo");
+  icon.SetContextMenu(std::move(menu));
+}
 
-TEST(StatusTrayWinTest, CreateTray) {
+TEST_F(StatusTrayWinTest, CreateTray) {
   // Just tests creation/destruction.
   StatusTrayWin tray;
 }
 
-TEST(StatusTrayWinTest, CreateIconAndMenu) {
-  // Create an icon, set the images, tooltip, and context menu, then shut it
-  // down.
+TEST_F(StatusTrayWinTest, CreateIconAndMenu) {
+  // Create an icon, set the context menu, then shut down.
   StatusTrayWin tray;
-  StatusIcon* icon = CreateStatusIcon(&tray);
-  std::unique_ptr<StatusIconMenuModel> menu(new StatusIconMenuModel(NULL));
-  menu->AddItem(0, u"foo");
-  icon->SetContextMenu(std::move(menu));
+  StatusIconWin* icon = CreateStatusIcon(tray);
+  CreateContextMenu(*icon);
 }
 
-#if !defined(USE_AURA)  // http://crbug.com/156370
-TEST(StatusTrayWinTest, ClickOnIcon) {
+TEST_F(StatusTrayWinTest, ClickOnIcon) {
   // Create an icon, send a fake click event, make sure observer is called.
   StatusTrayWin tray;
 
-  StatusIconWin* icon = CreateStatusIcon(&tray);
+  StatusIconWin* icon = CreateStatusIcon(tray);
   FakeStatusIconObserver observer;
   icon->AddObserver(&observer);
   // Mimic a click.
-  tray.WndProc(NULL, icon->message_id(), icon->icon_id(), WM_LBUTTONDOWN);
+  tray.WndProc(nullptr, icon->message_id(), icon->icon_id(), WM_LBUTTONDOWN);
   // Mimic a right-click - observer should not be called.
-  tray.WndProc(NULL, icon->message_id(), icon->icon_id(), WM_RBUTTONDOWN);
-  EXPECT_EQ(1, observer.status_icon_click_count());
+  tray.WndProc(nullptr, icon->message_id(), icon->icon_id(), WM_RBUTTONDOWN);
+  EXPECT_EQ(1u, observer.status_icon_click_count());
   icon->RemoveObserver(&observer);
 }
 
-TEST(StatusTrayWinTest, ClickOnBalloon) {
+TEST_F(StatusTrayWinTest, ContextMenu) {
+  // Create icon and context menu.
+  StatusTrayWin tray;
+  StatusIconWin* icon = CreateStatusIcon(tray);
+  CreateContextMenu(*icon);
+
+  // Trigger the context menu.
+  tray.WndProc(nullptr, icon->message_id(), icon->icon_id(), WM_RBUTTONDOWN);
+}
+
+TEST_F(StatusTrayWinTest, ClickOnBalloon) {
   // Create an icon, send a fake click event, make sure observer is called.
   StatusTrayWin tray;
-  StatusIconWin* icon = CreateStatusIcon(&tray);
+  StatusIconWin* icon = CreateStatusIcon(tray);
   FakeStatusIconObserver observer;
   icon->AddObserver(&observer);
   // Mimic a click.
-  tray.WndProc(
-      NULL, icon->message_id(), icon->icon_id(), TB_INDETERMINATE);
+  tray.WndProc(nullptr, icon->message_id(), icon->icon_id(), TB_INDETERMINATE);
   EXPECT_TRUE(observer.balloon_clicked());
   icon->RemoveObserver(&observer);
 }
 
-TEST(StatusTrayWinTest, HandleOldIconId) {
+TEST_F(StatusTrayWinTest, HandleOldIconId) {
   StatusTrayWin tray;
-  StatusIconWin* icon = CreateStatusIcon(&tray);
+  StatusIconWin* icon = CreateStatusIcon(tray);
   UINT message_id = icon->message_id();
   UINT icon_id = icon->icon_id();
 
   tray.RemoveStatusIcon(icon);
-  tray.WndProc(NULL, message_id, icon_id, WM_LBUTTONDOWN);
+  tray.WndProc(nullptr, message_id, icon_id, WM_LBUTTONDOWN);
 }
-#endif  // !defined(USE_AURA)
 
-TEST(StatusTrayWinTest, EnsureVisibleTest) {
+TEST_F(StatusTrayWinTest, EnsureVisibleTest) {
   StatusTrayWin tray;
 
   FakeStatusTrayStateChangerProxy* proxy =
@@ -131,7 +152,7 @@ TEST(StatusTrayWinTest, EnsureVisibleTest) {
   tray.SetStatusTrayStateChangerProxyForTest(
       std::unique_ptr<StatusTrayStateChangerProxy>(proxy));
 
-  StatusIconWin* icon = CreateStatusIcon(&tray);
+  StatusIconWin* icon = CreateStatusIcon(tray);
 
   icon->ForceVisible();
   // |proxy| is owned by |tray|, and |tray| lives to the end of the scope,
