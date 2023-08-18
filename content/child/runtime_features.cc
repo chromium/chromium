@@ -698,6 +698,24 @@ void ResolveInvalidConfigurations() {
     }
   }
 
+  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    LOG_IF(WARNING, WebRuntimeFeatures::IsSharedStorageAPIEnabled())
+        << "SharedStorage cannot be enabled in this "
+           "configuration. Use --"
+        << switches::kEnableFeatures << "="
+        << blink::features::kSharedStorageAPI.name << " in addition.";
+    WebRuntimeFeatures::EnableSharedStorageAPI(false);
+  }
+
+  if (!base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {
+    LOG_IF(WARNING, WebRuntimeFeatures::IsAttributionReportingEnabled())
+        << "AttributionReporting cannot be enabled in this "
+           "configuration. Use --"
+        << switches::kEnableFeatures << "="
+        << blink::features::kConversionMeasurement.name << " in addition.";
+    WebRuntimeFeatures::EnableAttributionReporting(false);
+  }
+
   if (!base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {
     LOG_IF(WARNING, WebRuntimeFeatures::IsAdInterestGroupAPIEnabled())
         << "AdInterestGroupAPI cannot be enabled in this "
@@ -705,6 +723,7 @@ void ResolveInvalidConfigurations() {
         << switches::kEnableFeatures << "="
         << blink::features::kInterestGroupStorage.name << " in addition.";
     WebRuntimeFeatures::EnableAdInterestGroupAPI(false);
+    WebRuntimeFeatures::EnableFledge(false);
   } else if (!base::FeatureList::IsEnabled(
                  blink::features::kFledgeBiddingAndAuctionServer)) {
     LOG_IF(WARNING,
