@@ -328,6 +328,8 @@ std::unique_ptr<BubbleParams> ParseBubbleParams(const base::Feature& feature) {
     LogParamValueParseError(feature.name, kCustomBubbleIdParamName);
     return nullptr;
   }
+  // Title of bubble could be empty.
+  param->title = GetParamValue(feature, kCustomBubbleTitleParamName);
   param->text = GetParamValue(feature, kCustomBubbleTextParamName);
   if (param->text.empty()) {
     LogParamValueParseError(feature.name, kCustomBubbleTextParamName);

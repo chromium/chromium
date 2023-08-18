@@ -321,6 +321,10 @@ void ScalableIphDelegateImpl::ShowBubble(
       params.bubble_id, NudgeCatalogName::kScalableIphBubble,
       base::UTF8ToUTF16(params.text), /*anchor_view=*/anchor_view);
 
+  if (!params.title.empty()) {
+    nudge_data.title_text = base::UTF8ToUTF16(params.title);
+  }
+
   // Currently, the help app on the shelf is the only view to which a bubble
   // will be anchored to. Therefore, if the anchor_view is non-null, the
   // nudge should be anchored to shelf. Once bubbles fully support anchor views,

@@ -167,11 +167,13 @@ constexpr char kCustomNotificationImageTypeValueWallpaper[] = "Wallpaper";
 
 // Parameters for a bubble UI. All fields are required field.
 // - Bubble ID: the id used to add and remove a bubble.
-// - Text: a text of a bubble.
+// - Title: the title of a bubble.
+// - Text: the text of a bubble.
 // - Button text: a text of a button in a bubble.
 // Currently only used for the help app nudge:
 // - Anchor view app ID: app id of the view to which a bubble is anchored.
 constexpr char kCustomBubbleIdParamName[] = "x_CustomBubbleId";
+constexpr char kCustomBubbleTitleParamName[] = "x_CustomBubbleTitle";
 constexpr char kCustomBubbleTextParamName[] = "x_CustomBubbleText";
 constexpr char kCustomBubbleButtonTextParamName[] = "x_CustomBubbleButtonText";
 constexpr char kCustomBubbleIconParamName[] = "x_CustomBubbleIcon";

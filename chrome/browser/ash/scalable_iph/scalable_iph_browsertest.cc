@@ -901,6 +901,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, InvokeIphByTimer_Bubble) {
 
   scalable_iph::ScalableIphDelegate::BubbleParams expected_params;
   expected_params.bubble_id = ScalableIphBrowserTestBase::kTestBubbleId;
+  expected_params.title = ScalableIphBrowserTestBase::kTestBubbleTitle;
   expected_params.text = ScalableIphBrowserTestBase::kTestBubbleText;
   expected_params.button.text =
       ScalableIphBrowserTestBase::kTestBubbleButtonText;
@@ -932,6 +933,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, InvokeIphByUnlock_Bubble) {
 
   scalable_iph::ScalableIphDelegate::BubbleParams expected_params;
   expected_params.bubble_id = ScalableIphBrowserTestBase::kTestBubbleId;
+  expected_params.title = ScalableIphBrowserTestBase::kTestBubbleTitle;
   expected_params.text = ScalableIphBrowserTestBase::kTestBubbleText;
   expected_params.button.text =
       ScalableIphBrowserTestBase::kTestBubbleButtonText;
@@ -1102,6 +1104,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubbleInvalidConfig,
   // Simulate an invalid config (i.e. missing bubble_id).
   scalable_iph::ScalableIphDelegate::BubbleParams invalid_params;
   invalid_params.bubble_id = "";
+  invalid_params.title = ScalableIphBrowserTestBase::kTestBubbleTitle;
   invalid_params.text = ScalableIphBrowserTestBase::kTestBubbleText;
   invalid_params.button.text =
       ScalableIphBrowserTestBase::kTestBubbleButtonText;

@@ -82,6 +82,7 @@ class ScalableIphDelegate {
     ~BubbleParams();
 
     std::string bubble_id;
+    std::string title;
     std::string text;
     BubbleIcon icon = BubbleIcon::kNoIcon;
     Button button;
