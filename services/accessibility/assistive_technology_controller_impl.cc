@@ -83,23 +83,15 @@ void AssistiveTechnologyControllerImpl::RunScriptForTest(
     mojom::AssistiveTechnologyType type,
     const std::string& script,
     base::OnceClosure on_complete) {
-  GetV8Manager(type)->RunScriptForTest(  // IN-TEST
+  enabled_ATs_.find(type)->second.RunScriptForTest(  // IN-TEST
       script, std::move(on_complete));
 }
 
 void AssistiveTechnologyControllerImpl::AddInterfaceForTest(
     mojom::AssistiveTechnologyType type,
     std::unique_ptr<InterfaceBinder> test_interface) {
-  GetV8Manager(type)->AddInterfaceForTest(  // IN-TEST
+  enabled_ATs_.find(type)->second.AddInterfaceForTest(  // IN-TEST
       std::move(test_interface));
-}
-
-V8Manager* AssistiveTechnologyControllerImpl::GetV8Manager(
-    mojom::AssistiveTechnologyType type) {
-  if (auto it = enabled_ATs_.find(type); it != enabled_ATs_.end()) {
-    return &it->second;
-  }
-  return nullptr;
 }
 
 void AssistiveTechnologyControllerImpl::CreateV8ManagerForType(
@@ -109,6 +101,7 @@ void AssistiveTechnologyControllerImpl::CreateV8ManagerForType(
     BindingsIsolateHolder::InitializeV8();
     v8_initialized_ = true;
   }
+
   V8Manager& manager = enabled_ATs_[type];
 
   // Install bindings on the global context depending on the type.
