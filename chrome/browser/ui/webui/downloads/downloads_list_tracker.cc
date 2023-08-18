@@ -233,7 +233,10 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
 
   base::FilePath download_path(download_item->GetTargetFilePath());
   file_value->file_path = download_path.AsUTF8Unsafe();
-  file_value->file_url = net::FilePathToFileURL(download_path).spec();
+  GURL file_url = net::FilePathToFileURL(download_path);
+  if (file_url.is_valid()) {
+    file_value->file_url = file_url.spec();
+  }
 
   extensions::DownloadedByExtension* by_ext =
       extensions::DownloadedByExtension::Get(download_item);
