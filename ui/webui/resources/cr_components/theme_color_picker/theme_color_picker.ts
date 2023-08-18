@@ -17,7 +17,7 @@ import {ThemeColorPickerBrowserProxy} from './browser_proxy.js';
 import {Color, ColorType, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR, LIGHT_DEFAULT_COLOR, SelectedColor} from './color_utils.js';
 import {ThemeColorElement} from './theme_color.js';
 import {getTemplate} from './theme_color_picker.html.js';
-import {ChromeColor, Theme} from './theme_color_picker.mojom-webui.js';
+import {ChromeColor, Theme, ThemeColorPickerHandlerRemote} from './theme_color_picker.mojom-webui.js';
 import {ThemeHueSliderDialogElement} from './theme_hue_slider_dialog.js';
 
 const ThemeColorPickerElementBase = I18nMixin(PolymerElement);
@@ -129,14 +129,17 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   private showManagedDialog_: boolean;
   private isChromeRefresh2023_: boolean;
 
+  private handler_: ThemeColorPickerHandlerRemote;
+
   override connectedCallback() {
     super.connectedCallback();
+    this.handler_ = ThemeColorPickerBrowserProxy.getInstance().handler;
     this.setThemeListenerId_ =
         ThemeColorPickerBrowserProxy.getInstance()
             .callbackRouter.setTheme.addListener((theme: Theme) => {
               this.theme_ = theme;
             });
-    ThemeColorPickerBrowserProxy.getInstance().handler.updateTheme();
+    this.handler_.updateTheme();
   }
 
   override disconnectedCallback() {
@@ -259,21 +262,21 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     if (this.handleClickForManagedColors_()) {
       return;
     }
-    ThemeColorPickerBrowserProxy.getInstance().handler.setDefaultColor();
+    this.handler_.setDefaultColor();
   }
 
   private onGreyDefaultColorClick_() {
     if (this.handleClickForManagedColors_()) {
       return;
     }
-    ThemeColorPickerBrowserProxy.getInstance().handler.setGreyDefaultColor();
+    this.handler_.setGreyDefaultColor();
   }
 
   private onMainColorClick_() {
     if (this.handleClickForManagedColors_()) {
       return;
     }
-    ThemeColorPickerBrowserProxy.getInstance().handler.setSeedColor(
+    this.handler_.setSeedColor(
         this.theme_!.backgroundImageMainColor!, BrowserColorVariant.kTonalSpot);
   }
 
@@ -282,8 +285,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
       return;
     }
     const color = this.$.chromeColors.itemForElement(e.target as HTMLElement);
-    ThemeColorPickerBrowserProxy.getInstance().handler.setSeedColor(
-        color.seed, color.variant);
+    this.handler_.setSeedColor(color.seed, color.variant);
   }
 
   private onCustomColorClick_() {
@@ -300,7 +302,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   }
 
   private onCustomColorChange_(e: Event) {
-    ThemeColorPickerBrowserProxy.getInstance().handler.setSeedColor(
+    this.handler_.setSeedColor(
         hexColorToSkColor((e.target as HTMLInputElement).value),
         BrowserColorVariant.kTonalSpot);
   }
@@ -332,12 +334,10 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     }
   }
 
-  private updateColors_() {
-    ThemeColorPickerBrowserProxy.getInstance()
-        .handler.getChromeColors(this.theme_.isDarkMode, false)
-        .then(({colors}) => {
-          this.colors_ = colors;
-        });
+  private async updateColors_() {
+    this.colors_ =
+        (await this.handler_.getChromeColors(this.theme_.isDarkMode, false))
+            .colors;
   }
 
   private onManagedDialogClosed_() {

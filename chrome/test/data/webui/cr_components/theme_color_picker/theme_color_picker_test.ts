@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
+import 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.js';
 
 import {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import {ThemeColorPickerBrowserProxy} from 'chrome://resources/cr_components/theme_color_picker/browser_proxy.js';
@@ -12,11 +13,10 @@ import {ThemeColorPickerElement} from 'chrome://resources/cr_components/theme_co
 import {ChromeColor, Theme, ThemeColorPickerClientCallbackRouter, ThemeColorPickerClientRemote, ThemeColorPickerHandlerRemote} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.mojom-webui.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {BrowserColorVariant} from 'chrome://resources/mojo/ui/base/mojom/themes.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-
-import {$$, assertStyle, capture, installMock} from './test_support.js';
+import {$$, eventToPromise, hasStyle} from 'chrome://webui-test/test_util.js';
 
 function createTheme(isDarkMode = false): Theme {
   return {
@@ -38,18 +38,17 @@ function createTheme(isDarkMode = false): Theme {
 
 suite('CrComponentsThemeColorPickerTest', () => {
   let colorsElement: ThemeColorPickerElement;
-  let handler: TestMock<ThemeColorPickerHandlerRemote>;
+  let handler: TestMock<ThemeColorPickerHandlerRemote>&
+      ThemeColorPickerHandlerRemote;
   let callbackRouter: ThemeColorPickerClientRemote;
   let chromeColorsResolver: PromiseResolver<{colors: ChromeColor[]}>;
 
   setup(() => {
     document.documentElement.toggleAttribute('chrome-refresh-2023', false);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    handler = installMock(
-        ThemeColorPickerHandlerRemote,
-        (mock: ThemeColorPickerHandlerRemote) =>
-            ThemeColorPickerBrowserProxy.setInstance(
-                mock, new ThemeColorPickerClientCallbackRouter()));
+    handler = TestMock.fromClass(ThemeColorPickerHandlerRemote);
+    ThemeColorPickerBrowserProxy.setInstance(
+        handler, new ThemeColorPickerClientCallbackRouter());
     callbackRouter = ThemeColorPickerBrowserProxy.getInstance()
                          .callbackRouter.$.bindNewPipeAndPassRemote();
     chromeColorsResolver = new PromiseResolver();
@@ -57,7 +56,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
 
   function initializeElement() {
     handler.setResultFor('getChromeColors', chromeColorsResolver.promise);
-    colorsElement = new ThemeColorPickerElement();
+    colorsElement = document.createElement('cr-theme-color-picker');
     document.body.appendChild(colorsElement);
   }
 
@@ -341,8 +340,8 @@ suite('CrComponentsThemeColorPickerTest', () => {
     // Custom color circle should be updated.
     assertEquals(0xffff0000, colorsElement.$.customColor.backgroundColor.value);
     assertEquals(0xff00ff00, colorsElement.$.customColor.foregroundColor.value);
-    assertStyle(
-        colorsElement.$.colorPickerIcon, 'background-color', 'rgb(0, 0, 255)');
+    assertTrue(hasStyle(
+        colorsElement.$.colorPickerIcon, 'background-color', 'rgb(0, 0, 255)'));
 
     // Set a theme that is not a custom color theme.
     const otherTheme = createTheme();
@@ -356,8 +355,8 @@ suite('CrComponentsThemeColorPickerTest', () => {
     // Custom color circle should be not be updated.
     assertEquals(0xffff0000, colorsElement.$.customColor.backgroundColor.value);
     assertEquals(0xff00ff00, colorsElement.$.customColor.foregroundColor.value);
-    assertStyle(
-        colorsElement.$.colorPickerIcon, 'background-color', 'rgb(0, 0, 255)');
+    assertTrue(hasStyle(
+        colorsElement.$.colorPickerIcon, 'background-color', 'rgb(0, 0, 255)'));
   });
 
   test('update colorPicker value for theme in GM3', async () => {
@@ -578,7 +577,8 @@ suite('CrComponentsThemeColorPickerTest', () => {
           callbackRouter.setTheme(theme);
           await callbackRouter.$.flushForTesting();
           await waitAfterNextRender(colorsElement);
-          const click = capture(colorsElement.$.colorPicker, 'click');
+          eventToPromise('click', colorsElement.$.colorPicker)
+              .then(() => assertNotReached());
 
           $$<HTMLElement>(colorsElement, selector)!.click();
           await waitAfterNextRender(colorsElement);
@@ -589,7 +589,6 @@ suite('CrComponentsThemeColorPickerTest', () => {
           assertTrue(managedDialog.$.dialog.open);
           assertEquals(0, handler.getCallCount('setDefaultColor'));
           assertEquals(0, handler.getCallCount('setSeedColor'));
-          assertFalse(click.received);
         });
       });
 });

@@ -3,36 +3,34 @@
 // found in the LICENSE file.
 
 import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
+import 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.js';
 
 import {ThemeColorPickerBrowserProxy} from 'chrome://resources/cr_components/theme_color_picker/browser_proxy.js';
 import {ThemeColorPickerElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.js';
 import {ThemeColorPickerClientCallbackRouter, ThemeColorPickerHandlerRemote} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.mojom-webui.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
-
-import {capture, installMock} from './test_support.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('CrComponentsThemeColorPickerFocusTest', () => {
   let colorsElement: ThemeColorPickerElement;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const handler = installMock(
-        ThemeColorPickerHandlerRemote,
-        (mock: ThemeColorPickerHandlerRemote) =>
-            ThemeColorPickerBrowserProxy.setInstance(
-                mock, new ThemeColorPickerClientCallbackRouter()));
+    const handler = TestMock.fromClass(ThemeColorPickerHandlerRemote);
+    ThemeColorPickerBrowserProxy.setInstance(
+        handler, new ThemeColorPickerClientCallbackRouter());
     handler.setResultFor('getChromeColors', new Promise(() => {}));
-    colorsElement = new ThemeColorPickerElement();
+    colorsElement = document.createElement('cr-theme-color-picker');
     document.body.appendChild(colorsElement);
   });
 
-  test('opens color picker', () => {
-    const focus = capture(colorsElement.$.colorPicker, 'focus');
-    const click = capture(colorsElement.$.colorPicker, 'click');
+  test('opens color picker', async () => {
+    const focus = eventToPromise('focus', colorsElement.$.colorPicker);
+    const click = eventToPromise('click', colorsElement.$.colorPicker);
 
     colorsElement.$.customColor.click();
 
-    assertTrue(focus.received);
-    assertTrue(click.received);
+    await focus;
+    await click;
   });
 });

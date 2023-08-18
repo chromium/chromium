@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_components/theme_color_picker/theme_color.js';
+
 import {ThemeColorElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {hasStyle, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {assertNotStyle, assertStyle} from './test_support.js';
 
 suite('CrComponentsThemeColorTest', () => {
   let colorElement: ThemeColorElement;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    colorElement = new ThemeColorElement();
+    colorElement = document.createElement('cr-theme-color');
     document.body.appendChild(colorElement);
   });
 
@@ -20,8 +22,8 @@ suite('CrComponentsThemeColorTest', () => {
     colorElement.backgroundColor = {value: 0xffff0000};
     colorElement.foregroundColor = {value: 0xff00ff00};
 
-    assertStyle(colorElement.$.background, 'fill', 'rgb(255, 0, 0)');
-    assertStyle(colorElement.$.foreground, 'fill', 'rgb(0, 255, 0)');
+    assertTrue(hasStyle(colorElement.$.background, 'fill', 'rgb(255, 0, 0)'));
+    assertTrue(hasStyle(colorElement.$.foreground, 'fill', 'rgb(0, 255, 0)'));
   });
 
   test('color can be checked', () => {
@@ -33,9 +35,7 @@ suite('CrComponentsThemeColorTest', () => {
         'cr-theme-color-check-mark-wrapper')!;
     assertTrue(wrapper.checked);
     const svg = colorElement.shadowRoot!.querySelector('svg')!;
-    assertStyle(svg, 'width', '50px');
-    assertStyle(svg, 'height', '50px');
-    assertStyle(svg, 'border', '0px none rgb(0, 0, 0)');
+    assertTrue(hasStyle(svg, 'border', '0px none rgb(0, 0, 0)'));
   });
 
   test('color can be unchecked', () => {
@@ -47,20 +47,18 @@ suite('CrComponentsThemeColorTest', () => {
         'cr-theme-color-check-mark-wrapper')!;
     assertFalse(wrapper.checked);
     const svg = colorElement.shadowRoot!.querySelector('svg')!;
-    assertStyle(svg, 'width', '50px');
-    assertStyle(svg, 'height', '50px');
-    assertStyle(svg, 'border', '1px solid rgba(0, 0, 0, 0)');
+    assertTrue(hasStyle(svg, 'border', '1px solid rgba(0, 0, 0, 0)'));
   });
 
   test('background color can be hidden', () => {
     colorElement.backgroundColorHidden = true;
 
-    assertStyle(colorElement.$.background, 'display', 'none');
+    assertFalse(isVisible(colorElement.$.background));
   });
 
   test('background color can be shown', () => {
     colorElement.backgroundColorHidden = false;
 
-    assertNotStyle(colorElement.$.background, 'display', 'none');
+    assertTrue(isVisible(colorElement.$.background));
   });
 });

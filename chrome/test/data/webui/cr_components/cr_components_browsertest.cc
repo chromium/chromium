@@ -26,11 +26,6 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, CertificateManagerProvisioning) {
 }
 #endif  // BUILDFLAG(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(CrComponentsTest, CheckMarkWrapper) {
-  set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);
-  RunTest("cr_components/check_mark_wrapper_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, ColorChangeListener) {
   RunTest("cr_components/color_change_listener_test.js", "mocha.run()");
 }
@@ -90,21 +85,6 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, SettingsPrefUtils) {
   // Preload a settings URL, so that the test can access settingsPrivate.
   set_test_loader_host(chrome::kChromeUISettingsHost);
   RunTest("cr_components/settings_pref_util_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsTest, ThemeColor) {
-  set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);
-  RunTest("cr_components/theme_color_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsTest, ThemeColorPicker) {
-  set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);
-  RunTest("cr_components/theme_color_picker_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsTest, ThemeHueSliderDialog) {
-  set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);
-  RunTest("cr_components/theme_hue_slider_dialog_test.js", "mocha.run()");
 }
 
 typedef WebUIMochaBrowserTest CrComponentsAppManagementTest;
@@ -193,4 +173,29 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, Theming) {
 IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, Prerendering) {
   RunTest("cr_components/most_visited_test.js",
           "runMochaSuite('Prerendering');");
+}
+
+typedef WebUIMochaBrowserTest CrComponentsThemeColorPickerTest;
+IN_PROC_BROWSER_TEST_F(CrComponentsThemeColorPickerTest, ThemeColor) {
+  set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);
+  RunTest("cr_components/theme_color_picker/theme_color_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsThemeColorPickerTest, CheckMarkWrapper) {
+  set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);
+  RunTest("cr_components/theme_color_picker/check_mark_wrapper_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsThemeColorPickerTest, ThemeColorPicker) {
+  set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);
+  RunTest("cr_components/theme_color_picker/theme_color_picker_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsThemeColorPickerTest, ThemeHueSliderDialog) {
+  set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);
+  RunTest("cr_components/theme_color_picker/theme_hue_slider_dialog_test.js",
+          "mocha.run()");
 }
