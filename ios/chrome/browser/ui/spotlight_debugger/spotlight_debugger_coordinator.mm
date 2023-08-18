@@ -7,7 +7,9 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
+#import "ios/chrome/app/spotlight/open_tabs_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
+#import "ios/chrome/app/spotlight/topsites_spotlight_manager.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -32,13 +34,16 @@
 
   self.viewController = [[SpotlightDebuggerViewController alloc] init];
   self.viewController.delegate = self;
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.viewController.bookmarksManager = [BookmarksSpotlightManager
-      bookmarksSpotlightManagerWithBrowserState:self.browser
-                                                    ->GetBrowserState()];
+      bookmarksSpotlightManagerWithBrowserState:browserState];
 
   self.viewController.readingListSpotlightManager = [ReadingListSpotlightManager
-      readingListSpotlightManagerWithBrowserState:self.browser
-                                                      ->GetBrowserState()];
+      readingListSpotlightManagerWithBrowserState:browserState];
+  self.viewController.openTabsSpotlightManager = [OpenTabsSpotlightManager
+      openTabsSpotlightManagerWithBrowserState:browserState];
+  self.viewController.topSitesSpotlightManager = [TopSitesSpotlightManager
+      topSitesSpotlightManagerWithBrowserState:browserState];
 
   UINavigationController* navController = [[UINavigationController alloc]
       initWithRootViewController:self.viewController];

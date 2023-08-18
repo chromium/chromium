@@ -8,10 +8,12 @@
 #import "base/notreached.h"
 #import "base/time/time.h"
 #import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
+#import "ios/chrome/app/spotlight/open_tabs_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
+#import "ios/chrome/app/spotlight/topsites_spotlight_manager.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -37,6 +39,8 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
   ClearAllRow = 0,
   ReindexBookmarks,
   ReindexReadingList,
+  ReindexOpenTabs,
+  ReindexTopSites,
   DebugCommandsRowsCount,
 };
 
@@ -64,6 +68,8 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
 - (void)dealloc {
   [self.bookmarksManager shutdown];
   [self.readingListSpotlightManager shutdown];
+  [self.openTabsSpotlightManager shutdown];
+  [self.topSitesSpotlightManager shutdown];
 }
 
 #pragma mark - Public
@@ -151,6 +157,18 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
                                                      kSymbolAccessoryPointSize);
           break;
         }
+        case ReindexOpenTabs: {
+          content.text = @"Clear and Reindex open tabs";
+          content.image = DefaultSymbolWithPointSize(@"bin.xmark",
+                                                     kSymbolAccessoryPointSize);
+          break;
+        }
+        case ReindexTopSites: {
+          content.text = @"Clear and Reindex Top sites";
+          content.image = DefaultSymbolWithPointSize(@"bin.xmark",
+                                                     kSymbolAccessoryPointSize);
+          break;
+        }
         default:
           NOTREACHED();
           break;
@@ -193,6 +211,12 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           break;
         case ReindexReadingList:
           [self clearAndReindexReadingList];
+          break;
+        case ReindexOpenTabs:
+          [self clearAndReindexOpenTabs];
+          break;
+        case ReindexTopSites:
+          [self clearAndReindexTopSites];
           break;
         default:
           NOTREACHED();
@@ -238,6 +262,16 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
 
 - (void)clearAndReindexReadingList {
   [self.readingListSpotlightManager clearAndReindexReadingList];
+  [self.tableView reloadData];
+}
+
+- (void)clearAndReindexOpenTabs {
+  [self.openTabsSpotlightManager clearAndReindexOpenTabs];
+  [self.tableView reloadData];
+}
+
+- (void)clearAndReindexTopSites {
+  [self.topSitesSpotlightManager reindexTopSites];
   [self.tableView reloadData];
 }
 
