@@ -184,7 +184,7 @@ public class OmniboxFeatures {
      * Returns whether the omnibox's recycler view pool should be pre-warmed prior to initial use.
      */
     public static boolean shouldPreWarmRecyclerViewPool() {
-        return sWarmRecycledViewPoolFlag.isEnabled();
+        return !isLowMemoryDevice() && sWarmRecycledViewPoolFlag.isEnabled();
     }
 
     /**
