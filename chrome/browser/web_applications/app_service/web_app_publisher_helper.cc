@@ -602,12 +602,11 @@ apps::Permissions WebAppPublisherHelper::CreatePermissions(
 
 // static
 apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
-    const web_app::AppId& app_id,
-    const GURL& app_scope,
-    const apps::ShareTarget* app_share_target,
-    const apps::FileHandlers* enabled_file_handlers) {
+    const WebAppProvider& provider,
+    const web_app::WebApp& app) {
   apps::IntentFilters filters;
 
+  GURL app_scope = provider.registrar_unsafe().GetAppScope(app.app_id());
   if (!app_scope.is_empty()) {
     filters.push_back(apps_util::MakeIntentFilterForUrlScope(app_scope));
   }
@@ -615,25 +614,27 @@ apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
     for (const char* scope_extension :
-         ChromeOsWebAppExperiments::GetScopeExtensions(app_id)) {
+         ChromeOsWebAppExperiments::GetScopeExtensions(app.app_id())) {
       filters.push_back(
           apps_util::MakeIntentFilterForUrlScope(GURL(scope_extension)));
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (app_share_target) {
+  if (app.share_target()) {
     base::Extend(filters,
-                 CreateShareIntentFiltersFromShareTarget(*app_share_target));
+                 CreateShareIntentFiltersFromShareTarget(*app.share_target()));
   }
 
+  const apps::FileHandlers* enabled_file_handlers =
+      provider.os_integration_manager().GetEnabledFileHandlers(app.app_id());
   if (enabled_file_handlers) {
     base::Extend(filters,
                  CreateIntentFiltersFromFileHandlers(*enabled_file_handlers));
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (app_id == ash::kChromeUIUntrustedProjectorSwaAppId) {
+  if (app.app_id() == ash::kChromeUIUntrustedProjectorSwaAppId) {
     filters.push_back(apps_util::MakeIntentFilterForUrlScope(
         GURL(ash::kChromeUIUntrustedProjectorPwaUrl)));
   }
@@ -702,13 +703,8 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   app->paused = IsPaused(web_app->app_id());
 
   // Add the intent filters for PWAs.
-  base::Extend(
-      app->intent_filters,
-      CreateIntentFiltersForWebApp(
-          web_app->app_id(), registrar().GetAppScope(web_app->app_id()),
-          registrar().GetAppShareTarget(web_app->app_id()),
-          provider_->os_integration_manager().GetEnabledFileHandlers(
-              web_app->app_id())));
+  base::Extend(app->intent_filters,
+               CreateIntentFiltersForWebApp(*provider_, *web_app));
 
   // These filters are used by the settings page to display would-be-handled
   // extensions even when the feature is not enabled for the app, whereas

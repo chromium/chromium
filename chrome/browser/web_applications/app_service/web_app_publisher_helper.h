@@ -65,7 +65,6 @@ class Profile;
 class GURL;
 
 namespace apps {
-struct ShareTarget;
 struct AppLaunchParams;
 enum class RunOnOsLoginMode;
 }  // namespace apps
@@ -286,14 +285,9 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
 
   bool IsShuttingDown() const;
 
-  // Create intent filters for `app_id`. The `app_scope` is needed because
-  // currently the correct app scope is not provided through WebApp API for
-  // shortcuts.
   static apps::IntentFilters CreateIntentFiltersForWebApp(
-      const web_app::AppId& app_id,
-      const GURL& app_scope,
-      const apps::ShareTarget* app_share_target,
-      const apps::FileHandlers* enabled_file_handlers);
+      const WebAppProvider& provider,
+      const web_app::WebApp& app);
 
  private:
 #if BUILDFLAG(IS_CHROMEOS)

@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -169,15 +170,18 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_LockScreen_DisabledByFlag) {
 
 TEST_F(WebAppPublisherHelperTest,
        CreateIntentFiltersForWebApp_WebApp_HasUrlFilter) {
-  auto web_app = web_app::test::CreateWebApp();
-  DCHECK(web_app->start_url().is_valid());
-  GURL scope = web_app->start_url().GetWithoutFilename();
-  web_app->SetScope(scope);
+  const WebApp* app = nullptr;
+  {
+    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
+    auto new_app = test::CreateWebApp();
+    app = new_app.get();
+    DCHECK(new_app->start_url().is_valid());
+    new_app->SetScope(new_app->start_url().GetWithoutFilename());
+    update->CreateApp(std::move(new_app));
+  }
 
   apps::IntentFilters filters =
-      WebAppPublisherHelper::CreateIntentFiltersForWebApp(
-          web_app->app_id(), scope,
-          /*app_share_target*/ nullptr, /*enabled_file_handlers*/ nullptr);
+      WebAppPublisherHelper::CreateIntentFiltersForWebApp(*provider_, *app);
 
   ASSERT_EQ(filters.size(), 1u);
   apps::IntentFilterPtr& filter = filters[0];
@@ -201,7 +205,7 @@ TEST_F(WebAppPublisherHelperTest,
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               apps::PatternMatchType::kLiteral);
-    EXPECT_EQ(condition.condition_values[0]->value, scope.scheme());
+    EXPECT_EQ(condition.condition_values[0]->value, app->scope().scheme());
   }
 
   {
@@ -211,7 +215,7 @@ TEST_F(WebAppPublisherHelperTest,
     EXPECT_EQ(condition.condition_values[0]->match_type,
               apps::PatternMatchType::kLiteral);
     EXPECT_EQ(condition.condition_values[0]->value,
-              apps_util::AuthorityView::Encode(scope));
+              apps_util::AuthorityView::Encode(app->scope()));
   }
 
   {
@@ -220,30 +224,33 @@ TEST_F(WebAppPublisherHelperTest,
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               apps::PatternMatchType::kPrefix);
-    EXPECT_EQ(condition.condition_values[0]->value, scope.path());
+    EXPECT_EQ(condition.condition_values[0]->value, app->scope().path());
   }
 }
 
 TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
-  auto web_app = web_app::test::CreateWebApp();
-  DCHECK(web_app->start_url().is_valid());
-  GURL scope = web_app->start_url().GetWithoutFilename();
-  web_app->SetScope(scope);
+  const WebApp* app = nullptr;
+  {
+    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
+    auto new_app = test::CreateWebApp();
+    app = new_app.get();
+    DCHECK(new_app->start_url().is_valid());
+    new_app->SetScope(new_app->start_url().GetWithoutFilename());
 
-  apps::FileHandler::AcceptEntry accept_entry;
-  accept_entry.mime_type = "text/plain";
-  accept_entry.file_extensions.insert(".txt");
-  apps::FileHandler file_handler;
-  file_handler.action = GURL("https://example.com/path/handler.html");
-  file_handler.accept.push_back(std::move(accept_entry));
-  apps::FileHandlers file_handlers;
-  file_handlers.push_back(std::move(file_handler));
-  web_app->SetFileHandlers(file_handlers);
+    apps::FileHandler::AcceptEntry accept_entry;
+    accept_entry.mime_type = "text/plain";
+    accept_entry.file_extensions.insert(".txt");
+    apps::FileHandler file_handler;
+    file_handler.action = GURL("https://example.com/path/handler.html");
+    file_handler.accept.push_back(std::move(accept_entry));
+    new_app->SetFileHandlers({std::move(file_handler)});
+    new_app->SetFileHandlerOsIntegrationState(OsIntegrationState::kEnabled);
+
+    update->CreateApp(std::move(new_app));
+  }
 
   apps::IntentFilters filters =
-      WebAppPublisherHelper::CreateIntentFiltersForWebApp(
-          web_app->app_id(), scope,
-          /*app_share_target*/ nullptr, &file_handlers);
+      WebAppPublisherHelper::CreateIntentFiltersForWebApp(*provider_, *app);
 
   ASSERT_EQ(filters.size(), 2u);
   // 1st filter is URL filter.
