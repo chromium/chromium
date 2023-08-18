@@ -4,16 +4,19 @@
 
 #include "components/pdf/browser/pdf_web_contents_helper.h"
 
+#include "base/test/metrics/user_action_tester.h"
 #include "components/pdf/browser/pdf_web_contents_helper_client.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/gfx/selection_bound.h"
 
 namespace pdf {
@@ -184,11 +187,11 @@ IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SelectionChanged) {
   EXPECT_EQ(gfx::RectF(), gfx::RectFBetweenSelectionBounds(start, end));
   EXPECT_EQ(gfx::RectF(), gfx::RectFBetweenVisibleSelectionBounds(start, end));
 
-  gfx::PointF left(1.0f, 1.0f);
-  gfx::PointF right(5.0f, 5.0f);
-  int32_t left_height = 2;
-  int32_t right_height = 2;
-  SelectionChanged(left, left_height, right, right_height);
+  constexpr gfx::PointF kLeft(1.0f, 1.0f);
+  constexpr gfx::PointF kRight(5.0f, 5.0f);
+  constexpr int32_t kLeftHeight = 2;
+  constexpr int32_t kRightHeight = 2;
+  SelectionChanged(kLeft, kLeftHeight, kRight, kRightHeight);
 
   start = manager->GetSelectionBoundStart();
   end = manager->GetSelectionBoundEnd();
@@ -198,16 +201,17 @@ IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SelectionChanged) {
   if (view)
     origin_f = view->TransformPointToRootCoordSpaceF(gfx::PointF());
 
-  gfx::PointF edge_start(left.x() + origin_f.x(), left.y() + origin_f.y());
-  gfx::PointF edge_end(left.x() + origin_f.x(),
-                       left.y() + origin_f.y() + left_height);
+  gfx::PointF edge_start(kLeft.x() + origin_f.x(), kLeft.y() + origin_f.y());
+  gfx::PointF edge_end(kLeft.x() + origin_f.x(),
+                       kLeft.y() + origin_f.y() + kLeftHeight);
   gfx::SelectionBound expected_start;
   expected_start.SetEdge(edge_start, edge_end);
   expected_start.SetVisibleEdge(edge_start, edge_end);
 
-  edge_start = gfx::PointF(right.x() + origin_f.x(), right.y() + origin_f.y());
-  edge_end = gfx::PointF(right.x() + origin_f.x(),
-                         right.y() + origin_f.y() + right_height);
+  edge_start =
+      gfx::PointF(kRight.x() + origin_f.x(), kRight.y() + origin_f.y());
+  edge_end = gfx::PointF(kRight.x() + origin_f.x(),
+                         kRight.y() + origin_f.y() + kRightHeight);
   gfx::SelectionBound expected_end;
   expected_end.SetEdge(edge_start, edge_end);
   expected_end.SetVisibleEdge(edge_start, edge_end);
@@ -232,6 +236,45 @@ IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SelectionChanged) {
   // the quick menu.
   EXPECT_EQ(expected_rect, gfx::RectFBetweenSelectionBounds(start, end));
   EXPECT_EQ(expected_rect, gfx::RectFBetweenVisibleSelectionBounds(start, end));
+}
+
+// When selecting something, only the copy command id should be enabled.
+IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest,
+                       IsCommandIdEnabledCopyEnabled) {
+  EXPECT_FALSE(
+      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCut));
+  EXPECT_FALSE(
+      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
+
+  constexpr gfx::PointF kLeft(1.0f, 1.0f);
+  constexpr gfx::PointF kRight(5.0f, 5.0f);
+  constexpr int32_t kLeftHeight = 2;
+  constexpr int32_t kRightHeight = 2;
+  SelectionChanged(kLeft, kLeftHeight, kRight, kRightHeight);
+
+  EXPECT_FALSE(
+      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCut));
+  EXPECT_TRUE(
+      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
+}
+
+// Test that the copy command executes.
+IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, ExecuteCommandCopy) {
+  content::NavigateToURL(shell(), GURL());
+
+  base::UserActionTester action_tester;
+  EXPECT_EQ(0, action_tester.GetActionCount("Copy"));
+
+  pdf_web_contents_helper()->ExecuteCommand(ui::TouchEditable::kCopy, 0);
+
+  EXPECT_EQ(1, action_tester.GetActionCount("Copy"));
+}
+
+IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, DefaultImplementation) {
+  EXPECT_FALSE(pdf_web_contents_helper()->SupportsAnimation());
+  EXPECT_FALSE(pdf_web_contents_helper()->CreateDrawable());
+  EXPECT_FALSE(pdf_web_contents_helper()->ShouldShowQuickMenu());
+  EXPECT_TRUE(pdf_web_contents_helper()->GetSelectedText().empty());
 }
 
 }  // namespace pdf

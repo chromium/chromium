@@ -74,7 +74,7 @@ class PDFWebContentsHelper
   bool ShouldShowQuickMenu() override;
   std::u16string GetSelectedText() override;
 
-  // ui::TouchSelectionControllerClientManager::Observer:
+  // content::TouchSelectionControllerClientManager::Observer:
   void OnManagerWillDestroy(
       content::TouchSelectionControllerClientManager* manager) override;
 
