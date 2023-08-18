@@ -488,8 +488,10 @@ bool EventTarget::AddEventListenerInternal(
           options->signal()->AddAlgorithm(WTF::BindOnce(
               [](EventTarget* event_target, const AtomicString& event_type,
                  const EventListener* listener, bool capture) {
-                event_target->removeEventListener(event_type, listener,
-                                                  capture);
+                if (event_target) {
+                  event_target->removeEventListener(event_type, listener,
+                                                    capture);
+                }
               },
               WrapWeakPersistent(this), event_type,
               WrapWeakPersistent(listener), options->capture()));
