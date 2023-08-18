@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/router/mojo/media_router_mojo_impl.h"
+#include "chrome/browser/media/router/mojo/media_router_desktop.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -110,8 +110,9 @@ MediaRoute CreateMediaRoute2() {
 }
 
 std::string RouteMessageToString(const RouteMessagePtr& message) {
-  if (!message->message && !message->data)
+  if (!message->message && !message->data) {
     return "null";
+  }
   std::string result;
   if (message->message) {
     result = "text=";
@@ -138,13 +139,13 @@ std::vector<MediaSinkInternal> ToInternalSinks(
   return internal_sinks;
 }
 
-class StubMediaRouterMojoImpl : public MediaRouterMojoImpl {
+class StubMediaRouterDesktop : public MediaRouterDesktop {
  public:
-  explicit StubMediaRouterMojoImpl(content::BrowserContext* context)
-      : MediaRouterMojoImpl(context) {}
-  ~StubMediaRouterMojoImpl() override = default;
+  explicit StubMediaRouterDesktop(content::BrowserContext* context)
+      : MediaRouterDesktop(context) {}
+  ~StubMediaRouterDesktop() override = default;
 
-  // media_router::MediaRouter:
+  // media_router::MediaRouter: implementation
   base::Value::Dict GetState() const override {
     NOTIMPLEMENTED();
     return base::Value::Dict();
@@ -159,10 +160,10 @@ class StubMediaRouterMojoImpl : public MediaRouterMojoImpl {
 
 }  // namespace
 
-class MediaRouterMojoImplTest : public MediaRouterMojoTest {
+class MediaRouterDesktopTest : public MediaRouterMojoTest {
  public:
-  MediaRouterMojoImplTest() = default;
-  ~MediaRouterMojoImplTest() override = default;
+  MediaRouterDesktopTest() = default;
+  ~MediaRouterDesktopTest() override = default;
 
  protected:
   void ExpectCastResultBucketCount(const std::string& operation,
@@ -179,9 +180,11 @@ class MediaRouterMojoImplTest : public MediaRouterMojoTest {
                       result_code, expected_count);
   }
 
-  std::unique_ptr<MediaRouterMojoImpl> CreateMediaRouter() override {
-    return std::unique_ptr<MediaRouterMojoImpl>(
-        new StubMediaRouterMojoImpl(profile()));
+  std::unique_ptr<MediaRouterDesktop> CreateMediaRouter() override {
+    auto router = std::unique_ptr<MediaRouterDesktop>(
+        new StubMediaRouterDesktop(profile()));
+    router->DisableMediaRouteProvidersForTest();
+    return router;
   }
 
   void ReceiveSinks(mojom::MediaRouteProviderId provider_id,
@@ -215,8 +218,8 @@ class MediaRouterMojoImplTest : public MediaRouterMojoTest {
       media_router::mojom::MediaRouteProviderId provider_id,
       int times) {
     for (int i = 0; i < times; i++) {
-      MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(source,
-                                                              provider_id);
+      MediaRouterDesktop::RecordPresentationRequestUrlBySink(source,
+                                                             provider_id);
     }
   }
 
@@ -231,7 +234,7 @@ class MediaRouterMojoImplTest : public MediaRouterMojoTest {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(MediaRouterMojoImplTest, CreateRoute) {
+TEST_F(MediaRouterDesktopTest, CreateRoute) {
   TestCreateRoute();
   ExpectCastResultBucketCount("CreateRoute", mojom::RouteRequestResultCode::OK,
                               1);
@@ -239,7 +242,7 @@ TEST_F(MediaRouterMojoImplTest, CreateRoute) {
 
 // Tests that MediaRouter is aware when a route is created, even if
 // MediaRouteProvider doesn't call OnRoutesUpdated().
-TEST_F(MediaRouterMojoImplTest, RouteRecognizedAfterCreation) {
+TEST_F(MediaRouterDesktopTest, RouteRecognizedAfterCreation) {
   MockMediaRoutesObserver routes_observer(router());
 
   EXPECT_CALL(routes_observer, OnRoutesUpdated(SizeIs(0)));
@@ -250,7 +253,7 @@ TEST_F(MediaRouterMojoImplTest, RouteRecognizedAfterCreation) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MediaRouterMojoImplTest, CreateIncognitoRoute) {
+TEST_F(MediaRouterDesktopTest, CreateIncognitoRoute) {
   ProvideTestSink(mojom::MediaRouteProviderId::CAST, kSinkId);
   MediaSource media_source(kSource);
   MediaRoute expected_route(kRouteId, media_source, kSinkId, "", false);
@@ -285,7 +288,7 @@ TEST_F(MediaRouterMojoImplTest, CreateIncognitoRoute) {
                               1);
 }
 
-TEST_F(MediaRouterMojoImplTest, CreateRouteFails) {
+TEST_F(MediaRouterDesktopTest, CreateRouteFails) {
   ProvideTestSink(mojom::MediaRouteProviderId::CAST, kSinkId);
   EXPECT_CALL(mock_cast_provider_,
               CreateRouteInternal(kSource, kSinkId, _,
@@ -312,7 +315,7 @@ TEST_F(MediaRouterMojoImplTest, CreateRouteFails) {
                               mojom::RouteRequestResultCode::TIMED_OUT, 1);
 }
 
-TEST_F(MediaRouterMojoImplTest, CreateRouteIncognitoMismatchFails) {
+TEST_F(MediaRouterDesktopTest, CreateRouteIncognitoMismatchFails) {
   ProvideTestSink(mojom::MediaRouteProviderId::CAST, kSinkId);
   EXPECT_CALL(mock_cast_provider_,
               CreateRouteInternal(kSource, kSinkId, _,
@@ -342,13 +345,13 @@ TEST_F(MediaRouterMojoImplTest, CreateRouteIncognitoMismatchFails) {
       "CreateRoute", mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, 1);
 }
 
-TEST_F(MediaRouterMojoImplTest, JoinRoute) {
+TEST_F(MediaRouterDesktopTest, JoinRoute) {
   TestJoinRoute(kPresentationId);
   ExpectCastResultBucketCount("JoinRoute", mojom::RouteRequestResultCode::OK,
                               1);
 }
 
-TEST_F(MediaRouterMojoImplTest, JoinRouteNotFoundFails) {
+TEST_F(MediaRouterDesktopTest, JoinRouteNotFoundFails) {
   RouteResponseCallbackHandler handler;
   base::RunLoop run_loop;
   EXPECT_CALL(handler,
@@ -365,7 +368,7 @@ TEST_F(MediaRouterMojoImplTest, JoinRouteNotFoundFails) {
                           mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, 1);
 }
 
-TEST_F(MediaRouterMojoImplTest, JoinRouteTimedOutFails) {
+TEST_F(MediaRouterDesktopTest, JoinRouteTimedOutFails) {
   // Make sure the MR has received an update with the route, so it knows there
   // is a route to join.
   const std::vector<MediaRoute> routes{CreateMediaRoute()};
@@ -398,7 +401,7 @@ TEST_F(MediaRouterMojoImplTest, JoinRouteTimedOutFails) {
                               mojom::RouteRequestResultCode::TIMED_OUT, 1);
 }
 
-TEST_F(MediaRouterMojoImplTest, JoinRouteIncognitoMismatchFails) {
+TEST_F(MediaRouterDesktopTest, JoinRouteIncognitoMismatchFails) {
   const MediaRoute route = CreateMediaRoute();
 
   // Make sure the MR has received an update with the route, so it knows there
@@ -439,17 +442,17 @@ TEST_F(MediaRouterMojoImplTest, JoinRouteIncognitoMismatchFails) {
       "JoinRoute", mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, 1);
 }
 
-TEST_F(MediaRouterMojoImplTest, DetachRoute) {
+TEST_F(MediaRouterDesktopTest, DetachRoute) {
   TestDetachRoute();
 }
 
-TEST_F(MediaRouterMojoImplTest, TerminateRoute) {
+TEST_F(MediaRouterDesktopTest, TerminateRoute) {
   TestTerminateRoute();
   ExpectCastResultBucketCount("TerminateRoute",
                               mojom::RouteRequestResultCode::OK, 1);
 }
 
-TEST_F(MediaRouterMojoImplTest, TerminateRouteFails) {
+TEST_F(MediaRouterDesktopTest, TerminateRouteFails) {
   ProvideTestRoute(mojom::MediaRouteProviderId::CAST, kRouteId);
   EXPECT_CALL(mock_cast_provider_, TerminateRouteInternal(kRouteId, _))
       .WillOnce(
@@ -467,7 +470,7 @@ TEST_F(MediaRouterMojoImplTest, TerminateRouteFails) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(MediaRouterMojoImplTest, HandleIssue) {
+TEST_F(MediaRouterDesktopTest, HandleIssue) {
   MockIssuesObserver issue_observer1(router()->GetIssueManager());
   MockIssuesObserver issue_observer2(router()->GetIssueManager());
   issue_observer1.Init();
@@ -491,7 +494,7 @@ TEST_F(MediaRouterMojoImplTest, HandleIssue) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-TEST_F(MediaRouterMojoImplTest, RegisterAndUnregisterMediaSinksObserver) {
+TEST_F(MediaRouterDesktopTest, RegisterAndUnregisterMediaSinksObserver) {
   MediaSource media_source(kSource);
 
   // These should only be called once even if there is more than one observer
@@ -520,7 +523,7 @@ TEST_F(MediaRouterMojoImplTest, RegisterAndUnregisterMediaSinksObserver) {
   ReceiveSinks(mojom::MediaRouteProviderId::CAST, media_source.id(),
                ToInternalSinks(kExpectedSinks));
 
-  // Since the MediaRouterMojoImpl has already received results for
+  // Since the MediaRouterDesktop has already received results for
   // |media_source|, return cached results to observers that are subsequently
   // registered.
   auto cached_sinks_observer = std::make_unique<MockMediaSinksObserver>(
@@ -544,7 +547,7 @@ TEST_F(MediaRouterMojoImplTest, RegisterAndUnregisterMediaSinksObserver) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MediaRouterMojoImplTest, TabSinksObserverIsShared) {
+TEST_F(MediaRouterDesktopTest, TabSinksObserverIsShared) {
   MediaSource tab_source_one(kTabSourceOne);
   MediaSource tab_source_two(kTabSourceTwo);
 
@@ -582,7 +585,7 @@ TEST_F(MediaRouterMojoImplTest, TabSinksObserverIsShared) {
   ReceiveSinks(mojom::MediaRouteProviderId::CAST, tab_source_one.id(),
                ToInternalSinks(kExpectedSinks));
 
-  // Since the MediaRouterMojoImpl has already received results for
+  // Since the MediaRouterDesktop has already received results for
   // |media_source|, return cached results to observers that are subsequently
   // registered.
   auto cached_sinks_observer = std::make_unique<MockMediaSinksObserver>(
@@ -613,7 +616,7 @@ TEST_F(MediaRouterMojoImplTest, TabSinksObserverIsShared) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MediaRouterMojoImplTest, RegisterAndUnregisterMediaRoutesObserver) {
+TEST_F(MediaRouterDesktopTest, RegisterAndUnregisterMediaRoutesObserver) {
   MockMediaRouter mock_router;
 
   auto routes_observer =
@@ -631,7 +634,7 @@ TEST_F(MediaRouterMojoImplTest, RegisterAndUnregisterMediaRoutesObserver) {
   EXPECT_TRUE(mock_router.routes_observers().empty());
 }
 
-TEST_F(MediaRouterMojoImplTest, UnregisterBeforeNotificationDoesntCrash) {
+TEST_F(MediaRouterDesktopTest, UnregisterBeforeNotificationDoesntCrash) {
   auto routes_observer = std::make_unique<MediaRoutesObserver>(router());
   auto routes_observer_two = std::make_unique<MediaRoutesObserver>(router());
 
@@ -643,7 +646,7 @@ TEST_F(MediaRouterMojoImplTest, UnregisterBeforeNotificationDoesntCrash) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MediaRouterMojoImplTest, RegisteredObserversGetMediaRouteUpdates) {
+TEST_F(MediaRouterDesktopTest, RegisteredObserversGetMediaRouteUpdates) {
   auto routes_observer =
       std::make_unique<StrictMock<MockMediaRoutesObserver>>(router());
   auto extra_routes_observer =
@@ -671,11 +674,11 @@ TEST_F(MediaRouterMojoImplTest, RegisteredObserversGetMediaRouteUpdates) {
   UpdateRoutes(mojom::MediaRouteProviderId::CAST, expected_routes);
 }
 
-TEST_F(MediaRouterMojoImplTest, SendRouteMessage) {
+TEST_F(MediaRouterDesktopTest, SendRouteMessage) {
   TestSendRouteMessage();
 }
 
-TEST_F(MediaRouterMojoImplTest, SendRouteBinaryMessage) {
+TEST_F(MediaRouterDesktopTest, SendRouteBinaryMessage) {
   TestSendRouteBinaryMessage();
 }
 
@@ -724,8 +727,9 @@ class ExpectedMessagesObserver final
 
  private:
   void OnMessagesReceived(std::vector<RouteMessagePtr> messages) override {
-    for (auto& message : messages)
+    for (auto& message : messages) {
       messages_.emplace_back(std::move(message));
+    }
   }
 
   void CheckReceivedMessages() {
@@ -744,7 +748,7 @@ class ExpectedMessagesObserver final
 
 }  // namespace
 
-TEST_F(MediaRouterMojoImplTest, RouteMessagesSingleObserver) {
+TEST_F(MediaRouterDesktopTest, RouteMessagesSingleObserver) {
   std::vector<RouteMessagePtr> incoming_batch1, incoming_batch2,
       incoming_batch3, all_messages;
   ProvideTestRoute(mojom::MediaRouteProviderId::CAST, kRouteId);
@@ -767,15 +771,16 @@ TEST_F(MediaRouterMojoImplTest, RouteMessagesSingleObserver) {
   // messages have been received.
 }
 
-TEST_F(MediaRouterMojoImplTest, RouteMessagesMultipleObservers) {
+TEST_F(MediaRouterDesktopTest, RouteMessagesMultipleObservers) {
   std::vector<RouteMessagePtr> incoming_batch1, incoming_batch2,
       incoming_batch3, all_messages;
   ProvideTestRoute(mojom::MediaRouteProviderId::CAST, kRouteId);
   PopulateRouteMessages(&incoming_batch1, &incoming_batch2, &incoming_batch3,
                         &all_messages);
   std::vector<RouteMessagePtr> all_messages2;
-  for (auto& message : all_messages)
+  for (auto& message : all_messages) {
     all_messages2.emplace_back(message->Clone());
+  }
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_cast_provider_, StartListeningForRouteMessages(Eq(kRouteId)))
@@ -795,7 +800,7 @@ TEST_F(MediaRouterMojoImplTest, RouteMessagesMultipleObservers) {
   // expected messages have been received.
 }
 
-TEST_F(MediaRouterMojoImplTest, PresentationConnectionStateChangedCallback) {
+TEST_F(MediaRouterDesktopTest, PresentationConnectionStateChangedCallback) {
   MediaRoute::Id route_id("route-id");
   const GURL presentation_url("http://www.example.com/presentation.html");
   const std::string presentation_id("pid");
@@ -835,7 +840,7 @@ TEST_F(MediaRouterMojoImplTest, PresentationConnectionStateChangedCallback) {
   }
 }
 
-TEST_F(MediaRouterMojoImplTest,
+TEST_F(MediaRouterDesktopTest,
        PresentationConnectionStateChangedCallbackRemoved) {
   MediaRoute::Id route_id("route-id");
   base::MockCallback<content::PresentationConnectionStateChangedCallback>
@@ -854,7 +859,7 @@ TEST_F(MediaRouterMojoImplTest,
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MediaRouterMojoImplTest, GetMediaController) {
+TEST_F(MediaRouterDesktopTest, GetMediaController) {
   MockMediaController mock_controller;
   mojo::Remote<mojom::MediaController> controller_remote;
   mojo::PendingRemote<mojom::MediaStatusObserver> observer_remote;
@@ -888,7 +893,7 @@ TEST_F(MediaRouterMojoImplTest, GetMediaController) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MediaRouterMojoImplTest, SendSinkRequestsToMultipleProviders) {
+TEST_F(MediaRouterDesktopTest, SendSinkRequestsToMultipleProviders) {
   // Register |mock_wired_display_provider_| with the router.
   // |mock_cast_provider_| has already been registered during setup.
   RegisterWiredDisplayProvider();
@@ -929,7 +934,7 @@ TEST_F(MediaRouterMojoImplTest, SendSinkRequestsToMultipleProviders) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MediaRouterMojoImplTest, SendRouteRequestsToMultipleProviders) {
+TEST_F(MediaRouterDesktopTest, SendRouteRequestsToMultipleProviders) {
   // Register |mock_wired_display_provider_| with the router.
   // |mock_cast_provider_| has already been registered during setup.
   RegisterWiredDisplayProvider();
@@ -958,7 +963,7 @@ TEST_F(MediaRouterMojoImplTest, SendRouteRequestsToMultipleProviders) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MediaRouterMojoImplTest, ObserveSinksFromMultipleProviders) {
+TEST_F(MediaRouterDesktopTest, ObserveSinksFromMultipleProviders) {
   const MediaSource source(kSource);
   // Sinks for the Cast MRP.
   MediaSinkInternal sink1a;
@@ -1001,7 +1006,7 @@ TEST_F(MediaRouterMojoImplTest, ObserveSinksFromMultipleProviders) {
   ReceiveSinks(mojom::MediaRouteProviderId::WIRED_DISPLAY, kSource, {});
 }
 
-TEST_F(MediaRouterMojoImplTest, ObserveRoutesFromMultipleProviders) {
+TEST_F(MediaRouterDesktopTest, ObserveRoutesFromMultipleProviders) {
   const MediaSource source(kSource);
   // Routes for the Cast MRP.
   const MediaRoute route1a("route1a", source, "sink 1a", "", true);
@@ -1032,9 +1037,9 @@ TEST_F(MediaRouterMojoImplTest, ObserveRoutesFromMultipleProviders) {
   UpdateRoutes(mojom::MediaRouteProviderId::WIRED_DISPLAY, {});
 }
 
-TEST_F(MediaRouterMojoImplTest, TestRecordPresentationRequestUrlBySink) {
+TEST_F(MediaRouterDesktopTest, TestRecordPresentationRequestUrlBySink) {
   using base::Bucket;
-  using PresentationUrlBySink = MediaRouterMojoImpl::PresentationUrlBySink;
+  using PresentationUrlBySink = MediaRouterDesktop::PresentationUrlBySink;
 
   MediaSource cast_source("cast:ABCD1234");
   MediaSource dial_source(
@@ -1070,7 +1075,7 @@ TEST_F(MediaRouterMojoImplTest, TestRecordPresentationRequestUrlBySink) {
           Bucket(static_cast<int>(PresentationUrlBySink::kDialUrlToDial), 4)));
 }
 
-TEST_F(MediaRouterMojoImplTest, TestGetCurrentRoutes) {
+TEST_F(MediaRouterDesktopTest, TestGetCurrentRoutes) {
   MediaSource source1("source_1");
   MediaSource source2("source_1");
   MediaRoute route1("route_1", source1, "sink_1", "", false);
@@ -1089,7 +1094,7 @@ TEST_F(MediaRouterMojoImplTest, TestGetCurrentRoutes) {
   EXPECT_TRUE(router()->GetCurrentRoutes().empty());
 }
 
-TEST_F(MediaRouterMojoImplTest, GetMirroringMediaControllerHost) {
+TEST_F(MediaRouterDesktopTest, GetMirroringMediaControllerHost) {
   MediaSource tab_source(kTabSourceOne);
   auto local_mirroring_route =
       MediaRoute(kRouteId, tab_source, kSinkId, kDescription, true);
