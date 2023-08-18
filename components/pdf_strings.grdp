@@ -371,5 +371,8 @@
     <message name="IDS_PDF_OCR_RESULT_END" is_accessibility_with_no_ui="true" desc="Notification to inform the user of the end of OCR results.">
       End of converted text
     </message>
+    <message name="IDS_PDF_OCR_POSTAMBLE_PAGE" is_accessibility_with_no_ui="true" desc="Notification that appears on a page on its own and which is used to inform the user that OCR is still in progress.">
+      OCR in progress ...
+    </message>
   </if>
 </grit-part>
