@@ -157,7 +157,7 @@ struct PartitionBucket {
   }
 
   // Sort the freelists of all slot spans.
-  void SortSlotSpanFreelists();
+  void SortSmallerSlotSpanFreeLists();
   // Sort the active slot span list in ascending freelist length.
   PA_COMPONENT_EXPORT(PARTITION_ALLOC) void SortActiveSlotSpans();
 

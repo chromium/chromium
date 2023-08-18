@@ -1400,7 +1400,9 @@ void PartitionRoot::PurgeMemory(int flags) {
         if (bucket.slot_size >= internal::MinPurgeableSlotSize()) {
           internal::PartitionPurgeBucket(this, &bucket);
         } else {
-          bucket.SortSlotSpanFreelists();
+          if (sort_smaller_slot_span_free_lists_) {
+            bucket.SortSmallerSlotSpanFreeLists();
+          }
         }
 
         // Do it at the end, as the actions above change the status of slot
@@ -1691,6 +1693,12 @@ ThreadCache* PartitionRoot::MaybeInitThreadCache() {
   return tcache;
 }
 
+// static
+void PartitionRoot::EnableSortSmallerSlotSpanFreeLists() {
+  sort_smaller_slot_span_free_lists_ = true;
+}
+
+// static
 void PartitionRoot::EnableSortActiveSlotSpans() {
   sort_active_slot_spans_ = true;
 }

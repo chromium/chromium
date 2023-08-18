@@ -1330,6 +1330,10 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 #endif
 
   if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocSortSmallerSlotSpanFreeLists)) {
+    partition_alloc::PartitionRoot::EnableSortSmallerSlotSpanFreeLists();
+  }
+  if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocSortActiveSlotSpans)) {
     partition_alloc::PartitionRoot::EnableSortActiveSlotSpans();
   }

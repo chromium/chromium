@@ -430,6 +430,7 @@ class PartitionAllocTest
   }
 
   void SetUp() override {
+    PartitionRoot::EnableSortSmallerSlotSpanFreeLists();
     PartitionRoot::EnableSortActiveSlotSpans();
     PartitionAllocGlobalInit(HandleOOM);
     InitializeMainTestAllocators();

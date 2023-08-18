@@ -1187,7 +1187,7 @@ void PartitionBucket::MaintainActiveList() {
   active_slot_spans_head = new_active_slot_spans_head;
 }
 
-void PartitionBucket::SortSlotSpanFreelists() {
+void PartitionBucket::SortSmallerSlotSpanFreeLists() {
   for (auto* slot_span = active_slot_spans_head; slot_span;
        slot_span = slot_span->next_slot_span) {
     // No need to sort the freelist if it's already sorted. Note that if the
