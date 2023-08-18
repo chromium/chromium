@@ -71961,6 +71961,18 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="IPsec"/>
 </enum>
 
+<enum name="MigrationToOSCryptEnum">
+  <summary>
+    Display migration status of LoginDatabase to OSCrypt on IOS.
+  </summary>
+  <int value="0" label="Migration started"/>
+  <int value="1" label="Migration failed: can't copy password_value column"/>
+  <int value="2" label="Migration failed: can't read password from keychain"/>
+  <int value="3" label="Migration failed: can't encrypt password with OSCrypt"/>
+  <int value="4" label="Migration failed: can't update password value"/>
+  <int value="5" label="Migration succeeded"/>
+</enum>
+
 <enum name="MigrationUIFirstScreen">
   <int value="0" label="Ready"/>
   <int value="1" label="Resume"/>

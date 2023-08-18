@@ -328,6 +328,7 @@ struct PasswordForm {
   // The current encrypted password. Must be non-empty for PasswordForm
   // instances retrieved from the password store or coming in a
   // PasswordStoreChange that is not of type REMOVE.
+  // TODO(crbug.com/1472526): Rename to keychain_identifier
   std::string encrypted_password;
 
   // If the form was a sign-up or a change password form, the name of the input
