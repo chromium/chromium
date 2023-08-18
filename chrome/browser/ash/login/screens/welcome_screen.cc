@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -196,14 +195,11 @@ WelcomeScreen::WelcomeScreen(base::WeakPtr<WelcomeView> view,
   input_method::InputMethodManager::Get()->AddObserver(this);
 
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
-  if (accessibility_manager) {
-    accessibility_subscription_ = accessibility_manager->RegisterCallback(
-        base::BindRepeating(&WelcomeScreen::OnAccessibilityStatusChanged,
-                            base::Unretained(this)));
-    UpdateA11yState();
-  } else {
-    CHECK_IS_TEST();
-  }
+  CHECK(accessibility_manager);
+  accessibility_subscription_ = accessibility_manager->RegisterCallback(
+      base::BindRepeating(&WelcomeScreen::OnAccessibilityStatusChanged,
+                          base::Unretained(this)));
+  UpdateA11yState();
 }
 
 WelcomeScreen::~WelcomeScreen() {
