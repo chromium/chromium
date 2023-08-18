@@ -45,7 +45,8 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
       const device::CompositorDelegateProvider& compositor_delegate_provider,
       device::SurfaceReadyCallback ready_callback,
       device::SurfaceTouchCallback touch_callback,
-      device::SurfaceDestroyedCallback destroyed_callback) override;
+      device::SurfaceDestroyedCallback destroyed_callback,
+      device::XrSessionButtonTouchedCallback button_touched_callback) override;
   void EndSession() override;
   bool EnsureARCoreLoaded() override;
   base::android::ScopedJavaLocalRef<jobject> GetCurrentActivityContext()
@@ -75,6 +76,9 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
   void OnDrawingSurfaceDestroyed(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
+  void OnXrSessionButtonTouched(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
   void OnXrHostActivityReady(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
@@ -86,6 +90,7 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
   device::SurfaceReadyCallback surface_ready_callback_;
   device::SurfaceTouchCallback surface_touch_callback_;
   device::SurfaceDestroyedCallback surface_destroyed_callback_;
+  device::XrSessionButtonTouchedCallback xr_button_touched_callback_;
   ActivityReadyCallback activity_ready_callback_;
 };
 

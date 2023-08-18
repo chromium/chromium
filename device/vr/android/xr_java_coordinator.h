@@ -43,6 +43,8 @@ using SurfaceTouchCallback =
                                  const gfx::PointF& location)>;
 using SurfaceDestroyedCallback = base::OnceClosure;
 
+using XrSessionButtonTouchedCallback = base::OnceClosure;
+
 // The purpose of this interface is to allow for dependency injection of code
 // that needs to talk Java Code in the WebXR component, which otherwise cannot
 // be directly talked to in //device. Unfortunately, the implementation in
@@ -73,7 +75,8 @@ class XrJavaCoordinator {
       const CompositorDelegateProvider& compositor_delegate_provider,
       device::SurfaceReadyCallback ready_callback,
       device::SurfaceTouchCallback touch_callback,
-      device::SurfaceDestroyedCallback destroyed_callback) = 0;
+      device::SurfaceDestroyedCallback destroyed_callback,
+      device::XrSessionButtonTouchedCallback button_touched_callback) = 0;
   virtual void EndSession() = 0;
 };
 

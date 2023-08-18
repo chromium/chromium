@@ -216,6 +216,10 @@ public class XrSessionCoordinator {
         return sActiveSessionAvailableSupplier;
     }
 
+    public static void onActiveXrSessionButtonTouched() {
+        sActiveSessionInstance.onXrSessionButtonTouched();
+    }
+
     public void onDrawingSurfaceReady(
             Surface surface, WindowAndroid rootWindow, int rotation, int width, int height) {
         if (DEBUG_LOGS) Log.i(TAG, "onDrawingSurfaceReady");
@@ -236,6 +240,13 @@ public class XrSessionCoordinator {
         if (DEBUG_LOGS) Log.i(TAG, "onDrawingSurfaceDestroyed");
         if (mNativeXrSessionCoordinator == 0) return;
         XrSessionCoordinatorJni.get().onDrawingSurfaceDestroyed(
+                mNativeXrSessionCoordinator, XrSessionCoordinator.this);
+    }
+
+    public void onXrSessionButtonTouched() {
+        if (DEBUG_LOGS) Log.i(TAG, "onXrSessionButtonTouched");
+        if (mNativeXrSessionCoordinator == 0) return;
+        XrSessionCoordinatorJni.get().onXrSessionButtonTouched(
                 mNativeXrSessionCoordinator, XrSessionCoordinator.this);
     }
 
@@ -277,6 +288,7 @@ public class XrSessionCoordinator {
                 boolean primary, boolean touching, int pointerId, float x, float y);
         void onDrawingSurfaceDestroyed(
                 long nativeXrSessionCoordinator, XrSessionCoordinator caller);
+        void onXrSessionButtonTouched(long nativeXrSessionCoordinator, XrSessionCoordinator caller);
         void onXrHostActivityReady(
                 long nativeXrSessionCoordinator, XrSessionCoordinator caller, Activity activity);
     }

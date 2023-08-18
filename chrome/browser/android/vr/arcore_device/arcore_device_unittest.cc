@@ -134,7 +134,8 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
       const CompositorDelegateProvider& compositor_delegate_provider,
       SurfaceReadyCallback ready_callback,
       SurfaceTouchCallback touch_callback,
-      SurfaceDestroyedCallback destroyed_callback) override {
+      SurfaceDestroyedCallback destroyed_callback,
+      XrSessionButtonTouchedCallback button_touched_callback) override {
     NOTREACHED();
   }
   void EndSession() override {}
