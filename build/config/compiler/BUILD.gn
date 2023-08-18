@@ -1753,6 +1753,11 @@ config("default_warnings") {
         cflags += [ "-Wno-nonportable-include-path" ]
       }
 
+      if (is_fuchsia && llvm_force_head_revision) {
+        # TODO(https://crbug.com/1474032): fix and reenable
+        cflags += [ "-Wno-deprecated-literal-operator" ]
+      }
+
       cflags += [
         "-Wenum-compare-conditional",
 
