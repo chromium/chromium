@@ -8932,6 +8932,32 @@
             ]
         }
     ],
+    "LCPCriticalPathPredictor": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "HighPriority_20230818",
+                    "params": {
+                        "lcpp_dry_run": "false",
+                        "lcpp_image_load_priority": "high",
+                        "lcpp_max_element_locator_length": "1024",
+                        "lcpp_max_hosts_to_track": "100"
+                    },
+                    "enable_features": [
+                        "LCPCriticalPathPredictor"
+                    ]
+                }
+            ]
+        }
+    ],
     "LCPVideoFirstFrame": [
         {
             "platforms": [
