@@ -192,12 +192,13 @@ void FastPairAdvertiser::UnregisterAdvertisement(base::OnceClosure callback) {
 
 void FastPairAdvertiser::OnUnregisterAdvertisement() {
   advertisement_.reset();
-  std::move(stop_callback_).Run();
   quick_start_metrics::RecordFastPairAdvertisementEnded(
       /*advertising_method*/ advertising_method_, /*succeeded=*/true,
       /*duration=*/advertising_timer_->Elapsed(),
       /*error_code=*/absl::nullopt);
   advertising_timer_.reset();
+
+  std::move(stop_callback_).Run();
   // |this| might be destroyed here, do not access local fields.
 }
 
@@ -205,6 +206,8 @@ void FastPairAdvertiser::OnUnregisterAdvertisementError(
     device::BluetoothAdvertisement::ErrorCode error_code) {
   LOG(WARNING) << __func__ << " failed with error code = " << error_code;
   advertisement_.reset();
+  advertising_timer_.reset();
+
   std::move(stop_callback_).Run();
   // |this| might be destroyed here, do not access local fields.
 }
