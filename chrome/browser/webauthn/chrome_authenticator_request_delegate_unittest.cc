@@ -19,9 +19,11 @@
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/features.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
@@ -741,29 +743,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
       32u, TouchIdMetadataSecret(delegate, other_browser_context.get()).size());
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateTest, DaysSinceDate) {
-  const base::Time now = base::Time::FromTimeT(1691188997);  // 2023-08-04
-  const struct {
-    char input[16];
-    absl::optional<int> expected_result;
-  } kTestCases[] = {
-      {"", absl::nullopt},          //
-      {"2023-08-", absl::nullopt},  //
-      {"2023-08-04", 0},            //
-      {"2023-08-03", 1},            //
-      {"2023-8-3", 1},              //
-      {"2023-07-04", 31},           //
-      {"2001-11-23", 7924},         //
-  };
-
-  for (const auto& test : kTestCases) {
-    SCOPED_TRACE(test.input);
-    const absl::optional<int> result =
-        ChromeAuthenticatorRequestDelegate::DaysSinceDate(test.input, now);
-    EXPECT_EQ(result, test.expected_result);
-  }
-}
-
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
@@ -978,3 +957,81 @@ TEST_F(DisableWebAuthnWithBrokenCertsTest, IgnoreCertificateErrorsFlag) {
 }
 
 }  // namespace
+
+#if BUILDFLAG(IS_MAC)
+
+// These test functions are outside of the anonymous namespace so that
+// `FRIEND_TEST_ALL_PREFIXES` works to let them test private functions.
+
+class ChromeAuthenticatorRequestDelegatePrivateTest : public testing::Test {
+  // A `BrowserTaskEnvironment` needs to be in-scope in order to create a
+  // `TestingProfile`.
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnICloudKeychain};
+};
+
+TEST_F(ChromeAuthenticatorRequestDelegatePrivateTest, DaysSinceDate) {
+  const base::Time now = base::Time::FromTimeT(1691188997);  // 2023-08-04
+  const struct {
+    char input[16];
+    absl::optional<int> expected_result;
+  } kTestCases[] = {
+      {"", absl::nullopt},          //
+      {"2023-08-", absl::nullopt},  //
+      {"2023-08-04", 0},            //
+      {"2023-08-03", 1},            //
+      {"2023-8-3", 1},              //
+      {"2023-07-04", 31},           //
+      {"2001-11-23", 7924},         //
+  };
+
+  for (const auto& test : kTestCases) {
+    SCOPED_TRACE(test.input);
+    const absl::optional<int> result =
+        ChromeAuthenticatorRequestDelegate::DaysSinceDate(test.input, now);
+    EXPECT_EQ(result, test.expected_result);
+  }
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegatePrivateTest, GetICloudKeychainPref) {
+  TestingProfile profile;
+
+  // We use a boolean preference as a tristate, so it's worth checking that
+  // an unset preference is recognised as such.
+  EXPECT_FALSE(ChromeAuthenticatorRequestDelegate::GetICloudKeychainPref(
+                   profile.GetPrefs())
+                   .has_value());
+  profile.GetPrefs()->SetBoolean(prefs::kCreatePasskeysInICloudKeychain, true);
+  EXPECT_EQ(*ChromeAuthenticatorRequestDelegate::GetICloudKeychainPref(
+                profile.GetPrefs()),
+            true);
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegatePrivateTest,
+       ShouldCreateInICloudKeychain) {
+  // Safety check that SPC requests never default to iCloud Keychain.
+  EXPECT_FALSE(ChromeAuthenticatorRequestDelegate::ShouldCreateInICloudKeychain(
+      ChromeAuthenticatorRequestDelegate::RequestSource::
+          kSecurePaymentConfirmation,
+      /*is_active_profile_authenticator_user=*/false,
+      /*has_icloud_drive_enabled=*/true, /*request_is_for_google_com=*/true,
+      /*preference=*/true));
+
+  // For the valid request type, the preference should be controlling if set.
+  for (const bool preference : {false, true}) {
+    EXPECT_EQ(preference,
+              ChromeAuthenticatorRequestDelegate::ShouldCreateInICloudKeychain(
+                  ChromeAuthenticatorRequestDelegate::RequestSource::
+                      kWebAuthentication,
+                  /*is_active_profile_authenticator_user=*/false,
+                  /*has_icloud_drive_enabled=*/true,
+                  /*request_is_for_google_com=*/true,
+                  /*preference=*/preference));
+
+    // Otherwise the default is controlled by several feature flags. Testing
+    // them would just be a change detector.
+  }
+}
+
+#endif

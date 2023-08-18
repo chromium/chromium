@@ -140,6 +140,8 @@ enum class TransportAvailabilityParam {
   kAttachmentCrossPlatform,
   kBleDisabled,
   kBleAccessDenied,
+  kHasICloudKeychain,
+  kCreateInICloudKeychain,
 };
 
 base::StringPiece TransportAvailabilityParamToString(
@@ -181,6 +183,10 @@ base::StringPiece TransportAvailabilityParamToString(
       return "kBleDisabled";
     case TransportAvailabilityParam::kBleAccessDenied:
       return "kBleAccessDenied";
+    case TransportAvailabilityParam::kHasICloudKeychain:
+      return "kHasICloudKeychain";
+    case TransportAvailabilityParam::kCreateInICloudKeychain:
+      return "kCreateInICloudKeychain";
   }
 }
 
@@ -274,11 +280,17 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto att_xplat = TransportAvailabilityParam::kAttachmentCrossPlatform;
   const auto ble_off = TransportAvailabilityParam::kBleDisabled;
   const auto ble_denied = TransportAvailabilityParam::kBleAccessDenied;
+  [[maybe_unused]] const auto has_ickc =
+      TransportAvailabilityParam::kHasICloudKeychain;
+  [[maybe_unused]] const auto create_ickc =
+      TransportAvailabilityParam::kCreateInICloudKeychain;
   using c = AuthenticatorRequestDialogModel::Mechanism::Credential;
   using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
   using p = AuthenticatorRequestDialogModel::Mechanism::Phone;
   const auto winapi = AuthenticatorRequestDialogModel::Mechanism::WindowsAPI();
   const auto add = AuthenticatorRequestDialogModel::Mechanism::AddPhone();
+  [[maybe_unused]] const auto ickc =
+      AuthenticatorRequestDialogModel::Mechanism::ICloudKeychain();
   const auto usb_ui = Step::kUsbInsertAndActivate;
   const auto mss = Step::kMechanismSelection;
   const auto plat_ui = Step::kNotStarted;
@@ -434,12 +446,18 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
       // QR code first: Make credential should jump to the QR code with
       // RK=true.
-      {L, mc, {usb, internal, cable}, {rk}, {}, {add, t(internal), t(usb)}, qr},
+      {L,
+       mc,
+       {usb, internal, cable},
+       {rk, att_xplat},
+       {},
+       {add, t(internal), t(usb)},
+       qr},
       // Unless there is a phone paired already.
       {L,
        mc,
        {usb, internal, cable},
-       {rk},
+       {rk, att_xplat},
        {pqr("a")},
        {p("a"), add, t(internal), t(usb)},
        mss},
@@ -451,14 +469,6 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {},
        {add, t(internal), t(usb)},
        mss},
-      // But not for any attachment, like platform
-      {L,
-       mc,
-       {usb, internal, cable},
-       {rk, att_xplat},
-       {},
-       {add, t(internal), t(usb)},
-       qr},
       // If RK=false, go to the default for the platform instead.
       {
           L,
@@ -648,6 +658,29 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {psync("a")},
        {c(phone), add},
        hero},
+
+#if BUILDFLAG(IS_MAC)
+      // Even with iCloud Keychain present, we shouldn't jump to it without
+      // additional flags set.
+      {L, mc, {internal}, {rk, has_ickc}, {}, {ickc, t(internal)}, create_pk},
+      // iCloud Keychain should be the default if the request delegate
+      // configured that.
+      {L,
+       mc,
+       {internal},
+       {rk, has_ickc, create_ickc},
+       {},
+       {ickc, t(internal)},
+       plat_ui},
+      // ... and only for attachment=platform
+      {L,
+       mc,
+       {internal},
+       {rk, att_any, has_ickc, create_ickc},
+       {},
+       {ickc, t(internal)},
+       mss},
+#endif
   };
 
   Test kListSyncedPasskeysTests_Windows_NoWinHybrid[]{
@@ -769,6 +802,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
         test.params, TransportAvailabilityParam::kOnlyHybridOrInternal);
     transports_info.request_is_internal_only =
         base::Contains(test.params, TransportAvailabilityParam::kOnlyInternal);
+    transports_info.has_icloud_keychain = base::Contains(
+        test.params, TransportAvailabilityParam::kHasICloudKeychain);
 
     if (base::Contains(
             test.params,
@@ -813,6 +848,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
                        TransportAvailabilityParam::kHasCableV2Extension)) {
       CHECK(!has_v2_cable_extension.has_value());
       has_v2_cable_extension = true;
+    }
+
+    model.set_allow_icloud_keychain(transports_info.has_icloud_keychain);
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kCreateInICloudKeychain)) {
+      model.set_should_create_in_icloud_keychain(true);
     }
 
     if (has_v2_cable_extension.has_value() || !test.phones.empty() ||
@@ -1047,6 +1088,10 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
     transports_info.is_ble_powered = test.ble_power == BLEPower::ON;
     transports_info.can_power_on_ble_adapter = true;
     transports_info.request_type = test.request_type;
+    if (transports_info.request_type == RequestType::kMakeCredential) {
+      transports_info.make_credential_attachment =
+          device::AuthenticatorAttachment::kAny;
+    }
     transports_info.available_transports = {AuthenticatorTransport::kHybrid};
     transports_info.is_off_the_record_context =
         test.profile == Profile::INCOGNITO;

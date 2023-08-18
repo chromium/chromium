@@ -1015,6 +1015,16 @@ std::vector<std::string> AuthenticatorRequestDialogModel::paired_phone_names()
   return names;
 }
 
+void AuthenticatorRequestDialogModel::set_allow_icloud_keychain(
+    bool is_allowed) {
+  allow_icloud_keychain_ = is_allowed;
+}
+
+void AuthenticatorRequestDialogModel::set_should_create_in_icloud_keychain(
+    bool is_enabled) {
+  should_create_in_icloud_keychain_ = is_enabled;
+}
+
 #if BUILDFLAG(IS_MAC)
 
 // This enum is used in a histogram. Never change assigned values and only add
@@ -1445,6 +1455,10 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
           !list_phone_passkeys) {
         continue;
       }
+      if (cred.source == device::AuthenticatorType::kICloudKeychain &&
+          !allow_icloud_keychain_) {
+        continue;
+      }
       if (cred.source == device::AuthenticatorType::kPhone) {
         specific_phones_listed = true;
       }
@@ -1513,11 +1527,17 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
     }
   }
 
-  if (transport_availability_.has_icloud_keychain) {
+  if (transport_availability_.has_icloud_keychain && allow_icloud_keychain_ &&
+      // The mechanism for iCloud Keychain only appears for create(), or if
+      // Chrome doesn't have permission to enumerate credentials and thus the
+      // user needs a generic mechanism to trigger it.
+      (!is_new_get_assertion_ui ||
+       transport_availability_.has_icloud_keychain_credential ==
+           device::FidoRequestHandlerBase::RecognizedCredential::kUnknown)) {
     const std::u16string name =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_ICLOUD_KEYCHAIN);
     mechanisms_.emplace_back(
-        Mechanism::ICloudKeychain(), name, name, kSmartphoneIcon,
+        Mechanism::ICloudKeychain(), name, name, vector_icons::kPasskeyIcon,
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::StartICloudKeychain,
             base::Unretained(this)));
@@ -1626,7 +1646,9 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
 
 absl::optional<size_t>
 AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
-  if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
+  if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
+      transport_availability_.request_type ==
+          device::FidoRequestType::kGetAssertion) {
     // If there is a single mechanism, go to that.
     if (mechanisms_.size() == 1) {
       return 0;
@@ -1670,8 +1692,9 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
       if (!windows_handles_hybrid) {
         // If there's a match on the platform authenticator, jump to that.
         if (transport_availability_.has_icloud_keychain_credential ==
-            device::FidoRequestHandlerBase::RecognizedCredential::
-                kHasRecognizedCredential) {
+                device::FidoRequestHandlerBase::RecognizedCredential::
+                    kHasRecognizedCredential &&
+            allow_icloud_keychain_) {
           priority_list.emplace_back(Mechanism::ICloudKeychain());
         }
         if (transport_availability_.has_platform_authenticator_credential ==
@@ -1735,6 +1758,22 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
       // If Windows supports hybrid then we defer to Windows in all cases.
       priority_list.emplace_back(Mechanism::WindowsAPI());
     }
+
+#if BUILDFLAG(IS_MAC)
+    if (*transport_availability_.make_credential_attachment ==
+        device::AuthenticatorAttachment::kPlatform) {
+      // For platform attachments, either we have iCloud Keychain available
+      // or not. If not, then there's only a single active mechanism (the
+      // profile authenticator) and we would have picked it above. Thus here we
+      // must be picking between the profile authenticator and iCloud Keychain.
+      if (should_create_in_icloud_keychain_) {
+        priority_list.emplace_back(Mechanism::ICloudKeychain());
+      } else {
+        priority_list.emplace_back(
+            Mechanism::Transport(AuthenticatorTransport::kInternal));
+      }
+    }
+#endif
 
     const bool is_passkey_request =
         resident_key_requirement() !=

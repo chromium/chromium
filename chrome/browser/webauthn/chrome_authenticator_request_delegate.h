@@ -22,6 +22,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class PrefService;
 class Profile;
 
 namespace content {
@@ -221,18 +222,14 @@ class ChromeAuthenticatorRequestDelegate
   // "leaks" to be reported.
   void SetPassEmptyUsbDeviceManagerForTesting(bool value);
 
-#if BUILDFLAG(IS_MAC)
-  // DaysSinceDate returns the number of days between `formatted_date` (in ISO
-  // 8601 format) and `now`. It returns `nullopt` if `formatted_date` cannot be
-  // parsed or if it's in `now`s future.
-  //
-  // It does not parse `formatted_date` strictly and is intended for trusted
-  // inputs.
-  static absl::optional<int> DaysSinceDate(const std::string& formatted_date,
-                                           base::Time now);
-#endif
-
  private:
+  FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
+                           DaysSinceDate);
+  FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
+                           GetICloudKeychainPref);
+  FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
+                           ShouldCreateInICloudKeychain);
+
   // GetRenderFrameHost returns a pointer to the RenderFrameHost that was given
   // to the constructor.
   content::RenderFrameHost* GetRenderFrameHost() const;
@@ -260,6 +257,40 @@ class ChromeAuthenticatorRequestDelegate
   void ConfigureEnclaveDiscovery(
       const std::string& rp_id,
       device::FidoDiscoveryFactory* discovery_factory);
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  // DaysSinceDate returns the number of days between `formatted_date` (in ISO
+  // 8601 format) and `now`. It returns `nullopt` if `formatted_date` cannot be
+  // parsed or if it's in `now`s future.
+  //
+  // It does not parse `formatted_date` strictly and is intended for trusted
+  // inputs.
+  static absl::optional<int> DaysSinceDate(const std::string& formatted_date,
+                                           base::Time now);
+
+  // GetICloudKeychainPref returns the value of the iCloud Keychain preference
+  // as a tristate. If no value for the preference has been set then it
+  // returns `absl::nullopt`.
+  static absl::optional<bool> GetICloudKeychainPref(const PrefService* prefs);
+
+  // IsActiveProfileAuthenticatorUser returns true if the profile authenticator
+  // has been used in the past 31 days.
+  static bool IsActiveProfileAuthenticatorUser(const PrefService* prefs);
+
+  // ShouldCreateInICloudKeychain returns true if attachment=platform creation
+  // requests should default to iCloud Keychain.
+  static bool ShouldCreateInICloudKeychain(
+      RequestSource request_source,
+      bool is_active_profile_authenticator_user,
+      bool has_icloud_drive_enabled,
+      bool request_is_for_google_com,
+      absl::optional<bool> preference);
+
+  // ConfigureICloudKeychain is called by `ConfigureDiscoveries` to configure
+  // the `AuthenticatorRequestDialogModel` with iCloud Keychain-related values.
+  void ConfigureICloudKeychain(RequestSource request_source,
+                               const std::string& rp_id);
 #endif
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;

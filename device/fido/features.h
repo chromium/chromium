@@ -70,6 +70,24 @@ BASE_DECLARE_FEATURE(kWebAuthnRequireUpToDateJSONForRemoteDesktop);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnICloudKeychain);
 
+// These five feature flags control whether iCloud Keychain is the default
+// mechanism for platform credential creation in different situations.
+// "Active" means that the user is an active user of the profile authenticator,
+// defined by having used it in the past 31 days. "Drive" means that the user
+// is currently signed into iCloud Drive, which isn't iCloud Keychain
+// (what's needed), but the cloest approximation that we can detect.
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForGoogle);
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForActiveWithDrive);
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForActiveWithoutDrive);
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForInactiveWithDrive);
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive);
+
 // Enable new hybrid UI
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNewHybridUI);

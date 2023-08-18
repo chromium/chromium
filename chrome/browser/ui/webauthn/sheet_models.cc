@@ -1496,6 +1496,8 @@ AuthenticatorMultiSourcePickerSheetModel::
   vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
 
   using CredentialMech = AuthenticatorRequestDialogModel::Mechanism::Credential;
+  using ICloudKeychainMech =
+      AuthenticatorRequestDialogModel::Mechanism::ICloudKeychain;
   bool has_local_passkeys =
       std::ranges::any_of(dialog_model->mechanisms(), [](const auto& mech) {
         return absl::holds_alternative<CredentialMech>(mech.type) &&
@@ -1508,9 +1510,14 @@ AuthenticatorMultiSourcePickerSheetModel::
     for (size_t i = 0; i < dialog_model->mechanisms().size(); ++i) {
       const AuthenticatorRequestDialogModel::Mechanism& mech =
           dialog_model->mechanisms()[i];
-      if (absl::holds_alternative<CredentialMech>(mech.type) &&
-          absl::get<CredentialMech>(mech.type).value() !=
-              device::AuthenticatorType::kPhone) {
+      if ((absl::holds_alternative<CredentialMech>(mech.type) &&
+           absl::get<CredentialMech>(mech.type).value() !=
+               device::AuthenticatorType::kPhone) ||
+          // iCloud Keychain appears in the primary list if present. This
+          // happens when Chrome does not have permission to enumerate
+          // credentials from iCloud Keychain. Thus this generic option is the
+          // only way for the user to trigger it.
+          absl::holds_alternative<ICloudKeychainMech>(mech.type)) {
         primary_passkey_indices_.push_back(i);
       } else {
         secondary_passkey_indices_.push_back(i);

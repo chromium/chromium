@@ -3231,6 +3231,13 @@ inline constexpr char kAnimationPolicy[] = "settings.a11y.animation_policy";
 inline constexpr char kSecurityKeyPermitAttestation[] =
     "securitykey.permit_attestation";
 
+#if BUILDFLAG(IS_MAC)
+// Whether to create platform WebAuthn credentials in iCloud Keychain rather
+// than the Chrome profile.
+inline constexpr char kCreatePasskeysInICloudKeychain[] =
+    "webauthn.create_in_icloud_keychain";
+#endif
+
 // Records the last time the CWS Info Service downloaded information about
 // currently installed extensions from the Chrome Web Store, successfully
 // compared it with the information stored in extension_prefs and updated the

@@ -407,6 +407,25 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
   registry->RegisterStringPref(kWebAuthnTouchIdMetadataSecretPrefName,
                                std::string());
   registry->RegisterStringPref(kWebAuthnTouchIdLastUsed, std::string());
+  // This boolean preference is used as a tristate. If unset, whether or not to
+  // default to iCloud is determined based on several factors.
+  // (See `ShouldCreateInICloudKeychain`.) If set, then this preference is
+  // controlling.
+  //
+  // The default value of this preference only determines whether the toggle
+  // in settings will show as set or not when the preference hasn't been
+  // explicitly set. Since the behaviour is actually more complex than can be
+  // expressed in a boolean, this is always an approximation.
+  registry->RegisterBooleanPref(
+      prefs::kCreatePasskeysInICloudKeychain,
+      ShouldCreateInICloudKeychain(
+          RequestSource::kWebAuthentication,
+          // Whether or not the user is actively using the profile authenticator
+          // is stored in preferences, which aren't available at this time while
+          // we're still registering them. Thus we assume that they are not.
+          /*is_active_profile_authenticator_user=*/false,
+          IsICloudDriveEnabled(),
+          /*request_is_for_google_com=*/false, /*preference=*/absl::nullopt));
 #endif
   cablev2::RegisterProfilePrefs(registry);
 }
@@ -751,21 +770,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
                                              RequestSource::kWebAuthentication);
 
 #if BUILDFLAG(IS_MAC)
-  dialog_model_->set_has_icloud_drive_enabled(IsICloudDriveEnabled());
-
-  if (base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain)) {
-    const std::string& last_used =
-        Profile::FromBrowserContext(GetBrowserContext())
-            ->GetPrefs()
-            ->GetString(kWebAuthnTouchIdLastUsed);
-    if (!last_used.empty()) {
-      const absl::optional<int> days =
-          DaysSinceDate(last_used, base::Time::Now());
-      if (days.has_value() && days.value() <= kMacOsRecentlyUsedMaxDays) {
-        dialog_model_->set_is_active_profile_authenticator_user(true);
-      }
-    }
-  }
+  ConfigureICloudKeychain(request_source, rp_id);
 #endif
 }
 
@@ -1100,4 +1105,85 @@ absl::optional<int> ChromeAuthenticatorRequestDelegate::DaysSinceDate(
   const base::TimeDelta difference = now - t;
   return difference.InDays();
 }
+
+// static
+absl::optional<bool> ChromeAuthenticatorRequestDelegate::GetICloudKeychainPref(
+    const PrefService* prefs) {
+  const PrefService::Preference* pref =
+      prefs->FindPreference(prefs::kCreatePasskeysInICloudKeychain);
+  if (pref->IsDefaultValue()) {
+    return absl::nullopt;
+  }
+  return pref->GetValue()->GetBool();
+}
+
+// static
+bool ChromeAuthenticatorRequestDelegate::IsActiveProfileAuthenticatorUser(
+    const PrefService* prefs) {
+  const std::string& last_used = prefs->GetString(kWebAuthnTouchIdLastUsed);
+  if (last_used.empty()) {
+    return false;
+  }
+  const absl::optional<int> days = DaysSinceDate(last_used, base::Time::Now());
+  return days.has_value() && days.value() <= kMacOsRecentlyUsedMaxDays;
+}
+
+// static
+bool ChromeAuthenticatorRequestDelegate::ShouldCreateInICloudKeychain(
+    RequestSource request_source,
+    bool is_active_profile_authenticator_user,
+    bool has_icloud_drive_enabled,
+    bool request_is_for_google_com,
+    absl::optional<bool> preference) {
+  if (!base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain) ||
+      // Secure Payment Confirmation and credit-card autofill continue to use
+      // the profile authenticator.
+      request_source != RequestSource::kWebAuthentication) {
+    return false;
+  }
+  if (preference.has_value()) {
+    return *preference;
+  }
+  const base::Feature* feature;
+  if (request_is_for_google_com) {
+    feature = &device::kWebAuthnICloudKeychainForGoogle;
+  } else {
+    if (is_active_profile_authenticator_user) {
+      if (has_icloud_drive_enabled) {
+        feature = &device::kWebAuthnICloudKeychainForActiveWithDrive;
+      } else {
+        feature = &device::kWebAuthnICloudKeychainForActiveWithoutDrive;
+      }
+    } else {
+      if (has_icloud_drive_enabled) {
+        feature = &device::kWebAuthnICloudKeychainForInactiveWithDrive;
+      } else {
+        feature = &device::kWebAuthnICloudKeychainForInactiveWithoutDrive;
+      }
+    }
+  }
+
+  return base::FeatureList::IsEnabled(*feature);
+}
+
+void ChromeAuthenticatorRequestDelegate::ConfigureICloudKeychain(
+    RequestSource request_source,
+    const std::string& rp_id) {
+  const PrefService* prefs =
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+  const bool is_icloud_drive_enabled = IsICloudDriveEnabled();
+  const bool is_active_profile_authenticator_user =
+      IsActiveProfileAuthenticatorUser(prefs);
+  dialog_model_->set_allow_icloud_keychain(request_source ==
+                                           RequestSource::kWebAuthentication);
+  dialog_model_->set_has_icloud_drive_enabled(is_icloud_drive_enabled);
+  dialog_model_->set_is_active_profile_authenticator_user(
+      is_active_profile_authenticator_user);
+  dialog_model_->set_should_create_in_icloud_keychain(
+      ShouldCreateInICloudKeychain(
+          request_source, is_active_profile_authenticator_user,
+          is_icloud_drive_enabled, rp_id == "google.com",
+          GetICloudKeychainPref(prefs)));
+}
+
 #endif

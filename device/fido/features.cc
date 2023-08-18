@@ -93,6 +93,31 @@ BASE_FEATURE(kWebAuthnICloudKeychain,
              "WebAuthenticationICloudKeychain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnICloudKeychainForGoogle,
+             "WebAuthenticationICloudKeychainForGoogle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnICloudKeychainForActiveWithDrive,
+             "WebAuthenticationICloudKeychainForActiveWithDrive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnICloudKeychainForActiveWithoutDrive,
+             "WebAuthenticationICloudKeychainForActiveWithoutDrive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnICloudKeychainForInactiveWithDrive,
+             "WebAuthenticationICloudKeychainForInactiveWithDrive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive,
+             "WebAuthenticationICloudKeychainForInactiveWithoutDrive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enabled in M117. Remove in or after M120.
 BASE_FEATURE(kWebAuthnNewHybridUI,
              "WebAuthenticationNewHybridUI",

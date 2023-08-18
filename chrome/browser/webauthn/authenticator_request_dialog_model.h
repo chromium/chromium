@@ -627,6 +627,9 @@ class AuthenticatorRequestDialogModel {
 
   bool offer_try_again_in_ui() const { return offer_try_again_in_ui_; }
 
+  void set_allow_icloud_keychain(bool);
+  void set_should_create_in_icloud_keychain(bool);
+
 #if BUILDFLAG(IS_MAC)
   void RecordMacOsStartedHistogram();
   void RecordMacOsSuccessHistogram(device::FidoRequestType,
@@ -847,6 +850,16 @@ class AuthenticatorRequestDialogModel {
   // For MakeCredential requests, the PublicKeyCredentialUserEntity associated
   // with the request.
   device::PublicKeyCredentialUserEntity user_entity_;
+
+  // allow_icloud_keychain_ is true if iCloud Keychain can be used for this
+  // request. It is disabled for Secure Payment Confirmation and other non-
+  // WebAuthn cases, for example.
+  bool allow_icloud_keychain_ = false;
+
+  // should_create_in_icloud_keychain is true if creation requests with
+  // attachment=platform should default to iCloud Keychain rather than the
+  // profile authenticator.
+  bool should_create_in_icloud_keychain_ = false;
 
 #if BUILDFLAG(IS_MAC)
   // did_record_macos_start_histogram_ is set to true if a histogram record of
