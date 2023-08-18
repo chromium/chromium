@@ -54,6 +54,11 @@ bool ZipAnalyzer::ResumeExtraction() {
     has_encrypted_ |= entry->is_encrypted;
     has_aes_encrypted_ |= entry->uses_aes_encryption;
 
+    if (!extract_success && entry->is_encrypted) {
+      results()->encryption_info.password_status =
+          EncryptionInfo::kKnownIncorrect;
+    }
+
     if (!UpdateResultsForEntry(temp_file_.Duplicate(),
                                GetRootPath().Append(entry->path),
                                writer.file_length(), entry->is_encrypted,
@@ -62,9 +67,17 @@ bool ZipAnalyzer::ResumeExtraction() {
     }
   }
 
+  results()->encryption_info.is_encrypted = has_encrypted_;
   if (has_encrypted_) {
     base::UmaHistogramBoolean("SBClientDownload.EncryptedZipUsesAes",
                               has_aes_encrypted_);
+    if (has_aes_encrypted_ && !password()->empty()) {
+      results()->encryption_info.password_status = EncryptionInfo::kUnknown;
+    } else if (results()->encryption_info.password_status !=
+               EncryptionInfo::kKnownIncorrect) {
+      results()->encryption_info.password_status =
+          EncryptionInfo::kKnownCorrect;
+    }
   }
 
   if (reader_.ok()) {
@@ -72,6 +85,7 @@ bool ZipAnalyzer::ResumeExtraction() {
   } else {
     results()->analysis_result = ArchiveAnalysisResult::kFailedDuringIteration;
   }
+
   results()->success = reader_.ok();
   return true;
 }

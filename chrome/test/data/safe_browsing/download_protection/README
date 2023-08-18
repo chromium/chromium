@@ -26,3 +26,4 @@ generated with the following commands:
 - zip zipfile_two_binaries_one_signed.zip unsigned.exe signed.exe
 - zip -e encrypted.zip signed.exe
 - cp encrypted.zip encrypter_zip_no_extension
+- 7za a -tzip -p12345 -mem=AES256 encrypted_aes.zip signed.exe

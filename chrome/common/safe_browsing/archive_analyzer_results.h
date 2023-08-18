@@ -40,6 +40,23 @@ enum class ArchiveAnalysisResult {
   kMaxValue = kFailedDuringIteration,
 };
 
+struct EncryptionInfo {
+  // True if the metadata is encrypted or there is at least one encrypted entry
+  // in the archive.
+  bool is_encrypted = false;
+
+  enum PasswordStatus {
+    kUnknown = 0,
+    kKnownIncorrect = 1,
+    kKnownCorrect = 2,
+    kMaxValue = kKnownCorrect,
+  };
+
+  // Set to kKnownCorrect if the archive unpacks correctly with the given
+  // password.
+  PasswordStatus password_status = kUnknown;
+};
+
 struct ArchiveAnalyzerResults {
   bool success = false;
   bool has_executable = false;
@@ -56,6 +73,9 @@ struct ArchiveAnalyzerResults {
   int file_count = 0;
   int directory_count = 0;
   ArchiveAnalysisResult analysis_result = ArchiveAnalysisResult::kUnspecified;
+
+  // TODO(crbug/1466284): Populate this information for RAR archives as well.
+  EncryptionInfo encryption_info;
 
   ArchiveAnalyzerResults();
   ArchiveAnalyzerResults(const ArchiveAnalyzerResults& other);

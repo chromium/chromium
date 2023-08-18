@@ -101,6 +101,15 @@ IPC_PROTOBUF_MESSAGE_TRAITS_BEGIN(
   IPC_PROTOBUF_MESSAGE_TRAITS_REPEATED_COMPLEX_MEMBER(contents)
 IPC_PROTOBUF_MESSAGE_TRAITS_END()
 
+IPC_ENUM_TRAITS_MAX_VALUE(
+    safe_browsing::EncryptionInfo::PasswordStatus,
+    safe_browsing::EncryptionInfo::PasswordStatus::kMaxValue)
+
+IPC_STRUCT_TRAITS_BEGIN(safe_browsing::EncryptionInfo)
+  IPC_STRUCT_TRAITS_MEMBER(is_encrypted)
+  IPC_STRUCT_TRAITS_MEMBER(password_status)
+IPC_STRUCT_TRAITS_END()
+
 IPC_STRUCT_TRAITS_BEGIN(safe_browsing::ArchiveAnalyzerResults)
   IPC_STRUCT_TRAITS_MEMBER(success)
   IPC_STRUCT_TRAITS_MEMBER(has_executable)
@@ -114,4 +123,5 @@ IPC_STRUCT_TRAITS_BEGIN(safe_browsing::ArchiveAnalyzerResults)
   IPC_STRUCT_TRAITS_MEMBER(file_count)
   IPC_STRUCT_TRAITS_MEMBER(directory_count)
   IPC_STRUCT_TRAITS_MEMBER(analysis_result)
+  IPC_STRUCT_TRAITS_MEMBER(encryption_info)
 IPC_STRUCT_TRAITS_END()
