@@ -230,8 +230,7 @@
   <div id="nearbyPrintersRevamp" class="padded first nearby-printers-section"
       hidden="[[!showNearbyPrintersRevampSection_(
           isPrinterSettingsRevampEnabled_, hasActiveNetworkConnection)]]">
-    <div id="nearbyPrintersDescription"
-        aria-hidden="[[isPrinterSettingsRevampEnabled_]]">
+    <div id="nearbyPrintersDescription" aria-hidden="true">
       <div id="availablePrintersReadyTitle"
           aria-label$="[[nearbyPrintersAriaLabel_]]"
           class="section-title">
@@ -249,7 +248,8 @@
         iron-icon="[[getIconDirection_(nearbyPrintersExpanded_)]]"
         aria-expanded="[[nearbyPrintersExpanded_]]"
         aria-label="$i18n{availablePrintersReadyTitle}"
-        aria-describedby="nearbyPrintersAriaLabel">
+        aria-describedby="availablePrintersReadySubtext
+            nearbyPrintersAriaLabel">
     </cr-icon-button>
     <cr-policy-pref-indicator
         pref="[[prefs.native_printing.user_native_printers_allowed]]"
