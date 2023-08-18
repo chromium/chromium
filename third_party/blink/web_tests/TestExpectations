@@ -5817,7 +5817,8 @@ crbug.com/1454956 [ Mac ] virtual/gpu/external/wpt/mediacapture-record/MediaReco
 crbug.com/1345886 [ Linux ] plugins/user-gesture.html [ Failure ]
 crbug.com/1464848 [ Mac10.15 ] http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 crbug.com/1466578 external/wpt/event-timing/event-click-visibilitychange.html [ Failure Pass ]
-crbug.com/1445140 [ Mac ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure ]
+crbug.com/1445140 [ Mac ] external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure ]
+crbug.com/1445140 [ Win ] external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure ]
 crbug.com/1469111 [ Mac ] http/tests/inspector-protocol/page/frame-started-stopped-loading.js [ Failure ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
