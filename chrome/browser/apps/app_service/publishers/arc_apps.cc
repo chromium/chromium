@@ -78,57 +78,6 @@
 
 namespace {
 
-void UpdateIconImage(apps::LoadIconCallback callback, apps::IconValuePtr iv) {
-  if (iv->icon_type == apps::IconType::kCompressed) {
-    ConvertUncompressedIconToCompressedIcon(std::move(iv), std::move(callback));
-    return;
-  }
-  std::move(callback).Run(std::move(iv));
-}
-
-void OnArcAppIconCompletelyLoaded(apps::IconType icon_type,
-                                  int32_t size_hint_in_dip,
-                                  apps::IconEffects icon_effects,
-                                  apps::LoadIconCallback callback,
-                                  ArcAppIcon* icon) {
-  if (!icon) {
-    std::move(callback).Run(std::make_unique<apps::IconValue>());
-    return;
-  }
-
-  auto iv = std::make_unique<apps::IconValue>();
-  iv->icon_type = icon_type;
-  iv->is_placeholder_icon = false;
-
-  switch (icon_type) {
-    case apps::IconType::kCompressed:
-      [[fallthrough]];
-    case apps::IconType::kUncompressed:
-      [[fallthrough]];
-    case apps::IconType::kStandard: {
-      iv->uncompressed =
-          icon->is_adaptive_icon()
-              ? apps::CompositeImagesAndApplyMask(icon->foreground_image_skia(),
-                                                  icon->background_image_skia())
-              : apps::ApplyBackgroundAndMask(icon->image_skia());
-
-      if (icon_effects != apps::IconEffects::kNone) {
-        apps::ApplyIconEffects(
-            /*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_effects,
-            size_hint_in_dip, std::move(iv),
-            base::BindOnce(&UpdateIconImage, std::move(callback)));
-        return;
-      }
-      break;
-    }
-    case apps::IconType::kUnknown:
-      NOTREACHED();
-      break;
-  }
-
-  UpdateIconImage(std::move(callback), std::move(iv));
-}
-
 apps::PermissionType GetPermissionType(
     arc::mojom::AppPermission arc_permission_type) {
   switch (arc_permission_type) {
