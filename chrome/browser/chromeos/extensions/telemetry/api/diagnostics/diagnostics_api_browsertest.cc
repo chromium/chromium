@@ -1393,6 +1393,89 @@ IN_PROC_BROWSER_TEST_F(
   )");
 }
 
+class NoExtraPermissionTelemetryExtensionDiagnosticsApiBrowserTest
+    : public PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest {
+ public:
+  NoExtraPermissionTelemetryExtensionDiagnosticsApiBrowserTest() = default;
+
+ protected:
+  std::string GetManifestFile(const std::string& manifest_key,
+                              const std::string& matches_origin) override {
+    return base::StringPrintf(R"(
+      {
+        "key": "%s",
+        "name": "Test Telemetry Extension",
+        "version": "1",
+        "manifest_version": 3,
+        "chromeos_system_extension": {},
+        "background": {
+          "service_worker": "sw.js"
+        },
+        "permissions": [ "os.diagnostics" ],
+        "externally_connectable": {
+          "matches": [
+            "%s"
+          ]
+        },
+        "options_page": "options.html"
+      }
+    )",
+                              manifest_key.c_str(), matches_origin.c_str());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    NoExtraPermissionTelemetryExtensionDiagnosticsApiBrowserTest,
+    RunBluetoothScanningRoutineWithoutPermissionFail) {
+  // Configure FakeDiagnosticsService.
+  {
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runBluetoothScanningRoutineNotWorking() {
+        await chrome.test.assertPromiseRejects(
+          chrome.os.diagnostics.runBluetoothScanningRoutine({
+            length_seconds: 10
+          }),
+          'Error: Unauthorized access to ' +
+          'chrome.os.diagnostics.runBluetoothScanningRoutine. Extension ' +
+          'doesn\'t have the permission.'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    NoExtraPermissionTelemetryExtensionDiagnosticsApiBrowserTest,
+    RunBluetoothPairingRoutineWithoutPermissionFail) {
+  // Configure FakeDiagnosticsService.
+  {
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runBluetoothPairingRoutineNotWorking() {
+        await chrome.test.assertPromiseRejects(
+          chrome.os.diagnostics.runBluetoothPairingRoutine({
+            peripheral_id: "HEALTHD_TEST_ID"
+          }),
+          'Error: Unauthorized access to ' +
+          'chrome.os.diagnostics.runBluetoothPairingRoutine. Extension ' +
+          'doesn\'t have the permission.'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 class BlockedTelemetryExtensionDiagnosticsApiBrowserTest
     : public PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest {
  public:
@@ -1445,7 +1528,7 @@ IN_PROC_BROWSER_TEST_F(BlockedTelemetryExtensionDiagnosticsApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BlockedTelemetryExtensionDiagnosticsApiBrowserTest,
-                       RunBluetoothScanningRoutineWithoutFeatureFlagFail) {
+                       RunBluetoothScanningRoutineFromBlockedExtensionFail) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       function runBluetoothScanningRoutineNotWorking() {
@@ -1465,7 +1548,7 @@ IN_PROC_BROWSER_TEST_F(BlockedTelemetryExtensionDiagnosticsApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BlockedTelemetryExtensionDiagnosticsApiBrowserTest,
-                       RunBluetoothPairingRoutineWithoutFeatureFlagFail) {
+                       RunBluetoothPairingRoutineFromBlockedExtensionFail) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       function runBluetoothPairingRoutineNotWorking() {

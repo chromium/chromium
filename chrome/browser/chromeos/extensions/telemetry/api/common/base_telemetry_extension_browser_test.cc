@@ -87,6 +87,7 @@ std::string BaseTelemetryExtensionBrowserTest::GetManifestFile(
         },
         "permissions": [
           "os.attached_device_info",
+          "os.bluetooth_peripherals_info",
           "os.diagnostics",
           "os.events",
           "os.telemetry",

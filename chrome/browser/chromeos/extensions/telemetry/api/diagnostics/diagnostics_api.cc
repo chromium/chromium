@@ -16,6 +16,7 @@
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/strings/stringprintf.h"
@@ -220,7 +221,16 @@ void OsDiagnosticsRunBluetoothDiscoveryRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunBluetoothPairingRoutineFunction -----------------------------
 
 void OsDiagnosticsRunBluetoothPairingRoutineFunction::RunIfAllowed() {
-  // TODO(b/294790547): Add permission check here.
+  // Pairing Routine is guarded by `os.bluetooth_peripherals_info` permission.
+  if (!extension()->permissions_data()->HasAPIPermission(
+          extensions::mojom::APIPermissionID::
+              kChromeOSBluetoothPeripheralsInfo)) {
+    Respond(
+        Error("Unauthorized access to "
+              "chrome.os.diagnostics.runBluetoothPairingRoutine. Extension "
+              "doesn't have the permission."));
+    return;
+  }
 
   const auto params = GetParams<cx_diag::RunBluetoothPairingRoutine::Params>();
   if (!params) {
@@ -239,7 +249,16 @@ void OsDiagnosticsRunBluetoothPowerRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunBluetoothScanningRoutineFunction ----------------------------
 
 void OsDiagnosticsRunBluetoothScanningRoutineFunction::RunIfAllowed() {
-  // TODO(b/294790547): Add permission check here.
+  // Scanning Routine is guarded by `os.bluetooth_peripherals_info` permission.
+  if (!extension()->permissions_data()->HasAPIPermission(
+          extensions::mojom::APIPermissionID::
+              kChromeOSBluetoothPeripheralsInfo)) {
+    Respond(
+        Error("Unauthorized access to "
+              "chrome.os.diagnostics.runBluetoothScanningRoutine. Extension"
+              " doesn't have the permission."));
+    return;
+  }
 
   const auto params = GetParams<cx_diag::RunBluetoothScanningRoutine::Params>();
   if (!params) {

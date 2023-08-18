@@ -108,7 +108,7 @@
       "lacros"
     ],
     "channel": "stable",
-    "feature_flag": "TelemetryExtensionPendingApprovalApi" // TODO(b/294790547): Don't remove it before adding permission check.
+    "feature_flag": "TelemetryExtensionPendingApprovalApi"
   },
   "os.diagnostics.runBluetoothPowerRoutine": {
     "blocklist": [
@@ -141,7 +141,7 @@
       "lacros"
     ],
     "channel": "stable",
-    "feature_flag": "TelemetryExtensionPendingApprovalApi" // TODO(b/294790547): Don't remove it before adding permission check.
+    "feature_flag": "TelemetryExtensionPendingApprovalApi"
   },
   "os.events": {
     "dependencies": [

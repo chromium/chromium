@@ -25,6 +25,7 @@ source_set("diagnostics") {
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
     "//extensions/browser",
+    "//extensions/common",
     "//mojo/public/cpp/bindings",
   ]
 
