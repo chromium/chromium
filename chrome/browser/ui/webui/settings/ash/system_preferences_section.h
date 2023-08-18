@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "chrome/browser/ui/webui/settings/ash/reset_section.h"
+#include "chrome/browser/ui/webui/settings/ash/search_section.h"
 
 namespace content {
 class WebUIDataSource;
@@ -18,7 +19,7 @@ namespace ash::settings {
 class SearchTagRegistry;
 
 // Provides UI strings and search tags for System Preferences settings.
-// Includes the Reset section.
+// Includes the Reset and Search sections.
 class SystemPreferencesSection : public OsSettingsSection {
  public:
   SystemPreferencesSection(Profile* profile,
@@ -38,6 +39,7 @@ class SystemPreferencesSection : public OsSettingsSection {
 
  private:
   ResetSection reset_subsection_;
+  SearchSection search_subsection_;
 };
 
 }  // namespace ash::settings

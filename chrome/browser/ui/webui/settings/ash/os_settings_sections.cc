@@ -78,9 +78,6 @@ OsSettingsSections::OsSettingsSections(
              std::make_unique<PersonalizationSection>(
                  profile, search_tag_registry, prefs));
 
-  AddSection(mojom::Section::kSearchAndAssistant,
-             std::make_unique<SearchSection>(profile, search_tag_registry));
-
   AddSection(mojom::Section::kApps, std::make_unique<AppsSection>(
                                         profile, search_tag_registry, prefs,
                                         arc_app_list_prefs, app_service_proxy));
@@ -130,6 +127,9 @@ OsSettingsSections::OsSettingsSections(
   } else {
     AddSection(mojom::Section::kReset,
                std::make_unique<ResetSection>(profile, search_tag_registry));
+
+    AddSection(mojom::Section::kSearchAndAssistant,
+               std::make_unique<SearchSection>(profile, search_tag_registry));
   }
 }
 

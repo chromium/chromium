@@ -38,6 +38,7 @@ namespace mojom {
 using ::chromeos::settings::mojom::kAssistantSubpagePath;
 using ::chromeos::settings::mojom::kSearchAndAssistantSectionPath;
 using ::chromeos::settings::mojom::kSearchSubpagePath;
+using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -49,7 +50,8 @@ bool ShouldShowQuickAnswersSettings() {
   return QuickAnswersState::Get() && QuickAnswersState::Get()->is_eligible();
 }
 
-const std::vector<SearchConcept>& GetSearchPageSearchConcepts() {
+const std::vector<SearchConcept>& GetSearchPageSearchConcepts(
+    const char* section_path) {
   if (ShouldShowQuickAnswersSettings()) {
     static const base::NoDestructor<std::vector<SearchConcept>> tags({
         {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
@@ -60,17 +62,17 @@ const std::vector<SearchConcept>& GetSearchPageSearchConcepts() {
          {.setting = mojom::Setting::kPreferredSearchEngine}},
     });
     return *tags;
-  } else {
-    static const base::NoDestructor<std::vector<SearchConcept>> tags({
-        {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
-         mojom::kSearchAndAssistantSectionPath,
-         mojom::SearchResultIcon::kMagnifyingGlass,
-         mojom::SearchResultDefaultRank::kMedium,
-         mojom::SearchResultType::kSetting,
-         {.setting = mojom::Setting::kPreferredSearchEngine}},
-    });
-    return *tags;
   }
+
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
+       section_path,
+       mojom::SearchResultIcon::kMagnifyingGlass,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kPreferredSearchEngine}},
+  });
+  return *tags;
 }
 
 const std::vector<SearchConcept>& GetQuickAnswersSearchConcepts() {
@@ -268,7 +270,9 @@ SearchSection::SearchSection(Profile* profile,
                              SearchTagRegistry* search_tag_registry)
     : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.AddSearchTags(GetSearchPageSearchConcepts());
+
+  updater.AddSearchTags(
+      GetSearchPageSearchConcepts(/*section_path=*/GetSectionPath()));
 
   AssistantState* assistant_state = AssistantState::Get();
   if (IsAssistantAllowed() && assistant_state) {
@@ -339,7 +343,9 @@ int SearchSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section SearchSection::GetSection() const {
-  return mojom::Section::kSearchAndAssistant;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::Section::kSystemPreferences
+             : mojom::Section::kSearchAndAssistant;
 }
 
 mojom::SearchResultIcon SearchSection::GetSectionIcon() const {
@@ -347,7 +353,9 @@ mojom::SearchResultIcon SearchSection::GetSectionIcon() const {
 }
 
 const char* SearchSection::GetSectionPath() const {
-  return mojom::kSearchAndAssistantSectionPath;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::kSystemPreferencesSectionPath
+             : mojom::kSearchAndAssistantSectionPath;
 }
 
 bool SearchSection::LogMetric(mojom::Setting setting,
