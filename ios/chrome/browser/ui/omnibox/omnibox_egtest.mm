@@ -1253,6 +1253,11 @@ void FocusFakebox() {
 // Copies and pastes a URL, then performs an undo of the paste, and attempts to
 // perform a second undo.
 - (void)testCopyPasteUndo {
+  // TODO(crbug.com/1473743): Remove if block when fixed.
+  if (@available(iOS 17.0, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 17.0.");
+  }
+
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
