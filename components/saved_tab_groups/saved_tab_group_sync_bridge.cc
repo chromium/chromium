@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
@@ -226,6 +227,11 @@ void SavedTabGroupSyncBridge::SavedTabGroupRemovedLocally(
   // deletion was part of a group deletion).
   RemoveEntitySpecific(removed_group->saved_guid(), write_batch.get());
 
+  // Keep track of the newly orphaned tabs since their group no longer exists.
+  for (const SavedTabGroupTab& tab : removed_group->saved_tabs()) {
+    tabs_missing_groups_.emplace_back(*tab.ToSpecifics());
+  }
+
   store_->CommitWriteBatch(
       std::move(write_batch),
       base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseSave,
@@ -378,8 +384,6 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
       // We reach this case if we were unable to find a group for this tab. This
       // can happen when sync sends the tab data before the group data. In this
       // case, we will store the tabs in case the group comes in later.
-      // TODO(dljames): Cleanup orphaned tabs after some time if the groups
-      // never come in.
       tabs_missing_groups_.emplace_back(std::move(specifics));
     }
   }

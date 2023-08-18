@@ -6,6 +6,7 @@
 #define COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_SYNC_BRIDGE_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
@@ -65,6 +66,11 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
       const absl::optional<base::Uuid>& tab_guid = absl::nullopt) override;
   void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid) override;
   void SavedTabGroupReorderedLocally() override;
+
+  const std::vector<sync_pb::SavedTabGroupSpecifics>&
+  GetTabsMissingGroupsForTesting() {
+    return tabs_missing_groups_;
+  }
 
  private:
   // Updates and/or adds the specifics into the ModelTypeStore.

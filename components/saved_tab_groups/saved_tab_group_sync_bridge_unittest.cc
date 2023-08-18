@@ -600,6 +600,22 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveGroupLocally) {
   EXPECT_CALL(processor_, Delete(tab_2_guid.AsLowercaseString(), _)).Times(0);
 
   saved_tab_group_model_.Remove(group_guid);
+
+  // Verify that the orphaned tabs are still stored locally in the sync bridge.
+  const std::vector<sync_pb::SavedTabGroupSpecifics>& tabs_missing_groups =
+      bridge_->GetTabsMissingGroupsForTesting();
+
+  auto it_1 = base::ranges::find_if(
+      tabs_missing_groups, [&](sync_pb::SavedTabGroupSpecifics specifics) {
+        return specifics.guid() == tab_1_guid.AsLowercaseString();
+      });
+  auto it_2 = base::ranges::find_if(
+      tabs_missing_groups, [&](sync_pb::SavedTabGroupSpecifics specifics) {
+        return specifics.guid() == tab_2_guid.AsLowercaseString();
+      });
+
+  EXPECT_TRUE(it_1 != tabs_missing_groups.end());
+  EXPECT_TRUE(it_2 != tabs_missing_groups.end());
 }
 
 // Verify that locally updated groups add all group data to the processor.
