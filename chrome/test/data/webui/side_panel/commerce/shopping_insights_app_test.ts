@@ -145,7 +145,7 @@ suite('ShoppingInsightsAppTest', () => {
     assertTrue(!!historyTitle);
     assertTrue(isVisible(historyTitle));
     assertEquals(
-        loadTimeData.getString('lowPriceMultipleOptions'),
+        loadTimeData.getString('historyTitle'),
         historyTitle.textContent!.trim());
 
     const attributesRow =
@@ -281,7 +281,7 @@ suite('ShoppingInsightsAppTest', () => {
         shoppingInsightsApp.shadowRoot!.querySelector('#historyTitle');
     assertTrue(!!historyTitle);
     assertEquals(
-        loadTimeData.getString('highPriceSingleOption'),
+        loadTimeData.getString('historyTitle'),
         historyTitle.textContent!.trim());
     assertFalse(
         isVisible(historySection.querySelector('catalog-attributes-row')));
