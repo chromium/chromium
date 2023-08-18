@@ -550,29 +550,27 @@ bool EditContext::CommitText(const WebString& text,
   // events accordingly.
   // Update the cached selection too.
   String update_text(text);
-  uint32_t update_range_start;
-  uint32_t update_range_end;
-  uint32_t new_selection_start;
-  uint32_t new_selection_end;
-  if (has_composition_) {
-    text_ = text_.Substring(0, composition_range_start_) + update_text +
-            text_.Substring(composition_range_end_);
-    selection_start_ = composition_range_start_ + update_text.length();
-    selection_end_ = composition_range_start_ + update_text.length();
-    update_range_start = composition_range_start_;
-    update_range_end = composition_range_end_;
-  } else {
-    text_ = text_.Substring(0, selection_start_) + update_text +
-            text_.Substring(selection_end_);
-    update_range_start = selection_start_;
-    update_range_end = selection_end_;
-    selection_start_ = selection_start_ + update_text.length();
-    selection_end_ = selection_end_ + update_text.length();
+
+  WebRange actual_replacement_range = replacement_range;
+  if (actual_replacement_range.IsEmpty()) {
+    if (has_composition_) {
+      actual_replacement_range =
+          WebRange(composition_range_start_,
+                   composition_range_end_ - composition_range_start_);
+    } else {
+      actual_replacement_range =
+          WebRange(selection_start_, selection_end_ - selection_start_);
+    }
   }
-  new_selection_start = selection_start_;
-  new_selection_end = selection_end_;
-  DispatchTextUpdateEvent(update_text, update_range_start, update_range_end,
-                          new_selection_start, new_selection_end);
+
+  text_ = text_.Substring(0, actual_replacement_range.StartOffset()) +
+          update_text + text_.Substring(actual_replacement_range.EndOffset());
+  selection_start_ = selection_end_ =
+      actual_replacement_range.StartOffset() + update_text.length();
+
+  DispatchTextUpdateEvent(update_text, actual_replacement_range.StartOffset(),
+                          actual_replacement_range.EndOffset(),
+                          selection_start_, selection_end_);
   // Fire composition end event.
   if (!text.IsEmpty() && has_composition_)
     DispatchCompositionEndEvent(text);
