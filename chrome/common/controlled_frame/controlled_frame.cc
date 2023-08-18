@@ -29,8 +29,11 @@ bool AvailabilityCheck(const std::string& api_full_name,
     return false;
   }
 
-  // Verify that the app is isolated and the API name is in our expected list.
-  return context_data.IsIsolatedApplication() &&
+  // Verify that the current context is an Isolated Web App and the API name is
+  // in our expected list.
+  bool is_not_extension = !extension && url.SchemeIs("isolated-app");
+  return is_not_extension && context == extensions::Feature::WEB_PAGE_CONTEXT &&
+         context_data.IsIsolatedApplication() &&
          base::Contains(GetControlledFrameFeatureList(), api_full_name);
 }
 

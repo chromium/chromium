@@ -1148,6 +1148,9 @@ bool IsExtensionIdAllowedToUseIsolatedContext(base::StringPiece extension_id) {
           "algkcnfjnajfhgimadimbjhmpaeohhln",  // Secure Shell Extension (dev)
           "iodihamcpbpeioajjeobimgagajmlibd",  // Secure Shell Extension
                                                // (stable)
+          // Extension IDs used in tests.
+          "bbobefdodiifgmhhdijgpelmkdaebfpn",  // Controlled Frame Service
+                                               // Worker Test
       });
   return base::Contains(kAllowedIsolatedContextExtensionIds, extension_id);
 }
