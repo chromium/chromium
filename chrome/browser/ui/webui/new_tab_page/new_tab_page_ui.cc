@@ -576,9 +576,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       "moduleRecipeExtendedExperimentEnabled",
       !splitExperimentGroup.empty() && (splitExperimentGroup[0] == "historical" || splitExperimentGroup[0] == "mix"));
 
-  source->AddBoolean("removeScrim", base::FeatureList::IsEnabled(
-                                        ntp_features::kNtpRemoveScrim));
-
   source->AddBoolean("modulesChromeCartInHistoryClustersModuleEnabled",
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpChromeCartInHistoryClusterModule));

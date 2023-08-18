@@ -381,17 +381,11 @@ class NewTabPageHandlerTest : public testing::Test {
 
 class NewTabPageHandlerThemeTest
     : public NewTabPageHandlerTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   NewTabPageHandlerThemeTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-
-    if (RemoveScrim()) {
-      enabled_features.push_back(ntp_features::kNtpRemoveScrim);
-    } else {
-      disabled_features.push_back(ntp_features::kNtpRemoveScrim);
-    }
 
     if (CustomizeChromeSidePanel()) {
       enabled_features.push_back(features::kCustomizeChromeSidePanel);
@@ -411,9 +405,8 @@ class NewTabPageHandlerThemeTest
                                    std::move(disabled_features));
   }
 
-  bool RemoveScrim() const { return std::get<0>(GetParam()); }
-  bool CustomizeChromeSidePanel() const { return std::get<1>(GetParam()); }
-  bool BackgroundImageErrorDetection() const { return std::get<2>(GetParam()); }
+  bool CustomizeChromeSidePanel() const { return std::get<0>(GetParam()); }
+  bool BackgroundImageErrorDetection() const { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -485,24 +478,15 @@ TEST_P(NewTabPageHandlerThemeTest, SetTheme) {
   EXPECT_EQ("no-repeat", theme->background_image->repeat_y);
   EXPECT_EQ("center", theme->background_image->position_x);
   EXPECT_EQ("top", theme->background_image->position_y);
-  if (!RemoveScrim()) {
-    EXPECT_EQ(SkColorSetRGB(0, 0, 2), theme->text_color);
-    EXPECT_EQ(SkColorSetRGB(0, 0, 4), theme->logo_color);
-  } else {
-    EXPECT_EQ(SkColorSetRGB(0, 0, 3), theme->text_color);
-    EXPECT_EQ(SkColorSetRGB(0, 0, 5), theme->logo_color);
-  }
+  EXPECT_EQ(SkColorSetRGB(0, 0, 3), theme->text_color);
+  EXPECT_EQ(SkColorSetRGB(0, 0, 5), theme->logo_color);
   EXPECT_FALSE(theme->background_image_attribution_1.has_value());
   EXPECT_FALSE(theme->background_image_attribution_2.has_value());
   EXPECT_FALSE(theme->background_image_attribution_url.has_value());
   EXPECT_FALSE(theme->background_image_collection_id.has_value());
   ASSERT_TRUE(theme->most_visited);
   EXPECT_EQ(SkColorSetRGB(0, 0, 8), theme->most_visited->background_color);
-  if (RemoveScrim()) {
-    EXPECT_FALSE(theme->most_visited->use_title_pill);
-  } else {
-    EXPECT_TRUE(theme->most_visited->use_title_pill);
-  }
+  EXPECT_FALSE(theme->most_visited->use_title_pill);
   EXPECT_TRUE(theme->most_visited->use_white_tile_icon);
   EXPECT_EQ(false, theme->most_visited->is_dark);
 }
@@ -675,7 +659,6 @@ TEST_P(NewTabPageHandlerThemeTest, SetThirdPartyTheme) {
 INSTANTIATE_TEST_SUITE_P(All,
                          NewTabPageHandlerThemeTest,
                          ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool(),
                                             ::testing::Bool()));
 
 TEST_F(NewTabPageHandlerTest, Histograms) {

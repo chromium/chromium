@@ -165,14 +165,9 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Misc) {
           "runMochaSuite('NewTabPageAppTest Misc')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, OgbThemingRemoveScrimFalse) {
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, OgbThemingRemoveScrim) {
   RunTest("new_tab_page/app_test.js",
-          "runMochaSuite('NewTabPageAppTest OgbThemingRemoveScrim_false')");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, OgbThemingRemoveScrimTrue) {
-  RunTest("new_tab_page/app_test.js",
-          "runMochaSuite('NewTabPageAppTest OgbThemingRemoveScrim_true')");
+          "runMochaSuite('NewTabPageAppTest OgbThemingRemoveScrim')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, OgbScrim) {

@@ -75,8 +75,7 @@ void NewTabPageThirdPartyHandler::NotifyAboutTheme() {
     theme->has_custom_background =
         theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND);
     theme->id = profile_->GetPrefs()->GetString(prefs::kCurrentThemeID);
-    most_visited->use_title_pill =
-        !base::FeatureList::IsEnabled(ntp_features::kNtpRemoveScrim);
+    most_visited->use_title_pill = false;
   }
   theme->most_visited = std::move(most_visited);
   page_->SetTheme(std::move(theme));

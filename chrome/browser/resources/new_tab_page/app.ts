@@ -295,18 +295,6 @@ export class AppElement extends AppElementBase {
         observer: 'onPromoAndModulesLoadedChange_',
       },
 
-      removeScrim_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('removeScrim'),
-        reflectToAttribute: true,
-      },
-
-      showOneGoogleBarScrim_: {
-        type: Boolean,
-        computed:
-            'computeShowOneGoogleBarScrim_(removeScrim_, showBackgroundImage_)',
-      },
-
       showLensUploadDialog_: Boolean,
 
       /**
@@ -357,7 +345,6 @@ export class AppElement extends AppElementBase {
   private modulesLoaded_: boolean;
   private modulesShownToUser: boolean;
   private promoAndModulesLoaded_: boolean;
-  private removeScrim_: boolean;
   private lazyRender_: boolean;
   private scrolledToTop_: boolean;
 
@@ -533,10 +520,6 @@ export class AppElement extends AppElementBase {
     return (!loadTimeData.getBoolean('middleSlotPromoEnabled') ||
             this.middleSlotPromoLoaded_) &&
         (!loadTimeData.getBoolean('modulesEnabled') || this.modulesLoaded_);
-  }
-
-  private computeShowOneGoogleBarScrim_(): boolean {
-    return this.removeScrim_ && this.showBackgroundImage_;
   }
 
   private async onLazyRendered_() {

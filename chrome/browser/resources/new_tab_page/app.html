@@ -49,10 +49,6 @@
   }
 
   :host([show-background-image_]) {
-    --ntp-theme-text-shadow: 0 0 16px rgba(0, 0, 0, .3);
-  }
-
-  :host([show-background-image_][remove-scrim_]) {
     --ntp-theme-text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.5),
         0px 0px 2px rgba(0, 0, 0, 0.2), 0px 0px 10px rgba(0, 0, 0, 0.1);
     --ntp-protected-icon-background-color: rgba(0, 0, 0, .6);
@@ -291,17 +287,14 @@
     max-width: 50vw;
     padding: 8px;
     position: fixed;
-    text-shadow: var(--ntp-theme-text-shadow);
     z-index: -1;
-  }
-
-  :host([remove-scrim_]) #backgroundImageAttribution {
     background-color: var(--ntp-protected-icon-background-color);
     text-shadow: none;
   }
 
-  :host([remove-scrim_]) #backgroundImageAttribution:hover {
+  #backgroundImageAttribution:hover {
     background-color: var(--ntp-protected-icon-background-color-hovered);
+    background: rgba(var(--google-grey-900-rgb), .1);
   }
 
   :host-context([dir='ltr']) #backgroundImageAttribution {
@@ -310,10 +303,6 @@
 
   :host-context([dir='rtl']) #backgroundImageAttribution {
     right: 16px;
-  }
-
-  #backgroundImageAttribution:hover {
-    background: rgba(var(--google-grey-900-rgb), .1);
   }
 
   #backgroundImageAttribution1Container {
@@ -375,7 +364,7 @@
         --ntp-logo-color: [[rgbaOrInherit_(logoColor_)]];">
   <template is="dom-if" if="[[lazyRender_]]">
     <template is="dom-if" if="[[oneGoogleBarEnabled_]]">
-      <div id="oneGoogleBarScrim" hidden$="[[!showOneGoogleBarScrim_]]"
+      <div id="oneGoogleBarScrim" hidden$="[[!showBackgroundImage_]]"
           fixed$="[[scrolledToTop_]]"></div>
       <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
           hidden$="[[!oneGoogleBarLoaded_]]"

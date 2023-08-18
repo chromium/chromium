@@ -242,11 +242,6 @@ BASE_FEATURE(kNtpRecipeTasksModule,
              "NtpRecipeTasksModule",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the scrim is removed.
-BASE_FEATURE(kNtpRemoveScrim,
-             "NtpRemoveScrim",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, SafeBrowsing module will be shown to a target user.
 BASE_FEATURE(kNtpSafeBrowsingModule,
              "NtpSafeBrowsingModule",
@@ -351,12 +346,6 @@ BASE_FEATURE(kNtpHistoryClustersModuleIncludeSyncedVisits,
 BASE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering,
              "HistoryClustersModuleEnableContentClustering",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<std::string> kNtpOgbButtonSelectorParam{
-    &kNtpRemoveScrim, "NtpOgbButtonSelectorParam", ".gb_A"};
-
-const base::FeatureParam<std::string> kNtpOgbUnprotectedTextSelectorParam{
-    &kNtpRemoveScrim, "NtpOgbUnprotectedTextSelectorParam", ".gb_d"};
 
 const char kNtpModulesEligibleForHappinessTrackingSurveyParam[] =
     "NtpModulesEligibleForHappinessTrackingSurveyParam";

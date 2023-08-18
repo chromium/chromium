@@ -67,7 +67,6 @@ BASE_DECLARE_FEATURE(kNtpOneGoogleBar);
 BASE_DECLARE_FEATURE(kNtpRealboxLensSearch);
 BASE_DECLARE_FEATURE(kNtpLensDirectUpload);
 BASE_DECLARE_FEATURE(kNtpRecipeTasksModule);
-BASE_DECLARE_FEATURE(kNtpRemoveScrim);
 BASE_DECLARE_FEATURE(kNtpSafeBrowsingModule);
 BASE_DECLARE_FEATURE(kNtpShortcuts);
 BASE_DECLARE_FEATURE(kNtpSingleRowShortcuts);
@@ -100,12 +99,6 @@ extern const base::FeatureParam<double>
 // backgrounds.
 extern const base::FeatureParam<double>
     kNtpElementLuminosityChangeForDarkBackgroundParam;
-
-// Parameter for the CSS selector for the button elements on the OGB.
-extern const base::FeatureParam<std::string> kNtpOgbButtonSelectorParam;
-// Parameter for the CSS selector for the unprotected text on the OGB.
-extern const base::FeatureParam<std::string>
-    kNtpOgbUnprotectedTextSelectorParam;
 
 // Parameter determining the module load timeout.
 extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
