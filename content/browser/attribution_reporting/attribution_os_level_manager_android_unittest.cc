@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
@@ -36,8 +37,13 @@ class AttributionOsLevelManagerAndroidTest : public ::testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<AttributionOsLevelManager> manager_;
 };
+
+TEST_F(AttributionOsLevelManagerAndroidTest, GetMeasurementStatusTimeMetric) {
+  histogram_tester_.ExpectTotalCount("Conversions.GetMeasurementStatusTime", 1);
+}
 
 // Simple test to ensure that JNI calls work properly.
 TEST_F(AttributionOsLevelManagerAndroidTest, Register) {
