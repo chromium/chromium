@@ -68,7 +68,9 @@ generate_grd("build_json_grdp") {
   input_files = [
     "nearby_share_progress_bar_dark.json",
     "nearby_share_progress_bar_light.json",
+    "nearby_share_progress_bar_jelly.json",
     "nearby_share_pulse_animation_dark.json",
     "nearby_share_pulse_animation_light.json",
+    "nearby_share_pulse_animation_jelly.json",
   ]
 }

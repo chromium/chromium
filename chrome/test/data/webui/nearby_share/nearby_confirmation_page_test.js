@@ -131,13 +131,13 @@ suite('ConfirmatonPageTest', function() {
         TransferStatus.kInProgress, token);
     await transferUpdateListener.remote_.$.flushForTesting();
 
-    const isAnimationHidden =
-        !!confirmationPageElement.shadowRoot.querySelector('cr-lottie[style]');
+    const isAnimationShown =
+        !!confirmationPageElement.shadowRoot.querySelector('#animation');
 
     if (confirmationPageElement.shadowRoot.querySelector('#errorTitle')) {
-      assertTrue(isAnimationHidden);
+      assertFalse(isAnimationShown);
     } else {
-      assertFalse(isAnimationHidden);
+      assertTrue(isAnimationShown);
     }
   });
 
@@ -159,14 +159,14 @@ suite('ConfirmatonPageTest', function() {
         TransferStatus.kRejected, token);
     await transferUpdateListener.remote_.$.flushForTesting();
 
-    const isAnimationHidden =
-        !!confirmationPageElement.shadowRoot.querySelector('cr-lottie[style]');
+    const isAnimationShown =
+        !!confirmationPageElement.shadowRoot.querySelector('#animation');
 
     if (confirmationPageElement.shadowRoot.querySelector('#errorTitle')
             .textContent) {
-      assertTrue(isAnimationHidden);
+      assertFalse(isAnimationShown);
     } else {
-      assertFalse(isAnimationHidden);
+      assertTrue(isAnimationShown);
     }
   });
 

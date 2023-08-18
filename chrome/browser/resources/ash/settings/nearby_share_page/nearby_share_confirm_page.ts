@@ -9,6 +9,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
+import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '/shared/nearby_page_template.js';
 import '/shared/nearby_device.js';
@@ -17,6 +18,7 @@ import '/shared/nearby_progress.js';
 
 import {ShareTarget, TransferStatus} from '/shared/nearby_share.mojom-webui.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './nearby_share_confirm_page.html.js';
@@ -30,6 +32,11 @@ const PROGRESS_BAR_URL_LIGHT: string = 'nearby_share_progress_bar_light.json';
  * The progress bar asset URL for dark mode.
  */
 const PROGRESS_BAR_URL_DARK: string = 'nearby_share_progress_bar_dark.json';
+
+/**
+ * The progress bar asset URL for jelly mode.
+ */
+const PROGRESS_BAR_URL_JELLY: string = 'nearby_share_progress_bar_jelly.json';
 
 const NearbyShareConfirmPageElementBase = I18nMixin(PolymerElement);
 
@@ -86,6 +93,18 @@ export class NearbyShareConfirmPageElement extends
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Return true if the Jelly feature flag is enabled.
+       */
+      isJellyEnabled_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.valueExists('isJellyEnabled') &&
+              loadTimeData.getBoolean('isJellyEnabled');
+        },
+      },
     };
   }
 
@@ -95,6 +114,7 @@ export class NearbyShareConfirmPageElement extends
   private errorDescription_: string|null;
   private errorTitle_: string|null;
   private isDarkModeActive_: boolean;
+  private isJellyEnabled_: boolean;
 
   /**
    * Update the |errorTitle_| and the |errorDescription_| when the transfer
@@ -155,6 +175,10 @@ export class NearbyShareConfirmPageElement extends
    * progress bar.
    */
   private getAnimationUrl_(): string {
+    if (this.isJellyEnabled_) {
+      return PROGRESS_BAR_URL_JELLY;
+    }
+
     return this.isDarkModeActive_ ? PROGRESS_BAR_URL_DARK :
                                     PROGRESS_BAR_URL_LIGHT;
   }

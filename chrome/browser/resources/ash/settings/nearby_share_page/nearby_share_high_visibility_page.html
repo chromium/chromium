@@ -106,7 +106,7 @@
     font: var(--cros-annotation-2-font);
   }
 
-  cr-lottie {
+  #animation {
     bottom: 0;
     height: 100px;
     left: 0;
@@ -122,12 +122,13 @@
     cancel-button-label="$i18n{cancel}"
     close-only="[[getErrorTitle_(errorState_)]]">
   <div id="content" slot="content">
+    <!-- TODO(b/279623883): Remove dark mode handling. -->
     <iron-media-query query="(prefers-color-scheme: dark)"
         query-matches="{{isDarkModeActive_}}">
     </iron-media-query>
-    <cr-lottie animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
-      autoplay="true">
-    </cr-lottie>
+      <cros-lottie-renderer id="animation" asset-url="[[getAnimationUrl_(isDarkModeActive_, isJellyEnabled_)]]"
+          autoplay dynamic aria-hidden>
+      </cros-lottie-renderer>
     <div id="help">
       <template is="dom-if" if="[[!getErrorTitle_(errorState_)]]" restamp>
         <iron-icon id="infoIcon" icon="nearby20:info"

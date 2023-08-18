@@ -9,6 +9,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
+import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '/shared/nearby_device.js';
@@ -42,6 +43,8 @@ function tokensEqual(a: UnguessableToken, b: UnguessableToken): boolean {
   return a.high === b.high && a.low === b.low;
 }
 
+// TODO(TODO(b/279623883): Remove dark mode handling.
+
 /**
  * The pulse animation asset URL for light mode.
  */
@@ -53,6 +56,12 @@ const PULSE_ANIMATION_URL_LIGHT: string =
  */
 const PULSE_ANIMATION_URL_DARK: string =
     'nearby_share_pulse_animation_dark.json';
+
+/**
+ * The pulse animation asset URL for jelly mode.
+ */
+const PULSE_ANIMATION_URL_JELLY: string =
+    'nearby_share_pulse_animation_jelly.json';
 
 
 const NearbyDiscoveryPageElementBase = I18nMixin(PolymerElement);
@@ -157,6 +166,19 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Return true if the Jelly feature flag is enabled.
+       */
+      isJellyEnabled_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.valueExists('isJellyEnabled') &&
+              loadTimeData.getBoolean('isJellyEnabled');
+        },
+      },
+
       /**
        * Return true if the Nearby Share Self Share feature flag is enabled.
        */
@@ -183,6 +205,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
   private errorTitle_: string|null;
   private errorDescription_: string|null;
   private isDarkModeActive_: boolean;
+  private isJellyEnabled_: boolean;
 
   private mojoEventTarget_: ShareTargetListenerCallbackRouter|null = null;
   private listenerIds_: number[]|null = null;
@@ -631,6 +654,12 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
    * pulsing background animation
    */
   private getAnimationUrl_(): string {
+    if (this.isJellyEnabled_) {
+      return PULSE_ANIMATION_URL_JELLY;
+    }
+
+    // TODO(b/279623883): Clean up dark mode logic and duplicate assets after
+    // Jelly is launched.
     return this.isDarkModeActive_ ? PULSE_ANIMATION_URL_DARK :
                                     PULSE_ANIMATION_URL_LIGHT;
   }

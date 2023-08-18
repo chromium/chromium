@@ -33,7 +33,7 @@
     color: var(--cros-sys-secondary);
   }
 
-  cr-lottie {
+  #animation {
     bottom: 0;
     height: 100%;
     left: 0;
@@ -124,13 +124,14 @@
       </div>
     </div>
 
+    <!-- TODO(b/279623883): Remove dark mode handling. -->
     <iron-media-query query="(prefers-color-scheme: dark)"
         query-matches="{{isDarkModeActive_}}">
     </iron-media-query>
-    <template is="dom-if" if="[[!errorTitle_]]">
-      <cr-lottie animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
-          autoplay="true">
-      </cr-lottie>
+    <template is="dom-if" if="[[!errorTitle_]]" restamp>
+      <cros-lottie-renderer id="animation" asset-url="[[getAnimationUrl_(isDarkModeActive_, isJellyEnabled_)]]"
+          autoplay dynamic aria-hidden>
+      </cros-lottie-renderer>
     </template>
 
     <template is="dom-if" if="[[contactName_(shareTarget, errorTitle_)]]">
