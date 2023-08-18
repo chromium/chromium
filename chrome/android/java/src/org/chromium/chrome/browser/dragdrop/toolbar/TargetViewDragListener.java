@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.dragdrop.toolbar;
 
-import android.content.res.ColorStateList;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.dragdrop.toolbar.ToolbarDragDropCoordinator.OnDropCallback;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -37,16 +35,14 @@ class TargetViewDragListener implements OnDragListener {
             case DragEvent.ACTION_DRAG_STARTED:
                 return true;
             case DragEvent.ACTION_DRAG_ENTERED:
-                mModel.set(TargetViewProperties.TARGET_VIEW_COLOR,
-                        ColorStateList.valueOf(
-                                v.getResources().getColor(R.color.baseline_primary_40)));
+                mModel.set(TargetViewProperties.TARGET_VIEW_ACTIVE, true);
                 break;
             case DragEvent.ACTION_DRAG_EXITED:
-                mModel.set(TargetViewProperties.TARGET_VIEW_COLOR, null);
+                mModel.set(TargetViewProperties.TARGET_VIEW_ACTIVE, false);
                 break;
             case DragEvent.ACTION_DROP:
                 mOnDropCallback.parseDragEvent(event);
-                mModel.set(TargetViewProperties.TARGET_VIEW_COLOR, null);
+                mModel.set(TargetViewProperties.TARGET_VIEW_ACTIVE, false);
                 return true;
         }
         return false;

@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.dragdrop.toolbar;
 
-import android.content.res.ColorStateList;
-
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -18,12 +17,12 @@ class TargetViewProperties {
     public static final WritableIntPropertyKey TARGET_VIEW_VISIBLE = new WritableIntPropertyKey();
 
     // View related properties
+    public static final WritableBooleanPropertyKey TARGET_VIEW_ACTIVE =
+            new WritableBooleanPropertyKey();
+
     public static final WritableObjectPropertyKey<TargetViewDragListener> ON_DRAG_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<ColorStateList> TARGET_VIEW_COLOR =
-            new WritableObjectPropertyKey<>();
-
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {TARGET_VIEW_VISIBLE, TARGET_VIEW_COLOR, ON_DRAG_LISTENER};
+            new PropertyKey[] {TARGET_VIEW_VISIBLE, TARGET_VIEW_ACTIVE, ON_DRAG_LISTENER};
 }

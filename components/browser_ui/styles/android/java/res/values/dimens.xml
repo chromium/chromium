@@ -28,6 +28,11 @@ found in the LICENSE file.
     <item name="switch_track_enabled_alpha" format="float" type="dimen">0.3</item>
     <item name="filled_button_bg_disabled_alpha" format="float" type="dimen">0.12</item>
 
+    <!-- Target view values for various things -->
+    <item name="target_view_unfocused_alpha" format="float" type="dimen">.5</item>
+    <item name="target_view_focused_alpha" format="float" type="dimen">.8</item>
+    <dimen name="target_view_stroke_width">2dp</dimen>
+
     <!-- Surface color elevations -->
     <dimen name="dialog_bg_color_elev">@dimen/default_elevation_0</dimen>
     <dimen name="sheet_bg_color_elev">@dimen/default_elevation_0</dimen>

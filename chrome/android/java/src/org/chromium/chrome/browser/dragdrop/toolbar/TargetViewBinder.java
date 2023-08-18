@@ -19,8 +19,8 @@ class TargetViewBinder implements PropertyModelChangeProcessor
     public void bind(PropertyModel model, FrameLayout view, PropertyKey propertyKey) {
         if (propertyKey == TargetViewProperties.TARGET_VIEW_VISIBLE) {
             view.setVisibility(model.get(TargetViewProperties.TARGET_VIEW_VISIBLE));
-        } else if (propertyKey == TargetViewProperties.TARGET_VIEW_COLOR) {
-            view.setBackgroundTintList(model.get(TargetViewProperties.TARGET_VIEW_COLOR));
+        } else if (propertyKey == TargetViewProperties.TARGET_VIEW_ACTIVE) {
+            view.setActivated(model.get(TargetViewProperties.TARGET_VIEW_ACTIVE));
         } else if (propertyKey == TargetViewProperties.ON_DRAG_LISTENER) {
             view.setOnDragListener(model.get(TargetViewProperties.ON_DRAG_LISTENER));
         }

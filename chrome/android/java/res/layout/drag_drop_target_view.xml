@@ -13,5 +13,4 @@ found in the LICENSE file.
     android:layout_height="0dp"
     android:textAlignment="center"
     android:background="@drawable/target_view_outline"
-    android:visibility="gone"
-    />
+    android:visibility="gone"/>
