@@ -6,9 +6,6 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_GROUP_LIST_H_
 
 #include "base/feature_list.h"
-#include "build/build_config.h"
-#include "components/feature_engagement/public/group_constants.h"
-#include "components/flags_ui/feature_entry.h"
 
 namespace feature_engagement {
 using GroupVector = std::vector<const base::Feature*>;

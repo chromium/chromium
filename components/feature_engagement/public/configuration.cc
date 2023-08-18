@@ -149,7 +149,7 @@ bool operator==(const BlockedBy& lhs, const BlockedBy& rhs) {
          std::tie(rhs.type, rhs.affected_features);
 }
 
-FeatureConfig::FeatureConfig() : valid(false) {}
+FeatureConfig::FeatureConfig() = default;
 
 FeatureConfig::FeatureConfig(const FeatureConfig& other) = default;
 

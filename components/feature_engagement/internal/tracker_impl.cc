@@ -105,7 +105,8 @@ Tracker* Tracker::Create(
     const base::FilePath& storage_dir,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
-    base::WeakPtr<TrackerEventExporter> event_exporter) {
+    base::WeakPtr<TrackerEventExporter> event_exporter,
+    ConfigurationProviderList configuration_providers) {
   DVLOG(2) << "Creating Tracker";
   if (base::FeatureList::IsEnabled(kIPHDemoMode))
     return CreateDemoModeTracker().release();
@@ -119,8 +120,9 @@ Tracker* Tracker::Create(
   auto event_store =
       std::make_unique<PersistentEventStore>(std::move(event_db));
 
-  auto configuration = std::make_unique<ChromeVariationsConfiguration>();
-  configuration->ParseConfigs(GetAllFeatures(), GetAllGroups());
+  auto configuration = std::make_unique<ChromeVariationsConfiguration>(
+      std::move(configuration_providers));
+  configuration->LoadConfigs(GetAllFeatures(), GetAllGroups());
 
   auto event_storage_validator =
       std::make_unique<FeatureConfigEventStorageValidator>();

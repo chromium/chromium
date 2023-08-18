@@ -1656,7 +1656,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     // Only used for tests. Various magic tricks are used below to ensure this
     // config is invalid and unusable.
     absl::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = false;
+    config->valid = true;
     config->availability = Comparator(LESS_THAN, 0);
     config->session_rate = Comparator(LESS_THAN, 0);
     config->trigger = EventConfig("dummy_feature_iph_trigger",

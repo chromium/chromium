@@ -6,6 +6,10 @@
 
 #include <utility>
 
+#include "components/feature_engagement/public/configuration_provider.h"
+#include "components/feature_engagement/public/field_trial_configuration_provider.h"
+#include "components/feature_engagement/public/local_configuration_provider.h"
+
 namespace feature_engagement {
 
 DisplayLockHandle::DisplayLockHandle(ReleaseCallback callback)
@@ -34,6 +38,13 @@ bool Tracker::TriggerDetails::ShouldShowIph() const {
 
 bool Tracker::TriggerDetails::ShouldShowSnooze() const {
   return should_show_snooze_;
+}
+
+ConfigurationProviderList Tracker::GetDefaultConfigurationProviders() {
+  ConfigurationProviderList providers;
+  providers.emplace_back(std::make_unique<FieldTrialConfigurationProvider>());
+  providers.emplace_back(std::make_unique<LocalConfigurationProvider>());
+  return providers;
 }
 
 }  // namespace feature_engagement

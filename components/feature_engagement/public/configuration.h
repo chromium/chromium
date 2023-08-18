@@ -171,7 +171,7 @@ struct FeatureConfig {
   ~FeatureConfig();
 
   // Whether the configuration has been successfully parsed.
-  bool valid;
+  bool valid = false;
 
   // The configuration for a particular event that will be searched for when
   // counting how many times a particular feature has been used.

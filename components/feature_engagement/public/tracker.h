@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/feature_engagement/public/configuration_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -144,12 +145,16 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   using OnInitializedCallback = base::OnceCallback<void(bool success)>;
 
   // The |storage_dir| is the path to where all local storage will be.
-  // The |bakground_task_runner| will be used for all disk reads and writes.
+  // The |background_task_runner| will be used for all disk reads and writes.
+  // If `configuration_providers` is not specified, a default set of providers
+  // will be provided.
   static Tracker* Create(
       const base::FilePath& storage_dir,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       leveldb_proto::ProtoDatabaseProvider* db_provider,
-      base::WeakPtr<TrackerEventExporter> event_exporter);
+      base::WeakPtr<TrackerEventExporter> event_exporter,
+      ConfigurationProviderList configuration_providers =
+          GetDefaultConfigurationProviders());
 
   // Possibly adds a command line argument for a child browser process to
   // communicate what IPH are allowed in a testing environment. Has no effect if
@@ -279,6 +284,9 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // SimpleTestClock, so we can advacne the clock in test.
   virtual void SetClockForTesting(const base::Clock& clock,
                                   base::Time& initial_now) = 0;
+
+  // Returns the default set of configuration providers.
+  static ConfigurationProviderList GetDefaultConfigurationProviders();
 
  protected:
   Tracker() = default;
