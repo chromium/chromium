@@ -16,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
+#include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -56,10 +57,17 @@ views::Label* SetupLabel(views::FlexLayoutView* parent) {
 }
 
 std::u16string GetFormattedDueDate(const base::Time& due) {
+  // Google Tasks API does not respect time portion of the date and always
+  // returns "YYYY-MM-DDT00:00:00.000Z" format (see "due" field
+  // https://developers.google.com/tasks/reference/rest/v1/tasks). Treating this
+  // date in UTC format as is leads to showing one day less in timezones to the
+  // west of UTC. The following line adjusts `due` so that it becomes a
+  // **local** midnight instead.
+  const auto adjusted_due = due - calendar_utils::GetTimeDifference(due);
   const auto midnight_today = base::Time::Now().LocalMidnight();
   const auto midnight_tomorrow = midnight_today + base::Days(1);
 
-  if (midnight_today <= due && due < midnight_tomorrow) {
+  if (midnight_today <= adjusted_due && adjusted_due < midnight_tomorrow) {
     return l10n_util::GetStringUTF16(IDS_GLANCEABLES_DUE_TODAY);
   }
 
@@ -67,7 +75,7 @@ std::u16string GetFormattedDueDate(const base::Time& due) {
   CHECK(date_helper);
   const auto formatter =
       date_helper->CreateSimpleDateFormatter(kFormatterPattern);
-  return date_helper->GetFormattedTime(&formatter, due);
+  return date_helper->GetFormattedTime(&formatter, adjusted_due);
 }
 
 std::unique_ptr<views::ImageView> CreateSecondRowIcon(
@@ -178,6 +186,8 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
 
     views::Label* due_date_label = SetupLabel(tasks_details_view_);
     due_date_label->SetText(formatted_due_date);
+    due_date_label->SetID(
+        base::to_underlying(GlanceablesViewId::kTaskItemDueLabel));
     due_date_label->SetProperty(views::kMarginsKey, kSecondRowItemsMargin);
     due_date_label->SetFontList(
         TypographyProvider::Get()->ResolveTypographyToken(

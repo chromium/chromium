@@ -40,6 +40,7 @@ enum class GlanceablesViewId {
 
   // `GlanceablesTaskView`.
   kTaskItemTitleLabel,
+  kTaskItemDueLabel,
 
   // `GlanceablesErrorMessageView`
   kGlanceablesErrorMessageLabel,

@@ -32,7 +32,7 @@ class GlanceablesTaskViewPixelTest
     AshTestBase::SetUp();
 
     base::Time due_date;
-    ASSERT_TRUE(base::Time::FromString("2022-12-21T23:38:22.590Z", &due_date));
+    ASSERT_TRUE(base::Time::FromString("2022-12-21T00:00:00.000Z", &due_date));
 
     task_ = std::make_unique<GlanceablesTask>(
         "task-id", "Task title",
