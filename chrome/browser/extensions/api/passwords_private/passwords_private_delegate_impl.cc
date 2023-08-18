@@ -588,6 +588,14 @@ void PasswordsPrivateDelegateImpl::OnFetchingFamilyMembersCompleted(
       recipient_info.display_name = family_member.user_name;
       recipient_info.profile_image_url = family_member.profile_image_url;
 
+      if (!family_member.public_key.key.empty()) {
+        recipient_info.is_eligible = true;
+        api::passwords_private::PublicKey public_key;
+        public_key.value = family_member.public_key.key;
+        public_key.version = family_member.public_key.key_version;
+        recipient_info.public_key = std::move(public_key);
+      }
+
       results.family_members.push_back(std::move(recipient_info));
     }
   }
@@ -720,9 +728,13 @@ void PasswordsPrivateDelegateImpl::SharePassword(
       PasswordSenderServiceFactory::GetForProfile(profile_);
   for (const api::passwords_private::RecipientInfo& recipient_info :
        recipients) {
-    // TODO(crbug/1445526): Populate other fields from the `recipient_info`.
-    password_sender_service->SendPasswords(corresponding_credentials,
-                                           {.user_id = recipient_info.user_id});
+    CHECK(recipient_info.public_key.has_value());
+    password_manager::PublicKey public_key;
+    public_key.key = recipient_info.public_key.value().value;
+    public_key.key_version = recipient_info.public_key.value().version;
+    password_sender_service->SendPasswords(
+        corresponding_credentials, {.user_id = recipient_info.user_id,
+                                    .public_key = std::move(public_key)});
   }
 }
 

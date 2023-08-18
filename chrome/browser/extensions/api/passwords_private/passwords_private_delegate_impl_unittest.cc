@@ -103,6 +103,7 @@ using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Ne;
+using ::testing::Optional;
 using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::StrictMock;
@@ -112,6 +113,8 @@ namespace {
 
 constexpr char kHistogramName[] = "PasswordManager.AccessPasswordInSettings";
 constexpr char kSharingRecipientId1[] = "user id 1";
+constexpr char kSharingRecipientKeyValue1[] = "key 1";
+constexpr char kSharingRecipientKeyValue2[] = "key 2";
 constexpr char kSharingRecipientId2[] = "user id 2";
 constexpr char kSharingRecipientDisplayName1[] = "User One";
 constexpr char kSharingRecipientDisplayName2[] = "User Two";
@@ -1673,6 +1676,9 @@ TEST_F(PasswordsPrivateDelegateImplTest, SharePasswordWithTwoRecipients) {
 
   PasswordsPrivateDelegate::ShareRecipients recipients;
   api::passwords_private::RecipientInfo recipient1;
+  api::passwords_private::PublicKey public_key1;
+  public_key1.value = kSharingRecipientKeyValue1;
+  recipient1.public_key = std::move(public_key1);
   recipient1.user_id = kSharingRecipientId1;
   recipient1.display_name = kSharingRecipientDisplayName1;
   recipient1.email = kSharingRecipientEmail1;
@@ -1680,6 +1686,9 @@ TEST_F(PasswordsPrivateDelegateImplTest, SharePasswordWithTwoRecipients) {
   recipients.push_back(std::move(recipient1));
 
   api::passwords_private::RecipientInfo recipient2;
+  api::passwords_private::PublicKey public_key2;
+  public_key2.value = kSharingRecipientKeyValue2;
+  recipient2.public_key = std::move(public_key2);
   recipient2.user_id = kSharingRecipientId2;
   recipient2.display_name = kSharingRecipientDisplayName2;
   recipient2.email = kSharingRecipientEmail2;
@@ -1689,6 +1698,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, SharePasswordWithTwoRecipients) {
   password_manager::MockPasswordSenderService* password_sender_service =
       static_cast<password_manager::MockPasswordSenderService*>(
           PasswordSenderServiceFactory::GetForProfile(profile()));
+
+  password_manager::PublicKey expected_public_key1, expected_public_key2;
+  expected_public_key1.key = kSharingRecipientKeyValue1;
+  expected_public_key2.key = kSharingRecipientKeyValue2;
   // There are two recipients and hence, SendPasswords() should be called twice
   // with the same credentials for each recipient.
   EXPECT_CALL(
@@ -1698,9 +1711,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, SharePasswordWithTwoRecipients) {
               Field(&PasswordForm::username_value, password.username_value),
               Field(&PasswordForm::password_value, password.password_value),
               Field(&PasswordForm::signon_realm, password.signon_realm))),
-          Field("user id", &PasswordRecipient::user_id, kSharingRecipientId1))
-
-  );
+          AllOf(Field("user id", &PasswordRecipient::user_id,
+                      kSharingRecipientId1),
+                Field("public key", &PasswordRecipient::public_key,
+                      expected_public_key1))));
   EXPECT_CALL(
       *password_sender_service,
       SendPasswords(
@@ -1708,7 +1722,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, SharePasswordWithTwoRecipients) {
               Field(&PasswordForm::username_value, password.username_value),
               Field(&PasswordForm::password_value, password.password_value),
               Field(&PasswordForm::signon_realm, password.signon_realm))),
-          Field("user id", &PasswordRecipient::user_id, kSharingRecipientId2))
+          AllOf(Field("user id", &PasswordRecipient::user_id,
+                      kSharingRecipientId2),
+                Field("public key", &PasswordRecipient::public_key,
+                      expected_public_key2)))
 
   );
 
@@ -1755,6 +1772,9 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 
   PasswordsPrivateDelegate::ShareRecipients recipients;
   api::passwords_private::RecipientInfo recipient;
+  api::passwords_private::PublicKey public_key;
+  public_key.value = kSharingRecipientKeyValue1;
+  recipient.public_key = std::move(public_key);
   recipient.user_id = kSharingRecipientId1;
   recipient.display_name = kSharingRecipientDisplayName1;
   recipient.email = kSharingRecipientEmail1;
@@ -1764,6 +1784,9 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   password_manager::MockPasswordSenderService* password_sender_service =
       static_cast<password_manager::MockPasswordSenderService*>(
           PasswordSenderServiceFactory::GetForProfile(profile()));
+
+  password_manager::PublicKey expected_public_key;
+  expected_public_key.key = kSharingRecipientKeyValue1;
   // There is one recipient and hence, SendPasswords() should be called only
   // once with the two credentials represented by this ui entry.
   EXPECT_CALL(
@@ -1772,7 +1795,10 @@ TEST_F(PasswordsPrivateDelegateImplTest,
           UnorderedElementsAre(
               Field(&PasswordForm::signon_realm, "https://facebook.com"),
               Field(&PasswordForm::signon_realm, "https://m.facebook.com")),
-          Field("user id", &PasswordRecipient::user_id, kSharingRecipientId1)))
+          AllOf(Field("user id", &PasswordRecipient::user_id,
+                      kSharingRecipientId1),
+                Field("public key", &PasswordRecipient::public_key,
+                      expected_public_key))))
       .Times(1);
 
   delegate->SharePassword(/*id=*/id_with_two_affiliated_domains, recipients);
@@ -1823,10 +1849,14 @@ class PasswordsPrivateDelegateImplFetchFamilyMembersTest
   const std::string kTestEmail = "theo@example.com";
   const std::string kTestProfileImageUrl =
       "https://3837fjsdjaka.image.example.com";
+  const std::string kTestPublicKeyBase64 =
+      "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MTI=";
+  const uint32_t kTestPublicKeyVersion = 42;
 
   void SetServerResponse(sync_pb::PasswordSharingRecipientsResponse::
                              PasswordSharingRecipientsResult result,
-                         net::HttpStatusCode status = net::HTTP_OK) {
+                         net::HttpStatusCode status = net::HTTP_OK,
+                         bool recipient_has_public_key = false) {
     sync_pb::PasswordSharingRecipientsResponse response;
     response.set_result(result);
     if (result == sync_pb::PasswordSharingRecipientsResponse::SUCCESS) {
@@ -1836,6 +1866,12 @@ class PasswordsPrivateDelegateImplFetchFamilyMembersTest
       user_info->mutable_user_display_info()->set_email(kTestEmail);
       user_info->mutable_user_display_info()->set_profile_image_url(
           kTestProfileImageUrl);
+      if (recipient_has_public_key) {
+        const password_manager::PublicKey kTestPublicKey = {
+            kTestPublicKeyBase64, kTestPublicKeyVersion};
+        user_info->mutable_cross_user_sharing_public_key()->CopyFrom(
+            kTestPublicKey.ToProto());
+      }
     }
     profile_url_loader_factory().AddResponse(
         password_manager::PasswordSharingRecipientsDownloader::
@@ -1852,7 +1888,7 @@ class PasswordsPrivateDelegateImplFetchFamilyMembersTest
 };
 
 TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
-       FetchFamilyMembersSucceeds) {
+       FetchFamilyMembersSucceedsWithoutPublicKey) {
   SetServerResponse(sync_pb::PasswordSharingRecipientsResponse::SUCCESS);
 
   base::MockCallback<PasswordsPrivateDelegate::FetchFamilyResultsCallback>
@@ -1866,8 +1902,41 @@ TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
                           Field(&RecipientInfo::user_id, kTestUserId),
                           Field(&RecipientInfo::display_name, kTestUserName),
                           Field(&RecipientInfo::email, kTestEmail),
+                          Field(&RecipientInfo::is_eligible, false),
+                          Field(&RecipientInfo::public_key, Eq(absl::nullopt)),
                           Field(&RecipientInfo::profile_image_url,
                                 kTestProfileImageUrl)))))));
+
+  delegate()->FetchFamilyMembers(callback.Get());
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
+       FetchFamilyMembersSucceedsWithPublicKey) {
+  SetServerResponse(sync_pb::PasswordSharingRecipientsResponse::SUCCESS,
+                    net::HTTP_OK, /*recipient_has_public_key=*/true);
+
+  base::MockCallback<PasswordsPrivateDelegate::FetchFamilyResultsCallback>
+      callback;
+  EXPECT_CALL(
+      callback,
+      Run(AllOf(
+          Field(&FamilyFetchResults::status,
+                api::passwords_private::FAMILY_FETCH_STATUS_SUCCESS),
+          Field(&FamilyFetchResults::family_members,
+                ElementsAre(AllOf(
+                    Field(&RecipientInfo::user_id, kTestUserId),
+                    Field(&RecipientInfo::display_name, kTestUserName),
+                    Field(&RecipientInfo::email, kTestEmail),
+                    Field(&RecipientInfo::is_eligible, true),
+                    Field(&RecipientInfo::public_key,
+                          Optional(AllOf(
+                              Field(&api::passwords_private::PublicKey::value,
+                                    kTestPublicKeyBase64),
+                              Field(&api::passwords_private::PublicKey::version,
+                                    kTestPublicKeyVersion)))),
+                    Field(&RecipientInfo::profile_image_url,
+                          kTestProfileImageUrl)))))));
 
   delegate()->FetchFamilyMembers(callback.Get());
   task_environment()->RunUntilIdle();
