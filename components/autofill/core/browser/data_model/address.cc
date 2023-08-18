@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <algorithm>
+#include <memory>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -29,30 +30,38 @@
 
 namespace autofill {
 
-Address::Address() = default;
+Address::Address() : structured_address_(std::make_unique<AddressNode>()){};
 
-Address::Address(const Address& address) = default;
+Address::Address(const Address& address) {
+  *this = address;
+}
 
 Address::~Address() = default;
 
-Address& Address::operator=(const Address& address) = default;
+Address& Address::operator=(const Address& address) {
+  if (this == &address) {
+    return *this;
+  }
+  structured_address_->CopyFrom(address.GetStructuredAddress());
+  return *this;
+};
 
 bool Address::operator==(const Address& other) const {
   if (this == &other)
     return true;
-  return structured_address_.SameAs(other.structured_address_);
+  return structured_address_->SameAs(*other.structured_address_.get());
 }
 
 bool Address::FinalizeAfterImport() {
-  structured_address_.MigrateLegacyStructure();
-  bool result = structured_address_.CompleteFullTree();
+  structured_address_->MigrateLegacyStructure();
+  bool result = structured_address_->CompleteFullTree();
   // If the address could not be completed, it is possible that it contains an
   // invalid structure.
   if (!result) {
-    if (structured_address_.WipeInvalidStructure()) {
+    if (structured_address_->WipeInvalidStructure()) {
       // If the structure was wiped because it is invalid, try to complete the
       // address again.
-      result = structured_address_.CompleteFullTree();
+      result = structured_address_->CompleteFullTree();
     }
   }
   return result;
@@ -60,8 +69,8 @@ bool Address::FinalizeAfterImport() {
 
 bool Address::MergeStructuredAddress(const Address& newer,
                                      bool newer_was_more_recently_used) {
-  return structured_address_.MergeWithComponent(newer.GetStructuredAddress(),
-                                                newer_was_more_recently_used);
+  return structured_address_->MergeWithComponent(newer.GetStructuredAddress(),
+                                                 newer_was_more_recently_used);
 }
 
 absl::optional<AlternativeStateNameMap::CanonicalStateName>
@@ -72,18 +81,18 @@ Address::GetCanonicalizedStateName() const {
 }
 
 bool Address::IsStructuredAddressMergeable(const Address& newer) const {
-  return structured_address_.IsMergeableWithComponent(
+  return structured_address_->IsMergeableWithComponent(
       newer.GetStructuredAddress());
 }
 
-const AddressNode& Address::GetStructuredAddress() const {
-  return structured_address_;
+const AddressComponent& Address::GetStructuredAddress() const {
+  return *structured_address_.get();
 }
 
 std::u16string Address::GetRawInfo(ServerFieldType type) const {
   DCHECK_EQ(FieldTypeGroup::kAddressHome, AutofillType(type).group());
 
-  return structured_address_.GetValueForType(type);
+  return structured_address_->GetValueForType(type);
 }
 
 void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
@@ -95,18 +104,19 @@ void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
   // the address to contain different tokens, the structure must be reset.
   if (type == ADDRESS_HOME_STREET_ADDRESS) {
     const std::u16string current_value =
-        structured_address_.GetValueForType(type);
+        structured_address_->GetValueForType(type);
     if (!current_value.empty()) {
-      AreStringTokenEquivalent(value, structured_address_.GetValueForType(type))
-          ? structured_address_.SetValueForType(ADDRESS_HOME_STREET_ADDRESS,
-                                                value, status)
-          : structured_address_.SetValueForTypeAndResetSubstructure(
+      AreStringTokenEquivalent(value,
+                               structured_address_->GetValueForType(type))
+          ? structured_address_->SetValueForType(ADDRESS_HOME_STREET_ADDRESS,
+                                                 value, status)
+          : structured_address_->SetValueForTypeAndResetSubstructure(
                 ADDRESS_HOME_STREET_ADDRESS, value, status);
       return;
     }
   }
 
-  structured_address_.SetValueForType(type, value, status);
+  structured_address_->SetValueForType(type, value, status);
 }
 
 void Address::GetMatchingTypes(const std::u16string& text,
@@ -115,7 +125,7 @@ void Address::GetMatchingTypes(const std::u16string& text,
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
 
   std::string country_code = base::UTF16ToUTF8(
-      structured_address_.GetValueForType(ADDRESS_HOME_COUNTRY));
+      structured_address_->GetValueForType(ADDRESS_HOME_COUNTRY));
 
   // Check to see if the |text| canonicalized as a country name is a match.
   std::string entered_country_code =
@@ -148,13 +158,13 @@ void Address::GetMatchingTypes(const std::u16string& text,
 }
 
 void Address::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
-  structured_address_.GetSupportedTypes(supported_types);
+  structured_address_->GetSupportedTypes(supported_types);
 }
 
 std::u16string Address::GetInfoImpl(const AutofillType& type,
                                     const std::string& locale) const {
   std::string country_code = base::UTF16ToUTF8(
-      structured_address_.GetValueForType(ADDRESS_HOME_COUNTRY));
+      structured_address_->GetValueForType(ADDRESS_HOME_COUNTRY));
 
   if (type.html_type() == HtmlFieldType::kCountryCode) {
     return base::ASCIIToUTF16(country_code);
@@ -190,7 +200,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
                          : std::string();
     }
 
-    structured_address_.SetValueForType(
+    structured_address_->SetValueForType(
         ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16(country_code), status);
     return !country_code.empty();
   }
@@ -206,7 +216,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
         CountryNames::GetInstance()->GetCountryCodeForLocalizedCountryName(
             value, locale);
 
-    structured_address_.SetValueForType(
+    structured_address_->SetValueForType(
         ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16(country_code), status);
     return !GetRawInfo(ADDRESS_HOME_COUNTRY).empty();
   }
@@ -217,8 +227,8 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
   // There's a good chance that this formatting is not intentional, but it's
   // also not obviously safe to just strip the newlines.
   if (storable_type == ADDRESS_HOME_STREET_ADDRESS) {
-    return structured_address_.IsValueForTypeValid(ADDRESS_HOME_STREET_ADDRESS,
-                                                   /*wipe_if_not=*/true);
+    return structured_address_->IsValueForTypeValid(ADDRESS_HOME_STREET_ADDRESS,
+                                                    /*wipe_if_not=*/true);
   }
 
   return true;
@@ -226,7 +236,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
 
 VerificationStatus Address::GetVerificationStatusImpl(
     ServerFieldType type) const {
-  return structured_address_.GetVerificationStatusForType(type);
+  return structured_address_->GetVerificationStatusForType(type);
 }
 
 }  // namespace autofill

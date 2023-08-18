@@ -56,7 +56,7 @@ class Address : public FormGroup {
   bool IsStructuredAddressMergeable(const Address& newer) const;
 
   // Returns a constant reference to |structured_address_|.
-  const AddressNode& GetStructuredAddress() const;
+  const AddressComponent& GetStructuredAddress() const;
 
  private:
   // FormGroup:
@@ -74,7 +74,7 @@ class Address : public FormGroup {
 
   // This data structure holds the address information if the structured address
   // feature is enabled.
-  AddressNode structured_address_;
+  std::unique_ptr<AddressComponent> structured_address_;
 };
 
 }  // namespace autofill
