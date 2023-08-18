@@ -1890,6 +1890,8 @@ static_library("browser") {
       "picture_in_picture/auto_pip_setting_overlay_view.h",
       "user_education/browser_tutorial_service.cc",
       "user_education/browser_tutorial_service.h",
+      "user_education/user_education_configuration_provider.cc",
+      "user_education/user_education_configuration_provider.h",
       "user_education/user_education_service.cc",
       "user_education/user_education_service.h",
       "user_education/user_education_service_factory.cc",

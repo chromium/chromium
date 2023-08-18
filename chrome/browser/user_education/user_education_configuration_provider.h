@@ -1,0 +1,34 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_CONFIGURATION_PROVIDER_H_
+#define CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_CONFIGURATION_PROVIDER_H_
+
+#include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/configuration_provider.h"
+#include "components/feature_engagement/public/feature_list.h"
+#include "components/feature_engagement/public/group_list.h"
+#include "components/user_education/common/feature_promo_registry.h"
+
+// Provides feature engagement configuration based on IPH registered in the
+// browser.
+class UserEducationConfigurationProvider
+    : public feature_engagement::ConfigurationProvider {
+ public:
+  UserEducationConfigurationProvider();
+  ~UserEducationConfigurationProvider() override;
+
+  // feature_engagement::ConfigurationProvider:
+  bool MaybeProvideFeatureConfiguration(
+      const base::Feature& feature,
+      feature_engagement::FeatureConfig& config,
+      const feature_engagement::FeatureVector& known_features,
+      const feature_engagement::GroupVector& known_groups) const override;
+  const char* GetConfigurationSourceDescription() const override;
+
+ private:
+  user_education::FeaturePromoRegistry registry_;
+};
+
+#endif  // CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_CONFIGURATION_PROVIDER_H_

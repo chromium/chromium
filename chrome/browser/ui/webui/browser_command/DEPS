@@ -1,4 +1,0 @@
-include_rules = [
-  # Browser command relies on the tutorial ID defined here.
-  "+chrome/browser/ui/views/user_education/browser_user_education_service.h",
-]
