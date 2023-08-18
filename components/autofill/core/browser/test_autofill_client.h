@@ -49,6 +49,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/plus_addresses/plus_address_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/translate/core/browser/language_state.h"
@@ -131,6 +132,10 @@ class TestAutofillClientTemplate : public T {
   }
 
   IbanManager* GetIbanManager() override { return GetMockIbanManager(); }
+
+  plus_addresses::PlusAddressService* GetPlusAddressService() override {
+    return test_plus_address_service_;
+  }
 
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override {
     return &mock_merchant_promo_code_manager_;
@@ -677,6 +682,11 @@ class TestAutofillClientTemplate : public T {
     test_shared_loader_factory_ = url_loader_factory;
   }
 
+  void set_plus_address_service(
+      plus_addresses::PlusAddressService* plus_address_service) {
+    test_plus_address_service_ = plus_address_service;
+  }
+
   GURL form_origin() { return form_origin_; }
 
   ukm::TestUkmRecorder* GetTestUkmRecorder() { return &test_ukm_recorder_; }
@@ -685,6 +695,8 @@ class TestAutofillClientTemplate : public T {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   signin::IdentityTestEnvironment identity_test_env_;
   raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
+  raw_ptr<plus_addresses::PlusAddressService> test_plus_address_service_ =
+      nullptr;
   TestAddressNormalizer test_address_normalizer_;
   std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuide>>
       mock_autofill_optimization_guide_ =

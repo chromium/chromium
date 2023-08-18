@@ -53,6 +53,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/plus_addresses/plus_address_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
@@ -898,6 +899,33 @@ TEST_P(FormDataImporterTest, InvalidPhoneNumber) {
   profile_without_number.ClearFields({PHONE_HOME_WHOLE_NUMBER});
   ExtractAddressProfilesAndVerifyExpectation(*form_structure,
                                              {profile_without_number});
+}
+
+TEST_P(FormDataImporterTest, PlusAddressesExcluded) {
+  const std::string kDummyPlusAddress = "plus+plus@plus.plus";
+
+  // Save `kDummyPlusAddress` into the `plus_address_service`, and configure the
+  // `autofill_client_` to use it.
+  plus_addresses::PlusAddressService plus_address_service;
+  plus_address_service.SavePlusAddress(
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      kDummyPlusAddress);
+  autofill_client_->set_plus_address_service(&plus_address_service);
+
+  // Next, make a form with the `kDummyPlusAddress` filled in, which should be
+  // excluded from imports.
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, EMAIL_ADDRESS, kDummyPlusAddress);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+
+  // Create a default profile, but remove the email address, since extraction
+  // should skip the known plus address.
+  AutofillProfile expected_profile = ConstructDefaultProfile();
+  expected_profile.ClearFields({EMAIL_ADDRESS});
+
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {expected_profile});
 }
 
 // ImportAddressProfiles tests.
