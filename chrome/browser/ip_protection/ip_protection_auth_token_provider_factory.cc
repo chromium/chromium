@@ -65,10 +65,9 @@ IpProtectionAuthTokenProviderFactory::BuildServiceInstanceForBrowserContext(
 
 bool IpProtectionAuthTokenProviderFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  // TODO(https://crbug.com/1444621): If we update IpProtectionAuthTokenProvider
-  // to begin requesting tokens on construction, have this return true to
-  // instantiate an instance of the IpProtectionAuthTokenProvider when the
-  // BrowserContext is created instead of lazily so that it can begin fetching
-  // tokens as soon as possible.
-  return false;
+  // Auth tokens will be requested soon after `Profile()` creation (after the
+  // per-profile `NetworkContext()` gets created) so instantiate the
+  // `IpProtectionAuthTokenProvider()` so that it already exists by the time
+  // that request is made.
+  return true;
 }

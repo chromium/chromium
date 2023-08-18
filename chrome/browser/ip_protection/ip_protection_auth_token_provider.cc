@@ -87,8 +87,8 @@ void IpProtectionAuthTokenProvider::OnRequestOAuthTokenCompleted(
   // If we fail to get an OAuth token don't attempt to fetch from Phosphor as
   // the request is guaranteed to fail.
   if (error.state() != GoogleServiceAuthError::NONE) {
-    VLOG(1) << "IP Protection OAuth token fetch failed with error: "
-            << base::NumberToString(static_cast<int>(error.state()));
+    VLOG(2) << "IPATP::OnRequestOAuthTokenCompleted got an error: "
+            << static_cast<int>(error.state());
     TryGetAuthTokensComplete(
         absl::nullopt, IpProtectionTryGetAuthTokensResult::kFailedOAuthToken);
     return;
@@ -130,11 +130,14 @@ void IpProtectionAuthTokenProvider::OnFetchBlindSignedTokenCompleted(
         result = IpProtectionTryGetAuthTokensResult::kFailedBSAOther;
         break;
     }
+    VLOG(2) << "IPATP::OnFetchBlindSignedTokenCompleted got an error: "
+            << static_cast<int>(result);
     TryGetAuthTokensComplete(absl::nullopt, result);
     return;
   }
 
   if (tokens.value().size() == 0) {
+    VLOG(2) << "IPATP::OnFetchBlindSignedTokenCompleted called with no tokens";
     TryGetAuthTokensComplete(
         absl::nullopt, IpProtectionTryGetAuthTokensResult::kFailedBSAOther);
     return;
@@ -241,11 +244,12 @@ void IpProtectionAuthTokenProvider::SetReceiver(
   if (is_shutting_down_) {
     return;
   }
+  // TODO(https://crbug.com/1473734): I'm not sure if this case is possible
+  // since a receiver should only be added when a NetworkContext is created, but
+  // maybe this can occur if the network service crashes and is restarted? If
+  // this can't happen, just replace this if statement with a CHECK.
+  DUMP_WILL_BE_CHECK(!receiver_.is_bound());
   if (receiver_.is_bound()) {
-    // TODO(awillia): I'm not sure if this case is possible since a receiver
-    // should only be added when a NetworkContext is created, but maybe this can
-    // occur if the network service crashes and is restarted? If this can't
-    // happen, just replace this if statement with a CHECK.
     receiver_.reset();
     // Reset any pending callbacks as well since this class only expects to have
     // only one pending call to `TryGetAuthTokens()` at any given time.
