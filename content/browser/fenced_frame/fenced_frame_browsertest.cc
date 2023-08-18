@@ -4768,7 +4768,11 @@ class FencedFrameReportEventBrowserTest
             *web_contents()->GetBrowserContext()),
         /*main_frame_origin=*/
         web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")));
+        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")),
+        /*allowed_reporting_origins=*/
+        {{url::Origin::Create(https_server()->GetURL("a.test", "/")),
+          url::Origin::Create(https_server()->GetURL("b.test", "/")),
+          url::Origin::Create(https_server()->GetURL("c.test", "/"))}});
   }
 
   // A helper function for specifying reportEvent tests. Each step consists of a
@@ -4851,7 +4855,8 @@ class FencedFrameReportEventBrowserTest
         blink::FencedFrame::ReportingDestination::kBuyer,
         {
             {"click", reporting_url},
-        });
+        },
+        /*reporting_ad_macro_map=*/FencedFrameReporter::ReportingMacroMap());
     // Set empty reporting url for seller.
     fenced_frame_reporter->OnUrlMappingReady(
         blink::FencedFrame::ReportingDestination::kSeller, {{"click", GURL()}});
