@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "printing/units.h"
+#include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -32,14 +33,24 @@ bool AddPdfPage(sk_sp<SkDocument> pdf_doc,
                 const sk_sp<SkData>& jpeg_image_data,
                 bool rotate,
                 absl::optional<int> dpi) {
-  const sk_sp<SkImage> image =
-      SkImages::DeferredFromEncodedData(jpeg_image_data);
-  if (!image) {
-    LOG(ERROR) << "Unable to generate image from encoded image data.";
+  if (!SkJpegDecoder::IsJpeg(jpeg_image_data->data(),
+                             jpeg_image_data->size())) {
+    LOG(ERROR) << "Not a valid JPEG image.";
     return false;
   }
   CHECK(
       SkJpegDecoder::IsJpeg(jpeg_image_data->data(), jpeg_image_data->size()));
+  std::unique_ptr<SkCodec> codec =
+      SkJpegDecoder::Decode(jpeg_image_data, nullptr);
+  if (!codec) {
+    LOG(ERROR) << "Unable to produce codec object from encoded jpeg data.";
+    return false;
+  }
+  auto [image, result] = codec->getImage();
+  if (!image || result != SkCodec::kSuccess) {
+    LOG(ERROR) << "Unable to decode image from encoded jpeg data.";
+    return false;
+  }
 
   // Convert from JPG dimensions in pixels (DPI) to PDF dimensions in points
   // (1/72 in).

@@ -64,6 +64,8 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/skia/include/codec/SkCodec.h"
+#include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -210,13 +212,19 @@ sk_sp<SkImage> HibernationHandler::GetImage() {
     return image_;
   }
 
-  DCHECK(encoded_);
+  CHECK(encoded_);
+  CHECK(SkPngDecoder::IsPng(encoded_->data(), encoded_->size()));
   DCHECK(
       base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
 
   base::TimeTicks before = base::TimeTicks::Now();
   // Note: not discarding the encoded image.
-  auto image = SkImages::DeferredFromEncodedData(encoded_)->makeRasterImage();
+  sk_sp<SkImage> image = nullptr;
+  std::unique_ptr<SkCodec> codec = SkPngDecoder::Decode(encoded_, nullptr);
+  if (codec) {
+    image = std::get<0>(codec->getImage());
+  }
+
   base::TimeTicks after = base::TimeTicks::Now();
   UMA_HISTOGRAM_TIMES(
       "Blink.Canvas.2DLayerBridge.Compression.DecompressionTime",
