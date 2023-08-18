@@ -87,7 +87,8 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
                       DownloadCheckResult pre_scan_download_check_result,
                       CheckDownloadRepeatingCallback callback,
                       DownloadProtectionService* download_service,
-                      enterprise_connectors::AnalysisSettings settings);
+                      enterprise_connectors::AnalysisSettings settings,
+                      const std::string& password);
 
   // Scan the given `item` that corresponds to a save package, with
   // `save_package_page` mapping every currently on-disk file part of that
@@ -251,6 +252,11 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // The request tokens of all the requests that make up the user action
   // represented by this ContentAnalysisDelegate instance.
   std::vector<std::string> request_tokens_;
+
+  // Password for the file, if it's an archive.
+  // TODO(crbug/1466287): Make this an absl::optional<std::string>, for
+  // consistency with the SafeArchiveAnalyzer mojo interface.
+  std::string password_;
 
   base::WeakPtrFactory<DeepScanningRequest> weak_ptr_factory_;
 };

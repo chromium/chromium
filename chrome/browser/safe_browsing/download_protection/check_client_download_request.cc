@@ -282,11 +282,11 @@ void CheckClientDownloadRequest::UploadBinary(
     service()->UploadForDeepScanning(
         item_, base::BindRepeating(&MaybeOverrideScanResult, reason, callback_),
         DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY, result,
-        std::move(settings));
+        std::move(settings), /*password=*/"");
   } else {
     service()->UploadForDeepScanning(
         item_, callback_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        result, std::move(settings));
+        result, std::move(settings), /*password=*/"");
   }
 }
 

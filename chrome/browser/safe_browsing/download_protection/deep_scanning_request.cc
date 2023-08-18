@@ -65,6 +65,7 @@ DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
       DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE,
       DownloadCheckResult::POTENTIALLY_UNWANTED,
       DownloadCheckResult::SENSITIVE_CONTENT_WARNING,
+      DownloadCheckResult::PROMPT_FOR_SCANNING,
       DownloadCheckResult::DEEP_SCANNED_FAILED,
       DownloadCheckResult::UNKNOWN,
       DownloadCheckResult::DEEP_SCANNED_SAFE};
@@ -329,7 +330,8 @@ DeepScanningRequest::DeepScanningRequest(
     DownloadCheckResult pre_scan_download_check_result,
     CheckDownloadRepeatingCallback callback,
     DownloadProtectionService* download_service,
-    enterprise_connectors::AnalysisSettings settings)
+    enterprise_connectors::AnalysisSettings settings,
+    const std::string& password)
     : item_(item),
       trigger_(trigger),
       callback_(callback),
@@ -337,6 +339,7 @@ DeepScanningRequest::DeepScanningRequest(
       analysis_settings_(std::move(settings)),
       pending_scan_requests_(1),
       pre_scan_download_check_result_(pre_scan_download_check_result),
+      password_(password),
       weak_ptr_factory_(this) {
   base::UmaHistogramEnumeration("SBClientDownload.DeepScanType",
                                 DeepScanType::NORMAL);
@@ -417,6 +420,8 @@ void DeepScanningRequest::StartSingleFileScan() {
   std::string sha256 =
       base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size());
   request->set_digest(sha256);
+
+  request->set_password(password_);
 
   file_metadata_.insert({item_->GetFullPath(),
                          enterprise_connectors::FileMetadata(
