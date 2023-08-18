@@ -170,10 +170,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void RegisterShortcutPublisher(AppType app_type,
                                  ShortcutPublisher* publisher);
 
-  // Update the shortcut with `delta`, which represents some state change of
-  // a shortcut.
-  void UpdateShortcut(ShortcutPtr delta);
-
   // Get pointer to the Shortcut Registry Cache which holds all shortcuts.
   // May return a nullptr if this cache doesn't exist.
   apps::ShortcutRegistryCache* ShortcutRegistryCache();

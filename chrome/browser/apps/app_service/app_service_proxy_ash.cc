@@ -431,10 +431,6 @@ void AppServiceProxyAsh::RegisterShortcutPublisher(
   shortcut_publishers_[app_type] = publisher;
 }
 
-void AppServiceProxyAsh::UpdateShortcut(ShortcutPtr delta) {
-  ShortcutRegistryCache()->UpdateShortcut(std::move(delta));
-}
-
 apps::ShortcutRegistryCache* AppServiceProxyAsh::ShortcutRegistryCache() {
   return shortcut_registry_cache_ ? shortcut_registry_cache_.get() : nullptr;
 }
