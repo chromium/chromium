@@ -50,8 +50,7 @@ LocalDataContainer::CreateFromStoragePartition(
         /*file_system_helper=*/nullptr,
         /*quota_helper=*/nullptr,
         /*service_worker_helper=*/nullptr,
-        base::MakeRefCounted<browsing_data::SharedWorkerHelper>(
-            storage_partition),
+        /*shared_worker_helper=*/nullptr,
         /*cache_storage_helper=*/nullptr);
   }
 

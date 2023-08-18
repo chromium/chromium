@@ -111,8 +111,7 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
     DetailedInfo& InitServiceWorker(
         const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitSharedWorker(
-        const browsing_data::SharedWorkerHelper::SharedWorkerInfo*
-            shared_worker);
+        const browsing_data::SharedWorkerInfo* shared_worker);
     DetailedInfo& InitCacheStorage(
         const content::StorageUsageInfo* storage_usage_info);
 
@@ -125,8 +124,7 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
     raw_ptr<const browsing_data::FileSystemHelper::FileSystemInfo>
         file_system_info = nullptr;
     raw_ptr<const BrowsingDataQuotaHelper::QuotaInfo> quota_info = nullptr;
-    raw_ptr<const browsing_data::SharedWorkerHelper::SharedWorkerInfo>
-        shared_worker_info = nullptr;
+    raw_ptr<const browsing_data::SharedWorkerInfo> shared_worker_info = nullptr;
   };
 
   CookieTreeNode() {}

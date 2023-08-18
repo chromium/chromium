@@ -17,6 +17,7 @@
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
+#include "components/browsing_data/content/shared_worker_info.h"
 #include "components/browsing_data/core/features.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
@@ -24,6 +25,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/private_aggregation_data_model.h"
+#include "content/public/browser/shared_worker_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/storage_usage_info.h"
@@ -138,6 +140,13 @@ std::string GetDataOwner::GetOwningHost<net::SharedDictionaryIsolationKey>(
   return isolation_key.frame_origin().host();
 }
 
+template <>
+std::string GetDataOwner::GetOwningHost<browsing_data::SharedWorkerInfo>(
+    const browsing_data::SharedWorkerInfo& shared_worker_info) const {
+  DCHECK_EQ(BrowsingDataModel::StorageType::kSharedWorker, storage_type_);
+  return shared_worker_info.storage_key.origin().host();
+}
+
 // Helper which allows the lifetime management of a deletion action to occur
 // separately from the BrowsingDataModel itself.
 struct StorageRemoverHelper {
@@ -249,6 +258,16 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
   if (types.Has(BrowsingDataModel::StorageType::kLocalStorage)) {
     helper->storage_partition_->GetDOMStorageContext()->DeleteLocalStorage(
         storage_key, helper->GetCompleteCallback());
+  }
+}
+
+template <>
+void StorageRemoverHelper::Visitor::operator()<browsing_data::SharedWorkerInfo>(
+    const browsing_data::SharedWorkerInfo& shared_worker_info) {
+  if (types.Has(BrowsingDataModel::StorageType::kSharedWorker)) {
+    helper->storage_partition_->GetSharedWorkerService()->TerminateWorker(
+        shared_worker_info.worker, shared_worker_info.name,
+        shared_worker_info.storage_key);
   }
 }
 

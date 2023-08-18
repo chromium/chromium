@@ -706,8 +706,15 @@ void PageSpecificContentSettings::SharedWorkerAccessed(
   PageSpecificContentSettings* settings = GetForFrame(
       content::RenderFrameHost::FromID(render_process_id, render_frame_id));
   if (settings) {
-    settings->OnSharedWorkerAccessed(worker_url, name, storage_key,
-                                     blocked_by_policy);
+    if (base::FeatureList::IsEnabled(
+            browsing_data::features::kMigrateStorageToBDM)) {
+      settings->OnBrowsingDataAccessed(
+          browsing_data::SharedWorkerInfo{worker_url, name, storage_key},
+          BrowsingDataModel::StorageType::kSharedWorker, blocked_by_policy);
+    } else {
+      settings->OnSharedWorkerAccessed(worker_url, name, storage_key,
+                                       blocked_by_policy);
+    }
   }
 }
 

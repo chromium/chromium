@@ -268,7 +268,7 @@ CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitServiceWorker(
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitSharedWorker(
-    const browsing_data::SharedWorkerHelper::SharedWorkerInfo* shared_worker) {
+    const browsing_data::SharedWorkerInfo* shared_worker) {
   Init(TYPE_SHARED_WORKER);
   shared_worker_info = shared_worker;
   origin = url::Origin::Create(
@@ -677,8 +677,7 @@ class CookieTreeSharedWorkerNode : public CookieTreeNode {
   // |shared_worker_info| should remain valid at least as long as the
   // CookieTreeSharedWorkerNode is valid.
   explicit CookieTreeSharedWorkerNode(
-      std::list<browsing_data::SharedWorkerHelper::SharedWorkerInfo>::iterator
-          shared_worker_info)
+      std::list<browsing_data::SharedWorkerInfo>::iterator shared_worker_info)
       : CookieTreeNode(base::UTF8ToUTF16(shared_worker_info->worker.spec())),
         shared_worker_info_(shared_worker_info) {}
 
@@ -707,8 +706,7 @@ class CookieTreeSharedWorkerNode : public CookieTreeNode {
  private:
   // |shared_worker_info_| is expected to remain valid as long as the
   // CookieTreeSharedWorkerNode is valid.
-  std::list<browsing_data::SharedWorkerHelper::SharedWorkerInfo>::iterator
-      shared_worker_info_;
+  std::list<browsing_data::SharedWorkerInfo>::iterator shared_worker_info_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
