@@ -71,6 +71,9 @@ message ContentMetaData {
     optional PrinterType printer_type = 2;
   }
   optional PrintMetadata print_metadata = 11;
+
+  // Password for an encrypted archive.
+  optional bytes password = 12;
 }
 
 message ClientMetadata {
