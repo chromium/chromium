@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/user_education/user_education_service_factory.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 UserEducationServiceFactory* UserEducationServiceFactory::GetInstance() {
@@ -15,8 +13,8 @@ UserEducationServiceFactory* UserEducationServiceFactory::GetInstance() {
 }
 
 // static
-UserEducationService* UserEducationServiceFactory::GetForProfile(
-    Profile* profile) {
+UserEducationService* UserEducationServiceFactory::GetForBrowserContext(
+    content::BrowserContext* profile) {
   return static_cast<UserEducationService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

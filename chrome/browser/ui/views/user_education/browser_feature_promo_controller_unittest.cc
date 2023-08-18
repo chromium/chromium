@@ -17,14 +17,14 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/user_education/user_education_service.h"
-#include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
@@ -123,7 +123,7 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
     // Register placeholder tutorials and IPH journeys.
 
     auto* const user_education_service =
-        UserEducationServiceFactory::GetForProfile(browser()->profile());
+        UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
 
     // Create a dummy tutorial.
     // This is just the first two steps of the "create tab group" tutorial.
@@ -991,7 +991,7 @@ TEST_F(BrowserFeaturePromoControllerTest, StartsTutorial) {
 
   // We should be running the tutorial now.
   auto& tutorial_service =
-      UserEducationServiceFactory::GetForProfile(browser()->profile())
+      UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
           ->tutorial_service();
   EXPECT_TRUE(tutorial_service.IsRunningTutorial());
   tutorial_service.CancelTutorialIfRunning();

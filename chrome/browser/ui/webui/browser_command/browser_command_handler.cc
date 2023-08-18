@@ -17,9 +17,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/user_education/user_education_service.h"
-#include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -189,7 +189,7 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
 }
 
 user_education::TutorialService* BrowserCommandHandler::GetTutorialService() {
-  auto* service = UserEducationServiceFactory::GetForProfile(profile_);
+  auto* service = UserEducationServiceFactory::GetForBrowserContext(profile_);
   return service ? &service->tutorial_service() : nullptr;
 }
 

@@ -15,9 +15,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/user_education/user_education_service.h"
-#include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
@@ -97,7 +97,7 @@ ChromeUserEducationDelegate::CreateHelpBubble(
       ash::user_education_util::CreateExtendedProperties(help_bubble_id)
           .values()));
 
-  return UserEducationServiceFactory::GetForProfile(profile)
+  return UserEducationServiceFactory::GetForBrowserContext(profile)
       ->help_bubble_factory_registry()
       .CreateHelpBubble(element, std::move(help_bubble_params));
 }
@@ -131,7 +131,7 @@ void ChromeUserEducationDelegate::RegisterTutorial(
   // user profile. This is a self-imposed restriction.
   auto* const profile = GetProfile(account_id);
   CHECK(IsPrimaryProfile(profile));
-  UserEducationServiceFactory::GetForProfile(profile)
+  UserEducationServiceFactory::GetForBrowserContext(profile)
       ->tutorial_registry()
       .AddTutorial(ash::user_education_util::ToString(tutorial_id),
                    std::move(tutorial_description));
@@ -147,7 +147,7 @@ void ChromeUserEducationDelegate::StartTutorial(
   // user profile. This is a self-imposed restriction.
   auto* const profile = GetProfile(account_id);
   CHECK(IsPrimaryProfile(profile));
-  UserEducationServiceFactory::GetForProfile(profile)
+  UserEducationServiceFactory::GetForBrowserContext(profile)
       ->tutorial_service()
       .StartTutorial(ash::user_education_util::ToString(tutorial_id),
                      std::move(element_context), std::move(completed_callback),
@@ -163,7 +163,8 @@ void ChromeUserEducationDelegate::AbortTutorial(
   CHECK(IsPrimaryProfile(profile));
 
   auto& tutorial_service =
-      UserEducationServiceFactory::GetForProfile(profile)->tutorial_service();
+      UserEducationServiceFactory::GetForBrowserContext(profile)
+          ->tutorial_service();
   tutorial_service.CancelTutorialIfRunning(ToString(tutorial_id));
 }
 
@@ -183,7 +184,8 @@ void ChromeUserEducationDelegate::LaunchSystemWebAppAsync(
 bool ChromeUserEducationDelegate::IsRunningTutorial(
     const AccountId& account_id,
     absl::optional<ash::TutorialId> tutorial_id) const {
-  return UserEducationServiceFactory::GetForProfile(GetProfile(account_id))
+  return UserEducationServiceFactory::GetForBrowserContext(
+             GetProfile(account_id))
       ->tutorial_service()
       .IsRunningTutorial(ToString(tutorial_id));
 }
@@ -201,7 +203,7 @@ void ChromeUserEducationDelegate::OnProfileAdded(Profile* profile) {
 
   // Register tutorial dependencies.
   RegisterChromeHelpBubbleFactories(
-      UserEducationServiceFactory::GetForProfile(profile)
+      UserEducationServiceFactory::GetForBrowserContext(profile)
           ->help_bubble_factory_registry());
 
   // Cache whether the user associated with the primary profile is considered

@@ -1888,6 +1888,12 @@ static_library("browser") {
       "picture_in_picture/auto_pip_setting_helper.h",
       "picture_in_picture/auto_pip_setting_overlay_view.cc",
       "picture_in_picture/auto_pip_setting_overlay_view.h",
+      "user_education/browser_tutorial_service.cc",
+      "user_education/browser_tutorial_service.h",
+      "user_education/user_education_service.cc",
+      "user_education/user_education_service.h",
+      "user_education/user_education_service_factory.cc",
+      "user_education/user_education_service_factory.h",
     ]
   }
 
@@ -2505,7 +2511,10 @@ static_library("browser") {
   ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/companion/visual_search:flags" ]
+    deps += [
+      "//chrome/browser/companion/visual_search:flags",
+      "//components/user_education/common",
+    ]
   }
 
   if (enable_screen_ai_service) {

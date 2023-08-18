@@ -12,8 +12,8 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/user_education/user_education_service.h"
-#include "chrome/browser/ui/user_education/user_education_service_factory.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -258,7 +258,7 @@ bool PasswordManagerShortcutPromo::ShouldShowPromo() const {
     return false;
   }
 
-  auto* service = UserEducationServiceFactory::GetForProfile(profile_);
+  auto* service = UserEducationServiceFactory::GetForBrowserContext(profile_);
   if (service) {
     auto* tutorial_service = &service->tutorial_service();
     if (tutorial_service && tutorial_service->IsRunningTutorial()) {

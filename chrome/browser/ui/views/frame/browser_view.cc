@@ -91,8 +91,6 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_feature_promo_snooze_service.h"
-#include "chrome/browser/ui/user_education/user_education_service.h"
-#include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/accessibility/accessibility_focus_highlight.h"
@@ -173,6 +171,8 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -869,7 +869,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   // Create user education resources.
   UserEducationService* const user_education_service =
-      UserEducationServiceFactory::GetForProfile(GetProfile());
+      UserEducationServiceFactory::GetForBrowserContext(GetProfile());
   if (user_education_service) {
     RegisterChromeHelpBubbleFactories(
         user_education_service->help_bubble_factory_registry());

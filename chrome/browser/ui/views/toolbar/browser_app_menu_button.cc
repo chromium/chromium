@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_otr_state.h"
@@ -21,13 +22,13 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_education/user_education_service.h"
-#include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -121,7 +122,7 @@ AlertMenuItem BrowserAppMenuButton::CloseFeaturePromoAndContinue() {
     return AlertMenuItem::kNone;
 
   auto* const service =
-      UserEducationServiceFactory::GetForProfile(browser->profile());
+      UserEducationServiceFactory::GetForBrowserContext(browser->profile());
   if (service && service->tutorial_service().IsRunningTutorial(
                      kPasswordManagerTutorialId)) {
     return AlertMenuItem::kPasswordManager;

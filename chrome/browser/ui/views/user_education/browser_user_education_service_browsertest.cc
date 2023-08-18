@@ -18,9 +18,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/user_education/user_education_service.h"
-#include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_configurations.h"
@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
 
   // Get the associated feature promo registry.
   const user_education::FeaturePromoRegistry& registry =
-      UserEducationServiceFactory::GetForProfile(browser()->profile())
+      UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
           ->feature_promo_registry();
 
   std::vector<IPHFailure> failures;
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
   std::vector<TutorialFailure> failures;
 
   auto* const service =
-      UserEducationServiceFactory::GetForProfile(browser()->profile());
+      UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
   const auto& registry = service->tutorial_registry();
   for (auto identifier : registry.GetTutorialIdentifiers()) {
     const auto* const description = registry.GetTutorialDescription(identifier);

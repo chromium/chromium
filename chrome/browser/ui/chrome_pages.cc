@@ -34,10 +34,10 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
-#include "chrome/browser/ui/user_education/user_education_service.h"
-#include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -442,7 +442,7 @@ void ShowPasswordManager(Browser* browser) {
   // This code is necessary to fix a bug (crbug.com/1448559) during Password
   // Manager Shortcut tutorial flow.
   auto* service =
-      UserEducationServiceFactory::GetForProfile(browser->profile());
+      UserEducationServiceFactory::GetForBrowserContext(browser->profile());
   if (service) {
     auto* tutorial_service = &service->tutorial_service();
     if (tutorial_service &&

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_USER_EDUCATION_USER_EDUCATION_SERVICE_H_
-#define CHROME_BROWSER_UI_USER_EDUCATION_USER_EDUCATION_SERVICE_H_
+#ifndef CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_SERVICE_H_
+#define CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_SERVICE_H_
 
-#include "chrome/browser/ui/user_education/browser_tutorial_service.h"
+#include "chrome/browser/user_education/browser_tutorial_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"

@@ -262,7 +262,7 @@
 #include "chrome/browser/storage/storage_notification_service_factory.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
-#include "chrome/browser/ui/user_education/user_education_service_factory.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/commerce/core/proto/coupon_db_content.pb.h"
 #endif

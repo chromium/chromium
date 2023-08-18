@@ -25,8 +25,8 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ui/user_education/user_education_service.h"
-#include "chrome/browser/ui/user_education/user_education_service_factory.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -192,7 +192,7 @@ TEST_F(ChromeUserEducationDelegateTest, RegisterTutorial) {
 
   // Initially there should be no tutorial registered.
   user_education::TutorialRegistry& tutorial_registry =
-      UserEducationServiceFactory::GetForProfile(profile())
+      UserEducationServiceFactory::GetForBrowserContext(profile())
           ->tutorial_registry();
   EXPECT_FALSE(tutorial_registry.IsTutorialRegistered(tutorial_id_str));
 
@@ -223,7 +223,8 @@ TEST_F(ChromeUserEducationDelegateTest, StartAndAbortTutorial) {
 
   // Verify the tutorial is not running.
   user_education::TutorialService& tutorial_service =
-      UserEducationServiceFactory::GetForProfile(profile())->tutorial_service();
+      UserEducationServiceFactory::GetForBrowserContext(profile())
+          ->tutorial_service();
   EXPECT_FALSE(delegate()->IsRunningTutorial(account_id()));
 
   // Attempt to start the tutorial.
@@ -268,7 +269,8 @@ TEST_F(ChromeUserEducationDelegateTest, AbortSpecificTutorial) {
 
   // Verify the tutorial is not running.
   user_education::TutorialService& tutorial_service =
-      UserEducationServiceFactory::GetForProfile(profile())->tutorial_service();
+      UserEducationServiceFactory::GetForBrowserContext(profile())
+          ->tutorial_service();
   EXPECT_FALSE(tutorial_service.IsRunningTutorial(kTestTutorialIdString));
 
   // Attempt to start the tutorial.
