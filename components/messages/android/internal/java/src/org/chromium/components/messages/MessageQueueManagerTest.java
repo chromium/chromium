@@ -85,6 +85,11 @@ public class MessageQueueManagerTest {
         public boolean isDestroyed() {
             return false;
         }
+
+        @Override
+        public boolean isSwitchingScope() {
+            return false;
+        }
     };
 
     private class EmptyMessageStateHandler implements MessageStateHandler {

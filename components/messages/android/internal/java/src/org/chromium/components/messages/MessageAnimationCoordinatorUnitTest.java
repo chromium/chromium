@@ -83,6 +83,11 @@ public class MessageAnimationCoordinatorUnitTest {
         public boolean isDestroyed() {
             return false;
         }
+
+        @Override
+        public boolean isSwitchingScope() {
+            return false;
+        }
     });
 
     @Rule
@@ -499,6 +504,11 @@ public class MessageAnimationCoordinatorUnitTest {
 
             @Override
             public boolean isDestroyed() {
+                return false;
+            }
+
+            @Override
+            public boolean isSwitchingScope() {
                 return false;
             }
         });

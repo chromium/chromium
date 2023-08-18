@@ -253,6 +253,13 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         return mIsDestroyed;
     }
 
+    @Override
+    public boolean isSwitchingScope() {
+        if (mActivityTabProvider == null) return false;
+        final Tab tab = mActivityTabProvider.get();
+        return tab != null && tab.isDestroyed();
+    }
+
     /**
      * Suspend queue so that the queue will not show a new message until it is resumed.
      * @return A token of {@link TokenHolder} required when resuming the queue.
