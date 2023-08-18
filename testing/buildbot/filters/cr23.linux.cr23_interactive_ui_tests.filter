@@ -14,5 +14,3 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.DragMultipleTabsRightIntoGroup/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragMultipleTabsRightIntoGroup/1
 -TabHoverCardInteractiveUiTest.HoverCardHidesOnMouseExit
--TabStripRegionViewBrowserTest.TestBeginEndFocus
--TabStripRegionViewBrowserTest.TestSearchButtonIsEndAligned

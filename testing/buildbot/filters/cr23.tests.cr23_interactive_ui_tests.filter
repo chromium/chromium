@@ -17,7 +17,6 @@ PriceTrackingIconViewErrorHandelingTest.*
 PriceTrackingIconViewInteractiveTest.*
 TabDragging/DetachToBrowserTabDragControllerTest.*
 TabHoverCardInteractiveUiTest.*
-TabStripRegionViewBrowserTest.*
 TestMenuControllerUITest.*
 TouchableMenuItemViewTest.*
 

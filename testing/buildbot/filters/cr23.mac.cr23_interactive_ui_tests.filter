@@ -16,5 +16,3 @@
 
 # This may be a flaky failure unrelated to the cr23 code paths.
 -SitePerProcessInteractivePDFTest.ContextMenuPositionForEmbeddedPDFInCrossOriginFrame
-
--TabStripRegionViewBrowserTest.TestSearchButtonIsEndAligned
