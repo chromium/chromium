@@ -173,9 +173,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   BOOL _idleRecentTabs;
 
   TabGridPage _activePageWhenAppear;
-
-  BOOL _itemsCanBeRestored;
-  BOOL _itemsCanBeClosed;
 }
 
 // TabGridPaging property.
@@ -2296,20 +2293,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self updateSelectionModeToolbars];
 }
 
-- (void)closeAllButtonTapped:(id)sender {
-  switch (self.currentPage) {
-    case TabGridPageIncognitoTabs:
-      [self.incognitoTabsDelegate closeAllItems];
-      break;
-    case TabGridPageRegularTabs:
-      [self handleCloseAllButtonForRegularTabsWithAnchor:sender];
-      break;
-    case TabGridPageRemoteTabs:
-      NOTREACHED() << "It is invalid to call close all tabs on remote tabs.";
-      break;
-  }
-}
-
 - (void)searchButtonTapped:(id)sender {
   self.tabGridMode = TabGridModeSearch;
   base::RecordAction(base::UserMetricsAction("MobileTabGridSearchTabs"));
@@ -2435,56 +2418,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-#pragma mark - Control helpers
-
-- (void)handleCloseAllButtonForRegularTabsWithAnchor:(UIBarButtonItem*)anchor {
-  DCHECK_EQ(self.undoCloseAllAvailable,
-            (self.regularTabsViewController.gridEmpty &&
-             self.regularTabsViewController.inactiveGridEmpty));
-
-  if (self.undoCloseAllAvailable) {
-    [self undoCloseAllItemsForRegularTabs];
-  } else {
-    [self saveAndCloseAllItemsForRegularTabs];
-  }
-}
-
-- (void)undoCloseAllItemsForRegularTabs {
-  GridViewController* regularViewController =
-      [self gridViewControllerForPage:TabGridPageRegularTabs];
-
-  [regularViewController willUndoCloseAll];
-
-  // This was saved as a stack: first save the inactive tabs, then the active
-  // tabs. So undo in the reverse order: first undo the active tabs, then the
-  // inactive tabs.
-  [self.regularTabsDelegate undoCloseAllItems];
-  [self.inactiveTabsDelegate undoCloseAllItems];
-
-  [regularViewController didUndoCloseAll];
-
-  self.undoCloseAllAvailable = NO;
-  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
-}
-
-- (void)saveAndCloseAllItemsForRegularTabs {
-  GridViewController* regularViewController =
-      [self gridViewControllerForPage:TabGridPageRegularTabs];
-
-  [regularViewController willCloseAll];
-
-  // This was saved as a stack: first save the inactive tabs, then the active
-  // tabs. So undo in the reverse order: first undo the active tabs, then the
-  // inactive tabs.
-  [self.inactiveTabsDelegate saveAndCloseAllItems];
-  [self.regularTabsDelegate saveAndCloseAllItems];
-
-  [regularViewController didCloseAll];
-
-  self.undoCloseAllAvailable = YES;
-  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
-}
-
 #pragma mark - DisabledTabViewControllerDelegate
 
 - (void)didTapLinkWithURL:(const GURL&)URL {
@@ -2578,31 +2511,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-#pragma mark - GridConsumer
-
-- (void)setItemsCanBeRestored:(BOOL)itemsCanBeRestored {
-  _itemsCanBeRestored = itemsCanBeRestored;
-}
-
-- (void)setItemsCanBeClosed:(BOOL)itemsCanBeClosed {
-  _itemsCanBeClosed = itemsCanBeClosed;
-}
-
-#pragma mark - UIResponder Helper
-
-// Returns YES if "close all" can be performed. Conditions are:
-// * Tab grid is currently displayed,
-// * There are tabs to close in the current page,
-// * Not in an undo scenario.
-- (BOOL)canCloseAllTab {
-  return self.viewVisible && _itemsCanBeClosed;
-}
-
-// Returns YES if "undo" the close all action can be performed.
-- (BOOL)canUndoCloseAllTab {
-  return self.viewVisible && _itemsCanBeRestored;
-}
-
 #pragma mark - UIResponder
 
 // To always be able to register key commands via -keyCommands, the VC must be
@@ -2611,13 +2519,26 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return YES;
 }
 
+- (UIResponder*)nextResponder {
+  UIResponder* nextResponder = [super nextResponder];
+  if (self.viewVisible) {
+    // Add toolbars to the responder chain.
+    // TODO(crbug.com/1457146): Transform toolbars in view controller directly
+    // have it in the chain by default instead of adding it manually.
+    [self.bottomToolbar respondBeforeResponder:nextResponder];
+    [self.topToolbar respondBeforeResponder:self.bottomToolbar];
+    return self.topToolbar;
+  } else {
+    return nextResponder;
+  }
+}
+
 - (NSArray<UIKeyCommand*>*)keyCommands {
   // On iOS 15+, key commands visible in the app's menu are created in
   // MenuBuilder. Return the key commands that are not already present in the
   // menu.
   return @[
     UIKeyCommand.cr_openNewRegularTab,
-    UIKeyCommand.cr_undo,
     UIKeyCommand.cr_close,
     // TODO(crbug.com/1385469): Move it to the menu builder once we have the
     // strings.
@@ -2640,12 +2561,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
   if (sel_isEqual(action, @selector(keyCommand_find))) {
     return self.viewVisible;
-  }
-  if (sel_isEqual(action, @selector(keyCommand_closeAll))) {
-    return [self canCloseAllTab];
-  }
-  if (sel_isEqual(action, @selector(keyCommand_undo))) {
-    return [self canUndoCloseAllTab];
   }
   return [super canPerformAction:action withSender:sender];
 }
@@ -2698,17 +2613,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   base::RecordAction(
       base::UserMetricsAction("MobileKeyCommandGoToRemoteTabGrid"));
   [self setCurrentPageAndPageControl:TabGridPageRemoteTabs animated:YES];
-}
-
-- (void)keyCommand_closeAll {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandCloseAll"));
-  [self closeAllButtonTapped:nil];
-}
-
-- (void)keyCommand_undo {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandUndo"));
-  // This function is also responsible for handling undo.
-  [self closeAllButtonTapped:nil];
 }
 
 - (void)keyCommand_close {

@@ -13,6 +13,7 @@ source_set("toolbars") {
   ]
   deps = [
     ":toolbars_ui",
+    "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
@@ -28,6 +29,7 @@ source_set("toolbars_ui") {
     "tab_grid_page_control.h",
     "tab_grid_page_control.mm",
     "tab_grid_toolbars_action_wrangler.h",
+    "tab_grid_toolbars_buttons_delegate.h",
     "tab_grid_toolbars_commands_wrangler.h",
     "tab_grid_toolbars_delegate_wrangler.h",
     "tab_grid_toolbars_utils.h",
@@ -42,11 +44,22 @@ source_set("toolbars_ui") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_grid_toolbars_view_controllers_unittest.mm" ]
+  deps = [
+    ":toolbars_ui",
+    "//base/test:test_support",
+    "//testing/gtest",
   ]
 }

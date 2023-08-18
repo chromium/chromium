@@ -13,6 +13,9 @@
 // Gets the toolbars configuration.
 - (TabGridToolbarsConfiguration*)toolbarsConfiguration;
 
+// YES if some tabs can be restored.
+- (BOOL)didSavedClosedTabs;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_TOOLBARS_CONFIGURATION_PROVIDER_H_

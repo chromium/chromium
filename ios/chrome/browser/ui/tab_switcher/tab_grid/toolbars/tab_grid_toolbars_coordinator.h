@@ -6,17 +6,16 @@
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TOOLBARS_TAB_GRID_TOOLBARS_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_commands_wrangler.h"
 
 @protocol GridToolbarsMutator;
 @class TabGridBottomToolbar;
 @protocol TabGridToolbarsActionWrangler;
 @protocol TabGridToolbarsDelegateWrangler;
 @class TabGridTopToolbar;
+@protocol TabGridToolbarsCommandsWrangler;
 
 // Coordinator to manage both TabGrid toolbars.
-@interface TabGridToolbarsCoordinator
-    : ChromeCoordinator <TabGridToolbarsCommandsWrangler>
+@interface TabGridToolbarsCoordinator : ChromeCoordinator
 
 // Search delegate.
 @property(nonatomic, weak) id<UISearchBarDelegate> searchDelegate;
@@ -27,6 +26,12 @@
 
 // Mutator to handle toolbars modification.
 @property(nonatomic, readonly, weak) id<GridToolbarsMutator> toolbarsMutator;
+
+// Sends commands to the toolbar.
+// TODO(crbug.com/1456659): Should be removed once -updateToolbarButtons
+// function is not needed anymore.
+@property(nonatomic, readonly, weak) id<TabGridToolbarsCommandsWrangler>
+    commandsWrangler;
 
 // Wrangler to manage actions/delegate, should be removed in a future
 // refactoring. Those should be moved to the Grid once the grid has a direct

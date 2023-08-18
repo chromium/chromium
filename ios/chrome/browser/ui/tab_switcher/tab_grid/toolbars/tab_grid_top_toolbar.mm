@@ -4,16 +4,22 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 
+#import <objc/runtime.h>
+
 #import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/location.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_buttons_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -57,6 +63,8 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   BOOL _scrolledToEdge;
   UIView* _scrolledToTopBackgroundView;
   UIView* _scrolledBackgroundView;
+  // Configures the responder following the receiver in the responder chain.
+  UIResponder* _followingNextResponder;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -120,37 +128,12 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   }
 }
 
-- (void)setSelectAllButtonTarget:(id)target action:(SEL)action {
-  _selectAllButton.target = target;
-  _selectAllButton.action = action;
-}
-
-- (void)setSearchButtonTarget:(id)target action:(SEL)action {
-  _searchButton.target = target;
-  _searchButton.action = action;
-}
-
 - (void)setSearchBarDelegate:(id<UISearchBarDelegate>)delegate {
   _searchBar.delegate = delegate;
 }
 
-- (void)setDoneButtonTarget:(id)target action:(SEL)action {
-  _doneButton.target = target;
-  _doneButton.action = action;
-}
-
-- (void)setCancelSearchButtonTarget:(id)target action:(SEL)action {
-  _cancelSearchButton.target = target;
-  _cancelSearchButton.action = action;
-}
-
 - (void)setSearchButtonEnabled:(BOOL)enabled {
   _searchButton.enabled = enabled;
-}
-
-- (void)setCloseAllButtonTarget:(id)target action:(SEL)action {
-  _closeAllOrUndoButton.target = target;
-  _closeAllOrUndoButton.action = action;
 }
 
 - (void)setCloseAllButtonEnabled:(BOOL)enabled {
@@ -393,6 +376,8 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   _closeAllOrUndoButton = [[UIBarButtonItem alloc] init];
   _closeAllOrUndoButton.tintColor =
       UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  _closeAllOrUndoButton.target = self;
+  _closeAllOrUndoButton.action = @selector(closeAllButtonTapped:);
   [self useUndoCloseAll:NO];
 
   // The segmented control has an intrinsic size.
@@ -402,6 +387,8 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   _pageControlItem = [[UIBarButtonItem alloc] initWithCustomView:_pageControl];
 
   _doneButton = [[UIBarButtonItem alloc] init];
+  _doneButton.target = self;
+  _doneButton.action = @selector(doneButtonTapped:);
   _doneButton.style = UIBarButtonItemStyleDone;
   _doneButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
   _doneButton.accessibilityIdentifier = kTabGridDoneButtonIdentifier;
@@ -413,6 +400,8 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   _editButton.accessibilityIdentifier = kTabGridEditButtonIdentifier;
 
   _selectAllButton = [[UIBarButtonItem alloc] init];
+  _selectAllButton.target = self;
+  _selectAllButton.action = @selector(selectAllButtonTapped:);
   _selectAllButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
   _selectAllButton.title =
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON);
@@ -441,8 +430,8 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   _searchButton =
       [[UIBarButtonItem alloc] initWithImage:searchImage
                                        style:UIBarButtonItemStylePlain
-                                      target:nil
-                                      action:nil];
+                                      target:self
+                                      action:@selector(searchButtonTapped:)];
 
   _searchButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
   _searchButton.accessibilityIdentifier = kTabGridSearchButtonIdentifier;
@@ -455,6 +444,8 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   // create a custom cancel button.
   _searchBar.showsCancelButton = NO;
   _cancelSearchButton = [[UIBarButtonItem alloc] init];
+  _cancelSearchButton.target = self;
+  _cancelSearchButton.action = @selector(cancelSearchButtonTapped:);
   _cancelSearchButton.style = UIBarButtonItemStylePlain;
   _cancelSearchButton.tintColor =
       UIColorFromRGB(kTabGridToolbarTextButtonColor);
@@ -516,6 +507,66 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 - (BOOL)shouldUseCompactLayout:(UITraitCollection*)traitCollection {
   return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
          traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
+}
+
+#pragma mark - Public
+
+- (void)respondBeforeResponder:(UIResponder*)nextResponder {
+  _followingNextResponder = nextResponder;
+}
+
+#pragma mark - UIResponder
+
+- (NSArray<UIKeyCommand*>*)keyCommands {
+  return @[ UIKeyCommand.cr_undo ];
+}
+
+- (UIResponder*)nextResponder {
+  return _followingNextResponder;
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+  if (sel_isEqual(action, @selector(keyCommand_closeAll))) {
+    return !_undoActive && _closeAllOrUndoButton.enabled;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_undo))) {
+    return _undoActive;
+  }
+  return [super canPerformAction:action withSender:sender];
+}
+
+- (void)keyCommand_closeAll {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandCloseAll"));
+  [self closeAllButtonTapped:nil];
+}
+
+- (void)keyCommand_undo {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandUndo"));
+  // This function is also responsible for handling undo.
+  // TODO(crbug.com/1457146): This should be separated to avoid confusion.
+  [self closeAllButtonTapped:nil];
+}
+
+#pragma mark - Control actions
+
+- (void)closeAllButtonTapped:(id)sender {
+  [self.buttonsDelegate closeAllButtonTapped:sender];
+}
+
+- (void)doneButtonTapped:(id)sender {
+  [self.buttonsDelegate doneButtonTapped:sender];
+}
+
+- (void)selectAllButtonTapped:(id)sender {
+  [self.buttonsDelegate selectAllButtonTapped:sender];
+}
+
+- (void)searchButtonTapped:(id)sender {
+  [self.buttonsDelegate searchButtonTapped:sender];
+}
+
+- (void)cancelSearchButtonTapped:(id)sender {
+  [self.buttonsDelegate cancelSearchButtonTapped:sender];
 }
 
 @end

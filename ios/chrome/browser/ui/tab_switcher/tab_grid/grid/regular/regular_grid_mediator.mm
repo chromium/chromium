@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/features.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_configuration_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
@@ -102,9 +102,42 @@
         base::UserMetricsAction("MobileTabGridSelectRegularPanel"));
 
     [self configureToolbarsButtons];
-    [self notifyConsumerAboutChanges];
   }
   // TODO(crbug.com/1457146): Implement.
+}
+
+#pragma mark - TabGridToolbarsButtonsDelegate
+
+- (void)closeAllButtonTapped:(id)sender {
+  // TODO(crbug.com/1457146): Clean this in order to have "Close All" and "Undo"
+  // separated actions.
+  // This was saved as a stack: first save the inactive tabs, then the active
+  // tabs. So undo in the reverse order: first undo the active tabs, then the
+  // inactive tabs.
+  if (_closedSessionWindow ||
+      [self.containedGridToolbarsProvider didSavedClosedTabs]) {
+    if ([self.consumer respondsToSelector:@selector(willUndoCloseAll)]) {
+      [self.consumer willUndoCloseAll];
+    }
+    [self undoCloseAllItems];
+    [self.inactiveTabsGridCommands undoCloseAllItems];
+    if ([self.consumer respondsToSelector:@selector(didUndoCloseAll)]) {
+      [self.consumer didUndoCloseAll];
+    }
+  } else {
+    if ([self.consumer respondsToSelector:@selector(willCloseAll)]) {
+      [self.consumer willCloseAll];
+    }
+    [self.inactiveTabsGridCommands saveAndCloseAllItems];
+    [self saveAndCloseAllItems];
+    if ([self.consumer respondsToSelector:@selector(didCloseAll)]) {
+      [self.consumer didCloseAll];
+    }
+  }
+  // This is needed because configure button is called (web state list observer
+  // in base grid mediator) when regular tabs are modified but not when inactive
+  // tabs are modified.
+  [self configureToolbarsButtons];
 }
 
 #pragma mark - Parent's function
@@ -120,11 +153,7 @@
   toolbarsConfiguration.undoButton = [self canUndo];
 
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
-}
-
-- (void)notifyConsumerAboutChanges {
-  [self.gridConsumer setItemsCanBeRestored:[self canUndo]];
-  [self.gridConsumer setItemsCanBeClosed:[self canCloseAll]];
+  [self.toolbarsMutator setToolbarsButtonsDelegate:self];
 }
 
 #pragma mark - Private
@@ -158,10 +187,8 @@
 
 // YES if there are tabs that can be restored.
 - (BOOL)canUndo {
-  TabGridToolbarsConfiguration* containedGridToolbarsConfiguration =
-      [self.containedGridToolbarsProvider toolbarsConfiguration];
-
-  return _closedSessionWindow || containedGridToolbarsConfiguration.undoButton;
+  return (_closedSessionWindow != nil) ||
+         [self.containedGridToolbarsProvider didSavedClosedTabs];
 }
 
 // YES if there are tabs in regular grid only (not pinned, not in inactive tabs,

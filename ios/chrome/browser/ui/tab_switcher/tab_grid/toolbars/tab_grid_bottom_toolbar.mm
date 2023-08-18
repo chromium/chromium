@@ -4,13 +4,19 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 
+#import <objc/runtime.h>
+
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_new_tab_button.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_buttons_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -33,6 +39,8 @@
   BOOL _scrolledToEdge;
   UIView* _scrolledToBottomBackgroundView;
   UIView* _scrolledBackgroundView;
+  // Configures the responder following the receiver in the responder chain.
+  UIResponder* _followingNextResponder;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -118,24 +126,6 @@
   [self updateCloseTabsButtonTitle];
 }
 
-- (void)setNewTabButtonTarget:(id)target action:(SEL)action {
-  [_smallNewTabButton addTarget:target
-                         action:action
-               forControlEvents:UIControlEventTouchUpInside];
-  [_largeNewTabButton addTarget:target
-                         action:action
-               forControlEvents:UIControlEventTouchUpInside];
-}
-
-- (void)setCloseAllButtonTarget:(id)target action:(SEL)action {
-  _closeAllOrUndoButton.target = target;
-  _closeAllOrUndoButton.action = action;
-}
-
-- (void)setDoneButtonTarget:(id)target action:(SEL)action {
-  _doneButton.target = target;
-  _doneButton.action = action;
-}
 
 - (void)setNewTabButtonEnabled:(BOOL)enabled {
   _smallNewTabButton.enabled = enabled;
@@ -209,21 +199,12 @@
 
 #pragma mark Close Tabs
 
-- (void)setCloseTabsButtonTarget:(id)target action:(SEL)action {
-  _closeTabsButton.target = target;
-  _closeTabsButton.action = action;
-}
-
 - (void)setCloseTabsButtonEnabled:(BOOL)enabled {
   _closeTabsButton.enabled = enabled;
 }
 
 #pragma mark Share Tabs
 
-- (void)setShareTabsButtonTarget:(id)target action:(SEL)action {
-  _shareButton.target = target;
-  _shareButton.action = action;
-}
 - (void)setShareTabsButtonEnabled:(BOOL)enabled {
   _shareButton.enabled = enabled;
 }
@@ -266,10 +247,14 @@
                                       forAxis:UILayoutConstraintAxisVertical];
 
   _closeAllOrUndoButton = [[UIBarButtonItem alloc] init];
+  _closeAllOrUndoButton.target = self;
+  _closeAllOrUndoButton.action = @selector(closeAllButtonTapped:);
   _closeAllOrUndoButton.tintColor =
       UIColorFromRGB(kTabGridToolbarTextButtonColor);
 
   _doneButton = [[UIBarButtonItem alloc] init];
+  _doneButton.target = self;
+  _doneButton.action = @selector(doneButtonTapped:);
   _doneButton.style = UIBarButtonItemStyleDone;
   _doneButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
   _doneButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_DONE_BUTTON);
@@ -281,7 +266,9 @@
                            action:nil];
 
   _smallNewTabButton = [[TabGridNewTabButton alloc] initWithLargeSize:NO];
-
+  [_smallNewTabButton addTarget:self
+                         action:@selector(newTabButtonTapped:)
+               forControlEvents:UIControlEventTouchUpInside];
   _smallNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
   _smallNewTabButton.page = self.page;
 
@@ -300,11 +287,13 @@
   _addToButton.accessibilityIdentifier = kTabGridEditAddToButtonIdentifier;
   _shareButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                           target:nil
-                           action:nil];
+                           target:self
+                           action:@selector(shareSelectedTabs:)];
   _shareButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
   _shareButton.accessibilityIdentifier = kTabGridEditShareButtonIdentifier;
   _closeTabsButton = [[UIBarButtonItem alloc] init];
+  _closeTabsButton.target = self;
+  _closeTabsButton.action = @selector(closeSelectedTabs:);
   _closeTabsButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
   _closeTabsButton.accessibilityIdentifier =
       kTabGridEditCloseTabsButtonIdentifier;
@@ -320,7 +309,9 @@
 
   // For other layout, display a floating new tab button.
   _largeNewTabButton = [[TabGridNewTabButton alloc] initWithLargeSize:YES];
-
+  [_largeNewTabButton addTarget:self
+                         action:@selector(newTabButtonTapped:)
+               forControlEvents:UIControlEventTouchUpInside];
   // When a11y font size is used, long press on UIBarButtonItem will show a
   // built-in a11y modal panel with image and title if set. The size is not
   // taken into account.
@@ -466,6 +457,66 @@
       [self isShowingFloatingButton] || !_scrolledToEdge;
   _scrolledBackgroundView.hidden =
       [self isShowingFloatingButton] || _scrolledToEdge;
+}
+
+#pragma mark - Public
+
+- (void)respondBeforeResponder:(UIResponder*)nextResponder {
+  _followingNextResponder = nextResponder;
+}
+
+#pragma mark - UIResponder
+
+- (UIResponder*)nextResponder {
+  return _followingNextResponder;
+}
+
+- (NSArray<UIKeyCommand*>*)keyCommands {
+  return @[ UIKeyCommand.cr_undo ];
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+  if (sel_isEqual(action, @selector(keyCommand_closeAll))) {
+    return !_undoActive && _closeAllOrUndoButton.enabled;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_undo))) {
+    return _undoActive;
+  }
+  return [super canPerformAction:action withSender:sender];
+}
+
+- (void)keyCommand_closeAll {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandCloseAll"));
+  [self closeAllButtonTapped:nil];
+}
+
+- (void)keyCommand_undo {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandUndo"));
+  // This function is also responsible for handling undo.
+  // TODO(crbug.com/1457146): This should be separated to avoid confusion.
+  [self closeAllButtonTapped:nil];
+}
+
+#pragma mark - Control actions
+
+- (void)closeAllButtonTapped:(id)sender {
+  [self.buttonsDelegate closeAllButtonTapped:sender];
+}
+
+- (void)doneButtonTapped:(id)sender {
+  [self.buttonsDelegate doneButtonTapped:sender];
+}
+
+- (void)newTabButtonTapped:(id)sender {
+  [self.buttonsDelegate newTabButtonTapped:sender];
+}
+
+- (void)closeSelectedTabs:(id)sender {
+  [self.buttonsDelegate closeSelectedTabs:sender];
+}
+
+- (void)shareSelectedTabs:(id)sender {
+  [self.buttonsDelegate shareSelectedTabs:sender];
 }
 
 @end

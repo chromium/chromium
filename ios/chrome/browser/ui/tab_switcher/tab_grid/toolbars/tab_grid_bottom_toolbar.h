@@ -7,9 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
 @class TabGridNewTabButton;
+@protocol TabGridToolbarsButtonsDelegate;
 
 // Bottom toolbar for TabGrid. The appearance of the toolbar is decided by
 // screen size, current TabGrid page and mode:
@@ -25,7 +27,7 @@
 //   Normal mode:    [                                      newTabButton]
 //   Remote page:    [                                                  ]
 //   Selection mode: [CloseTabButton       shareButton       AddToButton]
-@interface TabGridBottomToolbar : UIView
+@interface TabGridBottomToolbar : UIView <KeyCommandActions>
 
 // This property together with `mode` and self.traitCollection control the items
 // shown in toolbar and its background color. Setting this property will also
@@ -41,13 +43,9 @@
 // Tab button views created for the bottom toolbar.
 @property(nonatomic, readonly) TabGridNewTabButton* smallNewTabButton;
 @property(nonatomic, readonly) TabGridNewTabButton* largeNewTabButton;
+// Delegate to call when a button is pushed.
+@property(nonatomic, weak) id<TabGridToolbarsButtonsDelegate> buttonsDelegate;
 
-// Sets target/action for tapping event on new tab button.
-- (void)setNewTabButtonTarget:(id)target action:(SEL)action;
-// Sets target/action for tapping event on close all button.
-- (void)setCloseAllButtonTarget:(id)target action:(SEL)action;
-// Sets target/action for tapping event on done button.
-- (void)setDoneButtonTarget:(id)target action:(SEL)action;
 // Set `enabled` on the new tab button.
 - (void)setNewTabButtonEnabled:(BOOL)enabled;
 // Set `enabled` on the done button.
@@ -57,13 +55,9 @@
 // use undo or closeAll text on the close all button based on `useUndo` value.
 - (void)useUndoCloseAll:(BOOL)useUndo;
 
-// Sets target/action for tapping event on close tabs button.
-- (void)setCloseTabsButtonTarget:(id)target action:(SEL)action;
 // Set `enabled` on the close tabs button.
 - (void)setCloseTabsButtonEnabled:(BOOL)enabled;
 
-// Sets target/action for tapping event on share tabs button.
-- (void)setShareTabsButtonTarget:(id)target action:(SEL)action;
 // Set `enabled` on the close tabs button.
 - (void)setShareTabsButtonEnabled:(BOOL)enabled;
 
@@ -85,7 +79,8 @@
 // Updates the appearance of the this toolbar, based on whether the content
 // below it is `scrolledToEdge` or not.
 - (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge;
-
+// Adds the receiver in the chain before the original next responder.
+- (void)respondBeforeResponder:(UIResponder*)nextResponder;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TOOLBARS_TAB_GRID_BOTTOM_TOOLBAR_H_

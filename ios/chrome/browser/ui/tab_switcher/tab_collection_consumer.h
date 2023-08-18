@@ -10,7 +10,7 @@
 @class TabSwitcherItem;
 
 // Supports idempotent insert/delete/updates tabs to a collection view.
-@protocol TabCollectionConsumer
+@protocol TabCollectionConsumer <NSObject>
 
 // Many of the following methods pass a `selectedItemID` as a parameter,
 // indicating the identifier of the item that should be in the selected state
@@ -53,6 +53,20 @@
 
 // Dismisses any presented modal UI.
 - (void)dismissModals;
+
+@optional
+
+// Notifies the grid that all items will be closed.
+- (void)willCloseAll;
+
+// Notifies the grid that all items have been closed.
+- (void)didCloseAll;
+
+// Notifies the grid that all closed items will be restored.
+- (void)willUndoCloseAll;
+
+// Notifies the grid that all closed items have been restored.
+- (void)didUndoCloseAll;
 
 @end
 

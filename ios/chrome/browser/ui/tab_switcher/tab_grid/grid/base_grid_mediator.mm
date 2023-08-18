@@ -54,10 +54,10 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -323,7 +323,9 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       break;
     }
   }
-
+  // Update toolbar's buttons as the number of tabs changed so the options
+  // changed (ex: No tabs selection when the grid is empty).
+  [self configureToolbarsButtons];
   if (status.active_web_state_change()) {
     // If the selected index changes as a result of the last webstate being
     // detached, the active index will be kInvalidIndex.
@@ -335,10 +337,6 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     [self.consumer
         selectItemWithID:status.new_active_web_state->GetStableIdentifier()];
   }
-  // Update toolbar's buttons as the number of tabs changed so the options
-  // changed (ex: No tabs selection when the grid is empty).
-  [self configureToolbarsButtons];
-  [self notifyConsumerAboutChanges];
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
@@ -354,7 +352,6 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   // Update toolbar's buttons as the number of tabs have probably changed so the
   // options changed (ex: "Undo" may be available now).
   [self configureToolbarsButtons];
-  [self notifyConsumerAboutChanges];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -1071,14 +1068,48 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
-- (void)notifyConsumerAboutChanges {
-  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
-}
-
 #pragma mark - TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
   NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+}
+
+#pragma mark - TabGridToolbarsButtonsDelegate
+
+- (void)closeAllButtonTapped:(id)sender {
+  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+}
+
+- (void)doneButtonTapped:(id)sender {
+  [self.actionWrangler doneButtonTapped:sender];
+}
+
+- (void)newTabButtonTapped:(id)sender {
+  [self.actionWrangler newTabButtonTapped:sender];
+}
+
+- (void)selectAllButtonTapped:(id)sender {
+  [self.actionWrangler selectAllButtonTapped:sender];
+}
+
+- (void)searchButtonTapped:(id)sender {
+  [self.actionWrangler searchButtonTapped:sender];
+}
+
+- (void)cancelSearchButtonTapped:(id)sender {
+  [self.actionWrangler cancelSearchButtonTapped:sender];
+}
+
+- (void)closeSelectedTabs:(id)sender {
+  [self.actionWrangler closeSelectedTabs:sender];
+}
+
+- (void)shareSelectedTabs:(id)sender {
+  [self.actionWrangler shareSelectedTabs:sender];
+}
+
+- (void)selectTabsButtonTapped:(id)sender {
+  [self.actionWrangler selectTabsButtonTapped:sender];
 }
 
 @end

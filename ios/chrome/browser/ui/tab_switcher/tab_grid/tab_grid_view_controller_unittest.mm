@@ -164,8 +164,6 @@ TEST_F(TabGridViewControllerTest, ImplementsActions) {
   [view_controller_ keyCommand_openNewRegularTab];
   [view_controller_ keyCommand_openNewIncognitoTab];
   [view_controller_ keyCommand_find];
-  [view_controller_ keyCommand_closeAll];
-  [view_controller_ keyCommand_undo];
   [view_controller_ keyCommand_close];
 }
 
@@ -179,8 +177,6 @@ TEST_F(TabGridViewControllerTest, Metrics) {
   ExpectUMA(@"keyCommand_openNewIncognitoTab",
             "MobileKeyCommandOpenNewIncognitoTab");
   ExpectUMA(@"keyCommand_find", "MobileKeyCommandSearchTabs");
-  ExpectUMA(@"keyCommand_closeAll", "MobileKeyCommandCloseAll");
-  ExpectUMA(@"keyCommand_undo", "MobileKeyCommandUndo");
   ExpectUMA(@"keyCommand_close", "MobileKeyCommandClose");
 }
 
@@ -207,39 +203,6 @@ TEST_F(TabGridViewControllerTest, ValidateCommand_find) {
                               IDS_IOS_KEYBOARD_SEARCH_TABS)]);
     }
   }
-}
-
-// Checks when Close All and Undo keyboard shortcuts are possible.
-TEST_F(TabGridViewControllerTest, CanPerform_CloseAllAndUndo) {
-  InitializeViewController(TabGridPageConfiguration::kIncognitoPageOnly);
-  EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
-  EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
-
-  // Load the view and notify its content will appear. This sets data sources
-  // for the different grids and loads their initial snapshots.
-  [view_controller_ view];
-  [view_controller_ contentWillAppearAnimated:NO];
-
-  EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
-  EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
-  IncognitoGridMediator* incognitoMediator = [[IncognitoGridMediator alloc]
-      initWithConsumer:view_controller_.incognitoTabsConsumer];
-  [incognitoMediator setBrowser:browser_.get()];
-  // TODO(crbug.com/1457146): The consumer should be incognito tabs view
-  // controller.
-  incognitoMediator.gridConsumer = view_controller_;
-  view_controller_.incognitoTabsDelegate = incognitoMediator;
-  [view_controller_.incognitoTabsDelegate addNewItem];
-  EXPECT_TRUE(CanPerform(@"keyCommand_closeAll"));
-  EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
-  [view_controller_.incognitoTabsDelegate closeAllItems];
-  EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
-  EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
-
-  // Forces the IncognitoGridMediator to removes its Observer from WebStateList
-  // before the Browser is destroyed.
-  incognitoMediator.browser = nullptr;
-  incognitoMediator = nil;
 }
 
 // Checks that the ESC keyboard shortcut is always possible.

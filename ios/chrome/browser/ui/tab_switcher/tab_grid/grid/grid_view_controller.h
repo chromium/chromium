@@ -172,18 +172,6 @@
 // TabGridModeSelection.
 - (void)deselectAllItemsForEditing;
 
-// Notifies the grid that all items will be closed.
-- (void)willCloseAll;
-
-// Notifies the grid that all items have been closed.
-- (void)didCloseAll;
-
-// Notifies the grid that all closed items will be restored.
-- (void)willUndoCloseAll;
-
-// Notifies the grid that all closed items have been restored.
-- (void)didUndoCloseAll;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_VIEW_CONTROLLER_H_

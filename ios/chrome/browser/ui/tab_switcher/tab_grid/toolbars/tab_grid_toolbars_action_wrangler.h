@@ -12,8 +12,6 @@
 // TODO(crbug.com/1456659): Remove this class.
 @protocol TabGridToolbarsActionWrangler
 
-- (void)closeAllButtonTapped:(id)sender;
-
 - (void)doneButtonTapped:(id)sender;
 
 - (void)newTabButtonTapped:(id)sender;

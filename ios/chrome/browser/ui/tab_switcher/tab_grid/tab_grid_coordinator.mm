@@ -96,6 +96,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_tab_grid_transition_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
@@ -734,7 +735,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [_toolbarsCoordinator start];
   self.baseViewController.topToolbar = _toolbarsCoordinator.topToolbar;
   self.baseViewController.bottomToolbar = _toolbarsCoordinator.bottomToolbar;
-  self.baseViewController.toolbarCommandsWrangler = _toolbarsCoordinator;
+  // TODO(crbug.com/1457146): To remove when -updateToolbarButtons function call
+  // is not needed anymore.
+  self.baseViewController.toolbarCommandsWrangler =
+      _toolbarsCoordinator.commandsWrangler;
 
   self.regularTabsMediator = [[RegularGridMediator alloc]
       initWithConsumer:baseViewController.regularTabsConsumer];
@@ -746,10 +750,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       [[PriceCardMediator alloc] initWithWebStateList:regularWebStateList];
 
   self.regularTabsMediator.browser = _regularBrowser;
+  // TODO(crbug.com/1457146): The action wrangler should be the regular grid
+  // view controller.
+  self.regularTabsMediator.actionWrangler = self.baseViewController;
   self.regularTabsMediator.delegate = self;
-  // TODO(crbug.com/1457146): The consumer should be regular tabs view
-  // controller.
-  self.regularTabsMediator.gridConsumer = self.baseViewController;
   if (regularBrowserState) {
     self.regularTabsMediator.tabRestoreService =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
@@ -777,11 +781,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   self.incognitoTabsMediator = [[IncognitoGridMediator alloc]
       initWithConsumer:baseViewController.incognitoTabsConsumer];
+  // TODO(crbug.com/1457146): The action wrangler should be the incognito grid
+  // view controller.
+  self.incognitoTabsMediator.actionWrangler = self.baseViewController;
   self.incognitoTabsMediator.browser = _incognitoBrowser;
   self.incognitoTabsMediator.delegate = self;
-  // TODO(crbug.com/1457146): The consumer should be incognito tabs view
-  // controller.
-  self.incognitoTabsMediator.gridConsumer = self.baseViewController;
 
   baseViewController.regularTabsDelegate = self.regularTabsMediator;
   baseViewController.incognitoTabsDelegate = self.incognitoTabsMediator;
@@ -834,6 +838,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
         self.inactiveTabsCoordinator.gridCommandsHandler;
     self.regularTabsMediator.containedGridToolbarsProvider =
         self.inactiveTabsCoordinator.toolbarsConfigurationProvider;
+    self.regularTabsMediator.inactiveTabsGridCommands =
+        self.inactiveTabsCoordinator.gridCommandsHandler;
   }
 
   // TODO(crbug.com/845192) : Remove RecentTabsTableViewController dependency on
@@ -852,6 +858,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       SyncServiceFactory::GetForBrowserState(regularBrowserState);
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(regularBrowserState);
+  // TODO(crbug.com/1457146): Rename in recentTabsMediator.
   self.remoteTabsMediator =
       [[RecentTabsMediator alloc] initWithSessionSyncService:syncService
                                              identityManager:identityManager
@@ -860,7 +867,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                  syncService:service
                                                  browserList:browserList];
   self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
-  self.remoteTabsMediator.gridConsumer = self.baseViewController;
   baseViewController.remoteTabsViewController.imageDataSource =
       self.remoteTabsMediator;
   baseViewController.remoteTabsViewController.delegate =

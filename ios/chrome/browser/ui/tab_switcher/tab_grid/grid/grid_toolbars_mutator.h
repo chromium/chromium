@@ -8,12 +8,17 @@
 #import <Foundation/Foundation.h>
 
 @class TabGridToolbarsConfiguration;
+@protocol TabGridToolbarsButtonsDelegate;
 
 // Allows grids mediator to reflect toolbars needs in tab grid toolbars' model.
 @protocol GridToolbarsMutator <NSObject>
 
 // Sends to tab grid toolbars model the needed toolbar configuration.
 - (void)setToolbarConfiguration:(TabGridToolbarsConfiguration*)configuration;
+
+// Sends to tab grid toolbars model which delegates should handle buttons'
+// actions.
+- (void)setToolbarsButtonsDelegate:(id<TabGridToolbarsButtonsDelegate>)delegate;
 
 @end
 

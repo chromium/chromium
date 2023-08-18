@@ -490,8 +490,12 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
       [[TabGridToolbarsConfiguration alloc] init];
   toolbarsConfiguration.closeAllButton = !_webStateList->empty();
   toolbarsConfiguration.searchButton = YES;
-  toolbarsConfiguration.undoButton = _closedSessionWindow;
+  toolbarsConfiguration.undoButton = [self didSavedClosedTabs];
   return toolbarsConfiguration;
+}
+
+- (BOOL)didSavedClosedTabs {
+  return _closedSessionWindow != nil;
 }
 
 @end
