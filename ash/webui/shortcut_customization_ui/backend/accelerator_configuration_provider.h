@@ -149,19 +149,6 @@ class AcceleratorConfigurationProvider
   friend class AcceleratorConfigurationProviderTest;
   using NonConfigAcceleratorActionMap = ui::AcceleratorMap<AcceleratorActionId>;
 
-  // Represents the different states the current pending accelerator can be
-  // in.
-  enum class AcceleratorConflictErrorState {
-    // No error.
-    kStandby,
-    // Awaiting user to re-input the same accelerator.
-    kAwaitingConflictResolution,
-    // Accelerator with conflict has been resolved and can be used.
-    kConflictResolved,
-    // Awaiting user to re-input the same non-search modifier accelerator.
-    kAwaitingNonSearchConfirmation,
-  };
-
   // Accelerator that is queued to be added. This should only be set if the user
   // has attempted to add an accelerator that conflicts with a overridable
   // existing accelerator.
@@ -205,14 +192,6 @@ class AcceleratorConfigurationProvider
                            AcceleratorActionId action_id,
                            const ui::Accelerator& accelerator);
 
-  // Handle the case in which the user inputs an accelerator without Search as
-  // a modifier. Returns the `AcceleratorConflictErrorState` that reflects
-  // the current state of handling the non-search accelerator.
-  AcceleratorConflictErrorState MaybeHandleNonSearchAccelerator(
-      const ui::Accelerator& accelerator,
-      mojom::AcceleratorSource source,
-      AcceleratorActionId action_id);
-
   void SetLayoutDetailsMapForTesting(
       const std::vector<AcceleratorLayoutDetails>& layouts);
 
@@ -254,8 +233,6 @@ class AcceleratorConfigurationProvider
   NonConfigAcceleratorActionMap non_configurable_accelerator_to_id_;
 
   std::unique_ptr<PendingAccelerator> pending_accelerator_;
-
-  AcceleratorConflictErrorState conflict_error_state_;
 
   mojo::Remote<shortcut_customization::mojom::AcceleratorsUpdatedObserver>
       accelerators_updated_mojo_observer_;

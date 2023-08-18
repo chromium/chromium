@@ -803,7 +803,6 @@ void AcceleratorConfigurationProvider::PreventProcessingAccelerators(
   // Always reset the pending accelerator whenever the user has just started
   // or stopped inputting an accelerator.
   pending_accelerator_.reset();
-  conflict_error_state_ = AcceleratorConflictErrorState::kStandby;
   Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
       prevent_processing_accelerators);
   std::move(callback).Run();
@@ -863,18 +862,6 @@ void AcceleratorConfigurationProvider::AddAccelerator(
   if (result_data_ptr.has_value()) {
     std::move(callback).Run(std::move(*result_data_ptr));
     LogAddAccelerator(source, accelerator, result_data->result);
-    return;
-  }
-
-  // After the accelerator has gone through conflict detection, check if the
-  // accelerator contains search/meta.
-  // Warn users that the inputted accelerator may conflict with existing
-  // browser app shortcuts if there is no meta/search key as a modifier.
-  conflict_error_state_ =
-      MaybeHandleNonSearchAccelerator(accelerator, source, action_id);
-  if (conflict_error_state_ != AcceleratorConflictErrorState::kStandby) {
-    result_data->result = AcceleratorConfigResult::kNonSearchAcceleratorWarning;
-    std::move(callback).Run(std::move(result_data));
     return;
   }
 
@@ -962,16 +949,6 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
     LogReplaceAccelerator(source, accelerator_to_replace, new_accelerator,
                           (*result_data_ptr)->result);
     std::move(callback).Run(std::move(*result_data_ptr));
-    return;
-  }
-
-  // Warn users that the inputted accelerator may conflict with existing
-  // app shortcuts if there is no meta/search key as a modifier.
-  conflict_error_state_ =
-      MaybeHandleNonSearchAccelerator(new_accelerator, source, action_id);
-  if (conflict_error_state_ != AcceleratorConflictErrorState::kStandby) {
-    result_data->result = AcceleratorConfigResult::kNonSearchAcceleratorWarning;
-    std::move(callback).Run(std::move(result_data));
     return;
   }
 
@@ -1205,39 +1182,10 @@ AcceleratorConfigurationProvider::PreprocessAddAccelerator(
     pending_accelerator_ =
         std::make_unique<PendingAccelerator>(accelerator, source, action_id);
     result_data->shortcut_name = shortcut_name;
-    conflict_error_state_ =
-        AcceleratorConflictErrorState::kAwaitingConflictResolution;
     return result_data;
   }
 
-  if (pending_accelerator_->accelerator == accelerator &&
-      conflict_error_state_ ==
-          AcceleratorConflictErrorState::kAwaitingConflictResolution) {
-    conflict_error_state_ = AcceleratorConflictErrorState::kConflictResolved;
-  }
   return absl::nullopt;
-}
-
-AcceleratorConfigurationProvider::AcceleratorConflictErrorState
-AcceleratorConfigurationProvider::MaybeHandleNonSearchAccelerator(
-    const ui::Accelerator& accelerator,
-    mojom::AcceleratorSource source,
-    AcceleratorActionId action_id) {
-  if (conflict_error_state_ !=
-      AcceleratorConflictErrorState::kAwaitingNonSearchConfirmation) {
-    pending_accelerator_.reset();
-  }
-
-  if ((accelerator.modifiers() & ui::EF_COMMAND_DOWN) == 0) {
-    if (!pending_accelerator_ || pending_accelerator_->action != action_id ||
-        pending_accelerator_->source != source ||
-        pending_accelerator_->accelerator != accelerator) {
-      pending_accelerator_ =
-          std::make_unique<PendingAccelerator>(accelerator, source, action_id);
-      return AcceleratorConflictErrorState::kAwaitingNonSearchConfirmation;
-    }
-  }
-  return AcceleratorConflictErrorState::kStandby;
 }
 
 void AcceleratorConfigurationProvider::SetLayoutDetailsMapForTesting(
