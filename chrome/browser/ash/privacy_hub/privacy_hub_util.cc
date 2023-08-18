@@ -118,9 +118,6 @@ ScopedCameraLedFallbackForTesting::~ScopedCameraLedFallbackForTesting() {
 }
 
 void SetAppAccessNotifier(AppAccessNotifier* app_access_notifier) {
-  if (!features::IsCrosPrivacyHubEnabled()) {
-    return;
-  }
   // Wraps the `AppAccessNotifier` to be used from
   // `PrivacyHubNotificationController`.
   class Wrapper : public SensorDisabledNotificationDelegate {
