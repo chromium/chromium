@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
   auto* gpu_process_host = content::GpuProcessHost::Get();
   EXPECT_TRUE(gpu_process_host);
   EXPECT_EQ(GetProcessPriority(gpu_process_host->process_id()),
-            base::Process::Priority::kBestEffort);
+            base::Process::Priority::kUserVisible);
 }
 
 // Flaky: https://crbug.com/1443367
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
   EnsureBackgroundedStateChange();
 
   EXPECT_EQ(GetProcessPriority(gpu_process_host->process_id()),
-            base::Process::Priority::kBestEffort);
+            base::Process::Priority::kUserVisible);
 
   bridge->SimulateBrowserProcessForegroundedForTesting();
   EnsureBackgroundedStateChange();

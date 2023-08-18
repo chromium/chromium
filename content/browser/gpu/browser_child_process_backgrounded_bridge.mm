@@ -123,7 +123,7 @@ void BrowserChildProcessBackgroundedBridge::OnBrowserProcessForegrounded() {
 }
 
 void BrowserChildProcessBackgroundedBridge::OnBrowserProcessBackgrounded() {
-  process_->SetProcessPriority(base::Process::Priority::kBestEffort);
+  process_->SetProcessPriority(base::Process::Priority::kUserVisible);
 }
 
 }  // namespace content
