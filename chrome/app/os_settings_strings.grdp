@@ -3191,77 +3191,76 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_ALT" desc="In the touchpad settings subpage, the dropdown list item for the Alt + Click option.">
     alt + click
   </message>
-  <!-- TODO(b/286937607): Finalize and translate these strings -->
   <message name="IDS_SETTINGS_MODIFIER_KEYS_LABEL" desc="In the remap keyboard keys settings subpage, the label for the section that contains all of the modifier keys (Ctrl, Alt, etc).">
     Select an action for each key
   </message>
   <message name="IDS_SETTINGS_OTHER_KEYS_LABEL" desc="In the remap keyboard keys settings subpage, the label for the section that contains all of the non-modifier keys (Backspace, Home, etc).">
     Select a shortcut for each action
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_INSERT" translateable="false" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the insert 6-pack key action.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_INSERT" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the insert 6-pack key action.">
     insert
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME" translateable="false" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the home 6-pack key action.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the home 6-pack key action.">
     home
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_END" translateable="false" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the end 6-pack key action.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_END" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the end 6-pack key action.">
     end
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP" translateable="false" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the PageUp 6-pack key action.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the PageUp 6-pack key action.">
     page up
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN" translateable="false" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the PageDown 6-pack key action.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the PageDown 6-pack key action.">
     page down
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE" translateable="false" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the delete 6-pack key action.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the delete 6-pack key action.">
     delete
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE_ALT" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     alt + backspace
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE_SEARCH" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the search + backspace option.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the search + backspace option.">
     search + backspace
   </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + backspace option.">
     launcher + backspace
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME_ALT" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     ctrl + alt + up arrow
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME_SEARCH" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     search + left arrow
   </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + left arrow option.">
     launcher + left arrow
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_END_ALT" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_END_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     ctrl + alt + down arrow
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_END_SEARCH" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_END_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     search + right arrow
   </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_END_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + right arrow option.">
     launcher + right arrow
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_INSERT_SEARCH" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_INSERT_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     search + shift + backspace
   </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_INSERT_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + shift + backspace option.">
     launcher + shift + backspace
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_ALT" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     alt + down arrow
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_SEARCH" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     search + down arrow
   </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + down arrow option.">
     launcher + down arrow
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_ALT" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     alt + up arrow
   </message>
-  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_SEARCH" translateable="false" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+  <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
     search + up arrow
   </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + up arrow option.">
