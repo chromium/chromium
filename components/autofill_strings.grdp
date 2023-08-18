@@ -110,6 +110,11 @@
     The form was filled in
   </message>
   <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that edit autofill profile option was selected." translateable="false">
+    The edit address option was selected
+  </message>
+
+  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that delete autofill profile option was selected." translateable="false">
     The delete address option was selected
   </message>
@@ -148,10 +153,17 @@
     Manage...
   </message>
 
+  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
+  <message name="IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the bottom of the Autofill sub meny to open the edit address profile dialog." meaning="Entry point to address profile deletion." translateable="false">
+    Edit address
+  </message>
+
+  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
   <message name="IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the bottom of the Autofill sub menu to open the delete address profile dialog." meaning="Entry point to address profile deletion." translateable="false">
     Delete address
   </message>
 
+  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
   <message name="IDS_AUTOFILL_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the footer of the Autofill sub menu to fill everything from the address profile." meaning="Fill every available information from the address profile." translateable="false">
     Fill everything
   </message>

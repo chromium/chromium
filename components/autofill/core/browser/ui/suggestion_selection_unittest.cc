@@ -232,8 +232,9 @@ TEST_F(SuggestionSelectionTest,
   // 9. line separator
   // 10. email
   // 11. line separator
-  // 12. delete address
-  ASSERT_EQ(12U, suggestions[0].children.size());
+  // 12. edit profile
+  // 13. delete address
+  ASSERT_EQ(13U, suggestions[0].children.size());
   EXPECT_THAT(
       suggestions[0].children,
       ElementsAre(
@@ -262,6 +263,7 @@ TEST_F(SuggestionSelectionTest,
               PopupItemId::kFieldByFieldFilling,
               profile.GetInfo(ServerFieldType::EMAIL_ADDRESS, app_locale)),
           EqualsSuggestion(PopupItemId::kSeparator),
+          EqualsSuggestion(PopupItemId::kEditAddressProfile),
           EqualsSuggestion(PopupItemId::kDeleteAddressProfile)));
 
   // The address line 1 (sixth child) suggestion should have the following
@@ -306,8 +308,9 @@ TEST_F(SuggestionSelectionTest,
   // 9. line separator
   // 10. email
   // 11. line separator
-  // 12. delete address
-  ASSERT_EQ(12U, suggestions[0].children.size());
+  // 12. edit address
+  // 13. delete address
+  ASSERT_EQ(13U, suggestions[0].children.size());
   EXPECT_THAT(suggestions[0].children[4],
               Field(&Suggestion::popup_item_id, PopupItemId::kFillFullAddress));
 }

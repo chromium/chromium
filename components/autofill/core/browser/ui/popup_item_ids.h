@@ -53,6 +53,7 @@ enum class PopupItemId : int {
   kSeePromoCodeDetails,
   kWebauthnSignInWithAnotherDevice,
   kIbanEntry,
+  kEditAddressProfile,
   kDeleteAddressProfile,
   kCreateNewPlusAddress,
   kFillExistingPlusAddress,

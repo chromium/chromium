@@ -54,18 +54,29 @@ std::u16string GetInfoInOneLine(const AutofillProfile* profile,
   return profile->GetInfo(type, app_locale);
 }
 
+Suggestion GetEditAddressProfileSuggestion(Suggestion::BackendId backend_id) {
+  Suggestion suggestion(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
+  suggestion.popup_item_id = PopupItemId::kEditAddressProfile;
+  suggestion.icon = "editIcon";
+  suggestion.payload = backend_id;
+  suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_A11Y_ANNOUNCE_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
+  return suggestion;
+}
+
 // Creates the suggestion that will open the delete address profile dialog.
 // TODO(crbug.com/1459990): Use this once the new popup with submenus
 // implementation is complete.
 Suggestion GetDeleteAddressProfileSuggestion(Suggestion::BackendId backend_id) {
-  Suggestion sugestion(l10n_util::GetStringUTF16(
+  Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
-  sugestion.popup_item_id = PopupItemId::kDeleteAddressProfile;
-  sugestion.icon = "deleteIcon";
-  sugestion.payload = backend_id;
-  sugestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+  suggestion.popup_item_id = PopupItemId::kDeleteAddressProfile;
+  suggestion.icon = "deleteIcon";
+  suggestion.payload = backend_id;
+  suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
-  return sugestion;
+  return suggestion;
 }
 
 // Creates the suggestion that will fill all address related fields.
@@ -229,6 +240,8 @@ void AddFooterChildSuggestions(const AutofillProfile& profile,
   // TODO(crbug.com/1459990): Add fill everything option if current filling is
   // not in the form filling granularity level. This would mean that an user
   // just filled specifics groups or fields.
+  suggestion.children.push_back(
+      GetEditAddressProfileSuggestion(Suggestion::BackendId(profile.guid())));
   suggestion.children.push_back(
       GetDeleteAddressProfileSuggestion(Suggestion::BackendId(profile.guid())));
 }

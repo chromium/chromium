@@ -280,6 +280,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
     case PopupItemId::kAddressEntry:
     case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kEditAddressProfile:
     case PopupItemId::kDeleteAddressProfile:
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
