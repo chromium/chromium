@@ -30,6 +30,7 @@ import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -494,6 +495,8 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private mouseChanged_() {
     if ((!this.mice || this.mice.length === 0) &&
         Router.getInstance().currentRoute === routes.PER_DEVICE_MOUSE) {
+      getAnnouncerInstance().announce(
+          this.i18n('allMiceDisconnectedA11yLabel'));
       Router.getInstance().navigateTo(routes.DEVICE);
     }
   }
@@ -501,6 +504,9 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private touchpadChanged_() {
     if ((!this.touchpads || this.touchpads.length === 0) &&
         Router.getInstance().currentRoute === routes.PER_DEVICE_TOUCHPAD) {
+      getAnnouncerInstance().announce(
+          this.i18n('allTouchpadsDisconnectedA11yLabel'));
+
       Router.getInstance().navigateTo(routes.DEVICE);
     }
   }
@@ -509,6 +515,8 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     if ((!this.pointingSticks || this.pointingSticks.length === 0) &&
         Router.getInstance().currentRoute ===
             routes.PER_DEVICE_POINTING_STICK) {
+      getAnnouncerInstance().announce(
+          this.i18n('allPointingSticksDisconnectedA11yLabel'));
       Router.getInstance().navigateTo(routes.DEVICE);
     }
   }

@@ -5422,6 +5422,21 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_DISABLED" desc="In keyboard remap keys subpage, the dropdown list item for a disabled key.">
     disabled
   </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_CONNECTED_A11Y_LABEL" desc="The message announced to screen readers when a device is connected.">
+    <ph name="DEVICE_NAME">$1<ex>Internal Keyboard</ex></ph> has been connected
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_DISCONNECTED_A11Y_LABEL" desc="The message announced to screen readers when a device is disconnected.">
+    <ph name="DEVICE_NAME">$1<ex>Internal Keyboard</ex></ph> has been disconnected
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_ALL_MICE_DISCONNECTED_A11Y_LABEL" desc="The message announced to screen readers when all mice have been disconnected.">
+    All mice have been disconnected
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_ALL_TOUCHPADS_DISCONNECTED_A11Y_LABEL" desc="The message announced to screen readers when all mice have been disconnected.">
+    All touchpads have been disconnected
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_ALL_POINTING_STICKS_DISCONNECTED_A11Y_LABEL" desc="The message announced to screen readers when all mice have been disconnected.">
+    All TrackPoints have been disconnected
+  </message>
 
   <!-- Device Keyboard page (OS settings) -->
   <message name="IDS_SETTINGS_KEYBOARD_TITLE" desc="In Device Settings, the title of the keyboard settings subpage.">

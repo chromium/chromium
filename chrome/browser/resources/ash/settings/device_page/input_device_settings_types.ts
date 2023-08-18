@@ -80,6 +80,7 @@ export type PointingStickSettings =
     InputDeviceSettingsTypes.PointingStickSettings;
 export type DeviceSettings =
     KeyboardSettings|TouchpadSettings|MouseSettings|PointingStickSettings;
+export type InputDeviceType = Keyboard|Touchpad|Mouse|PointingStick;
 
 export type InputDeviceSettingsPolicy =
     InputDeviceSettingsTypes.InputDeviceSettingsPolicy;

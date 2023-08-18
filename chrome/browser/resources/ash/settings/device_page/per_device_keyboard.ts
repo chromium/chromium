@@ -18,26 +18,25 @@ import '/shared/settings/controls/settings_slider.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {KeyboardPolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 import {Keyboard} from './input_device_settings_types.js';
+import {getDeviceStateChangesToAnnounce} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_keyboard.html.js';
 
 const SettingsPerDeviceKeyboardElementBase =
-    DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          RouteObserverMixinInterface & DeepLinkingMixinInterface,
-    };
+    DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
 
 export class SettingsPerDeviceKeyboardElement extends
     SettingsPerDeviceKeyboardElementBase {
@@ -59,6 +58,7 @@ export class SettingsPerDeviceKeyboardElement extends
 
       keyboards: {
         type: Array,
+        observer: 'onKeyboardListUpdated',
       },
 
       keyboardPolicies: {
@@ -128,6 +128,18 @@ export class SettingsPerDeviceKeyboardElement extends
     }
 
     this.attemptDeepLink();
+  }
+
+  private onKeyboardListUpdated(
+      newKeyboardList: Keyboard[], oldKeyboardList: Keyboard[]|undefined) {
+    if (!oldKeyboardList) {
+      return;
+    }
+    const {msgId, deviceNames} =
+        getDeviceStateChangesToAnnounce(newKeyboardList, oldKeyboardList);
+    for (const deviceName of deviceNames) {
+      getAnnouncerInstance().announce(this.i18n(msgId, deviceName));
+    }
   }
 
   private onShowKeyboardShortcutViewerClick(): void {

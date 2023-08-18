@@ -18,6 +18,8 @@ import '/shared/settings/controls/settings_slider.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -25,10 +27,11 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {PointingStick} from './input_device_settings_types.js';
+import {getDeviceStateChangesToAnnounce} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_pointing_stick.html.js';
 
 const SettingsPerDevicePointingStickElementBase =
-    RouteObserverMixin(PolymerElement);
+    RouteObserverMixin(I18nMixin(PolymerElement));
 
 export class SettingsPerDevicePointingStickElement extends
     SettingsPerDevicePointingStickElementBase {
@@ -44,6 +47,7 @@ export class SettingsPerDevicePointingStickElement extends
     return {
       pointingSticks: {
         type: Array,
+        observer: 'onPointingStickListUpdated',
       },
     };
   }
@@ -54,6 +58,19 @@ export class SettingsPerDevicePointingStickElement extends
     // Does not apply to this page.
     if (route !== routes.PER_DEVICE_POINTING_STICK) {
       return;
+    }
+  }
+
+  private onPointingStickListUpdated(
+      newPointingStickList: PointingStick[],
+      oldPointingStickList: PointingStick[]|undefined) {
+    if (!oldPointingStickList) {
+      return;
+    }
+    const {msgId, deviceNames} = getDeviceStateChangesToAnnounce(
+        newPointingStickList, oldPointingStickList);
+    for (const deviceName of deviceNames) {
+      getAnnouncerInstance().announce(this.i18n(msgId, deviceName));
     }
   }
 

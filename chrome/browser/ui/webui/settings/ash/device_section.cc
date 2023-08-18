@@ -1763,6 +1763,16 @@ void DeviceSection::AddDevicePointersStrings(
       base::FeatureList::IsEnabled(ash::features::kAllowScrollSettings);
 
   webui::LocalizedString kPointersStrings[] = {
+      {"allMiceDisconnectedA11yLabel",
+       IDS_SETTINGS_PER_DEVICE_ALL_MICE_DISCONNECTED_A11Y_LABEL},
+      {"allTouchpadsDisconnectedA11yLabel",
+       IDS_SETTINGS_PER_DEVICE_ALL_TOUCHPADS_DISCONNECTED_A11Y_LABEL},
+      {"allPointingSticksDisconnectedA11yLabel",
+       IDS_SETTINGS_PER_DEVICE_ALL_POINTING_STICKS_DISCONNECTED_A11Y_LABEL},
+      {"deviceConnectedA11yLabel",
+       IDS_SETTINGS_PER_DEVICE_CONNECTED_A11Y_LABEL},
+      {"deviceDisconnectedA11yLabel",
+       IDS_SETTINGS_PER_DEVICE_DISCONNECTED_A11Y_LABEL},
       {"mouseTitle", IDS_SETTINGS_MOUSE_TITLE},
       {"builtInPointingStickName", IDS_SETTINGS_BUILT_IN_POINTING_STICK_NAME},
       {"pointingStickTitle", IDS_SETTINGS_POINTING_STICK_TITLE},

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DeviceSettings, InputDeviceSettingsPolicy, PolicyStatus} from './input_device_settings_types.js';
+import {DeviceSettings, InputDeviceSettingsPolicy, InputDeviceType, PolicyStatus} from './input_device_settings_types.js';
 
 function objectsAreEqual(
     obj1: {[key: string]: any}, obj2: {[key: string]: any}): boolean {
@@ -60,4 +60,22 @@ export function getPrefPolicyFields(policy?: InputDeviceSettingsPolicy):
     enforcement: undefined,
     recommendedValue: undefined,
   };
+}
+
+export function getDeviceStateChangesToAnnounce(
+    newDeviceList: InputDeviceType[],
+    prevDeviceList: InputDeviceType[]): {msgId: string, deviceNames: string[]} {
+  let msgId: string;
+  let devices: InputDeviceType[];
+  if (newDeviceList.length > prevDeviceList.length) {
+    devices =
+        newDeviceList.filter((device) => !prevDeviceList.includes(device));
+    msgId = 'deviceConnectedA11yLabel';
+  } else {
+    msgId = 'deviceDisconnectedA11yLabel';
+    devices =
+        prevDeviceList.filter((device) => !newDeviceList.includes(device));
+  }
+
+  return {msgId, deviceNames: devices.map(device => device.name)};
 }
