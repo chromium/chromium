@@ -49,6 +49,7 @@
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
+#include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -254,6 +255,14 @@ GetTransitionFromMetricsAnimationInfo(
 
 bool IsKioskSession() {
   return Shell::Get()->session_controller()->IsRunningInAppMode();
+}
+
+void MaybeLogWelcomeTourInteraction(AppListShowSource show_source) {
+  if (features::IsWelcomeTourEnabled() &&
+      IsAppListShowSourceUserTriggered(show_source)) {
+    welcome_tour_metrics::RecordInteraction(
+        welcome_tour_metrics::Interaction::kLauncher);
+  }
 }
 
 }  // namespace
@@ -499,6 +508,10 @@ void AppListControllerImpl::Show(int64_t display_id,
   if (should_record_metrics)
     LogAppListShowSource(show_source, !IsTabletMode());
 
+  // Checking `should_record_metrics` is redundant here, since this helper
+  // function never logs metrics when the app list was shown by tablet mode.
+  MaybeLogWelcomeTourInteraction(show_source);
+
   if (IsTabletMode()) {
     fullscreen_presenter_->Show(AppListViewState::kFullscreenAllApps,
                                 display_id, event_time_stamp, show_source);
@@ -568,6 +581,9 @@ ShelfAction AppListControllerImpl::ToggleAppList(
     }
     LogAppListShowSource(show_source, /*app_list_bubble=*/false);
     last_open_source_ = show_source;
+
+    MaybeLogWelcomeTourInteraction(show_source);
+
     return SHELF_ACTION_APP_LIST_SHOWN;
   }
 
@@ -575,6 +591,8 @@ ShelfAction AppListControllerImpl::ToggleAppList(
   if (action == SHELF_ACTION_APP_LIST_SHOWN) {
     LogAppListShowSource(show_source, /*app_list_bubble=*/true);
     last_open_source_ = show_source;
+
+    MaybeLogWelcomeTourInteraction(show_source);
   }
   return action;
 }
