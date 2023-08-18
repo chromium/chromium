@@ -159,8 +159,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
   EXPECT_EQ(usage_before_operation, usage_after_operation + 100);
 }
 
-// TODO(crbug.com/1304977): Failing on Mac and Linux builders.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1304977): Failing on various builders.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||                     \
+    (BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER) && \
+     defined(LEAK_SANITIZER))
 #define MAYBE_QuotaUsageOverallocation DISABLED_QuotaUsageOverallocation
 #else
 #define MAYBE_QuotaUsageOverallocation QuotaUsageOverallocation
