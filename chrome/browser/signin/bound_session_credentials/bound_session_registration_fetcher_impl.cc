@@ -37,18 +37,6 @@ bound_session_credentials::RegistrationParams CreateRegistrationParams(
   params.set_wrapped_key(wrapped_key);
   return params;
 }
-
-std::string GetAlgoName(crypto::SignatureVerifier::SignatureAlgorithm algo) {
-  if (algo == crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256) {
-    return "ES256";
-  }
-
-  if (algo == crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256) {
-    return "RS256";
-  }
-
-  return std::string();
-}
 }  // namespace
 
 BoundSessionRegistrationFetcherImpl::BoundSessionRegistrationFetcherImpl(
@@ -65,12 +53,20 @@ BoundSessionRegistrationFetcherImpl::~BoundSessionRegistrationFetcherImpl() =
 void BoundSessionRegistrationFetcherImpl::Start(
     RegistrationCompleteCallback callback) {
   callback_ = std::move(callback);
+  // TODO: Make `key_service_` not optional. It was made optional to facilitate
+  // testing but we now have a feature flag for software emulation, so this
+  // should be no longer needed.
   if (key_service_) {
-    key_service_->GenerateSigningKeySlowlyAsync(
-        registration_params_.SupportedAlgos(),
-        unexportable_keys::BackgroundTaskPriority::kBestEffort,
-        base::BindOnce(&BoundSessionRegistrationFetcherImpl::OnKeyCreated,
-                       weak_ptr_factory_.GetWeakPtr()));
+    // base::Unretained() is safe since `this` owns
+    // `registration_token_helper_`.
+    registration_token_helper_ =
+        RegistrationTokenHelper::CreateForSessionBinding(
+            *key_service_, registration_params_.Challenge(),
+            registration_params_.RegistrationEndpoint(),
+            base::BindOnce(&BoundSessionRegistrationFetcherImpl::
+                               OnRegistrationTokenCreated,
+                           base::Unretained(this)));
+    registration_token_helper_->Start();
   } else {
     // Early fail of request, object is invalid after this
     std::move(callback_).Run(absl::nullopt);
@@ -127,40 +123,21 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
   std::move(callback_).Run(return_value);
 }
 
-void BoundSessionRegistrationFetcherImpl::OnKeyCreated(
-    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-        created_key) {
-  if (!created_key.has_value()) {
-    std::move(callback_).Run(absl::nullopt);
-    return;
-  }
-  unexportable_keys::UnexportableKeyId key_id = *created_key;
-
-  unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> public_key =
-      key_service_->GetSubjectPublicKeyInfo(key_id);
-  std::string pkey(reinterpret_cast<const char*>(public_key->data()),
-                   public_key->size());
-  std::string pkey_base64;
-  base::Base64Encode(pkey, &pkey_base64);
-
-  unexportable_keys::ServiceErrorOr<
-      crypto::SignatureVerifier::SignatureAlgorithm>
-      algo_used = key_service_->GetAlgorithm(key_id);
-  std::string algo_string = GetAlgoName(algo_used.value());
-  if (algo_string.empty()) {
+void BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated(
+    absl::optional<RegistrationTokenHelper::Result> result) {
+  if (!result.has_value()) {
     std::move(callback_).Run(absl::nullopt);
     return;
   }
 
-  std::vector<uint8_t> wrapped_key = *key_service_->GetWrappedKey(key_id);
+  const std::vector<uint8_t>& wrapped_key = result->wrapped_binding_key;
   wrapped_key_str_ = std::string(wrapped_key.begin(), wrapped_key.end());
 
-  StartFetchingRegistration(std::move(pkey_base64), std::move(algo_string));
+  StartFetchingRegistration(result->registration_token);
 }
 
 void BoundSessionRegistrationFetcherImpl::StartFetchingRegistration(
-    std::string public_key,
-    std::string algo_used) {
+    const std::string& registration_token) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("device_bound_session_register",
                                           R"(
@@ -210,18 +187,11 @@ void BoundSessionRegistrationFetcherImpl::StartFetchingRegistration(
       net::IsolationInfo::CreateForInternalRequest(
           url::Origin::Create(registration_params_.RegistrationEndpoint()));
 
-  std::string body = *base::WriteJson(
-      base::Value::Dict()
-          .Set("binding_alg", std::move(algo_used))  // Algorithm
-          .Set("key",
-               std::move(public_key))  // Public key
-          .Set("client_constraints",
-               base::Value::Dict().Set("signature_quota_per_minute", 1)));
-  std::string content_type = "application/json";
+  std::string content_type = "application/jwt";
 
   url_loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
-  url_loader_->AttachStringForUpload(body, content_type);
+  url_loader_->AttachStringForUpload(registration_token, content_type);
   url_loader_->SetRetryOptions(
       3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   url_loader_->DownloadToString(

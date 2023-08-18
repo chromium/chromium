@@ -9,6 +9,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
+#include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
@@ -58,11 +59,20 @@ bound_session_credentials::RegistrationParams CreateTestRegistrationParams() {
 void ConfigureURLLoaderFactoryForRegistrationResponse(
     network::TestURLLoaderFactory* url_loader_factory,
     const std::string response_body,
-    bool* out_made_download) {
+    bool* out_made_download,
+    std::string* request_body = nullptr) {
   url_loader_factory->SetInterceptor(
       base::BindLambdaForTesting([=](const network::ResourceRequest& request) {
         *out_made_download = true;
         ASSERT_TRUE(request.url.is_valid());
+        ASSERT_FALSE(request.request_body.get()->elements()->empty());
+        if (request_body) {
+          *request_body = std::string(request.request_body.get()
+                                          ->elements()
+                                          ->at(0)
+                                          .As<network::DataElementBytes>()
+                                          .AsStringPiece());
+        }
         auto response_head = network::mojom::URLResponseHead::New();
         response_head->headers =
             base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -131,11 +141,12 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
   network::TestURLLoaderFactory url_loader_factory;
   bool made_download = false;
+  std::string request_body;
 
   ConfigureURLLoaderFactoryForRegistrationResponse(
       &url_loader_factory,
       std::string(kXSSIPrefix) + std::string(kJSONRegistrationParams),
-      &made_download);
+      &made_download, &request_body);
 
   BoundSessionRegistrationFetcherParam params =
       BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
@@ -169,6 +180,12 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
       wrapped_key_to_key_id.GetCallback());
   EXPECT_TRUE(wrapped_key_to_key_id.IsReady());
   EXPECT_TRUE(wrapped_key_to_key_id.Get().has_value());
+
+  // Verify that the request body contains a valid registration token.
+  UnexportableKeyId key_id = wrapped_key_to_key_id.Get().value();
+  EXPECT_TRUE(signin::VerifyJwtSignature(
+      request_body, *unexportable_key_service().GetAlgorithm(key_id),
+      *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
 }
 
 TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {

@@ -94,11 +94,12 @@ BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
     }
 
     if (base::EqualsCaseInsensitiveASCII(key, kChallengeItemKey)) {
-      if (!base::Base64UrlDecode(value,
-                                 base::Base64UrlDecodePolicy::DISALLOW_PADDING,
-                                 &challenge)) {
+      // Challenge will be eventually written into a `base::Value`, when
+      // generating the registration token, which is restricted to UTF8.
+      if (!base::IsStringUTF8AllowingNoncharacters(value)) {
         return absl::nullopt;
       }
+      challenge = value;
     }
   }
 
