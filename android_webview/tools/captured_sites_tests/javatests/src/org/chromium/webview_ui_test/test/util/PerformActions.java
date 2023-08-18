@@ -139,7 +139,7 @@ public class PerformActions {
                         * 2) // TODO (crbug/1470296) remove and replace with margin detection;
                 + ";";
         final String heightJS = "window.innerHeight";
-        return getRelativePos(topJS, bottomJS, heightJS);
+        return getRelativePos(topJS, bottomJS, heightJS, xPath);
     }
     // Returns the relative width [0, 1] of the given element on the current webview.
     @VisibleForTesting
@@ -147,22 +147,41 @@ public class PerformActions {
         final String leftJS = getElemToXPath(xPath) + "elem.getBoundingClientRect().left;";
         final String rightJS = getElemToXPath(xPath) + "elem.getBoundingClientRect().right;";
         final String widthJS = "window.innerWidth";
-        return getRelativePos(leftJS, rightJS, widthJS);
+        return getRelativePos(leftJS, rightJS, widthJS, xPath);
     }
     // Generalizable helper for width and height that computes where the element lies relative to
     // webview.
     @VisibleForTesting
-    double getRelativePos(String lowerJS, String higherJS, String sizeJS) throws Throwable {
-        String lowerString = findCallback(lowerJS);
+    double getRelativePos(String lowerJS, String higherJS, String sizeJS, String xPath)
+            throws Throwable {
+        String errorString = "No element found with xPath: " + xPath;
+
+        String lowerString = findCallbackAndFailIfNull(lowerJS, errorString);
         double lower = Double.valueOf(lowerString);
 
-        String higherString = findCallback(higherJS);
+        String higherString = findCallbackAndFailIfNull(higherJS, errorString);
         double higher = Double.valueOf(higherString);
 
-        String sizeString = findCallback(sizeJS);
+        String sizeString = findCallbackAndFailIfNull(sizeJS);
         double size = Double.valueOf(sizeString);
 
         return ((lower + higher) / 2) / size;
+    }
+    // Runs javascript and returns callback if present, fails with default error message otherwise.
+    @VisibleForTesting
+    String findCallbackAndFailIfNull(String js) throws Throwable {
+        String errorMessage = "from javascript " + js;
+        return findCallbackAndFailIfNull(js, errorMessage);
+    }
+    // Runs javascript and returns callback if present, fails with message otherwise.
+    @VisibleForTesting
+    String findCallbackAndFailIfNull(String js, String errorMessage) throws Throwable {
+        String callback = findCallback(js);
+        // Checks if there was no callback, or the result of callback was itself null.
+        if (callback == null || callback.equals("null")) {
+            throw new NullPointerException("Callback failed:" + errorMessage);
+        }
+        return callback;
     }
     // Sets the element at xPath to a JS variable elem.
     @VisibleForTesting
