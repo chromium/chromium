@@ -78,6 +78,7 @@
 #include "extensions/common/mojom/automation_registry.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
@@ -86,6 +87,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using blink::web_pref::WebPreferences;
@@ -703,6 +705,19 @@ bool ChromeContentBrowserClientExtensionsPart::IsBuiltinComponent(
     return false;
 
   const auto& extension_id = origin.host();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Check if the component is the ODFS external component extension.
+  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
+      extension_id == extension_misc::kODFSExtensionId &&
+      ExtensionRegistry::Get(browser_context)
+              ->GetInstalledExtension(extension_id)
+              ->location() == mojom::ManifestLocation::kExternalComponent) {
+    return true;
+  }
+#endif
+
+  // Check if the component is a loaded component extension.
   return ExtensionSystem::Get(browser_context)
       ->extension_service()
       ->component_loader()
