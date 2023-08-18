@@ -4,6 +4,9 @@
 
 #include "ui/views/controls/menu/menu_controller.h"
 
+#include <functional>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -95,6 +98,13 @@ bool ShouldIgnoreScreenBoundsForMenus() {
 #else
   return false;
 #endif
+}
+
+gfx::Size GetPreferredSizeForSubmenu(SubmenuView& submenu) {
+  auto size = submenu.GetPreferredSize();
+  const auto insets = submenu.GetScrollViewContainer()->GetInsets();
+  size.Enlarge(insets.width(), insets.height());
+  return size;
 }
 
 // Test implementation of MenuControllerDelegate that only reports the values
@@ -585,11 +595,7 @@ class MenuControllerTest : public ViewsTestBase,
     SubmenuView* sub_menu = parent_item->GetSubmenu();
 
     parent_item->SetBoundsRect(parent_bounds);
-    MenuHost::InitParams params;
-    params.parent = owner();
-    params.bounds = parent_item->bounds();
-    params.do_capture = false;
-    sub_menu->ShowAt(params);
+    ShowSubmenu(sub_menu, [&](auto& params) { params.bounds = parent_bounds; });
     gfx::Rect final_bounds =
         CalculateBubbleMenuBoundsWithoutInsets(options, item);
     sub_menu->Close();
@@ -750,6 +756,26 @@ class MenuControllerTest : public ViewsTestBase,
     return menu_controller_->exit_type_;
   }
 
+  // Displays a submenu with appropriate params. If the first arg is null (the
+  // default), displays `menu_item()->GetSubmenu()`. Supply a second arg if you
+  // want a callback to modify the init params before calling
+  // `SubmenuView::ShowAt()`.
+  template <typename T = void (*)(MenuHost::InitParams&),
+            typename =
+                std::enable_if_t<std::is_invocable_v<T, MenuHost::InitParams&>>>
+  void ShowSubmenu(
+      SubmenuView* sub_menu = nullptr,
+      T&& adjust_params = [](auto&) {}) {
+    if (!sub_menu) {
+      sub_menu = menu_item()->GetSubmenu();
+    }
+    MenuHost::InitParams params;
+    params.parent = owner();
+    params.bounds = gfx::Rect(GetPreferredSizeForSubmenu(*sub_menu));
+    std::invoke(std::forward<T>(adjust_params), params);
+    sub_menu->ShowAt(params);
+  }
+
   // Adds a menu item having buttons as children and returns it. If
   // `single_child` is true, the hosting menu item has only one child button.
   MenuItemView* AddButtonMenuItems(bool single_child) {
@@ -763,11 +789,7 @@ class MenuControllerTest : public ViewsTestBase,
       button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
       item_view->AddChildView(button);
     }
-    MenuHost::InitParams params;
-    params.parent = owner();
-    params.bounds = menu_item()->bounds();
-    params.do_capture = false;
-    menu_item()->GetSubmenu()->ShowAt(params);
+    ShowSubmenu();
     return item_view;
   }
 
@@ -1671,12 +1693,8 @@ TEST_F(MenuControllerTest, AsynchronousCancelDuringDrag) {
 // Tests that if a menu is destroyed while drag operations are occurring, that
 // the MenuHost does not crash as the drag completes.
 TEST_F(MenuControllerTest, AsynchronousDragHostDeleted) {
+  ShowSubmenu();
   SubmenuView* submenu = menu_item()->GetSubmenu();
-  MenuHost::InitParams params;
-  params.parent = owner();
-  params.bounds = menu_item()->bounds();
-  params.do_capture = false;
-  submenu->ShowAt(params);
   MenuHost* host = GetMenuHost(submenu);
   MenuHostOnDragWillStart(host);
   submenu->Close();
@@ -1715,12 +1733,8 @@ TEST_F(MenuControllerTest, AsycDropCallback) {
 // MenuController has been destroyed. A MenuHostRootView should not attempt to
 // access a destroyed MenuController. This test should not cause a crash.
 TEST_F(MenuControllerTest, HostReceivesInputBeforeDestruction) {
+  ShowSubmenu();
   SubmenuView* submenu = menu_item()->GetSubmenu();
-  MenuHost::InitParams params;
-  params.parent = owner();
-  params.bounds = menu_item()->bounds();
-  params.do_capture = false;
-  submenu->ShowAt(params);
   gfx::Point location(submenu->bounds().bottom_right());
   location.Offset(1, 1);
 
@@ -1762,13 +1776,9 @@ TEST_F(MenuControllerTest, PreserveGestureForOwner) {
   MenuItemView* item = menu_item();
   controller->Run(owner(), nullptr, item, gfx::Rect(),
                   MenuAnchorPosition::kBottomCenter, false, false);
-  SubmenuView* sub_menu = item->GetSubmenu();
-  MenuHost::InitParams params;
-  params.parent = owner();
-  params.bounds = gfx::Rect(0, 0, 100, 100);
-  params.do_capture = true;
-  sub_menu->ShowAt(params);
+  ShowSubmenu();
 
+  SubmenuView* sub_menu = item->GetSubmenu();
   gfx::Point location = sub_menu->GetLocalBounds().bottom_left();
   location.Offset(0, 10);
   ui::GestureEvent event(location.x(), location.y(), 0, ui::EventTimeForNow(),
@@ -1817,14 +1827,11 @@ TEST_F(MenuControllerTest, ForwardsEventsToNativeViewForGestures) {
   controller->Run(owner(), nullptr, item, gfx::Rect(),
                   MenuAnchorPosition::kBottomCenter, false, false,
                   child_window.get());
-  SubmenuView* sub_menu = item->GetSubmenu();
-  MenuHost::InitParams params;
-  params.parent = owner();
-  params.bounds = item->bounds();
-  params.do_capture = false;
-  params.native_view_for_gestures = child_window.get();
-  sub_menu->ShowAt(params);
+  ShowSubmenu(nullptr, [&](auto& params) {
+    params.native_view_for_gestures = child_window.get();
+  });
 
+  SubmenuView* sub_menu = item->GetSubmenu();
   gfx::Point location = sub_menu->GetLocalBounds().bottom_left();
   location.Offset(0, 10);
   ui::GestureEvent event(location.x(), location.y(), 0, ui::EventTimeForNow(),
@@ -1870,13 +1877,8 @@ TEST_F(MenuControllerTest, NoTouchCloseWhenSendingGesturesToOwner) {
   controller->set_send_gesture_events_to_owner(true);
 
   // Show a sub menu and touch outside of it.
-  MenuItemView* item = menu_item();
-  SubmenuView* sub_menu = item->GetSubmenu();
-  MenuHost::InitParams params;
-  params.parent = owner();
-  params.bounds = item->bounds();
-  params.do_capture = false;
-  sub_menu->ShowAt(params);
+  ShowSubmenu();
+  SubmenuView* sub_menu = menu_item()->GetSubmenu();
   gfx::Point location(sub_menu->GetLocalBounds().bottom_right());
   location.Offset(1, 1);
   ui::TouchEvent touch_event(
@@ -1918,12 +1920,8 @@ TEST_F(MenuControllerTest, AsynchronousRepostEvent) {
 
   // Show a sub menu to target with a pointer selection. However have the event
   // occur outside of the bounds of the entire menu.
+  ShowSubmenu();
   SubmenuView* sub_menu = item->GetSubmenu();
-  MenuHost::InitParams params;
-  params.parent = owner();
-  params.bounds = item->bounds();
-  params.do_capture = false;
-  sub_menu->ShowAt(params);
   gfx::Point location(sub_menu->GetLocalBounds().bottom_right());
   location.Offset(1, 1);
   ui::MouseEvent event(ui::ET_MOUSE_PRESSED, location, location,
@@ -1953,13 +1951,8 @@ TEST_F(MenuControllerTest, AsynchronousTouchEventRepostEvent) {
 
   // Show a sub menu to target with a touch event. However have the event occur
   // outside of the bounds of the entire menu.
-  MenuItemView* item = menu_item();
-  SubmenuView* sub_menu = item->GetSubmenu();
-  MenuHost::InitParams params;
-  params.parent = owner();
-  params.bounds = item->bounds();
-  params.do_capture = false;
-  sub_menu->ShowAt(params);
+  ShowSubmenu();
+  SubmenuView* sub_menu = menu_item()->GetSubmenu();
   gfx::Point location(sub_menu->GetLocalBounds().bottom_right());
   location.Offset(1, 1);
   ui::TouchEvent event(ui::ET_TOUCH_PRESSED, location, ui::EventTimeForNow(),
@@ -1992,12 +1985,8 @@ TEST_F(MenuControllerTest, AsynchronousRepostEventDeletesController) {
 
   // Show a sub menu to target with a pointer selection. However have the event
   // occur outside of the bounds of the entire menu.
+  ShowSubmenu();
   SubmenuView* sub_menu = item->GetSubmenu();
-  MenuHost::InitParams params;
-  params.parent = owner();
-  params.bounds = item->bounds();
-  params.do_capture = true;
-  sub_menu->ShowAt(params);
   gfx::Point location(sub_menu->GetLocalBounds().bottom_right());
   location.Offset(1, 1);
   ui::MouseEvent event(ui::ET_MOUSE_PRESSED, location, location,
@@ -2031,16 +2020,9 @@ TEST_F(MenuControllerTest, AsynchronousGestureDeletesController) {
                   MenuAnchorPosition::kTopLeft, false, false);
 
   // Show a sub menu to target with a tap event.
-  SubmenuView* sub_menu = item->GetSubmenu();
-  MenuHost::InitParams params;
-  params.parent = owner();
-  auto size = sub_menu->GetPreferredSize();
-  const auto insets = sub_menu->GetScrollViewContainer()->GetInsets();
-  size.Enlarge(insets.width(), insets.height());
-  params.bounds = gfx::Rect(size);
-  params.do_capture = true;
-  sub_menu->ShowAt(params);
+  ShowSubmenu();
 
+  SubmenuView* sub_menu = item->GetSubmenu();
   gfx::Point location = sub_menu->GetMenuItemAt(0)->bounds().CenterPoint();
   ui::GestureEvent event(location.x(), location.y(), 0, ui::EventTimeForNow(),
                          ui::GestureEventDetails(ui::ET_GESTURE_TAP));
@@ -2553,15 +2535,8 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
   // Setup a submenu. Additionally hook up appropriate Widget and View
   // containers, with bounds, so that hit testing works.
   MenuController* controller = menu_controller();
-  MenuItemView* base_menu = menu_item();
-  base_menu->SetBounds(0, 0, 200, 200);
-  SubmenuView* base_submenu = base_menu->GetSubmenu();
-  base_submenu->SetBounds(0, 0, 200, 200);
-  MenuHost::InitParams params;
-  params.parent = owner();
-  params.bounds = gfx::Rect(0, 0, 200, 200);
-  params.do_capture = false;
-  base_submenu->ShowAt(params);
+  ShowSubmenu();
+  SubmenuView* base_submenu = menu_item()->GetSubmenu();
   GetMenuHost(base_submenu)
       ->SetContentsView(base_submenu->GetScrollViewContainer());
 
@@ -2576,13 +2551,10 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
   SubmenuView* sub_menu_view = sub_menu_item->GetSubmenu();
   const auto insets = sub_menu_view->GetScrollViewContainer()->GetInsets();
   const gfx::Rect bounds(0, 50, 50 + insets.width(), 50 + insets.height());
-  sub_menu_item->SetBoundsRect(bounds);
-  base_submenu->AddChildView(sub_menu_item.get());
-  sub_menu_view->SetBoundsRect(bounds);
-  params.parent = owner();
-  params.bounds = bounds;
-  params.do_capture = false;
-  sub_menu_view->ShowAt(params);
+  // TODO(pkasting): The bounds manipulation in this whole test is suspicious;
+  // understand it more deeply, see why the lambda here is needed and if it can
+  // be removed or any of this test simplified/clarified.
+  ShowSubmenu(sub_menu_view, [&](auto& params) { params.bounds = bounds; });
   GetMenuHost(sub_menu_view)
       ->SetContentsView(sub_menu_view->GetScrollViewContainer());
 
@@ -2604,11 +2576,7 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
                   true, false);
 
   SubmenuView* nested_menu_submenu = nested_menu_item_1->GetSubmenu();
-  nested_menu_submenu->SetBounds(0, 0, 100, 100);
-  params.parent = owner();
-  params.bounds = gfx::Rect(0, 0, 100, 100);
-  params.do_capture = false;
-  nested_menu_submenu->ShowAt(params);
+  ShowSubmenu(nested_menu_submenu);
   GetMenuHost(nested_menu_submenu)
       ->SetContentsView(nested_menu_submenu->GetScrollViewContainer());
 
@@ -2677,11 +2645,7 @@ TEST_F(MenuControllerTest, DragFromViewIntoMenuAndExit) {
 
   auto drag_view = std::make_unique<View>();
   drag_view->SetBoundsRect(gfx::Rect(0, 500, 100, 100));
-  MenuHost::InitParams params;
-  params.parent = owner();
-  params.bounds = gfx::Rect(0, 0, 100, 100);
-  params.do_capture = false;
-  sub_menu->ShowAt(params);
+  ShowSubmenu();
   gfx::Point press_location(drag_view->GetLocalBounds().CenterPoint());
   gfx::Point drag_location(first_item->bounds().CenterPoint());
   gfx::Point release_location(200, 50);
@@ -2716,16 +2680,11 @@ TEST_F(MenuControllerTest, DragFromViewIntoMenuAndExit) {
 // Tests that |MenuHost::InitParams| are correctly forwarded to the created
 // |aura::Window|.
 TEST_F(MenuControllerTest, AuraWindowIsInitializedWithMenuHostInitParams) {
-  SubmenuView* sub_menu = menu_item()->GetSubmenu();
+  ShowSubmenu(nullptr,
+              [](auto& params) { params.menu_type = ui::MenuType::kRootMenu; });
 
-  MenuHost::InitParams params;
-  params.parent = owner();
-  params.bounds = gfx::Rect(0, 0, 100, 100);
-  params.do_capture = false;
-  params.menu_type = ui::MenuType::kRootMenu;
-  sub_menu->ShowAt(params);
-
-  aura::Window* window = sub_menu->GetWidget()->GetNativeWindow();
+  aura::Window* window =
+      menu_item()->GetSubmenu()->GetWidget()->GetNativeWindow();
   EXPECT_EQ(ui::MenuType::kRootMenu,
             window->GetProperty(aura::client::kMenuType));
 }
@@ -2875,14 +2834,7 @@ TEST_F(MenuControllerTest, NoUseAfterFreeWhenMenuCanceledOnMousePress) {
 
   controller->Run(owner(), nullptr, item.get(), item->bounds(),
                   MenuAnchorPosition::kTopLeft, false, false);
-  MenuHost::InitParams params;
-  params.parent = owner();
-  auto size = sub_menu->GetPreferredSize();
-  const auto insets = sub_menu->GetScrollViewContainer()->GetInsets();
-  size.Enlarge(insets.width(), insets.height());
-  params.bounds = gfx::Rect(size);
-  params.do_capture = true;
-  sub_menu->ShowAt(params);
+  ShowSubmenu(sub_menu);
 
   // Simulate a mouse press in the middle of the |closing_widget|.
   const gfx::Point location = canceling_view->bounds().CenterPoint();
@@ -3304,11 +3256,7 @@ class ExecuteCommandWithoutClosingMenuTest : public MenuControllerTest {
     menu_controller()->Run(owner(), nullptr, menu_item(), gfx::Rect(),
                            MenuAnchorPosition::kTopLeft, false, false);
 
-    MenuHost::InitParams params;
-    params.parent = owner();
-    params.bounds = gfx::Rect(0, 0, 100, 100);
-    params.do_capture = false;
-    menu_item()->GetSubmenu()->ShowAt(params);
+    ShowSubmenu();
 
     menu_delegate()->set_should_execute_command_without_closing_menu(true);
   }
