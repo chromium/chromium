@@ -67,16 +67,22 @@ void LayoutNGView::UpdateLayout() {
       chrome_client.GetScreenInfo(frame).device_scale_factor);
 #endif
 
-  is_resizing_initial_containing_block_ =
+  bool is_resizing_initial_containing_block =
       LogicalWidth() != ViewLogicalWidthForBoxSizing() ||
       LogicalHeight() != ViewLogicalHeightForBoxSizing();
   bool invalidate_svg_roots =
       GetDocument().SvgExtensions() && !ShouldUsePrintingLayout() &&
-      (!GetFrameView() || is_resizing_initial_containing_block_);
+      (!GetFrameView() || is_resizing_initial_containing_block);
   if (invalidate_svg_roots) {
     GetDocument()
         .AccessSVGExtensions()
         .InvalidateSVGRootsWithRelativeLengthDescendents();
+  }
+
+  DCHECK(!initial_containing_block_resize_handled_list_);
+  if (is_resizing_initial_containing_block) {
+    initial_containing_block_resize_handled_list_ =
+        MakeGarbageCollected<HeapHashSet<Member<const LayoutObject>>>();
   }
 
   const auto& style = StyleRef();
@@ -88,7 +94,7 @@ void LayoutNGView::UpdateLayout() {
   builder.SetIsFixedBlockSize(true);
 
   NGBlockNode(this).Layout(builder.ToConstraintSpace());
-  is_resizing_initial_containing_block_ = false;
+  initial_containing_block_resize_handled_list_ = nullptr;
 }
 
 AtomicString LayoutNGView::NamedPageAtIndex(wtf_size_t page_index) const {
