@@ -201,30 +201,33 @@ IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SelectionChanged) {
   if (view)
     origin_f = view->TransformPointToRootCoordSpaceF(gfx::PointF());
 
-  gfx::PointF edge_start(kLeft.x() + origin_f.x(), kLeft.y() + origin_f.y());
-  gfx::PointF edge_end(kLeft.x() + origin_f.x(),
-                       kLeft.y() + origin_f.y() + kLeftHeight);
   gfx::SelectionBound expected_start;
-  expected_start.SetEdge(edge_start, edge_end);
-  expected_start.SetVisibleEdge(edge_start, edge_end);
+  {
+    gfx::PointF edge_start(kLeft.x() + origin_f.x(), kLeft.y() + origin_f.y());
+    gfx::PointF edge_end(kLeft.x() + origin_f.x(),
+                         kLeft.y() + origin_f.y() + kLeftHeight);
+    expected_start.SetEdge(edge_start, edge_end);
+    expected_start.SetVisibleEdge(edge_start, edge_end);
+  }
 
-  edge_start =
-      gfx::PointF(kRight.x() + origin_f.x(), kRight.y() + origin_f.y());
-  edge_end = gfx::PointF(kRight.x() + origin_f.x(),
-                         kRight.y() + origin_f.y() + kRightHeight);
   gfx::SelectionBound expected_end;
-  expected_end.SetEdge(edge_start, edge_end);
-  expected_end.SetVisibleEdge(edge_start, edge_end);
+  {
+    gfx::PointF edge_start(kRight.x() + origin_f.x(),
+                           kRight.y() + origin_f.y());
+    gfx::PointF edge_end(kRight.x() + origin_f.x(),
+                         kRight.y() + origin_f.y() + kRightHeight);
+    expected_end.SetEdge(edge_start, edge_end);
+    expected_end.SetVisibleEdge(edge_start, edge_end);
+  }
 
-  bool has_selection = expected_start != expected_end;
-  expected_start.set_visible(has_selection);
-  expected_end.set_visible(has_selection);
-  expected_start.set_type(has_selection ? gfx::SelectionBound::LEFT
-                                        : gfx::SelectionBound::EMPTY);
-  expected_end.set_type(has_selection ? gfx::SelectionBound::RIGHT
-                                      : gfx::SelectionBound::EMPTY);
+  ASSERT_NE(expected_start, expected_end);
 
+  expected_start.set_visible(true);
+  expected_start.set_type(gfx::SelectionBound::LEFT);
   EXPECT_EQ(expected_start, start);
+
+  expected_end.set_visible(true);
+  expected_end.set_type(gfx::SelectionBound::RIGHT);
   EXPECT_EQ(expected_end, end);
 
   gfx::RectF expected_rect(
