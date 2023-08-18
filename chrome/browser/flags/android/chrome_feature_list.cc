@@ -292,6 +292,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRequestDesktopSiteDefaultsLogging,
     &kRestoreTabsOnFRE,
     &kSafeModeForCachedFlags,
+    &kSearchEnginesPromoV3,
     &kShowScrollableMVTOnNTPAndroid,
     &kFeedPositionAndroid,
     &kSearchResumptionModuleAndroid,
@@ -1056,6 +1057,12 @@ BASE_FEATURE(kTrustedWebActivityPostMessage,
 BASE_FEATURE(kResizeOnlyActiveTab,
              "ResizeOnlyActiveTab",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// This feature updates the triggering logic for the default search engine
+// choice promo. See crbug.com/1471643 for more details.
+BASE_FEATURE(kSearchEnginesPromoV3,
+             "SearchEnginesPromoV3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // SpareTab is enabled by default for configuring renderer initialization
 // through field trial. Users of spareTab should declare their own field trial
