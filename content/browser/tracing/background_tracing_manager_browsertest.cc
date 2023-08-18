@@ -1737,13 +1737,7 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest,
   background_tracing_helper.WaitForScenarioIdle();
 }
 
-// TODO(https://crbug.com/1472381): Flaky on Android
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ProtoTraceReceived DISABLED_ProtoTraceReceived
-#else
-#define MAYBE_ProtoTraceReceived ProtoTraceReceived
-#endif
-IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, MAYBE_ProtoTraceReceived) {
+IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ProtoTraceReceived) {
   TestBackgroundTracingHelper background_tracing_helper;
 
   std::unique_ptr<BackgroundTracingConfig> config = CreatePreemptiveConfig();

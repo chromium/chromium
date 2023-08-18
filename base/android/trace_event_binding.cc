@@ -43,7 +43,9 @@ class TraceEnabledObserver : public perfetto::TrackEventSessionObserver {
         args.config->chrome_config().trace_config());
     event_name_filtering_per_session_[args.internal_instance_index] =
         trace_config.IsEventPackageNameFilterEnabled();
+  }
 
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override {
     JNIEnv* env = base::android::AttachCurrentThread();
     base::android::Java_TraceEvent_setEnabled(env, true);
     base::android::Java_TraceEvent_setEventNameFilteringEnabled(
