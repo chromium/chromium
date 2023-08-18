@@ -76,6 +76,7 @@ suite('CookiesPageTest', function() {
     assertFalse(isChildVisible(page, '#clearOnExit'));
 
     assertTrue(isChildVisible(page, '#doNotTrack'));
+    // TODO(b/296212999): Remove after b/296212999 is launched.
     assertTrue(isChildVisible(page, '#preloadingLinkRow'));
 
     assertTrue(isChildVisible(page, '#allowThirdParty'));
@@ -85,6 +86,7 @@ suite('CookiesPageTest', function() {
     assertFalse(isChildVisible(page, '#blockAll'));
   });
 
+  // TODO(b/296212999): Remove after b/296212999 is launched.
   test('PreloadingClickRecorded', async function() {
     const linkRow =
         page.shadowRoot!.querySelector<HTMLElement>('#preloadingLinkRow');
@@ -98,10 +100,9 @@ suite('CookiesPageTest', function() {
     assertEquals(routes.PRELOADING, Router.getInstance().getCurrentRoute());
   });
 
+  // TODO(b/296212999): Remove after b/296212999 is launched.
   test('PreloadingSubLabel', async function() {
     assertTrue(isChildVisible(page, '#preloadingLinkRow'));
-    // TODO(crbug.com/1385176): Remove after crbug.com/1385176 is launched.
-    assertFalse(isChildVisible(page, '#preloadingToggle'));
 
     const preloadingPageLinkRow =
         page.shadowRoot!.querySelector<CrLinkRowElement>('#preloadingLinkRow');
@@ -777,3 +778,29 @@ suite('LacrosSecondaryProfile', function() {
   });
 });
 // </if>
+
+// TODO(b/296212999): Remove after b/296212999 is launched.
+suite('PreloadingSubpageMovedToPerformanceSettings', function() {
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPerformanceSettingsPreloadingSubpageEnabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    flush();
+  });
+
+  test('PreloadingLinkRowNotShown', function() {
+    assertFalse(isChildVisible(page, '#preloadingLinkRow'));
+  });
+});

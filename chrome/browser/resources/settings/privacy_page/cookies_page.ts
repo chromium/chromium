@@ -127,6 +127,12 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
       },
+
+      showPreloadingSubpage_: {
+        type: Boolean,
+        value: () => !loadTimeData.getBoolean(
+            'isPerformanceSettingsPreloadingSubpageEnabled'),
+      },
     };
   }
 
@@ -143,6 +149,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   focusConfig: FocusConfig;
   private enableFirstPartySetsUI_: boolean;
   private isPrivacySandboxSettings4_: boolean;
+  private showPreloadingSubpage_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -159,15 +166,17 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         `${routes.SITE_SETTINGS_ALL.path}_${routes.COOKIES.path}`,
         selectSiteDataLinkRow);
 
-    const selectPreloadingLinkRow = () => {
-      const toFocus =
-          this.shadowRoot!.querySelector<HTMLElement>('#preloadingLinkRow');
-      assert(toFocus);
-      focusWithoutInk(toFocus);
-    };
-    this.focusConfig.set(
-        `${routes.PRELOADING.path}_${routes.COOKIES.path}`,
-        selectPreloadingLinkRow);
+    if (this.showPreloadingSubpage_) {
+      const selectPreloadingLinkRow = () => {
+        const toFocus =
+            this.shadowRoot!.querySelector<HTMLElement>('#preloadingLinkRow');
+        assert(toFocus);
+        focusWithoutInk(toFocus);
+      };
+      this.focusConfig.set(
+          `${routes.PRELOADING.path}_${routes.COOKIES.path}`,
+          selectPreloadingLinkRow);
+    }
   }
 
   override currentRouteChanged(route: Route) {

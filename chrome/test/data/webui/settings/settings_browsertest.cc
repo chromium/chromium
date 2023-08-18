@@ -517,7 +517,7 @@ class SettingsCookiesPageTest : public SettingsBrowserTest {
             privacy_sandbox::kPrivacySandboxSettings4,
             privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
         },
-        {});
+        {features::kPerformanceSettingsPreloadingSubpage});
   }
 
  private:
@@ -563,6 +563,12 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
                        MAYBE_PrivacySandboxSettings4Disabled2) {
   RunTest("settings/cookies_page_test.js",
           "runMochaSuite('PrivacySandboxSettings4Disabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
+                       PreloadingSubpageMovedToPerformanceSettings) {
+  RunTest("settings/cookies_page_test.js",
+          "runMochaSuite('PreloadingSubpageMovedToPerformanceSettings')");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
