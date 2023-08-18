@@ -19,7 +19,7 @@
             description: "Measures the performance of inserting/deleting a new rule into an existing stylesheet.",
             run: function() {
                 let sheet = document.getElementById('sheet').sheet;
-                sheet.insertRule(".doesnotexist { color: red; }");
+                sheet.insertRule(".doesnotexist { color: red; }", 1);
                 forceStyleRecalc(document.body);
                 sheet.deleteRule(1);
                 forceStyleRecalc(document.body);
