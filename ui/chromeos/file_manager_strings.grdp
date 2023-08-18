@@ -1401,7 +1401,7 @@
     Share folder with <ph name="VM_NAME">$1<ex>MyVm</ex></ph>
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA" desc="Confirmation message shown when a user shares the root of a volume such as 'My files' with the VM type codenamed Bruschetta" >
-    Give <ph name="VM_NAME">$1<ex>MyVm</ex></ph> permission to access files in the <ph name="FOLDER_NAME">$1<ex>Downloads</ex></ph> folder
+    Give <ph name="VM_NAME">$1<ex>MyVm</ex></ph> permission to access files in the <ph name="FOLDER_NAME">$2<ex>Downloads</ex></ph> folder
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA_DRIVE" desc="Confirmation message shown when a user shares the root of a Drive volume (My Drive, Team Drives, Computers) with the VM type codenamed Bruschetta.">
     Give <ph name="VM_NAME">$1<ex>MyVm</ex></ph> permission to access files in your Google Drive. Changes will sync to your other devices.
@@ -1409,8 +1409,8 @@
   <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_BRUSCHETTA" desc="Confirmation message shown when a user shares a folder with the VM type codenamed Bruschetta.">
     1 folder shared with <ph name="VM_NAME">$1<ex>MyVm</ex></ph>
   </message>
-  <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_BRUSCHETTA_PLURAL" desc="Confirmation message shown when a user shares more than 1 folder with the VM type codenamed Bruscheta.">
-    <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> folders shared with <ph name="VM_NAME">$1<ex>MyVm</ex></ph>
+  <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_BRUSCHETTA_PLURAL" desc="Confirmation message shown when a user shares more than 1 folder with the VM type codenamed Bruschetta.">
+    <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> folders shared with <ph name="VM_NAME">$2<ex>MyVm</ex></ph>
   </message>
   <message name="IDS_FILE_BROWSER_MESSAGE_FOLDER_SHARED_WITH_CROSTINI" desc="Message shown in FilesApp message bar when a user has shared a folder with the crostini container.">
     This folder is shared with Linux

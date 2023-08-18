@@ -1208,10 +1208,13 @@ void AddStringsForVms(base::Value::Dict* dict) {
   dict->Set("FOLDER_SHARED_WITH_BRUSCHETTA",
             l10n_util::GetStringFUTF16(
                 IDS_FILE_BROWSER_FOLDER_SHARED_WITH_BRUSCHETTA, overall_name));
-  dict->Set(
-      "FOLDER_SHARED_WITH_BRUSCHETTA_PLURAL",
-      l10n_util::GetStringFUTF16(
-          IDS_FILE_BROWSER_FOLDER_SHARED_WITH_BRUSCHETTA_PLURAL, overall_name));
+  // ui/file_manager/file_manager/foreground/js/crostini_controller.js expects
+  // a string with "$1" in it, and the JavaScript code will fill in the number
+  // of folders shared.
+  dict->Set("FOLDER_SHARED_WITH_BRUSCHETTA_PLURAL",
+            l10n_util::GetStringFUTF16(
+                IDS_FILE_BROWSER_FOLDER_SHARED_WITH_BRUSCHETTA_PLURAL, u"$1",
+                overall_name));
   dict->Set(
       "SHARE_WITH_BRUSCHETTA_BUTTON_LABEL",
       l10n_util::GetStringFUTF16(
@@ -1224,10 +1227,11 @@ void AddStringsForVms(base::Value::Dict* dict) {
             l10n_util::GetStringFUTF16(
                 IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA_TITLE,
                 overall_name));
-  dict->Set(
-      "SHARE_ROOT_FOLDER_WITH_BRUSCHETTA",
-      l10n_util::GetStringFUTF16(
-          IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA, overall_name));
+  // As above, the JavaScript code will replace the "$1".
+  dict->Set("SHARE_ROOT_FOLDER_WITH_BRUSCHETTA",
+            l10n_util::GetStringFUTF16(
+                IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA,
+                overall_name, u"$1"));
   dict->Set("SHARE_ROOT_FOLDER_WITH_BRUSCHETTA_DRIVE",
             l10n_util::GetStringFUTF16(
                 IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA_DRIVE,
