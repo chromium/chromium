@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline_options.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
-#include "third_party/blink/renderer/core/animation/view_timeline_attachment.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -298,9 +297,11 @@ ViewTimeline::ViewTimeline(Document* document,
                            Element* subject,
                            ScrollAxis axis,
                            TimelineInset inset)
-    : ScrollTimeline(
-          document,
-          MakeGarbageCollected<ViewTimelineAttachment>(subject, axis, inset)) {}
+    : ScrollTimeline(document,
+                     ReferenceType::kNearestAncestor,
+                     /* reference_element */ subject,
+                     axis),
+      inset_(inset) {}
 
 void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
                                     ScrollOrientation physical_orientation,
@@ -336,7 +337,7 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
     viewport_size = scrollable_area->LayoutContentRect().Height();
   }
 
-  Element* source = CurrentAttachment()->ComputeSourceNoLayout();
+  Element* source = ComputeSourceNoLayout();
   DCHECK(source);
   TimelineInset inset = ResolveAuto(GetInset(), *source, GetAxis());
 
@@ -608,8 +609,7 @@ CSSNumericValue* ViewTimeline::getCurrentTime(const String& rangeName) {
 }
 
 Element* ViewTimeline::subject() const {
-  return CurrentAttachment() ? CurrentAttachment()->GetReferenceElement()
-                             : nullptr;
+  return GetReferenceElement();
 }
 
 bool ViewTimeline::Matches(Element* subject,
@@ -619,20 +619,11 @@ bool ViewTimeline::Matches(Element* subject,
                                /* reference_element */ subject, axis)) {
     return false;
   }
-  const auto* attachment =
-      DynamicTo<ViewTimelineAttachment>(CurrentAttachment());
-  DCHECK(attachment);
-  return attachment->GetInset() == inset;
+  return inset_ == inset;
 }
 
 const TimelineInset& ViewTimeline::GetInset() const {
-  if (const auto* attachment =
-          DynamicTo<ViewTimelineAttachment>(CurrentAttachment())) {
-    return attachment->GetInset();
-  }
-
-  DEFINE_STATIC_LOCAL(TimelineInset, default_inset, ());
-  return default_inset;
+  return inset_;
 }
 
 double ViewTimeline::ToFractionalOffset(

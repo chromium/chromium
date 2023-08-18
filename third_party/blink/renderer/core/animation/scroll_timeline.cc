@@ -7,6 +7,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -73,22 +75,13 @@ ScrollTimeline::ScrollTimeline(Document* document,
                                ReferenceType reference_type,
                                Element* reference,
                                ScrollAxis axis)
-    : ScrollTimeline(
-          document,
-          MakeGarbageCollected<ScrollTimelineAttachment>(reference_type,
-                                                         reference,
-                                                         axis)) {}
-
-ScrollTimeline::ScrollTimeline(Document* document,
-                               ScrollTimelineAttachment* attachment)
-    : ScrollSnapshotTimeline(document) {
-  if (attachment) {
-    attachments_.push_back(attachment);
-  }
-}
+    : ScrollSnapshotTimeline(document),
+      reference_type_(reference_type),
+      reference_element_(reference),
+      axis_(axis) {}
 
 Element* ScrollTimeline::RetainingElement() const {
-  return CurrentAttachment()->GetReferenceElement();
+  return reference_element_;
 }
 
 // TODO(crbug.com/1060384): This section is missing from the spec rewrite.
@@ -174,7 +167,49 @@ void ScrollTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
 }
 
 Element* ScrollTimeline::source() const {
-  return CurrentAttachment() ? CurrentAttachment()->ComputeSource() : nullptr;
+  return ComputeSource();
+}
+
+Element* ScrollTimeline::ComputeSource() const {
+  if (reference_type_ == ReferenceType::kNearestAncestor &&
+      reference_element_) {
+    reference_element_->GetDocument().UpdateStyleAndLayout(
+        DocumentUpdateReason::kJavaScript);
+  }
+  return ComputeSourceNoLayout();
+}
+
+Element* ScrollTimeline::ComputeSourceNoLayout() const {
+  if (reference_type_ == ReferenceType::kSource) {
+    return reference_element_.Get();
+  }
+  DCHECK_EQ(ReferenceType::kNearestAncestor, reference_type_);
+
+  if (!reference_element_) {
+    return nullptr;
+  }
+
+  LayoutObject* layout_object = reference_element_->GetLayoutObject();
+  if (!layout_object) {
+    return nullptr;
+  }
+
+  const LayoutBox* scroll_container =
+      layout_object->ContainingScrollContainer();
+  if (!scroll_container) {
+    return reference_element_->GetDocument().ScrollingElementNoLayout();
+  }
+
+  Node* node = scroll_container->GetNode();
+  if (node->IsElementNode()) {
+    return DynamicTo<Element>(node);
+  }
+  if (node->IsDocumentNode()) {
+    return DynamicTo<Document>(node)->ScrollingElementNoLayout();
+  }
+
+  NOTREACHED();
+  return nullptr;
 }
 
 void ScrollTimeline::AnimationAttached(Animation* animation) {
@@ -194,32 +229,23 @@ void ScrollTimeline::AnimationDetached(Animation* animation) {
 }
 
 Node* ScrollTimeline::ComputeResolvedSource() const {
-  if (!CurrentAttachment()) {
-    return nullptr;
-  }
-  return ResolveSource(CurrentAttachment()->ComputeSourceNoLayout());
+  return ResolveSource(ComputeSourceNoLayout());
 }
 
 void ScrollTimeline::Trace(Visitor* visitor) const {
-  visitor->Trace(attachments_);
+  visitor->Trace(reference_element_);
   ScrollSnapshotTimeline::Trace(visitor);
 }
 
 bool ScrollTimeline::Matches(ReferenceType reference_type,
                              Element* reference_element,
                              ScrollAxis axis) const {
-  const ScrollTimelineAttachment* attachment = CurrentAttachment();
-  DCHECK(attachment);
-  return (attachment->GetReferenceType() == reference_type) &&
-         (attachment->GetReferenceElement() == reference_element) &&
-         (attachment->GetAxis() == axis);
+  return (reference_type_ == reference_type) &&
+         (reference_element_ == reference_element) && (axis_ == axis);
 }
 
 ScrollAxis ScrollTimeline::GetAxis() const {
-  if (const ScrollTimelineAttachment* attachment = CurrentAttachment()) {
-    return attachment->GetAxis();
-  }
-  return ScrollAxis::kBlock;
+  return axis_;
 }
 
 absl::optional<double> ScrollTimeline::GetMaximumScrollPosition() const {
