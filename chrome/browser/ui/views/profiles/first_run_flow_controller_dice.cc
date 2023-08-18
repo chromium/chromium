@@ -385,7 +385,9 @@ void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
       // browser prompt.
       !is_continue_callback &&
       // Check for policies.
-      !IsDefaultBrowserDisabledByPolicy();
+      !IsDefaultBrowserDisabledByPolicy() &&
+      // Some releases cannot be set as default browser.
+      shell_integration::CanSetAsDefaultBrowser();
 
   if (!should_show_default_browser_step) {
     FinishFlowAndRunInBrowser(profile_, std::move(post_host_cleared_callback_));
