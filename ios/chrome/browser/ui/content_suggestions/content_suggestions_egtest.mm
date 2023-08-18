@@ -154,26 +154,45 @@ void TapMoreButtonIfVisible() {
 
 #pragma mark - Setup/Teardown
 
+// TODO(crbug.com/1473705): Test is flaky on device. Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testSetUpListDismissItemsWithSyncToSigninEnabled \
+  FLAKY_testSetUpListDismissItemsWithSyncToSigninEnabled
+#define MAYBE_testSetUpListExpands FLAKY_testSetUpListExpands
+#define MAYBE_testSetUpListDismissItemsWithSyncToSigninDisabled \
+  FLAKY_testSetUpListDismissItemsWithSyncToSigninDisabled
+#define MAYBE_testMagicStackSetUpListCompleteAllItems \
+  FLAKY_testMagicStackSetUpListCompleteAllItems
+#else
+#define MAYBE_testSetUpListDismissItemsWithSyncToSigninEnabled \
+  testSetUpListDismissItemsWithSyncToSigninEnabled
+#define MAYBE_testSetUpListExpands testSetUpListExpands
+#define MAYBE_testSetUpListDismissItemsWithSyncToSigninDisabled \
+  testSetUpListDismissItemsWithSyncToSigninDisabled
+#define MAYBE_testMagicStackSetUpListCompleteAllItems \
+  testMagicStackSetUpListCompleteAllItems
+#endif
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFeedAblation);
   config.features_enabled.push_back(kIOSSetUpList);
   if ([self isRunningTest:@selector
-            (testSetUpListDismissItemsWithSyncToSigninDisabled)] ||
+            (MAYBE_testSetUpListDismissItemsWithSyncToSigninDisabled)] ||
       [self isRunningTest:@selector
             (testSetUpListSigninWithSyncToSigninDisabled)]) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
   if ([self isRunningTest:@selector
-            (testSetUpListDismissItemsWithSyncToSigninEnabled)] ||
+            (MAYBE_testSetUpListDismissItemsWithSyncToSigninEnabled)] ||
       [self isRunningTest:@selector
             (testSetUpListSigninWithSyncToSigninEnabled)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
     config.features_enabled.push_back(kConsistencyNewAccountInterface);
   }
-  if ([self isRunningTest:@selector(testMagicStackSetUpListCompleteAllItems)]) {
+  if ([self isRunningTest:@selector
+            (MAYBE_testMagicStackSetUpListCompleteAllItems)]) {
     config.features_enabled.push_back(kMagicStack);
   } else {
     config.features_disabled.push_back(kMagicStack);
@@ -339,7 +358,7 @@ void TapMoreButtonIfVisible() {
 
 // Tests that the SetUpList can be expanded and unexpanded by touching the
 // "expand" button at the bottom of the list.
-- (void)testSetUpListExpands {
+- (void)MAYBE_testSetUpListExpands {
   [self prepareToTestSetUpList];
 
   id<GREYMatcher> signinItem = grey_accessibilityID(set_up_list::kSignInItemID);
@@ -371,7 +390,7 @@ void TapMoreButtonIfVisible() {
 // Tests that each item opens the appropriate UI flow and that dismissing that
 // UI marks the item complete. Also tests that the "All Set" view appears when
 // all items are complete.
-- (void)testSetUpListDismissItemsWithSyncToSigninDisabled {
+- (void)MAYBE_testSetUpListDismissItemsWithSyncToSigninDisabled {
   [self prepareToTestSetUpList];
 
   // Tap the signin item.
@@ -437,7 +456,7 @@ void TapMoreButtonIfVisible() {
 // Tests that each item opens the appropriate UI flow and that dismissing that
 // UI marks the item complete. Also tests that the "All Set" view appears when
 // all items are complete.
-- (void)testSetUpListDismissItemsWithSyncToSigninEnabled {
+- (void)MAYBE_testSetUpListDismissItemsWithSyncToSigninEnabled {
   [self prepareToTestSetUpList];
 
   // Tap the signin item.
@@ -591,7 +610,7 @@ void TapMoreButtonIfVisible() {
   [[EarlGrey selectElementWithMatcher:syncView] assertWithMatcher:grey_nil()];
 }
 
-- (void)testMagicStackSetUpListCompleteAllItems {
+- (void)MAYBE_testMagicStackSetUpListCompleteAllItems {
   [self prepareToTestSetUpListInMagicStack];
 
   // Tap the signin item.
