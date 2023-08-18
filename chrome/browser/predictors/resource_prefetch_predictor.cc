@@ -812,8 +812,9 @@ void ResourcePrefetchPredictor::LearnLcpp(
 
     // Now we have one free space to store a new lcp_element_locator.
     // (`SumOfFrequency()` takes time. Hence `DCHECK_LE` is used.)
+    // Adds `1e-5` to avoid floating point errors.
     DCHECK_LE(1 + SumOfFrequency(histogram, other_bucket_frequency),
-              kSlidingWindowSize);
+              kSlidingWindowSize + 1e-5);
 
     // Store new lcp_element_locator.
     {
