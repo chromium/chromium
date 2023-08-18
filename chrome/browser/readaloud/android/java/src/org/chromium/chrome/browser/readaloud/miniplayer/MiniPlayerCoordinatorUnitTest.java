@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.readaloud.miniplayer;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -27,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.readaloud.PlayerState;
 import org.chromium.chrome.browser.readaloud.R;
 import org.chromium.chrome.browser.readaloud.miniplayer.MiniPlayerCoordinator.Observer;
 
@@ -104,5 +106,19 @@ public class MiniPlayerCoordinatorUnitTest {
         mExpandCaptor.getValue().onClick(mTitleAndPublisherView);
 
         verify(mObserver, times(1)).onExpandRequested();
+    }
+
+    @Test
+    public void testDismissWhenNeverShown() {
+        // Check that methods depending on the mediator don't crash when it's null.
+        assertEquals(PlayerState.GONE, mCoordinator.getState());
+        mCoordinator.dismiss(false);
+    }
+
+    @Test
+    public void testShowDismiss() {
+        mCoordinator.show(/*animate=*/false, /*playback=*/null);
+        mCoordinator.dismiss(/*animate=*/false);
+        assertEquals(PlayerState.GONE, mCoordinator.getState());
     }
 }

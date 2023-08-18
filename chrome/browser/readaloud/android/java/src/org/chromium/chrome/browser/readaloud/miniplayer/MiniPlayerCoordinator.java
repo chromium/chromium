@@ -96,6 +96,9 @@ public class MiniPlayerCoordinator {
      * Returns the mini player visibility state.
      */
     public @PlayerState int getState() {
+        if (mMediator == null) {
+            return PlayerState.GONE;
+        }
         return mMediator.getState();
     }
 
@@ -105,6 +108,9 @@ public class MiniPlayerCoordinator {
      *         instantly disappear (though web contents resizing may lag behind).
      */
     public void dismiss(boolean animate) {
+        if (mMediator == null) {
+            return;
+        }
         mMediator.dismiss(animate);
     }
 }
