@@ -18,6 +18,7 @@ import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.FrameLayout;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ThreadUtils;
@@ -32,6 +33,7 @@ import org.chromium.url.GURL;
  * This class also serves a secondary function of routing certain callbacks from the content layer
  * to specific listener interfaces.
  */
+@Lifetime.WebView
 class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     private static final String TAG = "AwWebContentsDelegateAdapter";
 

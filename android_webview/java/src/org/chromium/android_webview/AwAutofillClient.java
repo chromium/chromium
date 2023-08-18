@@ -7,6 +7,7 @@ package org.chromium.android_webview;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -21,9 +22,9 @@ import org.chromium.ui.DropdownItem;
  * Java counterpart to the AwAutofillClient. This class is owned by AwContents and has
  * a weak reference from native side.
  */
+@Lifetime.WebView
 @JNINamespace("android_webview")
 public class AwAutofillClient {
-
     private final long mNativeAwAutofillClient;
     private AutofillPopup mAutofillPopup;
     private Context mContext;

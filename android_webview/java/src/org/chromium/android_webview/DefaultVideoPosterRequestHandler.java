@@ -7,6 +7,7 @@ package org.chromium.android_webview;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -25,6 +26,7 @@ import java.util.Random;
  * The shouldInterceptRequest is used to get the default video poster, if the url is
  * the mDefaultVideoPosterURL.
  */
+@Lifetime.WebView
 public class DefaultVideoPosterRequestHandler {
     private static InputStream getInputStream(final AwContentsClient contentClient)
             throws IOException {

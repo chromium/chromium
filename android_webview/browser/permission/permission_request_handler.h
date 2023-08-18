@@ -26,6 +26,7 @@ class PermissionRequestHandlerClient;
 // requests.
 // It is owned by AwContents and has 1x1 mapping to AwContents. All methods
 // are running on UI thread.
+// Lifetime: WebView
 class PermissionRequestHandler : public content::WebContentsObserver {
  public:
   PermissionRequestHandler(PermissionRequestHandlerClient* client,

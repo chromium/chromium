@@ -13,7 +13,7 @@
 #include "printing/print_settings.h"
 
 namespace android_webview {
-
+// Lifetime: WebView
 class AwPrintManager : public printing::PrintManager,
     public content::WebContentsUserData<AwPrintManager> {
  public:

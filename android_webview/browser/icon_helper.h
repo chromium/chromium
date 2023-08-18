@@ -25,6 +25,7 @@ class Size;
 namespace android_webview {
 
 // A helper that observes favicon changes for Webview.
+// Lifetime: WebView
 class IconHelper : public content::WebContentsObserver {
  public:
   class Listener {

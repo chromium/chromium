@@ -17,6 +17,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.content_public.browser.ActionModeCallback;
@@ -27,6 +28,7 @@ import org.chromium.content_public.browser.WebContents;
 /**
  * A class that handles selection action mode for Android WebView.
  */
+@Lifetime.WebView
 public class AwActionModeCallback extends ActionModeCallback {
     private final Context mContext;
     private final AwContents mAwContents;
