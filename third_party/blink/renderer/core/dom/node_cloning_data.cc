@@ -16,7 +16,7 @@ void NodeCloningData::Finalize() {
     return;
   }
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  DCHECK(NodeMoveScope::InScope());
+  DCHECK(NodeMoveScope::InScope() || part_queue_.empty());
   for (auto part : part_queue_) {
     if (!part->IsValid()) {
       // Only valid parts are cloned.

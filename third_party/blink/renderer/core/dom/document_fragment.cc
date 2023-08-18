@@ -101,6 +101,9 @@ DocumentPartRoot& DocumentFragment::getPartRoot() {
   CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   if (!document_part_root_) {
     document_part_root_ = MakeGarbageCollected<DocumentPartRoot>(*this);
+    // We use the existence of the Document's part root to signal the existence
+    // of Parts. So retrieve it here.
+    GetDocument().getPartRoot();
   }
   return *document_part_root_;
 }

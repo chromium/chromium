@@ -84,8 +84,7 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
     node = node->nextSibling();
     CHECK(node) << "IsValid should detect invalid siblings";
   }
-  NodeMoveScope node_move_scope(*new_parent,
-                                NodeMoveScopeType::kAppendAfterAllChildren);
+  NodeMoveScope node_move_scope(*new_parent, NodeMoveScopeType::kClone);
   data.Finalize();
   ChildNodePart* part_root =
       static_cast<ChildNodePart*>(data.ClonedPartRootFor(*this));

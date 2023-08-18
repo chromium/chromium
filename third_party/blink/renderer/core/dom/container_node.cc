@@ -416,8 +416,7 @@ Node* ContainerNode::InsertBefore(Node* new_child,
   NodeVector targets;
   DOMTreeMutationDetector detector(*new_child, *this);
   NodeMoveScope node_move_scope(
-      *this, ref_child->parentElement() &&
-                     ref_child->parentElement()->firstChild() == ref_child
+      *this, firstChild() == ref_child
                  ? NodeMoveScopeType::kInsertBeforeAllChildren
                  : NodeMoveScopeType::kOther);
   if (!CollectChildrenAndRemoveFromOldParent(*new_child, targets,
@@ -610,8 +609,7 @@ Node* ContainerNode::ReplaceChild(Node* new_child,
     DOMTreeMutationDetector detector(*new_child, *this);
     NodeMoveScope node_move_scope(
         *this, !next ? NodeMoveScopeType::kAppendAfterAllChildren
-                     : (next->parentElement() &&
-                                next->parentElement()->firstChild() == next
+                     : (firstChild() == next
                             ? NodeMoveScopeType::kInsertBeforeAllChildren
                             : NodeMoveScopeType::kOther));
     if (!CollectChildrenAndRemoveFromOldParent(*new_child, targets,

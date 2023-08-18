@@ -16,15 +16,14 @@
 namespace blink {
 
 enum class NodeMoveScopeType {
+  kOther = 0,
   kInsertBeforeAllChildren,
   kAppendAfterAllChildren,
-  kOther,
+  kClone,
 };
 
 class NodeMoveScopeItem : public GarbageCollected<NodeMoveScopeItem> {
  public:
-  // This likely needs to set all_parts_lists_clean_ to false if any
-  // mutation events have listeners. Or something like that.
   NodeMoveScopeItem(Node& destination_root, NodeMoveScopeType type)
       : destination_root_(destination_root),
         all_parts_lists_clean_(type != NodeMoveScopeType::kOther &&
@@ -85,7 +84,11 @@ class NodeMoveScope {
       return;
     }
     DCHECK(IsMainThread());
-    document_ = &destination_root.GetDocument();
+    auto* document = &destination_root.GetDocument();
+    if (!document->DOMPartsInUse() && type != NodeMoveScopeType::kClone) {
+      return;
+    }
+    document_ = document;
     current_item_ =
         MakeGarbageCollected<NodeMoveScopeItem>(destination_root, type);
     document_->NodeMoveScopeItems().push_back(current_item_);
@@ -98,6 +101,9 @@ class NodeMoveScope {
       return;
     }
     DCHECK(IsMainThread());
+    if (!InScope()) {
+      return;
+    }
     if (document_) {
       DCHECK(current_item_);
       DCHECK_EQ(document_->NodeMoveScopeItems().back(), current_item_);
@@ -111,7 +117,10 @@ class NodeMoveScope {
     }
   }
 
-  static bool InScope() { return current_item_; }
+  static bool InScope() {
+    DCHECK_EQ(!document_, !current_item_);
+    return current_item_;
+  }
 
   static Node* GetDestinationTreeRoot() {
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
@@ -128,7 +137,6 @@ class NodeMoveScope {
     }
     DCHECK(IsMainThread());
     if (!InScope()) {
-      NOTREACHED() << "We should always be inside a NodeMoveScope here";
       return;
     }
     current_item_->SetCurrentNodeBeingRemoved(node);

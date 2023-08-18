@@ -1618,6 +1618,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // https://crbug.com/1453291
   // The DOM Parts API: https://github.com/tbondwilkinson/dom-parts.
   DocumentPartRoot& getPartRoot();
+  DocumentPartRoot& EnsureDocumentPartRoot();
+  bool DOMPartsInUse() const { return document_part_root_; }
 
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().

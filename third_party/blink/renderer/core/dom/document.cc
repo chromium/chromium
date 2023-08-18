@@ -2488,6 +2488,10 @@ CSSToggleInference& Document::EnsureCSSToggleInference() {
 }
 
 DocumentPartRoot& Document::getPartRoot() {
+  return EnsureDocumentPartRoot();
+}
+
+DocumentPartRoot& Document::EnsureDocumentPartRoot() {
   CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   if (!document_part_root_) {
     document_part_root_ = MakeGarbageCollected<DocumentPartRoot>(*this);
