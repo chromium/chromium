@@ -242,9 +242,7 @@ void AuthSessionAuthenticator::DoCompleteLogin(
   }
   DCHECK(!user_exists || !ephemeral);
   LOGIN_LOG(EVENT) << "Regular user CompleteLogin " << user_exists;
-  const bool challenge_response_auth =
-      !context->GetChallengeResponseKeys().empty();
-  const bool has_password = !context->GetKey()->GetSecret().empty();
+  bool challenge_response_auth = !context->GetChallengeResponseKeys().empty();
   std::vector<AuthOperation> steps;
   if (!user_exists) {
     if (safe_mode_delegate_->IsSafeMode()) {
@@ -277,22 +275,18 @@ void AuthSessionAuthenticator::DoCompleteLogin(
       steps.push_back(
           base::BindOnce(&AuthFactorEditor::AddContextChallengeResponseKey,
                          auth_factor_editor_->AsWeakPtr()));
-      steps.push_back(
-          base::BindOnce(&AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
-                         weak_factory_.GetWeakPtr()));
-    } else if (has_password) {
+    } else {
       steps.push_back(base::BindOnce(&AuthFactorEditor::AddContextKnowledgeKey,
                                      auth_factor_editor_->AsWeakPtr()));
-      steps.push_back(
-          base::BindOnce(&AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
-                         weak_factory_.GetWeakPtr()));
     }
     // In addition to factors suitable for authentication, fetch a set of
     // supported factor types for new users.
     steps.push_back(
         base::BindOnce(&AuthFactorEditor::GetAuthFactorsConfiguration,
                        auth_factor_editor_->AsWeakPtr()));
-
+    steps.push_back(
+        base::BindOnce(&AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
+                       weak_factory_.GetWeakPtr()));
   } else {  // existing user
     if (!challenge_response_auth) {
       // We are sure that password is correct, so intercept authentication

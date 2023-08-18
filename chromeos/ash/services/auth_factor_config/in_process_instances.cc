@@ -17,34 +17,30 @@ namespace ash::auth {
 
 namespace {
 
-AuthFactorConfig& GetAuthFactorConfigImpl(QuickUnlockStorageDelegate& delegate,
-                                          PrefService* local_state) {
-  static base::NoDestructor<AuthFactorConfig> auth_factor_config{&delegate,
-                                                                 local_state};
+AuthFactorConfig& GetAuthFactorConfigImpl(
+    QuickUnlockStorageDelegate& delegate) {
+  static base::NoDestructor<AuthFactorConfig> auth_factor_config{&delegate};
   return *auth_factor_config;
 }
 
 RecoveryFactorEditor& GetRecoveryFactorEditorImpl(
-    QuickUnlockStorageDelegate& delegate,
-    PrefService* local_state) {
+    QuickUnlockStorageDelegate& delegate) {
   static base::NoDestructor<RecoveryFactorEditor> recovery_factor_editor(
-      &GetAuthFactorConfigImpl(delegate, local_state), &delegate);
+      &GetAuthFactorConfigImpl(delegate), &delegate);
   return *recovery_factor_editor;
 }
 
 PinFactorEditor& GetPinFactorEditorImpl(QuickUnlockStorageDelegate& storage,
-                                        PrefService* local_state,
                                         PinBackendDelegate& pin_backend) {
   static base::NoDestructor<PinFactorEditor> pin_factor_editor(
-      &GetAuthFactorConfigImpl(storage, local_state), &pin_backend, &storage);
+      &GetAuthFactorConfigImpl(storage), &pin_backend, &storage);
   return *pin_factor_editor;
 }
 
 PasswordFactorEditor& GetPasswordFactorEditorImpl(
-    QuickUnlockStorageDelegate& storage,
-    PrefService* local_state) {
+    QuickUnlockStorageDelegate& storage) {
   static base::NoDestructor<PasswordFactorEditor> password_factor_editor(
-      &GetAuthFactorConfigImpl(storage, local_state), &storage);
+      &GetAuthFactorConfigImpl(storage), &storage);
   return *password_factor_editor;
 }
 
@@ -52,47 +48,38 @@ PasswordFactorEditor& GetPasswordFactorEditorImpl(
 
 void BindToAuthFactorConfig(
     mojo::PendingReceiver<mojom::AuthFactorConfig> receiver,
-    QuickUnlockStorageDelegate& delegate,
-    PrefService* local_state) {
-  GetAuthFactorConfigImpl(delegate, local_state)
-      .BindReceiver(std::move(receiver));
+    QuickUnlockStorageDelegate& delegate) {
+  GetAuthFactorConfigImpl(delegate).BindReceiver(std::move(receiver));
 }
 
 mojom::AuthFactorConfig& GetAuthFactorConfig(
-    QuickUnlockStorageDelegate& delegate,
-    PrefService* local_state) {
-  return GetAuthFactorConfigImpl(delegate, local_state);
+    QuickUnlockStorageDelegate& delegate) {
+  return GetAuthFactorConfigImpl(delegate);
 }
 
 void BindToRecoveryFactorEditor(
     mojo::PendingReceiver<mojom::RecoveryFactorEditor> receiver,
-    QuickUnlockStorageDelegate& delegate,
-    PrefService* local_state) {
-  GetRecoveryFactorEditorImpl(delegate, local_state)
-      .BindReceiver(std::move(receiver));
+    QuickUnlockStorageDelegate& delegate) {
+  GetRecoveryFactorEditorImpl(delegate).BindReceiver(std::move(receiver));
 }
 
 mojom::RecoveryFactorEditor& GetRecoveryFactorEditor(
-    QuickUnlockStorageDelegate& delegate,
-    PrefService* local_state) {
-  return GetRecoveryFactorEditorImpl(delegate, local_state);
+    QuickUnlockStorageDelegate& delegate) {
+  return GetRecoveryFactorEditorImpl(delegate);
 }
 
 void BindToPinFactorEditor(
     mojo::PendingReceiver<mojom::PinFactorEditor> receiver,
     QuickUnlockStorageDelegate& storage,
-    PrefService* local_state,
     PinBackendDelegate& pin_backend) {
-  GetPinFactorEditorImpl(storage, local_state, pin_backend)
+  GetPinFactorEditorImpl(storage, pin_backend)
       .BindReceiver(std::move(receiver));
 }
 
 void BindToPasswordFactorEditor(
     mojo::PendingReceiver<mojom::PasswordFactorEditor> receiver,
-    QuickUnlockStorageDelegate& storage,
-    PrefService* local_state) {
-  GetPasswordFactorEditorImpl(storage, local_state)
-      .BindReceiver(std::move(receiver));
+    QuickUnlockStorageDelegate& storage) {
+  GetPasswordFactorEditorImpl(storage).BindReceiver(std::move(receiver));
 }
 
 }  // namespace ash::auth

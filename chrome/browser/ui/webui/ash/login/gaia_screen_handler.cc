@@ -819,13 +819,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
         LoginDisplayHost::default_host()->CompleteLogin(*user_context);
       });
 
-  const bool confirm_saml_password =
-      using_saml && password.empty() && !IsSamlUserPasswordless();
-  const bool need_password_gaia =
-      !using_saml && password.empty() &&
-      !ash::features::AreLocalPasswordsEnabledForConsumers();
-
-  if (confirm_saml_password || need_password_gaia) {
+  if (password.empty() && !IsSamlUserPasswordless()) {
     CHECK_NE(scraped_saml_passwords.size(), 1u);
     complete_login_callback = base::BindOnce(
         &GaiaScreenHandler::SAMLConfirmPassword, weak_factory_.GetWeakPtr(),
