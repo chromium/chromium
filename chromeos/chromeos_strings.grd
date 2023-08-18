@@ -4060,6 +4060,10 @@
             that includes a top row key but does not include the search key">
           Shortcut with top row keys need to include the search key.
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_NON_SEARCH_SHORTCUT_WARNING"
+            desc="The status (warning) message that displays when user attempts to input a shortcut that does not include the search/meta key.">
+          Shortcut without search key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the search key.
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS" desc="Text description of a search that has no results.">
           No search results found
         </message>

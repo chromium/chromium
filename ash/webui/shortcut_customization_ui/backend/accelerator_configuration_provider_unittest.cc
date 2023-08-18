@@ -14,6 +14,7 @@
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
@@ -1475,7 +1476,8 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorBadSource) {
 TEST_F(AcceleratorConfigurationProviderTest, AddSameAccelerator) {
   // Initialize default accelerators.
   const AcceleratorData test_data[] = {
-      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
+       ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
        AcceleratorAction::kToggleMirrorMode},
   };
 
@@ -1485,7 +1487,8 @@ TEST_F(AcceleratorConfigurationProviderTest, AddSameAccelerator) {
   base::RunLoop().RunUntilIdle();
 
   AcceleratorResultDataPtr result;
-  const ui::Accelerator accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN);
+  const ui::Accelerator accelerator(ui::VKEY_SPACE,
+                                    ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN);
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh,
@@ -1559,7 +1562,8 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorExceedsMaximum) {
 
   AcceleratorResultDataPtr result;
   // Attempting to add a 6th accelerator will result in an error.
-  const ui::Accelerator accelerator(ui::VKEY_M, ui::EF_CONTROL_DOWN);
+  const ui::Accelerator accelerator(ui::VKEY_M,
+                                    ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN);
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh,
@@ -1594,7 +1598,8 @@ TEST_F(AcceleratorConfigurationProviderTest,
   AcceleratorResultDataPtr result;
   // Attempting to add a 6th accelerator should be okay since there are
   // only 4 active accelerators for `kToggleAppList`.
-  const ui::Accelerator accelerator(ui::VKEY_M, ui::EF_CONTROL_DOWN);
+  const ui::Accelerator accelerator(ui::VKEY_M,
+                                    ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN);
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh,
@@ -1604,7 +1609,8 @@ TEST_F(AcceleratorConfigurationProviderTest,
 
   // Attempting to add a 7th accelerator will result to an error since there are
   // 5 active accelerators for `kToggleAppList`.
-  const ui::Accelerator accelerator2(ui::VKEY_E, ui::EF_CONTROL_DOWN);
+  const ui::Accelerator accelerator2(ui::VKEY_E,
+                                     ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN);
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh,
@@ -1667,7 +1673,8 @@ TEST_F(AcceleratorConfigurationProviderTest,
   AcceleratorResultDataPtr result;
   // Attempting to add a 6th accelerator should be okay since there are
   // only 4 active accelerators for `kToggleAppList`.
-  const ui::Accelerator accelerator(ui::VKEY_M, ui::EF_CONTROL_DOWN);
+  const ui::Accelerator accelerator(ui::VKEY_M,
+                                    ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN);
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh,
@@ -1677,7 +1684,8 @@ TEST_F(AcceleratorConfigurationProviderTest,
 
   // Attempting to add a 7th accelerator will result to an error since there are
   // 5 active accelerators for `kToggleAppList`.
-  const ui::Accelerator accelerator2(ui::VKEY_E, ui::EF_CONTROL_DOWN);
+  const ui::Accelerator accelerator2(ui::VKEY_E,
+                                     ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN);
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh,
@@ -1829,6 +1837,15 @@ TEST_F(AcceleratorConfigurationProviderTest, AddHiddenAccelerator) {
   const ui::Accelerator hidden_accelerator(
       ui::VKEY_U, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
   AcceleratorResultDataPtr result;
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh,
+                          AcceleratorAction::kToggleMirrorMode,
+                          hidden_accelerator, &result);
+
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kNonSearchAcceleratorWarning,
+            result->result);
+
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh,
@@ -2030,7 +2047,128 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorConflictOverride) {
                                updated_test_data, actual_config);
 }
 
-TEST_F(AcceleratorConfigurationProviderTest, ReplaceBadSourceOrAction) {
+TEST_F(AcceleratorConfigurationProviderTest, AddNonSearchAccelerator) {
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       kToggleMirrorMode},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  AcceleratorResultDataPtr result;
+  const ui::Accelerator accelerator(ui::VKEY_K,
+                                    ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+
+  // Attempting to input a non-search accelerator will result in an error.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
+                          accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kNonSearchAcceleratorWarning,
+            result->result);
+
+  // Re-input the accelerator, expect success.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
+                          accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
+}
+
+TEST_F(AcceleratorConfigurationProviderTest,
+       AddWithConflictAndThenNonSearchAccelerator) {
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       kToggleMirrorMode},
+      {/*trigger_on_press=*/true, ui::VKEY_K,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, kToggleCalendar},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  AcceleratorResultDataPtr result;
+  const ui::Accelerator accelerator(ui::VKEY_K,
+                                    ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+
+  // Upon first input: expect a conflict error that is overrideable.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
+                          accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kConflictCanOverride,
+            result->result);
+
+  // Re-input the accelerator to confirm the override but now expect a warning
+  // for using a non-search accelerator.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
+                          accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kNonSearchAcceleratorWarning,
+            result->result);
+
+  // Re-input the accelerator again and expect success.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
+                          accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
+}
+
+TEST_F(AcceleratorConfigurationProviderTest,
+       ReplaceWithConflictAndThenNonSearchAccelerator) {
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       kToggleMirrorMode},
+      {/*trigger_on_press=*/true, ui::VKEY_K,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, kToggleCalendar},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  AcceleratorResultDataPtr result;
+  const ui::Accelerator old_accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN);
+  const ui::Accelerator new_accelerator(ui::VKEY_K,
+                                        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+
+  // Upon first input: expect a conflict error that is overridable.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
+                              AcceleratorAction::kToggleMirrorMode,
+                              old_accelerator, new_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kConflictCanOverride,
+            result->result);
+
+  // Re-input the accelerator to confirm the override but now expect a warning
+  // for using a non-search accelerator.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
+                              AcceleratorAction::kToggleMirrorMode,
+                              old_accelerator, new_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kNonSearchAcceleratorWarning,
+            result->result);
+
+  // Re-input the accelerator again and expect success.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
+                              AcceleratorAction::kToggleMirrorMode,
+                              old_accelerator, new_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, ReplaceWithNonSearchAccelerator) {
   FakeAcceleratorsUpdatedMojoObserver observer;
   SetUpObserver(&observer);
 
@@ -2048,6 +2186,44 @@ TEST_F(AcceleratorConfigurationProviderTest, ReplaceBadSourceOrAction) {
   AcceleratorResultDataPtr result;
   const ui::Accelerator old_accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN);
   const ui::Accelerator new_accelerator(ui::VKEY_M, ui::EF_ALT_DOWN);
+
+  // Attempt to replace with a non-search accelerator, expect an error.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
+                              AcceleratorAction::kToggleMirrorMode,
+                              old_accelerator, new_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kNonSearchAcceleratorWarning,
+            result->result);
+
+  // Re-input the same accelerator, confirming the change.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
+                              AcceleratorAction::kToggleMirrorMode,
+                              old_accelerator, new_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, ReplaceBadSourceOrAction) {
+  FakeAcceleratorsUpdatedMojoObserver observer;
+  SetUpObserver(&observer);
+
+  // Initialize default accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleMirrorMode},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  AcceleratorResultDataPtr result;
+  const ui::Accelerator old_accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN);
+  const ui::Accelerator new_accelerator(ui::VKEY_M,
+                                        ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   // Browser is a locked source.
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
@@ -2167,7 +2343,8 @@ TEST_F(AcceleratorConfigurationProviderTest,
   AcceleratorResultDataPtr result;
   // The accelerator does not specify key_state will be default to PRESSED.
   const ui::Accelerator old_accelerator(ui::VKEY_LWIN, ui::EF_NONE);
-  const ui::Accelerator new_accelerator(ui::VKEY_M, ui::EF_ALT_DOWN);
+  const ui::Accelerator new_accelerator(ui::VKEY_M,
+                                        ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
@@ -2206,7 +2383,8 @@ TEST_F(AcceleratorConfigurationProviderTest, ReplaceDefaultAccelerator) {
 
   AcceleratorResultDataPtr result;
   const ui::Accelerator old_accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN);
-  const ui::Accelerator new_accelerator(ui::VKEY_M, ui::EF_ALT_DOWN);
+  const ui::Accelerator new_accelerator(ui::VKEY_M,
+                                        ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
@@ -2219,7 +2397,8 @@ TEST_F(AcceleratorConfigurationProviderTest, ReplaceDefaultAccelerator) {
   const AcceleratorData updated_test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kToggleMirrorMode},
-      {/*trigger_on_press=*/true, ui::VKEY_M, ui::EF_ALT_DOWN,
+      {/*trigger_on_press=*/true, ui::VKEY_M,
+       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN,
        AcceleratorAction::kToggleMirrorMode},
   };
 
@@ -2256,7 +2435,8 @@ TEST_F(AcceleratorConfigurationProviderTest, ReplaceAcceleratorDoesNotExist) {
 
   AcceleratorResultDataPtr result;
   const ui::Accelerator old_accelerator(ui::VKEY_J, ui::EF_CONTROL_DOWN);
-  const ui::Accelerator new_accelerator(ui::VKEY_M, ui::EF_ALT_DOWN);
+  const ui::Accelerator new_accelerator(ui::VKEY_M,
+                                        ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
@@ -2316,7 +2496,8 @@ TEST_F(AcceleratorConfigurationProviderTest, AddThenReplaceAccelerator) {
   base::RunLoop().RunUntilIdle();
 
   AcceleratorResultDataPtr result;
-  const ui::Accelerator accelerator(ui::VKEY_M, ui::EF_ALT_DOWN);
+  const ui::Accelerator accelerator(ui::VKEY_M,
+                                    ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh,
@@ -2327,7 +2508,8 @@ TEST_F(AcceleratorConfigurationProviderTest, AddThenReplaceAccelerator) {
   const AcceleratorData updated_test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kToggleMirrorMode},
-      {/*trigger_on_press=*/true, ui::VKEY_M, ui::EF_ALT_DOWN,
+      {/*trigger_on_press=*/true, ui::VKEY_M,
+       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN,
        AcceleratorAction::kToggleMirrorMode},
   };
 
@@ -2395,6 +2577,15 @@ TEST_F(AcceleratorConfigurationProviderTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MIRROR_MODE),
             result->shortcut_name);
+
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
+                              AcceleratorAction::kToggleCalendar,
+                              old_accelerator, new_accelerator, &result);
+
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kNonSearchAcceleratorWarning,
+            result->result);
 
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())

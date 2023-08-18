@@ -409,6 +409,12 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         this.hasError = true;
         return;
       }
+      case AcceleratorConfigResult.kNonSearchAcceleratorWarning: {
+        // TODO(jimmyxgong): Add the "Learn More" link when available.
+        this.statusMessage = this.i18n('warningSearchNotIncluded');
+        this.hasError = true;
+        return;
+      }
       case AcceleratorConfigResult.kSuccess: {
         this.fireUpdateEvent();
         return;
