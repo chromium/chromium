@@ -245,6 +245,10 @@
     opacity: 1;
     transition-delay: 0s;
   }
+
+  :host-context([chrome-refresh-2023]) #dialogContent {
+    height: 160px;
+  }
 </style>
 <div id="container" hidden$="[[!visible_]]"
     style="--tile-background-color: [[rgbaOrInherit_(theme.backgroundColor)]];
@@ -291,7 +295,7 @@
   </cr-button>
   <cr-dialog id="dialog" on-close="onDialogClose_">
     <div slot="title">[[dialogTitle_]]</div>
-    <div slot="body">
+    <div slot="body" id="dialogContent">
       <cr-input id="dialogInputName" label="[[i18n('nameField')]]"
           value="{{dialogTileTitle_}}" spellcheck="false" autofocus></cr-input>
       <cr-input id="dialogInputUrl" label="[[i18n('urlField')]]"
