@@ -23,6 +23,7 @@
   NSCursor* __strong _cursor;
   absl::optional<float> _aspectRatio;
   gfx::Size _excludedMargin;
+  BOOL _updatedWindowTitleAfterFirstMiniaturization;
 
   // Only valid during a live resize.
   // Used to keep track of whether a resize is happening horizontally or
@@ -215,6 +216,26 @@
 - (void)windowDidMiniaturize:(NSNotification*)notification {
   _parent->host()->OnWindowMiniaturizedChanged(true);
   _parent->OnVisibilityChanged();
+
+  // When windows are miniaturized on session restore, they appear just fine
+  // in the Dock but are absent from the Window menu. It's unclear why this
+  // is happening, but my guess is it's something to do with how early in
+  // the launch process the miniaturization is taking place / funky
+  // interaction with remote_cocoa. When a window changes its title, the
+  // AppKit rebuilds the Window menu, so the workaround is to make sure that
+  // when a window is miniaturized for the first time, we force a window title
+  // update.
+  //
+  // This code will get triggered for any window the first time it's
+  // miniaturized, even ones that weren't created by session restore. However,
+  // this code will run at most one time, and it's harmless.
+  if (!_updatedWindowTitleAfterFirstMiniaturization) {
+    NSWindow* window = _parent->ns_window();
+    NSString* title = window.title;
+    window.title = @"";
+    window.title = title;
+    _updatedWindowTitleAfterFirstMiniaturization = YES;
+  }
 }
 
 - (void)windowDidDeminiaturize:(NSNotification*)notification {
