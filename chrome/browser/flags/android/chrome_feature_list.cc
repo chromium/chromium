@@ -377,6 +377,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &query_tiles::features::kQueryTilesInNTP,
     &query_tiles::features::kQueryTilesOnStart,
     &query_tiles::features::kQueryTilesSegmentation,
+    &safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection,
     &safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection,
     &segmentation_platform::features::kContextualPageActions,
     &segmentation_platform::features::kContextualPageActionPriceTracking,

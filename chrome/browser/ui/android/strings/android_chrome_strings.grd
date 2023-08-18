@@ -1721,6 +1721,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY" desc="Summary for Safe Browsing enhanced protection mode.">
         Faster, proactive protection against dangerous websites, downloads, and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.
       </message>
+      <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY_UPDATED" desc="Summary for Safe Browsing enhanced protection mode.">
+        Real-time, proactive protection against dangerous sites, downloads, and extensions that’s based on your browsing data getting sent to Google
+      </message>
       <message name="IDS_SAFE_BROWSING_STANDARD_PROTECTION_TITLE" desc="Title for Safe Browsing standard protection mode. [CHAR_LIMIT=32]">
         Standard protection
       </message>
@@ -1736,25 +1739,55 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFE_BROWSING_NO_PROTECTION_SUMMARY" desc="Summary for Safe Browsing no protection mode.">
         Does not protect you against dangerous websites, downloads, and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.
       </message>
+      <message name="IDS_SAFE_BROWSING_NO_PROTECTION_SUMMARY_UPDATED" desc="Summary for Safe Browsing no protection mode.">
+        Does not protect you against dangerous websites, downloads, and extensions. Your Safe Browsing settings in other Google products won't be affected.
+      </message>
 
       <!-- Safe Browsing enhanced protection preferences -->
       <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_SUBTITLE" desc="Subtitle for Safe Browsing enhanced protection mode.">
         Enhanced protection:
       </message>
+      <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_SUBTITLE_UPDATED" desc="Subtitle for Safe Browsing enhanced protection mode.">
+        Enhanced protection
+      </message>
       <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_ONE" desc="First bullet point under the Safe Browsing enhanced protection mode">
         Predicts and warns you about dangerous events before they happen.
+      </message>
+      <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_ONE_UPDATED" desc="First bullet point that describes the details of the Safe Browsing control.">
+        Warns you about dangerous sites, even ones Google didn’t know about before, by analyzing more data from sites than standard protection. You can choose to skip Chrome warnings.
       </message>
       <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing enhanced protection mode">
         Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.
       </message>
+      <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_TWO_UPDATED" desc="Second bullet point that describes the details of the Safe Browsing control.">
+        In-depth scans for suspicious downloads.
+      </message>
       <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_THREE" desc="Third bullet point under the Safe Browsing enhanced protection mode">
         Improves security for you and everyone on the web.
+      </message>
+      <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_THREE_UPDATED" desc="Third bullet point that describes the details of the Safe Browsing control.">
+        When you're signed in, protects you across Google services.
       </message>
       <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_FOUR" desc="Fourth bullet point under the Safe Browsing enhanced protection mode">
         Warns you if passwords are exposed in a data breach.
       </message>
+      <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_FOUR_UPDATED" desc="Fourth bullet point that describes the details of the Safe Browsing control.">
+        Improves security for you and everyone on the web.
+      </message>
       <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_FIVE" desc="Fifth bullet point under the Safe Browsing enhanced protection mode">
         Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity, and system information to help discover new threats. Temporarily links this data to your Google Account when you’re signed in, to protect you across Google apps.
+      </message>
+      <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_FIVE_UPDATED" desc="Fifth bullet point that describes the details of the Safe Browsing control.">
+        Warns you if you use a password that has been compromised in a data breach.
+      </message>
+      <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_SIX_UPDATED" desc="Sixth bullet point that describes the details of the Safe Browsing control.">
+        Sends the URLs of sites you visit and a small sample of page content, downloads, extension activity, and system information to Google Safe Browsing to check if they’re harmful.
+      </message>
+      <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_SEVEN_UPDATED" desc="Seventh bullet point that describes the details of the Safe Browsing control.">
+        When you’re signed in, this data is linked to your Google Account to protect you across Google services, for example increasing protection in Gmail after a security incident.
+      </message>
+      <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_EIGHT_UPDATED" desc="Eighth bullet point that describes the details of the Safe Browsing control.">
+        Doesn’t noticeably slow down your browser or device.
       </message>
 
       <!-- Safe Browsing standard protection preferences -->

@@ -85,6 +85,7 @@ android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.safe_browsing.settings"
   sources = [
+    "javatests/src/org/chromium/chrome/browser/safe_browsing/settings/EnhancedProtectionSettingsFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/safe_browsing/settings/StandardProtectionSettingsFragmentTest.java",
   ]
@@ -124,6 +125,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/layout/radio_button_group_safe_browsing_preference.xml",
     "java/res/xml/enhanced_protection_preferences.xml",
+    "java/res/xml/enhanced_protection_preferences_updated.xml",
     "java/res/xml/safe_browsing_preferences.xml",
     "java/res/xml/standard_protection_preferences.xml",
   ]

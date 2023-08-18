@@ -99,6 +99,13 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
         }
         mEnhancedProtection.setVisibility(View.VISIBLE);
         mEnhancedProtection.setAuxButtonClickedListener(this);
+        // Update the description text with the friendlier settings string based on the value
+        // of the friendlier settings feature flag
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)) {
+            mEnhancedProtection.setDescriptionText(getContext().getString(
+                    R.string.safe_browsing_enhanced_protection_summary_updated));
+        }
         mStandardProtection = (RadioButtonWithDescriptionAndAuxButton) holder.findViewById(
                 R.id.standard_protection);
         mStandardProtection.setAuxButtonClickedListener(this);
@@ -110,6 +117,13 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
                     R.string.safe_browsing_standard_protection_summary_updated));
         }
         mNoProtection = (RadioButtonWithDescription) holder.findViewById(R.id.no_protection);
+        // Update the description text with the friendlier settings string based on the value
+        // of the friendlier settings feature flag
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)) {
+            mNoProtection.setDescriptionText(
+                    getContext().getString(R.string.safe_browsing_no_protection_summary_updated));
+        }
         RadioButtonWithDescriptionLayout groupLayout =
                 (RadioButtonWithDescriptionLayout) mNoProtection.getRootView();
         groupLayout.setOnCheckedChangeListener(this);
