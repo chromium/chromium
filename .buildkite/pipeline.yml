@@ -48,7 +48,7 @@ steps:
       - "os=macos"
       - "queue=runtime"
     artifact_paths:
-      - "build_id/macOS/arm_64/**"
+      - "build_id/macOS/arm64/**"
   - label: "Build chromium - Windows"
     key: "build-chromium-windows"
     timeout_in_minutes: 60
@@ -70,3 +70,4 @@ steps:
     depends_on:
       - "build-chromium-linux-x86_64"
       - "build-chromium-mac-x86_64"
+      - "build-chromium-mac-arm64"
