@@ -2699,6 +2699,7 @@ component("i18n") {
 
 test("base_perftests") {
   sources = [
+    "big_endian_perftest.cc",
     "hash/hash_perftest.cc",
     "json/json_perftest.cc",
     "message_loop/message_pump_perftest.cc",
