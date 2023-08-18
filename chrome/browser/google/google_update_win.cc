@@ -923,10 +923,10 @@ void UpdateCheckDriver::OnUpgradeError(UpdateCheckResult check_result,
     return;
   }
 
-  std::u16string html_error_msg = base::StringPrintf(
-      u"%d: <a href='%ls0x%X' target=_blank>0x%X</a>", update_state_.error_code,
-      base::UTF8ToWide(chrome::kUpgradeHelpCenterBaseURL).c_str(),
-      update_state_.hresult, update_state_.hresult);
+  std::u16string html_error_msg = base::UTF8ToUTF16(base::StringPrintf(
+      "%d: <a href='%s%#lX' target=_blank>%#lX</a>", update_state_.error_code,
+      chrome::kUpgradeHelpCenterBaseURL, update_state_.hresult,
+      update_state_.hresult));
   if (update_state_.installer_exit_code) {
     html_error_msg +=
         u": " + base::NumberToString16(*update_state_.installer_exit_code);

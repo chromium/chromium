@@ -613,10 +613,10 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
 
     // Compute a newer version.
     base::Version current_version(CHROME_VERSION_STRING);
-    new_version_ = base::StringPrintf(
-        u"%u.%u.%u.%u", current_version.components()[0],
+    new_version_ = base::ASCIIToUTF16(base::StringPrintf(
+        "%u.%u.%u.%u", current_version.components()[0],
         current_version.components()[1], current_version.components()[2] + 1,
-        current_version.components()[3]);
+        current_version.components()[3]));
 
     SetUpdateDriverTaskRunnerForTesting(task_runner_.get());
   }
