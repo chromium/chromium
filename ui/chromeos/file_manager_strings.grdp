@@ -790,6 +790,11 @@
   <message name="IDS_FILE_BROWSER_ERROR_PROGRESS_SUMMARY_PLURAL" desc="Summary message for multiple errors above the progress bar. This message may be placed at the next to ohter *_PROGERSS_SUMMARY messages.">
     <ph name="COUNT">$1<ex>10</ex></ph> errors.
   </message>
+  <message name="IDS_FILE_BROWSER_WARNING_PROGRESS_SUMMARY" desc="Summary message for one or more warnings above the progress bar. This message may be placed next to other *_PROGERSS_SUMMARY messages.">
+    {0, plural,
+        =1 {1 warning.}
+        other {<ph name="COUNT">$1<ex>10</ex></ph> warnings.}}
+  </message>
   <message name="IDS_FILE_BROWSER_PERCENT_COMPLETE" desc="Percentage of file operation that is complete in a progress message.">
     <ph name="PERCENT">$1<ex>10</ex></ph>% complete.
   </message>
