@@ -17,6 +17,8 @@ class UserEducationConfigurationProvider
     : public feature_engagement::ConfigurationProvider {
  public:
   UserEducationConfigurationProvider();
+  explicit UserEducationConfigurationProvider(
+      user_education::FeaturePromoRegistry registry_for_testing);
   ~UserEducationConfigurationProvider() override;
 
   // feature_engagement::ConfigurationProvider:
@@ -26,6 +28,13 @@ class UserEducationConfigurationProvider
       const feature_engagement::FeatureVector& known_features,
       const feature_engagement::GroupVector& known_groups) const override;
   const char* GetConfigurationSourceDescription() const override;
+
+  // For automatic configuration of triggers, derive default "trigger" and
+  // "used" names. The default "used" name, in turn, will be used to ensure that
+  // teams using IPH will be able to call a method that says "this feature was
+  // used" while specifying only the associated `base::Feature`.
+  static std::string GetDefaultTriggerName(const base::Feature& feature);
+  static std::string GetDefaultUsedName(const base::Feature& feature);
 
  private:
   user_education::FeaturePromoRegistry registry_;
