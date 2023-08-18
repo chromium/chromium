@@ -39,3 +39,4 @@ GdkMonitor* gdk_display_get_monitor(GdkDisplay *display, int monitor_num);
 void gdk_monitor_get_geometry(GdkMonitor *monitor, GdkRectangle *geometry);
 int gdk_monitor_get_scale_factor(GdkMonitor *monitor);
 GdkMonitor* gdk_display_get_primary_monitor(GdkDisplay *display);
+GListModel* gdk_display_get_monitors(GdkDisplay *self);

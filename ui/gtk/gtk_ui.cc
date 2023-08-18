@@ -254,11 +254,19 @@ bool GtkUi::Initialize() {
 
   // Listen for scale factor changes.
   GdkDisplay* display = gdk_display_get_default();
-  g_signal_connect_after(display, "monitor-added",
-                         G_CALLBACK(OnMonitorAddedThunk), this);
-  const int n_monitors = gdk_display_get_n_monitors(display);
-  for (int i = 0; i < n_monitors; i++) {
-    TrackMonitor(gdk_display_get_monitor(display, i));
+  if (GtkCheckVersion(4)) {
+    GListModel* monitors = gdk_display_get_monitors(display);
+    g_signal_connect_after(monitors, "items-changed",
+                           G_CALLBACK(OnMonitorsChangedThunk), this);
+    const guint n_monitors = g_list_model_get_n_items(monitors);
+    OnMonitorsChanged(monitors, 0, 0, n_monitors);
+  } else {
+    g_signal_connect_after(display, "monitor-added",
+                           G_CALLBACK(OnMonitorAddedThunk), this);
+    const int n_monitors = gdk_display_get_n_monitors(display);
+    for (int i = 0; i < n_monitors; i++) {
+      TrackMonitor(gdk_display_get_monitor(display, i));
+    }
   }
 
   LoadGtkValues();
@@ -676,6 +684,16 @@ void GtkUi::OnMonitorAdded(GdkDisplay* display, GdkMonitor* monitor) {
   UpdateDeviceScaleFactor();
 }
 
+void GtkUi::OnMonitorsChanged(GListModel* monitors,
+                              guint position,
+                              guint removed,
+                              guint added) {
+  for (size_t i = position; i < position + added; i++) {
+    TrackMonitor(static_cast<GdkMonitor*>(g_list_model_get_item(monitors, i)));
+  }
+  UpdateDeviceScaleFactor();
+}
+
 void GtkUi::LoadGtkValues() {
   // TODO(thomasanderson): GtkThemeService had a comment here about having to
   // muck with the raw Prefs object to remove prefs::kCurrentThemeImages or else
@@ -905,16 +923,35 @@ ui::DisplayConfig GtkUi::GetDisplayConfig() const {
       platform_->IncludeFontScaleInDeviceScale() ? FontScale() : 1.0;
 
   GdkDisplay* display = gdk_display_get_default();
-  GdkMonitor* primary = gdk_display_get_primary_monitor(display);
+  GdkMonitor* primary = nullptr;
+  std::vector<GdkMonitor*> monitors;
+  if (GtkCheckVersion(4)) {
+    GListModel* list = gdk_display_get_monitors(display);
+    auto n_monitors = g_list_model_get_n_items(list);
+    if (!n_monitors) {
+      return config;
+    }
+    primary = static_cast<GdkMonitor*>(g_list_model_get_item(list, 0));
+    monitors.reserve(n_monitors);
+    for (unsigned int i = 0; i < n_monitors; ++i) {
+      monitors.push_back(
+          static_cast<GdkMonitor*>(g_list_model_get_item(list, i)));
+    }
+  } else {
+    primary = gdk_display_get_primary_monitor(display);
+    const int n_monitors = gdk_display_get_n_monitors(display);
+    monitors.reserve(n_monitors);
+    for (int i = 0; i < n_monitors; i++) {
+      monitors.push_back(gdk_display_get_monitor(display, i));
+    }
+  }
   if (!primary) {
     return config;
   }
   config.primary_scale =
       std::max(1, gdk_monitor_get_scale_factor(primary)) * font_scale;
-  const int n_monitors = gdk_display_get_n_monitors(display);
-  config.display_geometries.reserve(n_monitors);
-  for (int i = 0; i < n_monitors; i++) {
-    GdkMonitor* monitor = gdk_display_get_monitor(display, i);
+  config.display_geometries.reserve(monitors.size());
+  for (GdkMonitor* monitor : monitors) {
     GdkRectangle geometry;
     gdk_monitor_get_geometry(monitor, &geometry);
     int monitor_scale = std::max(1, gdk_monitor_get_scale_factor(monitor));

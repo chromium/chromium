@@ -42,18 +42,21 @@ std::string GetThemeName() {
 GtkCssContext WindowContext(bool solid_frame, bool focused) {
   std::string selector = "window.background.";
   selector += solid_frame ? "solid-csd" : "csd";
-  if (!focused)
+  if (!focused) {
     selector += ":inactive";
+  }
   return AppendCssNodeToStyleContext({}, selector);
 }
 
 GtkCssContext DecorationContext(bool solid_frame, bool focused) {
   auto context = WindowContext(solid_frame, focused);
   // GTK4 renders the decoration directly on the window.
-  if (!GtkCheckVersion(4))
+  if (!GtkCheckVersion(4)) {
     context = AppendCssNodeToStyleContext(context, "decoration");
-  if (!focused)
+  }
+  if (!focused) {
     gtk_style_context_set_state(context, GTK_STATE_FLAG_BACKDROP);
+  }
 
   // The web contents is rendered after the frame border, so remove bottom
   // rounded corners otherwise their borders would get covered up.
@@ -69,8 +72,9 @@ GtkCssContext HeaderContext(bool solid_frame, bool focused) {
   auto context = WindowContext(solid_frame, focused);
   context =
       AppendCssNodeToStyleContext(context, "headerbar.header-bar.titlebar");
-  if (!focused)
+  if (!focused) {
     gtk_style_context_set_state(context, GTK_STATE_FLAG_BACKDROP);
+  }
   return context;
 }
 
@@ -87,10 +91,10 @@ SkBitmap PaintBitmap(const gfx::Size& bitmap_size,
 
   auto bounds = render_bounds;
 
-  double opacity = 1;
-  GtkStyleContextGet(context, "opacity", &opacity, nullptr);
-  if (opacity < 1)
+  double opacity = GetOpacityFromContext(context);
+  if (opacity < 1) {
     cairo_push_group(cr);
+  }
 
   cairo_scale(cr, scale, scale);
   gtk_render_background(context, cr, bounds.x(), bounds.y(), bounds.width(),
@@ -156,10 +160,10 @@ bool HeaderIsTranslucent() {
   // The arbitrary square size to render a sample header.
   constexpr int kHeaderSize = 32;
   auto context = HeaderContext(false, false);
-  double opacity = 1.0f;
-  GtkStyleContextGet(context, "opacity", &opacity, nullptr);
-  if (opacity < 1.0f)
+  double opacity = GetOpacityFromContext(context);
+  if (opacity < 1.0) {
     return true;
+  }
   ApplyCssToContext(context, R"(window, headerbar {
     box-shadow: none;
     border: none;
@@ -202,8 +206,9 @@ WindowFrameProviderGtk::Asset::~Asset() = default;
 void WindowFrameProviderGtk::Asset::CloneFrom(
     const WindowFrameProviderGtk::Asset& src) {
   valid = src.valid;
-  if (!valid)
+  if (!valid) {
     return;
+  }
 
   frame_size_px = src.frame_size_px;
   frame_thickness_px = src.frame_thickness_px;
@@ -270,8 +275,9 @@ void WindowFrameProviderGtk::PaintWindowFrame(
 
   auto draw_image = [&](int src_x, int src_y, int src_w, int src_h, int dst_x,
                         int dst_y, int dst_w, int dst_h) {
-    if (src_w <= 0 || src_h <= 0 || dst_w <= 0 || dst_h <= 0)
+    if (src_w <= 0 || src_h <= 0 || dst_w <= 0 || dst_h <= 0) {
       return;
+    }
     canvas->DrawImageInt(image, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w,
                          dst_h, false);
   };
@@ -344,8 +350,9 @@ void WindowFrameProviderGtk::MaybeUpdateBitmaps(float scale) {
   }
 
   auto& asset = assets_[ToRoundedScale(scale)];
-  if (asset.valid)
+  if (asset.valid) {
     return;
+  }
 
   asset.frame_size_px = std::ceil(kMaxFrameSizeDip * scale);
 

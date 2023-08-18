@@ -47,8 +47,7 @@ SkBitmap GetWidgetBitmap(const gfx::Size& size,
   CairoSurface surface(bitmap);
   cairo_t* cr = surface.cairo();
 
-  double opacity = 1;
-  GtkStyleContextGet(context, "opacity", &opacity, nullptr);
+  double opacity = GetOpacityFromContext(context);
   if (opacity < 1)
     cairo_push_group(cr);
 

@@ -135,6 +135,14 @@ class GtkUi : public ui::LinuxUiAndTheme {
 
   CHROMEG_CALLBACK_1(GtkUi, void, OnMonitorAdded, GdkDisplay*, GdkMonitor*);
 
+  CHROMEG_CALLBACK_3(GtkUi,
+                     void,
+                     OnMonitorsChanged,
+                     GListModel*,
+                     guint,
+                     guint,
+                     guint);
+
   // Loads all GTK-provided settings.
   void LoadGtkValues();
 

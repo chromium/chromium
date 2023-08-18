@@ -213,6 +213,8 @@ float GetDeviceScaleFactor();
 // This should only be called on Gtk4.
 GdkTexture* GetTextureFromRenderNode(GskRenderNode* node);
 
+double GetOpacityFromContext(GtkStyleContext* context);
+
 }  // namespace gtk
 
 #endif  // UI_GTK_GTK_UTIL_H_
