@@ -38,6 +38,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/html_test_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -70,6 +71,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -1510,6 +1512,134 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreSecondaryDisplay) {
 
   sm_.Replay();
 }
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreWebContents) {
+  EnableChromeVox();
+
+  base::SimpleTestTickClock clock;
+  auto* clock_ptr = &clock;
+  ui::SetEventTickClockForTesting(clock_ptr);
+
+  auto* root_window = Shell::Get()->GetPrimaryRootWindow();
+  ui::test::EventGenerator generator(root_window);
+  auto* generator_ptr = &generator;
+
+  gfx::Rect b2_bounds;
+  gfx::Rect b3_bounds;
+
+  sm_.Call([this]() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(R"(data:text/html;charset=utf-8,
+            <button id="b1" autofocus>First</button>
+            <button id="b2">Second</button>
+            <button id="b3">Third</button>
+        )")));
+  });
+  sm_.ExpectSpeech("First");
+  sm_.Call([this, clock_ptr, generator_ptr, &b2_bounds, &b3_bounds]() {
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    b2_bounds = GetControlBoundsInRoot(web_contents, "b2");
+    b3_bounds = GetControlBoundsInRoot(web_contents, "b3");
+
+    ui::TouchEvent touch_press(
+        ui::ET_TOUCH_PRESSED, b2_bounds.top_center(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_press);
+
+    clock_ptr->Advance(base::Seconds(1));
+
+    ui::TouchEvent touch_move(
+        ui::ET_TOUCH_MOVED, b2_bounds.CenterPoint(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move);
+
+    clock_ptr->Advance(base::Seconds(1));
+
+    ui::TouchEvent touch_move2(
+        ui::ET_TOUCH_MOVED, b2_bounds.left_center(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move2);
+  });
+  sm_.ExpectSpeech("Second");
+  sm_.Call([clock_ptr, generator_ptr, &b3_bounds]() {
+    clock_ptr->Advance(base::Seconds(1));
+
+    ui::TouchEvent touch_move(
+        ui::ET_TOUCH_MOVED, b3_bounds.right_center(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move);
+
+    clock_ptr->Advance(base::Seconds(1));
+
+    ui::TouchEvent touch_move2(
+        ui::ET_TOUCH_MOVED, b3_bounds.CenterPoint(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move2);
+  });
+  sm_.ExpectSpeech("Third");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreWebContentsHighDPI) {
+  ShellTestApi shell_test_api;
+  // Use DPI of Strongbad, to reproduce b/295325508.
+  display::test::DisplayManagerTestApi(shell_test_api.display_manager())
+      .UpdateDisplay("800x700*1.77778");
+
+  EnableChromeVox();
+
+  base::SimpleTestTickClock clock;
+  auto* clock_ptr = &clock;
+  ui::SetEventTickClockForTesting(clock_ptr);
+
+  auto* root_window = Shell::Get()->GetPrimaryRootWindow();
+  ui::test::EventGenerator generator(root_window);
+  auto* generator_ptr = &generator;
+
+  sm_.Call([this]() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(R"(data:text/html;charset=utf-8,
+            <button id="b1" autofocus>First</button>
+            <button id="b2">Second</button>
+        )")));
+  });
+  sm_.ExpectSpeech("First");
+  sm_.Call([this, clock_ptr, generator_ptr]() {
+    float scale_factor = 1.77778;
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    gfx::Rect b2_bounds = GetControlBoundsInRoot(web_contents, "b2");
+    // GetControlBoundsInRoot returns in DIPs. Multiply by resolution to get px,
+    // which is where we need to touch on a high density screen.
+    b2_bounds.set_x(b2_bounds.x() * scale_factor);
+    b2_bounds.set_y(b2_bounds.y() * scale_factor);
+    b2_bounds.set_width(b2_bounds.width() * scale_factor);
+    b2_bounds.set_height(b2_bounds.height() * scale_factor);
+
+    ui::TouchEvent touch_press(
+        ui::ET_TOUCH_PRESSED, b2_bounds.bottom_center(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_press);
+
+    clock_ptr->Advance(base::Seconds(1));
+
+    ui::TouchEvent touch_move(
+        ui::ET_TOUCH_MOVED, b2_bounds.CenterPoint(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move);
+
+    clock_ptr->Advance(base::Seconds(1));
+
+    ui::TouchEvent touch_move2(
+        ui::ET_TOUCH_MOVED, b2_bounds.right_center(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move2);
+  });
+  sm_.ExpectSpeech("Second");
+  sm_.Replay();
+}
+
+// TODO(b/287488905): Add test for touch explore with screen magnifier and high
+// DPI.
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxNextTabRecovery) {
   EnableChromeVox();

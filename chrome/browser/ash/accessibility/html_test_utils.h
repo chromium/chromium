@@ -21,6 +21,8 @@ namespace ash {
 void ExecuteScript(content::WebContents* web_contents,
                    const std::string& script);
 
+// Gets the bounds of the element with ID `field_id` in the web contents,
+// in density-independent pixels.
 gfx::Rect GetControlBoundsInRoot(content::WebContents* web_contents,
                                  const std::string& field_id);
 

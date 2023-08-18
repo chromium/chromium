@@ -387,8 +387,17 @@ void AutomationManagerAura::PerformHitTest(
     CHECK(action_handler);
 
     // Convert to pixels for the RenderFrameHost HitTest, if required.
-    if (action_handler->RequiresPerformActionPointInPixels())
-      window->GetHost()->ConvertDIPToPixels(&action.target_point);
+    if (action_handler->RequiresPerformActionPointInPixels()) {
+      // The point is in DIPs, so multiply by the device scale factor to
+      // get pixels. Don't apply magnification as the action_handler doesn't
+      // know about magnification scale (that's applied later in the stack).
+      // Specifically, we cannot use WindowTreeHost::ConvertDIPToPixels as that
+      // will re-apply the magnification transform. The local point has
+      // already been un-transformed when it was converted to local coordinates.
+      float device_scale_factor = window->GetHost()->device_scale_factor();
+      action.target_point.set_x(action.target_point.x() * device_scale_factor);
+      action.target_point.set_y(action.target_point.y() * device_scale_factor);
+    }
 
     action_handler->PerformAction(action);
     return;
