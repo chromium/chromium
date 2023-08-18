@@ -17,6 +17,7 @@ import './os_powerwash_dialog_esim_item.js';
 
 import {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -28,13 +29,14 @@ import {Router, routes} from '../router.js';
 import {getTemplate} from './os_powerwash_dialog.html.js';
 import {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_browser_proxy.js';
 
-interface OsSettingsPowerwashDialogElement {
+export interface OsSettingsPowerwashDialogElement {
   $: {
+    cancel: CrButtonElement,
     dialog: CrDialogElement,
   };
 }
 
-class OsSettingsPowerwashDialogElement extends PolymerElement {
+export class OsSettingsPowerwashDialogElement extends PolymerElement {
   static get is() {
     return 'os-settings-powerwash-dialog';
   }

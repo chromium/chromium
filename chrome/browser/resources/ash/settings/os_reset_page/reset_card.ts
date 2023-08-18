@@ -25,7 +25,7 @@ import {Route, routes} from '../router.js';
 
 import {getTemplate} from './reset_card.html.js';
 
-interface SettingsResetCardElement {
+export interface SettingsResetCardElement {
   $: {
     powerwashButton: CrButtonElement,
   };
@@ -34,7 +34,7 @@ interface SettingsResetCardElement {
 const SettingsResetCardElementBase =
     DeepLinkingMixin(RouteObserverMixin(PolymerElement));
 
-class SettingsResetCardElement extends SettingsResetCardElementBase {
+export class SettingsResetCardElement extends SettingsResetCardElementBase {
   static get is() {
     return 'settings-reset-card' as const;
   }

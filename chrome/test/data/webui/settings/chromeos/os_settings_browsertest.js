@@ -728,6 +728,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'OsPrivacyPageSmartPrivacySubpage',
    'os_privacy_page/smart_privacy_subpage_test.js'
  ],
+ [
+   'OsResetPageResetCard',
+   'os_reset_page/reset_card_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  ['OsSearchPage', 'os_search_page/os_search_page_test.js'],
  [
    'OsSearchPageGoogleAssistantSubpage',
@@ -819,6 +824,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
        'ash::features::kOsSettingsRevampWayfinding',
      ],
    },
+ ],
+ [
+   'SystemPreferencesPageResetCard',
+   'os_reset_page/reset_card_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
    'SystemPreferencesPageSearchAndAssistantCard',
