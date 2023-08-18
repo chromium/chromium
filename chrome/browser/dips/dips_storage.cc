@@ -104,6 +104,26 @@ void DIPSStorage::Write(const DIPSState& state) {
              state.bounce_times(), state.web_authn_assertion_times());
 }
 
+absl::optional<PopupsStateValue> DIPSStorage::ReadPopup(
+    const std::string& first_party_site,
+    const std::string& tracking_site) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
+
+  return db_->ReadPopup(first_party_site, tracking_site);
+}
+
+bool DIPSStorage::WritePopup(const std::string& first_party_site,
+                             const std::string& tracking_site,
+                             const uint64_t access_id,
+                             const base::Time& popup_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
+
+  return db_->WritePopup(first_party_site, tracking_site, access_id,
+                         popup_time);
+}
+
 void DIPSStorage::RemoveEvents(base::Time delete_begin,
                                base::Time delete_end,
                                network::mojom::ClearDataFilterPtr filter,

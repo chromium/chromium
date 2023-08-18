@@ -15956,6 +15956,38 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="OpenerHeuristic.PostPopupCookieAccess">
+  <owner>rtarpine@chromium.org</owner>
+  <owner>amaliev@chromium.org</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    Recorded by a top-level page that opens a pop-up with opener access, when
+    the user interacts with that pop-up. Recorded by a top-level page that opens
+    a pop-up with opener access, when the pop-up site later tries to access
+    cookies on the opener site.
+  </summary>
+  <metric name="AccessId">
+    <summary>
+      A random integer to identify the top-level site and associate this event
+      with the OpenerHeuristic.TopLevel event that preceded it when the pop-up
+      was opened.
+    </summary>
+  </metric>
+  <metric name="AccessSucceeded">
+    <summary>
+      Whether the cookie access attempt is allowed, or blocked by a third-party
+      cookie block.
+    </summary>
+  </metric>
+  <metric name="HoursSincePopupOpened" enum="PopupProvider">
+    <summary>
+      The number of hours before the cookie access that the initial
+      OpenerHeuristic.TopLevel event was recorded. Bucketized evenly with 120
+      buckets up to 60 days.
+    </summary>
+  </metric>
+</event>
+
 <event name="OpenerHeuristic.TopLevel">
   <owner>rtarpine@chromium.org</owner>
   <owner>dc-komics@google.com</owner>
@@ -15963,6 +15995,13 @@ be describing additional metrics about the same event.
     Recorded by a top-level page that opens a pop-up with opener access, when
     the user interacts with that pop-up.
   </summary>
+  <metric name="AccessId">
+    <summary>
+      A random integer to identify the top-level site and associate this event
+      with any OpenerHeuristic.PostPopupCookieAccess events that follow when the
+      pop-up site attempts to access cookies on the top-level site.
+    </summary>
+  </metric>
   <metric name="HasSameSiteIframe" enum="HasSameSiteIframe">
     <summary>
       &quot;True&quot; iff the top-level page contains an iframe whose URL

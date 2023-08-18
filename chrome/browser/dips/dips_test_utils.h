@@ -22,6 +22,7 @@
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
 
 namespace testing {
@@ -104,6 +105,18 @@ base::expected<content::WebContents*, std::string> OpenInNewTab(
 // Helper function for performing client side cookie access via JS.
 void AccessCookieViaJSIn(content::WebContents* web_contents,
                          content::RenderFrameHost* frame);
+
+// Helper function to navigate to /set-cookie on `host` and wait for
+// OnCookiesAccessed() to be called.
+bool NavigateToSetCookie(content::WebContents* web_contents,
+                         const net::EmbeddedTestServer* server,
+                         base::StringPiece host,
+                         bool is_secure_cookie_set);
+
+// Helper function for creating an image with a cookie access on the provided
+// WebContents.
+void CreateImageAndWaitForCookieAccess(content::WebContents* web_contents,
+                                       const GURL& image_url);
 
 // Helper function to block until all DIPS storage requests are complete.
 inline void WaitOnStorage(DIPSService* dips_service) {

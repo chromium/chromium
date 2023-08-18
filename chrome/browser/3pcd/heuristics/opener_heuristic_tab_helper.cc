@@ -22,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 using content::NavigationHandle;
 using content::RenderFrameHost;
@@ -136,8 +137,10 @@ OpenerHeuristicTabHelper::PopupObserver::PopupObserver(
       opener_(opener),
       opener_page_id_(opener->page_id()),
       opener_source_id_(
-          opener->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()) {
-}
+          opener->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()),
+      opener_url_(opener->web_contents()
+                      ->GetPrimaryMainFrame()
+                      ->GetLastCommittedURL()) {}
 
 OpenerHeuristicTabHelper::PopupObserver::~PopupObserver() = default;
 
@@ -172,7 +175,7 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
       .SetPopupId(popup_id_)
       .Record(ukm::UkmRecorder::Get());
 
-  EmitTopLevel(has_iframe);
+  EmitTopLevel(initial_url_, has_iframe);
 }
 
 void OpenerHeuristicTabHelper::PopupObserver::DidFinishNavigation(
@@ -236,10 +239,69 @@ void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
 
   interaction_reported_ = true;
 
-  EmitTopLevel(has_iframe);
+  EmitTopLevel(render_frame_host->GetLastCommittedURL(), has_iframe);
+}
+
+void OpenerHeuristicTabHelper::OnCookiesAccessed(
+    content::RenderFrameHost* render_frame_host,
+    const content::CookieAccessDetails& details) {
+  if (!render_frame_host->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering)) {
+    OnCookiesAccessed(render_frame_host->GetPageUkmSourceId(), details);
+  }
+}
+
+void OpenerHeuristicTabHelper::OnCookiesAccessed(
+    content::NavigationHandle* navigation_handle,
+    const content::CookieAccessDetails& details) {
+  OnCookiesAccessed(navigation_handle->GetNextPageUkmSourceId(), details);
+}
+
+void OpenerHeuristicTabHelper::OnCookiesAccessed(
+    const ukm::SourceId& source_id,
+    const content::CookieAccessDetails& details) {
+  DIPSService* dips = DIPSService::Get(web_contents()->GetBrowserContext());
+  if (!dips) {
+    // If DIPS is disabled, we can't look up past popup events.
+    // TODO(rtarpine): consider falling back to SiteEngagementService.
+    return;
+  }
+
+  // Ignore same-domain cookie access.
+  if (details.first_party_url.is_empty() ||
+      GetSiteForDIPS(details.first_party_url) == GetSiteForDIPS(details.url)) {
+    return;
+  }
+
+  dips->storage()
+      ->AsyncCall(&DIPSStorage::ReadPopup)
+      .WithArgs(GetSiteForDIPS(details.first_party_url),
+                GetSiteForDIPS(details.url))
+      .Then(base::BindOnce(&OpenerHeuristicTabHelper::EmitPostPopupCookieAccess,
+                           weak_factory_.GetWeakPtr(), source_id, details));
+}
+
+void OpenerHeuristicTabHelper::EmitPostPopupCookieAccess(
+    const ukm::SourceId& source_id,
+    const content::CookieAccessDetails& details,
+    absl::optional<PopupsStateValue> value) {
+  if (!value.has_value()) {
+    return;
+  }
+  int32_t hours_since_opener = Bucketize3PCDHeuristicTimeDelta(
+      GetClock()->Now() - value->last_popup_time, base::Days(30),
+      base::BindRepeating(&base::TimeDelta::InHours)
+          .Then(base::BindRepeating([](int64_t t) { return t; })));
+
+  ukm::builders::OpenerHeuristic_PostPopupCookieAccess(source_id)
+      .SetAccessId(value->access_id)
+      .SetAccessSucceeded(!details.blocked_by_policy)
+      .SetHoursSincePopupOpened(hours_since_opener)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevel(
+    const GURL& popup_url,
     OptionalBool has_iframe) {
   if (toplevel_reported_) {
     return;
@@ -252,6 +314,20 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevel(
       .Record(ukm::UkmRecorder::Get());
 
   toplevel_reported_ = true;
+
+  DIPSService* dips = DIPSService::Get(web_contents()->GetBrowserContext());
+  if (!dips) {
+    // If DIPS is disabled, we can't look up past popup events.
+    // TODO(rtarpine): consider falling back to SiteEngagementService.
+    return;
+  }
+
+  dips->storage()
+      ->AsyncCall(&DIPSStorage::WritePopup)
+      .WithArgs(GetSiteForDIPS(opener_url_), GetSiteForDIPS(popup_url),
+                /*access_id=*/base::RandUint64(),
+                /*popup_time=*/GetClock()->Now())
+      .Then(base::BindOnce([](bool succeeded) { DCHECK(succeeded); }));
 }
 
 OptionalBool

@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -52,7 +53,7 @@ class OpenerHeuristicTabHelper
     // the necessary information.
     void EmitPastInteractionIfReady();
     // Emit the OpenerHeuristic.TopLevel UKM event.
-    void EmitTopLevel(OptionalBool has_iframe);
+    void EmitTopLevel(const GURL& tracker_url, OptionalBool has_iframe);
     // See if the opener page has an iframe from the same site.
     OptionalBool GetOpenerHasSameSiteIframe(const GURL& popup_url);
 
@@ -70,6 +71,8 @@ class OpenerHeuristicTabHelper
     const size_t opener_page_id_;
     // A UKM source id for the page that opened the pop-up.
     const ukm::SourceId opener_source_id_;
+    // The URL of the page that opened the pop-up.
+    const GURL opener_url_;
     // How long after the user last interacted with the site until the pop-up
     // opened.
     absl::optional<base::TimeDelta> time_since_interaction_;
@@ -101,6 +104,13 @@ class OpenerHeuristicTabHelper
   // Asynchronous callback for reading past interaction timestamps from the
   // DIPSService.
   void GotPopupDipsState(const DIPSState& state);
+  // Record a OpenerHeuristic.PostPopupCookieAccess event, if there has been a
+  // corresponding popup event for the provided source and target sites.
+  void OnCookiesAccessed(const ukm::SourceId& source_id,
+                         const content::CookieAccessDetails& details);
+  void EmitPostPopupCookieAccess(const ukm::SourceId& source_id,
+                                 const content::CookieAccessDetails& details,
+                                 absl::optional<PopupsStateValue> value);
 
   // WebContentsObserver overrides:
   void PrimaryPageChanged(content::Page& page) override;
@@ -112,6 +122,10 @@ class OpenerHeuristicTabHelper
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
+  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
+                         const content::CookieAccessDetails& details) override;
+  void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
+                         const content::CookieAccessDetails& details) override;
 
   // To detect whether the user navigated away from the opener page before
   // interacting with a popup, we increment this ID on each committed

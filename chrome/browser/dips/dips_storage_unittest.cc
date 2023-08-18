@@ -248,6 +248,8 @@ class DIPSStorageTest : public testing::Test {
  public:
   DIPSStorageTest() = default;
 
+  void SetUp() override { storage_.SetClockForTesting(&clock_); }
+
   TimestampRange ToRange(base::Time first, base::Time last) {
     return {{first, last}};
   }
@@ -256,6 +258,7 @@ class DIPSStorageTest : public testing::Test {
   base::test::TaskEnvironment env_;
   ScopedDIPSFeatureEnabledWithParams feature{{{"interaction_ttl", "inf"}}};
   TestStorage storage_;
+  base::SimpleTestClock clock_;
 };
 
 TEST(DirtyBit, Constructor) {
@@ -633,8 +636,38 @@ TEST_F(DIPSStorageTest, RemoveByTimeInteractionOnly) {
   EXPECT_FALSE(state2.was_loaded());  // removed
 }
 
-// TODO(crbug.com/1445107): Add a test for clearing popups table via history
-// deletion.
+TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
+  std::string site1 = GetSiteForDIPS(GURL("https://example1.com"));
+  std::string site2 = GetSiteForDIPS(GURL("https://example2.com"));
+  std::string site3 = GetSiteForDIPS(GURL("https://example3.com"));
+  base::Time delete_begin = base::Time::FromDoubleT(3);
+  base::Time delete_end = base::Time::FromDoubleT(5);
+
+  ASSERT_TRUE(storage_.WritePopup(site1, site2, /*access_id=*/1u,
+                                  base::Time::FromDoubleT(2)));
+  ASSERT_TRUE(storage_.WritePopup(site1, site3, /*access_id=*/2u,
+                                  base::Time::FromDoubleT(4)));
+  ASSERT_TRUE(storage_.WritePopup(site2, site3, /*access_id=*/3u,
+                                  base::Time::FromDoubleT(6)));
+
+  storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                        DIPSEventRemovalType::kHistory);
+
+  // Verify that only the second popup event (with timestamp 4) was cleared.
+
+  absl::optional<PopupsStateValue> popup1 = storage_.ReadPopup(site1, site2);
+  ASSERT_TRUE(popup1.has_value());
+  EXPECT_EQ(popup1.value().access_id, 1u);
+  EXPECT_EQ(popup1.value().last_popup_time, base::Time::FromDoubleT(2));
+
+  absl::optional<PopupsStateValue> popup2 = storage_.ReadPopup(site1, site3);
+  ASSERT_FALSE(popup2.has_value());
+
+  absl::optional<PopupsStateValue> popup3 = storage_.ReadPopup(site2, site3);
+  ASSERT_TRUE(popup3.has_value());
+  EXPECT_EQ(popup3.value().access_id, 3u);
+  EXPECT_EQ(popup3.value().last_popup_time, base::Time::FromDoubleT(6));
+}
 
 TEST_F(DIPSStorageTest, RemoveByTimeBounces) {
   GURL url1("https://example1.com");

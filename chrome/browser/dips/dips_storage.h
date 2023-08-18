@@ -31,6 +31,15 @@ class DIPSStorage {
 
   DIPSState Read(const GURL& url);
 
+  absl::optional<PopupsStateValue> ReadPopup(
+      const std::string& first_party_site,
+      const std::string& tracking_site);
+
+  bool WritePopup(const std::string& first_party_site,
+                  const std::string& tracking_site,
+                  const uint64_t access_id,
+                  const base::Time& popup_time);
+
   void RemoveEvents(base::Time delete_begin,
                     base::Time delete_end,
                     network::mojom::ClearDataFilterPtr filter,
