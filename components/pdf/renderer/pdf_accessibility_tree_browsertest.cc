@@ -39,7 +39,6 @@
 #include <tuple>
 
 #include "base/containers/queue.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "components/services/screen_ai/screen_ai_ax_tree_serializer.h"
@@ -286,21 +285,11 @@ class FakeScreenAIAnnotator : public screen_ai::mojom::ScreenAIAnnotator {
 
 class TestPdfAccessibilityTree : public PdfAccessibilityTree {
  public:
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  TestPdfAccessibilityTree(
-      content::RenderFrame* render_frame,
-      chrome_pdf::PdfAccessibilityActionHandler* action_handler,
-      chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
-      bool override_on_ocr_data_received)
-      : PdfAccessibilityTree(render_frame, action_handler, image_fetcher),
-        override_on_ocr_data_received_(override_on_ocr_data_received) {}
-#else
   TestPdfAccessibilityTree(
       content::RenderFrame* render_frame,
       chrome_pdf::PdfAccessibilityActionHandler* action_handler,
       chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher)
       : PdfAccessibilityTree(render_frame, action_handler, image_fetcher) {}
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   ~TestPdfAccessibilityTree() override = default;
   TestPdfAccessibilityTree(const TestPdfAccessibilityTree&) = delete;
@@ -313,9 +302,7 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
 
   void OnOcrDataReceived(std::vector<PdfOcrRequest> ocr_requests,
                          std::vector<ui::AXTreeUpdate> tree_updates) override {
-    if (override_on_ocr_data_received_) {
-      tree_updates_.push_back(tree_updates);
-    }
+    tree_updates_.push_back(tree_updates);
     PdfAccessibilityTree::OnOcrDataReceived(ocr_requests, tree_updates);
   }
 
@@ -328,14 +315,10 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
         fake_annotator_->BindNewPipeAndPassRemote());
     ocr_service_for_testing()->SetPagesPerBatchForTesting(pages_per_batch);
   }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
  private:
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   std::vector<std::vector<ui::AXTreeUpdate>> tree_updates_;
   std::unique_ptr<FakeScreenAIAnnotator> fake_annotator_;
-  // TODO(crbug.com/1278249): Remove `override_on_ocr_data_received_`.
-  const bool override_on_ocr_data_received_;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 };
 
@@ -373,18 +356,13 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     page_info_.bounds = gfx::Rect(0, 0, 1, 1);
   }
 
-  void CreatePdfAccessibilityTree(bool override_on_ocr_data_received = false) {
+  void CreatePdfAccessibilityTree() {
     content::RenderFrame* render_frame = GetMainRenderFrame();
     render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
     ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
     pdf_accessibility_tree_ = std::make_unique<TestPdfAccessibilityTree>(
-        render_frame, &action_handler_, &image_fetcher_
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-        ,
-        override_on_ocr_data_received
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    );
+        render_frame, &action_handler_, &image_fetcher_);
   }
 
  protected:
@@ -458,9 +436,9 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeReload) {
     EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
 
     // There should only be one page node.
-    ASSERT_EQ(1u, root_node->children().size());
+    ASSERT_EQ(1u, root_node->GetChildCount());
 
-    ui::AXNode* page_node = root_node->children()[0];
+    ui::AXNode* page_node = root_node->GetChildAtIndex(0);
     ASSERT_TRUE(page_node);
     EXPECT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
     EXPECT_EQ(page_bounds, page_node->data().relative_bounds.bounds);
@@ -526,42 +504,42 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeCreation) {
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   ASSERT_TRUE(root_node);
   EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
-  ASSERT_EQ(1u, root_node->children().size());
+  ASSERT_EQ(1u, root_node->GetChildCount());
 
-  ui::AXNode* page_node = root_node->children()[0];
+  ui::AXNode* page_node = root_node->GetChildAtIndex(0);
   ASSERT_TRUE(page_node);
   EXPECT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  ASSERT_EQ(2u, page_node->children().size());
+  ASSERT_EQ(2u, page_node->GetChildCount());
 
-  ui::AXNode* paragraph_node = page_node->children()[0];
+  ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
   EXPECT_TRUE(paragraph_node->GetBoolAttribute(
       ax::mojom::BoolAttribute::kIsLineBreakingObject));
-  ASSERT_EQ(1u, paragraph_node->children().size());
+  ASSERT_EQ(1u, paragraph_node->GetChildCount());
 
-  ui::AXNode* link_node = paragraph_node->children()[0];
+  ui::AXNode* link_node = paragraph_node->GetChildAtIndex(0);
   ASSERT_TRUE(link_node);
   EXPECT_EQ(kChromiumTestUrl,
             link_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl));
   EXPECT_EQ(ax::mojom::Role::kLink, link_node->GetRole());
   EXPECT_EQ(gfx::RectF(1.0f, 1.0f, 5.0f, 6.0f),
             link_node->data().relative_bounds.bounds);
-  ASSERT_EQ(1u, link_node->children().size());
+  ASSERT_EQ(1u, link_node->GetChildCount());
 
-  paragraph_node = page_node->children()[1];
+  paragraph_node = page_node->GetChildAtIndex(1);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
   EXPECT_TRUE(paragraph_node->GetBoolAttribute(
       ax::mojom::BoolAttribute::kIsLineBreakingObject));
-  ASSERT_EQ(3u, paragraph_node->children().size());
+  ASSERT_EQ(3u, paragraph_node->GetChildCount());
 
-  ui::AXNode* static_text_node = paragraph_node->children()[0];
+  ui::AXNode* static_text_node = paragraph_node->GetChildAtIndex(0);
   ASSERT_TRUE(static_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
-  ASSERT_EQ(1u, static_text_node->children().size());
+  ASSERT_EQ(1u, static_text_node->GetChildCount());
 
-  ui::AXNode* image_node = paragraph_node->children()[1];
+  ui::AXNode* image_node = paragraph_node->GetChildAtIndex(1);
   ASSERT_TRUE(image_node);
   EXPECT_EQ(ax::mojom::Role::kImage, image_node->GetRole());
   EXPECT_EQ(gfx::RectF(8.0f, 9.0f, 2.0f, 1.0f),
@@ -569,7 +547,7 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeCreation) {
   EXPECT_EQ(kTestAltText,
             image_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
 
-  image_node = paragraph_node->children()[2];
+  image_node = paragraph_node->GetChildAtIndex(2);
   ASSERT_TRUE(image_node);
   EXPECT_EQ(ax::mojom::Role::kImage, image_node->GetRole());
   EXPECT_EQ(gfx::RectF(11.0f, 14.0f, 5.0f, 8.0f),
@@ -630,17 +608,18 @@ TEST_F(PdfAccessibilityTreeTest, TestOverlappingAnnots) {
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   ASSERT_TRUE(root_node);
   EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
-  ASSERT_EQ(1u, root_node->children().size());
+  ASSERT_EQ(1u, root_node->GetChildCount());
 
-  ui::AXNode* page_node = root_node->children()[0];
+  ui::AXNode* page_node = root_node->GetChildAtIndex(0);
   ASSERT_TRUE(page_node);
   EXPECT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  ASSERT_EQ(1u, page_node->children().size());
+  ASSERT_EQ(1u, page_node->GetChildCount());
 
-  ui::AXNode* paragraph_node = page_node->children()[0];
+  ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  const std::vector<ui::AXNode*>& child_nodes = paragraph_node->children();
+  const std::vector<ui::AXNode*>& child_nodes =
+      paragraph_node->GetAllChildren();
   ASSERT_EQ(3u, child_nodes.size());
 
   ui::AXNode* link_node = child_nodes[0];
@@ -650,7 +629,7 @@ TEST_F(PdfAccessibilityTreeTest, TestOverlappingAnnots) {
   EXPECT_EQ(ax::mojom::Role::kLink, link_node->GetRole());
   EXPECT_EQ(gfx::RectF(1.0f, 1.0f, 5.0f, 6.0f),
             link_node->data().relative_bounds.bounds);
-  ASSERT_EQ(1u, link_node->children().size());
+  ASSERT_EQ(1u, link_node->GetChildCount());
 
   link_node = child_nodes[1];
   ASSERT_TRUE(link_node);
@@ -659,12 +638,12 @@ TEST_F(PdfAccessibilityTreeTest, TestOverlappingAnnots) {
   EXPECT_EQ(ax::mojom::Role::kLink, link_node->GetRole());
   EXPECT_EQ(gfx::RectF(1.0f, 2.0f, 5.0f, 6.0f),
             link_node->data().relative_bounds.bounds);
-  ASSERT_EQ(1u, link_node->children().size());
+  ASSERT_EQ(1u, link_node->GetChildCount());
 
   ui::AXNode* static_text_node = child_nodes[2];
   ASSERT_TRUE(static_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
-  ASSERT_EQ(1u, static_text_node->children().size());
+  ASSERT_EQ(1u, static_text_node->GetChildCount());
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestHighlightCreation) {
@@ -712,19 +691,19 @@ TEST_F(PdfAccessibilityTreeTest, TestHighlightCreation) {
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   ASSERT_TRUE(root_node);
   EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
-  ASSERT_EQ(1u, root_node->children().size());
+  ASSERT_EQ(1u, root_node->GetChildCount());
 
-  ui::AXNode* page_node = root_node->children()[0];
+  ui::AXNode* page_node = root_node->GetChildAtIndex(0);
   ASSERT_TRUE(page_node);
   EXPECT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  ASSERT_EQ(1u, page_node->children().size());
+  ASSERT_EQ(1u, page_node->GetChildCount());
 
-  ui::AXNode* paragraph_node = page_node->children()[0];
+  ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  ASSERT_EQ(1u, paragraph_node->children().size());
+  ASSERT_EQ(1u, paragraph_node->GetChildCount());
 
-  ui::AXNode* highlight_node = paragraph_node->children()[0];
+  ui::AXNode* highlight_node = paragraph_node->GetChildAtIndex(0);
   ASSERT_TRUE(highlight_node);
   EXPECT_EQ(ax::mojom::Role::kPdfActionableHighlight,
             highlight_node->GetRole());
@@ -738,14 +717,14 @@ TEST_F(PdfAccessibilityTreeTest, TestHighlightCreation) {
   EXPECT_EQ(kHighlightWhiteColor,
             static_cast<uint32_t>(highlight_node->GetIntAttribute(
                 ax::mojom::IntAttribute::kBackgroundColor)));
-  ASSERT_EQ(2u, highlight_node->children().size());
+  ASSERT_EQ(2u, highlight_node->GetChildCount());
 
-  ui::AXNode* static_text_node = highlight_node->children()[0];
+  ui::AXNode* static_text_node = highlight_node->GetChildAtIndex(0);
   ASSERT_TRUE(static_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
-  ASSERT_EQ(2u, static_text_node->children().size());
+  ASSERT_EQ(2u, static_text_node->GetChildCount());
 
-  ui::AXNode* popup_note_node = highlight_node->children()[1];
+  ui::AXNode* popup_note_node = highlight_node->GetChildAtIndex(1);
   ASSERT_TRUE(popup_note_node);
   EXPECT_EQ(ax::mojom::Role::kNote, popup_note_node->GetRole());
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_AX_ROLE_DESCRIPTION_PDF_POPUP_NOTE),
@@ -753,9 +732,9 @@ TEST_F(PdfAccessibilityTreeTest, TestHighlightCreation) {
                 ax::mojom::StringAttribute::kRoleDescription));
   EXPECT_EQ(gfx::RectF(1.0f, 1.0f, 5.0f, 6.0f),
             popup_note_node->data().relative_bounds.bounds);
-  ASSERT_EQ(1u, popup_note_node->children().size());
+  ASSERT_EQ(1u, popup_note_node->GetChildCount());
 
-  ui::AXNode* static_popup_note_text_node = popup_note_node->children()[0];
+  ui::AXNode* static_popup_note_text_node = popup_note_node->GetChildAtIndex(0);
   ASSERT_TRUE(static_popup_note_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText,
             static_popup_note_text_node->GetRole());
@@ -829,33 +808,34 @@ TEST_F(PdfAccessibilityTreeTest, TestTextFieldNodeCreation) {
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   ASSERT_TRUE(root_node);
   EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
-  ASSERT_EQ(1u, root_node->children().size());
+  ASSERT_EQ(1u, root_node->GetChildCount());
 
-  ui::AXNode* page_node = root_node->children()[0];
+  ui::AXNode* page_node = root_node->GetChildAtIndex(0);
   ASSERT_TRUE(page_node);
   EXPECT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  ASSERT_EQ(2u, page_node->children().size());
+  ASSERT_EQ(2u, page_node->GetChildCount());
 
-  ui::AXNode* paragraph_node = page_node->children()[0];
+  ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  ASSERT_EQ(1u, paragraph_node->children().size());
+  ASSERT_EQ(1u, paragraph_node->GetChildCount());
 
-  ui::AXNode* static_text_node = paragraph_node->children()[0];
+  ui::AXNode* static_text_node = paragraph_node->GetChildAtIndex(0);
   ASSERT_TRUE(static_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
-  ASSERT_EQ(1u, static_text_node->children().size());
+  ASSERT_EQ(1u, static_text_node->GetChildCount());
 
-  paragraph_node = page_node->children()[1];
+  paragraph_node = page_node->GetChildAtIndex(1);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  const std::vector<ui::AXNode*>& child_nodes = paragraph_node->children();
+  const std::vector<ui::AXNode*>& child_nodes =
+      paragraph_node->GetAllChildren();
   ASSERT_EQ(3u, child_nodes.size());
 
   static_text_node = child_nodes[0];
   ASSERT_TRUE(static_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
-  ASSERT_EQ(1u, static_text_node->children().size());
+  ASSERT_EQ(1u, static_text_node->GetChildCount());
 
   ui::AXNode* text_field_node = child_nodes[1];
   ASSERT_TRUE(text_field_node);
@@ -870,7 +850,7 @@ TEST_F(PdfAccessibilityTreeTest, TestTextFieldNodeCreation) {
             text_field_node->data().GetRestriction());
   EXPECT_EQ(gfx::RectF(1.0f, 1.0f, 5.0f, 6.0f),
             text_field_node->data().relative_bounds.bounds);
-  EXPECT_EQ(0u, text_field_node->children().size());
+  EXPECT_EQ(0u, text_field_node->GetChildCount());
 
   text_field_node = child_nodes[2];
   ASSERT_TRUE(text_field_node);
@@ -885,7 +865,7 @@ TEST_F(PdfAccessibilityTreeTest, TestTextFieldNodeCreation) {
             text_field_node->data().GetRestriction());
   EXPECT_EQ(gfx::RectF(1.0f, 10.0f, 5.0f, 6.0f),
             text_field_node->data().relative_bounds.bounds);
-  EXPECT_EQ(0u, text_field_node->children().size());
+  EXPECT_EQ(0u, text_field_node->GetChildCount());
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
@@ -982,33 +962,34 @@ TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   ASSERT_TRUE(root_node);
   EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
-  ASSERT_EQ(1u, root_node->children().size());
+  ASSERT_EQ(1u, root_node->GetChildCount());
 
-  ui::AXNode* page_node = root_node->children()[0];
+  ui::AXNode* page_node = root_node->GetChildAtIndex(0);
   ASSERT_TRUE(page_node);
   EXPECT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  ASSERT_EQ(2u, page_node->children().size());
+  ASSERT_EQ(2u, page_node->GetChildCount());
 
-  ui::AXNode* paragraph_node = page_node->children()[0];
+  ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  ASSERT_EQ(1u, paragraph_node->children().size());
+  ASSERT_EQ(1u, paragraph_node->GetChildCount());
 
-  ui::AXNode* static_text_node = paragraph_node->children()[0];
+  ui::AXNode* static_text_node = paragraph_node->GetChildAtIndex(0);
   ASSERT_TRUE(static_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
-  ASSERT_EQ(1u, static_text_node->children().size());
+  ASSERT_EQ(1u, static_text_node->GetChildCount());
 
-  paragraph_node = page_node->children()[1];
+  paragraph_node = page_node->GetChildAtIndex(1);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  const std::vector<ui::AXNode*>& child_nodes = paragraph_node->children();
+  const std::vector<ui::AXNode*>& child_nodes =
+      paragraph_node->GetAllChildren();
   ASSERT_EQ(5u, child_nodes.size());
 
   static_text_node = child_nodes[0];
   ASSERT_TRUE(static_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
-  ASSERT_EQ(1u, static_text_node->children().size());
+  ASSERT_EQ(1u, static_text_node->GetChildCount());
 
   ui::AXNode* check_box_node = child_nodes[1];
   ASSERT_TRUE(check_box_node);
@@ -1027,7 +1008,7 @@ TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
             check_box_node->data().GetRestriction());
   EXPECT_EQ(gfx::RectF(1.0f, 1.0f, 5.0f, 6.0f),
             check_box_node->data().relative_bounds.bounds);
-  EXPECT_EQ(0u, check_box_node->children().size());
+  EXPECT_EQ(0u, check_box_node->GetChildCount());
 
   ui::AXNode* radio_button_node = child_nodes[2];
   ASSERT_TRUE(radio_button_node);
@@ -1046,7 +1027,7 @@ TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
             radio_button_node->data().GetRestriction());
   EXPECT_EQ(gfx::RectF(1.0f, 2.0f, 5.0f, 6.0f),
             radio_button_node->data().relative_bounds.bounds);
-  EXPECT_EQ(0u, radio_button_node->children().size());
+  EXPECT_EQ(0u, radio_button_node->GetChildCount());
 
   radio_button_node = child_nodes[3];
   ASSERT_TRUE(radio_button_node);
@@ -1065,7 +1046,7 @@ TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
             radio_button_node->data().GetRestriction());
   EXPECT_EQ(gfx::RectF(1.0f, 3.0f, 5.0f, 6.0f),
             radio_button_node->data().relative_bounds.bounds);
-  EXPECT_EQ(0u, radio_button_node->children().size());
+  EXPECT_EQ(0u, radio_button_node->GetChildCount());
 
   ui::AXNode* push_button_node = child_nodes[4];
   ASSERT_TRUE(push_button_node);
@@ -1074,7 +1055,7 @@ TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
                                ax::mojom::StringAttribute::kName));
   EXPECT_EQ(gfx::RectF(1.0f, 4.0f, 5.0f, 6.0f),
             push_button_node->data().relative_bounds.bounds);
-  EXPECT_EQ(0u, push_button_node->children().size());
+  EXPECT_EQ(0u, push_button_node->GetChildCount());
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
@@ -1169,33 +1150,34 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   ASSERT_TRUE(root_node);
   EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
-  ASSERT_EQ(1u, root_node->children().size());
+  ASSERT_EQ(1u, root_node->GetChildCount());
 
-  ui::AXNode* page_node = root_node->children()[0];
+  ui::AXNode* page_node = root_node->GetChildAtIndex(0);
   ASSERT_TRUE(page_node);
   EXPECT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  ASSERT_EQ(2u, page_node->children().size());
+  ASSERT_EQ(2u, page_node->GetChildCount());
 
-  ui::AXNode* paragraph_node = page_node->children()[0];
+  ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  ASSERT_EQ(1u, paragraph_node->children().size());
+  ASSERT_EQ(1u, paragraph_node->GetChildCount());
 
-  ui::AXNode* static_text_node = paragraph_node->children()[0];
+  ui::AXNode* static_text_node = paragraph_node->GetChildAtIndex(0);
   ASSERT_TRUE(static_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
-  ASSERT_EQ(1u, static_text_node->children().size());
+  ASSERT_EQ(1u, static_text_node->GetChildCount());
 
-  paragraph_node = page_node->children()[1];
+  paragraph_node = page_node->GetChildAtIndex(1);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  const std::vector<ui::AXNode*>& child_nodes = paragraph_node->children();
+  const std::vector<ui::AXNode*>& child_nodes =
+      paragraph_node->GetAllChildren();
   ASSERT_EQ(3u, child_nodes.size());
 
   static_text_node = child_nodes[0];
   ASSERT_TRUE(static_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
-  ASSERT_EQ(1u, static_text_node->children().size());
+  ASSERT_EQ(1u, static_text_node->GetChildCount());
 
   {
     ui::AXNode* listbox_node = child_nodes[1];
@@ -1208,9 +1190,9 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
     EXPECT_TRUE(listbox_node->HasState(ax::mojom::State::kMultiselectable));
     EXPECT_TRUE(listbox_node->HasState(ax::mojom::State::kFocusable));
     EXPECT_EQ(kExpectedBounds[0], listbox_node->data().relative_bounds.bounds);
-    ASSERT_EQ(std::size(kExpectedOptions[0]), listbox_node->children().size());
+    ASSERT_EQ(std::size(kExpectedOptions[0]), listbox_node->GetChildCount());
     const std::vector<ui::AXNode*>& listbox_child_nodes =
-        listbox_node->children();
+        listbox_node->GetAllChildren();
     for (size_t i = 0; i < listbox_child_nodes.size(); i++) {
       EXPECT_EQ(ax::mojom::Role::kListBoxOption,
                 listbox_child_nodes[i]->GetRole());
@@ -1240,9 +1222,9 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
     EXPECT_FALSE(listbox_node->HasState(ax::mojom::State::kMultiselectable));
     EXPECT_TRUE(listbox_node->HasState(ax::mojom::State::kFocusable));
     EXPECT_EQ(kExpectedBounds[1], listbox_node->data().relative_bounds.bounds);
-    ASSERT_EQ(std::size(kExpectedOptions[1]), listbox_node->children().size());
+    ASSERT_EQ(std::size(kExpectedOptions[1]), listbox_node->GetChildCount());
     const std::vector<ui::AXNode*>& listbox_child_nodes =
-        listbox_node->children();
+        listbox_node->GetAllChildren();
     for (size_t i = 0; i < listbox_child_nodes.size(); i++) {
       EXPECT_EQ(ax::mojom::Role::kListBoxOption,
                 listbox_child_nodes[i]->GetRole());
@@ -1358,33 +1340,34 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   ASSERT_TRUE(root_node);
   EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
-  ASSERT_EQ(1u, root_node->children().size());
+  ASSERT_EQ(1u, root_node->GetChildCount());
 
-  ui::AXNode* page_node = root_node->children()[0];
+  ui::AXNode* page_node = root_node->GetChildAtIndex(0);
   ASSERT_TRUE(page_node);
   EXPECT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  ASSERT_EQ(2u, page_node->children().size());
+  ASSERT_EQ(2u, page_node->GetChildCount());
 
-  ui::AXNode* paragraph_node = page_node->children()[0];
+  ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  ASSERT_EQ(1u, paragraph_node->children().size());
+  ASSERT_EQ(1u, paragraph_node->GetChildCount());
 
-  ui::AXNode* static_text_node = paragraph_node->children()[0];
+  ui::AXNode* static_text_node = paragraph_node->GetChildAtIndex(0);
   ASSERT_TRUE(static_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
-  ASSERT_EQ(1u, static_text_node->children().size());
+  ASSERT_EQ(1u, static_text_node->GetChildCount());
 
-  paragraph_node = page_node->children()[1];
+  paragraph_node = page_node->GetChildAtIndex(1);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  const std::vector<ui::AXNode*>& child_nodes = paragraph_node->children();
+  const std::vector<ui::AXNode*>& child_nodes =
+      paragraph_node->GetAllChildren();
   ASSERT_EQ(3u, child_nodes.size());
 
   static_text_node = child_nodes[0];
   ASSERT_TRUE(static_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
-  ASSERT_EQ(1u, static_text_node->children().size());
+  ASSERT_EQ(1u, static_text_node->GetChildCount());
 
   {
     ui::AXNode* combobox_node = child_nodes[1];
@@ -1394,9 +1377,9 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
               combobox_node->data().GetRestriction());
     EXPECT_TRUE(combobox_node->HasState(ax::mojom::State::kFocusable));
     EXPECT_EQ(kExpectedBounds[0], combobox_node->data().relative_bounds.bounds);
-    ASSERT_EQ(2u, combobox_node->children().size());
+    ASSERT_EQ(2u, combobox_node->GetChildCount());
     const std::vector<ui::AXNode*>& combobox_child_nodes =
-        combobox_node->children();
+        combobox_node->GetAllChildren();
 
     ui::AXNode* combobox_input_node = combobox_child_nodes[0];
     EXPECT_EQ(ax::mojom::Role::kTextFieldWithComboBox,
@@ -1420,9 +1403,9 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
     EXPECT_EQ(kExpectedBounds[0],
               combobox_popup_node->data().relative_bounds.bounds);
     ASSERT_EQ(std::size(kExpectedOptions[0]),
-              combobox_popup_node->children().size());
+              combobox_popup_node->GetChildCount());
     const std::vector<ui::AXNode*>& popup_child_nodes =
-        combobox_popup_node->children();
+        combobox_popup_node->GetAllChildren();
     for (size_t i = 0; i < popup_child_nodes.size(); i++) {
       EXPECT_EQ(ax::mojom::Role::kListBoxOption,
                 popup_child_nodes[i]->GetRole());
@@ -1455,9 +1438,9 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
               combobox_node->data().GetRestriction());
     EXPECT_TRUE(combobox_node->HasState(ax::mojom::State::kFocusable));
     EXPECT_EQ(kExpectedBounds[1], combobox_node->data().relative_bounds.bounds);
-    ASSERT_EQ(2u, combobox_node->children().size());
+    ASSERT_EQ(2u, combobox_node->GetChildCount());
     const std::vector<ui::AXNode*>& combobox_child_nodes =
-        combobox_node->children();
+        combobox_node->GetAllChildren();
 
     ui::AXNode* combobox_input_node = combobox_child_nodes[0];
     EXPECT_EQ(ax::mojom::Role::kComboBoxMenuButton,
@@ -1479,9 +1462,9 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
     EXPECT_EQ(kExpectedBounds[1],
               combobox_popup_node->data().relative_bounds.bounds);
     ASSERT_EQ(std::size(kExpectedOptions[1]),
-              combobox_popup_node->children().size());
+              combobox_popup_node->GetChildCount());
     const std::vector<ui::AXNode*>& popup_child_nodes =
-        combobox_popup_node->children();
+        combobox_popup_node->GetAllChildren();
     for (size_t i = 0; i < popup_child_nodes.size(); i++) {
       EXPECT_EQ(ax::mojom::Role::kListBoxOption,
                 popup_child_nodes[i]->GetRole());
@@ -1553,27 +1536,27 @@ TEST_F(PdfAccessibilityTreeTest, TestPreviousNextOnLine) {
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   ASSERT_TRUE(root_node);
   EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
-  ASSERT_EQ(1u, root_node->children().size());
+  ASSERT_EQ(1u, root_node->GetChildCount());
 
-  ui::AXNode* page_node = root_node->children()[0];
+  ui::AXNode* page_node = root_node->GetChildAtIndex(0);
   ASSERT_TRUE(page_node);
   EXPECT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  ASSERT_EQ(1u, page_node->children().size());
+  ASSERT_EQ(1u, page_node->GetChildCount());
 
-  ui::AXNode* paragraph_node = page_node->children()[0];
+  ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
   EXPECT_TRUE(paragraph_node->GetBoolAttribute(
       ax::mojom::BoolAttribute::kIsLineBreakingObject));
-  ASSERT_EQ(2u, paragraph_node->children().size());
+  ASSERT_EQ(2u, paragraph_node->GetChildCount());
 
-  ui::AXNode* static_text_node = paragraph_node->children()[0];
+  ui::AXNode* static_text_node = paragraph_node->GetChildAtIndex(0);
   ASSERT_TRUE(static_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
   EXPECT_EQ(ax::mojom::NameFrom::kContents, static_text_node->GetNameFrom());
-  ASSERT_EQ(2u, static_text_node->children().size());
+  ASSERT_EQ(2u, static_text_node->GetChildCount());
 
-  ui::AXNode* previous_inline_node = static_text_node->children()[0];
+  ui::AXNode* previous_inline_node = static_text_node->GetChildAtIndex(0);
   ASSERT_TRUE(previous_inline_node);
   EXPECT_EQ(ax::mojom::Role::kInlineTextBox, previous_inline_node->GetRole());
   EXPECT_EQ(ax::mojom::NameFrom::kContents,
@@ -1581,7 +1564,7 @@ TEST_F(PdfAccessibilityTreeTest, TestPreviousNextOnLine) {
   ASSERT_FALSE(previous_inline_node->HasIntAttribute(
       ax::mojom::IntAttribute::kPreviousOnLineId));
 
-  ui::AXNode* next_inline_node = static_text_node->children()[1];
+  ui::AXNode* next_inline_node = static_text_node->GetChildAtIndex(1);
   ASSERT_TRUE(next_inline_node);
   EXPECT_EQ(ax::mojom::Role::kInlineTextBox, next_inline_node->GetRole());
   EXPECT_EQ(ax::mojom::NameFrom::kContents, next_inline_node->GetNameFrom());
@@ -1595,20 +1578,20 @@ TEST_F(PdfAccessibilityTreeTest, TestPreviousNextOnLine) {
             next_inline_node->GetIntAttribute(
                 ax::mojom::IntAttribute::kPreviousOnLineId));
 
-  ui::AXNode* link_node = paragraph_node->children()[1];
+  ui::AXNode* link_node = paragraph_node->GetChildAtIndex(1);
   ASSERT_TRUE(link_node);
   EXPECT_EQ(kChromiumTestUrl,
             link_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl));
   EXPECT_EQ(ax::mojom::Role::kLink, link_node->GetRole());
-  ASSERT_EQ(1u, link_node->children().size());
+  ASSERT_EQ(1u, link_node->GetChildCount());
 
-  static_text_node = link_node->children()[0];
+  static_text_node = link_node->GetChildAtIndex(0);
   ASSERT_TRUE(static_text_node);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static_text_node->GetRole());
   EXPECT_EQ(ax::mojom::NameFrom::kContents, static_text_node->GetNameFrom());
-  ASSERT_EQ(2u, static_text_node->children().size());
+  ASSERT_EQ(2u, static_text_node->GetChildCount());
 
-  previous_inline_node = static_text_node->children()[0];
+  previous_inline_node = static_text_node->GetChildAtIndex(0);
   ASSERT_TRUE(previous_inline_node);
   EXPECT_EQ(ax::mojom::Role::kInlineTextBox, previous_inline_node->GetRole());
   EXPECT_EQ(ax::mojom::NameFrom::kContents,
@@ -1620,7 +1603,7 @@ TEST_F(PdfAccessibilityTreeTest, TestPreviousNextOnLine) {
             previous_inline_node->GetIntAttribute(
                 ax::mojom::IntAttribute::kPreviousOnLineId));
 
-  next_inline_node = static_text_node->children()[1];
+  next_inline_node = static_text_node->GetChildAtIndex(1);
   ASSERT_TRUE(next_inline_node);
   EXPECT_EQ(ax::mojom::Role::kInlineTextBox, next_inline_node->GetRole());
   EXPECT_EQ(ax::mojom::NameFrom::kContents, next_inline_node->GetNameFrom());
@@ -1990,11 +1973,11 @@ TEST_F(PdfAccessibilityTreeTest, TestClickActionDataConversion) {
   WaitForThreadTasks();
 
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
-  const std::vector<ui::AXNode*>& page_nodes = root_node->children();
+  const std::vector<ui::AXNode*>& page_nodes = root_node->GetAllChildren();
   ASSERT_EQ(1u, page_nodes.size());
-  const std::vector<ui::AXNode*>& para_nodes = page_nodes[0]->children();
+  const std::vector<ui::AXNode*>& para_nodes = page_nodes[0]->GetAllChildren();
   ASSERT_EQ(2u, para_nodes.size());
-  const std::vector<ui::AXNode*>& link_nodes = para_nodes[1]->children();
+  const std::vector<ui::AXNode*>& link_nodes = para_nodes[1]->GetAllChildren();
   ASSERT_EQ(1u, link_nodes.size());
 
   const ui::AXNode* link_node = link_nodes[0];
@@ -2077,11 +2060,11 @@ TEST_F(PdfAccessibilityTreeTest, TestZoomAndScaleChanges) {
 
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   ASSERT_TRUE(root_node);
-  ASSERT_EQ(1u, root_node->children().size());
-  ui::AXNode* page_node = root_node->children()[0];
+  ASSERT_EQ(1u, root_node->GetChildCount());
+  ui::AXNode* page_node = root_node->GetChildAtIndex(0);
   ASSERT_TRUE(page_node);
-  ASSERT_EQ(2u, page_node->children().size());
-  ui::AXNode* para_node = page_node->children()[0];
+  ASSERT_EQ(2u, page_node->GetChildCount());
+  ui::AXNode* para_node = page_node->GetChildAtIndex(0);
   ASSERT_TRUE(para_node);
   gfx::RectF rect = para_node->data().relative_bounds.bounds;
   CompareRect({{26.0f, 189.0f}, {84.0f, 13.0f}}, rect);
@@ -2121,27 +2104,27 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
 
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   ASSERT_TRUE(root_node);
-  const std::vector<ui::AXNode*>& page_nodes = root_node->children();
+  const std::vector<ui::AXNode*>& page_nodes = root_node->GetAllChildren();
   ASSERT_EQ(1u, page_nodes.size());
   ASSERT_TRUE(page_nodes[0]);
-  const std::vector<ui::AXNode*>& para_nodes = page_nodes[0]->children();
+  const std::vector<ui::AXNode*>& para_nodes = page_nodes[0]->GetAllChildren();
   ASSERT_EQ(2u, para_nodes.size());
   ASSERT_TRUE(para_nodes[0]);
   const std::vector<ui::AXNode*>& static_text_nodes1 =
-      para_nodes[0]->children();
+      para_nodes[0]->GetAllChildren();
   ASSERT_EQ(1u, static_text_nodes1.size());
   ASSERT_TRUE(static_text_nodes1[0]);
   const std::vector<ui::AXNode*>& inline_text_nodes1 =
-      static_text_nodes1[0]->children();
+      static_text_nodes1[0]->GetAllChildren();
   ASSERT_TRUE(inline_text_nodes1[0]);
   ASSERT_EQ(1u, inline_text_nodes1.size());
   ASSERT_TRUE(para_nodes[1]);
   const std::vector<ui::AXNode*>& static_text_nodes2 =
-      para_nodes[1]->children();
+      para_nodes[1]->GetAllChildren();
   ASSERT_EQ(1u, static_text_nodes2.size());
   ASSERT_TRUE(static_text_nodes2[0]);
   const std::vector<ui::AXNode*>& inline_text_nodes2 =
-      static_text_nodes2[0]->children();
+      static_text_nodes2[0]->GetAllChildren();
   ASSERT_TRUE(inline_text_nodes2[0]);
   ASSERT_EQ(1u, inline_text_nodes2.size());
 
@@ -2224,187 +2207,6 @@ TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-TEST_F(PdfAccessibilityTreeTest, TestTransformFromOnOcrDataReceived) {
-  // Enable feature flag.
-  //
-  // TODO(crbug.com/1443341): This should be moved to the test fixture's
-  // constructor per the `ScopedFeatureList` implementation notes.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kPdfOcr);
-
-  // Assume `image` contains some text that will be extracted by OCR. `image`
-  // will be passed to the function that creates a transform, which will be
-  // then applied to the text paragraphs extracted by OCR.
-  chrome_pdf::AccessibilityImageInfo image;
-  // Simulate that the width and height of `image` got shrunk by 80% in
-  // `image_data`.
-  constexpr float kScaleFactor = 0.8f;
-  constexpr float kImageWidth = 200.0f;
-  constexpr float kImageHeight = 200.0f;
-  constexpr int kBitmapWidth = static_cast<int>(kImageWidth * kScaleFactor);
-  constexpr int kBitmapHeight = static_cast<int>(kImageHeight * kScaleFactor);
-  image.page_object_index = 0;
-  image.bounds = gfx::RectF(0.0f, 0.0f, kImageWidth, kImageHeight);
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(kBitmapWidth, kBitmapHeight, /*isOpaque=*/false);
-  image_fetcher_.AddImage(/*page_index=*/0, image.page_object_index,
-                          std::move(bitmap));
-  page_objects_.images.push_back(image);
-
-  page_info_.text_run_count = text_runs_.size();
-  page_info_.char_count = chars_.size();
-
-  CreatePdfAccessibilityTree();
-
-  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
-  pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
-  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
-                                                    chars_, page_objects_);
-  WaitForThreadTasks();
-
-  // TODO(crbug.com/1423810): Convert these in-line comments into EXPECT() with
-  // ToString() output from AXTree. To do this in a more stable way, we need to
-  // use AXTreeFormatter and move the whole or some part of the following file
-  // (content/public/browser/ax_inspect_factory.h) into content/public/renderer
-  // or content/public/common along with its deps.
-  /*
-   * Expected PDF accessibility tree structure (with PDF OCR feature flag)
-   * Document
-   * ++ Status
-   * ++ Region
-   * ++++ Paragraph
-   * ++++++ image
-   */
-
-  ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
-  ASSERT_TRUE(root_node);
-  EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
-  ASSERT_EQ(2u, root_node->children().size());
-
-  ui::AXNode* status_node_wrapper = root_node->children()[0];
-  ASSERT_TRUE(status_node_wrapper);
-  EXPECT_EQ(ax::mojom::Role::kBanner, status_node_wrapper->GetRole());
-  ASSERT_EQ(1u, status_node_wrapper->children().size());
-
-  ui::AXNode* status_node = status_node_wrapper->children()[0];
-  ASSERT_TRUE(status_node);
-  EXPECT_EQ(ax::mojom::Role::kStatus, status_node->GetRole());
-  ASSERT_EQ(0u, status_node->children().size());
-
-  ui::AXNode* page_node = root_node->children()[1];
-  ASSERT_TRUE(page_node);
-  EXPECT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  ASSERT_EQ(1u, page_node->children().size());
-
-  ui::AXNode* paragraph_node = page_node->children()[0];
-  ASSERT_TRUE(paragraph_node);
-  EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  ASSERT_EQ(1u, paragraph_node->children().size());
-
-  ui::AXNode* image_node = paragraph_node->children()[0];
-  ASSERT_TRUE(image_node);
-  EXPECT_EQ(ax::mojom::Role::kImage, image_node->GetRole());
-  ASSERT_EQ(0u, image_node->children().size());
-  EXPECT_EQ(image.bounds, image_node->data().relative_bounds.bounds);
-
-  // Simulate creating a child tree using OCR results.
-  pdf_accessibility_tree_->CreateOcrService();
-
-  // Text bounds before applying the transform.
-  constexpr gfx::RectF kTextBoundsBeforeTransform1 = {{8.0f, 8.0f},
-                                                      {80.0f, 24.0f}};
-  constexpr gfx::RectF kTextBoundsBeforeTransform2 = {{16.0f, 88.0f},
-                                                      {40.0f, 56.0f}};
-  ui::AXTreeUpdate child_tree_update = CreateMockOCRResult(
-      image.bounds, kTextBoundsBeforeTransform1, kTextBoundsBeforeTransform2);
-  WaitForThreadTasks();
-
-  EXPECT_EQ(child_tree_update.tree_data.tree_id, ui::AXTreeIDUnknown());
-
-  PdfAccessibilityTree::PdfOcrRequest request(
-      image_node->id(), image, paragraph_node->id(), page_node->id(),
-      /*page_index=*/0);
-  // Image pixel size is automatically set when OCR request is running, but
-  // this test skips that step.
-  request.image_pixel_size = gfx::SizeF(kBitmapWidth, kBitmapHeight);
-
-  // Reset `remaining_page_count_` to be zero. `remaining_page_count_` is later
-  // used in `OnOcrDataReceived()` to check whether OCR is done or not. Note
-  // that the OCR is considered to be done when `remaining_page_count_` == 0.
-  pdf_accessibility_tree_->ocr_service_for_testing()
-      ->ResetRemainingPageCountForTesting();
-  pdf_accessibility_tree_->OnOcrDataReceived(
-      std::vector<PdfAccessibilityTree::PdfOcrRequest>{{request}},
-      std::vector<ui::AXTreeUpdate>{child_tree_update});
-  WaitForThreadTasks();
-
-  // TODO(crbug.com/1423810): Convert these in-line comments into EXPECT() with
-  // ToString() output from AXTree. To do this in a more stable way, we need to
-  // use AXTreeFormatter and move the whole or some part of the following file
-  // (content/public/browser/ax_inspect_factory.h) into content/public/renderer
-  // or content/public/common along with its deps.
-  /*
-   * Expected PDF accessibility tree structure (after running OCR)
-   * Document
-   * ++ Status
-   * ++ Region
-   * ++++ Paragraph
-   * ++++++ Region (child tree)
-   * ++++++++ Static Text
-   * ++++++++ Static Text
-   */
-
-  root_node = pdf_accessibility_tree_->GetRoot();
-  ASSERT_TRUE(root_node);
-  ASSERT_EQ(2u, root_node->children().size());
-
-  status_node_wrapper = root_node->children()[0];
-  ASSERT_TRUE(status_node_wrapper);
-  EXPECT_EQ(ax::mojom::Role::kBanner, status_node_wrapper->GetRole());
-  ASSERT_EQ(1u, status_node_wrapper->children().size());
-
-  status_node = status_node_wrapper->children()[0];
-  ASSERT_TRUE(status_node);
-  EXPECT_EQ(ax::mojom::Role::kStatus, status_node->GetRole());
-
-  page_node = root_node->children()[1];
-  ASSERT_TRUE(page_node);
-  EXPECT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  ASSERT_EQ(1u, page_node->children().size());
-
-  paragraph_node = page_node->children()[0];
-  ASSERT_TRUE(paragraph_node);
-  EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  ASSERT_EQ(1u, paragraph_node->children().size());
-
-  ui::AXNode* region_node = paragraph_node->children()[0];
-  ASSERT_TRUE(region_node);
-  EXPECT_EQ(ax::mojom::Role::kRegion, region_node->GetRole());
-  ASSERT_EQ(2u, region_node->children().size());
-
-  // Expected text bounds after applying the transform. These numbers are
-  // expected to be kTextBoundsBeforeTransform * 1 / kScaleFactor.
-  constexpr gfx::RectF kExpectedTextBoundRelativeToTreeBounds1 = {
-      {10.0f, 10.0f}, {100.0f, 30.0f}};
-  constexpr gfx::RectF kExpectedTextBoundRelativeToTreeBounds2 = {
-      {20.0f, 110.0f}, {50.0f, 70.0f}};
-
-  // Check the nodes from OCR results.
-  ui::AXNode* ocred_node = region_node->children()[0];
-  ASSERT_TRUE(ocred_node);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, ocred_node->GetRole());
-  gfx::RectF bounds = ocred_node->data().relative_bounds.bounds;
-  // The bounds already got updated inside of OnOcrDataReceived().
-  CompareRect(kExpectedTextBoundRelativeToTreeBounds1, bounds);
-
-  ocred_node = region_node->children()[1];
-  ASSERT_TRUE(ocred_node);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, ocred_node->GetRole());
-  bounds = ocred_node->data().relative_bounds.bounds;
-  // The bounds already got updated inside of OnOcrDataReceived().
-  CompareRect(kExpectedTextBoundRelativeToTreeBounds2, bounds);
-}
-
 class PdfOcrServiceTest
     : public PdfAccessibilityTreeTest,
       public testing::WithParamInterface<
@@ -2459,27 +2261,27 @@ class PdfOcrServiceTest
     ASSERT_NE(nullptr, root_node);
     ASSERT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
     uint32_t pages_plus_status_node_count = doc_info_.page_count + 1u;
-    ASSERT_EQ(pages_plus_status_node_count, root_node->children().size());
+    ASSERT_EQ(pages_plus_status_node_count, root_node->GetChildCount());
 
-    ui::AXNode* page_node = root_node->children()[1];
+    ui::AXNode* page_node = root_node->GetChildAtIndex(1);
     ASSERT_NE(nullptr, page_node);
     ASSERT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-    ASSERT_EQ(1u, page_node->children().size());
+    ASSERT_EQ(1u, page_node->GetChildCount());
 
-    ui::AXNode* paragraph_node = page_node->children()[0];
+    ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
     ASSERT_NE(nullptr, paragraph_node);
     ASSERT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-    ASSERT_EQ(2u, paragraph_node->children().size());
+    ASSERT_EQ(2u, paragraph_node->GetChildCount());
 
-    ui::AXNode* image1_node = paragraph_node->children()[0];
+    ui::AXNode* image1_node = paragraph_node->GetChildAtIndex(0);
     ASSERT_NE(nullptr, image1_node);
     ASSERT_EQ(ax::mojom::Role::kImage, image1_node->GetRole());
-    ASSERT_EQ(0u, image1_node->children().size());
+    ASSERT_EQ(0u, image1_node->GetChildCount());
 
-    ui::AXNode* image2_node = paragraph_node->children()[1];
+    ui::AXNode* image2_node = paragraph_node->GetChildAtIndex(1);
     ASSERT_NE(nullptr, image2_node);
     ASSERT_EQ(ax::mojom::Role::kImage, image2_node->GetRole());
-    ASSERT_EQ(0u, image2_node->children().size());
+    ASSERT_EQ(0u, image2_node->GetChildCount());
 
     if (!is_ocr_service_started_before_pdf_loads) {
       pdf_accessibility_tree_->CreateFakeOCRService(pages_per_batch,
@@ -2493,7 +2295,7 @@ class PdfOcrServiceTest
 };
 
 TEST_P(PdfOcrServiceTest, PageBatching) {
-  CreatePdfAccessibilityTree(/*override_on_ocr_data_received=*/true);
+  CreatePdfAccessibilityTree();
 
   constexpr uint32_t kPagesPerBatch = 20u;
   bool is_ocr_service_started_before_pdf_loads;
@@ -2509,16 +2311,16 @@ TEST_P(PdfOcrServiceTest, PageBatching) {
   // The first node of the root node's children is a status node. There
   // should be no postamble page informing the user of OCR progress
   // when OCR has either not yet started, or has been completed.
-  ASSERT_EQ(page_count + 1u, root_node->children().size());
+  ASSERT_EQ(page_count + 1u, root_node->GetChildCount());
   for (uint32_t i = 0; i < page_count; ++i) {
     if (!is_ocr_service_started_before_pdf_loads) {
-      ui::AXNode* page_node = root_node->children()[i + 1];
+      ui::AXNode* page_node = root_node->GetChildAtIndex(i + 1);
       ASSERT_NE(nullptr, page_node);
-      ui::AXNode* paragraph_node = page_node->children()[0];
+      ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
       ASSERT_NE(nullptr, paragraph_node);
-      ui::AXNode* image1_node = paragraph_node->children()[0];
+      ui::AXNode* image1_node = paragraph_node->GetChildAtIndex(0);
       ASSERT_NE(nullptr, image1_node);
-      ui::AXNode* image2_node = paragraph_node->children()[1];
+      ui::AXNode* image2_node = paragraph_node->GetChildAtIndex(1);
       ASSERT_NE(nullptr, image2_node);
       base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
       requests.emplace(image1_node->id(), CreateMockInaccessibleImage(),
@@ -2602,7 +2404,7 @@ TEST_P(PdfOcrServiceTest, PageBatching) {
 }
 
 TEST_P(PdfOcrServiceTest, UMAMetrics) {
-  CreatePdfAccessibilityTree(/*override_on_ocr_data_received=*/true);
+  CreatePdfAccessibilityTree();
 
   constexpr uint32_t kPagesPerBatch = 1u;
   base::HistogramTester histograms;
@@ -2616,13 +2418,13 @@ TEST_P(PdfOcrServiceTest, UMAMetrics) {
   for (uint32_t i = 0; i < page_count; ++i) {
     if (!is_ocr_service_started_before_pdf_loads) {
       ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
-      ui::AXNode* page_node = root_node->children()[i + 1];
+      ui::AXNode* page_node = root_node->GetChildAtIndex(i + 1);
       ASSERT_NE(nullptr, page_node);
-      ui::AXNode* paragraph_node = page_node->children()[0];
+      ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
       ASSERT_NE(nullptr, paragraph_node);
-      ui::AXNode* image1_node = paragraph_node->children()[0];
+      ui::AXNode* image1_node = paragraph_node->GetChildAtIndex(0);
       ASSERT_NE(nullptr, image1_node);
-      ui::AXNode* image2_node = paragraph_node->children()[1];
+      ui::AXNode* image2_node = paragraph_node->GetChildAtIndex(1);
       ASSERT_NE(nullptr, image2_node);
       base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
       requests.emplace(image1_node->id(), CreateMockInaccessibleImage(),
@@ -2667,7 +2469,7 @@ TEST_P(PdfOcrServiceTest, UMAMetrics) {
 }
 
 TEST_P(PdfOcrServiceTest, EmptyOCRResults) {
-  CreatePdfAccessibilityTree(/*override_on_ocr_data_received=*/false);
+  CreatePdfAccessibilityTree();
 
   constexpr uint32_t kPagesPerBatch = 20u;
   bool is_ocr_service_started_before_pdf_loads;
@@ -2680,13 +2482,13 @@ TEST_P(PdfOcrServiceTest, EmptyOCRResults) {
   for (uint32_t i = 0; i < page_count; ++i) {
     if (!is_ocr_service_started_before_pdf_loads) {
       ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
-      ui::AXNode* page_node = root_node->children()[i + 1];
+      ui::AXNode* page_node = root_node->GetChildAtIndex(i + 1);
       ASSERT_NE(nullptr, page_node);
-      ui::AXNode* paragraph_node = page_node->children()[0];
+      ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
       ASSERT_NE(nullptr, paragraph_node);
-      ui::AXNode* image1_node = paragraph_node->children()[0];
+      ui::AXNode* image1_node = paragraph_node->GetChildAtIndex(0);
       ASSERT_NE(nullptr, image1_node);
-      ui::AXNode* image2_node = paragraph_node->children()[1];
+      ui::AXNode* image2_node = paragraph_node->GetChildAtIndex(1);
       ASSERT_NE(nullptr, image2_node);
       base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
       requests.emplace(image1_node->id(), CreateMockInaccessibleImage(),
@@ -2710,14 +2512,14 @@ TEST_P(PdfOcrServiceTest, EmptyOCRResults) {
   ASSERT_NE(nullptr, root_node);
   ASSERT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
   uint32_t pages_plus_status_node_count = doc_info_.page_count + 1u;
-  ASSERT_EQ(pages_plus_status_node_count, root_node->children().size());
+  ASSERT_EQ(pages_plus_status_node_count, root_node->GetChildCount());
 
-  ui::AXNode* status_wrapper_node = root_node->children()[0];
+  ui::AXNode* status_wrapper_node = root_node->GetChildAtIndex(0);
   ASSERT_NE(nullptr, status_wrapper_node);
   ASSERT_EQ(ax::mojom::Role::kBanner, status_wrapper_node->GetRole());
-  ASSERT_EQ(1u, status_wrapper_node->children().size());
+  ASSERT_EQ(1u, status_wrapper_node->GetChildCount());
 
-  ui::AXNode* status_node = status_wrapper_node->children()[0];
+  ui::AXNode* status_node = status_wrapper_node->GetChildAtIndex(0);
   ASSERT_NE(nullptr, status_node);
   ASSERT_EQ(ax::mojom::Role::kStatus, status_node->GetRole());
   // Note that the string below needs to be synced with `IDS_PDF_OCR_NO_RESULT`.
@@ -2746,17 +2548,13 @@ class PdfOcrTest : public PdfAccessibilityTreeTest {
   PdfOcrTest& operator=(const PdfOcrTest&) = delete;
   ~PdfOcrTest() override = default;
 
- protected:
-  void SetUp() override {
-    PdfAccessibilityTreeTest::SetUp();
-    CreatePdfAccessibilityTree();
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(PdfOcrTest, CheckLiveRegionPoliteStatus) {
+  CreatePdfAccessibilityTree();
+
   page_objects_.images.push_back(CreateMockInaccessibleImage());
 
   // Get and use the underlying AXTree to create an AXEventGenerator. This
@@ -2774,17 +2572,17 @@ TEST_F(PdfOcrTest, CheckLiveRegionPoliteStatus) {
   ASSERT_NE(nullptr, root_node);
   EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
   uint32_t pages_plus_status_node_count = doc_info_.page_count + 1u;
-  ASSERT_EQ(pages_plus_status_node_count, root_node->children().size());
+  ASSERT_EQ(pages_plus_status_node_count, root_node->GetChildCount());
 
-  ui::AXNode* status_wrapper_node = root_node->children()[0];
+  ui::AXNode* status_wrapper_node = root_node->GetChildAtIndex(0);
   ASSERT_NE(nullptr, status_wrapper_node);
   EXPECT_EQ(ax::mojom::Role::kBanner, status_wrapper_node->GetRole());
-  ASSERT_EQ(1u, status_wrapper_node->children().size());
+  ASSERT_EQ(1u, status_wrapper_node->GetChildCount());
 
-  ui::AXNode* status_node = status_wrapper_node->children()[0];
+  ui::AXNode* status_node = status_wrapper_node->GetChildAtIndex(0);
   ASSERT_NE(nullptr, status_node);
   EXPECT_EQ(ax::mojom::Role::kStatus, status_node->GetRole());
-  EXPECT_EQ(0u, status_node->children().size());
+  EXPECT_EQ(0u, status_node->GetChildCount());
   EXPECT_TRUE(
       status_node->GetBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic));
   constexpr char kDefaultLiveRegionRelevant[] = "additions text";
@@ -2803,15 +2601,15 @@ TEST_F(PdfOcrTest, CheckLiveRegionPoliteStatus) {
             status_node->GetStringAttribute(
                 ax::mojom::StringAttribute::kContainerLiveStatus));
 
-  ui::AXNode* page_node = root_node->children()[1];
+  ui::AXNode* page_node = root_node->GetChildAtIndex(1);
   ASSERT_NE(nullptr, page_node);
-  ASSERT_EQ(1u, page_node->children().size());
+  ASSERT_EQ(1u, page_node->GetChildCount());
 
-  ui::AXNode* paragraph_node = page_node->children()[0];
+  ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
   ASSERT_NE(nullptr, paragraph_node);
-  ASSERT_EQ(1u, paragraph_node->children().size());
+  ASSERT_EQ(1u, paragraph_node->GetChildCount());
 
-  ui::AXNode* image_node = paragraph_node->children()[0];
+  ui::AXNode* image_node = paragraph_node->GetChildAtIndex(0);
   ASSERT_NE(nullptr, image_node);
 
   EXPECT_THAT(
@@ -2821,6 +2619,170 @@ TEST_F(PdfOcrTest, CheckLiveRegionPoliteStatus) {
                          root_node->id()),
           HasEventAtNode(ui::AXEventGenerator::Event::LIVE_REGION_CREATED,
                          status_node->id())));
+}
+
+TEST_F(PdfOcrTest, TestTransformFromOnOcrDataReceived) {
+  // Assume `image` contains some text that will be extracted by OCR. `image`
+  // will be passed to the function that creates a transform, which will be
+  // then applied to the text paragraphs extracted by OCR.
+  chrome_pdf::AccessibilityImageInfo image;
+  // Simulate that the width and height of `image` got shrunk by 80% in
+  // `image_data`.
+  constexpr float kScaleFactor = 0.8f;
+  constexpr float kImageWidth = 200.0f;
+  constexpr float kImageHeight = 200.0f;
+  constexpr int kBitmapWidth = static_cast<int>(kImageWidth * kScaleFactor);
+  constexpr int kBitmapHeight = static_cast<int>(kImageHeight * kScaleFactor);
+  image.page_object_index = 0;
+  image.bounds = gfx::RectF(0.0f, 0.0f, kImageWidth, kImageHeight);
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kBitmapWidth, kBitmapHeight, /*isOpaque=*/false);
+  image_fetcher_.AddImage(/*page_index=*/0, image.page_object_index,
+                          std::move(bitmap));
+  page_objects_.images.push_back(image);
+
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+
+  CreatePdfAccessibilityTree();
+
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+
+  /*
+   * Expected PDF accessibility tree structure (with PDF OCR feature flag)
+   * Document
+   * ++ Status
+   * ++ Region
+   * ++++ Paragraph
+   * ++++++ image
+   */
+
+  ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
+  ASSERT_TRUE(root_node);
+  EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
+  ASSERT_EQ(2u, root_node->GetChildCount());
+
+  ui::AXNode* status_node_wrapper = root_node->GetChildAtIndex(0);
+  ASSERT_TRUE(status_node_wrapper);
+  EXPECT_EQ(ax::mojom::Role::kBanner, status_node_wrapper->GetRole());
+  ASSERT_EQ(1u, status_node_wrapper->GetChildCount());
+
+  ui::AXNode* status_node = status_node_wrapper->GetChildAtIndex(0);
+  ASSERT_TRUE(status_node);
+  EXPECT_EQ(ax::mojom::Role::kStatus, status_node->GetRole());
+  ASSERT_EQ(0u, status_node->GetChildCount());
+
+  ui::AXNode* page_node = root_node->GetChildAtIndex(1);
+  ASSERT_TRUE(page_node);
+  EXPECT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
+  ASSERT_EQ(1u, page_node->GetChildCount());
+
+  ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
+  ASSERT_TRUE(paragraph_node);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
+  ASSERT_EQ(1u, paragraph_node->GetChildCount());
+
+  ui::AXNode* image_node = paragraph_node->GetChildAtIndex(0);
+  ASSERT_TRUE(image_node);
+  EXPECT_EQ(ax::mojom::Role::kImage, image_node->GetRole());
+  ASSERT_EQ(0u, image_node->GetChildCount());
+  EXPECT_EQ(image.bounds, image_node->data().relative_bounds.bounds);
+
+  // Simulate creating a child tree using OCR results.
+  pdf_accessibility_tree_->CreateOcrService();
+
+  // Text bounds before applying the transform.
+  constexpr gfx::RectF kTextBoundsBeforeTransform1 = {{8.0f, 8.0f},
+                                                      {80.0f, 24.0f}};
+  constexpr gfx::RectF kTextBoundsBeforeTransform2 = {{16.0f, 88.0f},
+                                                      {40.0f, 56.0f}};
+  ui::AXTreeUpdate child_tree_update = CreateMockOCRResult(
+      image.bounds, kTextBoundsBeforeTransform1, kTextBoundsBeforeTransform2);
+  WaitForThreadTasks();
+
+  EXPECT_EQ(child_tree_update.tree_data.tree_id, ui::AXTreeIDUnknown());
+
+  PdfAccessibilityTree::PdfOcrRequest request(
+      image_node->id(), image, paragraph_node->id(), page_node->id(),
+      /*page_index=*/0);
+  // Image pixel size is automatically set when OCR request is running, but
+  // this test skips that step.
+  request.image_pixel_size = gfx::SizeF(kBitmapWidth, kBitmapHeight);
+
+  // Reset `remaining_page_count_` to be zero. `remaining_page_count_` is later
+  // used in `OnOcrDataReceived()` to check whether OCR is done or not. Note
+  // that the OCR is considered to be done when `remaining_page_count_` == 0.
+  pdf_accessibility_tree_->ocr_service_for_testing()
+      ->ResetRemainingPageCountForTesting();
+  pdf_accessibility_tree_->OnOcrDataReceived(
+      std::vector<PdfAccessibilityTree::PdfOcrRequest>{{request}},
+      std::vector<ui::AXTreeUpdate>{child_tree_update});
+  WaitForThreadTasks();
+
+  /*
+   * Expected PDF accessibility tree structure (after running OCR)
+   * Document
+   * ++ Status
+   * ++ Region
+   * ++++ Paragraph
+   * ++++++ Region (child tree)
+   * ++++++++ Static Text
+   * ++++++++ Static Text
+   */
+
+  root_node = pdf_accessibility_tree_->GetRoot();
+  ASSERT_TRUE(root_node);
+  ASSERT_EQ(2u, root_node->GetChildCount());
+
+  status_node_wrapper = root_node->GetChildAtIndex(0);
+  ASSERT_TRUE(status_node_wrapper);
+  EXPECT_EQ(ax::mojom::Role::kBanner, status_node_wrapper->GetRole());
+  ASSERT_EQ(1u, status_node_wrapper->GetChildCount());
+
+  status_node = status_node_wrapper->GetChildAtIndex(0);
+  ASSERT_TRUE(status_node);
+  EXPECT_EQ(ax::mojom::Role::kStatus, status_node->GetRole());
+
+  page_node = root_node->GetChildAtIndex(1);
+  ASSERT_TRUE(page_node);
+  EXPECT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
+  ASSERT_EQ(1u, page_node->GetChildCount());
+
+  paragraph_node = page_node->GetChildAtIndex(0);
+  ASSERT_TRUE(paragraph_node);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
+  ASSERT_EQ(1u, paragraph_node->GetChildCount());
+
+  ui::AXNode* region_node = paragraph_node->GetChildAtIndex(0);
+  ASSERT_TRUE(region_node);
+  EXPECT_EQ(ax::mojom::Role::kRegion, region_node->GetRole());
+  ASSERT_EQ(2u, region_node->GetChildCount());
+
+  // Expected text bounds after applying the transform. These numbers are
+  // expected to be kTextBoundsBeforeTransform * 1 / kScaleFactor.
+  constexpr gfx::RectF kExpectedTextBoundRelativeToTreeBounds1 = {
+      {10.0f, 10.0f}, {100.0f, 30.0f}};
+  constexpr gfx::RectF kExpectedTextBoundRelativeToTreeBounds2 = {
+      {20.0f, 110.0f}, {50.0f, 70.0f}};
+
+  // Check the nodes from OCR results.
+  ui::AXNode* ocred_node = region_node->GetChildAtIndex(0);
+  ASSERT_TRUE(ocred_node);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, ocred_node->GetRole());
+  gfx::RectF bounds = ocred_node->data().relative_bounds.bounds;
+  // The bounds already got updated inside of OnOcrDataReceived().
+  CompareRect(kExpectedTextBoundRelativeToTreeBounds1, bounds);
+
+  ocred_node = region_node->GetChildAtIndex(1);
+  ASSERT_TRUE(ocred_node);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, ocred_node->GetRole());
+  bounds = ocred_node->data().relative_bounds.bounds;
+  // The bounds already got updated inside of OnOcrDataReceived().
+  CompareRect(kExpectedTextBoundRelativeToTreeBounds2, bounds);
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
