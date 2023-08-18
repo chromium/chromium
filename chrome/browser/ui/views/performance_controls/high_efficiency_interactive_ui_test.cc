@@ -719,9 +719,8 @@ class HighEfficiencyFaviconTreatmentTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// See crbug.com/1472907
 IN_PROC_BROWSER_TEST_P(HighEfficiencyFaviconTreatmentTest,
-                       DISABLED_FaviconTreatmentOnDiscard) {
+                       FaviconTreatmentOnDiscard) {
   constexpr char kFirstTabFavicon[] = "first_tab_favicon";
 
   RunTestSequence(
@@ -744,10 +743,10 @@ IN_PROC_BROWSER_TEST_P(HighEfficiencyFaviconTreatmentTest,
 std::vector<FaviconScreenShotTestConfig> HighEfficiencyTestConfig() {
   return {{performance_manager::features::DiscardTabTreatmentOptions::
                kFadeFullsizedFavicon,
-           "FadeFullSizedFaviconOnDiscard", "4492205"},
+           "FadeFullSizedFaviconOnDiscard", "4786929"},
           {performance_manager::features::DiscardTabTreatmentOptions::
                kFadeSmallFaviconWithRing,
-           "FadeSmallFaviconOnDiscard", "4633624"}};
+           "FadeSmallFaviconOnDiscard", "4786929"}};
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
