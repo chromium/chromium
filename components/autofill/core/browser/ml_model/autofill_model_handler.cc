@@ -18,13 +18,12 @@
 namespace autofill {
 
 AutofillModelHandler::AutofillModelHandler(
-    optimization_guide::OptimizationGuideModelProvider* model_provider,
-    const base::FilePath& dictionary_path)
+    optimization_guide::OptimizationGuideModelProvider* model_provider)
     : optimization_guide::ModelHandler<ServerFieldType, const FormFieldData&>(
           model_provider,
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
-          std::make_unique<AutofillModelExecutor>(dictionary_path),
+          std::make_unique<AutofillModelExecutor>(),
           /*model_inference_timeout=*/absl::nullopt,
           optimization_guide::proto::OptimizationTarget::
               OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,

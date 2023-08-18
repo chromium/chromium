@@ -9,10 +9,12 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
@@ -42,8 +44,12 @@ class AutofillModelHandlerTest : public testing::Test {
         test_data_dir.AppendASCII("autofill_model_baseline.tflite");
     base::FilePath dictionary_path =
         test_data_dir.AppendASCII("dictionary_test.txt");
-    model_handler_ = std::make_unique<AutofillModelHandler>(
-        model_provider_.get(), dictionary_path);
+    features_.InitAndEnableFeatureWithParameters(
+        features::kAutofillModelPredictions,
+        {{features::kAutofillModelDictionaryFilePath.name,
+          dictionary_path.MaybeAsASCII()}});
+    model_handler_ =
+        std::make_unique<AutofillModelHandler>(model_provider_.get());
     SimulateRetrieveModelFromServer(model_file_path);
     task_environment_.RunUntilIdle();
   }
@@ -71,6 +77,7 @@ class AutofillModelHandlerTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList features_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       model_provider_;
   std::unique_ptr<AutofillModelHandler> model_handler_;

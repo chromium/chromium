@@ -6,19 +6,23 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
 
 namespace autofill {
 
-AutofillModelExecutor::AutofillModelExecutor(
-    const base::FilePath& dictionary_path)
-    : vectorizer_(AutofillModelVectorizer::CreateVectorizer(dictionary_path)) {
+AutofillModelExecutor::AutofillModelExecutor() {
+  CHECK(base::FeatureList::IsEnabled(features::kAutofillModelPredictions));
+  vectorizer_ =
+      AutofillModelVectorizer::CreateVectorizer(base::FilePath::FromASCII(
+          features::kAutofillModelDictionaryFilePath.Get()));
   CHECK(vectorizer_);
 }
 AutofillModelExecutor::~AutofillModelExecutor() = default;

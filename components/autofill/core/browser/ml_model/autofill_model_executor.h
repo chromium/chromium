@@ -22,7 +22,7 @@ class AutofillModelExecutor
     : public optimization_guide::BaseModelExecutor<ServerFieldType,
                                                    const FormFieldData&> {
  public:
-  explicit AutofillModelExecutor(const base::FilePath& dictionary_path);
+  AutofillModelExecutor();
   ~AutofillModelExecutor() override;
 
  protected:

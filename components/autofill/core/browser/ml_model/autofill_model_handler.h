@@ -24,9 +24,8 @@ class AutofillModelHandler
     : public optimization_guide::ModelHandler<ServerFieldType,
                                               const FormFieldData&> {
  public:
-  AutofillModelHandler(
-      optimization_guide::OptimizationGuideModelProvider* model_provider,
-      const base::FilePath& dictionary_path);
+  explicit AutofillModelHandler(
+      optimization_guide::OptimizationGuideModelProvider* model_provider);
   ~AutofillModelHandler() override;
 
   // This function will asynchronously query predictions for the `form_data`

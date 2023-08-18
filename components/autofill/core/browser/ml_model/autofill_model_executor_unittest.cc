@@ -6,13 +6,16 @@
 
 #include "base/base_paths.h"
 #include "base/functional/callback.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,9 +40,13 @@ class AutofillModelExecutorTest : public testing::Test {
         test_data_dir.AppendASCII("autofill_model_baseline.tflite");
     base::FilePath dictionary_path =
         test_data_dir.AppendASCII("dictionary_test.txt");
+    features_.InitAndEnableFeatureWithParameters(
+        features::kAutofillModelPredictions,
+        {{features::kAutofillModelDictionaryFilePath.name,
+          dictionary_path.MaybeAsASCII()}});
     execution_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-    model_executor_ = std::make_unique<AutofillModelExecutor>(dictionary_path);
+    model_executor_ = std::make_unique<AutofillModelExecutor>();
     model_executor_->InitializeAndMoveToExecutionThread(
         /*model_inference_timeout=*/absl::nullopt,
         optimization_guide::proto::
@@ -56,6 +63,7 @@ class AutofillModelExecutorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> execution_task_runner_;
   base::FilePath model_file_path_;
+  base::test::ScopedFeatureList features_;
   std::unique_ptr<AutofillModelExecutor> model_executor_;
 };
 

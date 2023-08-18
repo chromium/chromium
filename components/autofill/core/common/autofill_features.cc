@@ -380,6 +380,21 @@ BASE_FEATURE(kAutofillLabelAffixRemoval,
              "AutofillLabelAffixRemoval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, all behaviours related to the on-device machine learning
+// model for field type predictions will be guarded.
+// TODO(crbug.com/1465926): Remove when launched.
+BASE_FEATURE(kAutofillModelPredictions,
+             "AutofillModelPredictions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The dictionary will be used for creating a new `AutofillModelVectorizer`
+// for vectorizing the model input. The `AutofillModelExecutor` will use
+// that dictionary path to initialize the vectorizer.
+// TODO(crbug.com/1465926): Remove once model is replaced with bigger model
+// and store dictionary path in the metadata's additional files.
+const base::FeatureParam<std::string> kAutofillModelDictionaryFilePath{
+    &kAutofillModelPredictions, "dictionary_path", "default"};
+
 // Allows passing a set of overrides for Autofill server predictions.
 // Example command line to override server predictions manually:
 // chrome --enable-features=AutofillOverridePredictions:spec/1_2_4-7_8_9
