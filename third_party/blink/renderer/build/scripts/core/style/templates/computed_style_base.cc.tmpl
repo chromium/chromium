@@ -107,6 +107,9 @@ constexpr bool HasLogging<
 template<typename> constexpr bool IsPersistent = false;
 template<typename T> constexpr bool IsPersistent<Persistent<T>> = true;
 
+template <typename> constexpr bool IsScopedRefPtr = false;
+template <typename T> constexpr bool IsScopedRefPtr<scoped_refptr<T>> = true;
+
 template<class T>
 static std::string DebugStringForField(const T& t) {
   if constexpr (std::is_same_v<T, bool>) {
@@ -114,6 +117,13 @@ static std::string DebugStringForField(const T& t) {
   }
   if constexpr (IsPersistent<T>) {
     if constexpr (HasLogging<typename T::PointeeType>) {
+      std::stringstream ss;
+      ss << *t;
+      return ss.str();
+    }
+  }
+  if constexpr (IsScopedRefPtr<T>) {
+    if constexpr (HasLogging<typename T::element_type>) {
       std::stringstream ss;
       ss << *t;
       return ss.str();

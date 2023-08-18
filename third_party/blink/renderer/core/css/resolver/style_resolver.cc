@@ -753,9 +753,8 @@ void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,
   }
 }
 
-void StyleResolver::MatchAuthorRules(
-    const Element& element,
-    ElementRuleCollector& collector) {
+void StyleResolver::MatchAuthorRules(const Element& element,
+                                     ElementRuleCollector& collector) {
   MatchHostRules(element, collector, tracker_);
   MatchSlottedRules(element, collector, tracker_);
   MatchElementScopeRules(element, collector, tracker_);
