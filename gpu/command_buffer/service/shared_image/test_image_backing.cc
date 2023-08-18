@@ -78,7 +78,7 @@ class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
       const gfx::Rect& update_rect,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return {};
     }
@@ -92,7 +92,7 @@ class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
   std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return {};
     }
@@ -106,7 +106,7 @@ class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
   std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return {};
     }

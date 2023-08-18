@@ -75,7 +75,7 @@ class RawDrawImageBacking::SkiaRawDrawImageRepresentation
       const gfx::Rect& update_rect,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     NOTIMPLEMENTED();
     return {};
   }
@@ -83,7 +83,7 @@ class RawDrawImageBacking::SkiaRawDrawImageRepresentation
   std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     NOTIMPLEMENTED();
     return {};
   }
@@ -93,7 +93,7 @@ class RawDrawImageBacking::SkiaRawDrawImageRepresentation
   std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     auto promise_texture = raw_draw_backing()->BeginSkiaReadAccess();
     if (!promise_texture)
       return {};

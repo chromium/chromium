@@ -62,7 +62,7 @@ class WrappedSkImageBacking::SkiaImageRepresentationImpl
       const gfx::Rect& update_rect,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     write_surfaces_ = wrapped_sk_image()->GetSkSurfaces(
         final_msaa_count, surface_props, context_state_);
     for (auto& surface : write_surfaces_) {
@@ -75,7 +75,7 @@ class WrappedSkImageBacking::SkiaImageRepresentationImpl
   std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     return wrapped_sk_image()->GetPromiseTextures();
   }
 
@@ -95,7 +95,7 @@ class WrappedSkImageBacking::SkiaImageRepresentationImpl
   std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     DCHECK(write_surfaces_.empty());
     return wrapped_sk_image()->GetPromiseTextures();
   }

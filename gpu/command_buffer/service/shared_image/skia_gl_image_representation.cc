@@ -131,7 +131,7 @@ std::vector<sk_sp<SkSurface>> SkiaGLImageRepresentation::BeginWriteAccess(
     const gfx::Rect& update_rect,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   DCHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CheckContext();
 
@@ -172,7 +172,7 @@ std::vector<sk_sp<GrPromiseImageTexture>>
 SkiaGLImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   DCHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CheckContext();
 
@@ -197,7 +197,7 @@ std::vector<sk_sp<GrPromiseImageTexture>>
 SkiaGLImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   DCHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CheckContext();
 

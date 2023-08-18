@@ -255,7 +255,7 @@ std::vector<sk_sp<SkSurface>> SkiaIOSurfaceRepresentation::BeginWriteAccess(
     const gfx::Rect& update_rect,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   CheckContext();
   if (egl_state_) {
     DCHECK(context_state_->GrContextIsGL());
@@ -304,7 +304,7 @@ std::vector<sk_sp<GrPromiseImageTexture>>
 SkiaIOSurfaceRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   CheckContext();
   if (egl_state_) {
     DCHECK(context_state_->GrContextIsGL());
@@ -336,7 +336,7 @@ std::vector<sk_sp<GrPromiseImageTexture>>
 SkiaIOSurfaceRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   CheckContext();
   if (egl_state_) {
     DCHECK(context_state_->GrContextIsGL());

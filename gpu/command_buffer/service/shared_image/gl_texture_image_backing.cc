@@ -127,7 +127,7 @@ class SkiaGaneshImageRepresentationImpl : public SkiaGaneshImageRepresentation {
       const gfx::Rect& update_rect,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     CheckContext();
 
     if (!write_surfaces_.empty()) {
@@ -161,7 +161,7 @@ class SkiaGaneshImageRepresentationImpl : public SkiaGaneshImageRepresentation {
   std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphore,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     CheckContext();
 
     return promise_textures_;
@@ -181,7 +181,7 @@ class SkiaGaneshImageRepresentationImpl : public SkiaGaneshImageRepresentation {
   std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     CheckContext();
     return promise_textures_;
   }

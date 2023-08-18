@@ -331,7 +331,7 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
       const gfx::Rect& update_rect,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     // Writes are not intended to used for video backed representations.
     NOTIMPLEMENTED();
     return {};
@@ -342,7 +342,7 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
   std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override {
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
 
     DCHECK(!scoped_hardware_buffer_);

@@ -26,7 +26,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrBackendSurfaceMutableState.h"
+#include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/gl_utils.h"
@@ -67,7 +67,7 @@ SkiaVkAndroidImageRepresentation::BeginWriteAccess(
     const gfx::Rect& update_rect,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   DCHECK_EQ(mode_, RepresentationAccessMode::kNone);
   DCHECK(promise_texture_);
 
@@ -108,7 +108,7 @@ std::vector<sk_sp<GrPromiseImageTexture>>
 SkiaVkAndroidImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   DCHECK_EQ(mode_, RepresentationAccessMode::kNone);
   DCHECK(promise_texture_);
 
@@ -142,7 +142,7 @@ std::vector<sk_sp<GrPromiseImageTexture>>
 SkiaVkAndroidImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   DCHECK_EQ(mode_, RepresentationAccessMode::kNone);
   DCHECK(!surface_);
   DCHECK(promise_texture_);
@@ -285,7 +285,7 @@ void SkiaVkAndroidImageRepresentation::EndAccess(bool readonly) {
   mode_ = RepresentationAccessMode::kNone;
 }
 
-std::unique_ptr<GrBackendSurfaceMutableState>
+std::unique_ptr<skgpu::MutableTextureState>
 SkiaVkAndroidImageRepresentation::GetEndAccessState() {
   // There is no layout to change if there is no image.
   if (!vulkan_image_)
@@ -302,7 +302,7 @@ SkiaVkAndroidImageRepresentation::GetEndAccessState() {
   // create new vkImage each time.
   if ((android_backing()->usage() & ~kSingleDeviceUsage) ||
       android_backing()->is_thread_safe()) {
-    return std::make_unique<GrBackendSurfaceMutableState>(
+    return std::make_unique<skgpu::MutableTextureState>(
         VK_IMAGE_LAYOUT_UNDEFINED, vulkan_image_->queue_family_index());
   }
   return nullptr;

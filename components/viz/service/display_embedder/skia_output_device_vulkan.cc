@@ -24,10 +24,10 @@
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrBackendSurfaceMutableState.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrRecordingContext.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -111,8 +111,8 @@ void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {
     DCHECK(sk_surface);
     auto queue_index =
         context_provider_->GetDeviceQueue()->GetVulkanQueueIndex();
-    GrBackendSurfaceMutableState state(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                                       queue_index);
+    skgpu::MutableTextureState state(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                                     queue_index);
     if (GrDirectContext* direct_context =
             GrAsDirectContext(sk_surface->recordingContext())) {
       direct_context->flush(sk_surface, {}, &state);

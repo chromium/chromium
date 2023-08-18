@@ -191,7 +191,7 @@ class WrappedSkiaGaneshCompoundImageRepresentation
       const gfx::Rect& update_rect,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) final {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) final {
     compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kSkia,
                                           AccessMode::kWrite);
     return wrapped_->BeginWriteAccess(final_msaa_count, surface_props,
@@ -201,7 +201,7 @@ class WrappedSkiaGaneshCompoundImageRepresentation
   std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) final {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) final {
     compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kSkia,
                                           AccessMode::kWrite);
     return wrapped_->BeginWriteAccess(begin_semaphores, end_semaphores,
@@ -212,7 +212,7 @@ class WrappedSkiaGaneshCompoundImageRepresentation
   std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) final {
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) final {
     compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kSkia,
                                           AccessMode::kRead);
     return wrapped_->BeginReadAccess(begin_semaphores, end_semaphores,

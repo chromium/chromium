@@ -130,7 +130,7 @@ SkiaGLImageRepresentationDXGISwapChain::BeginWriteAccess(
     const gfx::Rect& update_rect,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   std::vector<sk_sp<SkSurface>> surfaces =
       SkiaGLImageRepresentation::BeginWriteAccess(
           final_msaa_count, surface_props, update_rect, begin_semaphores,

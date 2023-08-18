@@ -66,7 +66,7 @@ DCompSurfaceSkiaGaneshImageRepresentation::BeginWriteAccess(
     const gfx::Rect& update_rect,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   DCompSurfaceImageBacking* dcomp_backing =
       static_cast<DCompSurfaceImageBacking*>(backing());
   sk_sp<SkSurface> surface = dcomp_backing->BeginDrawGanesh(
@@ -88,7 +88,7 @@ std::vector<sk_sp<GrPromiseImageTexture>>
 DCompSurfaceSkiaGaneshImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   NOTREACHED();
   return {};
 }
@@ -97,7 +97,7 @@ std::vector<sk_sp<GrPromiseImageTexture>>
 DCompSurfaceSkiaGaneshImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   NOTREACHED();
   return {};
 }

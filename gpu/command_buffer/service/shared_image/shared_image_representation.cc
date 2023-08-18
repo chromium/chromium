@@ -13,9 +13,9 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/gpu/GrBackendSurfaceMutableState.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/YUVABackendTextures.h"
@@ -234,7 +234,7 @@ SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::ScopedGaneshWriteAccess(
     base::PassKey<SkiaGaneshImageRepresentation> /* pass_key */,
     SkiaImageRepresentation* representation,
     std::vector<sk_sp<SkSurface>> surfaces,
-    std::unique_ptr<GrBackendSurfaceMutableState> end_state)
+    std::unique_ptr<skgpu::MutableTextureState> end_state)
     : ScopedWriteAccess(representation, std::move(surfaces)),
       end_state_(std::move(end_state)) {
   DCHECK(!surfaces_.empty());
@@ -244,7 +244,7 @@ SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::ScopedGaneshWriteAccess(
     base::PassKey<SkiaGaneshImageRepresentation> /* pass_key */,
     SkiaImageRepresentation* representation,
     std::vector<sk_sp<GrPromiseImageTexture>> promise_image_textures,
-    std::unique_ptr<GrBackendSurfaceMutableState> end_state)
+    std::unique_ptr<skgpu::MutableTextureState> end_state)
     : ScopedWriteAccess(representation, std::move(promise_image_textures)),
       end_state_(std::move(end_state)) {
   DCHECK(!promise_image_textures_.empty());
@@ -299,7 +299,7 @@ SkiaGaneshImageRepresentation::BeginScopedWriteAccess(
     return nullptr;
   }
 
-  std::unique_ptr<GrBackendSurfaceMutableState> end_state;
+  std::unique_ptr<skgpu::MutableTextureState> end_state;
   if (use_sk_surface) {
     std::vector<sk_sp<SkSurface>> surfaces =
         BeginWriteAccess(final_msaa_count, surface_props, update_rect,
@@ -358,7 +358,7 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::ScopedGaneshReadAccess(
     base::PassKey<SkiaGaneshImageRepresentation> /* pass_key */,
     SkiaImageRepresentation* representation,
     std::vector<sk_sp<GrPromiseImageTexture>> promise_image_textures,
-    std::unique_ptr<GrBackendSurfaceMutableState> end_state)
+    std::unique_ptr<skgpu::MutableTextureState> end_state)
     : ScopedReadAccess(representation, std::move(promise_image_textures)),
       end_state_(std::move(end_state)) {
   DCHECK(!promise_image_textures_.empty());
@@ -472,7 +472,7 @@ SkiaGaneshImageRepresentation::BeginScopedReadAccess(
     return nullptr;
   }
 
-  std::unique_ptr<GrBackendSurfaceMutableState> end_state;
+  std::unique_ptr<skgpu::MutableTextureState> end_state;
   std::vector<sk_sp<GrPromiseImageTexture>> promise_image_textures =
       BeginReadAccess(begin_semaphores, end_semaphores, &end_state);
   if (promise_image_textures.empty()) {
