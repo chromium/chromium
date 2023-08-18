@@ -90,6 +90,10 @@ bool ShouldShowForState(PrefService* local_state,
 // version, which may return 404 if there is no page for this milestone.
 GURL GetServerURL(bool may_redirect);
 
+// Same as GetServerURL, except version m117 and m118 are hard-coded to
+// the same What's New version.
+GURL GetServerURLForRefresh();
+
 // Return the startup URL for the WebUI page.
 GURL GetWebUIStartupURL();
 

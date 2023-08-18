@@ -153,6 +153,11 @@ bool ShouldShowForState(PrefService* local_state,
   return true;
 }
 
+GURL GetServerURLForRefresh() {
+  return net::AppendQueryParameter(GURL(kChromeWhatsNewRefreshURL), "internal",
+                                   "true");
+}
+
 GURL GetServerURL(bool may_redirect) {
   const GURL url =
       may_redirect
@@ -317,9 +322,7 @@ void StartWhatsNewFetch(Browser* browser) {
     // display again. ShouldShowRefresh should not be called after this
     // boolean is set to true.
     local_state->SetBoolean(prefs::kHasShownRefreshWhatsNew, true);
-    new WhatsNewFetcher(
-        browser, net::AppendQueryParameter(GURL(kChromeWhatsNewRefreshURL),
-                                           "internal", "true"));
+    new WhatsNewFetcher(browser, GetServerURLForRefresh());
     return;
   }
   new WhatsNewFetcher(browser);
