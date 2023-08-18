@@ -241,6 +241,10 @@ class AppServiceProxyLacros : public KeyedService,
       std::unique_ptr<apps::WebsiteMetricsServiceLacros>
           website_metrics_service);
 
+  void SetBrowserAppInstanceTrackerForTesting(
+      std::unique_ptr<apps::BrowserAppInstanceTracker>
+          browser_app_instance_tracker);
+
   // Exposes AppServiceSubscriber methods to allow tests to fake calls that
   // would normally come from Ash via the mojo interface.
   crosapi::mojom::AppServiceSubscriber* AsAppServiceSubscriberForTesting();

@@ -700,7 +700,12 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 #endif
 
   app->allow_uninstall = web_app->CanUserUninstallWebApp();
+
+#if BUILDFLAG(IS_CHROMEOS)
   app->paused = IsPaused(web_app->app_id());
+#else
+  app->paused = false;
+#endif
 
   // Add the intent filters for PWAs.
   base::Extend(app->intent_filters,
@@ -821,38 +826,51 @@ void WebAppPublisherHelper::SetIconEffect(const std::string& app_id) {
   delegate_->PublishWebApp(std::move(app));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void WebAppPublisherHelper::PauseApp(const std::string& app_id) {
+  if (IsShuttingDown()) {
+    return;
+  }
+
   if (paused_apps_.MaybeAddApp(app_id)) {
     SetIconEffect(app_id);
   }
 
-  constexpr bool kPaused = true;
-  delegate_->PublishWebApp(
-      paused_apps_.CreateAppWithPauseStatus(app_type(), app_id, kPaused));
+  if (!IsWebAppsCrosapiEnabled()) {
+    provider_->ui_manager().CloseAppWindows(app_id);
+  } else {
+    CHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+        profile_));
 
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if (!browser->is_type_app()) {
-      continue;
-    }
-    if (GetAppIdFromApplicationName(browser->app_name()) == app_id) {
-      browser->tab_strip_model()->CloseAllTabs();
-    }
+    apps::BrowserAppInstanceTracker* instance_tracker =
+        apps::AppServiceProxyFactory::GetForProfile(profile_)
+            ->BrowserAppInstanceTracker();
+    CHECK(instance_tracker);
+
+    instance_tracker->StopInstancesOfApp(app_id);
   }
+
+  delegate_->PublishWebApp(paused_apps_.CreateAppWithPauseStatus(
+      app_type(), app_id, /*paused=*/true));
 }
 
 void WebAppPublisherHelper::UnpauseApp(const std::string& app_id) {
+  if (IsShuttingDown()) {
+    return;
+  }
+
   if (paused_apps_.MaybeRemoveApp(app_id)) {
     SetIconEffect(app_id);
   }
 
-  constexpr bool kPaused = false;
-  delegate_->PublishWebApp(
-      paused_apps_.CreateAppWithPauseStatus(app_type(), app_id, kPaused));
+  delegate_->PublishWebApp(paused_apps_.CreateAppWithPauseStatus(
+      app_type(), app_id, /*paused=*/false));
 }
 
 bool WebAppPublisherHelper::IsPaused(const std::string& app_id) {
   return paused_apps_.IsPaused(app_id);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
                                      apps::IconType icon_type,
@@ -1142,16 +1160,21 @@ void WebAppPublisherHelper::StopApp(const std::string& app_id) {
   }
 
   if (!IsWebAppsCrosapiEnabled()) {
+    provider_->ui_manager().CloseAppWindows(app_id);
     return;
   }
+
+  CHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
 
   apps::BrowserAppInstanceTracker* instance_tracker =
       apps::AppServiceProxyFactory::GetForProfile(profile_)
           ->BrowserAppInstanceTracker();
+  CHECK(instance_tracker);
 
   instance_tracker->StopInstancesOfApp(app_id);
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void WebAppPublisherHelper::OpenNativeSettings(const std::string& app_id) {
   if (IsShuttingDown()) {
@@ -1352,9 +1375,10 @@ void WebAppPublisherHelper::OnWebAppManifestUpdated(
 void WebAppPublisherHelper::OnWebAppUninstalled(
     const AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
-  paused_apps_.MaybeRemoveApp(app_id);
 
 #if BUILDFLAG(IS_CHROMEOS)
+  paused_apps_.MaybeRemoveApp(app_id);
+
   app_notifications_.RemoveNotificationsForApp(app_id);
 
   auto result = media_requests_.RemoveRequests(app_id);
@@ -1590,9 +1614,11 @@ IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app) {
   icon_effects |= web_app->is_generated_icon() ? IconEffects::kCrOsStandardMask
                                                : IconEffects::kCrOsStandardIcon;
 
+#if BUILDFLAG(IS_CHROMEOS)
   if (IsPaused(web_app->app_id())) {
     icon_effects |= IconEffects::kPaused;
   }
+#endif
 
   bool is_disabled = false;
   if (web_app->chromeos_data().has_value()) {

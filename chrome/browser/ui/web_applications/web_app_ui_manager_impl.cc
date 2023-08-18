@@ -190,6 +190,17 @@ size_t WebAppUiManagerImpl::GetNumWindowsForApp(const AppId& app_id) {
   return it->second;
 }
 
+void WebAppUiManagerImpl::CloseAppWindows(const AppId& app_id) {
+  DCHECK(started_);
+
+  for (auto* browser : *BrowserList::GetInstance()) {
+    const AppBrowserController* app_controller = browser->app_controller();
+    if (app_controller && app_controller->app_id() == app_id) {
+      browser->window()->Close();
+    }
+  }
+}
+
 void WebAppUiManagerImpl::NotifyOnAllAppWindowsClosed(
     const AppId& app_id,
     base::OnceClosure callback) {

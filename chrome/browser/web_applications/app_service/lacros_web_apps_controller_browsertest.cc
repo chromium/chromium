@@ -6,30 +6,39 @@
 
 #include <iterator>
 #include <memory>
+#include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/values.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/notifications/notification_common.h"
+#include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -37,41 +46,59 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
-#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
+#include "chromeos/crosapi/mojom/app_service_types.mojom-shared.h"
+#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/webapps/browser/install_result_code.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -99,6 +126,8 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
       const {
     return capability_access_deltas_;
   }
+
+  void clear_deltas() { app_deltas_.clear(); }
 
  private:
   // crosapi::mojom::AppPublisher:
@@ -176,6 +205,13 @@ bool HasFileViewFilters(
   }
 
   return false;
+}
+
+// Upcast to expose private AppController methods.
+crosapi::mojom::AppController& AsAppController(
+    LacrosWebAppsController& lacros_web_apps_controller) {
+  return static_cast<crosapi::mojom::AppController&>(
+      lacros_web_apps_controller);
 }
 
 }  // namespace
@@ -499,8 +535,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, Launch) {
       crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
   launch_params->disposition =
       crosapi::mojom::WindowOpenDisposition::kNewWindow;
-  lacros_web_apps_controller.Launch(std::move(launch_params),
-                                    base::DoNothing());
+  AsAppController(lacros_web_apps_controller)
+      .Launch(std::move(launch_params), base::DoNothing());
   navigation_observer.Wait();
 }
 
@@ -547,52 +583,82 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, LaunchWithFiles) {
         ApiApprovalState::kAllowed);
   }
 
-  lacros_web_apps_controller.Launch(std::move(launch_params),
-                                    base::DoNothing());
+  AsAppController(lacros_web_apps_controller)
+      .Launch(std::move(launch_params), base::DoNothing());
   navigation_observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PauseUnpause) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
-  LaunchWebAppBrowserAndWait(app_id);
 
   MockAppPublisher mock_app_publisher;
-  LacrosWebAppsController lacros_web_apps_controller(profile());
+  apps::AppServiceProxyLacros& app_service =
+      *apps::AppServiceProxyFactory::GetForProfile(profile());
+  LacrosWebAppsController& lacros_web_apps_controller =
+      *app_service.LacrosWebAppsControllerForTesting();
+  app_service.SetBrowserAppInstanceTrackerForTesting(
+      std::make_unique<apps::BrowserAppInstanceTracker>(
+          profile(), app_service.AppRegistryCache()));
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
-  mock_app_publisher.Wait();
-  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 1U);
 
-  lacros_web_apps_controller.PauseApp(app_id);
+  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  LaunchWebAppBrowserAndWait(app_id);
   mock_app_publisher.Wait();
-  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 3U);
 
-  EXPECT_EQ(mock_app_publisher.get_deltas()[1]->app_type, apps::AppType::kWeb);
-  EXPECT_EQ(mock_app_publisher.get_deltas()[1]->app_id, app_id);
-  EXPECT_EQ(mock_app_publisher.get_deltas()[1]->icon_key->icon_effects,
+  // Ignore deltas from installation etc.
+  mock_app_publisher.clear_deltas();
+
+  AsAppController(lacros_web_apps_controller).PauseApp(app_id);
+  mock_app_publisher.Wait();
+  ASSERT_EQ(mock_app_publisher.get_deltas().size(), 2U);
+
+  EXPECT_EQ(mock_app_publisher.get_deltas()[0]->app_type, apps::AppType::kWeb);
+  EXPECT_EQ(mock_app_publisher.get_deltas()[0]->app_id, app_id);
+  EXPECT_EQ(mock_app_publisher.get_deltas()[0]->icon_key->icon_effects,
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon |
                 IconEffects::kPaused);
 
-  EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_type,
-            apps::AppType::kWeb);
-  EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
-  EXPECT_TRUE(mock_app_publisher.get_deltas().back()->paused.value_or(false));
+  EXPECT_EQ(mock_app_publisher.get_deltas()[1]->app_type, apps::AppType::kWeb);
+  EXPECT_EQ(mock_app_publisher.get_deltas()[1]->app_id, app_id);
+  EXPECT_TRUE(mock_app_publisher.get_deltas()[1]->paused.value_or(false));
 
-  lacros_web_apps_controller.UnpauseApp(app_id);
+  AsAppController(lacros_web_apps_controller).UnpauseApp(app_id);
   mock_app_publisher.Wait();
-  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 5U);
+  ASSERT_EQ(mock_app_publisher.get_deltas().size(), 4U);
+
+  EXPECT_EQ(mock_app_publisher.get_deltas()[2]->app_type, apps::AppType::kWeb);
+  EXPECT_EQ(mock_app_publisher.get_deltas()[2]->app_id, app_id);
+  EXPECT_EQ(mock_app_publisher.get_deltas()[2]->icon_key->icon_effects,
+            IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon);
 
   EXPECT_EQ(mock_app_publisher.get_deltas()[3]->app_type, apps::AppType::kWeb);
   EXPECT_EQ(mock_app_publisher.get_deltas()[3]->app_id, app_id);
-  EXPECT_EQ(mock_app_publisher.get_deltas()[3]->icon_key->icon_effects,
-            IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon);
+  EXPECT_FALSE(mock_app_publisher.get_deltas()[3]->paused.value_or(true));
+}
 
-  EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_type,
-            apps::AppType::kWeb);
-  EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
-  EXPECT_FALSE(mock_app_publisher.get_deltas().back()->paused.value_or(true));
+IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, StopApp) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
+
+  MockAppPublisher mock_app_publisher;
+  apps::AppServiceProxyLacros& app_service =
+      *apps::AppServiceProxyFactory::GetForProfile(profile());
+  LacrosWebAppsController& lacros_web_apps_controller =
+      *app_service.LacrosWebAppsControllerForTesting();
+  app_service.SetBrowserAppInstanceTrackerForTesting(
+      std::make_unique<apps::BrowserAppInstanceTracker>(
+          profile(), app_service.AppRegistryCache()));
+  lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
+  lacros_web_apps_controller.Init();
+  mock_app_publisher.Wait();
+
+  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
+
+  AsAppController(lacros_web_apps_controller).StopApp(app_id);
+  ui_test_utils::WaitForBrowserToClose(app_browser);
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetMenuModel) {
@@ -648,30 +714,22 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
            ->LacrosWebAppsControllerForTesting();
 
   crosapi::mojom::MenuItemsPtr menu_items;
-  {
-    base::RunLoop run_loop;
-    lacros_web_apps_controller.GetMenuModel(
-        app_id,
-        base::BindLambdaForTesting(
-            [&run_loop, &menu_items](crosapi::mojom::MenuItemsPtr items) {
-              menu_items = std::move(items);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-  }
+  base::test::TestFuture<crosapi::mojom::MenuItemsPtr> menu_items_future;
+  AsAppController(lacros_web_apps_controller)
+      .GetMenuModel(app_id, menu_items_future.GetCallback());
+  menu_items = menu_items_future.Take();
+
   ASSERT_TRUE(menu_items);
   ASSERT_EQ(6U, menu_items->items.size());
 
   auto id = *menu_items->items[5]->id;
 
-  {
-    base::RunLoop loop;
-    lacros_web_apps_controller.ExecuteContextMenuCommand(
-        app_id, id,
-        base::BindLambdaForTesting(
-            [&](::crosapi::mojom::LaunchResultPtr) { loop.Quit(); }));
-    loop.Run();
-  }
+  base::test::TestFuture<::crosapi::mojom::LaunchResultPtr>
+      launch_result_future;
+  AsAppController(lacros_web_apps_controller)
+      .ExecuteContextMenuCommand(app_id, id,
+                                 launch_result_future.GetCallback());
+  launch_result_future.Wait();
 
   EXPECT_EQ(BrowserList::GetInstance()
                 ->GetLastActive()
@@ -692,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, OpenNativeSettings) {
   lacros_web_apps_controller.Init();
   mock_app_publisher.Wait();
 
-  lacros_web_apps_controller.OpenNativeSettings(app_id);
+  AsAppController(lacros_web_apps_controller).OpenNativeSettings(app_id);
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(base::StartsWith(web_contents->GetVisibleURL().spec(),
@@ -715,7 +773,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, WindowMode) {
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->window_mode,
             apps::WindowMode::kWindow);
 
-  lacros_web_apps_controller.SetWindowMode(app_id, apps::WindowMode::kBrowser);
+  AsAppController(lacros_web_apps_controller)
+      .SetWindowMode(app_id, apps::WindowMode::kBrowser);
   mock_app_publisher.Wait();
 
   EXPECT_GE(mock_app_publisher.get_deltas().size(), 2U);
@@ -875,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetLink) {
     launch_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
         apps_util::MakeShareIntent(shared_link, shared_title), profile());
 
-    static_cast<crosapi::mojom::AppController&>(lacros_web_apps_controller)
+    AsAppController(lacros_web_apps_controller)
         .Launch(std::move(launch_params), base::DoNothing());
   }
   content::WebContents* const web_contents = waiter.Wait();
@@ -932,7 +991,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ShareImage) {
         crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
     launch_params->disposition =
         crosapi::mojom::WindowOpenDisposition::kNewWindow;
-    static_cast<crosapi::mojom::AppController&>(lacros_web_apps_controller)
+    AsAppController(lacros_web_apps_controller)
         .Launch(std::move(launch_params), base::DoNothing());
   }
   content::WebContents* const web_contents = waiter.Wait();
@@ -999,7 +1058,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ShareMultimedia) {
     launch_params->disposition =
         crosapi::mojom::WindowOpenDisposition::kNewWindow;
 
-    static_cast<crosapi::mojom::AppController&>(lacros_web_apps_controller)
+    AsAppController(lacros_web_apps_controller)
         .Launch(std::move(launch_params), base::DoNothing());
   }
   content::WebContents* const web_contents = waiter.Wait();

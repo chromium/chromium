@@ -427,6 +427,12 @@ void AppServiceProxyLacros::SetWebsiteMetricsServiceForTesting(
   metrics_service_ = std::move(website_metrics_service);
 }
 
+void AppServiceProxyLacros::SetBrowserAppInstanceTrackerForTesting(
+    std::unique_ptr<apps::BrowserAppInstanceTracker>
+        browser_app_instance_tracker) {
+  browser_app_instance_tracker_ = std::move(browser_app_instance_tracker);
+}
+
 crosapi::mojom::AppServiceSubscriber*
 AppServiceProxyLacros::AsAppServiceSubscriberForTesting() {
   return this;

@@ -110,6 +110,9 @@ class WebAppUiManager {
 
   virtual size_t GetNumWindowsForApp(const AppId& app_id) = 0;
 
+  // Close app windows. Does not affect tabs in a non-app browser.
+  virtual void CloseAppWindows(const AppId& app_id) = 0;
+
   virtual void NotifyOnAllAppWindowsClosed(const AppId& app_id,
                                            base::OnceClosure callback) = 0;
 

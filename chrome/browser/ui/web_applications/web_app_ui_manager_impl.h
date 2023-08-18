@@ -54,6 +54,7 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   // WebAppUiManager:
   WebAppUiManagerImpl* AsImpl() override;
   size_t GetNumWindowsForApp(const AppId& app_id) override;
+  void CloseAppWindows(const AppId& app_id) override;
   void NotifyOnAllAppWindowsClosed(const AppId& app_id,
                                    base::OnceClosure callback) override;
   bool CanAddAppToQuickLaunchBar() const override;
