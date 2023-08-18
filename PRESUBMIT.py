@@ -1623,6 +1623,28 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'^third_party/blink/renderer/core/script/script_loader\.cc',
       ),
     ),
+    BanRule(
+      pattern = r'base::raw_ptr<',
+      explanation = (
+        'Do not use base::raw_ptr, use raw_ptr.',
+      ),
+      treat_as_error = True,
+      excluded_paths = (
+        '^base/',
+        '^tools/',
+      ),
+    ),
+    BanRule(
+      pattern = r'base:raw_ref<',
+      explanation = (
+        'Do not use base::raw_ref, use raw_ref.',
+      ),
+      treat_as_error = True,
+      excluded_paths = (
+        '^base/',
+        '^tools/',
+      ),
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (

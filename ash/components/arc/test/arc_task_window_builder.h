@@ -36,7 +36,7 @@ class ArcTaskWindowBuilder {
 
   bool built_{false};
   int task_id_{1};
-  base::raw_ptr<exo::Surface> shell_root_surface_{nullptr};
+  raw_ptr<exo::Surface> shell_root_surface_{nullptr};
   views::Widget::InitParams init_params_;
   std::string package_name_;
 };

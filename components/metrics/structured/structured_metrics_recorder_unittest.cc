@@ -138,7 +138,7 @@ class TestSystemProfileProvider : public metrics::MetricsProvider {
 class TestStructuredMetricsRecorder : public StructuredMetricsRecorder {
  public:
   explicit TestStructuredMetricsRecorder(
-      base::raw_ptr<metrics::MetricsProvider> system_profile_provider)
+      raw_ptr<metrics::MetricsProvider> system_profile_provider)
       : StructuredMetricsRecorder(/*write_delay=*/base::Seconds(0),
                                   system_profile_provider) {}
 

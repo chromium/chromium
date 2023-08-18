@@ -46,13 +46,13 @@ int StructuredMetricsRecorder::kMaxEventsPerUpload = 100;
 char StructuredMetricsRecorder::kUnsentLogsPath[] = "structured_metrics/events";
 
 StructuredMetricsRecorder::StructuredMetricsRecorder(
-    base::raw_ptr<metrics::MetricsProvider> system_profile_provider)
+    raw_ptr<metrics::MetricsProvider> system_profile_provider)
     : StructuredMetricsRecorder(base::Milliseconds(kSaveDelayMs),
                                 system_profile_provider) {}
 
 StructuredMetricsRecorder::StructuredMetricsRecorder(
     base::TimeDelta write_delay,
-    base::raw_ptr<metrics::MetricsProvider> system_profile_provider)
+    raw_ptr<metrics::MetricsProvider> system_profile_provider)
     : write_delay_(write_delay),
       system_profile_provider_(system_profile_provider) {
   DCHECK(system_profile_provider_);

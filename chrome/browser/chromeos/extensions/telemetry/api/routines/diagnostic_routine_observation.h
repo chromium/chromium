@@ -39,7 +39,7 @@ class DiagnosticRoutineObservation
   // `ExtensionId` associated with this observation.
   const extensions::ExtensionId extension_id_;
   const base::Uuid uuid_;
-  base::raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
   mojo::Receiver<crosapi::mojom::TelemetryDiagnosticRoutineObserver> receiver_;
 };
 
