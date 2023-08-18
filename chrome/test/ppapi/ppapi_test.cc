@@ -311,8 +311,8 @@ void OutOfProcessPPAPITest::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void OutOfProcessPPAPITest::RunTest(const std::string& test_case) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-  // See crbug.com/1231528 for Windows, and crbug.com/1469244 for Linux.
+#if BUILDFLAG(IS_WIN)
+  // See crbug.com/1231528 for context.
   if (test_case == "Printing")
     return;
 #endif
