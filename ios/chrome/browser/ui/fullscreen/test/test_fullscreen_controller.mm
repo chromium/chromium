@@ -24,10 +24,6 @@ ChromeBroadcaster* TestFullscreenController::broadcaster() {
   return broadcaster_;
 }
 
-void TestFullscreenController::SetWebStateList(WebStateList* web_state_list) {
-  web_state_list_ = web_state_list;
-}
-
 void TestFullscreenController::AddObserver(
     FullscreenControllerObserver* observer) {
   observers_.AddObserver(observer);

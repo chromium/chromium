@@ -23,7 +23,6 @@ class TestFullscreenController : public FullscreenController {
 
   // FullscreenController:
   ChromeBroadcaster* broadcaster() override;
-  void SetWebStateList(WebStateList* web_state_list) override;
   void AddObserver(FullscreenControllerObserver* observer) override;
   void RemoveObserver(FullscreenControllerObserver* observer) override;
   bool IsEnabled() const override;
@@ -60,8 +59,6 @@ class TestFullscreenController : public FullscreenController {
  private:
   // The model.
   FullscreenModel* model_ = nullptr;
-  // The WebStateList.
-  WebStateList* web_state_list_ = nullptr;
   // The broadcaster.
   ChromeBroadcaster* broadcaster_ = nil;
   // The observers.

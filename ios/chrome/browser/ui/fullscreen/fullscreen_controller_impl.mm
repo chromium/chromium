@@ -98,10 +98,6 @@ ChromeBroadcaster* FullscreenControllerImpl::broadcaster() {
   return broadcaster_;
 }
 
-void FullscreenControllerImpl::SetWebStateList(WebStateList* web_state_list) {
-  web_state_list_observer_.SetWebStateList(web_state_list);
-}
-
 void FullscreenControllerImpl::AddObserver(
     FullscreenControllerObserver* observer) {
   mediator_.AddObserver(observer);

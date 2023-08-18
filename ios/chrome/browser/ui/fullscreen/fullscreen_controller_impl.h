@@ -30,7 +30,6 @@ class FullscreenControllerImpl : public FullscreenController {
 
   // FullscreenController:
   ChromeBroadcaster* broadcaster() override;
-  void SetWebStateList(WebStateList* web_state_list) override;
   void AddObserver(FullscreenControllerObserver* observer) override;
   void RemoveObserver(FullscreenControllerObserver* observer) override;
   bool IsEnabled() const override;

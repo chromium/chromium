@@ -12,7 +12,6 @@
 class Browser;
 @class ChromeBroadcaster;
 class FullscreenControllerObserver;
-class WebStateList;
 
 // An object that observes scrolling events in the main content area and
 // calculates how much of the toolbar should be visible as a result.  When the
@@ -32,10 +31,6 @@ class FullscreenController : public base::SupportsUserData::Data {
   // remove this ad-hoc broadcaster and drive the animations via the Browser's
   // ChromeBroadcaster.
   virtual ChromeBroadcaster* broadcaster() = 0;
-
-  // The WebStateList for the Browser whose fullscreen state is managed by this
-  // controller.
-  virtual void SetWebStateList(WebStateList* web_state_list) = 0;
 
   // Adds and removes FullscreenControllerObservers.
   virtual void AddObserver(FullscreenControllerObserver* observer) = 0;
