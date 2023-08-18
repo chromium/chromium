@@ -51,59 +51,44 @@ namespace {
 constexpr int kGooglePayLogoWidth = 40;
 #endif
 constexpr int kIconHeight = 16;
-
 constexpr int kSeparatorHeight = 12;
 
-class IconView : public views::ImageView {
- public:
-  METADATA_HEADER(IconView);
-
-  explicit IconView(TitleWithIconAndSeparatorView::Icon icon_to_show) {
-    icon_to_show_ = icon_to_show;
-  }
-
-  // views::ImageView:
-  void OnThemeChanged() override {
-    ImageView::OnThemeChanged();
-    gfx::ImageSkia image;
-    switch (icon_to_show_) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      case TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY:
-        // kGooglePayLogoIcon is square overall, despite the drawn portion being
-        // a rectangular area at the top. CreateTiledImage() will correctly clip
-        // it whereas setting the icon size would rescale it incorrectly and
-        // keep the bottom empty portion.
-        //
-        // TODO(crbug.com/1447908): clipping icon with the default (40x40) size
-        // into a 40x16 painting area instead of using CreateTiledImage to avoid
-        // asymmetric rescale.
-        image = gfx::ImageSkiaOperations::CreateTiledImage(
-            gfx::CreateVectorIcon(
-                vector_icons::kGooglePayLogoIcon,
-                GetColorProvider()->GetColor(kColorPaymentsGooglePayLogo)),
-            /*x=*/0, /*y=*/0, kGooglePayLogoWidth, kIconHeight);
-        break;
-      case TitleWithIconAndSeparatorView::Icon::GOOGLE_G: {
-        const gfx::VectorIcon& icon = vector_icons::kGoogleGLogoIcon;
+// kGooglePayLogoIcon is square overall, despite the drawn portion being a
+// rectangular area at the top. CreateTiledImage() will correctly clip it
+// whereas setting the icon size would rescale it incorrectly and keep the
+// bottom empty portion.
+gfx::ImageSkia CreateTiledIcon(const ui::ColorProvider* provider) {
+  return gfx::ImageSkiaOperations::CreateTiledImage(
+      gfx::CreateVectorIcon(vector_icons::kGooglePayLogoIcon,
+                            provider->GetColor(kColorPaymentsGooglePayLogo)),
+      /*x=*/0, /*y=*/0, kGooglePayLogoWidth, kIconHeight);
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+std::unique_ptr<views::ImageView> CreateIconView(
+    TitleWithIconAndSeparatorView::Icon icon_to_show) {
+  ui::ImageModel model;
+  switch (icon_to_show) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    case TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY:
+      model = ui::ImageModel::FromImageGenerator(
+          base::BindRepeating(&CreateTiledIcon),
+          gfx::Size(kGooglePayLogoWidth, kIconHeight));
+      break;
+    case TitleWithIconAndSeparatorView::Icon::GOOGLE_G: {
+      const gfx::VectorIcon& icon = vector_icons::kGoogleGLogoIcon;
 #else
-      case TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY:
-      case TitleWithIconAndSeparatorView::Icon::GOOGLE_G: {
-        const gfx::VectorIcon& icon = kCreditCardIcon;
+    case TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY:
+    case TitleWithIconAndSeparatorView::Icon::GOOGLE_G: {
+      const gfx::VectorIcon& icon = kCreditCardIcon;
 #endif
-        image = gfx::CreateVectorIcon(
-            icon, kIconHeight, GetColorProvider()->GetColor(ui::kColorIcon));
-        break;
-      }
+      model = ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kIconHeight);
+      break;
     }
-    SetImage(image);
   }
-
- private:
-  TitleWithIconAndSeparatorView::Icon icon_to_show_;
-};
-
-BEGIN_METADATA(IconView, views::ImageView)
-END_METADATA
+  return views::Builder<views::ImageView>().SetImage(model).Build();
+}
 
 }  // namespace
 
@@ -123,7 +108,7 @@ TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddRows(1, views::TableLayout::kFixedSize);
 
-  auto* icon_view_ptr = AddChildView(std::make_unique<IconView>(icon_to_show));
+  auto* icon_view_ptr = AddChildView(CreateIconView(icon_to_show));
 
   auto separator = std::make_unique<views::Separator>();
   separator->SetPreferredLength(kSeparatorHeight);
@@ -179,7 +164,7 @@ TitleWithIconAfterLabelView::TitleWithIconAfterLabelView(
       window_title, views::style::CONTEXT_DIALOG_TITLE));
   title_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   title_label->SetMultiLine(true);
-  auto* icon_view = AddChildView(std::make_unique<IconView>(icon_to_show));
+  auto* icon_view = AddChildView(CreateIconView(icon_to_show));
 
   // Center the icon against the first line of the title label. This needs to be
   // done after we create the title label, so that we can use its preferred
