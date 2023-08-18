@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 
 @interface HistorySyncPopupCoordinator () <
@@ -30,14 +29,19 @@
   // `YES` if the user has selected an account to sign-in especifically to be
   // able to enabled history sync (eg. using recent tabs history sync promo).
   BOOL _dedicatedSignInDone;
+  // Access point associated with the history opt-in screen.
+  signin_metrics::AccessPoint _accessPoint;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                       dedicatedSignInDone:(BOOL)dedicatedSignInDone {
+                       dedicatedSignInDone:(BOOL)dedicatedSignInDone
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _dedicatedSignInDone = dedicatedSignInDone;
+    _accessPoint = accessPoint;
   }
   return self;
 }
@@ -50,11 +54,18 @@
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
-  if (!CanHistorySyncOptInBePresented(_authenticationService, syncService)) {
+  // Check if History Sync Opt-In should be skipped.
+  HistorySyncSkipReason skipReason = [HistorySyncCoordinator
+      getHistorySyncOptInSkipReason:syncService
+              authenticationService:_authenticationService];
+  if (skipReason != HistorySyncSkipReason::kNone) {
+    [HistorySyncCoordinator recordHistorySyncSkipMetric:skipReason
+                                            accessPoint:_accessPoint];
     [self.delegate historySyncPopupCoordinator:self
                     didCloseWithDeclinedByUser:NO];
     return;
   }
+
   _navigationController =
       [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                     toolbarClass:nil];
@@ -65,7 +76,8 @@
                                browser:self.browser
                               delegate:self
                               firstRun:NO
-                         showUserEmail:!_dedicatedSignInDone];
+                         showUserEmail:!_dedicatedSignInDone
+                           accessPoint:_accessPoint];
   [_historySyncCoordinator start];
   [_navigationController setNavigationBarHidden:YES animated:NO];
   [self.baseViewController presentViewController:_navigationController

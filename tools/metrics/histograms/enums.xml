@@ -46398,6 +46398,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="15" label="Show tangible sync screen"/>
   <int value="16" label="Close tangible sync with sync"/>
   <int value="17" label="Close tangible sync without sync"/>
+  <int value="18" label="Show history sync screen"/>
+  <int value="19" label="Close history sync with history sync enabled"/>
+  <int value="20" label="Close history sync without history sync enabled"/>
 </enum>
 
 <enum name="FirstSmartLockStatus">

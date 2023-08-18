@@ -13,12 +13,7 @@
 
 @class ActionSheetCoordinator;
 @class AlertCoordinator;
-class AuthenticationService;
 class Browser;
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
 
 // Sign-out result, related to SignoutActionSheetCoordinator().
 typedef NS_ENUM(NSUInteger, SignoutActionSheetCoordinatorResult) {
@@ -58,10 +53,5 @@ NSString* DialogMessageFromError(NSError* error);
 AlertCoordinator* ErrorCoordinatorNoItem(NSError* error,
                                          UIViewController* viewController,
                                          Browser* browser);
-
-// Returns true if the history sync opt-in dialog can be presented to the user.
-bool CanHistorySyncOptInBePresented(
-    AuthenticationService* authentication_service,
-    syncer::SyncService* sync_service);
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_UI_UTIL_H_

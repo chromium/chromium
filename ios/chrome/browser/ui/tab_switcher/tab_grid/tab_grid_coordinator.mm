@@ -1229,7 +1229,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _historySyncPopupCoordinator = [[HistorySyncPopupCoordinator alloc]
       initWithBaseViewController:_baseViewController
                          browser:self.regularBrowser
-             dedicatedSignInDone:dedicatedSignInDone];
+             dedicatedSignInDone:dedicatedSignInDone
+                     accessPoint:signin_metrics::AccessPoint::
+                                     ACCESS_POINT_RECENT_TABS];
   _historySyncPopupCoordinator.delegate = self;
   [_historySyncPopupCoordinator start];
 }

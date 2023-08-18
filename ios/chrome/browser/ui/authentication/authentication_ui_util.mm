@@ -8,9 +8,6 @@
 #import "base/format_macros.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/user_selectable_type.h"
-#import "components/sync/service/sync_service.h"
-#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -19,7 +16,6 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -95,35 +91,4 @@ AlertCoordinator* ErrorCoordinatorNoItem(NSError* error,
                                                      title:title
                                                    message:errorMessage];
   return alertCoordinator;
-}
-
-bool CanHistorySyncOptInBePresented(
-    AuthenticationService* authentication_service,
-    syncer::SyncService* sync_service) {
-  if (!authentication_service->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
-    // Don't show history sync opt-in screen if no signed-in user account.
-    return false;
-  }
-  if (sync_service->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
-      sync_service->GetUserSettings()->IsTypeManagedByPolicy(
-          syncer::UserSelectableType::kTabs) ||
-      sync_service->GetUserSettings()->IsTypeManagedByPolicy(
-          syncer::UserSelectableType::kHistory)) {
-    // Skip History Sync Opt-in if sync is disabled, or if history or tabs sync
-    // is disabled by policy.
-    return false;
-  }
-  syncer::SyncUserSettings* sync_user_settings =
-      sync_service->GetUserSettings();
-
-  if (sync_user_settings->GetSelectedTypes().HasAll(
-          {syncer::UserSelectableType::kHistory,
-           syncer::UserSelectableType::kTabs})) {
-    // History opt-in is already set. This value is kept between signout/signin.
-    // In this case the UI can be skipped.
-    return false;
-  }
-  return true;
 }
