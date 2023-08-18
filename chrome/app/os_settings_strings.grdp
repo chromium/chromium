@@ -2607,19 +2607,19 @@ Press an assigned switch or key to remove assignment.
 
   <!-- Bruschetta sub-page -->
   <!-- TODO(b/233129383): Finalize and translate these strings -->
-  <message name="IDS_SETTINGS_BRUSCHETTA_LABEL" translateable="false" desc="Label for the Bruschetta sub-page.">
+  <message name="IDS_SETTINGS_BRUSCHETTA_LABEL" desc="Label for the Bruschetta sub-page.">
     Managed Development Environment (<ph name="GENERAL_NAME">$1<ex>HappyVm</ex></ph>)
   </message>
-  <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_USB_DEVICES_DESCRIPTION" translateable="false" desc="Description for managing shared USB devices.">
+  <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices.">
     Give <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph> permission to access USB devices. <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph> won't remember a USB device after it's removed.
   </message>
-  <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_INSTRUCTIONS_LOCATE" translateable="false" desc="Instructions for how to locate shared folders in Bruschetta..">
+  <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_INSTRUCTIONS_LOCATE" desc="Instructions for how to locate shared folders in Bruschetta..">
     Shared folders are available in <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph> at <ph name="BASE_DIR">$2<ex>/mnt/chromeos</ex></ph>.
   </message>
-  <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_INSTRUCTIONS_ADD" translateable="false" desc="Instructions for how to add shared folders in Bruschetta..">
+  <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_INSTRUCTIONS_ADD" desc="Instructions for how to add shared folders in Bruschetta..">
     To share, right-click on a folder in Files app, then select "Share with <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph>".
   </message>
-  <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE" translateable="false" desc="Message to show user when unsharing a Bruschetta shared folder fails..">
+  <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE" desc="Message to show user when unsharing a Bruschetta shared folder fails..">
     Couldn't unshare because an application is using this folder. The folder will be unshared when <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph> is next shut down.
   </message>
   <message name="IDS_SETTINGS_BRUSCHETTA_SUBTEXT" desc="Description for the section for enabling and managing Bruschetta (codename).">
