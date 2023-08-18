@@ -27,7 +27,7 @@ from dep_operations import NO_VALID_GN_STR
 
 # This is a temporary constant to make reverts easier (if necessary).
 # TODO(crbug.com/1099522): Remove this and make jdeps on by default.
-_USE_JDEPS = False
+_USE_JDEPS = True
 
 # This is temporary in case another revert & debug session is necessary.
 # TODO(crbug.com/1099522): Remove this when jdeps is on by default.
