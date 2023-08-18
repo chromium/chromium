@@ -623,8 +623,6 @@ class PersonalizationAppDynamicColorEnabledBrowserTest extends
       enabled: [
         'chromeos::features::kJelly',
       ],
-      // TODO(b/292651329) enable these.
-      disabled: TIME_OF_DAY_FEATURES,
     };
   }
 }
