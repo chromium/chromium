@@ -1345,7 +1345,7 @@ public class TabImpl implements Tab {
      * Builds the native counterpart to this class.
      */
     private void initializeNative() {
-        if (mNativeTabAndroid == 0) TabImplJni.get().init(TabImpl.this);
+        if (mNativeTabAndroid == 0) TabImplJni.get().init(TabImpl.this, mId);
         assert mNativeTabAndroid != 0;
     }
 
@@ -1776,7 +1776,7 @@ public class TabImpl implements Tab {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         TabImpl fromWebContents(WebContents webContents);
-        void init(TabImpl caller);
+        void init(TabImpl caller, int id);
         void destroy(long nativeTabAndroid);
         void initWebContents(long nativeTabAndroid, boolean incognito, boolean isBackgroundTab,
                 WebContents webContents, TabWebContentsDelegateAndroidImpl delegate,
