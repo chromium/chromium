@@ -28,6 +28,8 @@ source_set("browser") {
     "aw_autofill_client.h",
     "aw_browser_context.cc",
     "aw_browser_context.h",
+    "aw_browser_context_store.cc",
+    "aw_browser_context_store.h",
     "aw_browser_main_parts.cc",
     "aw_browser_main_parts.h",
     "aw_browser_permission_request_delegate.h",

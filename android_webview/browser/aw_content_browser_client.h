@@ -287,10 +287,6 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   scoped_refptr<safe_browsing::UrlCheckerDelegate>
   GetSafeBrowsingUrlCheckerDelegate();
 
-  // Android WebView currently has a single global (non-off-the-record) browser
-  // context.
-  std::unique_ptr<AwBrowserContext> browser_context_;
-
   scoped_refptr<safe_browsing::UrlCheckerDelegate>
       safe_browsing_url_checker_delegate_;
 

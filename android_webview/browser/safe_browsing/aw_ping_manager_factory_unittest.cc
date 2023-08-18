@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/safe_browsing/aw_ping_manager_factory.h"
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "base/functional/bind.h"
@@ -64,7 +65,9 @@ TEST_F(AwPingManagerFactoryTest, ReportThreatDetails) {
   safe_browsing::AwPingManagerFactory::GetInstance()
       ->SetURLLoaderFactoryForTesting(ref_counted_url_loader_factory);
 
-  AwBrowserContext context;
+  AwBrowserContext context(
+      base::FilePath(AwBrowserContextStore::kDefaultContextPath),
+      /*is_default=*/true);
   EXPECT_EQ(safe_browsing::AwPingManagerFactory::GetForBrowserContext(&context)
                 ->ReportThreatDetails(std::move(report)),
             ReportThreatDetailsResult::SUCCESS);

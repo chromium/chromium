@@ -20,6 +20,8 @@ import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentViewStatics;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -157,6 +159,56 @@ public class AwBrowserContext implements BrowserContextHandle {
         return sInstance;
     }
 
+    /**
+     * Check whether a context with the given name exists (in memory or on disk).
+     * <p>
+     * Name must be non-null and valid Unicode.
+     */
+    public static boolean checkNamedContextExists(String name) {
+        return AwBrowserContextJni.get().checkNamedContextExists(name);
+    }
+
+    /**
+     * Get the context with the given name, optionally creating it if needed.
+     * <p>
+     * Returns null if the context does not exist and createIfNeeded is false.
+     * <p>
+     * Name must be non-null and valid Unicode.
+     */
+    public static AwBrowserContext getNamedContext(String name, boolean createIfNeeded) {
+        return AwBrowserContextJni.get().getNamedContextJava(name, createIfNeeded);
+    }
+
+    /**
+     * Delete the named context.
+     * <p>
+     * Returns true if a context was deleted. Returns false if the context did not exist beforehand.
+     * <p>
+     * Name must be non-null and valid Unicode.
+     *
+     * @throws IllegalStateException if trying to delete the default profile or a profile which is
+     *                               in use.
+     */
+    public static boolean deleteNamedContext(String name) {
+        return AwBrowserContextJni.get().deleteNamedContext(name);
+    }
+
+    /**
+     * List all contexts.
+     */
+    public static List<String> listAllContexts() {
+        return Arrays.asList(AwBrowserContextJni.get().listAllContexts());
+    }
+
+    /**
+     * Get the named context's relative path, without loading it in.
+     * <p>
+     * Will return null if the context doesn't exist.
+     */
+    public static String getNamedContextPathForTesting(String name) {
+        return AwBrowserContextJni.get().getNamedContextPathForTesting(name); // IN-TEST
+    }
+
     // See comments in WebViewChromiumFactoryProvider for details.
     public void setWebLayerRunningInSameProcess() {
         AwBrowserContextJni.get().setWebLayerRunningInSameProcess(mNativeAwBrowserContext);
@@ -190,6 +242,11 @@ public class AwBrowserContext implements BrowserContextHandle {
     @NativeMethods
     interface Natives {
         AwBrowserContext getDefaultJava();
+        AwBrowserContext getNamedContextJava(String name, boolean createIfNeeded);
+        String getNamedContextPathForTesting(String name); // IN-TEST
+        boolean deleteNamedContext(String name);
+        String[] listAllContexts();
+        boolean checkNamedContextExists(String name);
         long getQuotaManagerBridge(long nativeAwBrowserContext);
         void setWebLayerRunningInSameProcess(long nativeAwBrowserContext);
         String[] updateServiceWorkerXRequestedWithAllowListOriginMatcher(

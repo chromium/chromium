@@ -151,6 +151,7 @@ bool EnsureBrowserStateDirectoriesCreated(const base::FilePath&,
                                           const base::FilePath&);
 
 namespace android_webview {
+class AwBrowserContext;
 class AwFormDatabaseService;
 class CookieManager;
 class JsSandboxIsolate;
@@ -586,6 +587,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   friend class ::ScopedAllowBlockingForProfile;
   friend class ::StartupTabProviderImpl;
   friend class ::WebEngineBrowserMainParts;
+  friend class android_webview::AwBrowserContext;
   friend class android_webview::ScopedAllowInitGLBindings;
   friend class ash::BrowserDataBackMigrator;
   friend class ash::LoginEventRecorder;

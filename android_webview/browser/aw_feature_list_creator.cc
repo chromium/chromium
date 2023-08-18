@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_feature_entries.h"
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
@@ -115,6 +116,10 @@ const char* const kPersistentPrefsAllowlist[] = {
     // System-level info.
     metrics::prefs::kVersionCodePref,
     prefs::kPrimaryCpuAbiBitnessPref,
+
+    // Records about profiles/contexts and their stored data
+    prefs::kProfileListPref,
+    prefs::kProfileCounterPref,
 };
 
 void HandleReadError(PersistentPrefStore::PrefReadError error) {}
@@ -173,6 +178,7 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
   AwBrowserProcess::RegisterEnterpriseAuthenticationAppLinkPolicyPref(
       pref_registry.get());
   AwTracingDelegate::RegisterPrefs(pref_registry.get());
+  AwBrowserContextStore::RegisterPrefs(pref_registry.get());
 
   PrefServiceFactory pref_service_factory;
 
