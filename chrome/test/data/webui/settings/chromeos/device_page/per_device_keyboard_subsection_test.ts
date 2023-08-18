@@ -6,6 +6,7 @@ import 'chrome://os-settings/os_settings.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {CrLinkRowElement, FakeInputDeviceSettingsProvider, fakeKeyboards, MetaKey, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardSubsectionElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -214,6 +215,13 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
             .length);
     assertEquals('No keys customized', remapKeysSubLabel.textContent!.trim());
+    loadTimeData.overrideValues({
+      enableAltClickAndSixPackCustomization: true,
+    });
+    subsection.set('keyboard', fakeKeyboards[3]);
+    await flushTasks();
+    // Expect 3 remapped six pack key shortcuts and 2 remapped modifier keys.
+    assertEquals('5 customized keys', remapKeysSubLabel.textContent!.trim());
   });
 
   /**

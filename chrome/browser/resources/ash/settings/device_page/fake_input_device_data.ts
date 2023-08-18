@@ -81,6 +81,37 @@ export const fakeKeyboards: Keyboard[] = [
       sixPackKeyRemappings: defaultSixPackKeyRemappings,
     },
   },
+  {
+    id: 9,
+    deviceKey: 'test:key',
+    name: 'Fake ERGO K861',
+    isExternal: true,
+    metaKey: MetaKey.kCommand,
+    modifierKeys: [
+      ModifierKey.kAlt,
+      ModifierKey.kBackspace,
+      ModifierKey.kCapsLock,
+      ModifierKey.kControl,
+      ModifierKey.kEscape,
+      ModifierKey.kMeta,
+    ],
+    settings: {
+      modifierRemappings: {
+        [ModifierKey.kControl]: ModifierKey.kCapsLock,
+        [ModifierKey.kCapsLock]: ModifierKey.kAssistant,
+      },
+      topRowAreFkeys: false,
+      suppressMetaFkeyRewrites: false,
+      sixPackKeyRemappings: {
+        pageDown: SixPackShortcutModifier.kSearch,
+        pageUp: SixPackShortcutModifier.kSearch,
+        del: SixPackShortcutModifier.kAlt,
+        insert: SixPackShortcutModifier.kSearch,
+        home: SixPackShortcutModifier.kAlt,
+        end: SixPackShortcutModifier.kAlt,
+      },
+    },
+  },
 ];
 
 export const fakeKeyboards2: Keyboard[] = [

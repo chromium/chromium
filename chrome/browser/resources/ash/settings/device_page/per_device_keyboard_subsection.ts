@@ -23,6 +23,7 @@ import './per_device_keyboard_remap_keys.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -33,7 +34,7 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings, MetaKey} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings, MetaKey, SixPackKeyInfo, SixPackShortcutModifier} from './input_device_settings_types.js';
 import {getPrefPolicyFields, settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
 
@@ -117,7 +118,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
           'autoRepeatDelaysPref.value,' +
           'autoRepeatIntervalsPref.value)',
       'onPoliciesChanged(keyboardPolicies)',
-      'onModifierRemappingsChanged(keyboard.settings.modifierRemappings)',
+      'onKeyboardRemappingsChanged(keyboard.*)',
       'updateSettingsToCurrentPrefs(keyboard)',
     ];
   }
@@ -202,13 +203,24 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
         this.keyboard.id, this.keyboard.settings);
   }
 
-  private async onModifierRemappingsChanged(): Promise<void> {
-    const numRemappedModifierKeys =
-        Object.keys(this.keyboard.settings.modifierRemappings).length;
+  private getNumRemappedSixPackKeys(): number {
+    return Object
+        .values(this.keyboard.settings.sixPackKeyRemappings as SixPackKeyInfo)
+        .filter(
+            (modifier: SixPackShortcutModifier) =>
+                modifier !== SixPackShortcutModifier.kSearch)
+        .length;
+  }
 
+  private async onKeyboardRemappingsChanged(): Promise<void> {
+    let numRemappedKeys =
+        Object.keys(this.keyboard.settings.modifierRemappings).length;
+    if (loadTimeData.getBoolean('enableAltClickAndSixPackCustomization')) {
+      numRemappedKeys += this.getNumRemappedSixPackKeys();
+    }
     this.remapKeyboardKeysSublabel =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'remapKeyboardKeysRowSubLabel', numRemappedModifierKeys);
+            'remapKeyboardKeysRowSubLabel', numRemappedKeys);
   }
 
   private onRemapKeyboardKeysClick(): void {
