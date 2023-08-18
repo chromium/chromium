@@ -70,7 +70,7 @@ def ustring_to_string(ptr, length=None):
     char_vals = [int((ptr + i).dereference()) for i in range(length)]
     string = struct.pack('H' * length, *char_vals).decode(
         'utf-16', 'replace').encode('utf-8')
-    return string + error_message
+    return string + error_message.encode('utf-8')
 
 
 def lstring_to_string(ptr, length=None):
