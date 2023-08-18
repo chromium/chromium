@@ -88,7 +88,7 @@ void CommandQueue::OnObjectSignaled(HANDLE object) {
   }
 }
 
-HRESULT CommandQueue::WaitAsync(base::OnceClosure callback) {
+void CommandQueue::WaitAsync(OnWaitAyncCallback callback) {
   if (!object_watcher_.IsWatching()) {
     CHECK(object_watcher_.StartWatchingMultipleTimes(fence_event_.get(), this));
   }
@@ -98,10 +98,11 @@ HRESULT CommandQueue::WaitAsync(base::OnceClosure callback) {
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to set event on completion : "
                 << logging::SystemErrorCodeToString(hr);
-    return hr;
+    std::move(callback).Run(hr);
+    return;
   };
-  queued_callbacks_.push_back({last_fence_value_, std::move(callback)});
-  return S_OK;
+  queued_callbacks_.push_back(
+      {last_fence_value_, base::BindOnce(std::move(callback), S_OK)});
 }
 
 void CommandQueue::ReferenceUntilCompleted(ComPtr<IUnknown> object) {

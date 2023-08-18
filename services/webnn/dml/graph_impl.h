@@ -80,7 +80,8 @@ class GraphImpl final : public WebNNGraphImpl {
       Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer,
       Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
       std::unique_ptr<ComputeResourceInfo> compute_resource_info,
-      mojom::WebNNContext::CreateGraphCallback callback);
+      mojom::WebNNContext::CreateGraphCallback callback,
+      HRESULT hr);
 
   // Execute the compiled platform graph asynchronously. The `named_inputs` was
   // validated in base class so we can use them to compute directly, the result

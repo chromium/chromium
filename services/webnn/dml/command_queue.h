@@ -38,9 +38,12 @@ class CommandQueue : public base::win::ObjectWatcher::Delegate,
   // the fence is signaled with the last fence value. Calling it on the GPU main
   // thread may block the UI.
   HRESULT WaitSyncForTesting();
+
+  using OnWaitAyncCallback = base::OnceCallback<void(HRESULT hr)>;
   // It's an asynchronous method for DirectML graph implementation, which will
-  // not block the CPU.
-  HRESULT WaitAsync(base::OnceClosure callback);
+  // not block the CPU. In case this method fails internally, the
+  // OnWaitAyncCallback accepts a HRESULT from it to handle.
+  void WaitAsync(OnWaitAyncCallback callback);
 
   void ReferenceUntilCompleted(ComPtr<IUnknown> object);
   void ReleaseCompletedResources();

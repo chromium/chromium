@@ -81,11 +81,11 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncOnce) {
 
   bool is_signaled = false;
   base::RunLoop run_loop;
-  EXPECT_EQ(command_queue->WaitAsync(base::BindLambdaForTesting([&]() {
+  command_queue->WaitAsync(base::BindLambdaForTesting([&](HRESULT hr) {
+    EXPECT_EQ(hr, S_OK);
     is_signaled = true;
     run_loop.Quit();
-  })),
-            S_OK);
+  }));
   run_loop.Run();
   EXPECT_TRUE(is_signaled);
 
@@ -117,14 +117,14 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncMultipleTimesOnIncreasingFenceValue) {
   base::RunLoop run_loop;
 
   // Call WaitAsync for the first time with fence value 1.
-  EXPECT_EQ(command_queue->WaitAsync(base::BindLambdaForTesting([&]() {
+  command_queue->WaitAsync(base::BindLambdaForTesting([&](HRESULT hr) {
+    EXPECT_EQ(hr, S_OK);
     if (--count) {
       return;
     } else {
       run_loop.Quit();
     }
-  })),
-            S_OK);
+  }));
 
   EXPECT_EQ(command_allocator->Reset(), S_OK);
   EXPECT_EQ(command_list->Reset(command_allocator.Get(), nullptr), S_OK);
@@ -132,14 +132,14 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncMultipleTimesOnIncreasingFenceValue) {
   // Call WaitAsync for the second time with fence value 2.
   ASSERT_EQ(command_list->Close(), S_OK);
   EXPECT_EQ(command_queue->ExecuteCommandList(command_list.Get()), S_OK);
-  EXPECT_EQ(command_queue->WaitAsync(base::BindLambdaForTesting([&]() {
+  command_queue->WaitAsync(base::BindLambdaForTesting([&](HRESULT hr) {
+    EXPECT_EQ(hr, S_OK);
     if (--count) {
       return;
     } else {
       run_loop.Quit();
     }
-  })),
-            S_OK);
+  }));
 
   run_loop.Run();
   EXPECT_EQ(count, 0);
@@ -171,24 +171,24 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncMultipleTimesOnSameFenceValue) {
   base::RunLoop run_loop;
 
   // Call WaitAsync for the first time with fence value 1.
-  EXPECT_EQ(command_queue->WaitAsync(base::BindLambdaForTesting([&]() {
+  command_queue->WaitAsync(base::BindLambdaForTesting([&](HRESULT hr) {
+    EXPECT_EQ(hr, S_OK);
     if (--count) {
       return;
     } else {
       run_loop.Quit();
     }
-  })),
-            S_OK);
+  }));
 
   // Call WaitAsync for the second time on the same fence value 1.
-  EXPECT_EQ(command_queue->WaitAsync(base::BindLambdaForTesting([&]() {
+  command_queue->WaitAsync(base::BindLambdaForTesting([&](HRESULT hr) {
+    EXPECT_EQ(hr, S_OK);
     if (--count) {
       return;
     } else {
       run_loop.Quit();
     }
-  })),
-            S_OK);
+  }));
 
   run_loop.Run();
   EXPECT_EQ(count, 0);

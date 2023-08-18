@@ -345,15 +345,10 @@ void GraphImpl::OnCompilationComplete(
   //  completes.
   command_queue->ReferenceUntilCompleted(compiled_operator);
 
-  hr = command_queue->WaitAsync(base::BindOnce(
+  command_queue->WaitAsync(base::BindOnce(
       &GraphImpl::OnInitializationComplete, std::move(command_recorder),
       std::move(persistent_buffer), std::move(compiled_operator),
       std::move(compute_resource_info), std::move(callback)));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to wait the initialization completed: "
-                << logging::SystemErrorCodeToString(hr);
-    std::move(callback).Run(mojo::NullRemote());
-  }
 }
 
 // static
@@ -362,7 +357,15 @@ void GraphImpl::OnInitializationComplete(
     ComPtr<ID3D12Resource> persistent_buffer,
     ComPtr<IDMLCompiledOperator> compiled_operator,
     std::unique_ptr<ComputeResourceInfo> compute_resource_info,
-    mojom::WebNNContext::CreateGraphCallback callback) {
+    mojom::WebNNContext::CreateGraphCallback callback,
+    HRESULT hr) {
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to wait for the initialization to complete: "
+                << logging::SystemErrorCodeToString(hr);
+    std::move(callback).Run(std::move(mojo::NullRemote()));
+    return;
+  }
+
   scoped_refptr<CommandQueue> command_queue(
       command_recorder->GetCommandQueue());
   // The remote sent to the renderer.
