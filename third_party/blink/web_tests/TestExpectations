@@ -3471,7 +3471,6 @@ crbug.com/1160916 external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ 
 
 # [css-grid]
 crbug.com/1045599 external/wpt/css/css-grid/abspos/grid-abspos-staticpos-align-self-safe-001.html [ Failure ]
-crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-repeat-max-width-001.html [ Failure ]
 crbug.com/1335889 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-009.html [ Failure ]
 
 # Simple to fix - but blocked on performance regression requiring cache logic change.
