@@ -271,7 +271,8 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kVirtualCreditCardEntry:
       manager_->FillOrPreviewVirtualCardInformation(
           mojom::AutofillActionPersistence::kPreview, backend_id.value(),
-          query_form_, query_field_, AutofillTriggerSource::kKeyboardAccessory);
+          query_form_, query_field_,
+          TriggerSourceFromSuggestionTriggerSource(trigger_source));
       break;
     default:
       break;
@@ -345,9 +346,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                                                 query_form_, query_field_);
       break;
     case PopupItemId::kScanCreditCard:
-      manager_->client().ScanCreditCard(
-          base::BindOnce(&AutofillExternalDelegate::OnCreditCardScanned,
-                         GetWeakPtr(), AutofillTriggerSource::kPopup));
+      manager_->client().ScanCreditCard(base::BindOnce(
+          &AutofillExternalDelegate::OnCreditCardScanned, GetWeakPtr(),
+          AutofillTriggerSource::kKeyboardAccessory));
       break;
     case PopupItemId::kShowAccountCards:
       manager_->OnUserAcceptedCardsFromAccountOption();
