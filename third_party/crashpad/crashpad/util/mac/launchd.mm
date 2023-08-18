@@ -17,8 +17,8 @@
 #import <Foundation/Foundation.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_launch_data.h"
 #include "base/strings/sys_string_conversions.h"
 #include "util/misc/implicit_cast.h"
@@ -36,7 +36,7 @@ launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {
 
     if (type_id_cf == CFDictionaryGetTypeID()) {
       NSDictionary* dictionary_ns = base::apple::CFToNSPtrCast(
-          base::mac::CFCastStrict<CFDictionaryRef>(property_cf));
+          base::apple::CFCastStrict<CFDictionaryRef>(property_cf));
       base::mac::ScopedLaunchData dictionary_launch(
           LaunchDataAlloc(LAUNCH_DATA_DICTIONARY));
 
@@ -60,7 +60,7 @@ launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {
 
     } else if (type_id_cf == CFArrayGetTypeID()) {
       NSArray* array_ns = base::apple::CFToNSPtrCast(
-          base::mac::CFCastStrict<CFArrayRef>(property_cf));
+          base::apple::CFCastStrict<CFArrayRef>(property_cf));
       base::mac::ScopedLaunchData array_launch(
           LaunchDataAlloc(LAUNCH_DATA_ARRAY));
       size_t index = 0;
@@ -78,7 +78,8 @@ launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {
       data_launch = array_launch.release();
 
     } else if (type_id_cf == CFNumberGetTypeID()) {
-      CFNumberRef number_cf = base::mac::CFCastStrict<CFNumberRef>(property_cf);
+      CFNumberRef number_cf =
+          base::apple::CFCastStrict<CFNumberRef>(property_cf);
       NSNumber* number_ns = base::apple::CFToNSPtrCast(number_cf);
       switch (CFNumberGetType(number_cf)) {
         case kCFNumberSInt8Type:
@@ -109,12 +110,12 @@ launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {
 
     } else if (type_id_cf == CFBooleanGetTypeID()) {
       CFBooleanRef boolean_cf =
-          base::mac::CFCastStrict<CFBooleanRef>(property_cf);
+          base::apple::CFCastStrict<CFBooleanRef>(property_cf);
       data_launch = LaunchDataNewBool(CFBooleanGetValue(boolean_cf));
 
     } else if (type_id_cf == CFStringGetTypeID()) {
       NSString* string_ns = base::apple::CFToNSPtrCast(
-          base::mac::CFCastStrict<CFStringRef>(property_cf));
+          base::apple::CFCastStrict<CFStringRef>(property_cf));
 
       // -fileSystemRepresentation might be more correct than -UTF8String,
       // because these strings can hold paths. The analogous function in
@@ -126,7 +127,7 @@ launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {
 
     } else if (type_id_cf == CFDataGetTypeID()) {
       NSData* data_ns = base::apple::CFToNSPtrCast(
-          base::mac::CFCastStrict<CFDataRef>(property_cf));
+          base::apple::CFCastStrict<CFDataRef>(property_cf));
       data_launch = LaunchDataNewOpaque([data_ns bytes], [data_ns length]);
     } else {
       base::ScopedCFTypeRef<CFStringRef> type_name_cf(

@@ -21,10 +21,10 @@
 #include <sys/types.h>
 #include <sys/utsname.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -168,7 +168,7 @@ std::string IORegistryEntryDataPropertyAsString(io_registry_entry_t entry,
                                                 CFStringRef key) {
   base::ScopedCFTypeRef<CFTypeRef> property(
       IORegistryEntryCreateCFProperty(entry, key, kCFAllocatorDefault, 0));
-  CFDataRef data = base::mac::CFCast<CFDataRef>(property);
+  CFDataRef data = base::apple::CFCast<CFDataRef>(property);
   if (data && CFDataGetLength(data) > 0) {
     return reinterpret_cast<const char*>(CFDataGetBytePtr(data));
   }
@@ -244,7 +244,7 @@ bool MacOSVersionComponents(int* major,
 
   bool success = true;
 
-  CFStringRef version_cf = base::mac::CFCast<CFStringRef>(
+  CFStringRef version_cf = base::apple::CFCast<CFStringRef>(
       TryCFDictionaryGetValue(dictionary, _kCFSystemVersionProductVersionKey));
   std::string version;
   if (!version_cf) {
@@ -264,7 +264,7 @@ bool MacOSVersionComponents(int* major,
     }
   }
 
-  CFStringRef build_cf = base::mac::CFCast<CFStringRef>(
+  CFStringRef build_cf = base::apple::CFCast<CFStringRef>(
       TryCFDictionaryGetValue(dictionary, _kCFSystemVersionBuildVersionKey));
   if (!build_cf) {
     LOG(ERROR) << "build_cf not found";
@@ -273,7 +273,7 @@ bool MacOSVersionComponents(int* major,
     build->assign(base::SysCFStringRefToUTF8(build_cf));
   }
 
-  CFStringRef product_cf = base::mac::CFCast<CFStringRef>(
+  CFStringRef product_cf = base::apple::CFCast<CFStringRef>(
       TryCFDictionaryGetValue(dictionary, _kCFSystemVersionProductNameKey));
   std::string product;
   if (!product_cf) {
@@ -284,8 +284,9 @@ bool MacOSVersionComponents(int* major,
   }
 
   // This key is not required, and in fact is normally not present.
-  CFStringRef extra_cf = base::mac::CFCast<CFStringRef>(TryCFDictionaryGetValue(
-      dictionary, _kCFSystemVersionProductVersionExtraKey));
+  CFStringRef extra_cf =
+      base::apple::CFCast<CFStringRef>(TryCFDictionaryGetValue(
+          dictionary, _kCFSystemVersionProductVersionExtraKey));
   std::string extra;
   if (extra_cf) {
     extra = base::SysCFStringRefToUTF8(extra_cf);
