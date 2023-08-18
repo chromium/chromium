@@ -116683,7 +116683,6 @@
     { "name": "blissy.com.br", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "blobby.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "blogeria.in", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "bloomberg.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "blueflow.pl", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "bluefrontier.co.uk", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "bluenetworks.xyz", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
