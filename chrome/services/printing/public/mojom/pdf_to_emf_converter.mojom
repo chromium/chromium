@@ -6,6 +6,7 @@ module printing.mojom;
 
 import "chrome/services/printing/public/mojom/pdf_render_settings.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "url/mojom/url.mojom";
 
 // Converts a PDF to EMF, page-by-page.
 interface PdfToEmfConverter {
@@ -17,9 +18,13 @@ interface PdfToEmfConverter {
       (mojo_base.mojom.ReadOnlySharedMemoryRegion? emf_region,
        float scale_factor);
 
+  // Tells the service what URL is committed in the main frame of the
+  // WebContents that is printing, for use in crash diagnosis.
+  SetWebContentsURL(url.mojom.Url url);
+
   // Sets the status for enterprise policy `kPdfUseSkiaRendererEnabled`. It
-  // should be called immediately once `mojom::NupPageConvert` remote is
-  // created and only when the enterprise policy is managed.
+  // should be called immediately once `PdfToEmfConverter` remote is created
+  // and only when the enterprise policy is managed.
   SetUseSkiaRendererPolicy(bool use_skia);
 };
 

@@ -59,7 +59,8 @@ bool TestPrintJob::FlushJob(base::TimeDelta timeout) {
 void TestPrintJob::StartPdfToEmfConversion(
     scoped_refptr<base::RefCountedMemory> bytes,
     const gfx::Size& page_size,
-    const gfx::Rect& content_area) {
+    const gfx::Rect& content_area,
+    const GURL& url) {
   page_size_ = page_size;
   content_area_ = content_area;
   type_ = mojom::PrinterLanguageType::kNone;
@@ -69,7 +70,8 @@ void TestPrintJob::StartPdfToPostScriptConversion(
     scoped_refptr<base::RefCountedMemory> bytes,
     const gfx::Rect& content_area,
     const gfx::Point& physical_offsets,
-    bool ps_level2) {
+    bool ps_level2,
+    const GURL& url) {
   content_area_ = content_area;
   physical_offsets_ = physical_offsets;
   type_ = ps_level2 ? mojom::PrinterLanguageType::kPostscriptLevel2
@@ -78,7 +80,8 @@ void TestPrintJob::StartPdfToPostScriptConversion(
 
 void TestPrintJob::StartPdfToTextConversion(
     scoped_refptr<base::RefCountedMemory> bytes,
-    const gfx::Size& page_size) {
+    const gfx::Size& page_size,
+    const GURL& url) {
   page_size_ = page_size;
   type_ = mojom::PrinterLanguageType::kTextOnly;
 }

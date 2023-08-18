@@ -19,11 +19,17 @@
 #include "printing/print_settings.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include <string>
+
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+class GURL;
 #endif
 
 namespace base {
@@ -92,7 +98,8 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
       scoped_refptr<base::RefCountedMemory> print_data,
       const gfx::Size& page_size,
       const gfx::Rect& content_area,
-      const gfx::Point& physical_offsets);
+      const gfx::Point& physical_offsets,
+      const GURL& url);
 
   // Overwrites the PDF page mapping to fill in values of -1 for all indices
   // that are not selected. This is needed when the user opens the system
@@ -215,17 +222,20 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   virtual void StartPdfToEmfConversion(
       scoped_refptr<base::RefCountedMemory> bytes,
       const gfx::Size& page_size,
-      const gfx::Rect& content_area);
+      const gfx::Rect& content_area,
+      const GURL& url);
 
   virtual void StartPdfToPostScriptConversion(
       scoped_refptr<base::RefCountedMemory> bytes,
       const gfx::Rect& content_area,
       const gfx::Point& physical_offsets,
-      bool ps_level2);
+      bool ps_level2,
+      const GURL& url);
 
   virtual void StartPdfToTextConversion(
       scoped_refptr<base::RefCountedMemory> bytes,
-      const gfx::Size& page_size);
+      const gfx::Size& page_size,
+      const GURL& url);
 
   void OnPdfConversionStarted(uint32_t page_count);
   void OnPdfPageConverted(uint32_t page_number,

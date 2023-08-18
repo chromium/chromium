@@ -34,6 +34,7 @@
 #include "printing/emf_win.h"
 #include "printing/pdf_render_settings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 using content::BrowserThread;
 
@@ -72,6 +73,7 @@ class PdfConverterImpl : public PdfConverter {
   PdfConverterImpl(scoped_refptr<base::RefCountedMemory> data,
                    const PdfRenderSettings& conversion_settings,
                    const absl::optional<bool>& use_skia,
+                   const GURL& url,
                    StartCallback start_callback);
 
   PdfConverterImpl(const PdfConverterImpl&) = delete;
@@ -140,6 +142,8 @@ class PdfConverterImpl : public PdfConverter {
 
   absl::optional<bool> use_skia_;
 
+  const GURL url_;
+
   // Document loaded callback.
   PdfConverter::StartCallback start_callback_;
 
@@ -203,9 +207,11 @@ bool PostScriptMetaFile::SafePlayback(HDC hdc) const {
 PdfConverterImpl::PdfConverterImpl(scoped_refptr<base::RefCountedMemory> data,
                                    const PdfRenderSettings& settings,
                                    const absl::optional<bool>& use_skia,
+                                   const GURL& url,
                                    StartCallback start_callback)
     : settings_(settings),
       use_skia_(use_skia),
+      url_(url),
       start_callback_(std::move(start_callback)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(start_callback_);
@@ -256,6 +262,7 @@ void PdfConverterImpl::OnPageCount(
   pdf_to_emf_converter_.set_disconnect_handler(base::BindOnce(
       &PdfConverterImpl::OnFailed, weak_ptr_factory_.GetWeakPtr(),
       "Connection to PdfToEmfConverter error."));
+  pdf_to_emf_converter_->SetWebContentsURL(url_);
   if (use_skia_) {
     pdf_to_emf_converter_->SetUseSkiaRendererPolicy(*use_skia_);
   }
@@ -385,9 +392,10 @@ std::unique_ptr<PdfConverter> PdfConverter::StartPdfConverter(
     scoped_refptr<base::RefCountedMemory> data,
     const PdfRenderSettings& conversion_settings,
     const absl::optional<bool>& use_skia,
+    const GURL& url,
     StartCallback start_callback) {
   return std::make_unique<PdfConverterImpl>(data, conversion_settings, use_skia,
-                                            std::move(start_callback));
+                                            url, std::move(start_callback));
 }
 
 ScopedSimulateFailureCreatingTempFileForTests::

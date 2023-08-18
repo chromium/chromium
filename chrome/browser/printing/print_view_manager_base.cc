@@ -309,8 +309,9 @@ void PrintViewManagerBase::PrintDocument(
       !print_job_->document()->settings().is_modifiable();
   if (!printing::features::ShouldPrintUsingXps(source_is_pdf)) {
     // Print using GDI, which first requires conversion to EMF.
-    print_job_->StartConversionToNativeFormat(print_data, page_size,
-                                              content_area, offsets);
+    print_job_->StartConversionToNativeFormat(
+        print_data, page_size, content_area, offsets,
+        web_contents()->GetLastCommittedURL());
     return;
   }
 #endif

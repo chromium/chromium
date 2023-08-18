@@ -60,16 +60,19 @@ class TestPrintJob : public PrintJob {
   // arguments passed in.
   void StartPdfToEmfConversion(scoped_refptr<base::RefCountedMemory> bytes,
                                const gfx::Size& page_size,
-                               const gfx::Rect& content_area) override;
+                               const gfx::Rect& content_area,
+                               const GURL& url) override;
 
   void StartPdfToPostScriptConversion(
       scoped_refptr<base::RefCountedMemory> bytes,
       const gfx::Rect& content_area,
       const gfx::Point& physical_offsets,
-      bool ps_level2) override;
+      bool ps_level2,
+      const GURL& url) override;
 
   void StartPdfToTextConversion(scoped_refptr<base::RefCountedMemory> bytes,
-                                const gfx::Size& page_size) override;
+                                const gfx::Size& page_size,
+                                const GURL& url) override;
 #endif  // BUILDFLAG(IS_WIN)
 
  private:

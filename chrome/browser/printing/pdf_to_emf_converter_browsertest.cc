@@ -158,7 +158,7 @@ class PdfToEmfConverterBrowserTest
     base::RunLoop run_loop;
     uint32_t page_count = kInvalidPageCount;
     pdf_converter_ = PdfConverter::StartPdfConverter(
-        test_input_, pdf_settings, /*use_skia=*/GetParam(),
+        test_input_, pdf_settings, /*use_skia=*/GetParam(), GURL(),
         base::BindOnce(&StartCallbackImpl, run_loop.QuitClosure(),
                        &page_count));
     run_loop.Run();
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(PdfToEmfConverterBrowserTest, FailureNoTempFile) {
   uint32_t page_count = kInvalidPageCount;
   std::unique_ptr<PdfConverter> pdf_converter = PdfConverter::StartPdfConverter(
       base::MakeRefCounted<base::RefCountedStaticMemory>(), PdfRenderSettings(),
-      /*use_skia=*/GetParam(),
+      /*use_skia=*/GetParam(), GURL(),
       base::BindOnce(&StartCallbackImpl, run_loop.QuitClosure(), &page_count));
   run_loop.Run();
   EXPECT_EQ(0u, page_count);
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_P(PdfToEmfConverterBrowserTest, FailureBadPdf) {
   base::RunLoop run_loop;
   uint32_t page_count = kInvalidPageCount;
   std::unique_ptr<PdfConverter> pdf_converter = PdfConverter::StartPdfConverter(
-      bad_pdf_data, PdfRenderSettings(), /*use_skia=*/GetParam(),
+      bad_pdf_data, PdfRenderSettings(), /*use_skia=*/GetParam(), GURL(),
       base::BindOnce(&StartCallbackImpl, run_loop.QuitClosure(), &page_count));
   run_loop.Run();
   EXPECT_EQ(0u, page_count);
