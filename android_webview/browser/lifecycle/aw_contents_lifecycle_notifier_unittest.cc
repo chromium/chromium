@@ -99,7 +99,6 @@ class AwContentsLifecycleNotifierTest : public testing::Test {
  protected:
   // testing::Test.
   void SetUp() override {
-    AwContentsLifecycleNotifier::InitObserverListForTest();
     observer_ = std::make_unique<TestWebViewAppObserver>();
     callback_ = std::make_unique<TestOnLoseForegroundCallback>(observer_.get());
     notifier_ = std::make_unique<TestAwContentsLifecycleNotifier>(

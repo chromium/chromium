@@ -7,14 +7,12 @@ package org.chromium.android_webview.test;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AppState;
 import org.chromium.android_webview.AwContentsLifecycleNotifier;
-import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -43,11 +41,6 @@ public class AwContentsLifecycleNotifierTest {
         public void onLastWebViewDestroyed() {
             mLastWebViewDestroyedCallback.notifyCalled();
         }
-    }
-
-    @Before
-    public void setUp() {
-        TrackExitReasonsOfInterest.setStateSupplier(AwContentsLifecycleNotifier::getAppState);
     }
 
     @Test
@@ -97,27 +90,5 @@ public class AwContentsLifecycleNotifierTest {
             Assert.assertFalse(AwContentsLifecycleNotifier.hasWebViewInstances());
             Assert.assertEquals(AppState.DESTROYED, AwContentsLifecycleNotifier.getAppState());
         });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testOnlyInitOnUiThread() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { AwContentsLifecycleNotifier.init(); });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testInitOffUiThreadFails() throws Throwable {
-        boolean didNotThrowException = true;
-        try {
-            AwContentsLifecycleNotifier.init();
-        } catch (Throwable t) {
-            didNotThrowException = false;
-        }
-        if (didNotThrowException) {
-            throw new Exception("Expected assertion when not running #init on UIThread.");
-        }
     }
 }

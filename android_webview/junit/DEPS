@@ -1,3 +1,0 @@
-include_rules = [
-    "+components/crash/android/java/src/org/chromium/components/crash/browser/ProcessExitReasonFromSystem.java",
-]

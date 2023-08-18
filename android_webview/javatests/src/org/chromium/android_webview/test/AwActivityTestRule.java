@@ -24,7 +24,6 @@ import org.chromium.android_webview.AwContents.DependencyFactory;
 import org.chromium.android_webview.AwContents.InternalAccessDelegate;
 import org.chromium.android_webview.AwContents.NativeDrawFunctorFactory;
 import org.chromium.android_webview.AwContentsClient;
-import org.chromium.android_webview.AwContentsLifecycleNotifier;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.android_webview.test.util.JSUtils;
@@ -197,9 +196,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         }
         launchActivity(); // The Activity must be launched in order to load native code
         final InMemorySharedPreferences prefs = new InMemorySharedPreferences();
-        // AwBrowserContext ctor depends on AwContentsLifecycleNotifier's observer list
-        // being initialized. So init here before constructing it.
-        TestThreadUtils.runOnUiThreadBlocking(() -> AwContentsLifecycleNotifier.init());
         TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mBrowserContext = createAwBrowserContextOnUiThread(prefs));
     }

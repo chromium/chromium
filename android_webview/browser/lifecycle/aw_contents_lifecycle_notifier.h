@@ -60,8 +60,6 @@ class AwContentsLifecycleNotifier {
 
   std::vector<const AwContents*> GetAllAwContents() const;
 
-  static void InitObserverListForTest();
-
  private:
   struct AwContentsData {
     AwContentsData();

@@ -23,7 +23,6 @@ import android.webkit.WebViewDatabase;
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwContentsLifecycleNotifier;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwDarkMode;
@@ -170,9 +169,6 @@ public class WebViewChromiumAwInit {
             PathService.override(DIR_RESOURCE_PAKS_ANDROID, "/system/framework/webview/paks");
 
             initPlatSupportLibrary();
-            // This init must occur before any uses of the #addObserver API,
-            // since the ObserverList is initialized here.
-            AwContentsLifecycleNotifier.init();
             doNetworkInitializations(context);
 
             waitUntilSetUpResources();
