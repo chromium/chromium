@@ -23,8 +23,21 @@
                 on-change="updateActionsSelect">
               <template is="dom-repeat" items="[[featuresList]]">
                 <option
-                    value="[[item]]">
-                  [[item]]
+                    value="[[item.value]]">
+                  [[item.name]]
+                </option>
+              </template>
+            </select>
+          </div>
+          <div class="select-div">
+            <label id="ActionSelectLabel">Action: </label>
+            <select aria-labelledby="ActionSelectLabel" name="Action"
+                id="actionSelect" class="md-select">
+              <template is="dom-repeat" items="{{actionsSelectList}}"
+                  as="action">
+                <option
+                    value="{{action.value}}">
+                    {{action.name}}
                 </option>
               </template>
             </select>

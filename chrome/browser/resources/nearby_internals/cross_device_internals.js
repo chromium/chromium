@@ -15,7 +15,7 @@ import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './cross_device_internals.html.js';
 import {NearbyPresenceBrowserProxy} from './nearby_presence_browser_proxy.js';
-import {PresenceDevice} from './types.js';
+import {PresenceDevice, SelectOption} from './types.js';
 
 Polymer({
   is: 'cross-device-internals',
@@ -36,16 +36,52 @@ Polymer({
       value: [],
     },
 
-    /** @private {!Array<!String>} */
+    /** @private {!Array<!SelectOption>} */
     featuresList: {
       type: Array,
       value: [
-        'Nearby Presence',
-        'Nearby Share',
-        'Nearby Connections',
-        'Fast Pair',
+        {name: 'Nearby Presence', value: 'NearbyPresence'},
+        {name: 'Nearby Share', value: 'NearbyShare'},
+        {name: 'Nearby Connections', value: 'NearbyConnections'},
+        {name: 'Fast Pair', value: 'FastPair'},
       ],
     },
+
+    /** @private {!Array<!SelectOption>} */
+    nearbyPresenceActionList: {
+      type: Array,
+      value: [
+        {name: 'Start Scan', value: 'StartScan'},
+        {name: 'Stop Scan', value: 'StopScan'},
+        {name: 'Sync Credentials', value: 'SyncCredentials'},
+        {name: 'First time flow', value: 'FirstTimeFlow'},
+      ],
+    },
+
+    /** @private {!Array<!SelectOption>} */
+    nearbyShareActionList: {
+      type: Array,
+      value: [],
+    },
+
+    /** @private {!Array<!SelectOption>} */
+    nearbyConnectionsActionList: {
+      type: Array,
+      value: [],
+    },
+
+
+    /** @private {!Array<!SelectOption>} */
+    fastPairActionList: {
+      type: Array,
+      value: [],
+    },
+
+    actionsSelectList: {
+      type: Array,
+      value: [],
+    },
+
   },
 
   created() {
@@ -65,10 +101,28 @@ Polymer({
         device => this.onPresenceDeviceChanged_(device));
     this.addWebUIListener(
         'presence-device-lost', device => this.onPresenceDeviceLost_(device));
+    this.set('actionsSelectList', this.nearbyPresenceActionList);
   },
 
   onStartScanClicked() {
     this.browserProxy_.SendStartScan();
+  },
+
+  updateActionsSelect() {
+    switch (this.$.actionGroup.value) {
+      case 'NearbyPresence':
+        this.set('actionsSelectList', this.nearbyPresenceActionList);
+        break;
+      case 'NearbyConnections':
+        this.set('actionsSelectList', this.nearbyConnectionsActionList);
+        break;
+      case 'NearbyShare':
+        this.set('actionsSelectList', this.nearbyShareActionList);
+        break;
+      case 'FastPair':
+        this.set('actionsSelectList', this.fastPairActionList);
+        break;
+    }
   },
 
   onStopScanClicked() {
