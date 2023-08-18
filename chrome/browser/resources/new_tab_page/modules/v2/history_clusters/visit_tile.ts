@@ -64,12 +64,19 @@ export class VisitTileModuleElement extends I18nMixin
         type: String,
         reflectToAttribute: true,
       },
+
+      hasDiscount: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
   format: string;
   imagesEnabled: boolean;
   visit: URLVisit;
+  hasDiscount: boolean;
   private imageUrl_: Url|null;
 
   hasImageUrl(): boolean {

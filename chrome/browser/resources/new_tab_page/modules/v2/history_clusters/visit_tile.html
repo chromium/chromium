@@ -154,6 +154,29 @@
       outline: var(--cr-border-hcm);
     }
   }
+
+  #discountChip {
+    background: var(--color-sys-tertiary-container);
+    border-radius: 4px;
+    color: var(--color-sys-on-tertiary-container);
+    display: inline-block;
+    font-weight: 500;
+    font-size: 11px;
+    height: 18px;
+    line-height: 18px;
+    margin-inline-start: 16px;
+    margin-top: 8px;
+    padding-inline-end: 4px;
+    padding-inline-start: 4px;
+    text-align: center;
+  }
+
+  :host([has-discount]) #title {
+    -webkit-line-clamp: 1;
+    height: 20px;
+    margin-bottom: 0px;
+  }
+
 </style>
 <a id="content" href="[[visit.normalizedUrl.url]]"
    aria-label$="[[visit.pageTitle]], [[label_]], [[visit.relativeDate]]">
@@ -176,6 +199,9 @@
     </template>
   </div>
   <div id="title" class="truncate">[[visit.pageTitle]]</div>
+  <template is="dom-if" if="[[hasDiscount]]" restamp>
+    <div id="discountChip"></div>
+  </template>
   <template is="dom-if" if="[[annotation_]]">
         <div id="annotation">[[annotation_]]</div>
   </template>
