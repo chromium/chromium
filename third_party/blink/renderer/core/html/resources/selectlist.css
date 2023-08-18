@@ -11,27 +11,27 @@
 
 selectlist {
   display: inline-flex;
-  user-select: none;
   font-family: sans-serif;
   font-size: .875em;
+  user-select: none;
 }
 
 selectlist::-internal-selectlist-button {
-  align-items: center;
-  appearance: none;
+  color: FieldText;
   background-color: Field;
+  appearance: none;
+  padding: 0.25em;
   border: 1px solid ButtonBorder;
   border-radius: 0.25em;
-  color: FieldText;
   cursor: default;
+  font-size:inherit;
+  text-align: inherit;
   display: inline-flex;
   flex-grow:1;
   flex-shrink:1;
-  font-size:inherit;
+  align-items: center;
   overflow-x:hidden;
   overflow-y:hidden;
-  padding: 0.25em;
-  text-align: inherit;
 }
 
 selectlist::-internal-selectlist-selected-value {
@@ -50,10 +50,10 @@ selectlist option {
 }
 
 selectlist option:hover {
+  color: SelectedItemText;
+  background-color: SelectedItem;
   cursor: default;
   user-select: none;
-  background-color: SelectedItem;
-  color: SelectedItemText;
 }
 
 selectlist optgroup {
@@ -62,10 +62,6 @@ selectlist optgroup {
 
 selectlist optgroup:last-child {
   padding-bottom: 0;
-}
-
-selectlist optgroup > option {
-  padding-left: 0.75em;
 }
 
 selectlist optgroup > option {
@@ -97,15 +93,15 @@ selectlist:-internal-autofill-selected::-internal-selectlist-button {
 }
 
 selectlist:disabled::-internal-selectlist-button {
+  color: -internal-light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
   background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
   border-color: -internal-light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
-  color: -internal-light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
   opacity: 0.7;
 }
 
 selectlist option:disabled {
-  background-color: initial;
   color: GrayText;
+  background-color: initial;
 }
 
 /* remove highlight on disabled options, making them visually un-selectable  */
