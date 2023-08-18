@@ -237,7 +237,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
     @Override
     public void onUiModeChanged(@BookmarkUiMode int mode) {
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            // TODO(https://crbug.com/1439583): Update title and buttons.
+            // TODO(https://crbug.com/1439583): Update buttons.
         } else {
             mModel.set(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE,
                     mode == BookmarkUiMode.SEARCHING);
@@ -249,6 +249,9 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
             mModel.set(BookmarkToolbarProperties.TITLE, null);
             mModel.set(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE, false);
             mModel.set(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE, false);
+        } else if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                && mode == BookmarkUiMode.SEARCHING) {
+            mModel.set(BookmarkToolbarProperties.TITLE, mContext.getString(R.string.bookmarks));
         } else {
             // All modes besides LOADING require a folder to be set. If there's none available,
             // then the button visibilities will be updated accordingly. Additionally, it's

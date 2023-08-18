@@ -79,6 +79,7 @@ public class BookmarkToolbarMediatorTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarios =
             new ActivityScenarioRule<>(TestActivity.class);
+
     @Mock
     private BookmarkDelegate mBookmarkDelegate;
     @Mock
@@ -497,5 +498,16 @@ public class BookmarkToolbarMediatorTest {
         initModelAndMediator();
         assertEquals(R.id.sort_by_reverse_alpha,
                 mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+    }
+
+    @Test
+    public void testTitleWhenSearching() {
+        String folderName = "test folder";
+        doReturn(folderName).when(mBookmarkItem).getTitle();
+        mMediator.onFolderStateSet(mBookmarkId);
+        assertEquals(folderName, mModel.get(BookmarkToolbarProperties.TITLE));
+
+        mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
+        assertEquals("Bookmarks", mModel.get(BookmarkToolbarProperties.TITLE));
     }
 }
