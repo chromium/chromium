@@ -134,8 +134,7 @@ auto Equals(const FormForest& exp) {
 // The basic test form is a credit card form with six fields: first name, last
 // name, number, month, year, CVC.
 FormData CreateForm() {
-  FormData form;
-  test::CreateTestCreditCardFormData(&form, true, false, true);
+  FormData form = test::CreateTestCreditCardFormData(true, false, true);
   CHECK_EQ(form.fields.size(), 6u);
   return form;
 }

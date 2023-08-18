@@ -180,8 +180,8 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
     ON_CALL(*fast_checkout_client, IsNotShownYet)
         .WillByDefault(testing::Return(true));
 
-    test::CreateTestCreditCardFormData(&form_, /*is_https=*/true,
-                                       /*use_month_type=*/false);
+    form_ = test::CreateTestCreditCardFormData(/*is_https=*/true,
+                                               /*use_month_type=*/false);
     form_.fields[0].is_focusable = true;
   }
 
@@ -225,11 +225,10 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest, TryToShowTouchToFillSucceeds) {
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        TryToShowTouchToFillFailsIfNotCreditCardField) {
-  {
-    FormFieldData field;
-    test::CreateTestFormField("Arbitrary", "arbitrary", "", "text", &field);
-    form_.fields.insert(form_.fields.begin(), field);
-  }
+  form_.fields.insert(
+      form_.fields.begin(),
+      test::CreateTestFormField("Arbitrary", "arbitrary", "", "text"));
+
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/false);
@@ -299,8 +298,8 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        TryToShowTouchToFillFailsIfFormIsNotSecure) {
   // Simulate non-secure form.
-  test::CreateTestCreditCardFormData(&form_, /*is_https=*/false,
-                                     /*use_month_type=*/false);
+  form_ = test::CreateTestCreditCardFormData(/*is_https=*/false,
+                                             /*use_month_type=*/false);
 
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 

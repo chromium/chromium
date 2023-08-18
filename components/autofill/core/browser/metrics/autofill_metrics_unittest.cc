@@ -3165,11 +3165,10 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_BadServerResponse) {
                       /*include_full_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
   // Set up our form data.
-  FormData form;
-  test::CreateTestCreditCardFormData(&form,
-                                     /*is_https=*/true,
-                                     /*use_month_type=*/true,
-                                     /*split_names=*/false);
+  FormData form = test::CreateTestCreditCardFormData(
+      /*is_https=*/true,
+      /*use_month_type=*/true,
+      /*split_names=*/false);
   std::vector<ServerFieldType> field_types{
       CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
       CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, CREDIT_CARD_VERIFICATION_CODE};

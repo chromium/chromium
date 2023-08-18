@@ -197,7 +197,6 @@ void CreateTestFormField(std::string_view label,
 // Populates `form` with data corresponding to a simple personal information
 // form, including name and email, but no address-related fields.
 [[nodiscard]] FormData CreateTestPersonalInformationFormData();
-void CreateTestPersonalInformationFormData(FormData* form);
 
 // Populates `form` with data corresponding to a simple credit card form.
 // Note that this actually appends fields to the form data, which can be
@@ -205,10 +204,6 @@ void CreateTestPersonalInformationFormData(FormData* form);
 [[nodiscard]] FormData CreateTestCreditCardFormData(bool is_https,
                                                     bool use_month_type,
                                                     bool split_names = false);
-void CreateTestCreditCardFormData(FormData* form,
-                                  bool is_https,
-                                  bool use_month_type,
-                                  bool split_names = false);
 
 // Populates `form_data` with data corresponding to an IBAN form (a form with a
 // single IBAN field). Note that this actually appends fields to the form data,

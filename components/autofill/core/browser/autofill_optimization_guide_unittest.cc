@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -28,6 +29,7 @@
 
 namespace autofill {
 
+using test::CreateTestCreditCardFormData;
 using test::CreateTestIbanFormData;
 
 class MockOptimizationGuideDecider
@@ -121,10 +123,9 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
-  FormData form_data;
-  test::CreateTestCreditCardFormData(&form_data, /*is_https=*/true,
-                                     /*use_month_type=*/true);
-  FormStructure form_structure{form_data};
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
 
@@ -144,10 +145,9 @@ TEST_F(AutofillOptimizationGuideTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
-  FormData form_data;
-  test::CreateTestCreditCardFormData(&form_data, /*is_https=*/true,
-                                     /*use_month_type=*/true);
-  FormStructure form_structure{form_data};
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
   test_api(*personal_data_manager_->GetCreditCards()[0])
@@ -167,10 +167,9 @@ TEST_F(AutofillOptimizationGuideTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
-  FormData form_data;
-  test::CreateTestCreditCardFormData(&form_data, /*is_https=*/true,
-                                     /*use_month_type=*/true);
-  FormStructure form_structure{form_data};
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
   personal_data_manager_->GetCreditCards()[0]->set_virtual_card_enrollment_type(
@@ -190,10 +189,9 @@ TEST_F(AutofillOptimizationGuideTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
-  FormData form_data;
-  test::CreateTestCreditCardFormData(&form_data, /*is_https=*/true,
-                                     /*use_month_type=*/true);
-  FormStructure form_structure{form_data};
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
   personal_data_manager_->GetCreditCards()[0]
@@ -214,10 +212,9 @@ TEST_F(AutofillOptimizationGuideTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
-  FormData form_data;
-  test::CreateTestCreditCardFormData(&form_data, /*is_https=*/true,
-                                     /*use_month_type=*/true);
-  FormStructure form_structure{form_data};
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
 
@@ -235,10 +232,9 @@ TEST_F(AutofillOptimizationGuideTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
-  FormData form_data;
-  test::CreateTestCreditCardFormData(&form_data, /*is_https=*/true,
-                                     /*use_month_type=*/true);
-  FormStructure form_structure{form_data};
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
   personal_data_manager_.reset();
@@ -276,13 +272,14 @@ TEST_F(AutofillOptimizationGuideTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kAutofillEnableMerchantOptOutClientSideUrlFiltering}, {});
-  FormData form_data = CreateTestIbanFormData();
-  test::CreateTestCreditCardFormData(&form_data, /*is_https=*/true,
-                                     /*use_month_type=*/false);
+  FormData form_data = CreateTestCreditCardFormData(/*is_https=*/true,
+                                                    /*use_month_type=*/false);
+  base::ranges::move(CreateTestIbanFormData().fields,
+                     std::back_inserter(form_data.fields));
   FormStructure form_structure{form_data};
   const std::vector<ServerFieldType> field_types = {
-      IBAN_VALUE,         CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NAME_LAST,
-      CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH,  CREDIT_CARD_EXP_4_DIGIT_YEAR};
+      CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NAME_LAST,        CREDIT_CARD_NUMBER,
+      CREDIT_CARD_EXP_MONTH,  CREDIT_CARD_EXP_4_DIGIT_YEAR, IBAN_VALUE};
   test_api(form_structure).SetFieldTypes(field_types, field_types);
 
   EXPECT_CALL(*decider_,
