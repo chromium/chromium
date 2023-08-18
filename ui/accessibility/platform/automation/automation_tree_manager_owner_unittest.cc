@@ -155,13 +155,13 @@ class FakeAutomationV8Router : public AutomationV8Router {
       const base::Value::Dict* params = event_args[0].GetIfDict();
       ASSERT_TRUE(params);
       ui::AXActionData data;
-      const std::string* tree_id = params->FindString("tree_id");
+      const std::string* tree_id = params->FindString("treeID");
       ASSERT_TRUE(tree_id);
       data.target_tree_id = ui::AXTreeID::FromString(*tree_id);
-      absl::optional<int> node_id = params->FindInt("node_id");
+      absl::optional<int> node_id = params->FindInt("nodeID");
       ASSERT_TRUE(node_id);
       data.target_node_id = *node_id;
-      absl::optional<int> request_id = params->FindInt("request_id");
+      absl::optional<int> request_id = params->FindInt("requestID");
       ASSERT_TRUE(request_id);
       data.request_id = *request_id;
 

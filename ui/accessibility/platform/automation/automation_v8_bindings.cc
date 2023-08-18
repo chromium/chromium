@@ -565,8 +565,8 @@ void AutomationV8Bindings::SendGetTextLocationResult(
     const ui::AXActionData& data,
     const absl::optional<gfx::Rect>& rect) {
   base::Value::Dict params;
-  params.Set("tree_id", data.target_tree_id.ToString());
-  params.Set("node_id", data.target_node_id);
+  params.Set("treeID", data.target_tree_id.ToString());
+  params.Set("nodeID", data.target_node_id);
   params.Set("result", false);
   if (rect) {
     params.Set("left", rect.value().x());
@@ -575,7 +575,7 @@ void AutomationV8Bindings::SendGetTextLocationResult(
     params.Set("height", rect.value().height());
     params.Set("result", true);
   }
-  params.Set("request_id", data.request_id);
+  params.Set("requestID", data.request_id);
 
   base::Value::List args;
   args.Append(std::move(params));
