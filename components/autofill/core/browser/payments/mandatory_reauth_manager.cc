@@ -14,6 +14,9 @@
 
 namespace autofill::payments {
 
+using autofill_metrics::LogMandatoryReauthOfferOptInDecision;
+using autofill_metrics::MandatoryReauthOfferOptInDecision;
+
 MandatoryReauthManager::MandatoryReauthManager(AutofillClient* client)
     : client_(client) {}
 MandatoryReauthManager::~MandatoryReauthManager() = default;
@@ -57,6 +60,8 @@ bool MandatoryReauthManager::ShouldOfferOptin(
   opt_in_source_ = autofill_metrics::MandatoryReauthOptInOrOutSource::kUnknown;
   // We should not offer to update a user pref in off the record mode.
   if (client_->IsOffTheRecord()) {
+    LogMandatoryReauthOfferOptInDecision(
+        MandatoryReauthOfferOptInDecision::kIncognitoMode);
     return false;
   }
 
@@ -74,6 +79,8 @@ bool MandatoryReauthManager::ShouldOfferOptin(
           client_->GetDeviceAuthenticator();
       !device_authenticator ||
       !device_authenticator->CanAuthenticateWithBiometricOrScreenLock()) {
+    LogMandatoryReauthOfferOptInDecision(
+        MandatoryReauthOfferOptInDecision::kNoSupportedReauthMethod);
     return false;
   }
 
@@ -82,6 +89,8 @@ bool MandatoryReauthManager::ShouldOfferOptin(
   // confusing to offer payments autofill functionalities when there was no card
   // submitted.
   if (!card_extracted_from_form.has_value()) {
+    LogMandatoryReauthOfferOptInDecision(
+        MandatoryReauthOfferOptInDecision::kNoCardExtractedFromForm);
     return false;
   }
 
@@ -95,6 +104,9 @@ bool MandatoryReauthManager::ShouldOfferOptin(
   // prompt to enable re-authentication could be confusing.
   if (!card_identifier_if_non_interactive_authentication_flow_completed
            .has_value()) {
+    LogMandatoryReauthOfferOptInDecision(
+        MandatoryReauthOfferOptInDecision::
+            kWentThroughInteractiveAuthentication);
     return false;
   }
 
@@ -121,15 +133,22 @@ bool MandatoryReauthManager::ShouldOfferOptin(
       if (!absl::holds_alternative<FormDataImporter::CardGuid>(
               card_identifier_if_non_interactive_authentication_flow_completed
                   .value())) {
+        LogMandatoryReauthOfferOptInDecision(
+            MandatoryReauthOfferOptInDecision::kManuallyFilledLocalCard);
         return false;
       }
       opt_in_source_ =
           autofill_metrics::MandatoryReauthOptInOrOutSource::kCheckoutLocalCard;
-      return LastFilledCardMatchesSubmittedCard(
+      bool is_card_match = LastFilledCardMatchesSubmittedCard(
           absl::get<FormDataImporter::CardGuid>(
               card_identifier_if_non_interactive_authentication_flow_completed
                   .value()),
           card_extracted_from_form.value());
+      LogMandatoryReauthOfferOptInDecision(
+          is_card_match ? MandatoryReauthOfferOptInDecision::kOffered
+                        : MandatoryReauthOfferOptInDecision::
+                              kNoStoredCardForExtractedCard);
+      return is_card_match;
     }
     case FormDataImporter::CreditCardImportType::kServerCard: {
       // From `import_type` we know that the submitted card exists as a server
@@ -143,6 +162,8 @@ bool MandatoryReauthManager::ShouldOfferOptin(
       if (!absl::holds_alternative<FormDataImporter::CardGuid>(
               card_identifier_if_non_interactive_authentication_flow_completed
                   .value())) {
+        LogMandatoryReauthOfferOptInDecision(
+            MandatoryReauthOfferOptInDecision::kManuallyFilledServerCard);
         return false;
       }
 
@@ -157,17 +178,24 @@ bool MandatoryReauthManager::ShouldOfferOptin(
           // Still use local card for metrics in this case.
           opt_in_source_ = autofill_metrics::MandatoryReauthOptInOrOutSource::
               kCheckoutLocalCard;
-          return LastFilledCardMatchesSubmittedCard(
+          bool is_card_match = LastFilledCardMatchesSubmittedCard(
               absl::get<FormDataImporter::CardGuid>(
                   card_identifier_if_non_interactive_authentication_flow_completed
                       .value()),
               *local_card);
+          LogMandatoryReauthOfferOptInDecision(
+              is_card_match ? MandatoryReauthOfferOptInDecision::kOffered
+                            : MandatoryReauthOfferOptInDecision::
+                                  kNoStoredCardForExtractedCard);
+          return is_card_match;
         }
       }
 
       // We could not find a matching local card for this server card, so we
       // should not offer re-auth opt-in as there is no re-auth functionality
       // for server cards.
+      LogMandatoryReauthOfferOptInDecision(
+          MandatoryReauthOfferOptInDecision::kUnsupportedCardType);
       return false;
     }
     case FormDataImporter::CreditCardImportType::kVirtualCard: {
@@ -182,6 +210,8 @@ bool MandatoryReauthManager::ShouldOfferOptin(
       if (!absl::holds_alternative<FormDataImporter::CardLastFourDigits>(
               card_identifier_if_non_interactive_authentication_flow_completed
                   .value())) {
+        LogMandatoryReauthOfferOptInDecision(
+            MandatoryReauthOfferOptInDecision::kManuallyFilledVirtualCard);
         return false;
       }
 
@@ -192,16 +222,24 @@ bool MandatoryReauthManager::ShouldOfferOptin(
       // card extracted from the form, as we do not store virtual cards in the
       // autofill table, so the card extracted from the form will not have a
       // GUID.
-      return base::UTF8ToUTF16(
-                 absl::get<FormDataImporter::CardLastFourDigits>(
-                     card_identifier_if_non_interactive_authentication_flow_completed
-                         .value())
-                     .value()) == card_extracted_from_form->LastFourDigits();
+      bool is_card_match =
+          base::UTF8ToUTF16(
+              absl::get<FormDataImporter::CardLastFourDigits>(
+                  card_identifier_if_non_interactive_authentication_flow_completed
+                      .value())
+                  .value()) == card_extracted_from_form->LastFourDigits();
+      LogMandatoryReauthOfferOptInDecision(
+          is_card_match ? MandatoryReauthOfferOptInDecision::kOffered
+                        : MandatoryReauthOfferOptInDecision::
+                              kNoStoredCardForExtractedCard);
+      return is_card_match;
     }
     case FormDataImporter::CreditCardImportType::kNewCard:
     case FormDataImporter::CreditCardImportType::kNoCard:
       // We should not offer mandatory re-auth opt-in for new cards or undefined
       // cards.
+      LogMandatoryReauthOfferOptInDecision(
+          MandatoryReauthOfferOptInDecision::kUnsupportedCardType);
       return false;
   }
 }

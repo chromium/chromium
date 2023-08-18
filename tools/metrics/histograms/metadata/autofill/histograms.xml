@@ -3393,6 +3393,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Autofill.PaymentMethods.MandatoryReauth.CheckoutFlow.ReauthOfferOptInDecision"
+    enum="MandatoryReauthOfferOptInDecision" expires_after="2024-04-01">
+  <owner>sujiezhu@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the detailed reason why (or why not) mandatory reauth opt-in was
+    offered during a credit card checkout flow. Whenever we determine whether to
+    offer the mandatory reauth opt-in prompt, we will log the decision result to
+    this histogram.
+  </summary>
+</histogram>
+
+<histogram
     name="Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.{Source}.{ChangingStatus}"
     enum="MandatoryReauthAuthEvent" expires_after="2024-04-01">
   <owner>koulvipul@google.com</owner>
