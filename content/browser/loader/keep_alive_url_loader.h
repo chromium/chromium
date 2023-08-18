@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_LOADER_KEEP_ALIVE_URL_LOADER_H_
 
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -21,6 +22,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -74,14 +76,14 @@ class CONTENT_EXPORT KeepAliveURLLoader
 
   // Must only be constructed by a `KeepAliveURLLoaderService`.
   //
+  // Note that calling ctor does not mean loading the request. `Start()` must
+  // also be called subsequently.
+  //
   // `resource_request` must be a keepalive request from a renderer.
   // `forwarding_client` should handle request loading results from the network
   //     service if it is still connected.
   // `delete_callback` is a callback to delete this object.
   // `policy_container_host` must not be null.
-  // `is_deferred` tells if the request loading should be started immediately
-  //     within this ctor. If false, the caller is responsible for calling
-  //     `StartDeferredLoad()` later.
   KeepAliveURLLoader(
       int32_t request_id,
       uint32_t options,
@@ -91,10 +93,8 @@ class CONTENT_EXPORT KeepAliveURLLoader
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
       scoped_refptr<PolicyContainerHost> policy_container_host,
       BrowserContext* browser_context,
-      base::PassKey<KeepAliveURLLoaderService>,
-      bool is_deferred = false,
-      URLLoaderThrottlesGetter url_loader_throttles_getter_for_testing =
-          base::NullCallback());
+      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
+      base::PassKey<KeepAliveURLLoaderService>);
   ~KeepAliveURLLoader() override;
 
   // Not copyable.
@@ -109,14 +109,16 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Must be called immediately after creating a KeepAliveLoader.
   void set_on_delete_callback(OnDeleteCallback on_delete_callback);
 
+  // Returns true if request loading has been started, i.e. `Start()` has been
+  // called. Otherwise, returns false by default.
+  bool IsStarted() const;
+
+  // Kicks off loading the request, including prepare for requests, and setting
+  // up communication with network service.
+  // This method must only be called when `IsStarted()` is false.
+  void Start();
+
   base::WeakPtr<KeepAliveURLLoader> GetWeakPtr();
-
-  // Returns true if this loader is deferred, i.e. not yet started to load.
-  bool IsDeferred() const;
-
-  // Tells the loader to start loading the deferred request.
-  // Must be called only when `IsDeferred()` is true.
-  void StartDeferredLoad();
 
   // For testing only:
   // TODO(crbug.com/1427366): Figure out alt to not rely on this in test.
@@ -144,12 +146,6 @@ class CONTENT_EXPORT KeepAliveURLLoader
   void SetObserverForTesting(scoped_refptr<TestObserver> observer);
 
  private:
-  // Handles the details to kick off loading the request.
-  // This method might be triggered from the ctor directly, or from the public
-  // method `StartDeferredLoad()`.
-  void StartLoad(
-      URLLoaderThrottlesGetter url_loader_throttles_getter_for_testing);
-
   // Receives actions from renderer.
   // `network::mojom::URLLoader` overrides:
   void FollowRedirect(
@@ -233,8 +229,8 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // which owns this loader.
   const raw_ptr<BrowserContext> browser_context_;
 
-  // Tells if this loader is deferred to start.
-  bool is_deferred_;
+  // Tells if this loader has been started or not.
+  bool is_started_ = false;
 
   // A callback to delete this loader object and clean up resource.
   OnDeleteCallback on_delete_callback_;
