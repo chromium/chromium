@@ -12,6 +12,13 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ui/base/device_form_factor.h"
 
+namespace {
+
+// Number of allowed moves between active and inactive.
+const int kMoveTabsLimit = 500;
+
+}  // namespace
+
 const int kInactiveTabsDisabledByUser = -1;
 
 BASE_FEATURE(kTabInactivityThreshold,
@@ -87,4 +94,15 @@ BASE_FEATURE(kShowInactiveTabsCount,
 bool IsShowInactiveTabsCountEnabled() {
   CHECK(IsInactiveTabsAvailable());
   return base::FeatureList::IsEnabled(kShowInactiveTabsCount);
+}
+
+BASE_FEATURE(kInactiveTabsMoveLimit,
+             "InactiveTabsMoveLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsInactiveTabsMoveNumberExceeded(int currentMoveNumber) {
+  if (base::FeatureList::IsEnabled(kInactiveTabsMoveLimit)) {
+    return currentMoveNumber >= kMoveTabsLimit;
+  }
+  return false;
 }

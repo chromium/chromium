@@ -15,9 +15,6 @@
 
 namespace {
 
-// Number of allowed moves between active and inactive.
-const int kMoveTabsLimit = 500;
-
 // Returns true if the given web state last is inactive determined by the given
 // threshold.
 bool IsInactive(const base::TimeDelta& threshold, web::WebState* web_state) {
@@ -75,7 +72,7 @@ void MoveTabsFromActiveToInactive(Browser* active_browser,
         for (int index =
                  active_web_state_list->GetIndexOfFirstNonPinnedWebState();
              index < active_web_state_list->count() &&
-             removed_web_state_number < kMoveTabsLimit;) {
+             !IsInactiveTabsMoveNumberExceeded(removed_web_state_number);) {
           web::WebState* current_web_state =
               active_web_state_list->GetWebStateAt(index);
           if (!IsVisibleURLNewTabPage(current_web_state) &&
@@ -101,8 +98,9 @@ void MoveTabsFromInactiveToActive(Browser* inactive_browser,
         const base::TimeDelta inactivity_threshold =
             InactiveTabsTimeThreshold();
         int removed_web_state_number = 0;
-        for (int index = 0; index < inactive_web_state_list->count() &&
-                            removed_web_state_number < kMoveTabsLimit;) {
+        for (int index = 0;
+             index < inactive_web_state_list->count() &&
+             !IsInactiveTabsMoveNumberExceeded(removed_web_state_number);) {
           if (!IsInactive(inactivity_threshold,
                           inactive_web_state_list->GetWebStateAt(index))) {
             int insertion_index =

@@ -541,6 +541,10 @@ const char kHideContentSuggestionTilesName[] = "Hide content suggestions tiles";
 const char kHideContentSuggestionTilesDescription[] =
     "Hides content suggestions tiles from the new tab page.";
 
+const char kInactiveTabsMoveLimitName[] = "Inactive tabs move limit";
+const char kInactiveTabsMoveLimitDescription[] =
+    "When enabled, limits the number of inactive tabs move.";
+
 const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
 const char kIncognitoNtpRevampDescription[] =
     "When enabled, Incognito new tab page will have an updated UI.";

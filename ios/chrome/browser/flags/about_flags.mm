@@ -1661,6 +1661,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-parcel-tracking", flag_descriptions::kIOSParcelTrackingName,
      flag_descriptions::kIOSParcelTrackingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSParcelTracking)},
+    {"enable-inactive-tabs-limit",
+     flag_descriptions::kInactiveTabsMoveLimitName,
+     flag_descriptions::kInactiveTabsMoveLimitDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kInactiveTabsMoveLimit)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

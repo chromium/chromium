@@ -49,4 +49,10 @@ BASE_DECLARE_FEATURE(kShowInactiveTabsCount);
 // Whether the count of Inactive Tabs should be shown.
 bool IsShowInactiveTabsCountEnabled();
 
+// Feature flag that sets the tab inactivity threshold.
+BASE_DECLARE_FEATURE(kInactiveTabsMoveLimit);
+
+// Whether the number of tab move exceeded.
+bool IsInactiveTabsMoveNumberExceeded(int currentMoveNumber);
+
 #endif  // IOS_CHROME_BROWSER_TABS_INACTIVE_TABS_FEATURES_H_
