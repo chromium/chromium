@@ -1216,13 +1216,13 @@ void ServiceWorkerContextCore::OnReportConsoleMessage(
     int line_number,
     const GURL& source_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  BrowserContext* browser_context = wrapper_->browser_context();
+  DCHECK(browser_context);
   DCHECK_EQ(this, version->context().get());
-  // NOTE: This differs slightly from
-  // RenderFrameHostImpl::DidAddMessageToConsole, which also asks the
-  // content embedder whether to classify the message as a builtin component.
-  // This is called on the IO thread, though, so we can't easily get a
-  // BrowserContext and call ContentBrowserClient::IsBuiltinComponent().
-  const bool is_builtin_component = HasWebUIScheme(source_url);
+  const bool is_builtin_component =
+      HasWebUIScheme(source_url) ||
+      GetContentClient()->browser()->IsBuiltinComponent(
+          browser_context, url::Origin::Create(source_url));
 
   LogConsoleMessage(message_level, message, line_number, is_builtin_component,
                     wrapper_->is_incognito(),
