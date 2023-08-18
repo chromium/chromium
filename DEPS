@@ -1156,7 +1156,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/anonymous-tokens.git' + '@' + '8c8d20953d502db31fec2353b199e6c22ef0236e',
 
   'src/third_party/content_analysis_sdk/src':
-    Var('chromium_git') + '/external/github.com/chromium/content_analysis_sdk.git' + '@' + '93f5b9cfe9509a6b58eb0414f1bd610c4859ed1d',
+    Var('chromium_git') + '/external/github.com/chromium/content_analysis_sdk.git' + '@' + '8d5118720805fdce0dd3ee2999c964501de4532c',
 
   'src/third_party/dav1d/libdav1d':
     Var('chromium_git') + '/external/github.com/videolan/dav1d.git' + '@' + 'f8ae94eca0f53502a2cddd29a263c1edea4822a0',
