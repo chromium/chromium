@@ -8,9 +8,7 @@ import os
 import sys
 import unittest
 
-# The following non-std imports are fetched via vpython. See the list at
-# //.vpython3
-import mock  # pylint: disable=import-error
+from unittest import mock
 
 _BUILD_UTIL_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -168,6 +166,24 @@ class ClientTest(unittest.TestCase):
                          'key1': 'value1',
                          'key2': 'value2'
                      }})
+
+  @mock.patch('requests.Session.post')
+  def testPostWithTags(self, mock_post):
+    self.client.Post('some-test',
+                     result_types.PASS,
+                     0,
+                     'some-test-log',
+                     None,
+                     tags=[('key1', 'value1'), ('key2', 'value2')])
+    data = json.loads(mock_post.call_args[1]['data'])
+    self.assertIn({
+        'key': 'key1',
+        'value': 'value1'
+    }, data['testResults'][0]['tags'])
+    self.assertIn({
+        'key': 'key2',
+        'value': 'value2'
+    }, data['testResults'][0]['tags'])
 
 
 if __name__ == '__main__':

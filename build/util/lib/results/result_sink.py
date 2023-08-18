@@ -83,7 +83,8 @@ class ResultSinkClient(object):
            variant=None,
            artifacts=None,
            failure_reason=None,
-           html_artifact=None):
+           html_artifact=None,
+           tags=None):
     """Uploads the test result to the ResultSink server.
 
     This assumes that the rdb stream has been called already and that
@@ -104,6 +105,8 @@ class ResultSinkClient(object):
       html_artifact: An optional html-formatted string to prepend to the test's
           log. Useful to encode click-able URL links in the test log, since that
           won't be formatted in the test_log.
+      tags: An optional list of tuple of key name and value to prepend to the
+          test's tags.
 
     Returns:
       N/A
@@ -134,6 +137,12 @@ class ResultSinkClient(object):
             'name': test_id,
         }
     }
+
+    if tags:
+      tr['tags'].extend({
+          'key': key_name,
+          'value': value
+      } for (key_name, value) in tags)
 
     if variant:
       tr['variant'] = {'def': variant}
