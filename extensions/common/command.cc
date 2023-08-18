@@ -263,9 +263,11 @@ Command::Command(const std::string& command_name,
                  const std::string& accelerator,
                  bool global)
     : command_name_(command_name), description_(description), global_(global) {
-  std::u16string error;
-  accelerator_ = ParseImpl(accelerator, CommandPlatform(), 0,
-                           !IsActionRelatedCommand(command_name), &error);
+  if (!accelerator.empty()) {
+    std::u16string error;
+    accelerator_ = ParseImpl(accelerator, CommandPlatform(), 0,
+                             !IsActionRelatedCommand(command_name), &error);
+  }
 }
 
 Command::Command(const Command& other) = default;
