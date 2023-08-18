@@ -8716,6 +8716,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfXfaSupport)},
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"backlight-ocr", flag_descriptions::kBacklightOcrName,
+     flag_descriptions::kBacklightOcrDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kBacklightOcr)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     {"send-tab-to-self-signin-promo",
      flag_descriptions::kSendTabToSelfSigninPromoName,
      flag_descriptions::kSendTabToSelfSigninPromoDescription, kOsAll,

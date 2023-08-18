@@ -1549,6 +1549,9 @@ extern const char kPasswordGenerationExperimentDescription[];
 extern const char kForceEnableFastCheckoutCapabilitiesName[];
 extern const char kForceEnableFastCheckoutCapabilitiesDescription[];
 
+extern const char kBacklightOcrName[];
+extern const char kBacklightOcrDescription[];
+
 extern const char kPdfOcrName[];
 extern const char kPdfOcrDescription[];
 

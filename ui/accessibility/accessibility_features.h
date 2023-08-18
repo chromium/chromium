@@ -171,6 +171,10 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityGameFaceIntegration);
 // Returns true if the GameFace integration is enabled.
 AX_BASE_EXPORT bool IsAccessibilityGameFaceIntegrationEnabled();
 
+// A feature that makes PDFs displayed in the ChromeOS Media App (AKA Backlight)
+// accessible by performing OCR on the images for each page.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kBacklightOcr);
+AX_BASE_EXPORT bool IsBacklightOcrEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables Get Image Descriptions to augment existing images labels,

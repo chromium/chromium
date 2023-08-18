@@ -814,6 +814,14 @@
     "expiry_milestone": 122
   },
   {
+    "name": "backlight-ocr",
+    "owners": [
+      "nektar",
+      "//ui/accessibility/OWNERS"
+    ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "biometric-reauth-password-filling",
     "owners": [ "ioanap", "izuzic@google.com"],
     "expiry_milestone": 120
