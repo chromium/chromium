@@ -116,7 +116,7 @@ TEST_P(ChannelIndicatorQuickSettingsViewPixelTest, FeedbackButtonVisible) {
   // `ChannelIndicatorQuickSettingsView`.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "feedback_button_visible",
-      /*revision_number=*/5, view()));
+      /*revision_number=*/6, view()));
 }
 
 }  // namespace ash

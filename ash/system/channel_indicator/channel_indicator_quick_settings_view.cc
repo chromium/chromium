@@ -254,6 +254,7 @@ class VersionButton : public views::LabelButton {
       label()->SetFontList(
           ash::TypographyProvider::Get()->ResolveTypographyToken(
               ash::TypographyToken::kCrosBody2));
+      label()->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 6)));
     } else {
       label()->SetFontList(
           gfx::FontList().DeriveWithWeight(gfx::Font::Weight::MEDIUM));
