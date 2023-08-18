@@ -7,13 +7,16 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_finder.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_dimmer.h"
+#include "ash/wm_mode/pie_menu_view.h"
 #include "ash/wm_mode/wm_mode_button_tray.h"
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -27,6 +30,14 @@
 namespace ash {
 
 namespace {
+
+enum PieMenuButtonIds {
+  kSnapButtonId = 0,
+  kMoveToDeskButtonId = 1,
+  kResizeButtonId = 2,
+};
+
+constexpr gfx::Size kPieMenuSize{300, 300};
 
 WmModeController* g_instance = nullptr;
 
@@ -43,6 +54,18 @@ std::unique_ptr<WindowDimmer> CreateDimmerForRoot(aura::Window* root) {
   dimmer->SetDimColor(kColorAshShieldAndBase40);
   dimmer->window()->Show();
   return dimmer;
+}
+
+gfx::Rect GetPieMenuScreenBounds(const gfx::Point& center_point_in_screen,
+                                 aura::Window* current_root) {
+  CHECK(current_root);
+
+  gfx::Rect bounds(
+      gfx::Point(center_point_in_screen.x() - kPieMenuSize.width() / 2,
+                 center_point_in_screen.y() - kPieMenuSize.height() / 2),
+      kPieMenuSize);
+  bounds.AdjustToFit(current_root->GetBoundsInScreen());
+  return bounds;
 }
 
 }  // namespace
@@ -84,7 +107,11 @@ void WmModeController::Toggle() {
         this, ui::EventTarget::Priority::kSystem);
     CreateLayer();
     MaybeChangeRoot(capture_mode_util::GetPreferredRootWindow());
+    BuildPieMenu();
   } else {
+    SetSelectedWindow(nullptr);
+    pie_menu_widget_.reset();
+    pie_menu_view_ = nullptr;
     ReleaseLayer();
     DCHECK(!layer());
     current_root_ = nullptr;
@@ -125,6 +152,13 @@ void WmModeController::OnPaintLayer(const ui::PaintContext& context) {
     canvas->FillRect(selected_window_->bounds(), kSelectedWindowHighlightColor);
 }
 
+void WmModeController::OnWindowDestroying(aura::Window* window) {
+  CHECK_EQ(window, selected_window_);
+  SetSelectedWindow(nullptr);
+}
+
+void WmModeController::OnPieMenuButtonPressed(int button_id) {}
+
 bool WmModeController::IsRootWindowDimmedForTesting(aura::Window* root) const {
   return dimmers_.contains(root);
 }
@@ -151,10 +185,14 @@ void WmModeController::UpdateTrayButtons() {
 
 void WmModeController::OnLocatedEvent(ui::LocatedEvent* event) {
   auto* target = static_cast<aura::Window*>(event->target());
+
+  // Let events targeting the pie menu (if available) go through.
+  if (IsTargetingPieMenu(target)) {
+    return;
+  }
+
   gfx::Point screen_location = event->root_location();
   wm::ConvertPointToScreen(target->GetRootWindow(), &screen_location);
-
-  MaybeChangeRoot(capture_mode_util::GetPreferredRootWindow(screen_location));
 
   // Let events on the WM Mode tray button go through.
   auto* status_area_widget =
@@ -167,19 +205,19 @@ void WmModeController::OnLocatedEvent(ui::LocatedEvent* event) {
   event->StopPropagation();
   event->SetHandled();
 
-  // Only consider top-most desk windows (i.e. ignore always-on-top, PIP,
-  // and Floated windows) for now.
-  auto* top_most_window = GetTopmostWindowAtPoint(screen_location, {});
-  if (top_most_window &&
-      !desks_util::GetDeskContainerForContext(top_most_window)) {
-    top_most_window = nullptr;
+  const bool is_release = event->type() == ui::ET_MOUSE_RELEASED ||
+                          event->type() == ui::ET_TOUCH_RELEASED;
+  if (!is_release) {
+    return;
   }
 
-  // Only repaint if there's a change in the selected window.
-  if (selected_window_ != top_most_window) {
-    selected_window_ = top_most_window;
-    layer()->SchedulePaint(layer()->bounds());
-  }
+  base::AutoReset<absl::optional<gfx::Point>> reset_release_location(
+      &last_release_event_screen_point_, screen_location);
+
+  MaybeChangeRoot(capture_mode_util::GetPreferredRootWindow(screen_location));
+
+  auto* top_most_window = GetTopMostWindowAtPoint(screen_location);
+  SetSelectedWindow(top_most_window);
 }
 
 void WmModeController::CreateLayer() {
@@ -201,9 +239,99 @@ void WmModeController::MaybeChangeRoot(aura::Window* new_root) {
     return;
 
   current_root_ = new_root;
-  auto* parent = new_root->GetChildById(kShellWindowId_OverlayContainer);
+  auto* parent = new_root->GetChildById(kShellWindowId_MenuContainer);
   parent->layer()->Add(layer());
   layer()->SetBounds(parent->bounds());
+
+  SetSelectedWindow(nullptr);
+}
+
+void WmModeController::SetSelectedWindow(aura::Window* window) {
+  if (selected_window_ != window) {
+    if (selected_window_) {
+      selected_window_->RemoveObserver(this);
+    }
+
+    selected_window_ = window;
+
+    if (selected_window_) {
+      selected_window_->AddObserver(this);
+    }
+
+    ScheduleRepaint();
+  }
+
+  MaybeRefreshPieMenu();
+}
+
+void WmModeController::ScheduleRepaint() {
+  CHECK(layer());
+  layer()->SchedulePaint(layer()->bounds());
+}
+
+void WmModeController::BuildPieMenu() {
+  DCHECK(!pie_menu_widget_);
+  DCHECK(current_root_);
+
+  pie_menu_widget_ = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.parent = current_root_->GetChildById(kShellWindowId_MenuContainer);
+  params.bounds = gfx::Rect(kPieMenuSize);
+  params.name = "WmModePieMenuWidget";
+  pie_menu_widget_->Init(std::move(params));
+  pie_menu_view_ = pie_menu_widget_->SetContentsView(
+      std::make_unique<PieMenuView>(/*delegate=*/this));
+
+  // TODO(b/252558235): Localize once approved.
+  pie_menu_view_->main_menu_container()->AddMenuButton(
+      kSnapButtonId, u"Snap window", &kWmModeGestureSnapIcon);
+  pie_menu_view_->main_menu_container()->AddMenuButton(
+      kMoveToDeskButtonId, u"Move to desk", &kWmModeGestureMoveToDeskIcon);
+  pie_menu_view_->main_menu_container()->AddMenuButton(
+      kResizeButtonId, u"Resize window", &kWmModeGestureResizeIcon);
+
+  // TODO(b/296464906): Add the sub menu buttons for the move-to-desk menu item.
+}
+
+bool WmModeController::IsTargetingPieMenu(aura::Window* event_target) const {
+  return pie_menu_widget_ && pie_menu_widget_->IsVisible() &&
+         pie_menu_widget_->GetNativeWindow()->Contains(event_target);
+}
+
+aura::Window* WmModeController::GetTopMostWindowAtPoint(
+    const gfx::Point& screen_location) const {
+  // Ignore the pie menu if it's available.
+  std::set<aura::Window*> windows_to_ignore;
+  if (pie_menu_widget_) {
+    windows_to_ignore.insert(pie_menu_widget_->GetNativeWindow());
+  }
+  auto* top_most_window =
+      GetTopmostWindowAtPoint(screen_location, windows_to_ignore);
+  // Only consider top-most desk windows (i.e. ignore always-on-top, PIP,
+  // and Floated windows) for now.
+  if (top_most_window &&
+      !desks_util::GetDeskContainerForContext(top_most_window)) {
+    top_most_window = nullptr;
+  }
+  return top_most_window;
+}
+
+void WmModeController::MaybeRefreshPieMenu() {
+  if (!pie_menu_widget_) {
+    return;
+  }
+
+  if (!selected_window_) {
+    pie_menu_widget_->Hide();
+    return;
+  }
+
+  pie_menu_widget_->SetBounds(GetPieMenuScreenBounds(
+      last_release_event_screen_point_.value_or(
+          selected_window_->GetBoundsInScreen().CenterPoint()),
+      current_root_));
+  pie_menu_widget_->Show();
 }
 
 }  // namespace ash

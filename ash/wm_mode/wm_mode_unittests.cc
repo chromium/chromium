@@ -152,23 +152,27 @@ TEST_F(WmModeTests, WindowSelection) {
 
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseToCenterOf(win2.get());
+  event_generator->ClickLeftButton();
   EXPECT_EQ(controller->selected_window(), win2.get());
   EXPECT_TRUE(roots[1]->layer()->Contains(controller->layer()));
 
-  // Moving the cursor outside the bounds of any window will remove any window
+  // Clicking outside the bounds of any window will remove any window
   // selection. However, the layer remains parented to the same root window.
   event_generator->MoveMouseTo(win2->GetBoundsInScreen().bottom_right() +
                                gfx::Vector2d(20, 20));
+  event_generator->ClickLeftButton();
   EXPECT_FALSE(controller->selected_window());
   EXPECT_TRUE(roots[1]->layer()->Contains(controller->layer()));
 
-  // The layer will change roots once cursor moves to its display even if there
-  // is no selected window.
+  // The layer will change roots once cursor moves to its display, and clicked
+  // even if there is no selected window.
   event_generator->MoveMouseTo(gfx::Point(0, 0));
+  event_generator->ClickLeftButton();
   EXPECT_FALSE(controller->selected_window());
   EXPECT_TRUE(roots[0]->layer()->Contains(controller->layer()));
 
   event_generator->MoveMouseToCenterOf(win1.get());
+  event_generator->ClickLeftButton();
   EXPECT_EQ(controller->selected_window(), win1.get());
 }
 
@@ -182,6 +186,7 @@ TEST_F(WmModeTests, RemovingSelectedRoot) {
 
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(roots[1]->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
   EXPECT_TRUE(roots[1]->layer()->Contains(controller->layer()));
 
   // Remove the second display (which is currently selected), and expect that
@@ -193,6 +198,40 @@ TEST_F(WmModeTests, RemovingSelectedRoot) {
 
   controller->Toggle();
   EXPECT_FALSE(controller->is_active());
+}
+
+TEST_F(WmModeTests, PieMenuVisibility) {
+  UpdateDisplay("800x700");
+  auto roots = Shell::GetAllRootWindows();
+  auto win1 = CreateTestWindow(gfx::Rect(400, 400));
+  auto win2 = CreateTestWindow(gfx::Rect(400, 300, 400, 400));
+
+  auto* controller = WmModeController::Get();
+  controller->Toggle();
+  EXPECT_TRUE(controller->is_active());
+  // The pie menu should be created but not visible.
+  ASSERT_TRUE(controller->pie_menu_widget());
+  EXPECT_FALSE(controller->pie_menu_widget()->IsVisible());
+
+  auto* event_generator = GetEventGenerator();
+
+  for (auto* window : {win1.get(), win2.get()}) {
+    event_generator->MoveMouseToCenterOf(window);
+    event_generator->ClickLeftButton();
+    EXPECT_EQ(controller->selected_window(), window);
+    EXPECT_TRUE(controller->pie_menu_widget()->IsVisible());
+    EXPECT_EQ(
+        controller->pie_menu_widget()->GetWindowBoundsInScreen().CenterPoint(),
+        window->GetBoundsInScreen().CenterPoint());
+  }
+
+  // Clicking outside the bounds of any window will remove any window selection.
+  // However, the layer remains parented to the same root window.
+  event_generator->MoveMouseTo(win1->GetBoundsInScreen().bottom_center() +
+                               gfx::Vector2d(20, 20));
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(controller->selected_window());
+  EXPECT_FALSE(controller->pie_menu_widget()->IsVisible());
 }
 
 }  // namespace ash
