@@ -40,8 +40,6 @@ void FakeFeaturedClient::HandleSeedFetched(
   handle_seed_fetched_attempts_++;
 
   if (responses_.empty()) {
-    LOG(ERROR) << "Insufficient amount of responses added. Call AddResponse to "
-                  "add expected response to invoke the callback with";
     std::move(callback).Run(false);
     return;
   }

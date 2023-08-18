@@ -107,7 +107,6 @@ class OzonePlatformX11 : public OzonePlatform,
 
   std::unique_ptr<display::NativeDisplayDelegate> CreateNativeDisplayDelegate()
       override {
-    NOTIMPLEMENTED();
     return nullptr;
   }
 
