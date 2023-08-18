@@ -217,14 +217,6 @@ crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
 # Fuchsia devices do not have enough memory for this test.
 crbug.com/1441056 [ fuchsia ] Pixel_SVGHuge [ Skip ]
 
-# MediaFoundation for Clear DirectComposition only supported on WIN10_RS3.
-[ android ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
-[ chromeos ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
-[ fuchsia ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
-[ linux ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
-[ mac ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
-[ win8 ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
-
 # WebGPU is not shipped on MacOS < 13.
 crbug.com/1426664 [ monterey ] Pixel_WebGPU* [ Skip ]
 

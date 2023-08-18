@@ -140,7 +140,8 @@ crbug.com/1345767 [ mac asan ] WebGPUTraceTest_WebGPUCanvasDisableOneCopyCapture
 crbug.com/1356246 TraceTest_SVGHuge [ Skip ]
 
 # This test was mainly meant to run as a pixel test, so skipping in this test suite.
-TraceTest_MediaFoundationClearDirectComposition [ Skip ]
+OverlayModeTraceTest_MediaFoundationClearDirectComposition [ Skip ]
+VideoPathTraceTest_MediaFoundationClearDirectComposition [ Skip ]
 
 # WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
 crbug.com/852089 [ linux ] WebGPUTraceTest_* [ Skip ]
