@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PostMessageAPIServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
+import {PostMessageApiServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
 
 import {AuthCompletedCredentials, Authenticator, AuthParams} from '../../gaia_auth_host/authenticator.js';
 
@@ -58,7 +58,7 @@ function constructEduCoexistenceUrl(params) {
 /**
  * Class that orchestrates the EDU Coexistence signin flow.
  */
-export class EduCoexistenceController extends PostMessageAPIServer {
+export class EduCoexistenceController extends PostMessageApiServer {
   /**
    * @param {!Element} ui Polymer object edu-coexistence-ui
    * @param {!Element} webview  The <webview> element to listen to as a

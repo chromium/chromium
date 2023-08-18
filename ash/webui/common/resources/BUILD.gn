@@ -511,6 +511,10 @@ checked_in_dts_files = [
   "network/network_siminfo.d.ts",
   "network/sim_lock_dialogs.d.ts",
   "network/apn_detail_dialog.d.ts",
+
+  "post_message_api/post_message_api_client.d.ts",
+  "post_message_api/post_message_api_request_handler.d.ts",
+  "post_message_api/post_message_api_server.d.ts",
 ]
 
 copy("copy_checked_in_dts_files") {
