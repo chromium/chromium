@@ -11448,10 +11448,8 @@ constexpr DesksTestParams kTestCombinations[] = {
      .use_16_desks = true,
      .enable_jellyroll = true},
     // Per-desk shelf enabled combinations.
-    // TODO(b/293951721): Enable once the current per-desk-shelf test failures
-    // have been sorted out.
-    // {.enable_jellyroll = false, .per_desk_shelf = true},
-    // {.enable_jellyroll = true, .per_desk_shelf = true},
+    {.enable_jellyroll = false, .per_desk_shelf = true},
+    {.enable_jellyroll = true, .per_desk_shelf = true},
 };
 
 // This is used for tests that only want to test 8/16 desks.

@@ -955,8 +955,13 @@ bool DesksController::MoveWindowFromActiveDeskTo(
                                    /*unminimize=*/true);
   }
 
-  MaybeUpdateShelfItems(/*windows_on_inactive_desk=*/{window},
-                        /*windows_on_active_desk=*/{});
+  // We don't update shelf items if we're moving an all-desk window, since we
+  // are in that case about to switch to `target_desk` and the app will be on
+  // that desk as well.
+  if (source != DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks) {
+    MaybeUpdateShelfItems(/*windows_on_inactive_desk=*/{window},
+                          /*windows_on_active_desk=*/{});
+  }
 
   Shell::Get()
       ->accessibility_controller()
@@ -1810,8 +1815,16 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   auto* overview_controller = shell->overview_controller();
   const bool in_overview = overview_controller->InOverviewSession();
 
-  // Windows that are associated with the desk that is being removed.
-  std::vector<aura::Window*> removed_desk_windows;
+  // Windows that are associated with the desk that is being removed. If we are
+  // combining desks, then they are going to be moved into the active desk.
+  // They are placed in a window tracker, in case an operation below closes any
+  // of them.
+  aura::WindowTracker windows_from_combined_desk;
+  if (close_type == DeskCloseType::kCombineDesks) {
+    for (aura::Window* window : removed_desk->GetAllAssociatedWindows()) {
+      windows_from_combined_desk.Add(window);
+    }
+  }
 
   // No need to spend time refreshing the mini_views of the removed desk.
   auto removed_desk_mini_views_pauser =
@@ -1861,11 +1874,6 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
     if (in_overview)
       RemoveAllWindowsFromOverview();
 
-    // Get the windows that are on the desk that is being removed. This must be
-    // done *after* `RemoveAllWindowsFromOverview` since that function may
-    // affect the windows on the desk.
-    removed_desk_windows = removed_desk->GetAllAssociatedWindows();
-
     // If overview mode is active, change desk activation without changing
     // window activation. Activation should remain on the dummy
     // "OverviewModeFocusedWidget" while overview mode is active.
@@ -1873,7 +1881,6 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
       // If we are not closing the app windows, then we move all windows to
       // `target_desk`.
       removed_desk->MoveWindowsToDesk(target_desk);
-      MaybeUpdateShelfItems({}, removed_desk_windows);
     } else if (in_overview) {
       // If we are closing the app windows, then we only need to move non-app
       // overview windows to `target_desk` if we are in overview.
@@ -1904,37 +1911,32 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
     if (in_overview)
       AppendWindowsToOverview(target_desk->GetAllAssociatedWindows());
 
-  } else {
-    removed_desk_windows = removed_desk->GetAllAssociatedWindows();
+  } else if (close_type == DeskCloseType::kCombineDesks) {
+    // We will refresh the mini_views of the active desk only once at the end.
+    auto active_desk_mini_view_pauser =
+        Desk::ScopedContentUpdateNotificationDisabler(
+            /*desks=*/{active_desk_},
+            /*notify_when_destroyed=*/false);
 
-    if (close_type == DeskCloseType::kCombineDesks) {
-      // We will refresh the mini_views of the active desk only once at the end.
-      auto active_desk_mini_view_pauser =
-          Desk::ScopedContentUpdateNotificationDisabler(
-              /*desks=*/{active_desk_},
-              /*notify_when_destroyed=*/false);
+    removed_desk->MoveWindowsToDesk(active_desk_);
 
-      removed_desk->MoveWindowsToDesk(active_desk_);
-      MaybeUpdateShelfItems({}, removed_desk_windows);
-
-      // If overview mode is active, we add the windows of the removed desk to
-      // the overview grid in the order of the new MRU (which changes after
-      // removing a desk by making the windows of the removed desk as the least
-      // recently used across all desks). Note that this can only be done after
-      // the windows have moved to the active desk in `MoveWindowsToDesk()`
-      // above, so that building the window MRU list should contain those
-      // windows.
-      if (in_overview) {
-        AppendWindowsToOverview(removed_desk_windows);
-      }
+    // If overview mode is active, we add the windows of the removed desk to the
+    // overview grid in the order of the new MRU (which changes after removing a
+    // desk by making the windows of the removed desk as the least recently used
+    // across all desks). Note that this can only be done after the windows have
+    // moved to the active desk in `MoveWindowsToDesk()` above, so that building
+    // the window MRU list should contain those windows.
+    if (in_overview) {
+      AppendWindowsToOverview(windows_from_combined_desk.windows());
     }
   }
 
   // It's OK now to refresh the mini_views of *only* the active desk, and only
   // if windows from the removed desk moved to it.
   DCHECK(!active_desk_->ContentUpdateNotificationSuspended());
-  if (!removed_desk_windows.empty())
+  if (!windows_from_combined_desk.windows().empty()) {
     active_desk_->NotifyContentChanged();
+  }
 
   UpdateDesksDefaultNames();
 
@@ -1952,6 +1954,9 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   // the end to avoid getting into a bad state.
   if (will_switch_desks)
     MaybeRestoreSplitView(/*refresh_snapped_windows=*/true);
+
+  // The current active desk may have gained some windows.
+  MaybeUpdateShelfItems({}, windows_from_combined_desk.windows());
 
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskHistogramName, source);
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskTypeHistogramName, close_type);
