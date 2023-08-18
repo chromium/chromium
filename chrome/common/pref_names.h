@@ -1850,11 +1850,6 @@ inline constexpr char kSuppressDifferentOriginSubframeJSDialogs[] =
 // or disabled. Defaults to blink::features::kReduceUserAgent field trial.
 inline constexpr char kUserAgentReduction[] = "user_agent_reduction";
 
-// Enum indicating if the user agent string should freeze the major version
-// at 99 and report the browser's major version in the minor position.
-inline constexpr char kForceMajorVersionToMinorPositionInUserAgent[] =
-    "force_major_version_to_minor_position_in_user_agent";
-
 #if (!BUILDFLAG(IS_ANDROID))
 // Boolean determining the side the side panel will be appear on (left / right).
 // True when the side panel is aligned to the right.

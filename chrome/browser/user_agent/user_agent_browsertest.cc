@@ -24,8 +24,6 @@ namespace policy {
 
 using ReductionPolicyState =
     embedder_support::UserAgentReductionEnterprisePolicyState;
-using ForceMajorVersionToMinorPolicyState =
-    embedder_support::ForceMajorVersionToMinorPosition;
 
 class UserAgentBrowserTest : public InProcessBrowserTest {
  public:
@@ -50,13 +48,6 @@ class UserAgentBrowserTest : public InProcessBrowserTest {
     return static_cast<ReductionPolicyState>(
         browser()->profile()->GetPrefs()->GetInteger(
             prefs::kUserAgentReduction));
-  }
-
-  void set_force_major_version_to_minor_policy(
-      ForceMajorVersionToMinorPolicyState policy) {
-    browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kForceMajorVersionToMinorPositionInUserAgent,
-        static_cast<int>(policy));
   }
 
   std::string observed_user_agent() { return observered_user_agent_; }
@@ -85,33 +76,6 @@ IN_PROC_BROWSER_TEST_F(UserAgentBrowserTest, ReductionPolicyDefault) {
   set_user_agent_reduction_policy(ReductionPolicyState::kDefault);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), empty_url()));
   EXPECT_EQ(observed_user_agent(), embedder_support::GetUserAgent());
-}
-
-IN_PROC_BROWSER_TEST_F(UserAgentBrowserTest, ForceMajorToMinorPolicyDisabled) {
-  set_force_major_version_to_minor_policy(
-      ForceMajorVersionToMinorPolicyState::kForceDisabled);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), empty_url()));
-  EXPECT_EQ(observed_user_agent(),
-            embedder_support::GetUserAgent(
-                ForceMajorVersionToMinorPolicyState::kForceDisabled));
-}
-
-IN_PROC_BROWSER_TEST_F(UserAgentBrowserTest, ForceMajorToMinorPolicyEnabled) {
-  set_force_major_version_to_minor_policy(
-      ForceMajorVersionToMinorPolicyState::kForceEnabled);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), empty_url()));
-  EXPECT_EQ(observed_user_agent(),
-            embedder_support::GetUserAgent(
-                ForceMajorVersionToMinorPolicyState::kForceEnabled));
-}
-
-IN_PROC_BROWSER_TEST_F(UserAgentBrowserTest, ForceMajorToMinorPolicyDefault) {
-  set_force_major_version_to_minor_policy(
-      ForceMajorVersionToMinorPolicyState::kDefault);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), empty_url()));
-  EXPECT_EQ(observed_user_agent(),
-            embedder_support::GetUserAgent(
-                ForceMajorVersionToMinorPolicyState::kDefault));
 }
 
 class ReduceUserAgentPlatformBrowserTest : public InProcessBrowserTest {

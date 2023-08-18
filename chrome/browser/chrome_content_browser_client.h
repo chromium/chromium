@@ -25,7 +25,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/startup_data.h"
-#include "components/embedder_support/user_agent_utils.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/web_api_handshake_checker.h"

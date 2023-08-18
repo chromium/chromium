@@ -215,6 +215,7 @@
 #include "components/embedder_support/content_settings_utils.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/embedder_support/switches.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
 #include "components/enterprise/content/pref_names.h"
 #include "components/error_page/common/error.h"
@@ -1644,10 +1645,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       static_cast<int>(
           embedder_support::UserAgentReductionEnterprisePolicyState::kDefault));
   registry->RegisterBooleanPref(prefs::kOriginAgentClusterDefaultEnabled, true);
-  registry->RegisterIntegerPref(
-      prefs::kForceMajorVersionToMinorPositionInUserAgent,
-      static_cast<int>(
-          embedder_support::ForceMajorVersionToMinorPosition::kDefault));
   registry->RegisterBooleanPref(
       policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed, true);
 
@@ -7047,14 +7044,10 @@ std::string ChromeContentBrowserClient::GetUserAgent() {
 std::string ChromeContentBrowserClient::GetUserAgentBasedOnPolicy(
     content::BrowserContext* context) {
   const PrefService* prefs = Profile::FromBrowserContext(context)->GetPrefs();
-  embedder_support::ForceMajorVersionToMinorPosition
-      force_major_version_to_minor =
-          embedder_support::GetMajorToMinorFromPrefs(prefs);
   embedder_support::UserAgentReductionEnterprisePolicyState
       user_agent_reduction =
           embedder_support::GetUserAgentReductionFromPrefs(prefs);
-  return embedder_support::GetUserAgent(force_major_version_to_minor,
-                                        user_agent_reduction);
+  return embedder_support::GetUserAgent(user_agent_reduction);
 }
 
 blink::UserAgentMetadata ChromeContentBrowserClient::GetUserAgentMetadata() {

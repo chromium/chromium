@@ -1,5 +1,6 @@
 caption: Freeze User-Agent string major version at 99
 default: 0
+deprecated: true
 desc: |-
   This policy controls whether the User-Agent string major
         version should be frozen at 99.
@@ -41,8 +42,6 @@ items:
   name: ForceEnabled
   value: 2
 owners:
-- eliason@chromium.org
-- abeyad@chromium.org
 - miketaylr@chromium.org
 schema:
   enum:
@@ -51,10 +50,10 @@ schema:
   - 2
   type: integer
 supported_on:
-- chrome_os:99-
-- chrome.*:99-
-- android:99-
-- webview_android:99-
+- chrome_os:99-117
+- chrome.*:99-117
+- android:99-117
+- webview_android:99-117
 tags:
 - website-sharing
 type: int-enum
