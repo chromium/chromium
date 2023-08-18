@@ -560,6 +560,8 @@ static_library("test_support") {
       "../browser/ui/profile_ui_test_utils.h",
       "../browser/ui/tabs/pinned_tab_test_utils.cc",
       "../browser/ui/tabs/pinned_tab_test_utils.h",
+      "../browser/ui/test/pixel_test_configuration_mixin.cc",
+      "../browser/ui/test/pixel_test_configuration_mixin.h",
       "../browser/ui/test/test_browser_dialog.cc",
       "../browser/ui/test/test_browser_dialog.h",
       "../browser/ui/test/test_browser_ui.cc",
@@ -3162,6 +3164,7 @@ if (!is_android) {
         "../browser/ui/views/profiles/profile_picker_ui_browsertest.cc",
         "../browser/ui/views/profiles/profile_type_choice_ui_browsertest.cc",
         "../browser/ui/views/profiles/sync_confirmation_ui_browsertest.cc",
+        "../browser/ui/webui/search_engine_choice/search_engine_choice_ui_browsertest.cc",
       ]
     }
 

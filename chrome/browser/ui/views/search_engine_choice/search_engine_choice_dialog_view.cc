@@ -45,6 +45,7 @@ void ShowSearchEngineChoiceDialog(Browser& browser) {
 
 SearchEngineChoiceDialogView::SearchEngineChoiceDialogView(Browser* browser)
     : browser_(browser) {
+  CHECK(browser_);
   CHECK(base::FeatureList::IsEnabled(switches::kSearchEngineChoice));
   // Create the web view in the native dialog.
   web_view_ =
