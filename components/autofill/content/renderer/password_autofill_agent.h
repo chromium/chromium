@@ -108,7 +108,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
  public:
   using UseFallbackData = base::StrongAlias<class UseFallbackDataTag, bool>;
   using ShowAll = base::StrongAlias<class ShowAllTag, bool>;
-  using GenerationShowing = base::StrongAlias<class GenerationShowingTag, bool>;
 
   PasswordAutofillAgent(content::RenderFrame* render_frame,
                         blink::AssociatedInterfaceRegistry* registry);
@@ -200,9 +199,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // as both UIs should not be shown at the same time. This function should
   // still be called in this situation so that UMA stats can be logged.
   // Returns true if any suggestions were shown, false otherwise.
-  bool ShowSuggestions(const blink::WebInputElement& element,
-                       ShowAll show_all,
-                       GenerationShowing generation_popup_showing);
+  bool ShowSuggestions(const blink::WebInputElement& element, ShowAll show_all);
 
   // Called when new form controls are inserted.
   void OnDynamicFormsSeen();

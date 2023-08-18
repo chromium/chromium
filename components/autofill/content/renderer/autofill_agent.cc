@@ -97,7 +97,6 @@ using form_util::IsOwnedByFrame;
 using form_util::TraverseDomForFourDigitCombinations;
 using mojom::SubmissionSource;
 using ShowAll = PasswordAutofillAgent::ShowAll;
-using GenerationShowing = PasswordAutofillAgent::GenerationShowing;
 using mojom::FocusedFieldType;
 
 namespace {
@@ -307,7 +306,6 @@ AutofillAgent::AutofillAgent(content::RenderFrame* render_frame,
       password_generation_agent_(password_generation_agent),
       query_node_autofill_state_(WebAutofillState::kNotFilled),
       is_popup_possibly_visible_(false),
-      is_generation_popup_possibly_visible_(false),
       is_user_gesture_required_(true),
       is_secure_context_required_(false),
       form_tracker_(render_frame),
@@ -983,8 +981,7 @@ void AutofillAgent::ShowSuggestions(
     if (password_autofill_agent_->ShowSuggestions(
             input_element,
             ShowAll(ShouldShowFullSuggestionListForPasswordManager(
-                trigger_source, element)),
-            GenerationShowing(is_generation_popup_possibly_visible_))) {
+                trigger_source, element)))) {
       is_popup_possibly_visible_ = true;
       return;
     }
@@ -1173,7 +1170,6 @@ void AutofillAgent::HidePopup() {
     return;
   }
   is_popup_possibly_visible_ = false;
-  is_generation_popup_possibly_visible_ = false;
 
   // The keyboard accessory has a separate, more complex hiding logic.
   if (IsKeyboardAccessoryEnabled())
