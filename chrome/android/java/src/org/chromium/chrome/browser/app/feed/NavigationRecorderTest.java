@@ -11,12 +11,14 @@ import static org.junit.Assert.assertEquals;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -24,6 +26,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -36,11 +39,16 @@ import java.util.concurrent.TimeoutException;
  * Instrumentation tests for {@link NavigationRecorder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class NavigationRecorderTest {
     private static final String TAG = "NavRecorderTest";
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sTestSetupRule = new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mTestSetupRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sTestSetupRule, false);
 
     private EmbeddedTestServer mTestServer;
     private String mNavUrl;
@@ -48,12 +56,11 @@ public class NavigationRecorderTest {
 
     @Before
     public void setUp() {
-        mTestServer = mTestSetupRule.getEmbeddedTestServerRule().getServer();
+        mTestServer = sTestSetupRule.getEmbeddedTestServerRule().getServer();
         mNavUrl = mTestServer.getURL("/chrome/test/data/android/google.html");
-        mTestSetupRule.startMainActivityOnBlankPage();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mInitialTab = mTestSetupRule.getActivity().getActivityTab();
+            mInitialTab = sTestSetupRule.getActivity().getActivityTab();
             // Add logging to debug flaky test: crbug.com/1297086.
             mInitialTab.addObserver(new EmptyTabObserver() {
                 @Override
@@ -104,7 +111,7 @@ public class NavigationRecorderTest {
             }
         });
 
-        mTestSetupRule.loadUrlInNewTab(null);
+        sTestSetupRule.loadUrlInNewTab(null);
         callback.waitForCallback(0);
     }
 
@@ -121,7 +128,7 @@ public class NavigationRecorderTest {
             }
         });
 
-        mTestSetupRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/simple.html"));
+        sTestSetupRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/simple.html"));
         callback.waitForCallback(0);
     }
 
