@@ -128,6 +128,19 @@ class SharedStorageHeaderObserverTest
     NavigateMainFrame(GURL(kMainOrigin));
   }
 
+  void TearDown() override {
+    // `RenderViewHostTestHarness::TearDown()` leads to the destruction of
+    // `TestBrowserContext` which leads to
+    // `BrowserContextImpl::ShutdownStoragePartitions()` being called. This
+    // destroys the `StoragePartitionImpl` that
+    // `SharedStorageHeaderObserver::storage_partition_` points to.
+    // Destroy the observer before `RenderViewHostTestHarness::TearDown()` to
+    // avoid it holding an Across Tasks Dangling Ptr to the
+    // `StoragePartitionImpl`.
+    observer_.reset();
+    RenderViewHostTestHarness::TearDown();
+  }
+
   void NavigateMainFrame(const GURL& url) {
     auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
         url, web_contents());
