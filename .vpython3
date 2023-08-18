@@ -408,9 +408,21 @@ wheel: <
   version: "version:0.10.1"
 >
 
+# Used by: pytest-py3:7.3.1
+wheel: <
+  name: "infra/python/wheels/exceptiongroup-py3"
+  version: "version:1.1.2"
+>
+
+# Used by: pytest-py3:7.3.1
+wheel: <
+  name: "infra/python/wheels/tomli-py3"
+  version: "version:2.0.1"
+>
+
 wheel <
   name: "infra/python/wheels/pytest-py3"
-  version: "version:6.2.2"
+  version: "version:7.3.1"
 >
 
 wheel <
