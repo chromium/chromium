@@ -90,6 +90,7 @@
 #include "third_party/blink/renderer/core/style/cursor_data.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
+#include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/cursors.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -171,6 +172,30 @@ gfx::Point DetermineHotSpot(const Image& image,
 
   // If neither is provided, use a default value of (0, 0).
   return gfx::Point();
+}
+
+// Returns whether the hit element contains a title and isn't a SVGUseElement or
+// part of an SVGUseElement.
+bool HasTitleAndNotSVGUseElement(const HitTestResult& hovered_node_result) {
+  // TODO(crbug.com/1473774): Remove flag check if no issues arise.
+  if (!RuntimeEnabledFeatures::SkipShadowHostWhenHoveringForTooltipEnabled()) {
+    return false;
+  }
+  Node* inner_node = hovered_node_result.InnerNode();
+  if (!inner_node) {
+    return false;
+  }
+  auto* element = DynamicTo<Element>(inner_node);
+  if (!element || element->title().IsNull()) {
+    return false;
+  }
+  ShadowRoot* containing_shadow_root = inner_node->ContainingShadowRoot();
+  if (IsA<SVGUseElement>(element) ||
+      (containing_shadow_root &&
+       IsA<SVGUseElement>(containing_shadow_root->host()))) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace
@@ -955,7 +980,11 @@ WebInputEventResult EventHandler::HandleMouseMoveEvent(
       layer_scrollable_area->MouseMovedInContentArea();
   }
 
-  hovered_node_result.SetToShadowHostIfInUAShadowRoot();
+  // Should not convert the hit shadow element to its shadow host, so that
+  // tooltips in the shadow tree appear correctly.
+  if (!HasTitleAndNotSVGUseElement(hovered_node_result)) {
+    hovered_node_result.SetToShadowHostIfInUAShadowRoot();
+  }
   page->GetChromeClient().MouseDidMoveOverElement(*frame_, location,
                                                   hovered_node_result);
 

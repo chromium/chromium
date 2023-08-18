@@ -7,4 +7,4 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Week' value='0' FOCUSABLE
 ++++++++++ROLE_SYSTEM_STATICTEXT name=', ' ia2_hypertext=', '
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Year' value='0' FOCUSABLE
-++++++ROLE_SYSTEM_BUTTONMENU name='Show week picker' FOCUSABLE HASPOPUP haspopup:menu
+++++++ROLE_SYSTEM_BUTTONMENU name='Show week picker' FOCUSABLE HASPOPUP description-from:tooltip haspopup:menu description='Show week picker'

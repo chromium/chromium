@@ -17,7 +17,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN focusable label='Year' actions='{SET_VALUE}' value='2008'
 ++++++++++++++STATIC_TEXT label='2008'
 ++++++++++++++++UNKNOWN label='2008'
-++++++++UNKNOWN focusable label='Show date picker' actions='{DEFAULT}'
+++++++++UNKNOWN focusable label='Show date picker' actions='{DEFAULT}' secondary_label='Show date picker'
 ++++++UNKNOWN focusable label='When' actions='{DEFAULT, SET_VALUE}' value='2008-09-01'
 ++++++++UNKNOWN
 ++++++++++UNKNOWN
@@ -34,4 +34,4 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN focusable label='Year When' actions='{SET_VALUE}' value='2008'
 ++++++++++++++STATIC_TEXT label='2008'
 ++++++++++++++++UNKNOWN label='2008'
-++++++++UNKNOWN focusable label='Show date picker' actions='{DEFAULT}'
+++++++++UNKNOWN focusable label='Show date picker' actions='{DEFAULT}' secondary_label='Show date picker'

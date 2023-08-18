@@ -8,7 +8,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Minutes' value='00' FOCUSABLE xml-roles:spinbutton
 ++++++++++ROLE_SYSTEM_STATICTEXT name=' ' ia2_hypertext=' '
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='AM/PM' value='AM' FOCUSABLE xml-roles:spinbutton
-++++++ROLE_SYSTEM_BUTTONMENU name='Show time picker' FOCUSABLE HASPOPUP xml-roles:button
+++++++ROLE_SYSTEM_BUTTONMENU name='Show time picker' FOCUSABLE HASPOPUP xml-roles:button description-from:tooltip description='Show time picker'
 ++++ROLE_SYSTEM_GROUPING name='Breakfast' value='00:00:00' FOCUSABLE text-input-type:time ia2_hypertext='<obj0><obj1>'
 ++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
 ++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>:<obj2> <obj4>'
@@ -17,4 +17,4 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Minutes Breakfast' value='00' FOCUSABLE xml-roles:spinbutton
 ++++++++++ROLE_SYSTEM_STATICTEXT name=' ' ia2_hypertext=' '
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='AM/PM Breakfast' value='AM' FOCUSABLE xml-roles:spinbutton
-++++++ROLE_SYSTEM_BUTTONMENU name='Show time picker' FOCUSABLE HASPOPUP xml-roles:button
+++++++ROLE_SYSTEM_BUTTONMENU name='Show time picker' FOCUSABLE HASPOPUP xml-roles:button description-from:tooltip description='Show time picker'

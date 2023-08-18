@@ -1,12 +1,9 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_SECTION READONLY
-++++IA2_ROLE_DATE_EDITOR FOCUSABLE
-++++++IA2_ROLE_SECTION
-++++++++IA2_ROLE_SECTION
-++++++++++ROLE_SYSTEM_SPINBUTTON name='Month' FOCUSABLE
-++++++++++ROLE_SYSTEM_STATICTEXT name=', '
-++++++++++ROLE_SYSTEM_SPINBUTTON name='Year' FOCUSABLE
-++++++ROLE_SYSTEM_BUTTONMENU FOCUSABLE
-++++++ROLE_SYSTEM_SPINBUTTON
-++++++++ROLE_SYSTEM_PUSHBUTTON
-++++++++ROLE_SYSTEM_PUSHBUTTON
+ROLE_SYSTEM_DOCUMENT value='http://a.test:57795/accessibility/html/input-month.html' READONLY FOCUSABLE ia2_hypertext='<obj0>'
+++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
+++++IA2_ROLE_DATE_EDITOR FOCUSABLE text-input-type:month ia2_hypertext='<obj0><obj1>'
+++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
+++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0> <obj2>'
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Month' value='0' FOCUSABLE valuetext:0
+++++++++++ROLE_SYSTEM_STATICTEXT name=' ' ia2_hypertext=' '
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Year' value='0' FOCUSABLE valuetext:0
+++++++ROLE_SYSTEM_BUTTONMENU name='Show month picker' FOCUSABLE HASPOPUP description-from:tooltip haspopup:menu description='Show month picker'

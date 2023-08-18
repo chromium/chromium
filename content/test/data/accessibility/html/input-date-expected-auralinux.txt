@@ -8,7 +8,7 @@
 ++++++++++[spin button] name='Day' current=1.000000 minimum=1.000000 maximum=31.000000
 ++++++++++[static] name='/'
 ++++++++++[spin button] name='Year' current=2008.000000 minimum=1.000000 maximum=275760.000000
-++++++[push button] name='Show date picker'
+++++++[push button] name='Show date picker' description='Show date picker' description-from:tooltip
 ++++[dateeditor] name='When' text-input-type:date
 ++++++[section]
 ++++++++[section]
@@ -17,4 +17,4 @@
 ++++++++++[spin button] name='Day When' current=1.000000 minimum=1.000000 maximum=31.000000
 ++++++++++[static] name='/'
 ++++++++++[spin button] name='Year When' current=2008.000000 minimum=1.000000 maximum=275760.000000
-++++++[push button] name='Show date picker'
+++++++[push button] name='Show date picker' description='Show date picker' description-from:tooltip
