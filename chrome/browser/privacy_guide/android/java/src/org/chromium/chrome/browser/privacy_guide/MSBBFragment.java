@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 
@@ -22,7 +23,9 @@ public class MSBBFragment extends Fragment {
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.privacy_guide_msbb_step, container, false);
+        return ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled()
+                ? inflater.inflate(R.layout.privacy_guide_msbb_v3_step, container, false)
+                : inflater.inflate(R.layout.privacy_guide_msbb_step, container, false);
     }
 
     @Override
