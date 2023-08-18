@@ -472,6 +472,9 @@ void IDBFactory::AllowIndexedDB(ExecutionContext* context,
     return;
   }
   callbacks_waiting_on_permission_decision_.push_back(std::move(callback));
+  if (callbacks_waiting_on_permission_decision_.size() > 1) {
+    return;
+  }
 
   WebContentSettingsClient* settings_client = nullptr;
 
