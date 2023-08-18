@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests object revelation in the UI.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -147,6 +149,6 @@ import {NetworkTestRunner} from 'network_test_runner';
 
   function revealed(request) {
     TestRunner.addResult(
-        'Request ' + new Common.ParsedURL(request.url()).lastPathComponent + ' revealed in the Network panel');
+        'Request ' + new Common.ParsedURL.ParsedURL(request.url()).lastPathComponent + ' revealed in the Network panel');
   }
 })();

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that URLs are linked to and completed correctly. Bugs 51663, 53171, 62643, 72373, 79905\n`);
@@ -17,7 +19,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   await TestRunner.addStylesheetTag('../styles/resources/styles-url-linkify.css');
 
   function completeURL(baseURL, href) {
-    TestRunner.addResult(Common.ParsedURL.completeURL(baseURL, href));
+    TestRunner.addResult(Common.ParsedURL.ParsedURL.completeURL(baseURL, href));
   }
 
   TestRunner.addResult('URLs completed:');
