@@ -834,7 +834,7 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
     expected_drm_modifier =
         IsDisplayVer14() ? I915_FORMAT_MOD_4_TILED : I915_FORMAT_MOD_Y_TILED;
   } else if (backend == VAImplementation::kMesaGallium) {
-    if (va_vendor_string.find("STONEY") != std::string::npos) {
+    if (va_vendor_string.find("stoney") != std::string::npos) {
       expected_drm_modifier = DRM_FORMAT_MOD_INVALID;
     }
   }
