@@ -9,6 +9,7 @@
 #import "base/check_op.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model_observer.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/web/common/features.h"
 
 namespace {
 // Object that increments `counter` by 1 for its lifetime.
@@ -402,6 +403,7 @@ void FullscreenModel::OnContentScrollOffsetBroadcasted(CGFloat offset) {
 }
 
 void FullscreenModel::OnScrollViewIsScrollingBroadcasted(bool scrolling) {
+  CHECK(!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   SetScrollViewIsScrolling(scrolling);
 }
 

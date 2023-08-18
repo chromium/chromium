@@ -35,7 +35,9 @@ source_set("main_content_ui_broadcasting_util") {
 
   deps = [
     ":main_content_ui",
+    "//base",
     "//ios/chrome/browser/ui/broadcaster",
+    "//ios/web/common:features",
   ]
 }
 

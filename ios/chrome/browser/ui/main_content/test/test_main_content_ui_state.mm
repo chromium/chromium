@@ -6,6 +6,5 @@
 
 @implementation TestMainContentUIState
 @synthesize yContentOffset = _yContentOffset;
-@synthesize scrolling = _scrolling;
 @synthesize dragging = _dragging;
 @end
