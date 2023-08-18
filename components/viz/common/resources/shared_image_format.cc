@@ -184,8 +184,9 @@ bool SharedImageFormat::IsBitmapFormatSupported() const {
 }
 
 int SharedImageFormat::NumberOfPlanes() const {
-  if (is_single_plane())
+  if (is_single_plane()) {
     return 1;
+  }
   switch (plane_config()) {
     case PlaneConfig::kY_U_V:
     case PlaneConfig::kY_V_U:
@@ -201,15 +202,18 @@ bool SharedImageFormat::IsValidPlaneIndex(int plane_index) const {
   return plane_index >= 0 && plane_index < NumberOfPlanes();
 }
 
-absl::optional<size_t> SharedImageFormat::MaybeEstimatedSizeInBytes(
+absl::optional<size_t> SharedImageFormat::MaybeEstimatedPlaneSizeInBytes(
+    int plane_index,
     const gfx::Size& size) const {
   DCHECK(!size.IsEmpty());
 
   if (is_single_plane()) {
     if (IsLegacyMultiplanar()) {
-      return GetEquivalentMultiplanarFormat(*this).MaybeEstimatedSizeInBytes(
-          size);
+      return GetEquivalentMultiplanarFormat(*this)
+          .MaybeEstimatedPlaneSizeInBytes(plane_index, size);
     }
+
+    DCHECK_EQ(plane_index, 0);
 
     base::CheckedNumeric<size_t> bits_per_row =
         BitsPerPixelForTrueSinglePlaneFormat(*this);
@@ -229,20 +233,42 @@ absl::optional<size_t> SharedImageFormat::MaybeEstimatedSizeInBytes(
   }
 
   size_t bytes_per_element = StorageBytesPerElement(channel_format());
+
+  gfx::Size plane_size = GetPlaneSize(plane_index, size);
+
+  base::CheckedNumeric<size_t> plane_estimated_bytes =
+      bytes_per_element * NumChannelsInPlane(plane_index);
+  DCHECK(plane_estimated_bytes.IsValid());
+  plane_estimated_bytes *= plane_size.width();
+  plane_estimated_bytes *= plane_size.height();
+  if (!plane_estimated_bytes.IsValid()) {
+    return absl::nullopt;
+  }
+
+  return plane_estimated_bytes.ValueOrDie();
+}
+
+absl::optional<size_t> SharedImageFormat::MaybeEstimatedSizeInBytes(
+    const gfx::Size& size) const {
+  DCHECK(!size.IsEmpty());
+
+  if (is_single_plane()) {
+    if (IsLegacyMultiplanar()) {
+      return GetEquivalentMultiplanarFormat(*this).MaybeEstimatedSizeInBytes(
+          size);
+    }
+    return MaybeEstimatedPlaneSizeInBytes(0, size);
+  }
+
   base::CheckedNumeric<size_t> total_estimated_bytes = 0;
   for (int plane_index = 0; plane_index < NumberOfPlanes(); ++plane_index) {
-    gfx::Size plane_size = GetPlaneSize(plane_index, size);
-
-    base::CheckedNumeric<size_t> plane_estimated_bytes =
-        bytes_per_element * NumChannelsInPlane(plane_index);
-    DCHECK(plane_estimated_bytes.IsValid());
-    plane_estimated_bytes *= plane_size.width();
-    plane_estimated_bytes *= plane_size.height();
-    if (!plane_estimated_bytes.IsValid()) {
+    absl::optional<size_t> plane_estimated_bytes =
+        MaybeEstimatedPlaneSizeInBytes(plane_index, size);
+    if (!plane_estimated_bytes.has_value()) {
       return absl::nullopt;
     }
 
-    total_estimated_bytes += plane_estimated_bytes;
+    total_estimated_bytes += plane_estimated_bytes.value();
     if (!total_estimated_bytes.IsValid()) {
       return absl::nullopt;
     }
@@ -262,8 +288,9 @@ bool SharedImageFormat::VerifySizeInBytes(const gfx::Size& size) const {
 gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,
                                           const gfx::Size& size) const {
   DCHECK(IsValidPlaneIndex(plane_index));
-  if (is_single_plane())
+  if (is_single_plane()) {
     return size;
+  }
 
   switch (plane_config()) {
     case PlaneConfig::kY_U_V:
@@ -384,8 +411,9 @@ bool SharedImageFormat::IsCompressed() const {
 }
 
 bool SharedImageFormat::IsLegacyMultiplanar() const {
-  if (!is_single_plane())
+  if (!is_single_plane()) {
     return false;
+  }
 
   switch (singleplanar_format()) {
     case mojom::SingleplanarFormat::YV12_LEGACY:
@@ -435,8 +463,9 @@ int SharedImageFormat::BitsPerPixel() const {
 }
 
 bool SharedImageFormat::operator==(const SharedImageFormat& o) const {
-  if (plane_type_ != o.plane_type())
+  if (plane_type_ != o.plane_type()) {
     return false;
+  }
 
   switch (plane_type_) {
     case PlaneType::kUnknown:

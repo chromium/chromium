@@ -128,6 +128,12 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
   // formats.
   absl::optional<size_t> MaybeEstimatedSizeInBytes(const gfx::Size& size) const;
 
+  // Returns estimated size in bytes for a plane of an image in this format of
+  // `size` or nullopt if size in bytes overflows.
+  absl::optional<size_t> MaybeEstimatedPlaneSizeInBytes(
+      int plane_index,
+      const gfx::Size& size) const;
+
   // Returns estimated size in bytes for an image in this format of `size` or 0
   // if size in bytes overflows. Includes all planes for multiplanar formats.
   size_t EstimatedSizeInBytes(const gfx::Size& size) const;

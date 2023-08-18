@@ -47,6 +47,8 @@ using testing::AtLeast;
 
 namespace gpu {
 
+namespace {
+
 class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
  public:
   void SetUp() override {
@@ -168,34 +170,49 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
 }
 
 #if BUILDFLAG(USE_DAWN)
-// Test to check interaction between Dawn and skia GL representations.
-TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
-  // Create a Dawn Metal device
-  dawn::native::Instance instance;
-  instance.DiscoverDefaultPhysicalDevices();
+class IOSurfaceImageBackingFactoryDawnTest
+    : public IOSurfaceImageBackingFactoryTest,
+      public testing::WithParamInterface<wgpu::BackendType> {
+ protected:
+  wgpu::BackendType backend_type() { return GetParam(); }
 
-  std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
-  auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Metal,
-                                       [](dawn::native::Adapter adapter) {
-                                         wgpu::AdapterProperties properties;
-                                         adapter.GetProperties(&properties);
-                                         return properties.backendType;
-                                       });
-  ASSERT_NE(adapter_it, adapters.end());
+  wgpu::Device CreateDevice() {
+    dawn::native::Instance instance;
+    instance.DiscoverDefaultPhysicalDevices();
 
-  // We need to request internal usage to be able to do operations with
-  // internal methods that would need specific usages.
-  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
-  wgpu::DeviceDescriptor device_descriptor;
+    wgpu::RequestAdapterOptions adapter_options;
+    adapter_options.backendType = backend_type();
+
+    std::vector<dawn::native::Adapter> adapters =
+        instance.EnumerateAdapters(&adapter_options);
+    if (adapters.empty()) {
+      return nullptr;
+    }
+
+    // We need to request internal usage to be able to do operations with
+    // internal methods that would need specific usages.
+    wgpu::FeatureName dawn_internal_usage =
+        wgpu::FeatureName::DawnInternalUsages;
+    wgpu::DeviceDescriptor device_descriptor;
 #ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
-  device_descriptor.requiredFeatureCount = 1;
+    device_descriptor.requiredFeatureCount = 1;
 #else
-  device_descriptor.requiredFeaturesCount = 1;
+    device_descriptor.requiredFeaturesCount = 1;
 #endif
-  device_descriptor.requiredFeatures = &dawn_internal_usage;
+    device_descriptor.requiredFeatures = &dawn_internal_usage;
 
-  wgpu::Device device =
-      wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
+    wgpu::Device device =
+        wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
+
+    return device;
+  }
+};
+
+// Test to check interaction between Dawn and skia GL representations.
+TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SkiaGL) {
+  // Create a Dawn device
+  wgpu::Device device = CreateDevice();
+  ASSERT_NE(device, nullptr);
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
@@ -216,7 +233,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
 
   // Create a DawnImageRepresentation.
   auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-      mailbox, device, wgpu::BackendType::Metal, {});
+      mailbox, device, backend_type(), {});
   EXPECT_TRUE(dawn_representation);
 
   // Clear the shared image to green using Dawn.
@@ -260,7 +277,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
 // 2. Do not call SetCleared so we can test Dawn Lazy clear
 // 3. Begin render pass in Dawn, but do not do anything
 // 4. Verify through CheckSkiaPixel that GL drawn color not seen
-TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
+TEST_P(IOSurfaceImageBackingFactoryDawnTest, GL_Dawn_Skia_UnclearTexture) {
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
@@ -315,35 +332,13 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
     EXPECT_FALSE(factory_ref->IsCleared());
   }
 
-  // Create a Dawn Metal device
-  dawn::native::Instance instance;
-  instance.DiscoverDefaultPhysicalDevices();
+  // Create a Dawn device
+  wgpu::Device device = CreateDevice();
+  ASSERT_NE(device, nullptr);
 
-  std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
-  auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Metal,
-                                       [](dawn::native::Adapter adapter) {
-                                         wgpu::AdapterProperties properties;
-                                         adapter.GetProperties(&properties);
-                                         return properties.backendType;
-                                       });
-  ASSERT_NE(adapter_it, adapters.end());
-
-  // We need to request internal usage to be able to do operations with
-  // internal methods that would need specific usages.
-  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
-  wgpu::DeviceDescriptor device_descriptor;
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
-  device_descriptor.requiredFeatureCount = 1;
-#else
-  device_descriptor.requiredFeaturesCount = 1;
-#endif
-  device_descriptor.requiredFeatures = &dawn_internal_usage;
-
-  wgpu::Device device =
-      wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
   {
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, wgpu::BackendType::Metal, {});
+        mailbox, device, backend_type(), {});
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
@@ -387,7 +382,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 // 3. Texture in Dawn will stay as uninitialized
 // 4. Expect skia to fail to access the texture because texture is not
 // initialized
-TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
+TEST_P(IOSurfaceImageBackingFactoryDawnTest, UnclearDawn_SkiaFails) {
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
@@ -407,34 +402,12 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
       shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
   // Create dawn device
-  dawn::native::Instance instance;
-  instance.DiscoverDefaultPhysicalDevices();
+  wgpu::Device device = CreateDevice();
+  ASSERT_NE(device, nullptr);
 
-  std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
-  auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Metal,
-                                       [](dawn::native::Adapter adapter) {
-                                         wgpu::AdapterProperties properties;
-                                         adapter.GetProperties(&properties);
-                                         return properties.backendType;
-                                       });
-  ASSERT_NE(adapter_it, adapters.end());
-
-  // We need to request internal usage to be able to do operations with
-  // internal methods that would need specific usages.
-  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
-  wgpu::DeviceDescriptor device_descriptor;
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
-  device_descriptor.requiredFeatureCount = 1;
-#else
-  device_descriptor.requiredFeaturesCount = 1;
-#endif
-  device_descriptor.requiredFeatures = &dawn_internal_usage;
-
-  wgpu::Device device =
-      wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
   {
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, wgpu::BackendType::Metal, {});
+        mailbox, device, backend_type(), {});
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
@@ -1213,7 +1186,16 @@ const auto kGMBFormats =
                       viz::MultiPlaneFormat::kNV12,
                       viz::MultiPlaneFormat::kP010);
 
-std::string TestParamToString(
+std::string TestBackendTypeParamToString(
+    const testing::TestParamInfo<wgpu::BackendType>& param_info) {
+  // We only support metal & vulkan on mac. And for vulkan, the only driver
+  // supported is swiftshader.
+  std::string adapter_type =
+      (param_info.param == wgpu::BackendType::Metal) ? "Metal" : "SwiftShader";
+  return adapter_type;
+}
+
+std::string TestContextTypeFormatParamsToString(
     const testing::TestParamInfo<
         std::tuple<viz::SharedImageFormat, GrContextType>>& param_info) {
   std::string format = std::get<0>(param_info.param).ToTestParamString();
@@ -1223,19 +1205,27 @@ std::string TestParamToString(
   return context_type + "_" + format;
 }
 
+}  // namespace
+
+INSTANTIATE_TEST_SUITE_P(,
+                         IOSurfaceImageBackingFactoryDawnTest,
+                         testing::Values(wgpu::BackendType::Metal,
+                                         wgpu::BackendType::Vulkan),
+                         TestBackendTypeParamToString);
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     IOSurfaceImageBackingFactoryScanoutTest,
     testing::Combine(kScanoutFormats,
                      testing::Values(GrContextType::kGL,
                                      GrContextType::kGraphiteDawn)),
-    TestParamToString);
+    TestContextTypeFormatParamsToString);
 INSTANTIATE_TEST_SUITE_P(
     ,
     IOSurfaceImageBackingFactoryGMBTest,
     testing::Combine(kGMBFormats,
                      testing::Values(GrContextType::kGL,
                                      GrContextType::kGraphiteDawn)),
-    TestParamToString);
+    TestContextTypeFormatParamsToString);
 
 }  // namespace gpu
