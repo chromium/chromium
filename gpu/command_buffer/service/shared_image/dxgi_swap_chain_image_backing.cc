@@ -205,9 +205,11 @@ bool DXGISwapChainImageBacking::DidBeginWriteAccess(
   // we'll initialize all the pixels and expand the swap rect.
   const gfx::Rect full_swap_rect = gfx::Rect(size());
   if (!IsCleared() && swap_rect != full_swap_rect) {
-    LOG(WARNING) << "First draw to surface should draw to everything";
-
+#if DCHECK_IS_ON()
+    initialize_color = SkColors::kBlue;
+#else
     initialize_color = SkColors::kTransparent;
+#endif
 
     // Ensure that the next swap contains the entire swap chain since we just
     // cleared it.
@@ -219,7 +221,15 @@ bool DXGISwapChainImageBacking::DidBeginWriteAccess(
     // We only need to write the alpha channel, but we clear since it's simpler
     // and are guaranteed to not have pixels we need to preserve before the
     // first write to each buffer.
+#if DCHECK_IS_ON()
+    initialize_color = SkColors::kBlue;
+#else
     initialize_color = SkColors::kBlack;
+#endif
+
+    // We don't need to modify the swap rect in this case since |Present1| will
+    // copy the contents outside the swap rect from the previous buffer and
+    // we've already forced a full swap on the first buffer above.
   }
 
   if (initialize_color.has_value()) {

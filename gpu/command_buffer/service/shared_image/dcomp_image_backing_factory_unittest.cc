@@ -431,23 +431,69 @@ class DCompImageBackingFactoryVisualTreeTest
     ::SetParent(child_window_.window(), window_.hwnd());
   }
 
+  // This does not need to be called unless the test expects alpha blending.
+  void set_background_fill_override(const SkColor4f& background_fill_override) {
+    background_fill_override_ = background_fill_override;
+  }
+
   void InitializeVisualTreeWithContent(IUnknown* content) {
     Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
-    EXPECT_HRESULT_SUCCEEDED(dcomp_device_.As(&desktop_device));
+    ASSERT_HRESULT_SUCCEEDED(dcomp_device_.As(&desktop_device));
 
-    EXPECT_HRESULT_SUCCEEDED(desktop_device->CreateTargetForHwnd(
+    ASSERT_HRESULT_SUCCEEDED(desktop_device->CreateTargetForHwnd(
         child_window_.window(), TRUE, &dcomp_target_));
 
-    EXPECT_HRESULT_SUCCEEDED(dcomp_device_->CreateVisual(&dcomp_root_visual_));
-    DCHECK(dcomp_root_visual_);
-    EXPECT_HRESULT_SUCCEEDED(dcomp_target_->SetRoot(dcomp_root_visual_.Get()));
+    ASSERT_HRESULT_SUCCEEDED(dcomp_device_->CreateVisual(&dcomp_root_visual_));
+    ASSERT_NE(dcomp_root_visual_, nullptr);
+    ASSERT_HRESULT_SUCCEEDED(dcomp_target_->SetRoot(dcomp_root_visual_.Get()));
 
-    EXPECT_HRESULT_SUCCEEDED(dcomp_root_visual_->SetContent(content));
+    // Fill the background so we have a consistent backdrop instead of relying
+    // on the color of the redirection surface when testing alpha blending. We
+    // default to magenta to make it obvious when something shouldn't be
+    // visible.
+    const SkColor4f background_fill_color =
+        background_fill_override_.value_or(SkColors::kMagenta);
+    {
+      Microsoft::WRL::ComPtr<IDCompositionSurface> background_fill;
+      ASSERT_HRESULT_SUCCEEDED(dcomp_device_->CreateSurface(
+          window_size_.width(), window_size_.height(),
+          DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ALPHA_MODE_IGNORE,
+          &background_fill));
+
+      RECT update_rect = gfx::Rect(window_size_).ToRECT();
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> update_texture;
+      POINT update_offset;
+      ASSERT_HRESULT_SUCCEEDED(background_fill->BeginDraw(
+          &update_rect, IID_PPV_ARGS(&update_texture), &update_offset));
+      {
+        Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target;
+        ASSERT_HRESULT_SUCCEEDED(d3d11_device_->CreateRenderTargetView(
+            update_texture.Get(), nullptr, &render_target));
+        ASSERT_NE(render_target, nullptr);
+        Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context;
+        d3d11_device_->GetImmediateContext(&d3d11_device_context);
+        ASSERT_NE(d3d11_device_context, nullptr);
+        d3d11_device_context->ClearRenderTargetView(
+            render_target.Get(), background_fill_color.vec());
+      }
+      ASSERT_HRESULT_SUCCEEDED(background_fill->EndDraw());
+
+      // The content of a visual is always drawn behind its children, so we'll
+      // use it for the background fill.
+      ASSERT_HRESULT_SUCCEEDED(
+          dcomp_root_visual_->SetContent(background_fill.Get()));
+    }
+
+    Microsoft::WRL::ComPtr<IDCompositionVisual2> content_visual;
+    ASSERT_HRESULT_SUCCEEDED(dcomp_device_->CreateVisual(&content_visual));
+    ASSERT_HRESULT_SUCCEEDED(content_visual->SetContent(content));
+    ASSERT_HRESULT_SUCCEEDED(
+        dcomp_root_visual_->AddVisual(content_visual.Get(), FALSE, nullptr));
   }
 
   void CommitAndWait() {
-    EXPECT_HRESULT_SUCCEEDED(dcomp_device_->Commit());
-    EXPECT_HRESULT_SUCCEEDED(dcomp_device_->WaitForCommitCompletion());
+    ASSERT_HRESULT_SUCCEEDED(dcomp_device_->Commit());
+    ASSERT_HRESULT_SUCCEEDED(dcomp_device_->WaitForCommitCompletion());
 
     // Wait for DXGI swap chains to flip, just in case.
     Sleep(1000);
@@ -467,16 +513,15 @@ class DCompImageBackingFactoryVisualTreeTest
             SkiaImageRepresentation::AllowUnclearedAccess::kYes, true);
     ASSERT_NE(nullptr, write_access);
 
-    if (!skia_representation->IsCleared()) {
-      // First draw, we need to initialize it.
-      write_access->surface()->getCanvas()->clear(SK_ColorTRANSPARENT);
-    }
+    auto* canvas = write_access->surface()->getCanvas();
 
-    SkPaint paint;
-    paint.setStyle(SkPaint::kFill_Style);
-    paint.setColor(color);
-    write_access->surface()->getCanvas()->drawRect(
-        gfx::RectToSkRect(update_rect), paint);
+    // Clear |update_rect| instead of drawing, since drawing does alpha blending
+    // and depends on initialized pixels in |update_rect|, which we might not
+    // have.
+    canvas->save();
+    canvas->clipRect(gfx::RectToSkRect(update_rect));
+    canvas->clear(color);
+    canvas->restore();
 
     EXPECT_EQ(0u, end_semaphores.size());
     GrFlushInfo flush_info;
@@ -550,6 +595,9 @@ class DCompImageBackingFactoryVisualTreeTest
              << ", color_space = " << color_space.ToString()
              << ", has_alpha = " << has_alpha;
 
+    if (has_alpha) {
+      set_background_fill_override(SkColors::kBlack);
+    }
     ScheduleImageWithOneDraw(usage, format, color_space, has_alpha,
                              gfx::Rect(window_size()), clear_color);
 
@@ -561,14 +609,17 @@ class DCompImageBackingFactoryVisualTreeTest
             gfx::Point(window_size_.width() / 4, window_size_.height() / 4)));
   }
 
-  // Check that a backing whose first draw does not cover the entire surface has
-  // its untouched pixels initialized to transparent black.
+  // Check that a backing whose first draw does not cover the entire surface is
+  // initialized internally and the draw does not fail. It is invalid to read
+  // from an uninitialized portion of a SharedImage. Incomplete draws still can
+  // happen in valid scenarios, however. E.g. if a client over-allocates the
+  // backing, but only reads from the part it draws to.
   void RunIncompleteFirstDrawTest(uint32_t usage) {
     // First draw does not cover full surface
-    const SkColor expected_color = SK_ColorRED;
+    const SkColor expected_color = SK_ColorGREEN;
     ScheduleImageWithOneDraw(usage, viz::SinglePlaneFormat::kRGBA_8888,
                              gfx::ColorSpace::CreateSRGB(), true,
-                             gfx::Rect(1, 1), expected_color);
+                             gfx::Rect(10, 10), expected_color);
 
     SkBitmap window_readback =
         gl::GLTestHelper::ReadBackWindow(window(), window_size());
@@ -577,22 +628,25 @@ class DCompImageBackingFactoryVisualTreeTest
     EXPECT_SKCOLOR_EQ(expected_color, gl::GLTestHelper::GetColorAtPoint(
                                           window_readback, gfx::Point(0, 0)));
 
-    // The rest of the image should be the color of the window's redirection
-    // surface, since there's only one visual.
-    // Note this checks that we replicate the behavior of SoftwareRenderer--it
-    // is normally invalid to read a uninitialized portion of a SharedImage.
-    const SkColor redirection_surface_color = SK_ColorBLACK;
+#if DCHECK_IS_ON()
+    // In DCHECK, DCompImageBackingFactory images are cleared to blue.
+    const SkColor expected_window_color = SK_ColorBLUE;
+#else
+    // In non-DCHECK, the backings are cleared to transparent.
+    set_background_fill_override(SkColors::kRed);
+    const SkColor expected_window_color = SK_ColorRED;
+#endif
     EXPECT_SKCOLOR_EQ(
-        redirection_surface_color,
-        gl::GLTestHelper::GetColorAtPoint(window_readback, gfx::Point(0, 1)));
+        expected_window_color,
+        gl::GLTestHelper::GetColorAtPoint(window_readback, gfx::Point(0, 10)));
     EXPECT_SKCOLOR_EQ(
-        redirection_surface_color,
-        gl::GLTestHelper::GetColorAtPoint(window_readback, gfx::Point(1, 0)));
+        expected_window_color,
+        gl::GLTestHelper::GetColorAtPoint(window_readback, gfx::Point(10, 0)));
     EXPECT_SKCOLOR_EQ(
-        redirection_surface_color,
-        gl::GLTestHelper::GetColorAtPoint(window_readback, gfx::Point(1, 1)));
+        expected_window_color,
+        gl::GLTestHelper::GetColorAtPoint(window_readback, gfx::Point(10, 10)));
     EXPECT_SKCOLOR_EQ(
-        redirection_surface_color,
+        expected_window_color,
         gl::GLTestHelper::GetColorAtPoint(window_readback, gfx::Point(99, 99)));
   }
 
@@ -618,6 +672,7 @@ class DCompImageBackingFactoryVisualTreeTest
   };
 
   gfx::Size window_size_;
+  absl::optional<SkColor4f> background_fill_override_;
 
   TestPlatformDelegate platform_delegate_;
   ui::WinWindow window_;
@@ -830,12 +885,12 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
 }
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest,
-       DCompSurfaceIncompleteFirstDrawInitializesToTransparent) {
+       DCompSurfaceIncompleteFirstDrawInitializesSurface) {
   RunIncompleteFirstDrawTest(kDCompSurfaceUsage);
 }
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest,
-       DXGISwapChainIncompleteFirstDrawInitializesToTransparent) {
+       DXGISwapChainIncompleteFirstDrawInitializesSurface) {
   RunIncompleteFirstDrawTest(kDXGISwapChainUsage);
 }
 

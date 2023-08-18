@@ -40,8 +40,10 @@ namespace gpu {
 
 namespace {
 
-bool ClearDCompSurface(IDCompositionSurface* surface,
-                       const gfx::Size& surface_size) {
+// Ensure that the full bounds of |surface| have been drawn to, so subsequent
+// |BeginDraw| calls are not required to cover the entire surface.
+bool InitializeDCompSurface(IDCompositionSurface* surface,
+                            const gfx::Size& surface_size) {
   HRESULT hr = S_OK;
 
   RECT rect = gfx::Rect(surface_size).ToRECT();
@@ -53,9 +55,15 @@ bool ClearDCompSurface(IDCompositionSurface* surface,
     return false;
   }
 
+#if DCHECK_IS_ON()
+  const SkColor4f initialize_color = SkColors::kBlue;
+#else
+  const SkColor4f initialize_color = SkColors::kTransparent;
+#endif
+
   // DX11 protects the DComp surface atlas so this clear only affects pixels in
   // the update rect.
-  if (!ClearD3D11TextureToColor(draw_texture, SkColors::kTransparent)) {
+  if (!ClearD3D11TextureToColor(draw_texture, initialize_color)) {
     return false;
   }
 
@@ -303,8 +311,7 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> DCompSurfaceImageBacking::BeginDraw(
   // requires a full draw on the first |BeginDraw|. To make an incomplete first
   // draw valid, we'll initialize all the pixels and expand the swap rect.
   if (!IsCleared() && gfx::Rect(size()) != update_rect) {
-    LOG(WARNING) << "First draw to surface should draw to everything";
-    if (!ClearDCompSurface(dcomp_surface_.Get(), size())) {
+    if (!InitializeDCompSurface(dcomp_surface_.Get(), size())) {
       LOG(ERROR) << "Could not initialize DComp surface";
       return nullptr;
     }
