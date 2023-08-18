@@ -81,7 +81,6 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
-#include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/network_service_instance.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
@@ -1269,18 +1268,10 @@ bool IsOpenInOfficeTask(const TaskDescriptor& task) {
 }
 
 bool IsExtensionInstalled(Profile* profile, const std::string& extension_id) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  if (!proxy) {
-    return false;
-  }
-  // The AppRegistryCache will contain the extension whether on Ash or Lacros.
-  bool installed = false;
-  proxy->AppRegistryCache().ForOneApp(
-      extension_id, [&installed](const apps::AppUpdate& update) {
-        installed = apps_util::IsInstalled(update.Readiness());
-      });
-  return installed;
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile);
+  return registry->GetExtensionById(extension_id,
+                                    extensions::ExtensionRegistry::ENABLED);
 }
 
 bool IsHtmlFile(const base::FilePath& path) {

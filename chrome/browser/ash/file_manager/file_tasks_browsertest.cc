@@ -70,7 +70,6 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/drive/file_errors.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
@@ -627,27 +626,20 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, IsExtensionInstalled) {
     GTEST_SKIP()
         << "Skipping test body for CrosapiParam::kEnabled, see b/287165243.";
   }
-  if (profile_type() == TestProfileType::kIncognito) {
-    GTEST_SKIP()
-        << "There is no AppServiceProxy for incognito profiles as they are "
-           "ephemeral and have no apps persisted inside them.";
-  }
 
   if (profile_type() == TestProfileType::kGuest) {
-    GTEST_SKIP() << "The extension can't install in guest mode.";
+    // The extension can't install in guest mode.
+    return;
   }
-
   Profile* const profile = browser()->profile();
   // Install new extension.
-  scoped_refptr<const extensions::Extension> extension =
-      InstallTiffHandlerChromeApp(profile);
+  auto extension = InstallTiffHandlerChromeApp(profile);
   ASSERT_TRUE(IsExtensionInstalled(profile, extension->id()));
 
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile);
   // Uninstall extension.
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  ASSERT_TRUE(proxy);
-  proxy->UninstallSilently(extension->id(), apps::UninstallSource::kUnknown);
+  registry->RemoveEnabled(extension->id());
   ASSERT_FALSE(IsExtensionInstalled(profile, extension->id()));
 }
 
