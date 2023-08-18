@@ -976,7 +976,7 @@
     Clean up offline storage?
   </message>
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_BODY" desc="Title text for the Offline Storage confirmation dialog where users can clear their offline storage in Settings: Files: Google Drive.">
-    This will remove <ph name="OFFLINE_STORAGE_SIZE">$1<ex>5.0 GB</ex></ph> of space used by your offline files. Some files will still be available offline. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    This will remove up to <ph name="OFFLINE_STORAGE_SIZE">$1<ex>5.0 GB</ex></ph> of space used by your offline files. Some files will still be available offline. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_DISABLED_TOOLTIP" desc="Tooltip text that shows when hovering over the clear offline storage button in the Settings: Files: Google Drive.">
     Can’t clean up storage while file sync is on
