@@ -79,6 +79,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -1960,8 +1961,21 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddString("firstPartySetsLearnMoreURL",
                          chrome::kFirstPartySetsLearnMoreURL);
 
-  html_source->AddString("safeBrowsingHelpCenterURL",
-                         chrome::kSafeBrowsingHelpCenterURL);
+  html_source->AddString(
+      "safeBrowsingHelpCenterURL",
+      base::FeatureList::IsEnabled(
+          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection) &&
+              base::FeatureList::IsEnabled(
+                  safe_browsing::
+                      kFriendlierSafeBrowsingSettingsStandardProtection)
+          ? chrome::kSafeBrowsingHelpCenterUpdatedURL
+          : chrome::kSafeBrowsingHelpCenterURL);
+
+  html_source->AddString(
+      "enhancedProtectionLearnMoreLabel",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_SAFEBROWSING_ENHANCED_LEARN_MORE_LABEL,
+          base::ASCIIToUTF16(chrome::kSafeBrowsingInChromeHelpCenterURL)));
 
   html_source->AddString("syncAndGoogleServicesLearnMoreURL",
                          chrome::kSyncAndGoogleServicesLearnMoreURL);

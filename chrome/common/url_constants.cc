@@ -272,6 +272,12 @@ const char kResetProfileSettingsLearnMoreURL[] =
 const char kSafeBrowsingHelpCenterURL[] =
     "https://support.google.com/chrome?p=cpn_safe_browsing";
 
+const char kSafeBrowsingHelpCenterUpdatedURL[] =
+    "https://support.google.com/chrome?p=safe_browsing_preferences";
+
+const char kSafeBrowsingInChromeHelpCenterURL[] =
+    "https://support.google.com/chrome?p=safebrowsing_in_chrome";
+
 const char kSafetyTipHelpCenterURL[] =
     "https://support.google.com/chrome/?p=safety_tip";
 

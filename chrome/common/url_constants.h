@@ -251,6 +251,12 @@ extern const char kResetProfileSettingsLearnMoreURL[];
 // "Learn more" URL for Safebrowsing
 extern const char kSafeBrowsingHelpCenterURL[];
 
+// Updated "Info icon" URL for Safebrowsing
+extern const char kSafeBrowsingHelpCenterUpdatedURL[];
+
+// "Learn more" URL for Enhanced Protection
+extern const char kSafeBrowsingInChromeHelpCenterURL[];
+
 // "Learn more" URL for safety tip bubble.
 extern const char kSafetyTipHelpCenterURL[];
 

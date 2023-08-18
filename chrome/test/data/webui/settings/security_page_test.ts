@@ -179,6 +179,11 @@ suite('Main', function() {
     const noProtection = page.$.safeBrowsingDisabled;
     const npSubLabel = loadTimeData.getString('safeBrowsingNoneDescUpdated');
     assertEquals(npSubLabel, noProtection.subLabel);
+
+    page.$.safeBrowsingEnhanced.click();
+    flush();
+    // Learn more label should be visible.
+    assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
   });
 });
 
