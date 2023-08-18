@@ -415,6 +415,9 @@ enum ServerFieldType {
 
   // No new types can be added without a corresponding change to the Autofill
   // server.
+  // This enum must be kept in sync with ServerFieldType from
+  // * chrome/common/extensions/api/autofill_private.idl
+  // * tools/typescript/definitions/autofill_private.d.ts
   // Please update `tools/metrics/histograms/enums.xml` by executing
   // `tools/metrics/histograms/update_autofill_enums.py`.
   MAX_VALID_FIELD_TYPE = 156,

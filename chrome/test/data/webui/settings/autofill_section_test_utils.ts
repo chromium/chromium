@@ -223,3 +223,9 @@ export async function deleteAddress(
       (address, [], [], manager.data.accountInfo);
   await flushTasks();
 }
+
+export function getAddressFieldValue(
+    address: chrome.autofillPrivate.AddressEntry,
+    type: chrome.autofillPrivate.ServerFieldType): string|undefined {
+  return address.fields.find(entry => entry.type === type)?.value;
+}

@@ -106,9 +106,16 @@ declare global {
         CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
         NUMERIC_QUANTITY,
         ONE_TIME_CODE,
+        DELIVERY_INSTRUCTIONS,
+        ADDRESS_HOME_OVERFLOW,
         ADDRESS_HOME_LANDMARK,
-        ADDRESS_HOME_BETWEEN_STREETS,
+        ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
         ADDRESS_HOME_ADMIN_LEVEL2,
+        ADDRESS_HOME_STREET_LOCATION,
+        ADDRESS_HOME_BETWEEN_STREETS,
+        ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+        ADDRESS_HOME_BETWEEN_STREETS_1,
+        ADDRESS_HOME_BETWEEN_STREETS_2,
         SINGLE_USERNAME_FORGOT_PASSWORD,
       }
 
@@ -128,20 +135,16 @@ declare global {
         isVirtualCardEnrolled?: boolean;
       }
 
+      export interface AddressField {
+        type: ServerFieldType;
+        value: string|undefined;
+      }
+
       export interface AddressEntry {
         guid?: string;
-        fullName?: string;
-        honorific?: string;
-        companyName?: string;
-        addressLines?: string;
-        addressLevel1?: string;
-        addressLevel2?: string;
-        addressLevel3?: string;
-        postalCode?: string;
-        sortingCode?: string;
-        countryCode?: string;
-        phoneNumber?: string;
-        emailAddress?: string;
+
+        fields: AddressField[];
+
         languageCode?: string;
         metadata?: AutofillMetadata;
       }

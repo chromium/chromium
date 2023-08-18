@@ -160,13 +160,13 @@ var availableTests = [
   function addNewAddress() {
     function filterAddressProperties(addresses) {
       return addresses.map(address => {
-        var filteredAddress = {};
-        ['fullName', 'addressLevel1', 'addressLevel2', 'addressLevel3',
-         'postalCode', 'sortingCode', 'phoneNumber', 'emailAddress']
-            .forEach(property => {
-              filteredAddress[property] = address[property];
-            });
-        return filteredAddress;
+        const fieldMap = {};
+        address.fields.forEach(entry => {
+          if (!!entry.value) {
+            fieldMap[entry.type] = entry.value;
+          }
+        });
+        return fieldMap;
       });
     }
 
@@ -181,28 +181,62 @@ var availableTests = [
               chrome.test.callbackPass(function(addressList, cardList) {
                 chrome.test.assertEq(
                     [{
-                      fullName: NAME,
-                      addressLevel1: ADDRESS_LEVEL1,
-                      addressLevel2: ADDRESS_LEVEL2,
-                      addressLevel3: ADDRESS_LEVEL3,
-                      postalCode: POSTAL_CODE,
-                      sortingCode: SORTING_CODE,
-                      phoneNumber: PHONE,
-                      emailAddress: EMAIL
+                      NAME_FULL: NAME,
+                      ADDRESS_HOME_STATE: ADDRESS_LEVEL1,
+                      ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
+                      ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,
+                      ADDRESS_HOME_ZIP: POSTAL_CODE,
+                      ADDRESS_HOME_SORTING_CODE: SORTING_CODE,
+                      ADDRESS_HOME_COUNTRY: COUNTRY_CODE,
+                      PHONE_HOME_WHOLE_NUMBER: PHONE,
+                      EMAIL_ADDRESS: EMAIL,
                     }],
                     filterAddressProperties(addressList));
               }));
 
           chrome.autofillPrivate.saveAddress({
-            fullName: NAME,
-            addressLevel1: ADDRESS_LEVEL1,
-            addressLevel2: ADDRESS_LEVEL2,
-            addressLevel3: ADDRESS_LEVEL3,
-            postalCode: POSTAL_CODE,
-            sortingCode: SORTING_CODE,
-            countryCode: COUNTRY_CODE,
-            phoneNumber: PHONE,
-            emailAddress: EMAIL
+            fields: [
+              {
+                type: chrome.autofillPrivate.ServerFieldType.NAME_FULL,
+                value: NAME
+              },
+              {
+                type: chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_STATE,
+                value: ADDRESS_LEVEL1
+              },
+              {
+                type: chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_CITY,
+                value: ADDRESS_LEVEL2
+              },
+              {
+                type: chrome.autofillPrivate.ServerFieldType
+                          .ADDRESS_HOME_DEPENDENT_LOCALITY,
+                value: ADDRESS_LEVEL3
+              },
+              {
+                type: chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_ZIP,
+                value: POSTAL_CODE
+              },
+              {
+                type: chrome.autofillPrivate.ServerFieldType
+                          .ADDRESS_HOME_SORTING_CODE,
+                value: SORTING_CODE
+              },
+              {
+                type:
+                    chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_COUNTRY,
+                value: COUNTRY_CODE
+              },
+              {
+                type: chrome.autofillPrivate.ServerFieldType
+                          .PHONE_HOME_WHOLE_NUMBER,
+                value: PHONE
+              },
+              {
+                type: chrome.autofillPrivate.ServerFieldType.EMAIL_ADDRESS,
+                value: EMAIL
+              },
+            ],
           });
         }));
   },
@@ -215,12 +249,12 @@ var availableTests = [
 
     function filterAddressProperties(addresses) {
       return addresses.map(address => {
-        var filteredAddress = {};
-        ['guid', 'fullName', 'addressLevel1', 'addressLevel2', 'addressLevel3',
-         'postalCode', 'sortingCode', 'phoneNumber', 'emailAddress']
-            .forEach(property => {
-              filteredAddress[property] = address[property];
-            });
+        const filteredAddress = {guid: address.guid};
+        address.fields.map(entry => {
+          if (!!entry.value) {
+            filteredAddress[entry.type] = entry.value
+          }
+        });
         return filteredAddress;
       });
     }
@@ -239,14 +273,15 @@ var availableTests = [
                 chrome.test.assertEq(
                     [{
                       guid: addressGuid,
-                      fullName: UPDATED_NAME,
-                      addressLevel1: ADDRESS_LEVEL1,
-                      addressLevel2: ADDRESS_LEVEL2,
-                      addressLevel3: ADDRESS_LEVEL3,
-                      postalCode: POSTAL_CODE,
-                      sortingCode: SORTING_CODE,
-                      phoneNumber: UPDATED_PHONE,
-                      emailAddress: EMAIL
+                      NAME_FULL: UPDATED_NAME,
+                      ADDRESS_HOME_STATE: ADDRESS_LEVEL1,
+                      ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
+                      ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,
+                      ADDRESS_HOME_ZIP: POSTAL_CODE,
+                      ADDRESS_HOME_SORTING_CODE: SORTING_CODE,
+                      ADDRESS_HOME_COUNTRY: COUNTRY_CODE,
+                      PHONE_HOME_WHOLE_NUMBER: UPDATED_PHONE,
+                      EMAIL_ADDRESS: EMAIL,
                     }],
                     filterAddressProperties(addressList));
               }));
@@ -255,8 +290,17 @@ var availableTests = [
           // using some different information.
           chrome.autofillPrivate.saveAddress({
             guid: addressGuid,
-            fullName: UPDATED_NAME,
-            phoneNumber: UPDATED_PHONE
+            fields: [
+              {
+                type: chrome.autofillPrivate.ServerFieldType.NAME_FULL,
+                value: UPDATED_NAME
+              },
+              {
+                type: chrome.autofillPrivate.ServerFieldType
+                          .PHONE_HOME_WHOLE_NUMBER,
+                value: UPDATED_PHONE
+              },
+            ],
           });
         }));
   },

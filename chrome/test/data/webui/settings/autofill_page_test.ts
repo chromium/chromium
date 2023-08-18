@@ -7,7 +7,7 @@ import {DomIf, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bund
 import {AutofillManagerImpl, PaymentsManagerImpl, SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {buildRouter, Router} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, OpenWindowProxyImpl, PasswordManagerImpl, SettingsAutofillPageElement, SettingsPluralStringProxyImpl, SettingsPrefsElement, PasswordManagerPage} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -177,7 +177,7 @@ suite('PasswordsAndForms', function() {
           (addressList, cardList, ibanList, accountInfo);
       flush();
 
-      assertEquals(
+      assertDeepEquals(
           addressList,
           element.shadowRoot!
               .querySelector<SettingsAutofillSectionElement>(

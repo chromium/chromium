@@ -99,9 +99,16 @@ namespace autofillPrivate {
     CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
     NUMERIC_QUANTITY,
     ONE_TIME_CODE,
+    DELIVERY_INSTRUCTIONS,
+    ADDRESS_HOME_OVERFLOW,
     ADDRESS_HOME_LANDMARK,
+    ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
     ADDRESS_HOME_ADMIN_LEVEL2,
+    ADDRESS_HOME_STREET_LOCATION,
     ADDRESS_HOME_BETWEEN_STREETS,
+    ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+    ADDRESS_HOME_BETWEEN_STREETS_1,
+    ADDRESS_HOME_BETWEEN_STREETS_2,
     SINGLE_USERNAME_FORGOT_PASSWORD,
     MAX_VALID_FIELD_TYPE
   };
@@ -152,57 +159,22 @@ namespace autofillPrivate {
     boolean? isVirtualCardEnrolled;
   };
 
+  // Represents single entry of the autofill profile, containing field type and
+  // the corresponding field value.
+  dictionary AddressField {
+    ServerFieldType type;
+    DOMString value;
+  };
+
   // An address entry which can be saved in the autofill section of the
   // settings UI.
   dictionary AddressEntry {
     // Globally unique identifier for this entry.
     DOMString? guid;
 
-    DOMString? fullName;
-
-    // A honorific title added to the name. E.g. "Mr.", "Dr.", "Her Royal
-    // Majesty".
-    DOMString? honorific;
-
-    DOMString? companyName;
-
-    // Street address (multiple lines, newlines preserved).
-    DOMString? addressLines;
-
-    // The broadest administrative level in the address, i.e. the province
-    // within which the locality is found; for example, in the US, this would be
-    // the state; in Switzerland it would be the canton; in the UK, the post
-    // town.
-    DOMString? addressLevel1;
-
-    // The second administrative level, in addresses with two or more
-    // administrative levels; in the countries with two administrative levels,
-    // this would typically be the city, town, village, or other locality within
-    // which the relevant street address is found.
-    DOMString? addressLevel2;
-
-    // The third administrative level, in addresses with three or more
-    // administrative levels.
-    DOMString? addressLevel3;
-
-    // Postal code, post code, ZIP code, CEDEX code (if CEDEX, append "CEDEX",
-    // and the arrondissement, if relevant, to the address-level2 field).
-    DOMString? postalCode;
-
-    // A sorting code is similar to a postal code. However, whereas a postal
-    // code normally refers to a single geographical location, a sorting code
-    // often does not. Instead, a sorting code is assigned to an organization,
-    // which might be geographically distributed. The most prominent example of
-    // a sorting code system is CEDEX in France.
-    DOMString? sortingCode;
-
-    // A two-character string representing the address' country. See
-    // autofill_country.cc for a list of valid codes.
-    DOMString? countryCode;
-
-    DOMString? phoneNumber;
-
-    DOMString? emailAddress;
+    // Fields have to be stored in the array with every field style stored only
+    // once.
+    AddressField[] fields;
 
     DOMString? languageCode;
 

@@ -38,9 +38,7 @@ export class AddressComponentUi {
   ) {
     this.addressFields_ = addressFields;
     this.existingAddress_ = originalFields !== undefined;
-    if (this.existingAddress_) {
-      this.originalValue_ = originalFields?.get(fieldType);
-    }
+    this.originalValue_ = originalFields?.get(fieldType);
     this.fieldType_ = fieldType;
     this.label = label;
     this.additionalClassName = additionalClassName;

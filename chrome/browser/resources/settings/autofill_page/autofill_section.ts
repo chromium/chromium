@@ -153,7 +153,7 @@ export class SettingsAutofillSectionElement extends
    */
   private onAddAddressClick_(e: Event) {
     e.preventDefault();
-    this.activeAddress = {};
+    this.activeAddress = {fields: []};
     this.showAddressDialog_ = true;
   }
 

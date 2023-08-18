@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -176,82 +177,33 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     if (!existing_profile)
       return RespondNow(Error(kErrorDataUnavailable));
   }
+  absl::optional<base::StringPiece> country_code;
+  if (auto it = std::find_if(
+          address->fields.begin(), address->fields.end(),
+          [](const auto& field) {
+            return field.type ==
+                   autofill_private::ServerFieldType::kAddressHomeCountry;
+          });
+      it != address->fields.end()) {
+    country_code = it->value;
+  }
   autofill::AutofillProfile profile =
-      existing_profile
-          ? *existing_profile
-          : CreateNewAutofillProfile(personal_data, address->country_code);
+      existing_profile ? *existing_profile
+                       : CreateNewAutofillProfile(personal_data, country_code);
 
-  if (address->full_name) {
-    profile.SetInfoWithVerificationStatus(
-        autofill::AutofillType(autofill::NAME_FULL),
-        base::UTF8ToUTF16(*address->full_name),
-        g_browser_process->GetApplicationLocale(), kUserVerified);
-  }
-
-  if (address->honorific) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::NAME_HONORIFIC_PREFIX, base::UTF8ToUTF16(*address->honorific),
-        kUserVerified);
-  }
-
-  if (address->company_name) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::COMPANY_NAME, base::UTF8ToUTF16(*address->company_name),
-        kUserVerified);
-  }
-
-  if (address->address_lines) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_STREET_ADDRESS,
-        base::UTF8ToUTF16(*address->address_lines), kUserVerified);
-  }
-
-  if (address->address_level1) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_STATE,
-        base::UTF8ToUTF16(*address->address_level1), kUserVerified);
-  }
-
-  if (address->address_level2) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_CITY,
-        base::UTF8ToUTF16(*address->address_level2), kUserVerified);
-  }
-
-  if (address->address_level3) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_DEPENDENT_LOCALITY,
-        base::UTF8ToUTF16(*address->address_level3), kUserVerified);
-  }
-
-  if (address->postal_code) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_ZIP, base::UTF8ToUTF16(*address->postal_code),
-        kUserVerified);
-  }
-
-  if (address->sorting_code) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_SORTING_CODE,
-        base::UTF8ToUTF16(*address->sorting_code), kUserVerified);
-  }
-
-  if (address->country_code) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_COUNTRY,
-        base::UTF8ToUTF16(*address->country_code), kUserVerified);
-  }
-
-  if (address->phone_number) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::PHONE_HOME_WHOLE_NUMBER,
-        base::UTF8ToUTF16(*address->phone_number), kUserVerified);
-  }
-
-  if (address->email_address) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::EMAIL_ADDRESS, base::UTF8ToUTF16(*address->email_address),
-        kUserVerified);
+  // TODO(crbug.com/1441904): Fields not visible for the autofill profile's
+  // country must be reset.
+  for (const api::autofill_private::AddressField& field : address->fields) {
+    if (field.type == autofill_private::ServerFieldType::kNameFull) {
+      profile.SetInfoWithVerificationStatus(
+          autofill::AutofillType(autofill::NAME_FULL),
+          base::UTF8ToUTF16(field.value),
+          g_browser_process->GetApplicationLocale(), kUserVerified);
+    } else {
+      profile.SetRawInfoWithVerificationStatus(
+          autofill::TypeNameToFieldType(autofill_private::ToString(field.type)),
+          base::UTF8ToUTF16(field.value), kUserVerified);
+    }
   }
 
   if (address->language_code)

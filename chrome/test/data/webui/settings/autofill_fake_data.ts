@@ -9,6 +9,8 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // clang-format on
 
+const ServerFieldType = chrome.autofillPrivate.ServerFieldType;
+
 export const STUB_USER_ACCOUNT_INFO: chrome.autofillPrivate.AccountInfo = {
   email: 'stub-user@example.com',
   isSyncEnabledForAutofillProfiles: false,
@@ -19,7 +21,9 @@ export const STUB_USER_ACCOUNT_INFO: chrome.autofillPrivate.AccountInfo = {
  * Creates a new fake address entry for testing.
  */
 export function createEmptyAddressEntry(): chrome.autofillPrivate.AddressEntry {
-  return {};
+  return {
+    fields: [],
+  };
 }
 
 /**
@@ -30,15 +34,29 @@ export function createAddressEntry(): chrome.autofillPrivate.AddressEntry {
   const addressLines = patternMaker('xxxx Main St', 10);
   return {
     guid: makeGuid(),
-    fullName: fullName,
-    companyName: 'Google',
-    addressLines: addressLines,
-    addressLevel1: 'CA',
-    addressLevel2: 'Venice',
-    postalCode: patternMaker('xxxxx', 10),
-    countryCode: 'US',
-    phoneNumber: patternMaker('(xxx) xxx-xxxx', 10),
-    emailAddress: patternMaker('userxxxx@gmail.com', 16),
+    fields: [
+      {type: ServerFieldType.NAME_FULL, value: fullName},
+      {type: ServerFieldType.COMPANY_NAME, value: 'Google'},
+      {
+        type: ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
+        value: addressLines,
+      },
+      {type: ServerFieldType.ADDRESS_HOME_STATE, value: 'CA'},
+      {type: ServerFieldType.ADDRESS_HOME_CITY, value: 'Venice'},
+      {
+        type: ServerFieldType.ADDRESS_HOME_ZIP,
+        value: patternMaker('xxxxx', 10),
+      },
+      {type: ServerFieldType.ADDRESS_HOME_COUNTRY, value: 'US'},
+      {
+        type: ServerFieldType.PHONE_HOME_WHOLE_NUMBER,
+        value: patternMaker('(xxx) xxx-xxxx', 10),
+      },
+      {
+        type: ServerFieldType.EMAIL_ADDRESS,
+        value: patternMaker('userxxxx@gmail.com', 16),
+      },
+    ],
     languageCode: 'EN-US',
     metadata: {
       isLocal: true,

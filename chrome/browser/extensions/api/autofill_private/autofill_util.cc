@@ -93,28 +93,32 @@ autofill_private::AddressEntry ProfileToAddressEntry(
 
   // Add all address fields to the entry.
   address.guid = profile.guid();
-  address.full_name = GetStringFromProfile(profile, autofill::NAME_FULL);
-  address.honorific =
-      GetStringFromProfile(profile, autofill::NAME_HONORIFIC_PREFIX);
-  address.company_name = GetStringFromProfile(profile, autofill::COMPANY_NAME);
-  address.address_lines =
-      GetStringFromProfile(profile, autofill::ADDRESS_HOME_STREET_ADDRESS);
-  address.address_level1 =
-      GetStringFromProfile(profile, autofill::ADDRESS_HOME_STATE);
-  address.address_level2 =
-      GetStringFromProfile(profile, autofill::ADDRESS_HOME_CITY);
-  address.address_level3 =
-      GetStringFromProfile(profile, autofill::ADDRESS_HOME_DEPENDENT_LOCALITY);
-  address.postal_code =
-      GetStringFromProfile(profile, autofill::ADDRESS_HOME_ZIP);
-  address.sorting_code =
-      GetStringFromProfile(profile, autofill::ADDRESS_HOME_SORTING_CODE);
-  address.country_code =
-      GetStringFromProfile(profile, autofill::ADDRESS_HOME_COUNTRY);
-  address.phone_number =
-      GetStringFromProfile(profile, autofill::PHONE_HOME_WHOLE_NUMBER);
-  address.email_address =
-      GetStringFromProfile(profile, autofill::EMAIL_ADDRESS);
+
+  // TODO(crbug.com/1441904): provide all available fields instead of the hard
+  // coded list of fields.
+  std::vector<autofill::ServerFieldType> field_types = {
+      autofill::NAME_FULL,
+      autofill::NAME_HONORIFIC_PREFIX,
+      autofill::COMPANY_NAME,
+      autofill::ADDRESS_HOME_STREET_ADDRESS,
+      autofill::ADDRESS_HOME_STATE,
+      autofill::ADDRESS_HOME_CITY,
+      autofill::ADDRESS_HOME_DEPENDENT_LOCALITY,
+      autofill::ADDRESS_HOME_ZIP,
+      autofill::ADDRESS_HOME_SORTING_CODE,
+      autofill::ADDRESS_HOME_COUNTRY,
+      autofill::PHONE_HOME_WHOLE_NUMBER,
+      autofill::EMAIL_ADDRESS};
+
+  base::ranges::transform(
+      field_types, back_inserter(address.fields), [&profile](auto field_type) {
+        autofill_private::AddressField field;
+        field.type = autofill_private::ParseServerFieldType(
+            FieldTypeToStringPiece(field_type));
+        field.value = GetStringFromProfile(profile, field_type);
+        return field;
+      });
+
   address.language_code = profile.language_code();
 
   // Parse |label| so that it can be used to create address metadata.

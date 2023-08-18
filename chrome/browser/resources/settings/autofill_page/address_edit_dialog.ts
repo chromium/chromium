@@ -73,7 +73,7 @@ export class SettingsAddressEditDialogElement extends
        */
       countryCode_: {
         type: String,
-        observer: 'onUpdateCountryCode_',
+        observer: 'onCountryCodeChanged_',
       },
 
       components_: Array,
@@ -116,7 +116,7 @@ export class SettingsAddressEditDialogElement extends
   private validationError_?: string;
   private countries_: CountryEntry[];
   private addressFields_:
-      Map<chrome.autofillPrivate.ServerFieldType, string|undefined>;
+      Map<chrome.autofillPrivate.ServerFieldType, string|undefined> = new Map();
   private originalAddressFields_?:
       Map<chrome.autofillPrivate.ServerFieldType, string|undefined>;
   private countryCode_: string|undefined;
@@ -131,24 +131,9 @@ export class SettingsAddressEditDialogElement extends
     super.connectedCallback();
 
     assert(this.address);
-    // TODO(crbug.com/1441904): remove this temporary explicit field mapping
-    // once fields are stored in the map.
-    this.addressFields_ = new Map([
-      [ServerFieldType.NAME_FULL, this.address.fullName],
-      [ServerFieldType.NAME_HONORIFIC_PREFIX, this.address.honorific],
-      [ServerFieldType.COMPANY_NAME, this.address.companyName],
-      [ServerFieldType.ADDRESS_HOME_STREET_ADDRESS, this.address.addressLines],
-      [ServerFieldType.ADDRESS_HOME_STATE, this.address.addressLevel1],
-      [ServerFieldType.ADDRESS_HOME_CITY, this.address.addressLevel2],
-      [
-        ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
-        this.address.addressLevel3,
-      ],
-      [ServerFieldType.ADDRESS_HOME_ZIP, this.address.postalCode],
-      [ServerFieldType.ADDRESS_HOME_SORTING_CODE, this.address.sortingCode],
-      [ServerFieldType.PHONE_HOME_WHOLE_NUMBER, this.address.phoneNumber],
-      [ServerFieldType.EMAIL_ADDRESS, this.address.emailAddress],
-    ]);
+    for (const entry of this.address.fields) {
+      this.addressFields_.set(entry.type, entry.value);
+    }
 
     this.countryInfo_.getCountryList().then(countryList => {
       if (this.address.guid && this.address.metadata !== undefined &&
@@ -168,17 +153,18 @@ export class SettingsAddressEditDialogElement extends
           isEditingExistingAddress ? new Map(this.addressFields_) : undefined;
 
       microTask.run(() => {
-        if (Object.keys(this.address).length === 0 && countryList.length > 0) {
+        const countryField =
+            this.addressFields_.get(ServerFieldType.ADDRESS_HOME_COUNTRY);
+        if (!countryField) {
+          assert(countryList.length > 0);
           // If the address is completely empty, the dialog is creating a new
           // address. The first address in the country list is what we suspect
           // the user's country is.
-          this.address.countryCode = countryList[0].countryCode;
+          this.addressFields_.set(
+              ServerFieldType.ADDRESS_HOME_COUNTRY, countryList[0].countryCode);
         }
-        if (this.countryCode_ === this.address.countryCode) {
-          this.updateAddressComponents_();
-        } else {
-          this.countryCode_ = this.address.countryCode;
-        }
+        this.countryCode_ =
+            this.addressFields_.get(ServerFieldType.ADDRESS_HOME_COUNTRY);
       });
     });
 
@@ -401,49 +387,26 @@ export class SettingsAddressEditDialogElement extends
       return;
     }
 
-    // Set a default country if none is set.
-    if (!this.address.countryCode) {
-      this.address.countryCode = this.countries_[0].countryCode;
-    }
-
-    // TODO(crbug.com/1441904): remove this temporary explicit field-by-field
-    // data dumping once address fields are stored in the map.
-    this.address.fullName = this.addressFields_.get(ServerFieldType.NAME_FULL);
-    this.address.honorific =
-        this.addressFields_.get(ServerFieldType.NAME_HONORIFIC_PREFIX);
-    this.address.companyName =
-        this.addressFields_.get(ServerFieldType.COMPANY_NAME);
-    this.address.addressLines =
-        this.addressFields_.get(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS);
-    this.address.addressLevel1 =
-        this.addressFields_.get(ServerFieldType.ADDRESS_HOME_STATE);
-    this.address.addressLevel2 =
-        this.addressFields_.get(ServerFieldType.ADDRESS_HOME_CITY);
-    this.address.addressLevel3 = this.addressFields_.get(
-        ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
-    this.address.postalCode =
-        this.addressFields_.get(ServerFieldType.ADDRESS_HOME_ZIP);
-    this.address.sortingCode =
-        this.addressFields_.get(ServerFieldType.ADDRESS_HOME_SORTING_CODE);
-    this.address.phoneNumber =
-        this.addressFields_.get(ServerFieldType.PHONE_HOME_WHOLE_NUMBER);
-    this.address.emailAddress =
-        this.addressFields_.get(ServerFieldType.EMAIL_ADDRESS);
+    this.address.fields = [];
+    this.addressFields_.forEach((value, key, _map) => {
+      this.address.fields.push({type: key, value: value});
+    });
 
     this.fire_('save-address', this.address);
     this.$.dialog.close();
+  }
+
+  private onCountryCodeChanged_(): void {
+    this.updateAddressComponents_();
   }
 
   /**
    * Syncs the country code back to the address and rebuilds the address
    * components for the new location.
    */
-  private onUpdateCountryCode_(countryCode: string|undefined): void {
-    this.address.countryCode = countryCode;
-    this.updateAddressComponents_();
-  }
-
-  private onCountryChange_(): void {
+  private onCountryCodeSelectChange_(): void {
+    this.addressFields_.set(
+        ServerFieldType.ADDRESS_HOME_COUNTRY, this.$.country.value);
     this.countryCode_ = this.$.country.value;
   }
 }
