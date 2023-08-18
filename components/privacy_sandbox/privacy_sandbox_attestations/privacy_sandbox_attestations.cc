@@ -252,9 +252,9 @@ void PrivacySandboxAttestations::LoadAttestationsInternal(
     return;
   }
   // For an attestations file with 10,000 entries, the average parsing time is
-  // around 150 microsecond.
-  base::UmaHistogramMicrosecondsTimes(kAttestationsFileParsingUMA,
-                                      parsing_timer.Elapsed());
+  // around 240 milliseconds as per local testing on a n2-standard-128 with 128
+  // vCPUs and 512 GB memory.
+  base::UmaHistogramTimes(kAttestationsFileParsingUMA, parsing_timer.Elapsed());
 
   // Queries on Privacy Sandbox APIs attestation status may happen on the UI
   // thread. The final assignment of the attestations map and its version is

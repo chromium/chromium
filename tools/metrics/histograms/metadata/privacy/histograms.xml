@@ -690,7 +690,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.InitializationDuration.Parsing"
-    units="microseconds" expires_after="M122">
+    units="ms" expires_after="M122">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -699,8 +699,6 @@ reviewer.
     measurement starts from the invocation of the protobuf parsing function and
     ends when the function returns. Note this metric is recorded only if the
     parsing succeeds.
-
-    Note: This histogram is not recorded on low-resolution clock clients.
   </summary>
 </histogram>
 
