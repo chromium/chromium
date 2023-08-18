@@ -21,11 +21,38 @@ or run on a branched builder.
 
 The tests communicates with Chrome using webdriver.
 
-# Running locally
+# Running tests
 
-The tests can be invoked using `testing/scripts/run_isolated_script_test.py`.
+The variation smoke test uses pytest framework to write and run tests. It
+requires the source root to be in PYTHONPATH. This is done in two ways:
 
-# Working in Progress
+1) invoke vpython3 from the source root;
+2) passing `-c chrome/test/variations/pytest.ini` to pytest.
 
-This folder is to migrate from `testing/scripts/run_variations_smoke_tests.py`
-and be the main home for variations smoke tests.
+It is always a good idea to invoke test using `vpython3` as this set up venv
+the same way as in a test bot:
+
+`chromium/src $ vpython3 -m pytest chrome/test/variations`
+
+You can also compile the target:
+`chrome/test/variations:variations_desktop_smoke_tests`
+
+This will produce a wrapper script under:
+`out/dir/bin/run_variations_desktop_smoke_tests`
+
+This is equivalent to:
+`cd out/dir && vpython3 -m pytest chrome/test/variations -c ../../chrome/test/variations/pytest.ini`
+
+To get a list of supported parameters:
+`chromium/src $ vpython3 -m pytest chrome/test/variations -h`
+
+## Running on different channels or platforms
+
+Same tests can run on almost all the platforms: (win, linux, mac, cros,
+android and webview). However not all the platforms can run on the same
+target platform. For example, (cros, android and webview) is only supported
+on Linux. Windows and Mac can only run on their own OS.
+
+The argument `--channel` can be set to (stable, beta, dev and canary).
+
+The argument `--chrome-version` can be set to a particular version.
