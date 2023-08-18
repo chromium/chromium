@@ -8,9 +8,6 @@
 
 namespace {
 
-// Estimated base height value for the bottom sheet without the table view.
-CGFloat const kEstimatedBaseHeightForBottomSheet = 195;
-
 // Sets a custom radius for the half sheet presentation.
 CGFloat const kHalfSheetCornerRadius = 20;
 
@@ -75,11 +72,9 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       self.sheetPresentationController;
   if (@available(iOS 16, *)) {
     // Expand to custom size (only available for iOS 16+).
-    __typeof(self) __weak weakSelf = self;
+    CGFloat fullHeight = [self preferredHeightForContent];
     auto resolver = ^CGFloat(
         id<UISheetPresentationControllerDetentResolutionContext> context) {
-      CGFloat fullHeight = [weakSelf detentForPreferredHeightInContext:context
-                                                        andIsContained:NO];
       BOOL tooLarge = (fullHeight > context.maximumDetentValue);
       [self displayGradientView:tooLarge];
       return tooLarge ? context.maximumDetentValue : fullHeight;
@@ -109,10 +104,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)reloadTableViewData {
   [_tableView reloadData];
-}
-
-- (CGFloat)bottomSheetEstimatedHeight {
-  return kEstimatedBaseHeightForBottomSheet;
 }
 
 - (CGFloat)tableViewEstimatedRowHeight {
@@ -170,11 +161,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
   if (@available(iOS 16, *)) {
-    __typeof(self) __weak weakSelf = self;
+    CGFloat bottomSheetHeight = [self preferredHeightForContent];
     auto resolver = ^CGFloat(
         id<UISheetPresentationControllerDetentResolutionContext> context) {
-      return [weakSelf detentForPreferredHeightInContext:context
-                                          andIsContained:NO];
+      return bottomSheetHeight;
     };
 
     UISheetPresentationControllerDetent* customDetent =
@@ -215,19 +205,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                     scrollPosition:UITableViewScrollPositionNone];
 }
 
-- (CGFloat)initialHeight {
-  CGFloat bottomSheetHeight =
-      [self.view
-          systemLayoutSizeFittingSize:CGSizeMake(self.view.frame.size.width, 1)]
-          .height;
-  if (bottomSheetHeight > 0) {
-    return bottomSheetHeight;
-  }
-  // Return an estimated height if we can't calculate the actual height.
-  return kEstimatedBaseHeightForBottomSheet +
-         kTableViewEstimatedRowHeight * [self initialNumberOfVisibleCells];
-}
-
 - (CGFloat)initialNumberOfVisibleCells {
   return 1;
 }
@@ -242,11 +219,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
   if (@available(iOS 16, *)) {
-    __typeof(self) __weak weakSelf = self;
+    CGFloat bottomSheetHeight = [self preferredHeightForContent];
     auto resolver = ^CGFloat(
         id<UISheetPresentationControllerDetentResolutionContext> context) {
-      return [weakSelf detentForPreferredHeightInContext:context
-                                          andIsContained:NO];
+      return bottomSheetHeight;
     };
     UISheetPresentationControllerDetent* customDetent =
         [UISheetPresentationControllerDetent
