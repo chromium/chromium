@@ -64,7 +64,7 @@ BASE_FEATURE(kRendererAppContainer,
 // egregious cases.
 BASE_FEATURE(kWinSboxHighRendererJobMemoryLimits,
              "WinSboxHighRendererJobMemoryLimits",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Emergency "off switch" for closing the KsecDD handle in cryptbase.dll just
 // before sandbox lockdown in renderers.
