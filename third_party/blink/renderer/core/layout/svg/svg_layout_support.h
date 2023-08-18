@@ -64,14 +64,6 @@ class CORE_EXPORT SVGLayoutSupport {
   static gfx::RectF ComputeVisualRectForText(const LayoutObject&,
                                              const gfx::RectF& text_bounds);
 
-  // Determine whether the passed location intersects a clip path referenced by
-  // the passed LayoutObject.
-  // |reference_box| is used to resolve 'objectBoundingBox' units/percentages,
-  // and can differ from the reference box of the passed LayoutObject.
-  static bool IntersectsClipPath(const LayoutObject&,
-                                 const gfx::RectF& reference_box,
-                                 const HitTestLocation&);
-
   // Important functions used by nearly all SVG layoutObjects centralizing
   // coordinate transformations / visual rect calculations
   static gfx::RectF LocalVisualRect(const LayoutObject&);

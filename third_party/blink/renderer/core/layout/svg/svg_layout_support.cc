@@ -32,10 +32,8 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
@@ -315,27 +313,6 @@ gfx::RectF SVGLayoutSupport::ComputeVisualRectForText(
   if (const ShadowList* text_shadow = layout_object.StyleRef().TextShadow())
     text_shadow->AdjustRectForShadow(visual_rect);
   return visual_rect;
-}
-
-bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
-                                          const gfx::RectF& reference_box,
-                                          const HitTestLocation& location) {
-  ClipPathOperation* clip_path_operation = object.StyleRef().ClipPath();
-  if (!clip_path_operation) {
-    return true;
-  }
-  if (auto* shape_clip =
-          DynamicTo<ShapeClipPathOperation>(*clip_path_operation)) {
-    float zoom = object.StyleRef().EffectiveZoom();
-    return shape_clip->GetPath(gfx::ScaleRect(reference_box, zoom), zoom)
-        .Transform(AffineTransform::MakeScale(1.f / zoom))
-        .Contains(location.TransformedPoint());
-  }
-  DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::kReference);
-  SVGResourceClient* client = SVGResources::GetClient(object);
-  auto* clipper = GetSVGResourceAsType(
-      *client, To<ReferenceClipPathOperation>(*clip_path_operation));
-  return !clipper || clipper->HitTestClipContent(reference_box, location);
 }
 
 DashArray SVGLayoutSupport::ResolveSVGDashArray(

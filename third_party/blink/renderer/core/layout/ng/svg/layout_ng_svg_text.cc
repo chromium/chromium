@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
+#include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
 #include "third_party/blink/renderer/core/paint/svg_model_object_painter.h"
@@ -348,9 +349,10 @@ bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
   if (!local_location)
     return false;
 
-  if (!SVGLayoutSupport::IntersectsClipPath(*this, ObjectBoundingBox(),
-                                            *local_location))
+  if (HasClipPath() &&
+      !ClipPathClipper::HitTest(*this, ObjectBoundingBox(), *local_location)) {
     return false;
+  }
 
   return LayoutNGBlockFlowMixin<LayoutSVGBlock>::NodeAtPoint(
       result, *local_location, accumulated_offset, phase);

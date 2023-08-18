@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
+#include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -299,6 +300,71 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
   return bounding_box;
 }
 
+static AffineTransform UserSpaceToClipPathTransform(
+    const LayoutSVGResourceClipper& clipper,
+    bool uses_zoomed_reference_box,
+    const gfx::RectF& reference_box) {
+  AffineTransform clip_path_transform;
+  if (uses_zoomed_reference_box) {
+    // If the <clipPath> is using "userspace on use" units, then the origin of
+    // the coordinate system is the top-left of the reference box.
+    if (clipper.ClipPathUnits() == SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
+      clip_path_transform.Translate(reference_box.x(), reference_box.y());
+    }
+    clip_path_transform.Scale(clipper.StyleRef().EffectiveZoom());
+  }
+  return clip_path_transform;
+}
+
+static Path GetPathWithObjectZoom(const ShapeClipPathOperation& shape,
+                                  bool uses_zoomed_reference_box,
+                                  const gfx::RectF& reference_box,
+                                  float zoom) {
+  const gfx::RectF zoomed_reference_box =
+      uses_zoomed_reference_box ? reference_box
+                                : gfx::ScaleRect(reference_box, zoom);
+  Path path = shape.GetPath(zoomed_reference_box, zoom);
+  if (!uses_zoomed_reference_box) {
+    path.Transform(AffineTransform::MakeScale(1.f / zoom));
+  }
+  return path;
+}
+
+bool ClipPathClipper::HitTest(const LayoutObject& object,
+                              const HitTestLocation& location) {
+  return HitTest(object, LocalReferenceBox(object), location);
+}
+
+bool ClipPathClipper::HitTest(const LayoutObject& object,
+                              const gfx::RectF& reference_box,
+                              const HitTestLocation& location) {
+  const ComputedStyle& style = object.StyleRef();
+  DCHECK(style.ClipPath());
+  const float zoom = style.EffectiveZoom();
+  const bool uses_zoomed_reference_box = UsesZoomedReferenceBox(object);
+  const ClipPathOperation& clip_path = *style.ClipPath();
+  if (const auto* shape = DynamicTo<ShapeClipPathOperation>(clip_path)) {
+    const Path path = GetPathWithObjectZoom(*shape, uses_zoomed_reference_box,
+                                            reference_box, zoom);
+    return path.Contains(location.TransformedPoint());
+  }
+  const LayoutSVGResourceClipper* clipper = ResolveElementReference(
+      object, To<ReferenceClipPathOperation>(clip_path));
+  if (!clipper) {
+    return true;
+  }
+  // Transform the HitTestLocation to the <clipPath>s coordinate space - which
+  // is not zoomed. Ditto for the reference box.
+  const TransformedHitTestLocation unzoomed_location(
+      location, UserSpaceToClipPathTransform(
+                    *clipper, uses_zoomed_reference_box, reference_box));
+  const gfx::RectF unzoomed_reference_box =
+      uses_zoomed_reference_box ? gfx::ScaleRect(reference_box, 1.f / zoom)
+                                : reference_box;
+  return clipper->HitTestClipContent(unzoomed_reference_box,
+                                     *unzoomed_location);
+}
+
 static AffineTransform MaskToContentTransform(
     const LayoutSVGResourceClipper& resource_clipper,
     bool uses_zoomed_reference_box,
@@ -337,12 +403,9 @@ static absl::optional<Path> PathBasedClipInternal(
   }
 
   DCHECK_EQ(clip_path.GetType(), ClipPathOperation::kShape);
-  auto zoom = clip_path_owner.StyleRef().EffectiveZoom();
-  auto& shape = To<ShapeClipPathOperation>(clip_path);
-  if (uses_zoomed_reference_box)
-    return shape.GetPath(reference_box, zoom);
-  return shape.GetPath(gfx::ScaleRect(reference_box, zoom), zoom)
-      .Transform(AffineTransform::MakeScale(1.f / zoom));
+  const auto& shape = To<ShapeClipPathOperation>(clip_path);
+  return GetPathWithObjectZoom(shape, uses_zoomed_reference_box, reference_box,
+                               clip_path_owner.StyleRef().EffectiveZoom());
 }
 
 void ClipPathClipper::PaintClipPathAsMaskImage(

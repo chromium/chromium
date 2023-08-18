@@ -32,12 +32,11 @@
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
+#include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/svg_image_painter.h"
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
@@ -235,9 +234,10 @@ bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
                                             LocalToSVGParentTransform());
   if (!local_location)
     return false;
-  if (!SVGLayoutSupport::IntersectsClipPath(*this, object_bounding_box_,
-                                            *local_location))
+  if (HasClipPath() &&
+      !ClipPathClipper::HitTest(*this, object_bounding_box_, *local_location)) {
     return false;
+  }
 
   if (hit_rules.can_hit_fill || hit_rules.can_hit_bounding_box) {
     if (local_location->Intersects(object_bounding_box_)) {

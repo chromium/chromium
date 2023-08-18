@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
+#include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/svg_container_painter.h"
 
 namespace blink {
@@ -248,9 +249,11 @@ bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
                                             LocalToSVGParentTransform());
   if (!local_location)
     return false;
-  if (!SVGLayoutSupport::IntersectsClipPath(*this, content_.ObjectBoundingBox(),
-                                            *local_location))
+  if (HasClipPath() &&
+      !ClipPathClipper::HitTest(*this, content_.ObjectBoundingBox(),
+                                *local_location)) {
     return false;
+  }
 
   if (!ChildPaintBlockedByDisplayLock() &&
       content_.HitTest(result, *local_location, phase))
