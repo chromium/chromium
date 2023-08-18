@@ -470,6 +470,7 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="3513704683820682405">Aangevulde realiteit</translation>
 <translation id="3518985090088779359">Aanvaar, gaan voort</translation>
 <translation id="3522247891732774234">Opdatering is beskikbaar. Meer opsies</translation>
+<translation id="3523426587027570423">Tik om “Luister na hierdie bladsy” toe te maak.</translation>
 <translation id="3524138585025253783">Ontwikkelaar-UI</translation>
 <translation id="3524334353996115845">Laat <ph name="ORIGIN" /> verifieer dat dit jy is</translation>
 <translation id="3527085408025491307">Vouer</translation>
@@ -674,6 +675,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4637420359569396807">Met advertensiemeting word beperkte soorte data tussen werwe en apps gedeel om die werkverrigting van hul advertensies te meet, soos die tyd van die dag waarop ’n advertensie vir jou gewys is.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 gekompromitteerde wagwoord}other{# gekompromitteerde wagwoorde}}</translation>
 <translation id="4650364565596261010">Stelsel se verstek</translation>
+<translation id="4654641641922242357">“Luister na hierdie bladsy”-speler.</translation>
 <translation id="465657074423018424">Veiligblaai beskerm jou teen misleidende werwe. As jy dit afskakel, moet jy baie versigtig wees wanneer jy blaai – veral voordat jy wagwoorde invoer.</translation>
 <translation id="4662373422909645029">Laat syfers uit bynaam</translation>
 <translation id="4663499661119906179">Sien topwerwe en -berigte vir jou</translation>
@@ -803,6 +805,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5222676887888702881">Meld af</translation>
 <translation id="5227554086496586518">Tik om soekresultate te sien</translation>
 <translation id="5233638681132016545">Nuwe oortjie</translation>
+<translation id="5234971936051226002">“Luister na hierdie bladsy”-speler is geminimeer.</translation>
 <translation id="5235196193381275927">Kon nie aanmeld nie</translation>
 <translation id="5246093389635966745">Wysig nutsbalkkortpad</translation>
 <translation id="5271967389191913893">Toestel kan nie die inhoud oopmaak wat afgelaai moet word nie.</translation>
@@ -1254,6 +1257,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> lêer is afgelaai}other{<ph name="FILES_DOWNLOADED_MANY" /> lêers is afgelaai}}</translation>
 <translation id="7581273696622423628">Voltooi die opname</translation>
 <translation id="7583262514280211622">Jy sal jou leeslys hier kry</translation>
+<translation id="7587250070160020374">Chrome speel tans</translation>
 <translation id="7588219262685291874">Skakel donkertema aan wanneer jou toestel se Batterybespaarder aan is</translation>
 <translation id="7594687499944811403">Laat <ph name="EMBEDDED_ORIGIN" /> verifieer dat dit jy is vir <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Bedryfstelsel</translation>
@@ -1321,6 +1325,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7926975587469166629">Kaart se bynaam</translation>
 <translation id="7929962904089429003">Maak die kieslys oop</translation>
 <translation id="7930998711684428189">Waarsku jou as wagwoorde in 'n dataskending blootgestel is.</translation>
+<translation id="7934668619883965330">Kan nie lêer aflaai nie. Lêerformaat word nie gesteun nie.</translation>
 <translation id="7939485076072265087">Skep gestileerde kaart met hoogtepunt</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is verouderd.</translation>
 <translation id="7944772052836377867">Sinkronisering moet verifieer dat dit jy is</translation>
@@ -1522,6 +1527,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8937772741022875483">Verwyder jou Chrome-aktiwiteit van Digitale Welstand?</translation>
 <translation id="8942627711005830162">Maak in 'n ander venster oop</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – hierdie taal kon nie afgelaai word nie. Probeer later weer.</translation>
+<translation id="8953618380150219653">“Luister na hierdie bladsy”-speler het teen volle hoogte oopgemaak.</translation>
 <translation id="8955719471735800169">Terug na bo</translation>
 <translation id="8964479563882643397">Maak die kieslys oop om 'n nuwe Incognito-oortjie oop te maak</translation>
 <translation id="8965591936373831584">hangende</translation>

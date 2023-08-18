@@ -248,7 +248,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1989113344093894667">Hindi ma-capture ang content</translation>
 <translation id="1990046457226896323">Na-download na ang mga speech file</translation>
 <translation id="1993072747612765854">Matuto pa tungkol sa pinakabagong update sa <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">I-off</translation>
 <translation id="1996162290124031907">Pumunta sa susunod na tab</translation>
 <translation id="1998100899771863792">Kasalukuyang desk</translation>
 <translation id="2001444736072756133">Hanapin ang iyong mga <ph name="CATEGORY" />, file, app, at higit pa.</translation>
@@ -673,6 +672,7 @@ Isaksak ang iyong device.</translation>
 <translation id="380165613292957338">Kumusta, ano ang maitutulong ko?</translation>
 <translation id="3804737937830804242">I-collapse ang camera</translation>
 <translation id="3824784079442479685">Pinapayagan nito ang access sa camera para sa <ph name="APP_NAME" /> at lahat ng app at website na may pahintulot sa camera. Posibleng kailanganin mong i-refresh ang web page o i-restart ang app.</translation>
+<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> sa <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ang naipasa na, <ph name="NUM_GRADED" /> ang nabigyan na ng grado</translation>
 <translation id="3826099427150913765">Lumipat sa password</translation>
 <translation id="383058930331066723">Naka-on ang battery saver mode</translation>
 <translation id="383629559565718788">Ipakita ang mga setting ng keyboard</translation>
@@ -1778,6 +1778,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8446884382197647889">Matuto Pa</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Isara ang Select-to-speak</translation>
+<translation id="8468806060683421065">dapat ipasa sa <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Mga setting ng scale ng display</translation>
 <translation id="8473301994082929012">Ang <ph name="ORGANIZATION_NAME" /> ay may <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pindutin ang Alt+Search o Shift upang kanselahin.</translation>
@@ -1862,6 +1863,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8853703225951107899">Hindi pa rin ma-verify ang iyong PIN o password. Tandaan: Kung pinalitan mo kamakailan ang iyong password, gamitin ang lumang password mo. Malalapat ang iyong bagong password kapag nag-sign out ka.</translation>
 <translation id="8855885154700222542">Key ng fullscreen</translation>
 <translation id="8858369206579825206">Mga kontrol sa privacy</translation>
+<translation id="8860366331836346216">Magdagdag ng eSIM</translation>
 <translation id="8870509716567206129">Hindi sinusuportahan ng app ang split-screen.</translation>
 <translation id="8874184842967597500">Hindi konekta</translation>
 <translation id="8875021410787719674">Magpalipat-lipat sa kanang sulok sa ibaba, Launcher, address bar, bookmarks bar, website na nakabukas, at mga download</translation>

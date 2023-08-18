@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">Soek tans vir mobiele netwerke …</translation>
 <translation id="1293556467332435079">Lêers</translation>
 <translation id="1297922636971898492">Google Drive is nie nou beskikbaar nie. Oplaai sal outomaties herbegin wanneer Google Drive terug is.</translation>
+<translation id="1306130176943817227">Kan nie uitvee nie. Item word tans gebruik.</translation>
 <translation id="1307931752636661898">Kan nie Linux-lêers bekyk nie</translation>
 <translation id="1313405956111467313">Outomatiese instaanbedieneropstelling</translation>
 <translation id="134645005685694099">Jou toestel het nie genoeg bergingspasie om lêersinkronisering aangeskakel te hou nie. Nuwe lêers sal nie meer outomaties gesinkroniseer word nie.</translation>
@@ -537,6 +538,7 @@
 <translation id="5218183485292899140">Switserse Frans</translation>
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="5253070652067921974">Geskep deur</translation>
+<translation id="5254207638927440400">Kan nie lêer skuif nie. Lêer word tans gebruik.</translation>
 <translation id="5257456363153333584">Naaldekoker</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Gaan van oral by lêers in, selfs vanlyn.<ph name="MARKUP_2" />
     Leêrs in Google Drive is op datum en beskikbaar vanaf enige toestel.<ph name="MARKUP_3" />
@@ -851,6 +853,7 @@
 <translation id="76959938259365003">Kon nie asblik leegmaak nie.</translation>
 <translation id="770015031906360009">Grieks</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> is gekopieer.</translation>
+<translation id="7707941139430559579">Kan nie lêer skuif nie. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Jy moet die Persoonlike Deblokkeringsleutel (PUK) van 8 syfers wat deur die diensverskaffer verskaf is, invoer om hierdie netwerk te gebruik.</translation>
 <translation id="7711920809702896782">Prentinligting</translation>
 <translation id="7724603315864178912">Knip</translation>

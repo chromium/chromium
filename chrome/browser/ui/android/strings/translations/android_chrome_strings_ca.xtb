@@ -470,6 +470,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3513704683820682405">Realitat augmentada</translation>
 <translation id="3518985090088779359">Accepta i continua</translation>
 <translation id="3522247891732774234">Hi ha una actualització disponible. Més opcions</translation>
+<translation id="3523426587027570423">Toca per tancar "Escolta aquesta pàgina".</translation>
 <translation id="3524138585025253783">Interfície d'usuari per a desenvolupadors</translation>
 <translation id="3524334353996115845">Permet que <ph name="ORIGIN" /> verifiqui la teva identitat</translation>
 <translation id="3527085408025491307">Carpeta</translation>
@@ -674,6 +675,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="4637420359569396807">Amb el mesurament d'anuncis, es poden compartir tipus de dades limitats entre llocs web i aplicacions per mesurar el rendiment dels anuncis, com ara l'hora en què se t'ha mostrat un anunci.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contrasenya en perill}other{# contrasenyes en perill}}</translation>
 <translation id="4650364565596261010">Opció predeterminada del sistema</translation>
+<translation id="4654641641922242357">Reproductor "Escolta aquesta pàgina".</translation>
 <translation id="465657074423018424">Navegació segura et protegeix de llocs web perillosos. Si la desactives, ves molt amb compte quan naveguis, especialment abans d'introduir contrasenyes.</translation>
 <translation id="4662373422909645029">L'àlies no pot incloure nombres</translation>
 <translation id="4663499661119906179">Consulta els llocs web i les històries que més visites</translation>
@@ -803,6 +805,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5222676887888702881">Tanca la sessió</translation>
 <translation id="5227554086496586518">Toca per veure els resultats de la cerca</translation>
 <translation id="5233638681132016545">Pestanya nova</translation>
+<translation id="5234971936051226002">El reproductor "Escolta aquesta pàgina" s'ha minimitzat.</translation>
 <translation id="5235196193381275927">S'ha produït un error durant l'inici de sessió</translation>
 <translation id="5246093389635966745">Edita la drecera de la barra d'eines</translation>
 <translation id="5271967389191913893">El dispositiu no pot obrir el contingut que s'ha de baixar.</translation>
@@ -1321,6 +1324,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7926975587469166629">Àlies de la targeta</translation>
 <translation id="7929962904089429003">Obre el menú</translation>
 <translation id="7930998711684428189">T'avisa si les contrasenyes queden exposades a causa d'una violació de les dades.</translation>
+<translation id="7934668619883965330">No es pot baixar el fitxer. No s'admet aquest format de fitxer.</translation>
 <translation id="7939485076072265087">Crea una targeta estilitzada amb marcatge</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> no està actualitzat.</translation>
 <translation id="7944772052836377867">La sincronització ha de verificar la teva identitat</translation>
@@ -1522,6 +1526,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8937772741022875483">Vols suprimir l'activitat de Chrome a Benestar digital?</translation>
 <translation id="8942627711005830162">Obre en una altra finestra</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: no s'ha pogut baixar aquest idioma. Torna-ho a provar més tard.</translation>
+<translation id="8953618380150219653">El reproductor "Escolta aquesta pàgina" s'ha obert a alçada completa.</translation>
 <translation id="8955719471735800169">Torna a dalt</translation>
 <translation id="8964479563882643397">Per obrir una pestanya d'incògnit nova, obre el menú</translation>
 <translation id="8965591936373831584">pendent</translation>

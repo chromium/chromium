@@ -182,6 +182,7 @@
 <translation id="174102739345480129">标记工具已关闭。</translation>
 <translation id="1743570585616704562">无法识别</translation>
 <translation id="1746730358044914197">输入法是由您的管理员配置的。</translation>
+<translation id="1747336645387973286">截止日期：<ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">屏幕键盘已启用</translation>
 <translation id="1749109475624620922">已将窗口“<ph name="WINDOW_TITLE" />”分配至所有桌面</translation>
 <translation id="1750088060796401187">最多只允许打开 <ph name="MAX_DESK_LIMIT" /> 个桌面。若要打开一个新桌面，请先移除一个已打开的桌面。</translation>
@@ -242,7 +243,6 @@
 <translation id="1989113344093894667">无法截取/录制内容</translation>
 <translation id="1990046457226896323">实时字幕文件已下载完毕</translation>
 <translation id="1993072747612765854">详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新</translation>
-<translation id="1995660704900986789">关机</translation>
 <translation id="1996162290124031907">转到下一个标签页</translation>
 <translation id="1998100899771863792">当前桌面</translation>
 <translation id="2001444736072756133">搜索您的<ph name="CATEGORY" />、文件、应用等内容。</translation>
@@ -474,6 +474,7 @@
 <translation id="3081696990447829002">展开菜单</translation>
 <translation id="3087734570205094154">底部</translation>
 <translation id="3090989381251959936">开启/关闭“<ph name="FEATURE_NAME" />”功能。<ph name="STATE_TEXT" /></translation>
+<translation id="3093423061078042895">逾期未交</translation>
 <translation id="3095995014811312755">版本</translation>
 <translation id="309749186376891736">移动光标</translation>
 <translation id="3100274880412651815">关闭截屏/录屏模式</translation>
@@ -535,6 +536,7 @@
 <translation id="3364721542077212959">触控笔工具</translation>
 <translation id="3365977133351922112">您的手机太远了，请移近些。</translation>
 <translation id="3368922792935385530">已连接</translation>
+<translation id="3369111525500416043">即将到期</translation>
 <translation id="3371140690572404006">USB-C 设备（右侧前端端口）</translation>
 <translation id="3375634426936648815">已连接</translation>
 <translation id="3378438761594387761">您近期的下载内容和屏幕截图会显示在此处</translation>
@@ -989,6 +991,7 @@
 <translation id="5208059991603368177">开启</translation>
 <translation id="5216991270656129561">保持关闭状态，直到<ph name="TIME" /></translation>
 <translation id="5217646019792206018">下一个桌面：<ph name="NEXT_DESK_NAME" />，使用搜索键 + 空格键或使用键盘快捷键“Shift + 搜索键 + <ph name="NEXT_DESK_INDEX" />”即可启用。</translation>
+<translation id="5218064144558110424">标为未完成</translation>
 <translation id="5222676887888702881">退出</translation>
 <translation id="5229343007215035173">开启/关闭隐私保护屏幕</translation>
 <translation id="5234764350956374838">关闭</translation>
@@ -1048,6 +1051,7 @@
 <translation id="5465662442746197494">需要帮助？</translation>
 <translation id="547979256943495781">任务栏位于屏幕右侧</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> 或 <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
+<translation id="5482873136202102190">, +</translation>
 <translation id="5491186829646618080">有可用的固件更新</translation>
 <translation id="5503884284981862082">打开/关闭 Google 助理</translation>
 <translation id="550391772491508736">继续投放</translation>
@@ -1174,6 +1178,7 @@
 <translation id="598882571027504733">要想获取此项更新，请在已连接该键盘的情况下重新启动您的 Chromebook。</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 页（共 <ph name="TOTAL_PAGE_NUM" /> 页）</translation>
 <translation id="601304062528754300">突出显示任务栏上的后一项</translation>
+<translation id="6015573907265691211">标为已完成</translation>
 <translation id="6018164090099858612">正在退出镜像模式</translation>
 <translation id="6019566113895157499">键盘快捷键</translation>
 <translation id="602001110135236999">向左滚动</translation>
@@ -1316,6 +1321,7 @@
 <translation id="6597278316891651699">相机已对准左下角。与系统界面冲突。</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="6612802754306526077">已选择录屏模式</translation>
+<translation id="6612889377159412215">子任务</translation>
 <translation id="6613765291890844037">存储空间：已用 <ph name="STORAGE_IN_USE_SIZE" /> | 总共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">已开启隐私保护屏</translation>
 <translation id="6625718907317144388">由于防窥探功能已开启，因此系统隐藏了<ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" />和其他通知</translation>
@@ -1359,6 +1365,7 @@
 <translation id="6786750046913594791">关闭文件夹</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="679368458793552943">开启放大镜时放大</translation>
+<translation id="6794287755901682422">此项内容的其他元数据：<ph name="GLANCEABLES_TASK_ITEM_METADATA" />。</translation>
 <translation id="6801878137098616817">最近修改过</translation>
 <translation id="6802196538183166658">选择时间即可打开“快捷设置”</translation>
 <translation id="6802687695197837794">这将允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有摄像头和麦克风使用权限的应用和网站使用摄像头和麦克风</translation>
@@ -1612,6 +1619,7 @@
 <translation id="793716872548410480">按<ph name="SHORTCUT_KEY_NAME" /> + V 可查看您的剪贴板。您复制的最后 5 项内容会保存到您的剪贴板中。</translation>
 <translation id="7942349550061667556">红色</translation>
 <translation id="7944023924886109030">查看今天的所有活动</translation>
+<translation id="7945357288295809525">显示无障碍设置，“<ph name="ENABLED_FEATURES" />”已启用。</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" />想使用您的<ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">调暗键盘</translation>
 <translation id="7963689218131240420">“勿扰”模式处于关闭状态。</translation>
@@ -1911,6 +1919,7 @@
 <translation id="953431725143473984">要关闭设备吗？</translation>
 <translation id="954052413789300507">空间不足，无法下载“<ph name="FILENAME" />”。请先释放空间。</translation>
 <translation id="974545358917229949">显示了 <ph name="RESULT_COUNT" /> 条与“<ph name="QUERY" />”相符的结果</translation>
+<translation id="981011780479609956">无截止日期</translation>
 <translation id="98120814841227350">转到文档末尾</translation>
 <translation id="987589956647469042">移动流量已开启</translation>
 <translation id="989374776391122812">摄像头和音频控件</translation>

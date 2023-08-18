@@ -182,6 +182,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="174102739345480129">Tính năng Đánh dấu đang tắt.</translation>
 <translation id="1743570585616704562">Không nhận dạng được</translation>
 <translation id="1746730358044914197">Các phương thức nhập do quản trị viên của bạn định cấu hình.</translation>
+<translation id="1747336645387973286">ngày đến hạn: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Đã bật bàn phím ảo</translation>
 <translation id="1749109475624620922">Cửa sổ <ph name="WINDOW_TITLE" /> đã được chỉ định cho tất cả không gian làm việc</translation>
 <translation id="1750088060796401187">Bạn chỉ được mở tối đa <ph name="MAX_DESK_LIMIT" /> không gian làm việc. Hãy xoá một không gian làm việc để mở một không gian làm việc mới.</translation>
@@ -242,7 +243,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1989113344093894667">Không thể chụp nội dung</translation>
 <translation id="1990046457226896323">Đã tải tệp mã chuyển lời nói thành văn bản xuống</translation>
 <translation id="1993072747612765854">Tìm hiểu thêm về bản cập nhật <ph name="SYSTEM_APP_NAME" /> mới nhất</translation>
-<translation id="1995660704900986789">Tắt nguồn</translation>
 <translation id="1996162290124031907">Chuyển sang thẻ tiếp theo</translation>
 <translation id="1998100899771863792">Không gian làm việc hiện tại</translation>
 <translation id="2001444736072756133">Tìm kiếm <ph name="CATEGORY" />, tệp, ứng dụng, v.v.</translation>
@@ -474,6 +474,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3081696990447829002">Mở rộng menu</translation>
 <translation id="3087734570205094154">Bên dưới</translation>
 <translation id="3090989381251959936">Bật/tắt <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
+<translation id="3093423061078042895">Trễ hạn</translation>
 <translation id="3095995014811312755">phiên bản</translation>
 <translation id="309749186376891736">Di con trỏ</translation>
 <translation id="3100274880412651815">Đóng chế độ chụp</translation>
@@ -535,6 +536,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3364721542077212959">Công cụ bút cảm ứng</translation>
 <translation id="3365977133351922112">Điện thoại của bạn ở quá xa. Hãy đưa điện thoại đến gần hơn.</translation>
 <translation id="3368922792935385530">Đã kết nối</translation>
+<translation id="3369111525500416043">Sắp đến hạn</translation>
 <translation id="3371140690572404006">Thiết bị USB-C (cổng phía trước, bên phải)</translation>
 <translation id="3375634426936648815">Đã kết nối</translation>
 <translation id="3378438761594387761">Bạn sẽ tìm thấy ảnh chụp màn hình và tệp đã tải xuống gần đây tại đây</translation>
@@ -989,6 +991,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="5208059991603368177">Bật</translation>
 <translation id="5216991270656129561">Tắt cho đến <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Không gian làm việc tiếp theo: <ph name="NEXT_DESK_NAME" />, dùng tổ hợp phím Tìm kiếm + Phím cách hoặc phím tắt: Shift + Tìm kiếm + <ph name="NEXT_DESK_INDEX" /> để kích hoạt.</translation>
+<translation id="5218064144558110424">Đánh dấu là chưa hoàn thành</translation>
 <translation id="5222676887888702881">Đăng xuất</translation>
 <translation id="5229343007215035173">Bật/tắt màn hình bảo vệ quyền riêng tư</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
@@ -1048,6 +1051,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="5465662442746197494">Bạn cần trợ giúp?</translation>
 <translation id="547979256943495781">Giá ở bên phải</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> hoặc <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
+<translation id="5482873136202102190">, +</translation>
 <translation id="5491186829646618080">Đã có bản cập nhật chương trình cơ sở</translation>
 <translation id="5503884284981862082">Mở/đóng Trợ lý Google</translation>
 <translation id="550391772491508736">Tiếp tục truyền</translation>
@@ -1174,6 +1178,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="598882571027504733">Để cập nhật, hãy khởi động lại Chromebook bằng bàn phím đã kết nối.</translation>
 <translation id="6012623610530968780">Trang <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Đánh dấu mục tiếp theo trên kệ</translation>
+<translation id="6015573907265691211">Đánh dấu là đã hoàn thành</translation>
 <translation id="6018164090099858612">Đang thoát chế độ phản chiếu</translation>
 <translation id="6019566113895157499">Phím tắt</translation>
 <translation id="602001110135236999">Cuộn sang trái</translation>
@@ -1316,6 +1321,7 @@ Mới cài đặt</translation>
 <translation id="6597278316891651699">Máy ảnh đang bám theo góc dưới bên trái. Xung đột với khu vực hệ thống.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="6612802754306526077">Đã chọn chế độ ghi màn hình</translation>
+<translation id="6612889377159412215">việc phụ cần làm</translation>
 <translation id="6613765291890844037">Đang sử dụng <ph name="STORAGE_IN_USE_SIZE" /> dung lượng lưu trữ | Tổng cộng <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Màn hình bảo vệ quyền riêng tư đang bật</translation>
 <translation id="6625718907317144388">Đã ẩn thông báo của <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> và các thông báo khác do đang bật chế độ chống nhìn lén</translation>
@@ -1359,6 +1365,7 @@ Mới cài đặt</translation>
 <translation id="6786750046913594791">Đóng thư mục</translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="679368458793552943">Phóng to khi kính lúp đang bật</translation>
+<translation id="6794287755901682422">Mục này có: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6801878137098616817">Mới chỉnh sửa gần đây</translation>
 <translation id="6802196538183166658">Mở phần Cài đặt nhanh bằng cách chọn thời gian</translation>
 <translation id="6802687695197837794">Điều này cho phép truy cập máy ảnh và micrô đối với <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> và tất cả ứng dụng cũng như trang web có quyền truy cập máy ảnh và micrô</translation>
@@ -1615,6 +1622,7 @@ Mới cài đặt</translation>
 <translation id="793716872548410480">Nhấn tổ hợp phím <ph name="SHORTCUT_KEY_NAME" /> + V để xem bảng nhớ tạm. 5 mục gần đây nhất mà bạn đã sao chép sẽ được lưu vào bảng nhớ tạm.</translation>
 <translation id="7942349550061667556">Đỏ</translation>
 <translation id="7944023924886109030">Xem tất cả sự kiện cho hôm nay</translation>
+<translation id="7945357288295809525">Hiển thị chế độ cài đặt hỗ trợ tiếp cận, "<ph name="ENABLED_FEATURES" />" đã bật.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> muốn sử dụng <ph name="DEVICE_NAME" /> của bạn</translation>
 <translation id="7951630946012935453">Giảm độ sáng bàn phím</translation>
 <translation id="7963689218131240420">Chế độ Không làm phiền đang tắt.</translation>
@@ -1914,6 +1922,7 @@ Mới cài đặt</translation>
 <translation id="953431725143473984">Tắt thiết bị?</translation>
 <translation id="954052413789300507">Không đủ dung lượng cho <ph name="FILENAME" />. Giải phóng dung lượng.</translation>
 <translation id="974545358917229949">Đang hiển thị <ph name="RESULT_COUNT" /> kết quả cho <ph name="QUERY" /></translation>
+<translation id="981011780479609956">Không có ngày đến hạn</translation>
 <translation id="98120814841227350">Chuyển đến cuối tài liệu</translation>
 <translation id="987589956647469042">Dữ liệu di động đang bật</translation>
 <translation id="989374776391122812">Các tuỳ chọn điều khiển máy ảnh và âm thanh</translation>

@@ -120,6 +120,7 @@
 <translation id="1553358976309200471">Chrome अपडेट करा</translation>
 <translation id="1554532453982918912">तुमच्याप्रमाणे Chrome चा वापर करणाऱ्या लोकांसाठी ते आणखी चांगले करण्याकरिता मदत करा</translation>
 <translation id="1558391695376153246">गुप्त टॅब बंद करा</translation>
+<translation id="1568636008098739136">हे पेज ऐका. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करून धरून ठेवा.</translation>
 <translation id="1571304935088121812">वापरकर्ता नाव कॉपी करा</translation>
 <translation id="1592864538817356322">साधारण संरक्षण:</translation>
 <translation id="1594635596540195766">खालील सूचीमध्ये <ph name="SUGGESTIONS_COUNT" /> आयटम सुचवले आहेत.</translation>
@@ -196,6 +197,7 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{एक डाउनलोड करता आले नाही}other{# डाउनलोड करता आले नाहीत}}</translation>
 <translation id="2067805253194386918">मजकूर</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> पैकी <ph name="RESULT_NUMBER" /> परिणाम</translation>
+<translation id="2093731487903423814">मागील १५ मिनिटांमधील</translation>
 <translation id="2096012225669085171">डिव्हाइसवर सिंक आणि पर्सनलाइझ करा</translation>
 <translation id="2100273922101894616">ऑटो साइन इन करा</translation>
 <translation id="2100314319871056947">मजकूर लहान भागांमध्ये शेअर करून पहा</translation>
@@ -567,6 +569,7 @@
 <translation id="4056223980640387499">सेपिया</translation>
 <translation id="4062305924942672200">कायदेशीर माहिती</translation>
 <translation id="4072805772816336153">नंतर पुन्हा प्रयत्न करा</translation>
+<translation id="4080602171844412446">संबंधित इनसाइट</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> कडून – <ph name="BEGIN_DEEMPHASIZED" />Google ने वितरित केले<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">तुम्ही हा QR कोड प्रदर्शित करणाऱ्या डिव्हाइसवर साइन इन करण्यासाठी हा टॅबलेट वापरू शकता.</translation>
@@ -647,6 +650,7 @@
 <translation id="4484496141267039529">कनेक्शन नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="4487967297491345095">Chrome चा सर्व ॲप डेटा कायमचा हटवला जाईल. यामध्ये सर्व फाइल, सेटिंग्ज, खाती, डेटाबेस, इ. चा समावेश होतो.</translation>
 <translation id="449126573531210296">तुमचे Google खाते वापरून सिंक केलेले पासवर्ड एंक्रिप्ट करा</translation>
+<translation id="4491323382106587961">खाते निवडा. सध्या निवडलेला <ph name="EMAIL" />.</translation>
 <translation id="4508528996305412043">फीड कार्ड मेनू उघडला गेला आहे</translation>
 <translation id="4509501256689523862">तुम्ही ब्राउझ करत असताना, तुम्ही पाहत असलेली जाहिरात पर्सनलाइझ केलेली आहे की नाही हे या सेटिंगवर, <ph name="BEGIN_LINK_1" />जाहिरातीचे विषय<ph name="END_LINK_1" />, तुमची <ph name="BEGIN_LINK_2" />कुकी सेटिंग्ज<ph name="END_LINK_2" /> आणि तुम्ही पाहत असलेली साइट जाहिराती पर्सनलाइझ करते की नाही त्यावर अवलंबून असते</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# दिवसापूर्वी}other{# दिवसांपूर्वी}}</translation>
@@ -654,6 +658,7 @@
 <translation id="4521489764227272523">निवडलेला डेटा Chrome वरून आणि तुमच्या सिंक केलेल्या डिव्हाइसवरून काढला गेला आहे.
 
 तुमच्या Google खात्यात <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> येथील इतर Google सेवांवरील शोध आणि अ‍ॅक्टिव्हिटी यांसारखा इतर स्वरूपातील ब्राउझिंग इतिहास असू शकतो.</translation>
+<translation id="4523326818319942067">मागील तासामधील</translation>
 <translation id="452750746583162491">तुमच्या सिंक केलेल्या डेटाचे पुनरावलोकन करा</translation>
 <translation id="4528638190900283934">अतिरिक्त वैशिष्‍ट्यांसाठी साइन इन करा</translation>
 <translation id="4532845899244822526">फोल्डर निवडा</translation>
@@ -707,6 +712,7 @@
 <translation id="4766678251456904326">डिव्हाइसवर खाते जोडा</translation>
 <translation id="4767947714785277816">आम्ही ads measurement नावाचे नवीन जाहिरातविषयक गोपनीयता वैशिष्‍ट्य लाँच करत आहोत. जाहिरातींचा परफॉर्मन्स मोजण्यासाठी मदत करण्याकरिता Chrome साइट आणि ॲप्सदरम्यान तुम्हाला जाहिरात कधी दाखवली होती यांसारखी अगदी मोजकीच माहिती शेअर करते.</translation>
 <translation id="4769095993849849966">नवीन फाइल नाव</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> हटवला</translation>
 <translation id="4778653490315793244">अद्याप दाखवण्यासाठी काहीही नाही</translation>
 <translation id="4787736314074622408">तुम्हाला <ph name="ITEM_TITLE" /> का हटवायची आहे?</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -808,6 +814,7 @@
 <translation id="5234971936051226002">“हे पेज ऐका” प्लेअर लहान केला आहे.</translation>
 <translation id="5235196193381275927">साइन-इन करताना काहीतरी चूक झाली</translation>
 <translation id="5246093389635966745">टूलबार शॉर्टकट संपादित करा</translation>
+<translation id="5264813352784073502">मागील २४ तासांमधील</translation>
 <translation id="5271967389191913893">डाउनलोड केली जाण्यासाठी डिव्हाइस आशय उघडू शकत नाही.</translation>
 <translation id="5292796745632149097">यांना पाठवा</translation>
 <translation id="5300426565656326054">ब्राउझरवर आधारित जाहिरात पर्सनलायझेशन</translation>
@@ -820,6 +827,7 @@
 <translation id="5329858041417644019">तुमचे ब्राउझर व्यवस्थापित केलेले नाही</translation>
 <translation id="5339031667684712858">तुम्ही काढून टाकलेल्या साइट</translation>
 <translation id="5342314432463739672">परवानगीच्या विनंत्या</translation>
+<translation id="534580735623577507"><ph name="TIME_PERIOD" /> कालावधीमध्ये कोणत्याही साइटना भेटी दिल्या गेल्या नाहीत</translation>
 <translation id="53537532693258630">तुम्ही हटवलेल्या साइट येथे दिसतील</translation>
 <translation id="5355191726083956201">सुधारित संरक्षण सुरू आहे</translation>
 <translation id="5361107212971249203">मजकूर</translation>
@@ -834,6 +842,7 @@
 <translation id="543338862236136125">पासवर्ड संपादित करा</translation>
 <translation id="5433691172869980887">वापरकर्ता नाव कॉपी केले</translation>
 <translation id="5438292632479953702">पुन्हा डाउनलोड करा</translation>
+<translation id="5441137934526263133">साइट काम करत नाही का? तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
 <translation id="5441466871879044658">या भाषेमध्ये भाषांतर करा</translation>
 <translation id="5441522332038954058">अ‍ॅड्रेस बारवर जा</translation>
 <translation id="5444999712122199445">साइटवर परत जा</translation>
@@ -931,6 +940,7 @@
 <translation id="5951119116059277034">लाइव्ह पेज पाहत आहे</translation>
 <translation id="5956665950594638604">नवीन टॅबमध्ये Chrome मदत केंद्र उघडा</translation>
 <translation id="5957442310066583693">तुमच्या टॉप साइट पाहण्यासाठी, होम बटणावर टॅप करा</translation>
+<translation id="59577092665511740">खाते निवडा.</translation>
 <translation id="5958275228015807058">तुमच्या फाइल आणि पेज डाउनलोडमध्ये शोधा</translation>
 <translation id="5958994127112619898">पेज सुलभ करा</translation>
 <translation id="5962718611393537961">संकुचित करण्‍यासाठी टॅप करा</translation>
@@ -1257,6 +1267,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फाइल डाउनलोड केली}other{<ph name="FILES_DOWNLOADED_MANY" /> फाइल डाउनलोड केल्या}}</translation>
 <translation id="7581273696622423628">सर्वेक्षण घ्या</translation>
 <translation id="7583262514280211622">तुम्हाला तुमची वाचन सूची येथे आढळेल</translation>
+<translation id="7587250070160020374">Chrome आता प्ले करत आहे</translation>
 <translation id="7588219262685291874">तुमच्या डिव्हाइसचे बॅटरी सेव्हर सुरू असेल तेव्हा गडद थीम सुरू करा</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> ला <ph name="TOP_ORIGIN" /> साठी हे तुम्हीच आहात याची पडताळणी करू द्या</translation>
 <translation id="7596558890252710462">ऑपरेटिंग सिस्टम</translation>
@@ -1271,7 +1282,9 @@
 <translation id="7638584964844754484">अयोग्य सांकेतिक पासफ्रेझ</translation>
 <translation id="7641339528570811325">ब्राउझिंग डेटा साफ करा...</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक काम करत नाही</translation>
+<translation id="7655240423373329753">मागील ७ दिवसांमधील</translation>
 <translation id="7655900163790317559">ब्लूटूथ सुरू करत आहे…</translation>
+<translation id="7656721520530864426">कोणत्याही साइट नाहीत</translation>
 <translation id="7656862631699126784">गुप्त मोड लॉक सुरू करा</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7665369617277396874">खाते जोडा</translation>
@@ -1369,6 +1382,7 @@
 <translation id="8088176524274673045">जवळपासच्या लोकांसोबत शेअर करण्यासाठी, त्यांना हा QR कोड स्कॅन करू द्या</translation>
 <translation id="8090732854597034573">तुम्हाला मदत हवी असल्यास, तुमच्या पालकांना विचारा</translation>
 <translation id="8100969750121413114">Chrome ला तुमचे हक्काचे ठिकाण बनवण्यासाठी साइन इन करा</translation>
+<translation id="8101414242770404289"><ph name="TIME_PERIOD" /> कालावधीमधील कोणतेही टॅब बंद केले जाणार नाहीत</translation>
 <translation id="8103578431304235997">गुप्त टॅब</translation>
 <translation id="8105613260829665809">पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_TOS_LINK" />सेवा अटी<ph name="END_TOS_LINK" /> यांना सहमती दर्शवता.\nअ‍ॅपमध्ये सुधारणा करण्यात मदत करण्यासाठी, Chrome हे Google ला वापर आणि क्रॅश डेटा पाठवते. <ph name="BEGIN_UMA_LINK" />व्यवस्थापित करा<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1420,6 +1434,7 @@
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> वापरून <ph name="SITE_ETLD_PLUS_ONE" /> मध्ये साइन इन करा</translation>
 <translation id="8416347857511542594">Chrome मध्ये जाहिरात पर्सनलायझेशनबद्दल अधिक जाणून घ्या</translation>
 <translation id="8419244640277402268">समावेश करा</translation>
+<translation id="8422250855136581222">या डिव्हाइसवरील कोणतेही टॅब बंद केले जाणार नाहीत</translation>
 <translation id="8424781820952413435">पेज पाठवले आहे. ते पाहण्यासाठी, तुमच्या <ph name="DEVICE_TYPE" /> वर Chrome उघडा</translation>
 <translation id="8427875596167638501">पूर्वावलोकन टॅब अर्धा उघडा आहे</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>

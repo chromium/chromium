@@ -1885,6 +1885,7 @@
 <translation id="2480868415629598489">修改你複製和貼上的資料</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2482895651873876648">分頁已移至包含「<ph name="GROUP_CONTENTS" />」的「<ph name="GROUP_NAME" />」群組</translation>
+<translation id="2483627560139625913">在 Chrome 瀏覽器設定中設定搜尋引擎</translation>
 <translation id="2484743711056182585">移除授權</translation>
 <translation id="2484909293434545162">使用 Cookie 的網站會顯示在這裡</translation>
 <translation id="2484959914739448251">如要從所有同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />輸入通關密語<ph name="END_LINK" />。</translation>
@@ -2039,6 +2040,7 @@
 <translation id="2612676031748830579">卡號</translation>
 <translation id="2613210758071148851">禁止 <ph name="RESTRICTED_SITE" /> 的任何擴充功能</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 將可編輯「<ph name="FILENAME" />」</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{在這個擴充功能中開啟並編輯「<ph name="FILE1" />」}other{在這個應用程式中開啟並編輯「<ph name="FILE1" />」和其他檔案}}</translation>
 <translation id="2616366145935564096">讀取以及變更你在 <ph name="WEBSITE_1" /> 網站上的資料</translation>
 <translation id="2618797463720777311">設定鄰近分享功能</translation>
 <translation id="261953424982546039">Chrome 研究室功能(&amp;L)...</translation>
@@ -4413,6 +4415,7 @@
 <translation id="4585793705637313973">編輯頁面</translation>
 <translation id="4586275095964870617">無法在替代瀏覽器中開啟 <ph name="URL" />。請與你的系統管理員聯絡。</translation>
 <translation id="4587589328781138893">網站</translation>
+<translation id="4588749726511456218">捲動加速功能 <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> 中未儲存任何裝置</translation>
 <translation id="4592525994536856567">瀏覽及搜尋內容時，載入速度更快了。</translation>
@@ -4481,6 +4484,7 @@
 <translation id="4646675363240786305">連接埠</translation>
 <translation id="4647090755847581616">關閉分頁(&amp;C)</translation>
 <translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步，共 <ph name="TOTAL_STEPS" /> 步</translation>
+<translation id="4647836961514597010">顏色選擇器</translation>
 <translation id="4648491805942548247">權限不足</translation>
 <translation id="4650037136970677721">已釋出記憶體</translation>
 <translation id="4650591383426000695">中斷手機與 <ph name="DEVICE_TYPE" /> 的連線</translation>
@@ -6038,6 +6042,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{在無痕式視窗中開啟所有網址(&amp;I)}=1{在無痕式視窗中開啟(&amp;I)}other{在無痕式視窗中開啟所有 ({COUNT} 個) 網址(&amp;I)}}</translation>
 <translation id="5975792506968920132">電池充電百分比</translation>
 <translation id="5976160379964388480">其他</translation>
+<translation id="5977976211062815271">在這部裝置上</translation>
 <translation id="5978277834170881274">使用基本拼字檢查功能(&amp;U)</translation>
 <translation id="5978493744931296692">管理員已停用其他設定檔</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
@@ -6226,6 +6231,7 @@
 <translation id="6130692320435119637">新增 Wi-Fi</translation>
 <translation id="6130887916931372608">鍵盤按鍵</translation>
 <translation id="6132714462430777655">要略過學校註冊程序嗎？</translation>
+<translation id="6134428719487602109">移除所有使用者帳戶，並將 Chromebook 恢復原廠設定。</translation>
 <translation id="6135823405800500595">請確認你的手機在附近且處於解鎖狀態，並已開啟藍牙和 Wi-Fi</translation>
 <translation id="6135826623269483856">不允許管理所有螢幕上的視窗</translation>
 <translation id="6136114942382973861">關閉下載內容列</translation>
@@ -8452,7 +8458,6 @@
 <translation id="7978412674231730200">秘密金鑰</translation>
 <translation id="7978450511781612192">你將登出自己的 Google 帳戶。你的書籤、歷史記錄、密碼和其他設定將不再保持同步。</translation>
 <translation id="7980084013673500153">資產 ID：<ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">預先載入網頁，以加快瀏覽及搜尋速度</translation>
 <translation id="7981662863948574132">顯示裝置 EID 和 QR 圖碼彈出式視窗</translation>
 <translation id="7981670705071137488">日後，系統會在背景進行軟體更新作業。你可以前往「設定」查看更新偏好設定。</translation>
 <translation id="7982083145464587921">請重新啟動裝置以修復這個錯誤。</translation>

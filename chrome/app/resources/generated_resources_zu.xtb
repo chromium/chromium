@@ -4558,6 +4558,7 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4646675363240786305">Izimbobo</translation>
 <translation id="4647090755847581616">Vala ithebhu</translation>
 <translation id="4647283074445570750">Isinyathelo esingu-<ph name="CURRENT_STEP" /> kwezingu-<ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Isikhethi sombala</translation>
 <translation id="4648491805942548247">Izimvume ezinganele</translation>
 <translation id="4650037136970677721">Inkumbulo ilondoloziwe</translation>
 <translation id="4650591383426000695">Nqamula ifoni yakho kusuka ku-<ph name="DEVICE_TYPE" /> yakho</translation>
@@ -6138,6 +6139,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5975056890546437204">{COUNT,plural, =0{Vula Konke ewindini le-&amp;Incognito}=1{Vula ewindini le-&amp;Incognito}one{Vula Konke ({COUNT}) ewindini le-&amp;Incognito}other{Vula Konke ({COUNT}) ewindini le-&amp;Incognito}}</translation>
 <translation id="5975792506968920132">Amaphesenti wokushaja kwebhethri</translation>
 <translation id="5976160379964388480">Okunye</translation>
+<translation id="5977976211062815271">Kule divayisi</translation>
 <translation id="5978277834170881274">&amp;Sebenzisa ukuhlola kwesipele okuvamile</translation>
 <translation id="5978493744931296692">Umlawuli wakho ukhubaze amanye amaphrofayela</translation>
 <translation id="5979084224081478209">Hlola amaphasiwedi</translation>
@@ -8579,7 +8581,6 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7978412674231730200">Ukhiye oyimfihlo</translation>
 <translation id="7978450511781612192">Lokhu kuzokukhipha kuwo wonke ama-akhawunti akho e-Google. Amabhukhimakhi akho, umlando, amaphasiwedi, nokuningi ngeke kusavumelaniswa.</translation>
 <translation id="7980084013673500153">I-ID yefa: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Layisha ngaphambili amakhasi ukuze uphequlule ngokuphephile uphinde useshe</translation>
 <translation id="7981662863948574132">Bonisa idivayisi ye-EID ne-popup yekhodi ye-QR</translation>
 <translation id="7981670705071137488">Ngemuva kwalokhu, izibuyekezo zesofthiwe zizokwenzeka ngemuva. Ungabuyekeza okuncamelayo kokubuyekeza Kumasethingi.</translation>
 <translation id="7982083145464587921">Sicela uqale kabusha idivayisi yakho ukuze ulungise leli phutha.</translation>

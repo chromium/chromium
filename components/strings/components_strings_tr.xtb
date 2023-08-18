@@ -606,6 +606,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2225927550500503913">Sanal kart etkin</translation>
 <translation id="2226636330183131181">Kablosuz ağda <ph name="BEGIN_LINK" />oturum açma<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">Bu adres şu anda Chrome'da kayıtlı. Adresi diğer Google ürünlerinde kullanmak için Google Hesabınıza (<ph name="ACCOUNT" />) kaydedin.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" />, <ph name="TOP_LEVEL_URL" /> sitesini ziyaret ettiğinizi bilecek.</translation>
 <translation id="2233745931693710080">Kompakt Disk</translation>
 <translation id="2239100178324503013">Şimdi gönder</translation>
 <translation id="2241693394036365668">Dosya indirme</translation>
@@ -2093,6 +2094,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5426179911063097041"><ph name="SITE" /> size bildirim göndermek istiyor</translation>
 <translation id="5430298929874300616">Yer işaretini kaldır</translation>
 <translation id="5443468954631487277">Ters sırada ön yüz yukarı bakacak şekilde</translation>
+<translation id="5447235695608032700"><ph name="SITE" /> sitesinin sizinle ilgili kaydettiği bilgileri kullanmasına izin verin</translation>
 <translation id="5447765697759493033">Bu site çevrilmeyecek</translation>
 <translation id="5452270690849572955">Bu <ph name="HOST_NAME" /> sayfası bulunamıyor</translation>
 <translation id="5455374756549232013">Politika zaman damgası yanlış</translation>
@@ -2769,7 +2771,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6897140037006041989">Kullanıcı Aracısı</translation>
 <translation id="6898699227549475383">Kuruluş (O)</translation>
 <translation id="6907458757809079309">Fitness</translation>
-<translation id="6910240653697687763"><ph name="URL" />, MIDI cihazlarınız üzerinde tam denetim istiyor</translation>
 <translation id="691024665142758461">Birden çok dosya indirme</translation>
 <translation id="6915804003454593391">Kullanıcı:</translation>
 <translation id="6916954549222464607">Finansal planlama ve yönetim</translation>

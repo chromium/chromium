@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">Mobiele netwerken zoeken</translation>
 <translation id="1293556467332435079">Bestanden</translation>
 <translation id="1297922636971898492">Google Drive is momenteel niet beschikbaar. Het uploaden wordt automatisch gestart zodra Google Drive weer beschikbaar is.</translation>
+<translation id="1306130176943817227">Kan niet verwijderen. Item is in gebruik.</translation>
 <translation id="1307931752636661898">Kan Linux-bestanden niet bekijken</translation>
 <translation id="1313405956111467313">Automatische proxyconfiguratie</translation>
 <translation id="134645005685694099">Je apparaat heeft onvoldoende opslagruimte om bestandssynchronisatie aan te houden. Nieuwe bestanden worden niet meer automatisch gesynchroniseerd.</translation>
@@ -538,6 +539,7 @@
 <translation id="5218183485292899140">Zwitsers Frans</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5253070652067921974">Gemaakt door</translation>
+<translation id="5254207638927440400">Kan bestand niet verplaatsen. Bestand is in gebruik.</translation>
 <translation id="5257456363153333584">Libel</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Open bestanden op alle locaties, zelfs offline.<ph name="MARKUP_2" /> 
     Bestanden in Google Drive zijn up-to-date en beschikbaar vanaf elk apparaat.<ph name="MARKUP_3" />

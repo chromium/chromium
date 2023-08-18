@@ -2310,6 +2310,7 @@
 <translation id="5873297634595728366">Ντιζελοκίνητα οχήματα</translation>
 <translation id="5877831137320480913">Ομορφιά και φυσική κατάσταση</translation>
 <translation id="5879989559903563723">Δεν επιτρέπεται σε λειτουργία επισκέπτη</translation>
+<translation id="5883861433316751031">Έλεγχος και επαναπρογραμματισμός συσκευών MIDI;</translation>
 <translation id="5884465125445718607">Κινεζικός φάκελος #6</translation>
 <translation id="5887400589839399685">Η κάρτα αποθηκεύτηκε</translation>
 <translation id="5887687176710214216">Τελευταία επίσκεψη χθες</translation>
@@ -2802,7 +2803,6 @@
             <ph name="LIST_ITEM" />Ιστορικό αναζήτησης<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Πληροφορίες που εισάγετε σε φόρμες<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
-<translation id="6910240653697687763">Ο ιστότοπος <ph name="URL" /> επιθυμεί να αποκτήσει τον πλήρη έλεγχο των συσκευών σας MIDI</translation>
 <translation id="691024665142758461">Λήψη πολλών αρχείων</translation>
 <translation id="6915804003454593391">Χρήστης</translation>
 <translation id="6916954549222464607">Χρηματοοικονομικός σχεδιασμός και διαχείριση</translation>
@@ -3369,6 +3369,7 @@
 <translation id="8038817883578389970">Αγώνες αυτοκινήτων</translation>
 <translation id="8041089156583427627">Αποστολή σχολίων</translation>
 <translation id="8041940743680923270">Χρήση καθολικής προεπιλεγμένης ρύθμισης (Ερώτηση)</translation>
+<translation id="8042577181291637092">Χρήση συσκευών MIDI;</translation>
 <translation id="8046360364391076336">Βιομηχανικά υλικά και εξοπλισμός</translation>
 <translation id="8052898407431791827">Αντιγράφηκε στο πρόχειρο</translation>
 <translation id="8055534648776115597">Τεχνική και διά βίου εκπαίδευση</translation>
@@ -3665,6 +3666,7 @@
 <translation id="8671519637524426245">Η τιμή <ph name="SECURE_DNS_SALT" /> δεν πληροί τις απαιτήσεις μεγέθους.</translation>
 <translation id="867224526087042813">Υπογραφή</translation>
 <translation id="8672264262457010862">Επιχειρήσεις και βιομηχανία</translation>
+<translation id="8673776281896298303">Έλεγχος και επαναπρογραμματισμός των συσκευών MIDI (SysEx)</translation>
 <translation id="8676424191133491403">Χωρίς καθυστέρηση</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, απάντηση, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Η φόρτωση της ιστοσελίδας στη διεύθυνση <ph name="PAGE" /> δεν ήταν δυνατή επειδή:</translation>

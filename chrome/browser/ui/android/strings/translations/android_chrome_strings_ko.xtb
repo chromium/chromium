@@ -470,6 +470,7 @@
 <translation id="3513704683820682405">증강 현실</translation>
 <translation id="3518985090088779359">동의하고 계속</translation>
 <translation id="3522247891732774234">업데이트할 수 있습니다. 옵션 더보기</translation>
+<translation id="3523426587027570423">'이 페이지의 내용 듣기'를 탭하여 종료합니다.</translation>
 <translation id="3524138585025253783">개발자 UI</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" />에서 본인 여부를 확인하도록 허용합니다.</translation>
 <translation id="3527085408025491307">폴더</translation>
@@ -674,6 +675,7 @@
 <translation id="4637420359569396807">광고 측정을 사용하면 광고 실적을 측정하기 위해 광고가 표시된 시간과 같이 제한된 유형의 데이터가 사이트 및 앱 간에 공유될 수 있습니다.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{유출된 비밀번호 1개}other{유출된 비밀번호 #개}}</translation>
 <translation id="4650364565596261010">시스템 기본값</translation>
+<translation id="4654641641922242357">'이 페이지의 내용 듣기' 플레이어입니다.</translation>
 <translation id="465657074423018424">세이프 브라우징은 사기성 웹사이트로부터 사용자를 보호합니다. 이 기능을 사용 중지하는 경우 인터넷을 탐색할 때, 특히 비밀번호를 입력할 때 주의하시기 바랍니다.</translation>
 <translation id="4662373422909645029">닉네임에 숫자를 포함할 수 없음</translation>
 <translation id="4663499661119906179">맞춤 인기 사이트 및 뉴스 보기</translation>
@@ -803,6 +805,7 @@
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5227554086496586518">검색결과를 보려면 탭하세요.</translation>
 <translation id="5233638681132016545">새 탭</translation>
+<translation id="5234971936051226002">'이 페이지의 내용 듣기' 플레이어가 최소화되었습니다.</translation>
 <translation id="5235196193381275927">로그인 중에 문제가 발생했습니다</translation>
 <translation id="5246093389635966745">툴바 바로가기 수정</translation>
 <translation id="5271967389191913893">기기에서 다운로드하려는 콘텐츠를 열 수 없습니다.</translation>
@@ -1254,6 +1257,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />개 파일 다운로드됨}other{<ph name="FILES_DOWNLOADED_MANY" />개 파일 다운로드됨}}</translation>
 <translation id="7581273696622423628">설문조사 참여</translation>
 <translation id="7583262514280211622">여기에서 읽기 목록 확인</translation>
+<translation id="7587250070160020374">Chrome에서 재생 중</translation>
 <translation id="7588219262685291874">기기 절전 모드 사용 시 어두운 테마 사용 설정</translation>
 <translation id="7594687499944811403"><ph name="TOP_ORIGIN" />에서 서비스를 사용하기 위해 <ph name="EMBEDDED_ORIGIN" />에서 본인 여부를 확인하도록 허용합니다.</translation>
 <translation id="7596558890252710462">운영체제</translation>
@@ -1321,6 +1325,7 @@
 <translation id="7926975587469166629">카드 닉네임</translation>
 <translation id="7929962904089429003">메뉴 열기</translation>
 <translation id="7930998711684428189">데이터 유출로 인해 비밀번호가 노출된 경우 알립니다.</translation>
+<translation id="7934668619883965330">파일을 다운로드할 수 없습니다. 지원되지 않는 파일 형식입니다.</translation>
 <translation id="7939485076072265087">강조표시한 텍스트에 사용할 스타일 카드 만들기</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />이(가) 이전 버전입니다.</translation>
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>
@@ -1522,6 +1527,7 @@
 <translation id="8937772741022875483">디지털 웰빙에서 Chrome 활동을 삭제할까요?</translation>
 <translation id="8942627711005830162">다른 창에서 열기</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: 다운로드할 수 없는 언어입니다. 나중에 다시 시도해 보세요.</translation>
+<translation id="8953618380150219653">'이 페이지의 내용 듣기' 플레이어가 전체 높이로 열렸습니다.</translation>
 <translation id="8955719471735800169">맨위로</translation>
 <translation id="8964479563882643397">새 시크릿 탭을 열려면 메뉴 열기</translation>
 <translation id="8965591936373831584">보류 중</translation>

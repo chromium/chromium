@@ -852,6 +852,7 @@
 <translation id="76959938259365003">No se pudo vaciar la papelera.</translation>
 <translation id="770015031906360009">Griego</translation>
 <translation id="7705251383879779343">Se copió <ph name="FILE_NAME" />.</translation>
+<translation id="7707941139430559579">No se puede mover el archivo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Para usar esta red, debes ingresar la clave personal de desbloqueo (PUK) de 8 dígitos que proporciona el operador.</translation>
 <translation id="7711920809702896782">Información de la imagen</translation>
 <translation id="7724603315864178912">Cortar</translation>

@@ -4498,6 +4498,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4646675363240786305">Port</translation>
 <translation id="4647090755847581616">&amp;Tutup Tab</translation>
 <translation id="4647283074445570750">Langkah <ph name="CURRENT_STEP" /> dari <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Pemilih warna</translation>
 <translation id="4648491805942548247">Izin tidak mencukupi</translation>
 <translation id="4650037136970677721">Memori dihemat</translation>
 <translation id="4650591383426000695">Memutuskan sambungan ponsel Anda dari <ph name="DEVICE_TYPE" /></translation>
@@ -6058,6 +6059,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5975056890546437204">{COUNT,plural, =0{Buka semua di &amp;jendela Samaran}=1{Buka di &amp;jendela Samaran}other{Buka semua ({COUNT}) di &amp;jendela Samaran}}</translation>
 <translation id="5975792506968920132">Persentase Pengisian Daya Baterai</translation>
 <translation id="5976160379964388480">Yang Lain</translation>
+<translation id="5977976211062815271">Di perangkat ini</translation>
 <translation id="5978277834170881274">&amp;Gunakan fitur periksa ejaan dasar</translation>
 <translation id="5978493744931296692">Administrator Anda telah menonaktifkan profil lain</translation>
 <translation id="5979084224081478209">Periksa sandi</translation>
@@ -8472,7 +8474,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7978412674231730200">Kunci pribadi</translation>
 <translation id="7978450511781612192">Tindakan ini akan membuat Anda logout dari Akun Google. Bookmark, histori, sandi, dan lainnya tidak akan disinkronkan lagi.</translation>
 <translation id="7980084013673500153">ID Aset: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Pramuat halaman agar penjelajahan dan penelusuran jadi lebih cepat</translation>
 <translation id="7981662863948574132">Tampilkan pop-up EID perangkat dan Kode QR</translation>
 <translation id="7981670705071137488">Setelah ini, update software akan dilakukan di latar belakang. Anda dapat meninjau preferensi update di Setelan.</translation>
 <translation id="7982083145464587921">Reset perangkat Anda untuk memperbaiki kesalahan ini.</translation>

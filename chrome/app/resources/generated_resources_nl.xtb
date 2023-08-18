@@ -4481,6 +4481,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4646675363240786305">Poorten</translation>
 <translation id="4647090755847581616">&amp;Tabblad sluiten</translation>
 <translation id="4647283074445570750">Stap <ph name="CURRENT_STEP" /> van <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Kleurenkiezer</translation>
 <translation id="4648491805942548247">Onvoldoende rechten</translation>
 <translation id="4650037136970677721">Herinnering opgeslagen</translation>
 <translation id="4650591383426000695">Je telefoon ontkoppelen van je <ph name="DEVICE_TYPE" /></translation>
@@ -6037,6 +6038,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="5975056890546437204">{COUNT,plural, =0{Alles openen in &amp;incognitovenster}=1{Openen in &amp;incognitovenster}other{Alles ({COUNT}) openen in &amp;incognitovenster}}</translation>
 <translation id="5975792506968920132">Percentage acculading</translation>
 <translation id="5976160379964388480">Overige</translation>
+<translation id="5977976211062815271">Op dit apparaat</translation>
 <translation id="5978277834170881274">Standaard spellingcontrole gebruiken</translation>
 <translation id="5978493744931296692">Je beheerder heeft andere profielen uitgezet</translation>
 <translation id="5979084224081478209">Wachtwoorden controleren</translation>
@@ -8447,7 +8449,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7978412674231730200">Privésleutel</translation>
 <translation id="7978450511781612192">Hiermee word je uitgelogd van je Google-accounts. Onder meer je bookmarks, geschiedenis en wachtwoorden worden niet meer gesynchroniseerd.</translation>
 <translation id="7980084013673500153">Item-ID: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Pagina's vooraf laden voor sneller browsen en zoeken</translation>
 <translation id="7981662863948574132">Pop-up met apparaat-EID en QR-code bekijken</translation>
 <translation id="7981670705071137488">Hierna vinden software-updates op de achtergrond plaats. Je kunt de updatevoorkeuren bekijken via Instellingen.</translation>
 <translation id="7982083145464587921">Start je apparaat opnieuw op om deze fout te verhelpen.</translation>

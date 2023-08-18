@@ -4479,6 +4479,7 @@
 <translation id="4646675363240786305">Порттар</translation>
 <translation id="4647090755847581616">&amp;Қойындыны жабу</translation>
 <translation id="4647283074445570750">Қадам: <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Түс таңдағыш</translation>
 <translation id="4648491805942548247">Рұқсаттар жеткіліксіз</translation>
 <translation id="4650037136970677721">Жад сақталды</translation>
 <translation id="4650591383426000695">Телефонды <ph name="DEVICE_TYPE" /> құрылғысынан ажыратыңыз.</translation>
@@ -6036,6 +6037,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{Барлығын инкогнито терезесінде ашу}=1{Инкогнито терезесінде ашу}other{Барлығын ({COUNT}) инкогнито терезесінде ашу}}</translation>
 <translation id="5975792506968920132">Батарея зарядының пайыздық көрсеткіші</translation>
 <translation id="5976160379964388480">Басқалар</translation>
+<translation id="5977976211062815271">Осы құрылғыда</translation>
 <translation id="5978277834170881274">&amp;Негізгі емле тексеру құралын пайдалану</translation>
 <translation id="5978493744931296692">Әкімшіңіз басқа профильдерді өшірген.</translation>
 <translation id="5979084224081478209">Құпия сөздерді тексеру</translation>
@@ -8449,7 +8451,6 @@
 <translation id="7978412674231730200">Жеке кілт</translation>
 <translation id="7978450511781612192">Google аккаунттарыңыздан шығарыласыз. Бетбелгілер, тарих, құпия сөздер, т.б. синхрондалмайтын болады.</translation>
 <translation id="7980084013673500153">Актив идентификаторы: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Интернетте жылдамырақ шарлау және іздеу үшін беттерді алдын ала жүктеу</translation>
 <translation id="7981662863948574132">Құрылғының EID нөмірі және QR коды бар қалқымалы терезесін көрсету</translation>
 <translation id="7981670705071137488">Бұдан былай бағдарламалық құрал фондық режимде жаңартылады. Жаңарту параметрлерін "Параметрлер" бөлімінен қарауға болады.</translation>
 <translation id="7982083145464587921">Бұл қатені түзету үшін құрылғыңызды қайта іске қосыңыз.</translation>

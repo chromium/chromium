@@ -606,6 +606,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2225927550500503913">Đã bật thẻ ảo</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Đăng nhập<ph name="END_LINK" /> vào mạng Wi-Fi</translation>
 <translation id="2228057197024893428">Địa chỉ này hiện được lưu vào Chrome. Để sử dụng địa chỉ này trên các sản phẩm của Google, hãy lưu địa chỉ vào Tài khoản Google <ph name="ACCOUNT" /> của bạn.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> sẽ biết rằng bạn đã truy cập <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Đĩa nén</translation>
 <translation id="2239100178324503013">Gửi bây giờ</translation>
 <translation id="2241693394036365668">Tải tệp xuống</translation>
@@ -2093,6 +2094,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5426179911063097041"><ph name="SITE" /> muốn gửi thông báo cho bạn</translation>
 <translation id="5430298929874300616">Xóa dấu trang</translation>
 <translation id="5443468954631487277">Thứ tự đảo ngược hướng lên</translation>
+<translation id="5447235695608032700">Cho phép <ph name="SITE" /> sử dụng thông tin mà họ đã lưu về bạn</translation>
 <translation id="5447765697759493033">Trang web này sẽ không được dịch</translation>
 <translation id="5452270690849572955">Không thể tìm thấy trang <ph name="HOST_NAME" /> này</translation>
 <translation id="5455374756549232013">Dấu thời gian chính sách không hợp lệ</translation>
@@ -2769,7 +2771,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6897140037006041989">Tác nhân Người dùng</translation>
 <translation id="6898699227549475383">Tổ chức (O)</translation>
 <translation id="6907458757809079309">Thể dục</translation>
-<translation id="6910240653697687763"><ph name="URL" /> muốn có quyền kiểm soát toàn bộ thiết bị MIDI của bạn</translation>
 <translation id="691024665142758461">Tải xuống nhiều tệp</translation>
 <translation id="6915804003454593391">Người dùng:</translation>
 <translation id="6916954549222464607">Quản lý và lập kế hoạch tài chính</translation>

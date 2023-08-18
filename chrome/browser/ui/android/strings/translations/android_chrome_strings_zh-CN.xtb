@@ -470,6 +470,7 @@
 <translation id="3513704683820682405">增强现实</translation>
 <translation id="3518985090088779359">接受并继续</translation>
 <translation id="3522247891732774234">有更新。更多选项</translation>
+<translation id="3523426587027570423">点按即可关闭“读出此网页的内容”播放器。</translation>
 <translation id="3524138585025253783">开发者界面</translation>
 <translation id="3524334353996115845">让 <ph name="ORIGIN" /> 验证您的身份</translation>
 <translation id="3527085408025491307">文件夹</translation>
@@ -674,6 +675,7 @@
 <translation id="4637420359569396807">开启“广告衡量”功能后，网站和应用之间可分享有限类型的数据（例如一天中向您展示广告的时段），以便衡量各自的广告效果。</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{有 1 个密码已遭泄露}other{有 # 个密码已遭泄露}}</translation>
 <translation id="4650364565596261010">系统默认设置</translation>
+<translation id="4654641641922242357">“读出此网页的内容”播放器。</translation>
 <translation id="465657074423018424">“安全浏览”功能会保护您免受诈骗网站的侵害。如果您关闭此功能，当浏览网站时（特别是在输入密码之前），请一定多加小心。</translation>
 <translation id="4662373422909645029">昵称不能包含数字</translation>
 <translation id="4663499661119906179">查看为您推荐的热门网站和报道</translation>
@@ -803,6 +805,7 @@
 <translation id="5222676887888702881">退出</translation>
 <translation id="5227554086496586518">点按即可查看搜索结果</translation>
 <translation id="5233638681132016545">打开新的标签页</translation>
+<translation id="5234971936051226002">“读出此网页的内容”播放器已最小化。</translation>
 <translation id="5235196193381275927">登录期间出了点问题</translation>
 <translation id="5246093389635966745">修改工具栏快捷方式</translation>
 <translation id="5271967389191913893">设备无法打开要下载的内容。</translation>
@@ -1322,6 +1325,7 @@
 <translation id="7926975587469166629">卡的昵称</translation>
 <translation id="7929962904089429003">打开菜单</translation>
 <translation id="7930998711684428189">密码遭遇数据泄露时向您发出警告。</translation>
+<translation id="7934668619883965330">无法下载此文件。文件格式不受支持。</translation>
 <translation id="7939485076072265087">使用突出显示的文本创建风格化卡片</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 不是最新版本。</translation>
 <translation id="7944772052836377867">同步功能需要验证您的身份</translation>
@@ -1523,6 +1527,7 @@
 <translation id="8937772741022875483">从“数字健康”应用中移除您的 Chrome 活动记录？</translation>
 <translation id="8942627711005830162">在其他窗口中打开</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - 无法下载此语言。请稍后再试。</translation>
+<translation id="8953618380150219653">“读出此网页的内容”播放器已全屏打开。</translation>
 <translation id="8955719471735800169">返回页首</translation>
 <translation id="8964479563882643397">若要打开一个新的无痕式标签页，请先打开菜单</translation>
 <translation id="8965591936373831584">待下载</translation>

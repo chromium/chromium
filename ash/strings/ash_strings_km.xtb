@@ -243,7 +243,6 @@
 <translation id="1989113344093894667">មិនអាចថតខ្លឹមសារបានទេ</translation>
 <translation id="1990046457226896323">បានទាញយក​ឯកសារនិយាយ</translation>
 <translation id="1993072747612765854">ស្វែងយល់​បន្ថែម​អំពី​កំណែ​ <ph name="SYSTEM_APP_NAME" /> ថ្មី​បំផុត</translation>
-<translation id="1995660704900986789">បិទ</translation>
 <translation id="1996162290124031907">ទៅកាន់​ផ្ទាំង​បន្ទាប់</translation>
 <translation id="1998100899771863792">តុនិម្មិត​បច្ចុប្បន្ន</translation>
 <translation id="2001444736072756133">ស្វែងរក <ph name="CATEGORY" /> ឯកសារ កម្មវិធី និងអ្វីៗជាច្រើនទៀត។</translation>
@@ -660,6 +659,7 @@
 <translation id="380165613292957338">សួស្តី តើ​មាន​អ្វី​​អាច​ឱ្យ​ខ្ញុំជួយ​បានទេ?</translation>
 <translation id="3804737937830804242">បង្រួមកាមេរ៉ា</translation>
 <translation id="3824784079442479685">ការធ្វើ​បែបនេះ​ផ្ដល់​សិទ្ធិចូលប្រើ​កាមេរ៉ា​ដល់ <ph name="APP_NAME" /> ព្រម​ទាំង​គ្រប់កម្មវិធី និង​គេហទំព័រ​ដែលមាន​ការ​អនុញ្ញាត​ឱ្យ​ប្រើ​កាមេរ៉ា។ អ្នកអាចនឹង​ត្រូវផ្ទុក​ទំព័របណ្ដាញ​ឡើងវិញ ឬ​ចាប់ផ្ដើម​កម្មវិធីនេះ​ឡើងវិញ។</translation>
+<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> នៃ <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ត្រូវបានប្រគល់ <ph name="NUM_GRADED" /> ត្រូវបានដាក់ពិន្ទុ</translation>
 <translation id="3826099427150913765">ប្ដូរទៅពាក្យសម្ងាត់</translation>
 <translation id="383058930331066723">មុខងារសន្សំថ្ម​ត្រូវបានបើក</translation>
 <translation id="383629559565718788">បង្ហាញ​ការកំណត់​ក្ដារ​ចុច</translation>
@@ -1745,6 +1745,7 @@
 <translation id="8446884382197647889">ស្វែងយល់បន្ថែម</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">បិទមុខងារជ្រើសរើសដើម្បីអាន</translation>
+<translation id="8468806060683421065">ផុតកំណត់នៅថ្ងៃ<ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">ការកំណត់​មាត្រដ្ឋានអេក្រង់</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> មាន <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />។</translation>
 <translation id="8477270416194247200">ចុច Alt+Search ឬ Shift ដើម្បីបោះបង់។</translation>
@@ -1828,6 +1829,7 @@
 <translation id="8853703225951107899">នៅតែមិនអាច​ផ្ទៀងផ្ទាត់​កូដ PIN ឬពាក្យសម្ងាត់របស់អ្នក​បានដដែល។ ចំណាំ៖ ប្រសិនបើអ្នកបានប្ដូរ​ពាក្យសម្ងាត់របស់អ្នកថ្មីៗនេះ សូមប្រើពាក្យសម្ងាត់ចាស់របស់អ្នក។ ពាក្យសម្ងាត់ថ្មីរបស់អ្នក​នឹងត្រូវបានប្រើ បន្ទាប់ពីអ្នកចេញពីគណនី។</translation>
 <translation id="8855885154700222542">គ្រាប់ចុច​ពេញ​អេក្រង់​</translation>
 <translation id="8858369206579825206">ការគ្រប់គ្រង​ឯកជនភាព</translation>
+<translation id="8860366331836346216">បញ្ចូល eSIM</translation>
 <translation id="8870509716567206129">កម្មវិធីមិនស្គាល់អេក្រង់បំបែកទេ។</translation>
 <translation id="8874184842967597500">មិនបានភ្ជាប់ទេ</translation>
 <translation id="8875021410787719674">ផ្លាស់ទី​រវាង​ជ្រុង​ខាងស្ដាំ​ផ្នែក​ខាងក្រោម កម្មវិធី​ចាប់ផ្ដើម របារអាសយដ្ឋាន របាចំណាំ គេហទំព័រ​ដែល​បានបើក និង​ការទាញយក</translation>

@@ -606,6 +606,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2225927550500503913">Virtuális kártya bekapcsolva</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Bejelentkezés<ph name="END_LINK" /> a Wi-Fi-hálózatra</translation>
 <translation id="2228057197024893428">A címet jelenleg a Chrome-ba menti a rendszer. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="ACCOUNT" />).</translation>
+<translation id="2228466771983364669">A(z) <ph name="EMBEDDED_URL" /> tudni fogja, hogy Ön járt itt: <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Kompakt lemez</translation>
 <translation id="2239100178324503013">Küldés most</translation>
 <translation id="2241693394036365668">Letöltés történt</translation>
@@ -2091,6 +2092,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5426179911063097041">A(z) <ph name="SITE" /> értesítéseket szeretne küldeni Önnek</translation>
 <translation id="5430298929874300616">Könyvjelző törlése</translation>
 <translation id="5443468954631487277">Fordított sorrend, felfelé fordítva</translation>
+<translation id="5447235695608032700">A(z) <ph name="SITE" /> felhasználhatja az Önről mentett adatait</translation>
 <translation id="5447765697759493033">Nem fordítjuk le ezt a webhelyet</translation>
 <translation id="5452270690849572955">Ez a(z) <ph name="HOST_NAME" /> oldal nem található</translation>
 <translation id="5455374756549232013">Hibás az irányelv időbélyege</translation>
@@ -2767,7 +2769,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Szervezet (O)</translation>
 <translation id="6907458757809079309">Fitnesz</translation>
-<translation id="6910240653697687763">A(z) <ph name="URL" /> webhely teljes hozzáférést kér a MIDI-eszközökhöz</translation>
 <translation id="691024665142758461">Több fájl letöltése</translation>
 <translation id="6915804003454593391">Felhasználó:</translation>
 <translation id="6916954549222464607">Pénzügyi tervezés és menedzsment</translation>

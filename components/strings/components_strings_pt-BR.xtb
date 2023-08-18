@@ -2290,6 +2290,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5873297634595728366">Veículos a diesel</translation>
 <translation id="5877831137320480913">Beleza e fitness</translation>
 <translation id="5879989559903563723">Não permitido no modo convidado</translation>
+<translation id="5883861433316751031">Controlar e reprogramar dispositivos MIDI?</translation>
 <translation id="5884465125445718607">Envelope chinês 6</translation>
 <translation id="5887400589839399685">Cartão salvo</translation>
 <translation id="5887687176710214216">Última visita: ontem</translation>
@@ -2771,7 +2772,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6897140037006041989">Agente do usuário</translation>
 <translation id="6898699227549475383">O (Organização)</translation>
 <translation id="6907458757809079309">Fitness</translation>
-<translation id="6910240653697687763"><ph name="URL" /> quer ter controle total sobre seus dispositivos MIDI</translation>
 <translation id="691024665142758461">Fazer o download de vários arquivos</translation>
 <translation id="6915804003454593391">Usuário:</translation>
 <translation id="6916954549222464607">Planejamento e gerenciamento financeiro</translation>
@@ -3334,6 +3334,7 @@ Mais detalhes:
 <translation id="8038817883578389970">Corrida de automóveis</translation>
 <translation id="8041089156583427627">Enviar comentários</translation>
 <translation id="8041940743680923270">Usar padrão global (Perguntar)</translation>
+<translation id="8042577181291637092">Usar dispositivos MIDI?</translation>
 <translation id="8046360364391076336">Materiais e equipamentos industriais</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8055534648776115597">Ensino técnico e complementar</translation>
@@ -3628,6 +3629,7 @@ Mais detalhes:
 <translation id="8671519637524426245">O valor <ph name="SECURE_DNS_SALT" /> não atende aos requisitos de tamanho.</translation>
 <translation id="867224526087042813">Assinatura</translation>
 <translation id="8672264262457010862">Indústria e negócios</translation>
+<translation id="8673776281896298303">Controlar e reprogramar seus dispositivos MIDI (SysEx)</translation>
 <translation id="8676424191133491403">Sem atraso</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Não foi possível carregar a página da Web no endereço <ph name="PAGE" /> porque:</translation>

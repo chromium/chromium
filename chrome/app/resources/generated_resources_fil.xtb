@@ -1924,6 +1924,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2480868415629598489">Baguhin ang data na kinokopya at pine-paste mo</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2482895651873876648">Inilipat ang tab sa grupong <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Magtakda ng search engine sa mga setting ng Chrome browser</translation>
 <translation id="2484743711056182585">Alisin ang grant</translation>
 <translation id="2484909293434545162">Kung gumagamit ang isang site ng cookies, lalabas ito rito</translation>
 <translation id="2484959914739448251">Para i-clear ang data sa pag-browse sa lahat ng iyong naka-sync na device at sa Google Account mo, <ph name="BEGIN_LINK" />ilagay ang iyong passphrase<ph name="END_LINK" />.</translation>
@@ -2080,6 +2081,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2612676031748830579">Numero ng card</translation>
 <translation id="2613210758071148851">Huwag payagan ang anumang extension sa <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306">Mae-edit ng <ph name="ORIGIN" /> ang <ph name="FILENAME" /></translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{Buksan at i-edit ang <ph name="FILE1" /> sa extension na ito}one{Buksan at i-edit ang <ph name="FILE1" />, ... sa app na ito}other{Buksan at i-edit ang <ph name="FILE1" />, ... sa app na ito}}</translation>
 <translation id="2616366145935564096">Basahin at baguhin ang iyong data sa <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">I-set up ang Nearby Share</translation>
 <translation id="261953424982546039">Chrome &amp;Labs...</translation>
@@ -4491,6 +4493,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4585793705637313973">I-edit ang page</translation>
 <translation id="4586275095964870617">Hindi mabuksan ang <ph name="URL" /> sa isang alternatibong browser. Mangyaring makipag-ugnayan sa iyong system administrator.</translation>
 <translation id="4587589328781138893">Mga Site</translation>
+<translation id="4588749726511456218">Acceleration ng pag-scroll <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Na-write na ang mga log sa directory na Mga Download.</translation>
 <translation id="459204634473266369">Walang device na naka-save sa <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">Mas mabilis na ang pag-browse at paghahanap.</translation>
@@ -4559,6 +4562,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4646675363240786305">Mga Port</translation>
 <translation id="4647090755847581616">&amp;Isara ang Tab</translation>
 <translation id="4647283074445570750">Hakbang <ph name="CURRENT_STEP" /> ng <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Tagapili ng kulay</translation>
 <translation id="4648491805942548247">Hindi sapat na mga pagpapahintulot</translation>
 <translation id="4650037136970677721">Natipid na memory</translation>
 <translation id="4650591383426000695">Idiskonekta ang iyong telepono sa <ph name="DEVICE_TYPE" /></translation>
@@ -6136,6 +6140,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5975056890546437204">{COUNT,plural, =0{Buksan lahat sa &amp;Incognito window}=1{Buksan lahat sa &amp;Incognito window}one{Buksan lahat ({COUNT}) sa &amp;Incognito window}other{Buksan lahat ({COUNT}) sa &amp;Incognito window}}</translation>
 <translation id="5975792506968920132">Porsyento ng Charge ng Baterya</translation>
 <translation id="5976160379964388480">Iba Pa</translation>
+<translation id="5977976211062815271">Sa device na ito</translation>
 <translation id="5978277834170881274">&amp;Gumamit ng basic na pang-check ng pagbabaybay</translation>
 <translation id="5978493744931296692">Na-disable ng iyong administrator ang iba pang profile</translation>
 <translation id="5979084224081478209">Suriin ang mga password</translation>
@@ -6326,6 +6331,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6130692320435119637">Magdagdag ng Wi-Fi</translation>
 <translation id="6130887916931372608">Key ng Keyboard</translation>
 <translation id="6132714462430777655">Laktawan ang pag-enroll para sa paaralan?</translation>
+<translation id="6134428719487602109">Alisin ang lahat ng user account at i-reset ang iyong Chromebook para magmukhang bago.</translation>
 <translation id="6135823405800500595">Tiyaking nasa malapit ang iyong telepono, naka-unlock, at naka-on ang Bluetooth at Wi-Fi</translation>
 <translation id="6135826623269483856">Hindi pinapayagang pamahalaan ang mga window sa lahat ng iyong display</translation>
 <translation id="6136114942382973861">Isara ang bar ng mga download</translation>
@@ -8579,7 +8585,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7978412674231730200">Private na key</translation>
 <translation id="7978450511781612192">Dahil dito, masa-sign out ka sa iyong mga Google Account. Hindi na masi-sync ang iyong mga bookmark, history, mga password, at higit pa.</translation>
 <translation id="7980084013673500153">Asset ID: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">I-preload ang mga page para sa mas mabilis na pag-browse at paghahanap</translation>
 <translation id="7981662863948574132">Ipakita ang popup ng device EID at QR Code</translation>
 <translation id="7981670705071137488">Pagkatapos nito, magaganap ang mga update sa software sa background. Puwede mong suriin ang mga kagustuhan sa update sa Mga Setting.</translation>
 <translation id="7982083145464587921">Paki-restart ang iyong device upang ayusin ang error na ito.</translation>

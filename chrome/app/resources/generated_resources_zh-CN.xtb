@@ -1075,6 +1075,7 @@
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1856715684130786728">添加位置…</translation>
 <translation id="1858585891038687145">信任该证书，以便标识软件编写者的身份</translation>
+<translation id="1859294693760125695">不再感兴趣了</translation>
 <translation id="1859339856433307593">此账号的密码已保存到您的 <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">此文件夹中没有内容</translation>
 <translation id="1862311223300693744">您安装了任何特殊的 VPN、代理、防火墙或 NAS 软件吗？</translation>
@@ -2755,6 +2756,7 @@
 <translation id="3226487301970807183">显示/隐藏靠左对齐的侧边栏</translation>
 <translation id="322708765617468434">设置完成后，您随时可以将其他用户添加到设备。每个人都可对自己的体验进行个性化设置并确保数据的私密性。</translation>
 <translation id="3227137524299004712">麦克风</translation>
+<translation id="3229412050601871341">设备密码</translation>
 <translation id="3232168089952388105">要分享设备相关信息吗？</translation>
 <translation id="3232558119926886907">右对齐</translation>
 <translation id="3232754137068452469">网络应用</translation>
@@ -2813,6 +2815,7 @@
 <translation id="3275778913554317645">在窗口中打开</translation>
 <translation id="3277214528693754078">使用文本光标（光标浏览模式）进行导航</translation>
 <translation id="3277594800340743211">大阴影</translation>
+<translation id="3277784185056747463">设备密码或 Google 账号密码</translation>
 <translation id="3278001907972365362">您需要注意自己的 Google 账号</translation>
 <translation id="3279092821516760512">附近的所选联系人可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
 <translation id="3279230909244266691">此过程可能需要几分钟的时间。正在启动虚拟机。</translation>
@@ -3269,6 +3272,7 @@
 <translation id="3660234220361471169">不可信</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{找到 1 个现有密码}other{找到 {NUM_PASSWORDS} 个现有密码}}</translation>
 <translation id="3664511988987167893">扩展程序图标</translation>
+<translation id="3665301845536101715">在侧边栏中打开</translation>
 <translation id="3665589677786828986">Chrome检测到您的部分设置被其他程序篡改了，因此已将这些设置重置为原始默认设置。</translation>
 <translation id="3665919494326051362">当前版本为 <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC 调试转储</translation>
@@ -4467,6 +4471,7 @@
 <translation id="4646675363240786305">端口</translation>
 <translation id="4647090755847581616">关闭标签页(&amp;C)</translation>
 <translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步（共 <ph name="TOTAL_STEPS" /> 步）</translation>
+<translation id="4647836961514597010">颜色选择器</translation>
 <translation id="4648491805942548247">权限不足</translation>
 <translation id="4650037136970677721">节省的内存</translation>
 <translation id="4650591383426000695">将手机与 <ph name="DEVICE_TYPE" /> 断开连接</translation>
@@ -6024,6 +6029,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{在无痕式窗口中打开全部网址(&amp;I)}=1{在无痕式窗口中打开(&amp;I)}other{在无痕式窗口中打开全部（{COUNT} 个）网址(&amp;I)}}</translation>
 <translation id="5975792506968920132">电池充电百分比</translation>
 <translation id="5976160379964388480">其他</translation>
+<translation id="5977976211062815271">在这部设备上</translation>
 <translation id="5978277834170881274">使用基本拼写检查(&amp;U)</translation>
 <translation id="5978493744931296692">您的管理员已停用其他个人资料</translation>
 <translation id="5979084224081478209">检查密码</translation>
@@ -6993,6 +6999,7 @@
 <translation id="6805647936811177813">请登录“<ph name="TOKEN_NAME" />”，从 <ph name="HOST_NAME" /> 导入客户端证书。</translation>
 <translation id="680572642341004180">启用 <ph name="SHORT_PRODUCT_OS_NAME" />上的 RLZ 跟踪功能。</translation>
 <translation id="6806089545527108739">不允许但可过段时间再询问</translation>
+<translation id="680644983456221885">根据系统向 Google 发送的浏览数据，实时地主动保护您免受危险网站、下载内容和扩展程序的侵害</translation>
 <translation id="6808039367995747522">要继续，请插入并轻触您的安全密钥</translation>
 <translation id="6808166974213191158">ChromeOS Flex 系统映像写入工具</translation>
 <translation id="6808193438228982088">狐狸</translation>
@@ -8438,7 +8445,6 @@
 <translation id="7978412674231730200">私有密钥</translation>
 <translation id="7978450511781612192">执行此操作会使您退出 Google 账号。您的书签、历史记录、密码及其他设置将不再保持同步。</translation>
 <translation id="7980084013673500153">资源 ID：<ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">预加载网页，加快浏览和搜索速度</translation>
 <translation id="7981662863948574132">显示包含设备 EID 和二维码的弹出式窗口</translation>
 <translation id="7981670705071137488">之后，软件更新将在后台进行。您可在“设置”中查看更新偏好设置。</translation>
 <translation id="7982083145464587921">请重新启动您的设备以修复此错误。</translation>
@@ -8638,6 +8644,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{1 个视频}other{# 个视频}}</translation>
 <translation id="8143442547342702591">无效的应用</translation>
 <translation id="8143609395536282994">您可以如何管理自己的数据：</translation>
+<translation id="8144429778087524791">标为已完成并隐藏</translation>
 <translation id="8145170459658034418">内存节省程序</translation>
 <translation id="8146177459103116374">如果您已在此设备上注册，就能<ph name="LINK2_START" />以现有用户的身份登录<ph name="LINK2_END" />。</translation>
 <translation id="8146287226035613638">添加您的首选语言并为它们排序。网站会尽可能以您的首选语言显示。这些偏好设置会与您的浏览器设置同步。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9128,6 +9135,7 @@
 <translation id="8557022314818157177">连续轻触您的安全密钥，直到您的指纹被捕获</translation>
 <translation id="8557180006508471423">在 Mac 上的“定位服务”中开启“Google Chrome”</translation>
 <translation id="8557856025359704738">下次下载将于 <ph name="NEXT_DATE_DOWNLOAD" />进行。</translation>
+<translation id="8558281414737757274">Google 账号密码</translation>
 <translation id="8559858985063901027">密钥</translation>
 <translation id="8559961053328923750">Chrome 会限制网站为衡量广告效果而通过浏览器分享的数据总量</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>
@@ -9140,6 +9148,7 @@
 <translation id="8569682776816196752">未找到任何目标</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8571687764447439720">添加 Kerberos 票据</translation>
+<translation id="8572052284359771939">将您访问过的网站网址以及网页内容、下载内容、扩展程序活动和系统信息的少量样本发送至“Google 安全浏览”功能，以检查这些内容是否有害。</translation>
 <translation id="8573111744706778015">输入“uo7”即可显示“ươ”</translation>
 <translation id="8574990355410201600">始终允许 <ph name="HOST" /> 播放声音</translation>
 <translation id="8575286410928791436">按住 <ph name="KEY_EQUIVALENT" /> 键即可退出</translation>

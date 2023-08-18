@@ -2801,7 +2801,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
             <ph name="LIST_ITEM" />otsinguajalugu;<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />vormidesse sisestatud teave.<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
-<translation id="6910240653697687763"><ph name="URL" /> soovib teie MIDI-seadmeid täielikult juhtida</translation>
 <translation id="691024665142758461">Mitme faili allalaadimine</translation>
 <translation id="6915804003454593391">Kasutaja:</translation>
 <translation id="6916954549222464607">Finantsplaneerimine ja -haldus</translation>

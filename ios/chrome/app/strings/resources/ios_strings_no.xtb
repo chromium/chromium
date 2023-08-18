@@ -62,6 +62,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1283524564873030414">Siste døgn</translation>
 <translation id="1285320974508926690">Oversett aldri dette nettstedet</translation>
 <translation id="1291506870746876680">Tillatelsene for <ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> blir tilbakestilt til å være avslått når du forlater dette nettstedet.</translation>
+<translation id="1295289763199166823">Tilpass menyen</translation>
 <translation id="1305822519689023679">For å sikre at du alltid kan bruke passordene i Google-kontoen din, må du bekrefte at det er deg.</translation>
 <translation id="1312721752506309252">Økt beskyttelse er på</translation>
 <translation id="1316466854070752597">Se alle åpne faner</translation>
@@ -110,6 +111,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1554477036522844996">Nytt vindu</translation>
 <translation id="1563071802032385236">Slå på «Spør om linker fra andre apper skal åpnes i Inkognito».</translation>
 <translation id="1565371473877914088">Ny inkognitofane</translation>
+<translation id="1565395699240341063">Skjult</translation>
 <translation id="1580715474678097352">Hold deg beskyttet mot farlige nettsteder</translation>
 <translation id="1580783302095112590">E-posten er sendt.</translation>
 <translation id="1582732959743469162">Dette stopper all fremdriften for den aktive nedlastingen.</translation>
@@ -446,6 +448,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3533436815740441613">Ny fane</translation>
 <translation id="3540141921715814660">Legg til i bokmerker</translation>
 <translation id="3551320343578183772">Lukk fanen</translation>
+<translation id="3564513311876185114">Menylinje for smart bestilling</translation>
 <translation id="3565207542107370586">Slett nettlesingsdata…</translation>
 <translation id="3575234738189584619">Søk med Lens</translation>
 <translation id="3577555362230509265">Bruk Chrome i andre apper.</translation>
@@ -1312,6 +1315,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="854938212724803178">Du har ett passord som er utsatt for sikkerhetsbrudd. Løs problemet nå for å ivareta sikkerheten.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du avviste {count} advarsel}other{Du avviste {count} advarsler}}</translation>
 <translation id="8558480467877843976">Nå kan du bruke Chrome når du blar gjennom eller trykker på linker i meldinger, dokumenter og andre apper.</translation>
+<translation id="8560253818350321773">Vis elementene som brukes ofte, først.</translation>
 <translation id="8580411965900177618">Nei takk</translation>
 <translation id="8588404856427128947">Av</translation>
 <translation id="8591976964826315682">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>

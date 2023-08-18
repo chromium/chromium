@@ -4470,6 +4470,7 @@
 <translation id="4646675363240786305">ポート</translation>
 <translation id="4647090755847581616">タブを閉じる(&amp;C)</translation>
 <translation id="4647283074445570750">ステップ <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">カラー選択ツール</translation>
 <translation id="4648491805942548247">十分な権限がありません</translation>
 <translation id="4650037136970677721">思い出を保存しました</translation>
 <translation id="4650591383426000695">スマートフォンを <ph name="DEVICE_TYPE" /> から切断します</translation>
@@ -6028,6 +6029,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{すべてをシークレット ウィンドウで開く(&amp;I)}=1{シークレット ウィンドウで開く(&amp;I)}other{すべて（{COUNT} 個）をシークレット ウィンドウで開く(&amp;I)}}</translation>
 <translation id="5975792506968920132">バッテリー残量（%）</translation>
 <translation id="5976160379964388480">その他</translation>
+<translation id="5977976211062815271">このデバイス</translation>
 <translation id="5978277834170881274">基本スペルチェックを使用(&amp;U)</translation>
 <translation id="5978493744931296692">他のプロフィールは管理者によって無効にされています</translation>
 <translation id="5979084224081478209">パスワードを確認</translation>
@@ -8438,7 +8440,6 @@
 <translation id="7978412674231730200">秘密鍵</translation>
 <translation id="7978450511781612192">この操作を行うと Google アカウントからログアウトし、ブックマーク、履歴、パスワードなどの設定は同期されなくなります。</translation>
 <translation id="7980084013673500153">アセット ID: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">ページをプリロードして、閲覧と検索をすばやく行えるようにする</translation>
 <translation id="7981662863948574132">デバイスの EID と QR コードのポップアップを表示します</translation>
 <translation id="7981670705071137488">今後、ソフトウェアの更新はバックグラウンドで行われます。更新の設定は [設定] で確認できます。</translation>
 <translation id="7982083145464587921">このエラーを修正するには、デバイスを再起動してください。</translation>

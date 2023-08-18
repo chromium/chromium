@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">મોબાઇલ નેટવર્ક માટે શોધી રહ્યાં છીએ</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google ડ્રાઇવ હાલમાં ઉપલબ્ધ નથી. Google ડ્રાઇવ પાછું આવી જાય તે પછી અપલોડિંગ ઑટોમૅટિક રીતે ફરીથી શરૂ થશે.</translation>
+<translation id="1306130176943817227">ડિલીટ કરી શકતા નથી. આઇટમનો ઉપયોગ ચાલુ છે.</translation>
 <translation id="1307931752636661898">Linux ફાઇલો બતાવી શકાતી નથી</translation>
 <translation id="1313405956111467313">ઑટોમૅટિક પ્રૉક્સી ગોઠવણ</translation>
 <translation id="134645005685694099">તમારા ડિવાઇસમાં ફાઇલ સિંક કરવાનું ચાલુ રાખવા માટે પર્યાપ્ત સ્ટોરેજ સ્પેસ નથી. નવી ફાઇલો હવેથી ઑટોમૅટિક રીતે સિંક થશે નહીં.</translation>
@@ -537,6 +538,7 @@
 <translation id="5218183485292899140">સ્વિસ ફ્રેંચ</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
 <translation id="5253070652067921974">આના દ્વારા બનાવેલ</translation>
+<translation id="5254207638927440400">ફાઇલ ખસેડી શકતા નથી. ફાઇલનો ઉપયોગ ચાલુ છે.</translation>
 <translation id="5257456363153333584">વાણિયો</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />ફાઇલોને ગમે ત્યાંથી ઍક્સેસ કરો, ઑફલાઇન હો ત્યારે પણ.<ph name="MARKUP_2" />
     Google Driveમાં ફાઇલો અપ ટૂ ડેટ છે અને કોઈ પણ ડિવાઇસમાંથી ઉપલબ્ધ છે.<ph name="MARKUP_3" />
@@ -852,6 +854,7 @@
 <translation id="76959938259365003">ટ્રેશને ખાલી કરવામાં નિષ્ફળ રહ્યાં.</translation>
 <translation id="770015031906360009">ગ્રીક</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> કૉપિ કરી.</translation>
+<translation id="7707941139430559579">ફાઇલ ખસેડી શકતા નથી. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">આ નેટવર્કનો ઉપયોગ કરવા માટે, તમારે મોબાઇલ ઑપરેટર દ્વારા પ્રદાન કરેલી 8-અંકની 'પર્સનલ અનબ્લૉકિંગ કી' (PUK) દાખલ કરવાની જરૂર છે.</translation>
 <translation id="7711920809702896782">છબીની માહિતી</translation>
 <translation id="7724603315864178912">કાપો</translation>

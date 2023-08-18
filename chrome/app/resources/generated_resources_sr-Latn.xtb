@@ -4481,6 +4481,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4646675363240786305">Portovi</translation>
 <translation id="4647090755847581616">&amp;Close Tab (Zatvori karticu)</translation>
 <translation id="4647283074445570750"><ph name="CURRENT_STEP" />. korak od <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Birač boja</translation>
 <translation id="4648491805942548247">Nedovoljan broj dozvola</translation>
 <translation id="4650037136970677721">Memorija koju ste uštedeli</translation>
 <translation id="4650591383426000695">Prekinite vezu između telefona i uređaja <ph name="DEVICE_TYPE" /></translation>
@@ -6041,6 +6042,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5975056890546437204">{COUNT,plural, =0{Otvori sve u &amp;prozoru bez arhiviranja}=1{Otvori u &amp;prozoru bez arhiviranja}one{Otvori sve ({COUNT}) u &amp;prozoru bez arhiviranja}few{Otvori sve ({COUNT}) u &amp;prozoru bez arhiviranja}other{Otvori sve ({COUNT}) u &amp;prozoru bez arhiviranja}}</translation>
 <translation id="5975792506968920132">Procenat napunjenosti baterije</translation>
 <translation id="5976160379964388480">Drugi</translation>
+<translation id="5977976211062815271">Na ovom uređaju</translation>
 <translation id="5978277834170881274">&amp;Koristi osnovnu proveru pravopisa</translation>
 <translation id="5978493744931296692">Administrator je onemogućio druge profile</translation>
 <translation id="5979084224081478209">Proveri lozinke</translation>
@@ -8460,7 +8462,6 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7978412674231730200">Privatni ključ</translation>
 <translation id="7978450511781612192">Ovim ćete se odjaviti sa Google naloga. Obeleživači, istorija, lozinke i dodatni sadržaj se više neće sinhronizovati.</translation>
 <translation id="7980084013673500153">ID elementa: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Stranice se učitavaju unapred radi bržeg pregledanja i pretraživanja</translation>
 <translation id="7981662863948574132">Prikaži iskačući prozor sa EID brojem i QR kodom uređaja</translation>
 <translation id="7981670705071137488">Posle ovoga, ažuriranja softvera će se odvijati u pozadini. Možete da pregledate podešavanja za ažuriranja u Podešavanjima.</translation>
 <translation id="7982083145464587921">Pokrenite ponovo uređaj da biste ispravili ovu grešku.</translation>

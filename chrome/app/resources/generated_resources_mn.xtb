@@ -4553,6 +4553,7 @@
 <translation id="4646675363240786305">Портууд</translation>
 <translation id="4647090755847581616">Цонхыг хаах</translation>
 <translation id="4647283074445570750">Алхам <ph name="TOTAL_STEPS" />-н <ph name="CURRENT_STEP" /></translation>
+<translation id="4647836961514597010">Өнгө сонгогч</translation>
 <translation id="4648491805942548247">Хангалтгүй зөвшөөрөл</translation>
 <translation id="4650037136970677721">Хэмнэсэн санах ой</translation>
 <translation id="4650591383426000695">Утсаа <ph name="DEVICE_TYPE" />-с салгах</translation>
@@ -6130,6 +6131,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{Бүгдийг &amp;Нууцлалтай цонхонд нээх}=1{&amp;Нууцлалтай цонхонд нээх}other{Бүгдийг ({COUNT}) &amp;Нууцлалтай цонхонд нээх}}</translation>
 <translation id="5975792506968920132">Цэнэгийн хувь</translation>
 <translation id="5976160379964388480">Бусад</translation>
+<translation id="5977976211062815271">Энэ төхөөрөмж дээр</translation>
 <translation id="5978277834170881274">&amp;Зөв бичгийн алдаа шалгах энгийн онцлогийг ашиглах</translation>
 <translation id="5978493744931296692">Танай администратор бусад профайлыг идэвхгүй болгосон</translation>
 <translation id="5979084224081478209">Нууц үгийг шалгах</translation>
@@ -8569,7 +8571,6 @@
 <translation id="7978412674231730200">Хувийн түлхүүр</translation>
 <translation id="7978450511781612192">Энэ нь таныг Google Бүртгэлүүдээс тань гаргах болно. Таны хавчуурга, түүх, нууц үгнүүд болон бусад зүйлийг синк хийхээ зогсооно.</translation>
 <translation id="7980084013673500153">Хөрөнгийн ID: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Хурдан хөтлөх болон хайхын тулд хуудсыг урьдчилан ачаалах</translation>
 <translation id="7981662863948574132">Төхөөрөмжийн EID болон QR кодын попапыг харуулах</translation>
 <translation id="7981670705071137488">Үүний дараа ард программ хангамжийг шинэчилнэ. Та тохиргоонд шинэчлэлийн сонголтоо үнэлэх боломжтой.</translation>
 <translation id="7982083145464587921">Энэ алдааг засахын тулд төхөөрөмжөө унтрааж асаана уу.</translation>

@@ -566,6 +566,11 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       La documentación sobre las extensiones externas y sobre cómo instalarlas está disponible en https://developer.chrome.com/apps/external_extensions.
       </translation>
 <translation id="1484190167468437592">Inhabilitar el audio en mono</translation>
+<translation id="1484580923123963615">Lista de permitidos que controla los informes de telemetría de sitios web de usuarios afiliados. La política <ph name="REPORT_WEBSITE_TELEMETRY_POLICY_NAME" /> controla los tipos de datos de telemetría de los informes.
+
+Si se define esta política, se controlarán los informes de telemetría de sitios web sobre URLs incluidas en la lista de URLs permitidas.
+Si no se define, no se enviará ningún informe de telemetría de sitios web.
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Esta política solo admite esquemas de URL HTTP y HTTPS.</translation>
 <translation id="1486021504508098388">Enviar información sobre la retroiluminación</translation>
 <translation id="1487722536912664411">Permitir que los usuarios usen <ph name="PRODUCT_NAME" /></translation>
 <translation id="1487916040416013623">Si se define esta política, especificará qué servidores deberían tener permiso para la autenticación integrada. La autenticación integrada solo se activará cuando <ph name="PRODUCT_NAME" /> reciba una solicitud de autenticación de un proxy o un servidor que esté incluido en la lista de permitidos.
@@ -2466,6 +2471,11 @@ Si esta política se inhabilita, la promoción de valoraciones del App Store no 
       Si se inhabilita la política, el software podrá insertar este tipo de código en los procesos de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3182503302060513467">La página Nueva pestaña mostrará el anuncio del espacio intermedio en caso de estar disponible</translation>
 <translation id="3184161739683646075">Controla el modo DNS-over-HTTPS</translation>
+<translation id="3184309751910415763">Lista de permitidos que controla los informes de actividad en sitios web por parte de usuarios afiliados.
+
+Si se define esta política, se controlarán los informes de eventos sobre URLs de sitios web abiertas y cerradas incluidas en la lista de URLs permitidas.
+Si no se define, no se enviará ningún informe de eventos de sitios web.
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Esta política solo admite esquemas de URL HTTP y HTTPS.</translation>
 <translation id="3184638144755436350">Chrome bloqueará el acceso a protocolos externos dentro de iframes
       en entornos aislados. Consulta https://chromestatus.com/features/5680742077038592.
 
@@ -2800,15 +2810,6 @@ Si se inhabilita esta política, no se permitirá la función de escritura predi
 
       Si se inhabilita la política o no se establece, se desactiva el DTC y no puede recoger, procesar ni enviar datos de diagnóstico y telemetría desde el dispositivo.</translation>
 <translation id="3442589735857147823">Permitir que los usuarios usen las máquinas virtuales necesarias para el funcionamiento de las aplicaciones de Linux</translation>
-<translation id="3445364060482221648">Si se habilita esta política, <ph name="PRODUCT_NAME" /> verificará los certificados de los servidores mediante el verificador de certificados integrado, usando Chrome Root Store como fuente de confianza pública.
-
-Si se inhabilita esta política, <ph name="PRODUCT_NAME" /> usará el verificador de certificados del sistema y los certificados raíz del sistema.
-
-Si no se define esta política, se podrán usar Chrome Root Store o las raíces proporcionadas por el sistema.
-
-Se prevé que esta política se elimine en la versión 120 de <ph name="PRODUCT_OS_NAME" /> y <ph name="PRODUCT_NAME" /> para <ph name="LINUX_OS_NAME" /> y <ph name="ANDROID_NAME" />, en la que el uso de raíces proporcionadas por la plataforma dejará de ser compatible.
-
-Esta política se eliminó en la versión 113 de <ph name="PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />, en la que el uso del verificador de certificados y las raíces proporcionados por la plataforma dejó de ser compatible.</translation>
 <translation id="3450649825886735618">No utilizar ningún servicio web de Google para ayudar a corregir errores ortográficos</translation>
 <translation id="3451422488938880786"> Permite habilitar o inhabilitar las reasignaciones de combinaciones de teclas internacionales</translation>
 <translation id="3451901387456196887">El usuario tendrá la opción de seleccionar dispositivos de emisión en el menú de <ph name="PRODUCT_NAME" /> mediante un código de acceso o un código QR.</translation>
@@ -3045,6 +3046,10 @@ Si se inhabilita esta política o no se establece, los dispositivos registrados 
 
       Si no se define esta política, <ph name="PRODUCT_NAME" /> usará un nombre de biblioteca predeterminado.</translation>
 <translation id="3650122925429054129">Inhabilitar el resaltado del cursor en la pantalla de inicio de sesión</translation>
+<translation id="365093517647222762">Envía informes de datos de telemetría de sitios web sobre URLs permitidas especificadas en la política <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> correspondientes a usuarios afiliados.
+
+Si se define esta política, se controlarán los informes de telemetría de sitios web sobre los tipos de datos de telemetría especificados.
+Si no se define, no se enviará ningún informe de datos de telemetría de sitios web.</translation>
 <translation id="3652670852519271837">Permitir que los sitios pidan al usuario que otorgue permiso de lectura a archivos y directorios a través de la API File System</translation>
 <translation id="3653237928288822292">Icono del proveedor de búsquedas predeterminadas</translation>
 <translation id="3654906736796256792">Permite ejecutar el entorno aislado de audio</translation>
@@ -4524,6 +4529,7 @@ Si se asigna el valor False a esta política, se usará el comportamiento predet
 <translation id="4996068111491152684">Las credenciales de inicio de sesión de <ph name="PRODUCT_OS_NAME" /> no se usarán para la autenticación de red.</translation>
 <translation id="4996086761250834365">Permitir análisis de producto de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="4996161752665479028">Habilitar SSH en la aplicación del sistema Terminal</translation>
+<translation id="499654521603185442">Informes de telemetría de sitios web</translation>
 <translation id="4997074784107449343">Cuando la opción Imprimir como imagen está disponible, no se establece como opción predeterminada en las vistas previas de impresión de documentos PDF.</translation>
 <translation id="500149597848135831">Habilitar todas las variaciones</translation>
 <translation id="5017369989680827157">Si se asigna el valor "Verdadero" a esta política o no se le asigna ninguno, se dará a los usuarios el control de la función de autocompletar direcciones en la UI.
@@ -6097,6 +6103,7 @@ En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva cuando
 
 Para obtener más información sobre las tecnologías antiguas, consulta la página https://chromestatus.com/features.</translation>
 <translation id="640827304541402854">Inhabilitar cruce de cortafuegos desde un host de acceso remoto</translation>
+<translation id="6410847321564585975">Lista de permitidos para informes de actividad en sitios web</translation>
 <translation id="6412352702230183710">Permitir solo hosts de mensajería nativa a nivel de sistema</translation>
 <translation id="6416506846917150119">Inhabilitar la escritura predictiva en el teclado físico cuando los usuarios escriban</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
@@ -6251,6 +6258,9 @@ El tiempo de espera de inactividad para que se inicie el salvapantallas y el int
       Si no se establece la política, no se aplicará ninguna longitud máxima.</translation>
 <translation id="6546185795045702747">Permitir que los sitios web comprueben si el usuario tiene métodos de pago guardados</translation>
 <translation id="6553143066970470539">Porcentaje de brillo de la pantalla</translation>
+<translation id="6554236101741861403">Intervalo en el que se recogen datos de telemetría de sitios web en dispositivos registrados de usuarios afiliados. El valor mínimo permitido es 5 minutos.
+
+Si no se establece esta política, se aplicará el intervalo predeterminado de 15 minutos.</translation>
 <translation id="6555557921186817432">Programa un reinicio automático después de que se haya aplicado una actualización de <ph name="PRODUCT_OS_NAME" />.
 
       Si se le asigna el valor true a esta política, se programará un reinicio automático cuando se haya aplicado una actualización de <ph name="PRODUCT_OS_NAME" /> y sea necesario reiniciar para completar el proceso de actualización. El reinicio se programará inmediatamente, pero puede retrasarse en el dispositivo hasta 24 horas si un usuario lo está usando en ese momento.
@@ -7949,6 +7959,7 @@ Si se define esta política, los usuarios no podrán modificarla en <ph name="PR
 <translation id="8020222525161221827">Habilitar la Desk API para el control de Chrome OS por terceros</translation>
 <translation id="802147957407376460">Girar la pantalla 0 grados</translation>
 <translation id="8021777486638359878">Considerar que el usuario está inactivo mientras se reproduce audio</translation>
+<translation id="8022597231371051452">Lista de permitidos para informes de telemetría de sitios web</translation>
 <translation id="8022909529579794519">Este ajuste define qué versión del navegador <ph name="LACROS_NAME" /> se utilizará.
 
 Si se asigna el valor <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> a esta política, el usuario podrá decidir qué versión del navegador <ph name="LACROS_NAME" /> se cargará: el binario de la partición <ph name="LACROS_ROOTFS_NAME" /> o el de la partición <ph name="LACROS_STATEFUL_NAME" />.
@@ -8733,6 +8744,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 <translation id="8728854710675158426">Hashes no seguros habilitados en handshakes de TLS</translation>
 <translation id="8734543507835977857">Iniciar los retrasos de gestión de energía y los límites de duración de sesión al comenzar la sesión</translation>
 <translation id="8736538322216687231">Aplicar el modo restringido en YouTube como mínimo</translation>
+<translation id="873800217865395140">Intervalo de recogida de telemetría de sitios web en milisegundos.</translation>
 <translation id="874149307422233209">Esta política permite que los administradores controlen cómo trata Google los datos de usuario que se envían a la Búsqueda mediante las funciones de <ph name="PRODUCT_OS_NAME" />.
 Si se habilita la política, el usuario podrá usar el cuadro de búsqueda del menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /> y el cuadro de direcciones del navegador <ph name="PRODUCT_NAME" /> en <ph name="PRODUCT_OS_NAME" /> de tal forma que no se asocie el historial de búsqueda del usuario a su identidad.
 Si esta política se inhabilita o no se establece, los datos del usuario de estas búsquedas se asociarán a su identidad.</translation>

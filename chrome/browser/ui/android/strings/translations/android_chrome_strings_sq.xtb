@@ -470,6 +470,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="3513704683820682405">Realiteti i zgjeruar</translation>
 <translation id="3518985090088779359">Prano dhe vazhdo</translation>
 <translation id="3522247891732774234">Një përditësim i disponueshëm. Më shumë opsione</translation>
+<translation id="3523426587027570423">Trokit për të mbyllur "Dëgjoje këtë faqe".</translation>
 <translation id="3524138585025253783">Ndërfaqja e përdoruesit për zhvilluesin</translation>
 <translation id="3524334353996115845">Lejo që <ph name="ORIGIN" /> të verifikojë që je ti</translation>
 <translation id="3527085408025491307">Dosje</translation>
@@ -674,6 +675,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4637420359569396807">Me matjen e reklamave, lloje të kufizuara të të dhënave mund të ndahen mes sajteve dhe aplikacioneve për të matur performancën e reklamave të tyre, si p.sh. ora kur të është shfaqur reklama.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 fjalëkalim i komprometuar}other{# fjalëkalime të komprometuara}}</translation>
 <translation id="4650364565596261010">Parazgjedhja e sistemit</translation>
+<translation id="4654641641922242357">Luajtësi "Dëgjoje këtë faqe".</translation>
 <translation id="465657074423018424">"Shfletimi i sigurt" të mbron kundër sajteve mashtruese. Nëse e çaktivizon, ki shumë kujdes kur shfleton, sidomos përpara se të futësh fjalëkalime.</translation>
 <translation id="4662373422909645029">Pseudonimi nuk mund të përmbajë numra</translation>
 <translation id="4663499661119906179">Shiko sajtet dhe historitë kryesore për ty</translation>
@@ -803,6 +805,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5227554086496586518">Trokit për të parë rezultatet e kërkimit</translation>
 <translation id="5233638681132016545">Skedë e re</translation>
+<translation id="5234971936051226002">Luajtësi "Dëgjoje këtë faqe" u minimizua.</translation>
 <translation id="5235196193381275927">Ndodhi një gabim gjatë identifikimit</translation>
 <translation id="5246093389635966745">Shkurtorja e modifikimit të shiritit të veglave</translation>
 <translation id="5271967389191913893">Pajisja nuk mund të hapë përmbajtjen që do të shkarkohet.</translation>
@@ -1321,6 +1324,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7926975587469166629">Pseudonimi i kartës</translation>
 <translation id="7929962904089429003">Hap menynë</translation>
 <translation id="7930998711684428189">Të paralajmëron nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave.</translation>
+<translation id="7934668619883965330">Skedari nuk mund të shkarkohet. Formati i skedarit nuk mbështetet.</translation>
 <translation id="7939485076072265087">Krijo kartë të stilizuar me theksim</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> është i vjetruar.</translation>
 <translation id="7944772052836377867">Sinkronizimi ka nevojë të verifikojë që je ti</translation>
@@ -1522,6 +1526,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8937772741022875483">Dëshiron të heqësh aktivitetin tënd të Chrome nga "Mirëqenia dixhitale"?</translation>
 <translation id="8942627711005830162">Hap në një dritare tjetër</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Kjo gjuhë nuk mund të shkarkohet. Provo përsëri më vonë.</translation>
+<translation id="8953618380150219653">Luajtësi "Dëgjoje këtë faqe" u hap në gjatësi të plotë.</translation>
 <translation id="8955719471735800169">Kthehu në krye</translation>
 <translation id="8964479563882643397">Për të hapur një skedë të re "të fshehtë", hap menynë</translation>
 <translation id="8965591936373831584">në pritje</translation>

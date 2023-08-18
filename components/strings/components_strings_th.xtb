@@ -606,6 +606,7 @@
 <translation id="2225927550500503913">เปิดบัตรเสมือนแล้ว</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />ลงชื่อเข้าใช้<ph name="END_LINK" />เครือข่าย Wi-Fi</translation>
 <translation id="2228057197024893428">บันทึกที่อยู่นี้ไว้ใน Chrome แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google ของคุณ <ph name="ACCOUNT" /></translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> จะรู้ว่าคุณไปที่ <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="2233745931693710080">แผ่นซีดี</translation>
 <translation id="2239100178324503013">ส่งเลย</translation>
 <translation id="2241693394036365668">มีการดาวน์โหลดไฟล์</translation>
@@ -2092,6 +2093,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> ต้องการส่งการแจ้งเตือนให้คุณ</translation>
 <translation id="5430298929874300616">นำบุ๊กมาร์กออก</translation>
 <translation id="5443468954631487277">ลำดับย้อนกลับหงายหน้าขึ้น</translation>
+<translation id="5447235695608032700">อนุญาตให้ <ph name="SITE" /> ใช้ข้อมูลเกี่ยวกับคุณที่บันทึกไว้</translation>
 <translation id="5447765697759493033">ระบบจะไม่แปลไซต์นี้</translation>
 <translation id="5452270690849572955">ไม่พบหน้า <ph name="HOST_NAME" /> นี้</translation>
 <translation id="5455374756549232013">เวลาบันทึกของนโยบายไม่เหมาะสม</translation>
@@ -2768,7 +2770,6 @@
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">องค์กร (O)</translation>
 <translation id="6907458757809079309">ฟิตเนส</translation>
-<translation id="6910240653697687763"><ph name="URL" /> ต้องการที่จะได้รับสิทธิ์ควบคุมอุปกรณ์ MIDI เต็มรูปแบบ</translation>
 <translation id="691024665142758461">ดาวน์โหลดหลายไฟล์</translation>
 <translation id="6915804003454593391">ผู้ใช้:</translation>
 <translation id="6916954549222464607">การวางแผนและจัดการด้านการเงิน</translation>

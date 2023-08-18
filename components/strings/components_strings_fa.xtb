@@ -606,6 +606,7 @@
 <translation id="2225927550500503913">کارت مجازی روشن شد</translation>
 <translation id="2226636330183131181">‏<ph name="BEGIN_LINK" />ورود به سیستم<ph name="END_LINK" /> در شبکه Wi-Fi</translation>
 <translation id="2228057197024893428">‏این نشانی درحال‌حاضر در Chrome ذخیره شده است. برای استفاده از این نشانی در محصولات Google، آن را در «حساب Google» خود (<ph name="ACCOUNT" />) ذخیره کنید.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> متوجه خواهد شد که شما از <ph name="TOP_LEVEL_URL" /> بازدید کرده‌اید.</translation>
 <translation id="2233745931693710080">لوح فشرده</translation>
 <translation id="2239100178324503013">اکنون ارسال شود</translation>
 <translation id="2241693394036365668">فایل بارگیری شده است</translation>
@@ -2093,6 +2094,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> می‌خواهد برایتان اعلان  ارسال کند</translation>
 <translation id="5430298929874300616">حذف نشانک</translation>
 <translation id="5443468954631487277">روبه‌بالا به‌ترتیب معکوس</translation>
+<translation id="5447235695608032700">اجازه دادن به <ph name="SITE" /> برای استفاده از اطلاعاتی که درباره شما ذخیره کرده‌اند</translation>
 <translation id="5447765697759493033">این سایت ترجمه نخواهد شد</translation>
 <translation id="5452270690849572955">صفحه <ph name="HOST_NAME" /> پیدا نمی‌شود</translation>
 <translation id="5455374756549232013">مهر زمان خط‌مشی نادرست است</translation>
@@ -2769,7 +2771,6 @@
 <translation id="6897140037006041989">نماینده کاربر</translation>
 <translation id="6898699227549475383">‏سازمان (O)</translation>
 <translation id="6907458757809079309">تناسب اندام</translation>
-<translation id="6910240653697687763">‏<ph name="URL" /> می‌خواهد کنترل کامل دستگاه‌های MIDI شما را به‌دست آورد</translation>
 <translation id="691024665142758461">بارگیری چندین فایل.</translation>
 <translation id="6915804003454593391">کاربر:</translation>
 <translation id="6916954549222464607">مدیریت و برنامه‌ریزی مالی</translation>

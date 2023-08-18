@@ -243,7 +243,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1989113344093894667">Snimanje sadržaja nije moguće</translation>
 <translation id="1990046457226896323">Govorne datoteke su preuzete</translation>
 <translation id="1993072747612765854">Saznajte više o najnovijem ažuriranju za <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Isključi</translation>
 <translation id="1996162290124031907">Prelazak na sljedeću karticu</translation>
 <translation id="1998100899771863792">Trenutačna radna površina</translation>
 <translation id="2001444736072756133">Pretražujte svoje <ph name="CATEGORY" />, datoteke, aplikacije i ostalo.</translation>
@@ -659,6 +658,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="380165613292957338">Pozdrav, kako mogu pomoći?</translation>
 <translation id="3804737937830804242">Zažmi fotoaparat</translation>
 <translation id="3824784079442479685">To omogućuje pristup kameri za aplikaciju <ph name="APP_NAME" /> te sve aplikacije i web-lokacije s dopuštenjem za kameru. Možda ćete morati osvježiti web-stranicu ili ponovo pokrenuti aplikaciju.</translation>
+<translation id="3825680296690914697">Predano <ph name="NUM_TURNED_IN" /> od <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, ocijenjeno <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Prelazak na zaporku</translation>
 <translation id="383058930331066723">Uključen je način štednje baterije</translation>
 <translation id="383629559565718788">Prikaz postavki tipkovnice</translation>
@@ -1744,6 +1744,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8446884382197647889">Saznajte više</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Zatvorite značajku Odabir za govor</translation>
+<translation id="8468806060683421065">rok: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Postavke skale prikaza</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ima <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pritisnite Alt + Pretraživanje ili Shift da biste otkazali.</translation>
@@ -1827,6 +1828,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8853703225951107899">Bez obzira na to, vaš PIN ili zaporku nije bilo moguće potvrditi. Napomena: ako ste nedavno promijenili zaporku, upotrijebite staru zaporku. Vaša nova zaporka primijenit će se nakon što se odjavite.</translation>
 <translation id="8855885154700222542">tipka cijelog zaslona</translation>
 <translation id="8858369206579825206">Kontrole privatnosti</translation>
+<translation id="8860366331836346216">Dodajte eSIM</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podijeljeni zaslon.</translation>
 <translation id="8874184842967597500">Niste povezani</translation>
 <translation id="8875021410787719674">Prebacivanje iz donjeg desnog kuta na pokretač, adresnu traku, traku oznaka, web-lokaciju koja je otvorena i preuzimanja</translation>

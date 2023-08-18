@@ -470,6 +470,7 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="3513704683820682405">Papildinātā realitāte</translation>
 <translation id="3518985090088779359">Piekrist un turpināt</translation>
 <translation id="3522247891732774234">Pieejams atjauninājums. Citas iespējas</translation>
+<translation id="3523426587027570423">Pieskarieties, lai aizvērtu atskaņotāju “Klausīties šo lapu”.</translation>
 <translation id="3524138585025253783">Izstrādātāja lietotājsaskarne</translation>
 <translation id="3524334353996115845">Ļaujiet <ph name="ORIGIN" /> apstiprināt jūsu identitāti.</translation>
 <translation id="3527085408025491307">Mape</translation>
@@ -674,6 +675,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4637420359569396807">Izmantojot reklāmu izvērtēšanu, lai izvērtētu vietņu un lietotņu reklāmu veiktspēju, starp šīm vietnēm un lietotnēm var tikt kopīgoti noteiktu veidu dati, piemēram, diennakts laiks, kad reklāma tika parādīta jums.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 uzlauzta parole}zero{# uzlauztu paroļu}one{# uzlauzta parole}other{# uzlauztas paroles}}</translation>
 <translation id="4650364565596261010">Sistēmas noklusējums</translation>
+<translation id="4654641641922242357">Atskaņotājs “Klausīties šo lapu”.</translation>
 <translation id="465657074423018424">Drošas pārlūkošanas režīmā jūs tiekat aizsargāts pret maldinošām tīmekļa vietnēm. Ja izslēgsiet šo režīmu, pārlūkošanas laikā ievērojiet īpašu piesardzību, it sevišķi tad, kad grasāties ievadīt paroli.</translation>
 <translation id="4662373422909645029">Segvārdā nedrīkst būt cipari</translation>
 <translation id="4663499661119906179">Skatiet vietnes, ko apmeklējat visbiežāk, un ieteicamos rakstus</translation>
@@ -803,6 +805,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5222676887888702881">Izrakstīties</translation>
 <translation id="5227554086496586518">Pieskarieties, lai skatītu meklēšanas rezultātus</translation>
 <translation id="5233638681132016545">Jauna cilne</translation>
+<translation id="5234971936051226002">Atskaņotājs “Klausīties šo lapu” ir minimizēts.</translation>
 <translation id="5235196193381275927">Mēģinot pierakstīties, radās problēma.</translation>
 <translation id="5246093389635966745">Rīkjoslas rediģēšanas saīsne</translation>
 <translation id="5271967389191913893">Ierīcē nevar atvērt lejupielādējamo saturu.</translation>
@@ -1074,6 +1077,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6649642165559792194">Priekšskatīt attēlu <ph name="BEGIN_NEW" />Jauns<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Parole</translation>
 <translation id="6659594942844771486">Cilne</translation>
+<translation id="6662119761881114773">Šajā ierīcē saglabātās paroles pašlaik nevar izmantot dažādās Chrome versijās. Pēc 121. versijas jūsu ierīcē saglabātās paroles pārlūkā Chrome (un šeit: <ph name="CHROME_CHANNEL" />) tiks sapludinātas un tās varēs izmantot abās lietotnēs.</translation>
 <translation id="666731172850799929">Atvērt lietotnē <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Kopēt attēlu</translation>
 <translation id="6672917148207387131">Pievienot vietni <ph name="DOMAIN" /></translation>
@@ -1320,6 +1324,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7926975587469166629">Kredītkartes apzīmējums</translation>
 <translation id="7929962904089429003">Atvērt izvēlni</translation>
 <translation id="7930998711684428189">Jūs saņemat brīdinājumu, ja paroles tiek atklātas datu aizsardzības pārkāpuma dēļ.</translation>
+<translation id="7934668619883965330">Nevar lejupielādēt failu. Faila formāts netiek atbalstīts.</translation>
 <translation id="7939485076072265087">Izveidot stilizētu kartīti ar izcēlumu</translation>
 <translation id="7942131818088350342">Spraudnis <ph name="PRODUCT_NAME" /> ir novecojis.</translation>
 <translation id="7944772052836377867">Sinhronizēšanai nepieciešams apstiprināt jūsu identitāti</translation>
@@ -1521,6 +1526,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8937772741022875483">Vai noņemt jūsu Chrome darbības no Digitālās labjutības?</translation>
 <translation id="8942627711005830162">Atvērt citā logā</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> — šo valodu nevarēja lejupielādēt. Vēlāk mēģiniet vēlreiz.</translation>
+<translation id="8953618380150219653">Atskaņotājs “Klausīties šo lapu” ir atvērts pilna ekrāna augstumā.</translation>
 <translation id="8955719471735800169">Augšup</translation>
 <translation id="8964479563882643397">Lai atvērtu jaunu inkognito cilni, atveriet izvēlni.</translation>
 <translation id="8965591936373831584">gaida</translation>

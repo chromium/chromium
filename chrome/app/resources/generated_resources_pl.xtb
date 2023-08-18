@@ -4469,6 +4469,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4646675363240786305">Porty</translation>
 <translation id="4647090755847581616">&amp;Zamknij kartę</translation>
 <translation id="4647283074445570750">Krok <ph name="CURRENT_STEP" /> z <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Selektor kolorów</translation>
 <translation id="4648491805942548247">Niewystarczające uprawnienia</translation>
 <translation id="4650037136970677721">Zaoszczędzona pamięć</translation>
 <translation id="4650591383426000695">Odłącz telefon od urządzenia <ph name="DEVICE_TYPE" /></translation>
@@ -6028,6 +6029,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5975056890546437204">{COUNT,plural, =0{Otwórz wszystkie w oknie &amp;incognito}=1{Otwórz w oknie &amp;incognito}few{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}many{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}other{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}}</translation>
 <translation id="5975792506968920132">Procent naładowania akumulatora</translation>
 <translation id="5976160379964388480">Pozostałe</translation>
+<translation id="5977976211062815271">Na tym urządzeniu</translation>
 <translation id="5978277834170881274">&amp;Używaj podstawowego sprawdzania pisowni</translation>
 <translation id="5978493744931296692">Administrator wyłączył inne profile</translation>
 <translation id="5979084224081478209">Sprawdź hasła</translation>
@@ -8444,7 +8446,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7978412674231730200">Klucz prywatny</translation>
 <translation id="7978450511781612192">Spowoduje to wylogowanie Cię z Twoich kont Google. Twoje zakładki, historia, hasła i inne dane przestaną być synchronizowane.</translation>
 <translation id="7980084013673500153">Identyfikator zasobu: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Ładuj wstępnie strony, by przyspieszyć przeglądanie i wyszukiwanie</translation>
 <translation id="7981662863948574132">Pokaż wyskakujące okienko z numerem EID urządzenia i kodem QR</translation>
 <translation id="7981670705071137488">Aktualizacje oprogramowania będą przeprowadzane w tle. Ustawienia aktualizacji możesz sprawdzić w Ustawieniach.</translation>
 <translation id="7982083145464587921">Aby naprawić ten błąd, ponownie uruchom urządzenie.</translation>

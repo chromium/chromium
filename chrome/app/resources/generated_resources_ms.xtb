@@ -1900,6 +1900,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2480868415629598489">Ubah suai data yang anda salin dan tampal</translation>
 <translation id="2482878487686419369">Pemberitahuan</translation>
 <translation id="2482895651873876648">Tab dialihkan ke kumpulan <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Tetapkan enjin carian dalam tetapan penyemak imbas Chrome</translation>
 <translation id="2484743711056182585">Alih keluar kebenaran</translation>
 <translation id="2484909293434545162">Jika laman menggunakan kuki, kuki tersebut akan dipaparkan di sini</translation>
 <translation id="2484959914739448251">Untuk mengosongkan data semakan imbas daripada semua peranti tersegerak dan Akaun Google anda, <ph name="BEGIN_LINK" />masukkan frasa laluan anda<ph name="END_LINK" />.</translation>
@@ -2054,6 +2055,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2612676031748830579">Nombor kad</translation>
 <translation id="2613210758071148851">Jangan benarkan sebarang sambungan pada <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> akan dapat mengedit <ph name="FILENAME" /></translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{Bukan dan edit <ph name="FILE1" /> dalam sambungan ini}other{Buka dan edit <ph name="FILE1" />, ... dalam apl ini}}</translation>
 <translation id="2616366145935564096">Baca dan tukar data anda di <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Sediakan Kongsi Berdekatan</translation>
 <translation id="261953424982546039">Chrome Labs...</translation>
@@ -4430,6 +4432,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4585793705637313973">Edit halaman</translation>
 <translation id="4586275095964870617"><ph name="URL" /> tidak dapat dibuka dalam penyemak imbas alternatif. Sila hubungi pentadbir sistem anda.</translation>
 <translation id="4587589328781138893">Tapak</translation>
+<translation id="4588749726511456218">Pecutan penatalan <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Log berjaya ditulis ke direktori Muat Turun.</translation>
 <translation id="459204634473266369">Tiada peranti disimpan pada <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">Menyemak imbas dan mencari adalah lebih pantas.</translation>
@@ -4498,6 +4501,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4646675363240786305">Port</translation>
 <translation id="4647090755847581616">&amp;Tutup Tab</translation>
 <translation id="4647283074445570750">Langkah <ph name="CURRENT_STEP" /> daripada <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Pemilih warna</translation>
 <translation id="4648491805942548247">Kebenaran tidak mencukupi</translation>
 <translation id="4650037136970677721">Kenangan disimpan</translation>
 <translation id="4650591383426000695">Putuskan sambungan telefon anda daripada <ph name="DEVICE_TYPE" /></translation>
@@ -6058,6 +6062,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5975056890546437204">{COUNT,plural, =0{Buka semua dalam tetingkap &amp;Inkognito}=1{Buka dalam tetingkap &amp;Inkognito}other{Buka semua ({COUNT}) dalam tetingkap &amp;Inkognito}}</translation>
 <translation id="5975792506968920132">Peratusan Cas Bateri</translation>
 <translation id="5976160379964388480">Lain-lain</translation>
+<translation id="5977976211062815271">Pada peranti ini</translation>
 <translation id="5978277834170881274">&amp;Gunakan semak ejaan asas</translation>
 <translation id="5978493744931296692">Pentadbir anda telah melumpuhkan profil lain</translation>
 <translation id="5979084224081478209">Semak kata laluan</translation>
@@ -6247,6 +6252,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6130692320435119637">Tambah Wi-Fi</translation>
 <translation id="6130887916931372608">Kekunci papan kekunci</translation>
 <translation id="6132714462430777655">Langkau pendaftaran sekolah?</translation>
+<translation id="6134428719487602109">Alih keluar semua akaun pengguna dan tetapkan semula Chromebook anda menjadi seperti baharu.</translation>
 <translation id="6135823405800500595">Pastikan telefon ada pada anda, tidak berkunci dan Bluetooth serta Wi-Fi dihidupkan.</translation>
 <translation id="6135826623269483856">Tidak dibenarkan mengurus tetingkap pada semua paparan anda</translation>
 <translation id="6136114942382973861">Tutup bar muat turun</translation>
@@ -8473,7 +8479,6 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7978412674231730200">Kunci persendirian</translation>
 <translation id="7978450511781612192">Tindakan ini akan menyebabkan anda log keluar daripada Akaun Google anda. Penanda halaman, sejarah, kata laluan dan pelbagai lagi tidak akan disegerakkan lagi.</translation>
 <translation id="7980084013673500153">ID Aset: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Pramuat halaman untuk penyemakan imbas dan pencarian yang lebih cepat</translation>
 <translation id="7981662863948574132">Paparkan tetingkap timbul EID dan Kod QR peranti</translation>
 <translation id="7981670705071137488">Selepas ini, kemaskinian perisian akan berlaku di latar. Anda boleh menyemak pilihan kemaskinian dalam Tetapan.</translation>
 <translation id="7982083145464587921">Sila mulakan semula peranti anda untuk membetulkan ralat ini.</translation>

@@ -606,6 +606,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2225927550500503913">La targeta virtual s'ha activat</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Inici de sessió<ph name="END_LINK" /> a la xarxa Wi-Fi</translation>
 <translation id="2228057197024893428">Actualment aquesta adreça està desada a Chrome. Per utilitzar-la en tots els productes de Google, desa-la al teu Compte de Google, <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> sabrà que has visitat <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Disc compacte</translation>
 <translation id="2239100178324503013">Envia ara</translation>
 <translation id="2241693394036365668">Es baixa un fitxer</translation>
@@ -2093,6 +2094,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5426179911063097041"><ph name="SITE" /> et vol enviar notificacions</translation>
 <translation id="5430298929874300616">Suprimeix l'adreça d'interès</translation>
 <translation id="5443468954631487277">Ordre invers de cara amunt</translation>
+<translation id="5447235695608032700">Permet que <ph name="SITE" /> utilitzi la informació que ha desat sobre tu</translation>
 <translation id="5447765697759493033">Aquest lloc web no es traduirà</translation>
 <translation id="5452270690849572955">No s'ha trobat aquesta pàgina de <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Marca de temps de la política incorrecta</translation>
@@ -2769,7 +2771,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6897140037006041989">Agent d'usuari</translation>
 <translation id="6898699227549475383">Organització (O)</translation>
 <translation id="6907458757809079309">Fitnes</translation>
-<translation id="6910240653697687763"><ph name="URL" /> vol obtenir un control total dels teus dispositius MIDI</translation>
 <translation id="691024665142758461">Baixa diversos fitxers</translation>
 <translation id="6915804003454593391">Usuari:</translation>
 <translation id="6916954549222464607">Gestió i planificació financera</translation>

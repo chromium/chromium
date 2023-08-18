@@ -606,6 +606,7 @@
 <translation id="2225927550500503913">વર્ચ્યુઅલ કાર્ડ ચાલુ કરવામાં આવ્યું છે</translation>
 <translation id="2226636330183131181">વાઇ-ફાઇ નેટવર્કમાં <ph name="BEGIN_LINK" />સાઇન ઇન કરવા વિશે<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">આ સરનામું હાલમાં Chromeમાં સાચવેલું છે. Googleની સમગ્ર પ્રોડક્ટ પર તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT" />માં સાચવો.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" />ને જાણ થશે કે તમે <ph name="TOP_LEVEL_URL" />ની મુલાકાત કરી.</translation>
 <translation id="2233745931693710080">કોમ્પેક્ટ ડિસ્ક</translation>
 <translation id="2239100178324503013">હમણાં મોકલો</translation>
 <translation id="2241693394036365668">ફાઇલ ડાઉનલોડ કરવામાં આવે ત્યારે</translation>
@@ -2093,6 +2094,7 @@
 <translation id="5426179911063097041"><ph name="SITE" />તમને નોટિફિકેશનો મોકલવા માગે છે</translation>
 <translation id="5430298929874300616">બુકમાર્ક દૂર કરો</translation>
 <translation id="5443468954631487277">ઉલટા ક્રમમાં ઉપર તરફ</translation>
+<translation id="5447235695608032700"><ph name="SITE" /> દ્વારા તમારા વિશે સાચવવામાં આવેલી માહિતીનો ઉપયોગ કરવાની તેમને મંજૂરી આપો</translation>
 <translation id="5447765697759493033">આ સાઇટનો અનુવાદ થશે નહીં</translation>
 <translation id="5452270690849572955">આ <ph name="HOST_NAME" /> પેજ શોધી શકાતું નથી</translation>
 <translation id="5455374756549232013">ખરાબ પૉલિસી ટાઇમસ્ટેમ્પ</translation>
@@ -2769,7 +2771,6 @@
 <translation id="6897140037006041989">વપરાશકર્તા એજન્ટ</translation>
 <translation id="6898699227549475383">ઑર્ગેનાઇઝેશન (O)</translation>
 <translation id="6907458757809079309">ફિટનેસ</translation>
-<translation id="6910240653697687763"><ph name="URL" /> તમારા MIDI ઉપકરણોનું પૂર્ણ નિયંત્રણ મેળવવા માગે છે</translation>
 <translation id="691024665142758461">બહુવિધ ફાઇલોને ડાઉનલોડ કરવા</translation>
 <translation id="6915804003454593391">વપરાશકર્તા: </translation>
 <translation id="6916954549222464607">નાણાકીય પ્લાનિંગ અને મેનેજમેન્ટ</translation>

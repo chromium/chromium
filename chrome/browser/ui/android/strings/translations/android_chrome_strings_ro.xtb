@@ -470,6 +470,7 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="3513704683820682405">Realitate augmentată</translation>
 <translation id="3518985090088779359">Acceptă și continuă</translation>
 <translation id="3522247891732774234">Actualizare disponibilă. Mai multe opțiuni</translation>
+<translation id="3523426587027570423">Atinge pentru a închide playerul Ascultă pagina.</translation>
 <translation id="3524138585025253783">IU pentru dezvoltatori</translation>
 <translation id="3524334353996115845">Permite ca <ph name="ORIGIN" /> să-ți verifice identitatea</translation>
 <translation id="3527085408025491307">Dosar</translation>
@@ -674,6 +675,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4637420359569396807">Pentru cuantificarea anunțurilor, pot fi trimise tipuri de date limitate între site-uri și aplicații pentru a măsura performanța anunțurilor lor, cum ar fi ora la care ți-a fost afișat un anunț.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{O parolă compromisă}few{# parole compromise}other{# de parole compromise}}</translation>
 <translation id="4650364565596261010">Setare prestabilită a sistemului</translation>
+<translation id="4654641641922242357">Playerul Ascultă pagina.</translation>
 <translation id="465657074423018424">Navigarea sigură te protejează împotriva site-urilor înșelătoare. Dacă o dezactivezi, ai mare grijă atunci când navighezi, mai ales înainte să introduci parole.</translation>
 <translation id="4662373422909645029">Pseudonimele nu pot să includă cifre</translation>
 <translation id="4663499661119906179">Vezi principalele site-uri și subiecte pentru tine</translation>
@@ -803,6 +805,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5222676887888702881">Deconectează-te</translation>
 <translation id="5227554086496586518">Atinge pentru a vedea rezultatele căutării</translation>
 <translation id="5233638681132016545">Filă nouă</translation>
+<translation id="5234971936051226002">Playerul Ascultă pagina minimizat.</translation>
 <translation id="5235196193381275927">A apărut o eroare la conectare</translation>
 <translation id="5246093389635966745">Editează comanda rapidă pentru bara de instrumente</translation>
 <translation id="5271967389191913893">Dispozitivul nu poate deschide conținutul de descărcat.</translation>
@@ -1254,6 +1257,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fișier descărcat}few{<ph name="FILES_DOWNLOADED_MANY" /> fișiere descărcate}other{<ph name="FILES_DOWNLOADED_MANY" /> de fișiere descărcate}}</translation>
 <translation id="7581273696622423628">Participă la sondaj</translation>
 <translation id="7583262514280211622">Aici vei vedea lista de lectură</translation>
+<translation id="7587250070160020374">Pagina de Chrome se redă acum</translation>
 <translation id="7588219262685291874">Activează tema întunecată când este activată Economisirea bateriei pentru dispozitiv</translation>
 <translation id="7594687499944811403">Permite ca <ph name="EMBEDDED_ORIGIN" /> să-ți verifice identitatea pentru <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistem de operare</translation>
@@ -1321,6 +1325,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7926975587469166629">Pseudonimul cardului</translation>
 <translation id="7929962904089429003">Deschide meniul</translation>
 <translation id="7930998711684428189">Te avertizează dacă parolele au fost expuse în urma încălcării securității datelor.</translation>
+<translation id="7934668619883965330">Nu se poate descărca fișierul. Formatul fișierului nu este acceptat.</translation>
 <translation id="7939485076072265087">Creează un card stilizat cu evidențiere</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> este învechit.</translation>
 <translation id="7944772052836377867">Sincronizarea trebuie să-ți confirme identitatea</translation>
@@ -1522,6 +1527,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8937772741022875483">Elimini activitatea în Chrome din Bunăstarea digitală?</translation>
 <translation id="8942627711005830162">Deschide în altă fereastră</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Limba nu a putut fi descărcată. Încearcă din nou mai târziu.</translation>
+<translation id="8953618380150219653">Playerul Ascultă pagina deschis la înălțimea completă.</translation>
 <translation id="8955719471735800169">Înapoi sus</translation>
 <translation id="8964479563882643397">Deschide meniul pentru a deschide o nouă filă incognito</translation>
 <translation id="8965591936373831584">în așteptare</translation>

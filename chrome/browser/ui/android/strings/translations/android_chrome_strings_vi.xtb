@@ -470,6 +470,7 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="3513704683820682405">Thực tế tăng cường</translation>
 <translation id="3518985090088779359">Chấp nhận và tiếp tục</translation>
 <translation id="3522247891732774234">Bản cập nhật có sẵn. Tùy chọn khác</translation>
+<translation id="3523426587027570423">Nhấn để đóng "Đọc trang này".</translation>
 <translation id="3524138585025253783">Giao diện người dùng dành cho nhà phát triển</translation>
 <translation id="3524334353996115845">Cho phép <ph name="ORIGIN" /> xác minh danh tính của bạn</translation>
 <translation id="3527085408025491307">Thư mục</translation>
@@ -674,6 +675,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4637420359569396807">Chế độ đo lường quảng cáo cho phép các trang web và ứng dụng chia sẻ với nhau một số loại dữ liệu nhất định để đo lường hiệu suất quảng cáo, chẳng hạn như thời điểm trong ngày mà bạn thấy quảng cáo.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mật khẩu bị lộ}other{# mật khẩu bị lộ}}</translation>
 <translation id="4650364565596261010">Tùy chọn mặc định của hệ thống</translation>
+<translation id="4654641641922242357">Trình phát "Đọc trang này".</translation>
 <translation id="465657074423018424">Tính năng Duyệt web an toàn bảo vệ bạn khỏi các trang web lừa đảo. Nếu bạn tắt tính năng này, hãy cẩn thận hơn khi duyệt web, đặc biệt là trước khi nhập mật khẩu.</translation>
 <translation id="4662373422909645029">Biệt hiệu không được bao gồm số</translation>
 <translation id="4663499661119906179">Xem các trang web hàng đầu và tin nổi bật dành cho bạn</translation>
@@ -803,6 +805,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5222676887888702881">Đăng xuất</translation>
 <translation id="5227554086496586518">Nhấn để xem kết quả tìm kiếm</translation>
 <translation id="5233638681132016545">Thẻ mới</translation>
+<translation id="5234971936051226002">Trình phát "Đọc trang này" đã thu nhỏ.</translation>
 <translation id="5235196193381275927">Đã xảy ra lỗi trong quá trình đăng nhập</translation>
 <translation id="5246093389635966745">Chỉnh sửa phím tắt thanh công cụ</translation>
 <translation id="5271967389191913893">Thiết bị không thể mở nội dung được tải xuống.</translation>
@@ -1254,6 +1257,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="757855969265046257">{FILES,plural, =1{Đã tải <ph name="FILES_DOWNLOADED_ONE" /> tệp xuống}other{Đã tải <ph name="FILES_DOWNLOADED_MANY" /> tệp xuống}}</translation>
 <translation id="7581273696622423628">Thực hiện khảo sát</translation>
 <translation id="7583262514280211622">Bạn sẽ thấy danh sách đọc ở đây</translation>
+<translation id="7587250070160020374">Chrome đang phát</translation>
 <translation id="7588219262685291874">Bật giao diện tối khi Trình tiết kiệm pin trên thiết bị đang bật</translation>
 <translation id="7594687499944811403">Cho phép <ph name="EMBEDDED_ORIGIN" /> xác minh danh tính của bạn trên <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Hệ điều hành</translation>
@@ -1321,6 +1325,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7926975587469166629">Biệt hiệu của thẻ</translation>
 <translation id="7929962904089429003">Mở menu</translation>
 <translation id="7930998711684428189">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu.</translation>
+<translation id="7934668619883965330">Không thể tải tệp xuống. Định dạng tệp không được hỗ trợ.</translation>
 <translation id="7939485076072265087">Tạo thẻ cách điệu cho văn bản nổi bật</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> đã lỗi thời.</translation>
 <translation id="7944772052836377867">Tính năng đồng bộ hóa cần xác minh danh tính của bạn</translation>
@@ -1522,6 +1527,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8937772741022875483">Bạn có muốn xóa hoạt động của mình trên Chrome khỏi Digital Wellbeing không?</translation>
 <translation id="8942627711005830162">Mở trong cửa sổ khác</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Không thể tải ngôn ngữ này xuống. Hãy thử lại sau.</translation>
+<translation id="8953618380150219653">Trình phát "Đọc trang này" đã mở trên toàn màn hình.</translation>
 <translation id="8955719471735800169">Quay lại đầu trang</translation>
 <translation id="8964479563882643397">Để mở một thẻ ẩn danh mới, hãy mở trình đơn</translation>
 <translation id="8965591936373831584">đang chờ xử lý</translation>

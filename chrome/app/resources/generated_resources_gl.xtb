@@ -4484,6 +4484,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4646675363240786305">Portos</translation>
 <translation id="4647090755847581616">&amp;Pechar pestana</translation>
 <translation id="4647283074445570750">Paso <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Seleccionador de cor</translation>
 <translation id="4648491805942548247">Permisos insuficientes</translation>
 <translation id="4650037136970677721">Memoria aforrada</translation>
 <translation id="4650591383426000695">Desconecta o teléfono do <ph name="DEVICE_TYPE" /></translation>
@@ -6041,6 +6042,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5975056890546437204">{COUNT,plural, =0{Abrir todos nunha ventá do modo de &amp;incógnito}=1{Abrir nunha ventá do modo de &amp;incógnito}other{Abrir todos ({COUNT}) nunha ventá do modo de &amp;incógnito}}</translation>
 <translation id="5975792506968920132">Porcentaxe de carga da batería</translation>
 <translation id="5976160379964388480">Outros</translation>
+<translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5978277834170881274">&amp;Utilizar corrector ortográfico básico</translation>
 <translation id="5978493744931296692">O teu administrador desactivou outros perfís</translation>
 <translation id="5979084224081478209">Comprobar contrasinais</translation>
@@ -8455,7 +8457,6 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7978412674231730200">Clave privada</translation>
 <translation id="7978450511781612192">Desta forma pecharase sesión nas túas Contas de Google. Deixarán de sincronizarse os marcadores, o historial, os contrasinais e outros datos.</translation>
 <translation id="7980084013673500153">Código de identificación do recurso: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Cargar previamente as páxinas para que a navegación e as buscas sexan máis rápidas</translation>
 <translation id="7981662863948574132">Mostrar ventá emerxente co EID do dispositivo e co código QR correspondente</translation>
 <translation id="7981670705071137488">Unha vez que remate este proceso, o software actualizarase en segundo plano. Podes revisar as túas preferencias de actualización en Configuración.</translation>
 <translation id="7982083145464587921">Reinicia o dispositivo para corrixir este erro.</translation>

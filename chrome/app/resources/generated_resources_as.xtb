@@ -4494,6 +4494,7 @@
 <translation id="4646675363240786305">প’ৰ্টসমূহ</translation>
 <translation id="4647090755847581616">&amp;টেব বন্ধ কৰক</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" />টাৰ ভিতৰত <ph name="CURRENT_STEP" /> নম্বৰ পদক্ষেপ</translation>
+<translation id="4647836961514597010">ৰং বাছনি কৰোঁতা</translation>
 <translation id="4648491805942548247">অপর্যাপ্ত অনুমতি</translation>
 <translation id="4650037136970677721">মেম’ৰী ছেভ কৰা হৈছে</translation>
 <translation id="4650591383426000695"><ph name="DEVICE_TYPE" />ৰ পৰা আপোনাৰ ফ’নটোৰ সংযোগ বিচ্ছিন্ন কৰক</translation>
@@ -6054,6 +6055,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{আটাইবোৰ &amp;ইনক’গনিট’ ৱিণ্ড’ত খোলক}=1{&amp;ইনক’গনিট’ ৱিণ্ড’ত খোলক}one{আটাইবোৰ ({COUNT}) &amp;ইনক’গনিট’ ৱিণ্ড’ত খোলক}other{আটাইবোৰ ({COUNT}) &amp;ইনক’গনিট’ ৱিণ্ড’ত খোলক}}</translation>
 <translation id="5975792506968920132">বেটাৰী চাৰ্জ হোৱাৰ শতাংশ</translation>
 <translation id="5976160379964388480">অন্য</translation>
+<translation id="5977976211062815271">এই ডিভাইচটোত</translation>
 <translation id="5978277834170881274">&amp;সাধাৰণ বানান পৰীক্ষক ব্যৱহাৰ কৰক</translation>
 <translation id="5978493744931296692">আপোনাৰ প্ৰশাসকে আন প্ৰ’ফাইলসমূহ অক্ষম কৰিছে</translation>
 <translation id="5979084224081478209">পাছৱৰ্ডবোৰ পৰীক্ষা কৰক</translation>
@@ -8470,7 +8472,6 @@
 <translation id="7978412674231730200">ব্যক্তিগত কী</translation>
 <translation id="7978450511781612192">এই কার্যয়ে আপোনাক নিজৰ Google একাউণ্টৰ পৰা ছাইন আউট কৰাব। আপোনাৰ বুকমাৰ্ক, ইতিহাস, পাছৱর্ড তথা অধিক সমল আৰু ছিংক কৰা নহয়।</translation>
 <translation id="7980084013673500153">সম্পদৰ আইডি: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">দ্ৰুতভাৱে ব্ৰাউজ আৰু সন্ধান কৰিবলৈ পৃষ্ঠা আগতীয়াকৈ ল'ড কৰক</translation>
 <translation id="7981662863948574132">ডিভাইচৰ ইআইডি আৰু কিউআৰ ক’ডৰ পপআপ দেখুৱাওক</translation>
 <translation id="7981670705071137488">ইয়াৰ পাছত, ছফ্টৱেৰ আপডে’ট নেপথ্যত কৰা হ’ব। আপুনি ছেটিঙত আপডে’টৰ অগ্ৰাধিকাৰসমূহ পৰ্যালোচনা কৰিব পাৰে।</translation>
 <translation id="7982083145464587921">এই আসোঁৱাহটো সমাধান কৰিবলৈ আপোনাৰ ডিভাইচ ৰিষ্টার্ট কৰক।</translation>

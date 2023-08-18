@@ -1091,6 +1091,7 @@
 <translation id="1854180393107901205">ຢຸດ​ການ​ຄາສທ໌</translation>
 <translation id="1856715684130786728">ເພີ່ມ​ທີ່ຕັ້ງ...</translation>
 <translation id="1858585891038687145">ເຊື່ອໝັ້ນໃບຢັ້ງຢືນນີ້ສຳລັບການລະບຸຕົວຕົນຜູ້ສ້າງຊອບແວ</translation>
+<translation id="1859294693760125695">ບໍ່ສົນໃຈແລ້ວ</translation>
 <translation id="1859339856433307593">ລະຫັດຜ່ານສຳລັບບັນຊີນີ້ຖືກບັນທຶກໃສ່ <ph name="BRAND" /> (<ph name="USER_EMAIL" />) ຂອງທ່ານແລ້ວ</translation>
 <translation id="1861262398884155592">ໂຟນເດີນີ້ຫວ່າງເປົ່າ</translation>
 <translation id="1862311223300693744">ທ່ານມີ VPN, ພຣັອກຊີ, firewall ຫຼື ຊອບແວ NAS ພິເສດຕິດຕັ້ງໄວ້ບໍ່?</translation>
@@ -2777,6 +2778,7 @@
 <translation id="3226487301970807183">ສະຫຼັບແຜງຄວບຄຸມດ້ານຂ້າງຈັດຕຳແໜ່ງໄວ້ຊ້າຍ</translation>
 <translation id="322708765617468434">ທ່ານສາມາດເພີ່ມຄົນອື່ນໄປໃສ່ອຸປະກອນຫຼັງຈາກຕັ້ງຄ່າແລ້ວໄດ້ຕະຫຼອດເວລາ. ແຕ່ລະຄົນສາມາດປັບແຕ່ງປະສົບການຂອງເຂົາເຈົ້າ ແລະ ຮັກສາຂໍ້ມູນໄວ້ເປັນສ່ວນຕົວໄດ້.</translation>
 <translation id="3227137524299004712">ໄມໂຄຣໂຟນ</translation>
+<translation id="3229412050601871341">ລະຫັດຜ່ານອຸປະກອນ</translation>
 <translation id="3232168089952388105">ແບ່ງປັນຂໍ້ມູນກ່ຽວກັບອຸປະກອນຂອງທ່ານບໍ?</translation>
 <translation id="3232558119926886907">ຈັດຕຳແໜ່ງໄວ້ຂວາ</translation>
 <translation id="3232754137068452469">ແອັບຂອງເວັບ</translation>
@@ -2835,6 +2837,7 @@
 <translation id="3275778913554317645">ເປີດເປັນໜ້າຕ່າງ</translation>
 <translation id="3277214528693754078">ນໍາທາງດ້ວຍເຄີເຊີຂໍ້ຄວາມ (ການຮຽກເບິ່ງດ້ວຍແປ້ນພິມ)</translation>
 <translation id="3277594800340743211">ເງົາຂະໜາດໃຫຍ່</translation>
+<translation id="3277784185056747463">ລະຫັດຜ່ານອຸປະກອນ ຫຼື ລະຫັດຜ່ານບັນຊີ Google</translation>
 <translation id="3278001907972365362">ບັນຊີ Google ຂອງທ່ານຕ້ອງການການດຳເນີນການ</translation>
 <translation id="3279092821516760512">ລາຍຊື່ຜູ້ຕິດຕໍ່ທີ່ເລືອກສາມາດແບ່ງປັນກັບທ່ານໄດ້ເມື່ອຢູ່ໃກ້ຄຽງ. ການໂອນຍ້າຍຈະບໍ່ເລີ່ມຂຶ້ນຈົນກວ່າທ່ານຍອມຮັບ.</translation>
 <translation id="3279230909244266691">ຂະບວນການນີ້ອາດຈະໃຊ້ເວລາສອງສາມນາທີ. ໂດຍເລີ່ມຈາກເຄື່ອງຈຳລອງສະເໝືອນຈິງ.</translation>
@@ -3291,6 +3294,7 @@
 <translation id="3660234220361471169">ບໍ່ເຊື່ອຖືໄດ້</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{ພົບ 1 ລະຫັດຜ່ານທີ່ມີຢູ່ແລ້ວ}other{ພົບ {NUM_PASSWORDS} ລະຫັດຜ່ານທີ່ມີຢູ່ແລ້ວ}}</translation>
 <translation id="3664511988987167893">ໄອຄອນສ່ວນຂະຫຍາຍ</translation>
+<translation id="3665301845536101715">ເປີດໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="3665589677786828986">Chrome ກວດພົບວ່າ ການຕັ້ງຄ່າຂອງທ່ານບາງຕົວໄດ້ຮັບຄວາມເສຍຫາຍໂດຍໂປຣແກຼມອື່ນ ແລະໄດ້ຕັ້ງຄ່າພວກມັນໄປເປັນຄ່າມາດຕະຖານເດີມຂອງພວກມັນແລ້ວ.</translation>
 <translation id="3665919494326051362">ເວີຊັນປັດຈຸບັນແມ່ນ <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">ໄຟລ໌ Dump ການດີບັກສຳລັບ Intel Wi-Fi NIC</translation>
@@ -4493,6 +4497,7 @@
 <translation id="4646675363240786305">ຜອດ</translation>
 <translation id="4647090755847581616">ປິດແຖບ</translation>
 <translation id="4647283074445570750">ຂັ້ນຕອນທີ <ph name="CURRENT_STEP" /> ຈາກທັງໝົດ <ph name="TOTAL_STEPS" /> ຂັ້ນຕອນ</translation>
+<translation id="4647836961514597010">ຕົວເລືອກສີ</translation>
 <translation id="4648491805942548247">ການ​ອະ​ນຸ​ຍາດ​ບໍ່​ພຽງ​ພໍ</translation>
 <translation id="4650037136970677721">ປະຢັດໜ່ວຍຄວາມຈຳແລ້ວ</translation>
 <translation id="4650591383426000695">ຕັດເຊື່ອມຕໍ່ໂທລະສັບຈາກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
@@ -6052,6 +6057,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{ເປີດທັງໝົດໃນ&amp;ໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ}=1{ເປີດໃນ&amp;ໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ}other{ເປີດທັງໝົດ ({COUNT}) ໃນ&amp;ໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ}}</translation>
 <translation id="5975792506968920132">ເປີເຊັນສາກແບັດເຕີຣີ</translation>
 <translation id="5976160379964388480">ອື່ນໆ</translation>
+<translation id="5977976211062815271">ໃນອຸປະກອນນີ້</translation>
 <translation id="5978277834170881274">&amp;ໃຊ້ການກວດການສະກົດຄຳພື້ນຖານ</translation>
 <translation id="5978493744931296692">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ປິດການນຳໃຊ້ໂປຣໄຟລ໌ອື່ນ</translation>
 <translation id="5979084224081478209">ກວດເບິ່ງລະຫັດຜ່ານ</translation>
@@ -7021,6 +7027,7 @@
 <translation id="6805647936811177813">ກະ​ລຸ​ນາ​ລົງຊື່ເຂົ້າ​ໃຊ້ <ph name="TOKEN_NAME" /> ເພື່ອນໍາເອົາໃບຢັ້ງຢືນເຄືອຂ່າຍເຂົ້າມາຈາກ <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">ເປີດໃຊ້ງານການຕິດຕາມ RLZ ຢູ່ໃນ <ph name="SHORT_PRODUCT_OS_NAME" /> .</translation>
 <translation id="6806089545527108739">ບໍ່ອະນຸຍາດແຕ່ໃຫ້ຖາມຄືນໃນພາຍຫຼັງ</translation>
+<translation id="680644983456221885">ການປົກປ້ອງເຊີງບຸກແບບສົດໆຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ ເຊິ່ງອີງຕາມຂໍ້ມູນການທ່ອງເວັບຂອງທ່ານທີ່ສົ່ງໄປຫາ Google</translation>
 <translation id="6808039367995747522">ເພື່ອສືບຕໍ່, ສຽບ ແລະ ແຕະກະແຈຄວາມປອດໄພຂອງທ່ານ</translation>
 <translation id="6808166974213191158">ຕົວຂຽນຮູບພາບຂອງລະບົບ ChromeOS Flex</translation>
 <translation id="6808193438228982088">ໝາຈອກ</translation>
@@ -8463,7 +8470,6 @@
 <translation id="7978412674231730200">ປຸ່ມສ່ວນຕົວ</translation>
 <translation id="7978450511781612192">ນີ້ຈະນຳທ່ານອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານ. ບຸກມາກ, ປະຫວັດ ແລະ ອື່ນໆອີກຂອງທ່ານຈະບໍ່ຊິ້ງຂໍ້ມູນອີກຕໍ່ໄປ.</translation>
 <translation id="7980084013673500153">ລະ​ຫັດຊັບ​ສິນ​: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">ໂຫຼດໜ້າກ່ອນສຳລັບການທ່ອງເວັບ ແລະ ການຊອກຫາທີ່ໄວກວ່າ</translation>
 <translation id="7981662863948574132">ສະແດງ EID ອຸປະກອນ ແລະ ປັອບອັບລະຫັດ QR</translation>
 <translation id="7981670705071137488">ຫຼັງຈາກນີ້, ການອັບເດດຊອບແວຈະເກີດຂຶ້ນໃນພື້ນຫຼັງ. ທ່ານສາມາດກວດສອບການຕັ້ງຄ່າອັບເດດໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="7982083145464587921">ກະ​ລຸ​ນາປິດເປີດອຸ​ປະ​ກອນ​ຂອງ​ທ່ານຄືນໃໝ່ ເພື່ອ​ແກ້​ໄຂ​ຄວາມ​ຜິດ​ພາດ​ນີ້​.</translation>
@@ -8662,6 +8668,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{ວິດີໂອ}other{# ວິດີໂອ}}</translation>
 <translation id="8143442547342702591">ແອັບພລິເຄຊັນໃຊ້ບໍ່ໄດ້</translation>
 <translation id="8143609395536282994">ທ່ານສາມາດຈັດການຂໍ້ມູນຂອງທ່ານໄດ້ແນວໃດ:</translation>
+<translation id="8144429778087524791">ໝາຍວ່າແລ້ວໆ ແລະ ເຊື່ອງໄວ້</translation>
 <translation id="8145170459658034418">ຕົວປະຢັດໜ່ວຍຄວາມຈຳ</translation>
 <translation id="8146177459103116374">ຖ້າ​ທ່ານ​ໄດ້​ລົງ​ທະ​ບຽນ​​ອຸ​ປະ​ກອນ​ນີ້​ແລ້ວ​, ທ່ານ​ສາ​ມາດ <ph name="LINK2_START" />ລົງຊື່ເຂົ້າ​ໃຊ້ເປັນຜູ້ໃຊ້ທີ່ມີຢູ່ໄດ້<ph name="LINK2_END" /> .</translation>
 <translation id="8146287226035613638">ເພີ່ມ ແລະ ຈັດລະດັບພາສາທີ່ທ່ານຕ້ອງການ. ເວັບໄຊຈະສະແດງເປັນພາສາທີ່ທ່ານຕ້ອງການ, ເມື່ອເປັນໄປໄດ້. ການຕັ້ງຄ່າເຫຼົ່ານີ້ແມ່ນຊິ້ງຂໍ້ມູນກັບການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9152,6 +9159,7 @@
 <translation id="8557022314818157177">ສືບຕໍ່ແຕະກະແຈຄວາມປອດໄພຈົນກວ່າວ່າໄດ້ບັນທຶກລາຍນິ້ວມືຂອງທ່ານໄວ້ແລ້ວ</translation>
 <translation id="8557180006508471423">ເປີດໃຊ້ "Google Chrome" ໃນບໍລິການສະຖານທີ່ຢູ່ Mac ຂອງທ່ານ</translation>
 <translation id="8557856025359704738">ການດາວໂຫຼດຕໍ່ໄປແມ່ນ <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8558281414737757274">ລະຫັດບັນຊີ Google</translation>
 <translation id="8559858985063901027">ກະແຈຜ່ານ</translation>
 <translation id="8559961053328923750">Chrome ຈໍາກັດຈໍານວນຂໍ້ມູນທັງໝົດທີ່ເວັບໄຊສາມາດແບ່ງປັນຜ່ານໂປຣແກຣມທ່ອງເວັບເພື່ອວັດແທກປະສິດທິພາບການໂຄສະນາ</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{ເປີດທັງໝົດໃນ&amp;ໜ້າຈໍໃໝ່}=1{ເປີດໃນ&amp;ໜ້າຈໍໃໝ່}other{ເປີດທັງໝົດ ({COUNT}) ໃນ&amp;ໜ້າຈໍໃໝ່}}</translation>
@@ -9164,6 +9172,7 @@
 <translation id="8569682776816196752">ບໍ່ພົບປາຍທາງ</translation>
 <translation id="8571213806525832805">4 ອາທິດຜ່ານມາ</translation>
 <translation id="8571687764447439720">ເພີ່ມປີ້ Kerberos</translation>
+<translation id="8572052284359771939">ສົ່ງ URL ຂອງເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ ແລະ ຕົວຢ່າງສ່ວນນ້ອຍໆຂອງເນື້ອຫາໃນໜ້າເວັບ, ການດາວໂຫຼດ, ການເຄື່ອນໄຫວຂອງສ່ວນຂະຫຍາຍ ແລະ ຂໍ້ມູນລະບົບໄປຫາ Google Safe Browsing ເພື່ອກວດສອບວ່າເປັນອັນຕະລາຍຫຼືບໍ່.</translation>
 <translation id="8573111744706778015">ພິມ "uo7" ເພື່ອໃຊ້ "ươ"</translation>
 <translation id="8574990355410201600">ອະນຸຍາດສຽງໃນ <ph name="HOST" /> ທຸກເທື່ອ</translation>
 <translation id="8575286410928791436">ກົດ <ph name="KEY_EQUIVALENT" /> ຄ້າງໄວ້ເພື່ອອອກ</translation>

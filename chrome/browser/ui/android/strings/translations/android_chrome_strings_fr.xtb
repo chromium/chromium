@@ -470,6 +470,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="3513704683820682405">Réalité augmentée</translation>
 <translation id="3518985090088779359">Accepter et continuer</translation>
 <translation id="3522247891732774234">Mise à jour disponible. Plus d'options</translation>
+<translation id="3523426587027570423">Appuyer pour fermer "Écouter cette page".</translation>
 <translation id="3524138585025253783">UI des développeurs</translation>
 <translation id="3524334353996115845">Autorisez <ph name="ORIGIN" /> à vérifier qu'il s'agit bien de vous</translation>
 <translation id="3527085408025491307">Dossier</translation>
@@ -674,6 +675,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4637420359569396807">Avec la mesure des performances des annonces, seuls quelques types de données peuvent être partagés entre les sites et les applis, comme l'heure à laquelle une annonce vous a été présentée.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mot de passe compromis}one{# mot de passe compromis}other{# mots de passe compromis}}</translation>
 <translation id="4650364565596261010">Paramètre par défaut du système</translation>
+<translation id="4654641641922242357">Lecteur "Écouter cette page".</translation>
 <translation id="465657074423018424">La navigation sécurisée vous protège contre les sites Web trompeurs. Si vous la désactivez, faites preuve d'une grande vigilance en ligne, surtout lorsque vous saisissez des mots de passe.</translation>
 <translation id="4662373422909645029">Le pseudo ne doit pas contenir de chiffres</translation>
 <translation id="4663499661119906179">Retrouvez les meilleurs sites et articles pour vous</translation>
@@ -803,6 +805,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5227554086496586518">Appuyer pour afficher les résultats de recherche</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
+<translation id="5234971936051226002">Lecteur "Écouter cette page" réduit.</translation>
 <translation id="5235196193381275927">Une erreur s'est produite lors de la connexion</translation>
 <translation id="5246093389635966745">Modifier le raccourci sur la barre d'outils</translation>
 <translation id="5271967389191913893">Impossible d'ouvrir le contenu à télécharger sur l'appareil.</translation>
@@ -1321,6 +1324,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7926975587469166629">Pseudo associé à la carte</translation>
 <translation id="7929962904089429003">Ouvrir le menu</translation>
 <translation id="7930998711684428189">Il vous avertit en cas de divulgation de mots de passe suite à une violation des données.</translation>
+<translation id="7934668619883965330">Impossible de télécharger le fichier. Format de fichier non compatible.</translation>
 <translation id="7939485076072265087">Créer une fiche stylisée avec le texte en surbrillance</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> est obsolète.</translation>
 <translation id="7944772052836377867">La synchronisation doit confirmer votre identité</translation>
@@ -1522,6 +1526,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8937772741022875483">Supprimer votre activité Chrome de Bien-être numérique ?</translation>
 <translation id="8942627711005830162">Ouvrir dans une autre fenêtre</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Impossible de télécharger cette langue. Réessayez plus tard.</translation>
+<translation id="8953618380150219653">Lecteur "Écouter cette page" ouvert à pleine hauteur.</translation>
 <translation id="8955719471735800169">Haut de page</translation>
 <translation id="8964479563882643397">Pour ouvrir un nouvel onglet de navigation privée, ouvrir le menu</translation>
 <translation id="8965591936373831584">en attente</translation>

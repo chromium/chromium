@@ -566,6 +566,11 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Le fonctionnement des extensions externes ainsi que leur installation sont décrits à la page https://developer.chrome.com/apps/external_extensions.
       </translation>
 <translation id="1484190167468437592">Désactiver l'audio mono</translation>
+<translation id="1484580923123963615">Liste d'autorisation qui contrôle les rapports de télémétrie de site Web pour les utilisateurs affiliés. Les rapports sur les types de données de télémétrie sont contrôlés par la règle <ph name="REPORT_WEBSITE_TELEMETRY_POLICY_NAME" />.
+
+Si cette règle est configurée, des rapports de télémétrie de site Web sont créés pour les URL figurant dans la liste d'autorisation.
+Si cette règle n'est pas configurée, aucun rapport de télémétrie de site Web n'est créé.
+Pour en savoir plus sur les formats d'URL valides, consultez https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Seuls les schémas d'URL HTTP et HTTPS sont autorisés pour cette règle.</translation>
 <translation id="1486021504508098388">Transmettre les informations concernant le rétroéclairage</translation>
 <translation id="1487722536912664411">Autoriser les utilisateurs à se servir de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1487916040416013623">Permet de spécifier les serveurs autorisés pour l'authentification intégrée qui n'est activée que lorsque <ph name="PRODUCT_NAME" /> reçoit une demande d'authentification d'un proxy ou d'un serveur figurant sur la liste des serveurs autorisés.
@@ -2466,6 +2471,11 @@ Si cette règle est désactivée, l'utilisateur ne verra pas la promo.</translat
       Si cette règle est désactivée, le logiciel peut injecter un tel code dans les processus de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3182503302060513467">La page "Nouvel onglet" affichera l'annonce d'espace intermédiaire si elle est disponible</translation>
 <translation id="3184161739683646075">Contrôle le mode DNS-over-HTTPS</translation>
+<translation id="3184309751910415763">Liste d'autorisation qui contrôle les rapports sur l'activité de sites Web pour les utilisateurs affiliés.
+
+Si cette règle est configurée, des rapports sont créés concernant les événements d'ouverture et de fermeture des URL de sites indiquées dans la liste d'autorisation.
+Si cette règle n'est pas configurée, aucun rapport n'est créé concernant les événements liés aux sites.
+Pour en savoir plus sur les formats d'URL valides, consultez https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Seuls les schémas d'URL HTTP et HTTPS sont autorisés pour cette règle.</translation>
 <translation id="3184638144755436350">Chrome bloquera les navigations vers des protocoles externes dans
       un iFrame en bac à sable. Consultez https://chromestatus.com/features/5680742077038592.
 
@@ -2796,15 +2806,6 @@ Si elle est désactivée, la fonctionnalité d'écriture prédictive est désact
 
       Si vous la désactivez, ou si vous ne la configurez pas, le dispositif est désactivé. Dans ce cas, les données de diagnostic et de télémétrie provenant de l'appareil ne peuvent pas être collectées, traitées ni signalées.</translation>
 <translation id="3442589735857147823">Autoriser les utilisateurs à se servir des machines virtuelles nécessaires pour faire fonctionner les applis Linux</translation>
-<translation id="3445364060482221648">Si cette règle est activée, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré et utilise le Chrome Root Store comme source de confiance publique.
-
-Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise l'outil de vérification des certificats du système et les certificats racine du système.
-
-Si cette règle n'est pas configurée, le Chrome Root Store ou les certificats racine du système peuvent être utilisés indifféremment.
-
-Il est prévu que cette règle soit supprimée dans la version 120 de <ph name="PRODUCT_OS_NAME" /> et <ph name="PRODUCT_NAME" /> pour <ph name="LINUX_OS_NAME" /> et <ph name="ANDROID_NAME" />, car les certificats racine fournis par la plate-forme ne seront plus pris en charge.
-
-Cette règle a été supprimée dans la version 113 de <ph name="PRODUCT_NAME" /> pour <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />, car l'outil de vérification des certificats et les racines fournis par la plate-forme ne sont plus pris en charge.</translation>
 <translation id="3450649825886735618">Ne pas utiliser de services Web Google pour corriger les fautes d'orthographe</translation>
 <translation id="3451422488938880786"> Permet d'autoriser ou non le remappage des raccourcis clavier internationaux</translation>
 <translation id="3451901387456196887">Permettre à l'utilisateur de sélectionner un appareil Cast dans le menu <ph name="PRODUCT_NAME" /> en utilisant un code d'accès ou en scannant un code QR.</translation>
@@ -3038,6 +3039,10 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les appareils
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise un nom de bibliothèque par défaut.</translation>
 <translation id="3650122925429054129">Désactiver la mise en surbrillance du curseur sur l'écran de connexion</translation>
+<translation id="365093517647222762">Signale les données de télémétrie des sites Web pour les URL autorisées spécifiées par la règle <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> pour les utilisateurs affiliés.
+
+Si cette règle est configurée, des rapports de télémétrie de site Web sont créés pour les types de données de télémétrie spécifiés.
+Si cette règle n'est pas configurée, aucun rapport de données de télémétrie de site Web n'est créé.</translation>
 <translation id="3652670852519271837">Autoriser les sites à demander aux utilisateurs l'accès en lecture aux fichiers et répertoires via l'API File System</translation>
 <translation id="3653237928288822292">Icône du moteur de recherche par défaut</translation>
 <translation id="3654906736796256792">Autoriser l'exécution en bac à sable du processus audio</translation>
@@ -4512,6 +4517,7 @@ Si cette règle est définie sur "False", c'est le comportement par défaut qui 
 <translation id="4996068111491152684">Les identifiants de connexion <ph name="PRODUCT_OS_NAME" /> ne seront pas utilisés pour l'authentification réseau.</translation>
 <translation id="4996086761250834365">Autoriser l'analyse de produit <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="4996161752665479028">Activer les connexions SSH dans Terminal System App</translation>
+<translation id="499654521603185442">Rapports de télémétrie de site Web</translation>
 <translation id="4997074784107449343">Lorsqu'elle est disponible, l'option "Imprimer en tant qu'image" permettant de générer un aperçu avant impression d'un PDF n'est pas proposée par défaut.</translation>
 <translation id="500149597848135831">Activer toutes les variantes</translation>
 <translation id="5017369989680827157">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs contrôlent la saisie automatique des adresses dans l'interface utilisateur.
@@ -6066,6 +6072,7 @@ Pour <ph name="PRODUCT_NAME" />, cette règle n'est appliquée que si l'ordinate
 
 Pour en savoir plus sur les anciennes technologies, consultez https://chromestatus.com/features.</translation>
 <translation id="640827304541402854">Désactiver la traversée de pare-feu depuis l'hôte d'accès à distance</translation>
+<translation id="6410847321564585975">Liste d'autorisation de rapports sur l'activité de site Web</translation>
 <translation id="6412352702230183710">Autoriser uniquement les hôtes de messagerie natifs au niveau du système</translation>
 <translation id="6416506846917150119">Désactiver l'écriture prédictive lors de la saisie au clavier physique</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
@@ -6220,6 +6227,9 @@ Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur
       Si cette règle n'est pas configurée, aucune longueur maximale n'est appliquée.</translation>
 <translation id="6546185795045702747">Autoriser les sites Web à vérifier si l'utilisateur a enregistré des modes de paiement</translation>
 <translation id="6553143066970470539">Niveau de luminosité de l'écran (%)</translation>
+<translation id="6554236101741861403">Fréquence à laquelle les données de télémétrie de site Web sont collectées sur les appareils enregistrés pour les utilisateurs affiliés. La valeur minimale autorisée est de cinq minutes.
+
+Si la règle n'est pas configurée, la fréquence par défaut (15 minutes) est appliquée.</translation>
 <translation id="6555557921186817432">Programmer un redémarrage automatique après l'installation des mises à jour de <ph name="PRODUCT_OS_NAME" />.
 
       Lorsque cette règle est définie sur "True", un redémarrage automatique est requis après l'installation d'une mise à jour de <ph name="PRODUCT_OS_NAME" /> afin de terminer le processus. Ce redémarrage est programmé pour être effectué immédiatement, mais il peut être retardé de 24 heures maximum si l'appareil est en cours d'utilisation.
@@ -7909,6 +7919,7 @@ Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dan
 <translation id="8020222525161221827">Activer l'API Desk pour le contrôle ChromeOS tiers</translation>
 <translation id="802147957407376460">Faire pivoter l'écran de 0 degré</translation>
 <translation id="8021777486638359878">Considérer l'utilisateur comme inactif pendant la lecture audio</translation>
+<translation id="8022597231371051452">Liste d'autorisation de rapports de télémétrie de site Web</translation>
 <translation id="8022909529579794519">Ce paramètre indique le navigateur <ph name="LACROS_NAME" /> à utiliser.
 
 Si la règle est définie sur "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />", l'utilisateur peut choisir le navigateur <ph name="LACROS_NAME" /> à charger : binaire à partir de la partition <ph name="LACROS_ROOTFS_NAME" /> ou <ph name="LACROS_STATEFUL_NAME" />.
@@ -8684,6 +8695,7 @@ Si cette règle n'est pas configurée, aucun mot de passe enregistré n'est impo
 <translation id="8728854710675158426">Hachages non sécurisés lors de handshakes TLS activés</translation>
 <translation id="8734543507835977857">Démarrer les délais de gestion de l'alimentation et les limites de longueur de session au démarrage de la session</translation>
 <translation id="8736538322216687231">Appliquer un mode restreint minimal sur YouTube</translation>
+<translation id="873800217865395140">Fréquence de collecte des données télémétriques de site Web en millisecondes.</translation>
 <translation id="874149307422233209">Cette règle permet aux administrateurs de contrôler comment Google traite les données utilisateur envoyées à la recherche Google via les fonctionnalités <ph name="PRODUCT_OS_NAME" />.
 Lorsque cette règle est activée, l'utilisateur peut utiliser le champ de recherche du Lanceur d'applications de <ph name="PRODUCT_OS_NAME" /> et le champ d'adresse du navigateur <ph name="PRODUCT_NAME" /> dans <ph name="PRODUCT_OS_NAME" />, de sorte que l'historique de ses recherches ne soit pas associé à son identité.
 Si cette règle n'est pas configurée ou qu'elle est désactivée, les données de l'utilisateur issues de ces recherches sont associées à son identité.</translation>

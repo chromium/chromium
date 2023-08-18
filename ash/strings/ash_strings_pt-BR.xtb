@@ -243,7 +243,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1989113344093894667">Não é possível fazer uma captura do conteúdo</translation>
 <translation id="1990046457226896323">Download de arquivos de fala concluído</translation>
 <translation id="1993072747612765854">Saiba mais sobre a última atualização do <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Desligar</translation>
 <translation id="1996162290124031907">Ir para a próxima guia</translation>
 <translation id="1998100899771863792">Espaço de trabalho atual</translation>
 <translation id="2001444736072756133">Pesquise <ph name="CATEGORY" />, arquivos, apps e muito mais.</translation>
@@ -660,6 +659,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="380165613292957338">Oi! Como posso ajudar?</translation>
 <translation id="3804737937830804242">Fechar câmera</translation>
 <translation id="3824784079442479685">Essa ação libera o acesso à câmera para <ph name="APP_NAME" /> e todos os apps e sites com essa permissão. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
+<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> de <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> atividades entregues, <ph name="NUM_GRADED" /> com nota</translation>
 <translation id="3826099427150913765">Usar senha</translation>
 <translation id="383058930331066723">Modo de Economia de bateria ativado</translation>
 <translation id="383629559565718788">Mostrar configurações do teclado</translation>
@@ -1745,6 +1745,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8446884382197647889">Saiba mais</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Fechar o Selecionar para ouvir</translation>
+<translation id="8468806060683421065">prazo: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Exibir configurações de escala</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> o recurso <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pressione Alt+Pesquisar ou Shift para cancelar.</translation>
@@ -1828,6 +1829,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8853703225951107899">Ainda não foi possível verificar seu PIN ou sua senha. Observação: se você mudou a senha recentemente, use a antiga. A nova senha será aplicada depois que você sair.</translation>
 <translation id="8855885154700222542">Tecla de tela cheia</translation>
 <translation id="8858369206579825206">Controles de privacidade</translation>
+<translation id="8860366331836346216">Adicionar eSIM</translation>
 <translation id="8870509716567206129">O app não é compatível com a divisão de tela.</translation>
 <translation id="8874184842967597500">Não conectado</translation>
 <translation id="8875021410787719674">Alternar entre o canto inferior direito, o acesso rápido, a barra de endereço, a barra de favoritos, o site aberto e os downloads</translation>

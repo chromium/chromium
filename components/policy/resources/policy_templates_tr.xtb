@@ -565,6 +565,11 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Harici uzantılar ve yüklenmeleri hakkında bilgiyi https://developer.chrome.com/apps/external_extensions adresinde bulabilirsiniz.
       </translation>
 <translation id="1484190167468437592">Mono sesi devre dışı bırak</translation>
+<translation id="1484580923123963615">İlişkili kullanıcılar için web sitesi telemetri raporlamasını kontrol eden izin verilenler listesi. Raporlanan telemetri veri türleri, <ph name="REPORT_WEBSITE_TELEMETRY_POLICY_NAME" /> politikası ile kontrol edilir.
+
+Politikanın ayarlanması, izin verilenler listesine eklenmiş URL'ler için web sitesi telemetri raporlamasını kontrol eder.
+Politika ayarlanmazsa web sitesi telemetrileri raporlanmaz.
+Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Bu politika için yalnızca HTTP ve HTTPS URL'si şemalarına izin verilir.</translation>
 <translation id="1486021504508098388">Arka ışık bilgilerini raporla</translation>
 <translation id="1487722536912664411">Kullanıcıların <ph name="PRODUCT_NAME" /> kullanmasına izin ver</translation>
 <translation id="1487916040416013623">Politikanın ayarlanması, entegre kimlik doğrulama için hangi sunuculara izin verileceğini belirtir. Entegre kimlik doğrulaması yalnızca <ph name="PRODUCT_NAME" /> bir proxy veya söz konusu izin verilenler listesindeki bir sunucudan kimlik doğrulaması daveti aldığında etkinleşir.
@@ -2475,6 +2480,11 @@ Politika, Devre Dışı değerine ayarlanırsa App Store puan promosyonu, kullan
       Politika, Devre Dışı değerine ayarlanırsa bu yazılımın <ph name="PRODUCT_NAME" /> işlemlerine bu tür kod yerleştirmesine izin verilir.</translation>
 <translation id="3182503302060513467">Orta aralık duyurusu mevcut olduğunda yeni sekme sayfasında gösterilir</translation>
 <translation id="3184161739683646075">DNS-over-HTTPS modunu denetler</translation>
+<translation id="3184309751910415763">İlişkili kullanıcılar için web sitesi etkinlik raporlamasını kontrol eden izin verilenler listesi.
+
+Politikanın ayarlanması, izin verilenler listesine eklenmiş URL'ler için web sitesinin URL'sinde açılan ve kapatılan etkinlik raporlamasını kontrol eder.
+Politika ayarlanmazsa web sitesi etkinlikleri raporlanmaz.
+Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Bu politika için yalnızca HTTP ve HTTPS URL'si şemalarına izin verilir.</translation>
 <translation id="3184638144755436350">Chrome, korumalı alana alınmış iframe içerisindeki harici protokollere
       yönelik gezinmeleri engeller. https://chromestatus.com/features/5680742077038592 adresine bakın.
 
@@ -2803,15 +2813,6 @@ Bu politika, Devre Dışı değerine ayarlanırsa fiziksel klavyede tahmine daya
 
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa DTC kapatılır. Cihazdan telemetri ve teşhis verilerini toplayamaz, işleyemez veya raporlayamaz.</translation>
 <translation id="3442589735857147823">Kullanıcıların, Linux uygulamalarını desteklemek için gerekli olan sanal makineleri kullanmasına izin ver</translation>
-<translation id="3445364060482221648">Bu politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" />, sunucu sertifikalarının doğrulamasını, herkese açık güven kaynağı Chrome Root Store olacak şekilde yerleşik sertifika doğrulayıcıyı kullanarak gerçekleştirir.
-
-Bu politika, Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" />, sistem sertifikası doğrulayıcıyı ve sistem kök sertifikalarını kullanır.
-
-Bu politika ayarlanmadan bırakılırsa Chrome Root Store veya sistem tarafından sağlanan kökler kullanılabilir.
-
-Platform tarafından sağlanan köklerin kullanım desteğinin kaldırılması planlandığında bu politikanın da <ph name="LINUX_OS_NAME" /> ve <ph name="ANDROID_NAME" /> sürüm 120 için <ph name="PRODUCT_OS_NAME" /> ve <ph name="PRODUCT_NAME" /> tarayıcılarında kullanım desteğinin kaldırılması planlanmaktadır.
-
-Bu politika, platform tarafından sağlanan sertifika doğrulayıcıyı ve kökleri kullanma desteği kaldırıldığında <ph name="MS_WIN_NAME" /> ve <ph name="MAC_OS_NAME" /> sürüm 113 için <ph name="PRODUCT_NAME" /> ürününden kaldırılmıştır.</translation>
 <translation id="3450649825886735618">Yazım hatalarının düzeltilmesine yardımcı olması için herhangi bir Google web hizmeti kullanma</translation>
 <translation id="3451422488938880786"> Yeniden eşleştirilen uluslararası klavye kısayollarının etkinleştirilmesine/devre dışı bırakılmasına olanak tanır</translation>
 <translation id="3451901387456196887">Kullanıcılara <ph name="PRODUCT_NAME" /> menüsünde erişim kodu kullanarak veya QR kodu tarayarak yayın cihazı seçme olanağı verilir.</translation>
@@ -3076,6 +3077,10 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ka
 
       Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, varsayılan bir kitaplık adı kullanır.</translation>
 <translation id="3650122925429054129">Giriş ekranında fare imlecini vurgulamayı devre dışı bırak</translation>
+<translation id="365093517647222762">İlişkili kullanıcılar için <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> politikası tarafından izin verilen URL'lere ait web sitesi telemetri verilerini raporlar.
+
+Politikanın ayarlanması, belirtilen telemetri veri türleri için web sitesi telemetri raporlamasını kontrol eder.
+Politika ayarlanmazsa web sitesi telemetri verileri raporlanmaz.</translation>
 <translation id="3652670852519271837">Sitelerin kullanıcıdan File System API üzerinden dosya ve dizinlere okuma erişimi istemesine izin ver</translation>
 <translation id="3653237928288822292">Varsayılan arama sağlayıcı simgesi</translation>
 <translation id="3654906736796256792">Sesli korumalı alanın çalışmasına izin ver</translation>
@@ -4560,6 +4565,7 @@ Politika, Yanlış değerine ayarlanırsa varsayılan davranış kullanılır.</
 <translation id="4996068111491152684">Ağ kimlik doğrulaması için <ph name="PRODUCT_OS_NAME" /> giriş kimlik bilgilerini kullanma.</translation>
 <translation id="4996086761250834365"><ph name="PLUGIN_VM_NAME" /> Ürün Analizine izin verin.</translation>
 <translation id="4996161752665479028">Terminal Sistem Uygulaması'nda SSH'yi etkinleştir</translation>
+<translation id="499654521603185442">Web sitesi telemetri raporlaması</translation>
 <translation id="4997074784107449343">Resim olarak yazdır, PDF dokümanların yazdırma önizlemelerinde kullanılabildiği durumlarda varsayılan olarak seçilmez.</translation>
 <translation id="500149597848135831">Tüm varyasyonları etkinleştirme</translation>
 <translation id="5017369989680827157">Politikayı True (Doğru) değerine ayarlamak veya ayarlamadan bırakmak, kullanıcı arayüzünde adresler için Otomatik doldurma kontrolünü kullanıcıya verir.
@@ -6127,6 +6133,7 @@ Eşleşen kalıplar, https://support.google.com/chrome/a?p=url_blocklist_filter_
 
 Eski teknolojiler hakkında daha fazla bilgiyi https://chromestatus.com/features adresinde bulabilirsiniz.</translation>
 <translation id="640827304541402854">Uzaktan erişim ana makinesinden güvenlik duvarı geçişini devre dışı bırak</translation>
+<translation id="6410847321564585975">Web sitesi etkinlik raporlaması izin verilenler listesi</translation>
 <translation id="6412352702230183710">Yalnızca sistem düzeyinde yerel mesajlaşma ana makinelerine izin ver</translation>
 <translation id="6416506846917150119">Kullanıcılar yazarken fiziksel klavyede tahmine dayalı yazma özelliğini devre dışı bırak</translation>
 <translation id="6417265370957905582">Google Asistan</translation>
@@ -6282,6 +6289,9 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
       Politika ayarlanmadan bırakılırsa maksimum uzunluk uygulanmaz.</translation>
 <translation id="6546185795045702747">Web sitelerinin, kullanıcıya ait kayıtlı bir ödeme yöntemi olup olmadığını kontrol etmesine izin ver</translation>
 <translation id="6553143066970470539">Ekran parlaklığı yüzdesi</translation>
+<translation id="6554236101741861403">İlişkili kullanıcılar için kayıtlı cihazlarda web sitesi telemetri verilerinin toplanma süresi. İzin verilen minimum süre 5 dakikadır.
+
+Ayarlanmazsa 15 dakikalık varsayılan süre geçerli olur.</translation>
 <translation id="6555557921186817432"><ph name="PRODUCT_OS_NAME" /> güncellemesi uygulandıktan sonra otomatik yeniden başlatma planlayın.
 
       Bu politika doğru değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> güncellemesi uygulandıktan sonra otomatik yeniden başlatma planlanır ve güncelleme işleminin tamamlanması için yeniden başlatma gerekir. Yeniden başlatma hemen planlanır ancak kullanıcı o anda cihazı kullanıyorsa cihazda 24 saate kadar gecikme yaşanabilir.
@@ -7985,6 +7995,7 @@ Politika ayarlanırsa kullanıcılar bunu <ph name="PRODUCT_NAME" /> ürününde
 <translation id="8020222525161221827">Üçüncü taraf ChromeOS kontrolü için Desk API'yi etkinleştirme</translation>
 <translation id="802147957407376460">Ekranı 0 derece döndür</translation>
 <translation id="8021777486638359878">Ses çalarken kullanıcıyı işlem yapmıyor olarak değerlendir</translation>
+<translation id="8022597231371051452">Web sitesi telemetri raporlaması izin verilenler listesi</translation>
 <translation id="8022909529579794519">Bu ayar hangi <ph name="LACROS_NAME" /> tarayıcının kullanılacağını yapılandırır.
 
 Politika <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> değerine ayarlanırsa kullanıcı hangi <ph name="LACROS_NAME" /> tarayıcının
@@ -8775,6 +8786,7 @@ Politika ayarlanmadan bırakılırsa kayıtlı şifreler ilk çalıştırma sır
 <translation id="8728854710675158426">TLS El Sıkışmalarında Güvenli Olmayan Karmalar Etkinleştirildi</translation>
 <translation id="8734543507835977857">Oturum başlangıcında güç yönetimi gecikmelerini ve oturum süresi sınırlarını başlat</translation>
 <translation id="8736538322216687231">Minimum YouTube Kısıtlı Modu'nu zorla</translation>
+<translation id="873800217865395140">Web sitesi telemetri toplama hızı (milisaniye cinsinden)</translation>
 <translation id="874149307422233209">Bu politika ile yöneticiler, <ph name="PRODUCT_OS_NAME" /> özellikleri aracılığıyla Arama'ya gönderilen kullanıcı verilerinin Google tarafından nasıl işleneceğini belirleyebilir.
 Politika etkinleştirildiğinde kullanıcı <ph name="PRODUCT_OS_NAME" /> Başlatıcı arama kutusu ile <ph name="PRODUCT_OS_NAME" /> içindeki <ph name="PRODUCT_NAME" /> Tarayıcı adres kutusunu kullanabilir ve kullanıcının arama geçmişi kullanıcının kimliğine bağlanmaz.
 Politika ayarlanmaz veya devre dışı bırakılırsa kullanıcının bu aramalardaki verileri kullanıcının kimliğine bağlanır.</translation>

@@ -1093,7 +1093,7 @@
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1856715684130786728">新增位置…</translation>
 <translation id="1858585891038687145">信任這個用於識別軟件製造商的憑證</translation>
-<translation id="1859294693760125695">已不感興趣</translation>
+<translation id="1859294693760125695">不再感興趣</translation>
 <translation id="1859339856433307593">此帳戶的密碼已儲存在「<ph name="BRAND" />」中 (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">此資料夾中沒有內容</translation>
 <translation id="1862311223300693744">您有安裝任何特殊的 VPN、Proxy、防火牆或 NAS 軟件
@@ -1900,6 +1900,7 @@
 <translation id="2480868415629598489">修改您複製並貼上的資料</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2482895651873876648">分頁移咗去包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組</translation>
+<translation id="2483627560139625913">在 Chrome 瀏覽器設定中設定搜尋引擎</translation>
 <translation id="2484743711056182585">移除存取權</translation>
 <translation id="2484909293434545162">使用 Cookie 的網站會在此處顯示</translation>
 <translation id="2484959914739448251">如要從所有已同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />輸入密碼短語<ph name="END_LINK" />。</translation>
@@ -2054,6 +2055,7 @@
 <translation id="2612676031748830579">信用卡號碼</translation>
 <translation id="2613210758071148851">不允許 <ph name="RESTRICTED_SITE" /> 的任何擴充程式</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 將可以編輯「<ph name="FILENAME" />」</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{在這個擴充功能中開啟並編輯「<ph name="FILE1" />」}other{在這個應用程式中開啟並編輯「<ph name="FILE1" />」和其他檔案}}</translation>
 <translation id="2616366145935564096">讀取及變更您在 <ph name="WEBSITE_1" /> 網站上的資料</translation>
 <translation id="2618797463720777311">設定「咫尺共享」</translation>
 <translation id="261953424982546039">Chrome Labs 功能 (&amp;L)…</translation>
@@ -3295,7 +3297,7 @@
 <translation id="3660234220361471169">不受信任</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{找到 1 個現有密碼}other{找到 {NUM_PASSWORDS} 個現有密碼}}</translation>
 <translation id="3664511988987167893">擴充程式圖示</translation>
-<translation id="3665301845536101715">在側邊面板中開啟</translation>
+<translation id="3665301845536101715">在側面板中開啟</translation>
 <translation id="3665589677786828986">Chrome 偵測到另一個程式破壞了部分設定，並且將這些設定重設為原始預設值。</translation>
 <translation id="3665919494326051362">目前的版本是 <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC 偵錯傾印</translation>
@@ -4426,6 +4428,7 @@
 <translation id="4585793705637313973">編輯頁面</translation>
 <translation id="4586275095964870617"><ph name="URL" /> 無法在替代瀏覽器中開啟。請聯絡您的系統管理員。</translation>
 <translation id="4587589328781138893">網站</translation>
+<translation id="4588749726511456218">捲動加速功能 <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> 中未儲存任何裝置</translation>
 <translation id="4592525994536856567">瀏覽及搜尋內容時，載入速度更快。</translation>
@@ -4494,6 +4497,7 @@
 <translation id="4646675363240786305">連接埠</translation>
 <translation id="4647090755847581616">關閉分頁(&amp;C)</translation>
 <translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步，共 <ph name="TOTAL_STEPS" /> 步</translation>
+<translation id="4647836961514597010">顏色挑選器</translation>
 <translation id="4648491805942548247">權限不足</translation>
 <translation id="4650037136970677721">已釋出記憶體</translation>
 <translation id="4650591383426000695">中斷手機與 <ph name="DEVICE_TYPE" /> 的連線</translation>
@@ -6051,6 +6055,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{在無痕式視窗中開啟全部書籤(&amp;I)}=1{在無痕式視窗中開啟書籤(&amp;I)}other{在無痕式視窗中開啟全部 {COUNT} 個書籤(&amp;I)}}</translation>
 <translation id="5975792506968920132">電池充電百分比</translation>
 <translation id="5976160379964388480">其他</translation>
+<translation id="5977976211062815271">在此裝置上</translation>
 <translation id="5978277834170881274">使用基本拼字檢查功能(&amp;U)</translation>
 <translation id="5978493744931296692">管理員已停用其他設定檔</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
@@ -6241,6 +6246,7 @@
 <translation id="6130692320435119637">新增 Wi-Fi</translation>
 <translation id="6130887916931372608">鍵盤按鍵</translation>
 <translation id="6132714462430777655">要略過學校註冊程序嗎？</translation>
+<translation id="6134428719487602109">移除所有使用者帳戶，並將 Chromebook 恢復原廠設定。</translation>
 <translation id="6135823405800500595">請確認您的手機在附近且已解鎖，並已開啟藍牙和 Wi-Fi</translation>
 <translation id="6135826623269483856">不允許在您所有的顯示屏上管理視窗</translation>
 <translation id="6136114942382973861">閂下載內容列</translation>
@@ -7021,7 +7027,7 @@
 <translation id="6805647936811177813">登入 <ph name="TOKEN_NAME" /> 即可從 <ph name="HOST_NAME" /> 匯入用戶端憑證。</translation>
 <translation id="680572642341004180">對 <ph name="SHORT_PRODUCT_OS_NAME" /> 啟用 RLZ 追蹤功能。</translation>
 <translation id="6806089545527108739">不允許但稍後再詢問</translation>
-<translation id="680644983456221885">系統會根據你傳送到 Google 的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充功能</translation>
+<translation id="680644983456221885">系統會根據你向 Google 傳送的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充程式</translation>
 <translation id="6808039367995747522">如要繼續，請插入並輕觸安全密鑰</translation>
 <translation id="6808166974213191158">ChromeOS Flex 系統映像寫入工具</translation>
 <translation id="6808193438228982088">狐狸</translation>
@@ -8466,7 +8472,6 @@
 <translation id="7978412674231730200">私密金鑰</translation>
 <translation id="7978450511781612192">此操作會將您登出 Google 帳戶。系統將不會繼續將書籤、記錄、密碼和其他同步至您的 Google 帳戶。</translation>
 <translation id="7980084013673500153">資產識別碼：<ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">預先載入網頁，以加快瀏覽和搜尋速度</translation>
 <translation id="7981662863948574132">顯示裝置 EID 同 QR 碼彈出式視窗</translation>
 <translation id="7981670705071137488">軟件日後會在背景中更新。您可在「設定」中查看更新偏好設定。</translation>
 <translation id="7982083145464587921">請重新啟動裝置以修正這個錯誤。</translation>
@@ -8666,7 +8671,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{1 部影片}other{# 部影片}}</translation>
 <translation id="8143442547342702591">無效的應用程式</translation>
 <translation id="8143609395536282994">您可透過哪些方式管理資料：</translation>
-<translation id="8144429778087524791">標示為完成並隱藏</translation>
+<translation id="8144429778087524791">標示為已完成並隱藏</translation>
 <translation id="8145170459658034418">記憶體節省模式</translation>
 <translation id="8146177459103116374">如果您已在這部裝置上註冊，您可以<ph name="LINK2_START" />用現有的使用者身分登入<ph name="LINK2_END" />。</translation>
 <translation id="8146287226035613638">新增偏好語言及指定各語言的優先次序。網站會按情況以您偏好的語言顯示內容。這些偏好設定會與您的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9170,7 +9175,7 @@
 <translation id="8569682776816196752">找不到目的地</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8571687764447439720">新增 Kerberos 票證</translation>
-<translation id="8572052284359771939">將你造訪的網址和網頁內容、下載內容、擴充功能活動和系統資訊的少許樣本傳送給 Google 安全瀏覽服務，檢查是否有害。</translation>
+<translation id="8572052284359771939">將你瀏覽的網址和少量網頁內容、下載檔案、擴充程式活動和系統資料的樣本傳送給「Google 安全瀏覽」，檢查是否有害。</translation>
 <translation id="8573111744706778015">輸入「uo7」會得到「ươ」</translation>
 <translation id="8574990355410201600">一律允許 <ph name="HOST" /> 播放聲音</translation>
 <translation id="8575286410928791436">按住 <ph name="KEY_EQUIVALENT" /> 即可離開</translation>

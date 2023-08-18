@@ -4479,6 +4479,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4646675363240786305">Ports</translation>
 <translation id="4647090755847581616">&amp;Fermer l'onglet</translation>
 <translation id="4647283074445570750">Étape <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Sélecteur de couleur</translation>
 <translation id="4648491805942548247">Autorisations insuffisantes.</translation>
 <translation id="4650037136970677721">Mémoire enregistrée</translation>
 <translation id="4650591383426000695">Déconnectez votre téléphone de votre <ph name="DEVICE_TYPE" /></translation>
@@ -6039,6 +6040,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5975056890546437204">{COUNT,plural, =0{Tout ouvrir dans une &amp;fenêtre de navigation privée}=1{Ouvrir dans une &amp;fenêtre de navigation privée}one{Tout ouvrir ({COUNT}) dans une &amp;fenêtre de navigation privée}other{Tout ouvrir ({COUNT}) dans une &amp;fenêtre de navigation privée}}</translation>
 <translation id="5975792506968920132">Niveau de charge de la batterie en pourcentage</translation>
 <translation id="5976160379964388480">Autres</translation>
+<translation id="5977976211062815271">Sur cet appareil</translation>
 <translation id="5978277834170881274">&amp;Utiliser le correcteur orthographique de base</translation>
 <translation id="5978493744931296692">Votre administrateur a désactivé les autres profils</translation>
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
@@ -8454,7 +8456,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7978412674231730200">Clé privée</translation>
 <translation id="7978450511781612192">Cela vous déconnectera de vos comptes Google. Vos favoris, votre historique, vos mots de passe et autres ne seront plus synchronisés.</translation>
 <translation id="7980084013673500153">Identifiant de ressource : <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Précharger les pages pour une navigation et une recherche plus rapides</translation>
 <translation id="7981662863948574132">Afficher la fenêtre contextuelle du numéro EID et du code QR de l'appareil</translation>
 <translation id="7981670705071137488">Dorénavant, les mises à jour logicielles se feront en arrière-plan. Vous pouvez examiner vos préférences de mise à jour dans les paramètres.</translation>
 <translation id="7982083145464587921">Veuillez redémarrer votre appareil pour corriger cette erreur.</translation>

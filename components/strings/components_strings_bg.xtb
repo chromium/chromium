@@ -606,6 +606,7 @@
 <translation id="2225927550500503913">Виртуалната карта е включена</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Влизане в профила<ph name="END_LINK" /> в Wi-Fi мрежата</translation>
 <translation id="2228057197024893428">Понастоящем този адрес е запазен в Chrome. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="ACCOUNT" />).</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> ще знае, че сте посетили <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Компактдиск</translation>
 <translation id="2239100178324503013">Изпращане сега</translation>
 <translation id="2241693394036365668">Изтегляне на файл</translation>
@@ -2093,6 +2094,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> иска да ви изпраща известия</translation>
 <translation id="5430298929874300616">Премахване на отметката</translation>
 <translation id="5443468954631487277">В обратен ред с отпечатаната страна нагоре</translation>
+<translation id="5447235695608032700">Разрешаване на <ph name="SITE" /> да използва запазената за вас информация</translation>
 <translation id="5447765697759493033">Този сайт няма да се превежда</translation>
 <translation id="5452270690849572955">Тази страница на <ph name="HOST_NAME" /> не може да бъде намерена</translation>
 <translation id="5455374756549232013">Невалидно клеймо за дата и час на правилото</translation>
@@ -2769,7 +2771,6 @@
 <translation id="6897140037006041989">Потребителски агент</translation>
 <translation id="6898699227549475383">Организация (О)</translation>
 <translation id="6907458757809079309">Фитнес</translation>
-<translation id="6910240653697687763"><ph name="URL" /> иска да получи пълен контрол над MIDI устройствата ви</translation>
 <translation id="691024665142758461">Изтегляне на няколко файла</translation>
 <translation id="6915804003454593391">Потребител:</translation>
 <translation id="6916954549222464607">Финансово планиране и управление</translation>

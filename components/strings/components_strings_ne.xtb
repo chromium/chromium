@@ -606,6 +606,7 @@
 <translation id="2225927550500503913">भर्चुअल कार्ड अन गरिएको छ</translation>
 <translation id="2226636330183131181">Wi-Fi नेटवर्कमा <ph name="BEGIN_LINK" />साइन इन गर्ने तरिका<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">यो ठेगाना हाल Chrome मा सेभ गरिएको छ। तपाईं यो ठेगाना Google का विभिन्न उत्पादनहरूमा प्रयोग गर्न चाहनुहुन्छ भने यसलाई आफ्नो Google खाता (<ph name="ACCOUNT" />) मा सेभ गर्नुहोस्।</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> लाई तपाईं <ph name="TOP_LEVEL_URL" /> मा जानुभएको कुरा थाहा हुने छ।</translation>
 <translation id="2233745931693710080">कम्प्याक्ट डिस्क</translation>
 <translation id="2239100178324503013">अहिले पठाउनुहोस्</translation>
 <translation id="2241693394036365668">फाइल डाउनलोड गरिँदा</translation>
@@ -2091,6 +2092,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> तपाईंलाई सूचनाहरू पठाउन चाहन्छ</translation>
 <translation id="5430298929874300616">पुस्तकचिनो हटाउनुहोस्</translation>
 <translation id="5443468954631487277">विपरीत क्रम तर माथितिर फर्काएर</translation>
+<translation id="5447235695608032700"><ph name="SITE" /> लाई उक्त साइटले तपाईंका बारेमा सेभ गरेको जानकारी प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="5447765697759493033">यो साइटलाई अनुवाद गरिने छैन</translation>
 <translation id="5452270690849572955">यो <ph name="HOST_NAME" /> को पृष्ठ फेला पार्न सक्दैन</translation>
 <translation id="5455374756549232013">खराब नीति टाइमस्ट्याम्प</translation>
@@ -2767,7 +2769,6 @@
 <translation id="6897140037006041989">प्रयोगकर्ता एजेन्ट</translation>
 <translation id="6898699227549475383">संगठन (सं)</translation>
 <translation id="6907458757809079309">तन्दुरुस्ती</translation>
-<translation id="6910240653697687763"><ph name="URL" /> तपाईंका MIDI यन्त्रहरूमाथि पूर्ण नियन्त्रण प्राप्त गर्न चाहन्छ</translation>
 <translation id="691024665142758461">बहुविध फाइलहरू डाउनलोड गर्नुहोस्।</translation>
 <translation id="6915804003454593391">प्रयोगकर्ता:</translation>
 <translation id="6916954549222464607">वित्तीय योजना तथा व्यवस्थापन</translation>

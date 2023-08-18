@@ -606,6 +606,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2225927550500503913">Virtuālā karte ir ieslēgta</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Pierakstīšanās<ph name="END_LINK" /> Wi-Fi tīklā</translation>
 <translation id="2228057197024893428">Šī adrese pašlaik ir saglabāta pārlūkā Chrome. Lai izmantotu šo adresi citos Google produktos, saglabājiet to savā Google kontā (<ph name="ACCOUNT" />).</translation>
+<translation id="2228466771983364669">Vietnei <ph name="EMBEDDED_URL" /> būs zināms, ka apmeklējāt vietni <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Kompaktdisks</translation>
 <translation id="2239100178324503013">Sūtīt tūlīt</translation>
 <translation id="2241693394036365668">Fails tiek lejupielādēts</translation>
@@ -2031,6 +2032,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5296589789433599000">Kulinārija un receptes</translation>
 <translation id="5299298092464848405">Parsējot politiku, radās kļūda.</translation>
 <translation id="5299638840995777423">Robotika</translation>
+<translation id="5300062471671636390">Paslēpt ierīču sarakstu apraidei</translation>
 <translation id="5300589172476337783">Rādīt</translation>
 <translation id="5306593769196050043">Abas lapas</translation>
 <translation id="5307166000025436103">Derīga</translation>
@@ -2091,6 +2093,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5426179911063097041">No vietnes <ph name="SITE" /> tiek mēģināts nosūtīt paziņojumus.</translation>
 <translation id="5430298929874300616">Noņemt grāmatzīmi</translation>
 <translation id="5443468954631487277">Pretēja secība, virspuse uz augšu</translation>
+<translation id="5447235695608032700">Atļaujiet vietnei <ph name="SITE" /> izmantot informāciju, kas tajā saglabāta par jums.</translation>
 <translation id="5447765697759493033">Šī vietne netiks tulkota</translation>
 <translation id="5452270690849572955">Šo vietnes <ph name="HOST_NAME" /> lapu nevar atrast</translation>
 <translation id="5455374756549232013">Politikas laikspiedols nav derīgs.</translation>
@@ -2767,7 +2770,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6897140037006041989">Lietotāja aģents</translation>
 <translation id="6898699227549475383">Organizācija (O)</translation>
 <translation id="6907458757809079309">Fitness</translation>
-<translation id="6910240653697687763">Vietnē <ph name="URL" /> tiek pieprasīta atļauja pilnībā pārvaldīt jūsu MIDI ierīces.</translation>
 <translation id="691024665142758461">lejupielādēt vairākus failus</translation>
 <translation id="6915804003454593391">Lietotājs:</translation>
 <translation id="6916954549222464607">Finanšu plānošana un pārvaldība</translation>
@@ -3494,6 +3496,7 @@ Papildu informācija:
 <translation id="8368027906805972958">Nezināma vai neatbalstīta ierīce (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play pakalpojumi</translation>
 <translation id="8369073279043109617">Iegūt jaunu kodu</translation>
+<translation id="8371841335382565017">Rādīt ierīču sarakstu apraidei</translation>
 <translation id="8371889962595521444">Pielāgoti saknes sertifikāti</translation>
 <translation id="8374636051559112948">Atšķiras</translation>
 <translation id="8378714024927312812">Pārvalda jūsu organizācija</translation>

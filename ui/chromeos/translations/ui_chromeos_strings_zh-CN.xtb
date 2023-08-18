@@ -849,6 +849,7 @@
 <translation id="76959938259365003">未能清空回收站。</translation>
 <translation id="770015031906360009">希腊语</translation>
 <translation id="7705251383879779343">已复制 <ph name="FILE_NAME" />。</translation>
+<translation id="7707941139430559579">无法移动文件。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">若要使用此网络，您需输入运营商提供的 8 位数个人解锁密钥 (PUK)。</translation>
 <translation id="7711920809702896782">图片信息</translation>
 <translation id="7724603315864178912">剪切</translation>

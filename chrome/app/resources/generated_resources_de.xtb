@@ -1078,6 +1078,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1854180393107901205">Übertragung beenden</translation>
 <translation id="1856715684130786728">Speicherort hinzufügen...</translation>
 <translation id="1858585891038687145">Diesem Zertifikat zur Identifizierung von Softwareherstellern vertrauen</translation>
+<translation id="1859294693760125695">Kein Interesse mehr</translation>
 <translation id="1859339856433307593">Ein Passwort für dieses Konto ist bereits in <ph name="BRAND" /> (<ph name="USER_EMAIL" />) gespeichert</translation>
 <translation id="1861262398884155592">Dieser Ordner ist leer</translation>
 <translation id="1862311223300693744">Hast du ein spezielles VPN, einen speziellen Proxy oder eine spezielle Firewall- oder NAS-Software installiert?</translation>
@@ -2758,6 +2759,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3226487301970807183">Linke Seitenleiste ein-/ausblenden</translation>
 <translation id="322708765617468434">Nach der Einrichtung kannst du dem Gerät jederzeit eine weitere Person hinzufügen. Jeder Nutzer kann seine Einstellungen personalisieren. Dabei bleiben die Daten der einzelnen Nutzer privat.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3229412050601871341">Gerätepasswort</translation>
 <translation id="3232168089952388105">Informationen zu deinem Gerät teilen?</translation>
 <translation id="3232558119926886907">Rechtsbündig</translation>
 <translation id="3232754137068452469">Web-App</translation>
@@ -2816,6 +2818,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3275778913554317645">In neuem Fenster öffnen</translation>
 <translation id="3277214528693754078">Textcursor verwenden (Tastaturnavigation)</translation>
 <translation id="3277594800340743211">Großer Schatten</translation>
+<translation id="3277784185056747463">Gerätepasswort oder Passwort des Google-Kontos</translation>
 <translation id="3278001907972365362">Deine Google-Konten erfordern Aufmerksamkeit</translation>
 <translation id="3279092821516760512">Ausgewählte Kontakte können Daten mit dir teilen, wenn du in der Nähe bist. Die Übertragung beginnt erst, nachdem du die Einladung angenommen hast.</translation>
 <translation id="3279230909244266691">Der Vorgang kann einige Minuten dauern. Virtuelle Maschine wird gestartet.</translation>
@@ -3271,6 +3274,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3660234220361471169">Nicht vertrauenswürdig</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 vorhandenes Passwort gefunden}other{{NUM_PASSWORDS} vorhandene Passwörter gefunden}}</translation>
 <translation id="3664511988987167893">Erweiterungssymbol</translation>
+<translation id="3665301845536101715">In Seitenleiste öffnen</translation>
 <translation id="3665589677786828986">Chrome hat festgestellt, dass einige deiner Einstellungen von einem anderen Programm manipuliert wurden, und hat sie auf die ursprünglichen Standardwerte zurückgesetzt.</translation>
 <translation id="3665919494326051362">Die aktuelle Version ist <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Debugging-Dump für Intel-WLAN-NICs</translation>
@@ -4471,6 +4475,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4646675363240786305">Ports</translation>
 <translation id="4647090755847581616">&amp;Tab schließen</translation>
 <translation id="4647283074445570750">Schritt <ph name="CURRENT_STEP" /> von <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Farbauswahl</translation>
 <translation id="4648491805942548247">Unzureichende Berechtigungen</translation>
 <translation id="4650037136970677721">Arbeitsspeicher gespart</translation>
 <translation id="4650591383426000695">Smartphone von <ph name="DEVICE_TYPE" /> trennen</translation>
@@ -6027,6 +6032,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5975056890546437204">{COUNT,plural, =0{Alle in &amp;Inkognitofenster öffnen}=1{In &amp;Inkognitofenster öffnen}other{Alle ({COUNT}) in &amp;Inkognitofenster öffnen}}</translation>
 <translation id="5975792506968920132">Akkustand in %</translation>
 <translation id="5976160379964388480">Sonstige</translation>
+<translation id="5977976211062815271">Auf diesem Gerät</translation>
 <translation id="5978277834170881274">&amp;Einfache Rechtschreibprüfung verwenden</translation>
 <translation id="5978493744931296692">Dein Administrator hat andere Profile deaktiviert</translation>
 <translation id="5979084224081478209">Passwörter prüfen</translation>
@@ -6996,6 +7002,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6805647936811177813">Melde dich in <ph name="TOKEN_NAME" /> an, um das Clientzertifikat von <ph name="HOST_NAME" /> herunterzuladen.</translation>
 <translation id="680572642341004180">RLZ-Nachverfolgung für <ph name="SHORT_PRODUCT_OS_NAME" /> aktivieren</translation>
 <translation id="6806089545527108739">Nicht zulassen, später noch einmal fragen</translation>
+<translation id="680644983456221885">Proaktiver Schutz in Echtzeit vor gefährlichen Websites, Downloads und Erweiterungen auf der Grundlage deiner Browserdaten, die an Google gesendet werden</translation>
 <translation id="6808039367995747522">Stecke deinen Sicherheitsschlüssel ein und tippe darauf, um fortzufahren</translation>
 <translation id="6808166974213191158">Chrome OS Flex-Systemimage-Writer</translation>
 <translation id="6808193438228982088">Fuchs</translation>
@@ -8441,7 +8448,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7978412674231730200">Privater Schlüssel</translation>
 <translation id="7978450511781612192">Dadurch wirst du aus deinen Google-Konten abgemeldet. Deine Lesezeichen, der Verlauf, deine Passwörter usw. werden nicht mehr synchronisiert.</translation>
 <translation id="7980084013673500153">Asset-ID: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Seiten vorab laden, um das Surfen und die Suche zu beschleunigen</translation>
 <translation id="7981662863948574132">Pop-up mit Geräte-EID und QR-Code anzeigen</translation>
 <translation id="7981670705071137488">Nach diesem Update finden alle weiteren Softwareupdates im Hintergrund statt. Die Updateeinstellungen kannst du dir in den Einstellungen ansehen.</translation>
 <translation id="7982083145464587921">Starte dein Gerät neu, um den Fehler zu beheben.</translation>
@@ -8640,6 +8646,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="814204052173971714">{COUNT,plural, =1{ein Video}other{# Videos}}</translation>
 <translation id="8143442547342702591">Ungültige Anwendung</translation>
 <translation id="8143609395536282994">So kannst du deine Daten verwalten:</translation>
+<translation id="8144429778087524791">Als erledigt markieren und ausblenden</translation>
 <translation id="8145170459658034418">Arbeitsspeicher-Sparmodus</translation>
 <translation id="8146177459103116374">Wenn du bereits auf diesem Gerät registriert bist, kannst du dich <ph name="LINK2_START" />als vorhandener Nutzer anmelden<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Füge deine bevorzugten Sprachen hinzu und ordne sie nach Priorität. Websites werden dir dann nach Möglichkeit in deinen bevorzugten Sprachen angezeigt. Diese Einstellungen werden mit den Browsereinstellungen synchronisiert. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9129,6 +9136,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8557022314818157177">Berühre mehrmals den Fingerabdrucksensor auf deinem Sicherheitsschlüssel, bis der Fingerabdruck gespeichert ist</translation>
 <translation id="8557180006508471423">„Google Chrome“ in den Standortdiensten auf deinem Mac einschalten</translation>
 <translation id="8557856025359704738">Nächster Download am <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8558281414737757274">Passwort des Google-Kontos</translation>
 <translation id="8559858985063901027">Passkeys</translation>
 <translation id="8559961053328923750">Chrome beschränkt die Gesamtmenge an Daten, die Websites über den Browser zur Analyse der Werbeleistung teilen können</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Alle in &amp;neuem Fenster öffnen}=1{In &amp;neuem Fenster öffnen}other{Alle ({COUNT}) in &amp;neuem Fenster öffnen}}</translation>
@@ -9141,6 +9149,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8569682776816196752">Keine Ziele gefunden</translation>
 <translation id="8571213806525832805">Letzte 4 Wochen</translation>
 <translation id="8571687764447439720">Kerberos-Ticket hinzufügen</translation>
+<translation id="8572052284359771939">Sendet die URLs der von dir besuchten Websites sowie eine kleine Auswahl an Seiteninhalten, Downloads, Erweiterungsaktivitäten und Systeminformationen an Google Safe Browsing, um zu prüfen, ob die Websites schädlich sind.</translation>
 <translation id="8573111744706778015">„uo7“ eingeben, um „ươ“ zu erhalten</translation>
 <translation id="8574990355410201600">Ton auf <ph name="HOST" /> immer zulassen</translation>
 <translation id="8575286410928791436">Zum Beenden <ph name="KEY_EQUIVALENT" /> gedrückt halten</translation>

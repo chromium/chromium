@@ -605,6 +605,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2225927550500503913">Virtual karta yoniq</translation>
 <translation id="2226636330183131181">WiFi tarmoq portaliga <ph name="BEGIN_LINK" />kirish<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">Hozir bu manzil Chromega saqlangan. Boshqa Google xizmatlarida ishlatish uchun manzilni Google hisobiga (<ph name="ACCOUNT" />) saqlang.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> sayti <ph name="TOP_LEVEL_URL" /> ochilgani haqida biladi.</translation>
 <translation id="2233745931693710080">Kompakt disk</translation>
 <translation id="2239100178324503013">Hozir yuborish</translation>
 <translation id="2241693394036365668">Fayl yuklab olinishi</translation>
@@ -2088,6 +2089,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5426179911063097041"><ph name="SITE" /> sayti bildirishnoma yuborishga ruxsat so‘ramoqda.</translation>
 <translation id="5430298929874300616">Xatcho‘pni o‘chirish</translation>
 <translation id="5443468954631487277">Teskari tartibda old tomonida</translation>
+<translation id="5447235695608032700"><ph name="SITE" /> saytiga siz haqingizdagi saqlangan maʼlumotlardan foydalanishiga ruxsat bering</translation>
 <translation id="5447765697759493033">Bu sayt tarjima qilinmaydi</translation>
 <translation id="5452270690849572955"><ph name="HOST_NAME" /> sahifasi topilmadi</translation>
 <translation id="5455374756549232013">Siyosat vaqti belgisi buzilgan</translation>
@@ -2763,7 +2765,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Tashkilot (O)</translation>
 <translation id="6907458757809079309">Fitnes</translation>
-<translation id="6910240653697687763"><ph name="URL" /> sayti MIDI qurilmalaringizni boshqarishga to‘liq ruxsat so‘ramoqda</translation>
 <translation id="691024665142758461">Bir nechta faylni yuklab olish</translation>
 <translation id="6915804003454593391">Foydalanuvchi:</translation>
 <translation id="6916954549222464607">Moliyani rejalashtirish va boshqarish</translation>

@@ -606,6 +606,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2225927550500503913">Karta virtuale është aktivizuar</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Identifikohu<ph name="END_LINK" /> në rrjetin WiFi</translation>
 <translation id="2228057197024893428">Kjo adresë është ruajtur aktualisht në Chrome. Për ta përdorur atë nëpër produktet e Google, ruaje atë në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> do të mësojë që ke vizituar <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Disk kompakt</translation>
 <translation id="2239100178324503013">Dërgo tani</translation>
 <translation id="2241693394036365668">Skedari është shkarkuar</translation>
@@ -2093,6 +2094,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5426179911063097041"><ph name="SITE" /> dëshiron të të dërgojë njoftime</translation>
 <translation id="5430298929874300616">Hiqe faqeshënuesin</translation>
 <translation id="5443468954631487277">Renditja e kundërt e kthyer lart</translation>
+<translation id="5447235695608032700">Lejo që <ph name="SITE" /> të përdorë informacionet e ruajtura për ty</translation>
 <translation id="5447765697759493033">Ky sajt nuk do të përkthehet</translation>
 <translation id="5452270690849572955">Kjo faqe e <ph name="HOST_NAME" /> nuk mund të gjendet</translation>
 <translation id="5455374756549232013">Vulë kohore politike e gabuar</translation>
@@ -2768,7 +2770,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6897140037006041989">Agjenti i përdoruesit</translation>
 <translation id="6898699227549475383">Organizata (O)</translation>
 <translation id="6907458757809079309">Palestra</translation>
-<translation id="6910240653697687763"><ph name="URL" /> kërkon të marrë nën kontroll të plotë pajisjet e tua MIDI</translation>
 <translation id="691024665142758461">Shkarko shumë skedarë</translation>
 <translation id="6915804003454593391">Përdoruesi:</translation>
 <translation id="6916954549222464607">Planifikimi dhe menaxhimi financiar</translation>

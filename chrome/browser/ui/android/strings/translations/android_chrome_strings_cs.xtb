@@ -470,6 +470,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3513704683820682405">Rozšířená realita</translation>
 <translation id="3518985090088779359">PŘIJMOUT A POKRAČOVAT</translation>
 <translation id="3522247891732774234">K dispozici je aktualizace. Další možnosti</translation>
+<translation id="3523426587027570423">Klepnutím zavřete přehrávač „Poslechnout si tuto stránku“.</translation>
 <translation id="3524138585025253783">Uživatelské rozhraní pro vývojáře</translation>
 <translation id="3524334353996115845">Umožnit webu <ph name="ORIGIN" /> ověřit vaši totožnost</translation>
 <translation id="3527085408025491307">Složka</translation>
@@ -674,6 +675,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4637420359569396807">S měřením reklam se mezi weby a aplikacemi mohou sdílet určité typy dat, aby mohly měřit výkon reklam, například v kterou denní dobu se vám reklama zobrazila.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Bylo nalezeno jedno prolomené heslo}few{Byla nalezena # prolomená hesla}many{Bylo nalezeno # prolomeného hesla}other{Bylo nalezeno # prolomených hesel}}</translation>
 <translation id="4650364565596261010">Výchozí nastavení systému</translation>
+<translation id="4654641641922242357">Přehrávač „Poslechnout si tuto stránku“.</translation>
 <translation id="465657074423018424">Bezpečné prohlížení vás chrání před podvodnými weby. Pokud ho vypnete, buďte při prohlížení mimořádně opatrní, zejména před zadáváním hesel.</translation>
 <translation id="4662373422909645029">Přezdívka nesmí obsahovat čísla</translation>
 <translation id="4663499661119906179">Zobrazit top weby a příběhy pro vás</translation>
@@ -803,6 +805,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5222676887888702881">Odhlásit se</translation>
 <translation id="5227554086496586518">Klepnutím zobrazíte výsledky vyhledávání</translation>
 <translation id="5233638681132016545">Nová karta</translation>
+<translation id="5234971936051226002">Přehrávač „Poslechnout si tuto stránku“ byl minimalizován.</translation>
 <translation id="5235196193381275927">Při přihlašování se něco pokazilo</translation>
 <translation id="5246093389635966745">Upravit zkratku lišty</translation>
 <translation id="5271967389191913893">Zařízení obsah ke stažení nemůže otevřít.</translation>
@@ -1321,6 +1324,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7926975587469166629">Přezdívka karty</translation>
 <translation id="7929962904089429003">Otevřít nabídku</translation>
 <translation id="7930998711684428189">Upozorňovat v případě vyzrazení hesel při porušení zabezpečení.</translation>
+<translation id="7934668619883965330">Soubor nelze stáhnout. Formát souboru není podporován.</translation>
 <translation id="7939485076072265087">Vytvořit stylizovanou kartu se zvýrazněním</translation>
 <translation id="7942131818088350342">Aplikace <ph name="PRODUCT_NAME" /> je zastaralá.</translation>
 <translation id="7944772052836377867">Synchronizace potřebuje ověřit vaši totožnost</translation>
@@ -1522,6 +1526,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8937772741022875483">Odstranit vaši aktivitu v Chromu z digitální rovnováhy?</translation>
 <translation id="8942627711005830162">Otevřít v jiném okně</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Tento jazyk se nepodařilo stáhnout. Zkuste to znovu později.</translation>
+<translation id="8953618380150219653">Přehrávač „Poslechnout si tuto stránku“ byl otevřen na celou výšku.</translation>
 <translation id="8955719471735800169">Zpět na začátek</translation>
 <translation id="8964479563882643397">Pokud chcete otevřít novou anonymní kartu, otevřete nabídku</translation>
 <translation id="8965591936373831584">nevyřízeno</translation>

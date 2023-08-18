@@ -470,6 +470,7 @@
 <translation id="3513704683820682405">واقعیت افزوده</translation>
 <translation id="3518985090088779359">پذیرش و ادامه</translation>
 <translation id="3522247891732774234">به‌روزرسانی موجود است. گزینه‌های بیشتر</translation>
+<translation id="3523426587027570423">برای بستن «خواندن این صفحه» ضربه بزنید.</translation>
 <translation id="3524138585025253783">واسط کاربر برنامه‌نویس</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> مجاز می‌شود هویت شما را تأیید کند</translation>
 <translation id="3527085408025491307">پوشه</translation>
@@ -674,6 +675,7 @@
 <translation id="4637420359569396807">با سنجش آگهی، انواع محدودی از داده‌ها را می‌توان بین سایت‌ها و برنامه‌ها هم‌رسانی کرد تا عملکرد آگهی‌ها سنجیده شود؛ داده‌هایی مثل زمانی از روز که آگهی به شما نشان داده شده است.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{۱ گذرواژه لورفته}one{# گذرواژه لورفته}other{# گذرواژه لورفته}}</translation>
 <translation id="4650364565596261010">پیش‌فرض سیستم</translation>
+<translation id="4654641641922242357">پخش‌کننده «خواندن این صفحه».</translation>
 <translation id="465657074423018424">«مرور ایمن» از شما دربرابر وب‌سایت‌های فریب‌کار محافظت می‌کند. اگر آن را خاموش کنید، هنگام مرور کردن بیشتر مراقب باشید؛ مخصوصاً قبل از وارد کردن گذرواژه‌ها.</translation>
 <translation id="4662373422909645029">نام مستعار نباید حاوی عدد باشد</translation>
 <translation id="4663499661119906179">دیدن سایت‌ها و داستان‌های برتر ویژه شما</translation>
@@ -803,6 +805,7 @@
 <translation id="5222676887888702881">خروج از سیستم</translation>
 <translation id="5227554086496586518">برای دیدن نتایج جستجو ضربه بزنید</translation>
 <translation id="5233638681132016545">برگه جدید</translation>
+<translation id="5234971936051226002">پخش‌کننده «خواندن این صفحه» کوچک شد.</translation>
 <translation id="5235196193381275927">هنگام ورود به سیستم مشکلی پیش آمد</translation>
 <translation id="5246093389635966745">میان‌بر ویرایش نوار ابزار</translation>
 <translation id="5271967389191913893">دستگاه نمی‌تواند محتوا را برای بارگیری باز کند.</translation>
@@ -1254,6 +1257,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> فایل بارگیری شد}one{<ph name="FILES_DOWNLOADED_MANY" /> فایل بارگیری شد}other{<ph name="FILES_DOWNLOADED_MANY" /> فایل بارگیری شد}}</translation>
 <translation id="7581273696622423628">در نظرسنجی شرکت کنید</translation>
 <translation id="7583262514280211622">فهرست خواندن را اینجا خواهید دید</translation>
+<translation id="7587250070160020374">‏Chrome اکنون درحال پخش است</translation>
 <translation id="7588219262685291874">روشن شدن زمینه تیره وقتی «بهینه‌سازی باتری» دستگاه روشن است</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> مجاز می‌شود هویت شما را برای <ph name="TOP_ORIGIN" /> تأیید کند</translation>
 <translation id="7596558890252710462">سیستم‌عامل</translation>
@@ -1321,6 +1325,7 @@
 <translation id="7926975587469166629">نام مستعار کارت</translation>
 <translation id="7929962904089429003">باز کردن منو</translation>
 <translation id="7930998711684428189">اگر گذرواژه‌ها به‌دلیل نقض داده لو رفته باشد، به شما هشدار می‌دهد.</translation>
+<translation id="7934668619883965330">فایل بارگیری نشد. از قالب فایل پشتیبانی نمی‌شود.</translation>
 <translation id="7939485076072265087">ایجاد کارت سبْک‌دار با نوشتار برجسته</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> قدیمی است.</translation>
 <translation id="7944772052836377867">همگام‌سازی باید هویتتان را تأیید کند</translation>
@@ -1522,6 +1527,7 @@
 <translation id="8937772741022875483">‏فعالیت Chrome شما در «آسایش دیجیتالی» برداشته شود؟</translation>
 <translation id="8942627711005830162">باز کردن در پنجره دیگر</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - این زبان بارگیری نشد. بعداً دوباره امتحان کنید.</translation>
+<translation id="8953618380150219653">پخش‌کننده «خواندن این صفحه» به‌صورت کامل باز شد.</translation>
 <translation id="8955719471735800169">برگشتن به بالا</translation>
 <translation id="8964479563882643397">برای باز کردن «برگه ناشناس»، روی منو ضربه بزنید</translation>
 <translation id="8965591936373831584">در انتظار</translation>

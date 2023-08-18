@@ -182,6 +182,7 @@
 <translation id="174102739345480129">मार्कर अफ छ।</translation>
 <translation id="1743570585616704562">पहिचान भएन</translation>
 <translation id="1746730358044914197">तपाईंको प्रशासकले इनपुट विधिहरूको कन्फिगर गर्नुभएको हो।</translation>
+<translation id="1747336645387973286">पूरा गर्नु पर्ने मिति: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">अन-स्क्रिन किबोर्ड सक्षम गरियो</translation>
 <translation id="1749109475624620922">सबै डेस्कमा "<ph name="WINDOW_TITLE" />" विन्डो असाइन गरिएको छ।</translation>
 <translation id="1750088060796401187">बढीमा <ph name="MAX_DESK_LIMIT" /> वटा डेस्क मात्र खोल्न मिल्छ। तपाईं नयाँ डेस्क खोल्न चाहनुहुन्छ भने कुनै डेस्क हटाउनुहोस्।</translation>
@@ -242,7 +243,6 @@
 <translation id="1989113344093894667">सामग्री क्याप्चर गर्न मिल्दैन</translation>
 <translation id="1990046457226896323">बोलीसम्बन्धी फाइलहरू डाउनलोड गरिए</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> को पछिल्लो अद्यावधिकबारे थप जान्नुहोस्</translation>
-<translation id="1995660704900986789">निष्क्रिय पार्नुहोस्</translation>
 <translation id="1996162290124031907">अर्को ट्याबमा जानुहोस्</translation>
 <translation id="1998100899771863792">हालको डेस्क</translation>
 <translation id="2001444736072756133">आफ्ना <ph name="CATEGORY" />, फाइल, एप र अन्य कुराहरू खोज्नुहोस्।</translation>
@@ -474,6 +474,7 @@
 <translation id="3081696990447829002">मेनु विस्तृत गर्नुहोस्</translation>
 <translation id="3087734570205094154">तल</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> अन/अफ गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
+<translation id="3093423061078042895">पूरा गर्नु पर्ने मिति नाघिसकेका</translation>
 <translation id="3095995014811312755">संस्करण</translation>
 <translation id="309749186376891736">कर्सर सार्नुहोस्</translation>
 <translation id="3100274880412651815">क्याप्चर मोड खारेज गर्नुहोस्</translation>
@@ -535,6 +536,7 @@
 <translation id="3364721542077212959">स्टाइलस सम्बन्धी उपकरणहरू</translation>
 <translation id="3365977133351922112">तपाईंको फोन धेरै टाढा छ। फोन अझ नजिक ल्याउनुहोस्।</translation>
 <translation id="3368922792935385530">जडित</translation>
+<translation id="3369111525500416043">पूरा गर्नु पर्ने मिति निकट रहेका</translation>
 <translation id="3371140690572404006">USB-C यन्त्र (दायाँ भागको अगाडिको पोर्ट)</translation>
 <translation id="3375634426936648815">कनेक्ट गरिएको छ</translation>
 <translation id="3378438761594387761">तपाईं यहाँ आफ्ना हालसालैका स्क्रिन क्याप्चर र डाउनलोड गरिएका सामग्री भेट्टाउनु हुने छ</translation>
@@ -989,6 +991,7 @@
 <translation id="5208059991603368177">अन छ</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> सम्म अफ रहने छ</translation>
 <translation id="5217646019792206018">अर्को डेस्क: <ph name="NEXT_DESK_NAME" />, एक्टिभेट गर्न Search+Space वा किबोर्डमा Shift+Search+<ph name="NEXT_DESK_INDEX" /> थिच्नुहोस्।</translation>
+<translation id="5218064144558110424">पूरा नभएको कार्यका रूपमा चिन्ह लगाइयोस्</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5229343007215035173">प्राइभेसी स्क्रिन अन/अफ गर्नुहोस्</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
@@ -1048,6 +1051,7 @@
 <translation id="5465662442746197494">मद्दत आवश्यक छ?</translation>
 <translation id="547979256943495781">सेल्फ दायाँतिर छ</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> वा <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> थिच्नुहोस्</translation>
+<translation id="5482873136202102190">, +</translation>
 <translation id="5491186829646618080">फर्मवेयरसम्बन्धी अपडेटहरू उपलब्ध छन्</translation>
 <translation id="5503884284981862082">Google सहायक खोल्नुहोस्/बन्द गर्नुहोस्</translation>
 <translation id="550391772491508736">कास्ट गर्ने कार्य सुचारु गर्नुहोस्</translation>
@@ -1174,6 +1178,7 @@
 <translation id="598882571027504733">अद्यावधिक प्राप्त गर्न, उक्त किबोर्ड जोडिएकै अवस्थामा आफ्नो Chromebook पुनः सुरु गर्नुहोस्।</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> मध्ये <ph name="SELECTED_PAGE" /> पृष्ठ</translation>
 <translation id="601304062528754300">सेल्फमा भएको अर्को वस्तु हाइलाइट गर्नुहोस्</translation>
+<translation id="6015573907265691211">पूरा भएको कार्यका रूपमा चिन्ह लगाइयोस्</translation>
 <translation id="6018164090099858612">मिरर मोडबाट बाहिर निस्कँदै</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">बायाँतिर स्क्रोल गर्नुहोस्</translation>
@@ -1316,6 +1321,7 @@
 <translation id="6597278316891651699">क्यामेरा पुछारको बायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="6612802754306526077">स्क्रिन रेकर्डिङ मोड चयन गरियो</translation>
+<translation id="6612889377159412215">उपकार्य</translation>
 <translation id="6613765291890844037">कुल भण्डारण <ph name="STORAGE_TOTAL_SIZE" /> मध्ये <ph name="STORAGE_IN_USE_SIZE" /> प्रयोग भइरहेको छ</translation>
 <translation id="6614169507485700968">गोपनीयताको स्क्रिन सक्रिय छ</translation>
 <translation id="6625718907317144388">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> र अन्य एपसम्बन्धी सूचनाहरू लुकाइएका छन्</translation>
@@ -1359,6 +1365,7 @@
 <translation id="6786750046913594791">फोल्डर बन्द गर्नुहोस्</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="679368458793552943">म्याग्निफायर अन भएका बेला जुम इन गर्नुहोस्</translation>
+<translation id="6794287755901682422">यो सामग्रीमा निम्न जानकारी समावेश छ: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />।</translation>
 <translation id="6801878137098616817">हालसालै सम्पादन गरिएको</translation>
 <translation id="6802196538183166658">समय चयन गरी द्रुत सेटिङ खोल्नुहोस्</translation>
 <translation id="6802687695197837794">तपाईंले यसो गर्नुभयो भने क्यामेरा र माइक्रोफोन प्रयोग गर्ने अनुमति भएका <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> र सबै एप तथा वेबसाइटहरूलाई क्यामेरा र माइक्रोफोन प्रयोग गर्ने अनुमति दिन्छ</translation>
@@ -1615,6 +1622,7 @@
 <translation id="793716872548410480">आफ्नो क्लिपबोर्ड हेर्न <ph name="SHORTCUT_KEY_NAME" /> + V थिच्नुहोस्। तपाईंले कपी गर्नुभएका पछिल्ला ५ वस्तुहरू तपाईंको क्लिपबोर्डमा सुरक्षित गरिन्छन्।</translation>
 <translation id="7942349550061667556">रातो</translation>
 <translation id="7944023924886109030">आजका सबै कार्यक्रमहरू हेर्नुहोस्</translation>
+<translation id="7945357288295809525">एक्सेसिबिलिटी सेटिङ देखाइयोस्, "<ph name="ENABLED_FEATURES" />" अन गरिएको छ।</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ले <ph name="DEVICE_NAME" /> प्रयोग गर्ने अनुमति माग्दै छ</translation>
 <translation id="7951630946012935453">किबोर्डको चमक घटाउनुहोस्</translation>
 <translation id="7963689218131240420">Do Not Disturb अफ छ।</translation>
@@ -1914,6 +1922,7 @@
 <translation id="953431725143473984">डिभाइस सट डाउन गर्ने हो?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> डाउनलोड गर्नका निम्ति पर्याप्त खाली ठाउँ छैन। ठाउँ खाली गर्नुहोस्।</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> सम्बन्धी <ph name="QUERY" /> परिणामहरू देखाउँदै</translation>
+<translation id="981011780479609956">पूरा गर्नु पर्ने मिति नतोकिएका</translation>
 <translation id="98120814841227350">कागजातको फेदमा जानुहोस्</translation>
 <translation id="987589956647469042">मोबाइल डेटा अन गरिएको छ</translation>
 <translation id="989374776391122812">क्यामेरा तथा अडियो कन्ट्रोलहरू</translation>

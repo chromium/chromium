@@ -607,6 +607,7 @@
 <translation id="2225927550500503913">ভার্চুয়াল কার্ড চালু করা হয়েছে</translation>
 <translation id="2226636330183131181">ওয়াই ফাই নেটওয়ার্কে <ph name="BEGIN_LINK" />সাইন-ইন করুন<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">এই ঠিকানাটি বর্তমানে Chrome-এ সেভ করা আছে। সব Google প্রোডাক্ট জুড়ে এটি ব্যবহার করতে, আপনার Google অ্যাকাউন্টে এটি সেভ করুন, <ph name="ACCOUNT" />।</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> জানবে যে আপনি <ph name="TOP_LEVEL_URL" /> দেখেছেন।</translation>
 <translation id="2233745931693710080">কমপ্যাক্ট ডিস্ক</translation>
 <translation id="2239100178324503013">এখনই পাঠান</translation>
 <translation id="2241693394036365668">ফাইল ডাউনলোড করা হয়েছে</translation>
@@ -2094,6 +2095,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> আপনাকে বিজ্ঞপ্তি পাঠাতে চায়</translation>
 <translation id="5430298929874300616">বুকমার্ক সরান</translation>
 <translation id="5443468954631487277">রিভার্স অর্ডার, সামনের দিক উপরে</translation>
+<translation id="5447235695608032700"><ph name="SITE" />-কে আপনার সম্পর্কে সেভ তথ্য ব্যবহার করার অনুমতি দিন</translation>
 <translation id="5447765697759493033">এই সাইটটি অনুবাদ করা হবে না</translation>
 <translation id="5452270690849572955">এই <ph name="HOST_NAME" /> পৃষ্ঠাটি পাওয়া যাচ্ছে না</translation>
 <translation id="5455374756549232013">ত্রুটিপূর্ণ নীতি টাইমস্ট্যাম্প</translation>
@@ -2769,7 +2771,6 @@
 <translation id="6897140037006041989">ব্যবহারকারী এজেন্ট</translation>
 <translation id="6898699227549475383">সংস্থা (O)</translation>
 <translation id="6907458757809079309">ফিটনেস</translation>
-<translation id="6910240653697687763">আপনার MIDI ডিভাইসে <ph name="URL" /> পূর্ণ নিয়ন্ত্রণ পেতে চায়</translation>
 <translation id="691024665142758461">একাধিক ফাইল ডাউনলোড করুন</translation>
 <translation id="6915804003454593391">ব্যবহারকারী:</translation>
 <translation id="6916954549222464607">আর্থিক পরিকল্পনা ও ব্যবস্থাপনা</translation>

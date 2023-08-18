@@ -4483,6 +4483,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4646675363240786305">Portas</translation>
 <translation id="4647090755847581616">Fe&amp;char Separador</translation>
 <translation id="4647283074445570750">Passo <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Seletor de cores</translation>
 <translation id="4648491805942548247">Permissões insuficientes</translation>
 <translation id="4650037136970677721">Memória guardada</translation>
 <translation id="4650591383426000695">Desligue o telemóvel do dispositivo <ph name="DEVICE_TYPE" /></translation>
@@ -6044,6 +6045,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5975056890546437204">{COUNT,plural, =0{Abrir todos numa janela de navegação anón&amp;ima}=1{Abrir numa janela de navegação anón&amp;ima}other{Abrir todos ({COUNT}) numa janela de navegação anón&amp;ima}}</translation>
 <translation id="5975792506968920132">Percentagem de carga da bateria</translation>
 <translation id="5976160379964388480">Outros</translation>
+<translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5978277834170881274">&amp;Utilizar a verificação ortográfica básica</translation>
 <translation id="5978493744931296692">O seu administrador desativou outros perfis</translation>
 <translation id="5979084224081478209">Rever palavras-passe</translation>
@@ -8459,7 +8461,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7978412674231730200">Chave privada</translation>
 <translation id="7978450511781612192">Deste modo, termina sessão nas suas Contas Google. Os marcadores, o histórico, as palavras-passe e muito mais deixam de ser sincronizados.</translation>
 <translation id="7980084013673500153">ID do recurso: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Pré-carregar as páginas para uma navegação e uma pesquisa mais rápidas</translation>
 <translation id="7981662863948574132">Mostrar pop-up do código QR e EID do dispositivo</translation>
 <translation id="7981670705071137488">Depois disto, as atualizações de software ocorrem em segundo plano. Pode rever as preferências de atualização nas Definições.</translation>
 <translation id="7982083145464587921">Reinicie o dispositivo para corrigir este erro.</translation>

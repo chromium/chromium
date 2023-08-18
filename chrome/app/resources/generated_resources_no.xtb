@@ -1918,6 +1918,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2480868415629598489">endre data du kopierer og limer inn</translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2482895651873876648">Fanen er flyttet til gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Angi søkemotor i Chrome-nettleserinnstillingene</translation>
 <translation id="2484743711056182585">Fjern innvilget tillatelse</translation>
 <translation id="2484909293434545162">Hvis et nettsted bruker informasjonskapsler, vises det her</translation>
 <translation id="2484959914739448251">For å slette nettlesingsdata på alle synkroniserte enheter og Google-kontoen din må du <ph name="BEGIN_LINK" />skrive inn passordfrasen din<ph name="END_LINK" />.</translation>
@@ -2074,6 +2075,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="2613210758071148851">Ikke tillat utvidelser på <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> får tilgang til å redigere <ph name="FILENAME" /></translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{Åpne og rediger <ph name="FILE1" /> i denne utvidelsen}other{Åpne og rediger <ph name="FILE1" />, … i denne appen}}</translation>
 <translation id="2616366145935564096">lese og endre opplysningene dine på <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Konfigurer nærdeling</translation>
 <translation id="261953424982546039">Chrome-&amp;prøvefunksjoner…</translation>
@@ -4482,6 +4484,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4585793705637313973">Endre siden</translation>
 <translation id="4586275095964870617">Kunne ikke åpne <ph name="URL" /> i en alternativ nettleser. Kontakt systemadministrator.</translation>
 <translation id="4587589328781138893">Nettsteder</translation>
+<translation id="4588749726511456218">Rulleakselerasjon <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Loggene er skrevet til Nedlastinger-katalogen.</translation>
 <translation id="459204634473266369">Ingen enheter er lagret i <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">Surfing og søk er raskere.</translation>
@@ -4550,6 +4553,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4646675363240786305">Porter</translation>
 <translation id="4647090755847581616">&amp;Lukk fane</translation>
 <translation id="4647283074445570750">Trinn <ph name="CURRENT_STEP" /> av <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Fargevelger</translation>
 <translation id="4648491805942548247">Utilstrekkelige tillatelser</translation>
 <translation id="4650037136970677721">Spart minne</translation>
 <translation id="4650591383426000695">Koble telefonen fra <ph name="DEVICE_TYPE" /></translation>
@@ -6126,6 +6130,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5975056890546437204">{COUNT,plural, =0{Åpne alle i &amp;inkognitovindu}=1{Åpne i &amp;inkognitovindu}other{Åpne alle ({COUNT}) i &amp;inkognitovindu}}</translation>
 <translation id="5975792506968920132">Ladingsprosent for batteri</translation>
 <translation id="5976160379964388480">Andre</translation>
+<translation id="5977976211062815271">På denne enheten</translation>
 <translation id="5978277834170881274">&amp;Bruk grunnleggende stavekontroll</translation>
 <translation id="5978493744931296692">Administratoren din har deaktivert andre profiler</translation>
 <translation id="5979084224081478209">Kontroller passordene</translation>
@@ -6316,6 +6321,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6130692320435119637">Legg til wifi</translation>
 <translation id="6130887916931372608">Tastaturtast</translation>
 <translation id="6132714462430777655">Vil du hoppe over skoleregistreringen?</translation>
+<translation id="6134428719487602109">Fjern alle brukerkontoer, og tilbakestill Chromebooken til fabrikkstandard.</translation>
 <translation id="6135823405800500595">Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og wifi er på</translation>
 <translation id="6135826623269483856">Nettsteder som ikke har lov til å administrere vinduer på alle skjermene dine</translation>
 <translation id="6136114942382973861">Lukk nedlastingsraden</translation>
@@ -8567,7 +8573,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7978412674231730200">Privatnøkkel</translation>
 <translation id="7978450511781612192">Dette logger deg av Google-kontoene dine. Bokmerkene dine, loggen din, passordene dine med mer blir ikke lenger synkronisert.</translation>
 <translation id="7980084013673500153">Ressurs-ID: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Last inn sider på forhånd for raskere nettlesing og søk</translation>
 <translation id="7981662863948574132">Vis forgrunnsvindu med enhetens EID-nummer og QR-kode</translation>
 <translation id="7981670705071137488">Etter dette kommer programvareoppdateringer til å foregå i bakgrunnen. Du kan gå gjennom preferansene dine for oppdateringer i innstillingene.</translation>
 <translation id="7982083145464587921">Start enheten på nytt for å fikse denne feilen.</translation>

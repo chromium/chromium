@@ -4481,6 +4481,7 @@
 <translation id="4646675363240786305">Портови</translation>
 <translation id="4647090755847581616">&amp;Close Tab (Затвори картицу)</translation>
 <translation id="4647283074445570750"><ph name="CURRENT_STEP" />. корак од <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Бирач боја</translation>
 <translation id="4648491805942548247">Недовољан број дозвола</translation>
 <translation id="4650037136970677721">Меморија коју сте уштедели</translation>
 <translation id="4650591383426000695">Прекините везу између телефона и уређаја <ph name="DEVICE_TYPE" /></translation>
@@ -6041,6 +6042,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{Отвори све у &amp;прозору без архивирања}=1{Отвори у &amp;прозору без архивирања}one{Отвори све ({COUNT}) у &amp;прозору без архивирања}few{Отвори све ({COUNT}) у &amp;прозору без архивирања}other{Отвори све ({COUNT}) у &amp;прозору без архивирања}}</translation>
 <translation id="5975792506968920132">Проценат напуњености батерије</translation>
 <translation id="5976160379964388480">Други</translation>
+<translation id="5977976211062815271">На овом уређају</translation>
 <translation id="5978277834170881274">&amp;Користи основну проверу правописа</translation>
 <translation id="5978493744931296692">Администратор је онемогућио друге профиле</translation>
 <translation id="5979084224081478209">Провери лозинке</translation>
@@ -8460,7 +8462,6 @@
 <translation id="7978412674231730200">Приватни кључ</translation>
 <translation id="7978450511781612192">Овим ћете се одјавити са Google налога. Обележивачи, историја, лозинке и додатни садржај се више неће синхронизовати.</translation>
 <translation id="7980084013673500153">ИД елемента: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Странице се учитавају унапред ради бржег прегледања и претраживања</translation>
 <translation id="7981662863948574132">Прикажи искачући прозор са EID бројем и QR кодом уређаја</translation>
 <translation id="7981670705071137488">После овога, ажурирања софтвера ће се одвијати у позадини. Можете да прегледате подешавања за ажурирања у Подешавањима.</translation>
 <translation id="7982083145464587921">Покрените поново уређај да бисте исправили ову грешку.</translation>

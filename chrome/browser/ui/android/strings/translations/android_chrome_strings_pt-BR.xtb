@@ -675,6 +675,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="4634124774493850572">Usar senha</translation>
 <translation id="4637420359569396807">Com a medição de anúncios, é possível compartilhar tipos limitados de dados entre sites e apps para avaliar a performance, como a hora do dia em que o anúncio foi mostrado.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 senha comprometida}one{# senha comprometida}other{# senhas comprometidas}}</translation>
+<translation id="4645146721047390964">Na navegação anônima, os sites não podem usar os cookies para acessar sua atividade de navegação em outros sites, por exemplo, para personalizar anúncios. Os recursos de alguns sites podem falhar.</translation>
 <translation id="4650364565596261010">Padrão do sistema</translation>
 <translation id="4654641641922242357">Player "Ouvir esta página".</translation>
 <translation id="465657074423018424">O "Navegação segura" protege você de sites enganosos. Se desativá-lo, tenha cuidado redobrado ao navegar pela Internet, principalmente quando for digitar senhas.</translation>
@@ -694,6 +695,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="4719927025381752090">Oferecer para traduzir</translation>
 <translation id="4720023427747327413">Abrir no <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Veja seus principais sites</translation>
+<translation id="4731877163452936634">Velocidade da reprodução: <ph name="PLAYBACK_SPEED" />. Clique para mudar.</translation>
 <translation id="4732120983431207637">Recuperador de pilha</translation>
 <translation id="4736934858538408121">Cartão virtual</translation>
 <translation id="473775607612524610">Atualizar</translation>
@@ -1251,6 +1253,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="751961395872307827">Não foi possível se conectar ao site</translation>
 <translation id="752220631458524187">Desconecte o smartphone quando terminar</translation>
 <translation id="7523960634226602883">Pesquisar com a câmera usando o Lens</translation>
+<translation id="752731652852882757">Bloquear na navegação anônima</translation>
 <translation id="7539698981064401140">Sincronize as guias e o histórico</translation>
 <translation id="7562080006725997899">Limpando dados de navegação</translation>
 <translation id="756809126120519699">Dados do Chrome apagados</translation>
@@ -1330,6 +1333,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7939485076072265087">Criar cartão estilizado com destaque</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está desatualizado.</translation>
 <translation id="7944772052836377867">A sincronização precisa confirmar sua identidade</translation>
+<translation id="7945822420239537236">Avançar <ph name="NUMBER_OF_SECONDS" /> segundos</translation>
 <translation id="7947953824732555851">Aceitar/fazer login</translation>
 <translation id="7957413488482743710">O cartão virtual oculta o real para proteger você contra possíveis tentativas de fraude. <ph name="BEGIN_LINK1" />Saiba mais sobre os cartões virtuais<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Botão "Voltar" dos insights da página</translation>
@@ -1338,6 +1342,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7965838025086216108">Você pode usar as senhas salvas em qualquer dispositivo. Elas são armazenadas no Gerenciador de senhas do Google da conta <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Adicionado à lista de leitura</translation>
 <translation id="7971136598759319605">Ativado há um dia</translation>
+<translation id="7972866381678406344">Voltar <ph name="NUMBER_OF_SECONDS" /> segundos</translation>
 <translation id="7975379999046275268">Visualizar página <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7986497153528221272">Para poder ver as senhas, configure um bloqueio de tela no dispositivo</translation>
 <translation id="7995059495660416932">O conteúdo vai ser mostrado quando estiver disponível</translation>

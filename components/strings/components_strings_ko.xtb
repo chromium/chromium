@@ -606,6 +606,7 @@
 <translation id="2225927550500503913">가상 카드 사용 설정됨</translation>
 <translation id="2226636330183131181">Wi-Fi 네트워크에 <ph name="BEGIN_LINK" />로그인<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">이 주소는 현재 Chrome에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="ACCOUNT" />)에 저장하세요.</translation>
+<translation id="2228466771983364669"><ph name="TOP_LEVEL_URL" />에 방문한 사실을 <ph name="EMBEDDED_URL" />에서 알 수 있습니다.</translation>
 <translation id="2233745931693710080">컴팩트 디스크</translation>
 <translation id="2239100178324503013">지금 보내기</translation>
 <translation id="2241693394036365668">파일 다운로드됨</translation>
@@ -2093,6 +2094,7 @@
 <translation id="5426179911063097041"><ph name="SITE" />에서 알림을 보내려고 합니다.</translation>
 <translation id="5430298929874300616">북마크 삭제</translation>
 <translation id="5443468954631487277">역순으로 인쇄면이 위를 향하게</translation>
+<translation id="5447235695608032700"><ph name="SITE" />에서 나에 관해 저장한 정보를 사용하도록 허용</translation>
 <translation id="5447765697759493033">이 사이트는 번역되지 않습니다.</translation>
 <translation id="5452270690849572955"><ph name="HOST_NAME" /> 페이지를 찾을 수 없음</translation>
 <translation id="5455374756549232013">잘못된 정책 타임스탬프</translation>
@@ -2769,7 +2771,6 @@
 <translation id="6897140037006041989">사용자 에이전트</translation>
 <translation id="6898699227549475383">조직(O)</translation>
 <translation id="6907458757809079309">피트니스</translation>
-<translation id="6910240653697687763"><ph name="URL" />에서 MIDI 기기를 완전히 제어하려고 합니다.</translation>
 <translation id="691024665142758461">여러 파일 다운로드</translation>
 <translation id="6915804003454593391">사용자:</translation>
 <translation id="6916954549222464607">재무 설계 및 관리</translation>

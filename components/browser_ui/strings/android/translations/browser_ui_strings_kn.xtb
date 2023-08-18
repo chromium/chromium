@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="1036348656032585052">ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1044891598689252897">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತವೆ</translation>
+<translation id="1073417869336441572">ನೀವು ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಏಕೆ ಅನುಮತಿಸುತ್ತೀರಿ ಎಂದು ಹೇಳುವ ಮೂಲಕ Chrome ಅನ್ನು ಸುಧಾರಿಸಲು ನಮಗೆ ಸಹಾಯ ಮಾಡಿ. <ph name="BEGIN_LINK" />ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಲ್ಲಿರುವ ಆ್ಯಪ್‌ಗಳು ಅಥವಾ ಸೈಟ್‌ಗಳ ಮೂಲಕ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿರುವ <ph name="DATASIZE" /> ಯಷ್ಟು ಡೇಟಾ ಹಾಗೂ ಕುಕೀಗಳನ್ನು ಇದು ತೆರವುಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="1178581264944972037">ವಿರಾಮ</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">ಮೂರನೇ ವ್ಯಕ್ತಿಯನ್ನು ಹೊರತುಪಡಿಸಿ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="1989112275319619282">ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="1994173015038366702">ಸೈಟ್ URL</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{1 ದಿನದಲ್ಲಿ ಅವಧಿ ಮೀರುತ್ತದೆ}one{# ದಿನಗಳಲ್ಲಿ ಅವಧಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ}other{# ದಿನಗಳಲ್ಲಿ ಅವಧಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ}}</translation>
 <translation id="2004697686368036666">ಫೀಚರ್‌ಗಳು ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು</translation>
 <translation id="2025115093177348061">ಆಗ್‌ಮೆಂಟೆಡ್ ರಿಯಾಲಿಟಿ</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> ಗೆ ಮರಳಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ತಿಳಿಯಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{Chrome ಮತ್ತೆ ನಾಳೆ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತದೆ}one{Chrome ಮತ್ತೆ ಕುಕೀಗಳನ್ನು # ದಿನಗಳವರೆಗೆ ನಿರ್ಬಂಧಿಸುತ್ತದೆ}other{Chrome ಮತ್ತೆ ಕುಕೀಗಳನ್ನು # ದಿನಗಳವರೆಗೆ ನಿರ್ಬಂಧಿಸುತ್ತದೆ}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> ನಲ್ಲಿನ ಸೈಟ್‌ಗಳು</translation>
 <translation id="3538390592868664640">ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ 3D ನಕ್ಷೆಗಳನ್ನು ರಚಿಸುವುದರಿಂದ ಅಥವಾ ಕ್ಯಾಮರಾ ಸ್ಥಿತಿಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದರಿಂದ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="3544058026430919413">ಗುಂಪಿನಲ್ಲಿರುವ ಇತರರ ಜೊತೆ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುವುದಕ್ಕಾಗಿ ಕುಕೀಗಳನ್ನು ಬಳಸಬಹುದಾದ ಸೈಟ್‌ಗಳ ಗುಂಪನ್ನು ಸಂಸ್ಥೆಯು ವ್ಯಾಖ್ಯಾನಿಸಬಹುದು. ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಇದು ಆಫ್ ಆಗಿರುತ್ತದೆ.</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">ಫೋನ್ ಸಂಖ್ಯೆಗಳು</translation>
 <translation id="3826050100957962900">ಥರ್ಡ್-ಪಾರ್ಟಿ ಸೈನ್ ಇನ್</translation>
 <translation id="3835233591525155343">ನಿಮ್ಮ ಸಾಧನದ ಬಳಕೆ</translation>
+<translation id="3843916486309149084">Chrome ಇಂದು ಮತ್ತೆ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತದೆ</translation>
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
 <translation id="3859306556332390985">ಮುಂದಕ್ಕೆ ಸೀಕ್ ಮಾಡಿ</translation>
 <translation id="3895926599014793903">ಒತ್ತಾಯದ ಝೂಮ್ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ಗಾಗಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಸೈನ್ ಇನ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿ.</translation>
 <translation id="6388207532828177975">ತೆರವುಗೊಳಿಸಿ &amp; ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="6398765197997659313">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
+<translation id="640163077447496506">ಇಂದು ಅವಧಿ ಅಂತ್ಯಗೊಳ್ಳುತ್ತದೆ</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ನಿಮ್ಮ ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನ ಮತ್ತು ಡೇಟಾವನ್ನು ಬಳಸದ ಹಾಗೆ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="6447842834002726250">ಕುಕೀಸ್</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
 <translation id="8154912474061769055">ಹಲವು ಸೈಟ್‌ಗಳಲ್ಲಿನ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು</translation>
 <translation id="8168435359814927499">ವಿಷಯ</translation>
+<translation id="8186479265534291036">ಸೈಟ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲವೇ? ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="8200772114523450471">ಪುನರಾರಂಭಿಸು</translation>
 <translation id="8206354486702514201">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಂದ ಜಾರಿಗೊಳಿಸಲಾಗಿದೆ.</translation>

@@ -182,6 +182,7 @@
 <translation id="174102739345480129">মার্কার বন্ধ আছে।</translation>
 <translation id="1743570585616704562">শনাক্ত করা যায়নি</translation>
 <translation id="1746730358044914197">আপনার প্রশাসক ইনপুটের পদ্ধতিগুলি কনফিগার করে।</translation>
+<translation id="1747336645387973286">শেষ করার তারিখ <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">অন-স্ক্রিন কীবোর্ড সক্ষম করা রয়েছে</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> উইন্ডো সব ডেস্কে অ্যাসাইন করা হয়েছে</translation>
 <translation id="1750088060796401187">শুধুমাত্র <ph name="MAX_DESK_LIMIT" />টি ডেস্কের অনুমতি দেওয়া হয়েছে। নতুন একটি খোলার জন্য ডেস্ক সরান।</translation>
@@ -242,7 +243,6 @@
 <translation id="1989113344093894667">কন্টেন্ট ক্যাপচার করা যাবে না</translation>
 <translation id="1990046457226896323">স্পিচ ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="1993072747612765854">সাম্প্রতিক <ph name="SYSTEM_APP_NAME" /> আপডেট সম্পর্কে আরও জানুন</translation>
-<translation id="1995660704900986789">পাওয়ার বন্ধ করুন</translation>
 <translation id="1996162290124031907">পরের ট্যাবে যান</translation>
 <translation id="1998100899771863792">বর্তমান ডেক্স</translation>
 <translation id="2001444736072756133">আপনার <ph name="CATEGORY" />, ফাইল, অ্যাপ এবং আরও অনেক কিছু সার্চ করুন।</translation>
@@ -356,7 +356,7 @@
 <translation id="2531025035050312891">ডিভাইস ধীরে চলছে</translation>
 <translation id="2531107890083353124">ট্যাবটি টেনে আনার সময়, <ph name="KEY_ONE" /> প্রেস করুন</translation>
 <translation id="254900897760075745">বেছে নেওয়া কন্টেন্ট কপি করুন</translation>
-<translation id="2549711466868162843">আরও উন্নত আলো</translation>
+<translation id="2549711466868162843">উন্নত লাইটিং</translation>
 <translation id="2549985041256363841">রেকর্ডিং শুরু করুন</translation>
 <translation id="255671100581129685">সর্বজনীন সেশনে Google অ্যাসিস্ট্যান্ট উপলভ্য নয়।</translation>
 <translation id="256712445991462162">ডক করা ম্যাগনিফায়ার</translation>
@@ -474,6 +474,7 @@
 <translation id="3081696990447829002">মেনুটি বড় করুন</translation>
 <translation id="3087734570205094154">নিচে</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> টগল করুন। <ph name="STATE_TEXT" /></translation>
+<translation id="3093423061078042895">পাওয়া যাচ্ছে না</translation>
 <translation id="3095995014811312755">সংস্করণ</translation>
 <translation id="309749186376891736">কার্সর সরান</translation>
 <translation id="3100274880412651815">ক্যাপচার মোড বাতিল করুন</translation>
@@ -535,6 +536,7 @@
 <translation id="3364721542077212959">স্টাইলাস টুল</translation>
 <translation id="3365977133351922112">আপনার ফোনটি অনেক দূরে আছে। আপনার ফোনটি কাছে আনুন।</translation>
 <translation id="3368922792935385530">সংযুক্ত</translation>
+<translation id="3369111525500416043">অ্যাসাইনমেন্ট খুব তাড়াতাড়ি শেষ করতে হবে</translation>
 <translation id="3371140690572404006">USB-C ডিভাইস (ডান দিকের সামনের পোর্ট)</translation>
 <translation id="3375634426936648815">কানেক্ট করা আছে</translation>
 <translation id="3378438761594387761">আপনি এখানে আপনার সাম্প্রতিক ডাউনলোড এবং স্ক্রিন ক্যাপচার পাবেন</translation>
@@ -989,6 +991,7 @@
 <translation id="5208059991603368177">চালু আছে</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> পর্যন্ত বন্ধ আছে</translation>
 <translation id="5217646019792206018">পরের ডেস্ক: <ph name="NEXT_DESK_NAME" />, Search+Space বা কীবোর্ডের শর্টকার্ট ব্যবহার করুন: চালু করতে Shift+Search+<ph name="NEXT_DESK_INDEX" />।</translation>
+<translation id="5218064144558110424">শেষ হয়নি হিসেবে চিহ্নিত করুন</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="5229343007215035173">প্রাইভেসি স্ক্রিন চালু/বন্ধ করুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
@@ -1048,6 +1051,7 @@
 <translation id="5465662442746197494">সাহায্য চান?</translation>
 <translation id="547979256943495781">শেল্ফ ডান দিকে দেখানো হচ্ছে</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> বা <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
+<translation id="5482873136202102190">, +</translation>
 <translation id="5491186829646618080">ফার্মওয়্যারের আপডেট উপলভ্য আছে</translation>
 <translation id="5503884284981862082">Google Assistant খুলুন/বন্ধ করুন</translation>
 <translation id="550391772491508736">কাস্ট করা আবার চালু করুন</translation>
@@ -1174,6 +1178,7 @@
 <translation id="598882571027504733">আপডেট পেতে, অ্যাটাচ করা কীবোর্ডের মাধ্যমে আপনার Chromebook রিস্টার্ট করুন।</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />টি পৃষ্ঠার মধ্যে <ph name="SELECTED_PAGE" />টি পৃষ্ঠা</translation>
 <translation id="601304062528754300">শেল্ফে পরের আইটেম হাইলাইট করুন</translation>
+<translation id="6015573907265691211">সম্পূর্ণ হয়েছে বলে চিহ্নিত করুন</translation>
 <translation id="6018164090099858612">মিরর মোড থেকে প্রস্থান করছে</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">বাঁ দিকে স্ক্রল করুন</translation>
@@ -1316,6 +1321,7 @@
 <translation id="6597278316891651699">ক্যামেরাটি নিচে বাঁদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="6612802754306526077">স্ক্রিন রেকর্ডিং মোড বেছে নেওয়া হয়েছে</translation>
+<translation id="6612889377159412215">সাবটাস্ক</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_TOTAL_SIZE" />-এর মধ্যে | <ph name="STORAGE_IN_USE_SIZE" /> স্টোরেজ ব্যবহার হচ্ছে</translation>
 <translation id="6614169507485700968">গোপনীয়তা স্ক্রিন চালু করা আছে</translation>
 <translation id="6625718907317144388">ভিউ সংক্রান্ত নিরাপত্তা চালু থাকার জন্য <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />-এর এবং অন্যান্য বিজ্ঞপ্তি লুকানো আছে</translation>
@@ -1359,6 +1365,7 @@
 <translation id="6786750046913594791">ফোল্ডার বন্ধ করুন</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="679368458793552943">ম্যাগনিফায়ার চালু থাকাকালীন বড় করুন</translation>
+<translation id="6794287755901682422">এই আইটেমে আছে: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />।</translation>
 <translation id="6801878137098616817">সম্প্রতি এডিট করা হয়েছে</translation>
 <translation id="6802196538183166658">সময় বেছে নিয়ে দ্রুত সেটিংস খুলুন</translation>
 <translation id="6802687695197837794">এটি ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতির মাধ্যমে <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> এবং সব অ্যাপ ও ওয়েবসাইট অ্যাক্সেস করার অনুমতি দেয়</translation>
@@ -1615,6 +1622,7 @@
 <translation id="793716872548410480">আপনার ক্লিপবোর্ড দেখতে <ph name="SHORTCUT_KEY_NAME" /> + V প্রেস করুন। আপনার কপি করা শেষ ৫টি আইটেম ক্লিপবোর্ডে সেভ করা হয়েছে।</translation>
 <translation id="7942349550061667556">লাল</translation>
 <translation id="7944023924886109030">আজকের সব ইভেন্ট দেখুন</translation>
+<translation id="7945357288295809525">অ্যাক্সেসিবিলিটি সেটিংস দেখুন, "<ph name="ENABLED_FEATURES" />" চালু করা আছে।</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> আপনার <ph name="DEVICE_NAME" /> ব্যবহার করতে চায়</translation>
 <translation id="7951630946012935453">ডিম কীবোর্ড</translation>
 <translation id="7963689218131240420">'বিরক্ত করবে না' বন্ধ আছে।</translation>
@@ -1914,6 +1922,7 @@
 <translation id="953431725143473984">ডিভাইস বন্ধ করবেন?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" />-এর জন্য পর্যাপ্ত স্টোরেজ নেই। স্টোরেজ খালি করুন।</translation>
 <translation id="974545358917229949"><ph name="QUERY" />-এর জন্য <ph name="RESULT_COUNT" />টি ফলাফল দেখানো হচ্ছে</translation>
+<translation id="981011780479609956">শেষ করার কোনও তারিখ নেই</translation>
 <translation id="98120814841227350">ডকুমেন্টের শেষে যান</translation>
 <translation id="987589956647469042">মোবাইল ডেটা চালু রয়েছে</translation>
 <translation id="989374776391122812">ক্যামেরা এবং অডিও নিয়ন্ত্রণ</translation>

@@ -606,6 +606,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2225927550500503913">Se activó la tarjeta virtual</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Acceder<ph name="END_LINK" /> a la red Wi-Fi</translation>
 <translation id="2228057197024893428">Actualmente, esta dirección se guarda en Chrome. Para usarla en todos los productos de Google, guárdala en tu Cuenta de Google, <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> sabrá que visitaste <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2239100178324503013">Enviar ahora</translation>
 <translation id="2241693394036365668">Se descargó un archivo</translation>
@@ -2094,6 +2095,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5426179911063097041"><ph name="SITE" /> quiere enviarte notificaciones</translation>
 <translation id="5430298929874300616">Eliminar marcador</translation>
 <translation id="5443468954631487277">Orden inverso hacia arriba</translation>
+<translation id="5447235695608032700">Permitir que <ph name="SITE" /> use la información que guardó sobre ti</translation>
 <translation id="5447765697759493033">Este sitio no se traducirá</translation>
 <translation id="5452270690849572955">No se encuentra esta página <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Marca de tiempo de política incorrecta</translation>
@@ -2770,7 +2772,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6897140037006041989">Usuario-agente</translation>
 <translation id="6898699227549475383">Organización (O)</translation>
 <translation id="6907458757809079309">Ejercicio</translation>
-<translation id="6910240653697687763"><ph name="URL" /> desea obtener el control total de tus dispositivos MIDI</translation>
 <translation id="691024665142758461">Descargar varios archivos</translation>
 <translation id="6915804003454593391">Usuario:</translation>
 <translation id="6916954549222464607">Planificación y administración financiera</translation>

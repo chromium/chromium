@@ -606,6 +606,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2225927550500503913">Kadi pepe imewashwa</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Kuingia katika akaunti<ph name="END_LINK" /> kwenye mtandao wa Wi-Fi</translation>
 <translation id="2228057197024893428">Anwani hii kwa sasa imehifadhiwa kwenye Chrome. Ili uitumie kwenye bidhaa za Google, ihifadhi kwenye Akaunti yako ya Google, <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> itafahamu kuwa umetembelea <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Diski Ndogo (CD)</translation>
 <translation id="2239100178324503013">Tuma sasa</translation>
 <translation id="2241693394036365668">Faili inapopakuliwa</translation>
@@ -2093,6 +2094,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5426179911063097041"><ph name="SITE" /> inataka kukutumia arifa</translation>
 <translation id="5430298929874300616">Ondoa alamisho</translation>
 <translation id="5443468954631487277">Kinyume cha mpangilio wa kuangalia juu</translation>
+<translation id="5447235695608032700">Ruhusu <ph name="SITE" /> itumie maelezo yanayokuhusu iliyoyahifadhi</translation>
 <translation id="5447765697759493033">Tovuti hii haitatafsiriwa</translation>
 <translation id="5452270690849572955">Ukurasa wa <ph name="HOST_NAME" /> hii haukupatikana</translation>
 <translation id="5455374756549232013">Muhuri wa muda wa sera mbaya</translation>
@@ -2769,7 +2771,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6897140037006041989">Programu ya Mtumiaji</translation>
 <translation id="6898699227549475383">Shirika (O)</translation>
 <translation id="6907458757809079309">Siha</translation>
-<translation id="6910240653697687763"><ph name="URL" /> inataka kupata udhibiti kamili wa vifaa vyako vya MIDI</translation>
 <translation id="691024665142758461">Pakua faili nyingi</translation>
 <translation id="6915804003454593391">Mtumiaji:</translation>
 <translation id="6916954549222464607">Mipango na usimamizi wa fedha</translation>

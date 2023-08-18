@@ -1082,6 +1082,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1854180393107901205">Detener el envío</translation>
 <translation id="1856715684130786728">Añadir ubicación...</translation>
 <translation id="1858585891038687145">Confiar en este certificado para identificar a los fabricantes de software</translation>
+<translation id="1859294693760125695">Ya no me interesa</translation>
 <translation id="1859339856433307593">Ya se ha guardado una contraseña para esta cuenta en el <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Esta carpeta está vacía</translation>
 <translation id="1862311223300693744">¿Tienes instalado algún software especial de VPN, proxy, cortafuegos o NAS?</translation>
@@ -2764,6 +2765,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3226487301970807183">Activa el panel lateral alineado a la izquierda</translation>
 <translation id="322708765617468434">Podrás añadir otro perfil al dispositivo después de la configuración. Cada perfil puede personalizar su experiencia y mantener la privacidad de sus datos.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
+<translation id="3229412050601871341">Contraseña del dispositivo</translation>
 <translation id="3232168089952388105">¿Compartir información sobre tu dispositivo?</translation>
 <translation id="3232558119926886907">Alinear a la derecha</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
@@ -2822,6 +2824,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3275778913554317645">Abrir como ventana</translation>
 <translation id="3277214528693754078">Desplazarse con el cursor de texto (navegación por cursor de texto)</translation>
 <translation id="3277594800340743211">Sombra grande</translation>
+<translation id="3277784185056747463">Contraseña del dispositivo o de la cuenta de Google</translation>
 <translation id="3278001907972365362">Parece que hay algún problema con tus cuentas de Google</translation>
 <translation id="3279092821516760512">Determinados contactos pueden compartir archivos contigo cuando estéis cerca. Las transferencias no se iniciarán hasta que las aceptes.</translation>
 <translation id="3279230909244266691">Iniciando la máquina virtual. Este proceso puede tardar unos minutos.</translation>
@@ -3278,6 +3281,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3660234220361471169">No es de confianza</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 contraseña existente encontrada}other{{NUM_PASSWORDS} contraseñas existentes encontradas}}</translation>
 <translation id="3664511988987167893">Icono de la extensión</translation>
+<translation id="3665301845536101715">Abrir en el panel lateral</translation>
 <translation id="3665589677786828986">Chrome ha detectado que otro programa ha dañado algunas opciones de configuración y ha restablecido la configuración predeterminada original.</translation>
 <translation id="3665919494326051362">La versión actual es <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Volcado de depuración de NICs de Wi-Fi de Intel</translation>
@@ -4478,6 +4482,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4646675363240786305">Puertos</translation>
 <translation id="4647090755847581616">&amp;Cerrar pestaña</translation>
 <translation id="4647283074445570750">Paso <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Selector de color</translation>
 <translation id="4648491805942548247">Permisos insuficientes</translation>
 <translation id="4650037136970677721">Memoria ahorrada</translation>
 <translation id="4650591383426000695">Desvincula tu teléfono del <ph name="DEVICE_TYPE" /></translation>
@@ -6038,6 +6043,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5975056890546437204">{COUNT,plural, =0{Abrir todas en una ventana de &amp;incógnito}=1{Abrir en una ventana de &amp;incógnito}other{Abrir todas ({COUNT}) en una ventana de &amp;incógnito}}</translation>
 <translation id="5975792506968920132">Porcentaje de carga de batería</translation>
 <translation id="5976160379964388480">Otros</translation>
+<translation id="5977976211062815271">En este dispositivo</translation>
 <translation id="5978277834170881274">&amp;Utilizar la revisión ortográfica básica</translation>
 <translation id="5978493744931296692">Tu administrador ha inhabilitado otros perfiles</translation>
 <translation id="5979084224081478209">Comprobar contraseñas</translation>
@@ -7007,6 +7013,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6805647936811177813">Inicia sesión en <ph name="TOKEN_NAME" /> para importar el certificado de cliente de <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Habilitar seguimiento de RLZ en <ph name="SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="6806089545527108739">No permitir, pero preguntar más tarde</translation>
+<translation id="680644983456221885">Protección proactiva en tiempo real (frente a sitios, descargas, y extensiones peligrosos) que se basa en el envío de tus datos de navegación a Google</translation>
 <translation id="6808039367995747522">Para seguir, inserta y toca tu llave de seguridad</translation>
 <translation id="6808166974213191158">Escritor de imágenes del sistema de ChromeOS Flex</translation>
 <translation id="6808193438228982088">Zorro</translation>
@@ -8452,7 +8459,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7978412674231730200">Clave privada</translation>
 <translation id="7978450511781612192">Se cerrará la sesión en tus cuentas de Google. Tus marcadores, historial, contraseñas y otros elementos dejarán de sincronizarse.</translation>
 <translation id="7980084013673500153">ID de recurso: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Cargar páginas previamente para que la navegación y las búsquedas sean más rápidas</translation>
 <translation id="7981662863948574132">Mostrar ventana emergente con EID y código QR del dispositivo</translation>
 <translation id="7981670705071137488">Después de que se complete este proceso, las actualizaciones de software se realizarán en segundo plano. Puedes revisar tus preferencias de actualización en Configuración.</translation>
 <translation id="7982083145464587921">Reinicia el dispositivo para solucionar el error.</translation>
@@ -8652,6 +8658,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="814204052173971714">{COUNT,plural, =1{un vídeo}other{# vídeos}}</translation>
 <translation id="8143442547342702591">La aplicación no es válida</translation>
 <translation id="8143609395536282994">Cómo puedes gestionar tus datos:</translation>
+<translation id="8144429778087524791">Marcar como completado y ocultar</translation>
 <translation id="8145170459658034418">Ahorro de memoria</translation>
 <translation id="8146177459103116374">Si ya te has registrado en este dispositivo, puedes <ph name="LINK2_START" />iniciar sesión con tu nombre de usuario<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Añade los idiomas que quieras y ordénalos según tu preferencia. Si es posible, los sitios web se mostrarán en tus idiomas preferidos. Estas preferencias se sincronizan con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9142,6 +9149,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8557022314818157177">Sigue pulsando tu llave de seguridad hasta que tu huella digital quede registrada.</translation>
 <translation id="8557180006508471423">Activa Google Chrome en los servicios de localización de tu Mac</translation>
 <translation id="8557856025359704738">Fecha de la próxima descarga: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8558281414737757274">Contraseña de la cuenta de Google</translation>
 <translation id="8559858985063901027">Claves de acceso</translation>
 <translation id="8559961053328923750">Chrome limita la cantidad total de datos que los sitios pueden compartir a través del navegador para medir el rendimiento de los anuncios.</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Abrir todas en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todas ({COUNT}) en una ventana &amp;nueva}}</translation>
@@ -9154,6 +9162,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8569682776816196752">No se ha encontrado ningún destino.</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8571687764447439720">Añadir ticket de Kerberos</translation>
+<translation id="8572052284359771939">Envía las URLs de los sitios que visitas y una pequeña muestra del contenido de la página, de las descargas, de la actividad de las extensiones y de la información del sistema a Navegación segura de Google para comprobar si son dañinas.</translation>
 <translation id="8573111744706778015">Escribe "uo7" para obtener "ươ"</translation>
 <translation id="8574990355410201600">Permitir siempre el sonido en <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Mantén pulsado <ph name="KEY_EQUIVALENT" /> para salir</translation>

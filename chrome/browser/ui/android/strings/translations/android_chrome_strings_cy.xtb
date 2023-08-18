@@ -470,6 +470,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="3513704683820682405">Realiti Estynedig</translation>
 <translation id="3518985090088779359">Derbyn a pharhau</translation>
 <translation id="3522247891732774234">Mae diweddariad ar gael. Rhagor o ddewisiadau</translation>
+<translation id="3523426587027570423">Tapiwch i gau 'Gwrando ar y dudalen hon'.</translation>
 <translation id="3524138585025253783">UI Datblygwr</translation>
 <translation id="3524334353996115845">Gadael i <ph name="ORIGIN" /> wirio mai chi sydd yno</translation>
 <translation id="3527085408025491307">Ffolder</translation>
@@ -673,6 +674,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4637420359569396807">Gyda mesur hysbysebion, gellir rhannu mathau cyfyngedig o ddata rhwng gwefannau ac apiau i fesur perfformiad eu hysbysebion, megis yr amser o'r dydd y dangoswyd hysbyseb i chi.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 cyfrinair sydd wedi'i ddarganfod}zero{# cyfrinair sydd wedi'u darganfod}two{# gyfrinair sydd wedi'u darganfod}few{# chyfrinair sydd wedi'u darganfod}many{# chyfrinair mewn perygl}other{# cyfrinair sydd wedi'u darganfod}}</translation>
 <translation id="4650364565596261010">System ddiofyn</translation>
+<translation id="4654641641922242357">Chwaraewr 'Gwrando ar y dudalen hon'.</translation>
 <translation id="465657074423018424">Mae Pori'n Ddiogel yn eich amddiffyn rhag gwefannau twyllodrus. Os byddwch yn ei ddiffodd, byddwch yn ofalus wrth bori, yn enwedig cyn rhoi unrhyw gyfrineiriau.</translation>
 <translation id="4662373422909645029">Ni all llysenw gynnwys rhifau</translation>
 <translation id="4663499661119906179">Gweld y gwefannau a'r straeon gorau i chi</translation>
@@ -802,6 +804,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5222676887888702881">Allgofnodi</translation>
 <translation id="5227554086496586518">Tapiwch i weld canlyniadau chwilio</translation>
 <translation id="5233638681132016545">Tab newydd</translation>
+<translation id="5234971936051226002">Chwaraewr 'Gwrando ar y dudalen hon' wedi'i leihau.</translation>
 <translation id="5235196193381275927">Aeth rhywbeth o'i le wrth fewngofnodi</translation>
 <translation id="5246093389635966745">Golygu llwybr byr y bar offer</translation>
 <translation id="5271967389191913893">Ni all y ddyfais agor y cynnwys i'w lawrlwytho.</translation>
@@ -1253,6 +1256,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="757855969265046257">{FILES,plural, =1{Mae <ph name="FILES_DOWNLOADED_ONE" /> ffeil wedi'i lawrlwytho}zero{Mae <ph name="FILES_DOWNLOADED_MANY" /> ffeil wedi'u lawrlwytho}two{Mae <ph name="FILES_DOWNLOADED_MANY" /> ffeil wedi'u lawrlwytho}few{Mae <ph name="FILES_DOWNLOADED_MANY" /> ffeil wedi'u lawrlwytho}many{Mae <ph name="FILES_DOWNLOADED_MANY" /> ffeil wedi'u lawrlwytho}other{Mae <ph name="FILES_DOWNLOADED_MANY" /> ffeil wedi'u lawrlwytho}}</translation>
 <translation id="7581273696622423628">Cymryd yr arolwg</translation>
 <translation id="7583262514280211622">Byddwch yn gweld eich rhestr ddarllen yma</translation>
+<translation id="7587250070160020374">Chrome nawr yn chwarae</translation>
 <translation id="7588219262685291874">Troi'r thema dywyll ymlaen pan fydd y modd arbed batri'r ddyfais wedi'i droi ymlaen</translation>
 <translation id="7594687499944811403">Gadael i <ph name="EMBEDDED_ORIGIN" /> wirio mai chi sydd yno ar gyfer <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">System weithredu</translation>
@@ -1320,6 +1324,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7926975587469166629">Llysenw cerdyn</translation>
 <translation id="7929962904089429003">Agorwch y ddewislen</translation>
 <translation id="7930998711684428189">Yn eich rhybuddio os yw cyfrineiriau'n cael eu datgelu mewn achos o dor data.</translation>
+<translation id="7934668619883965330">Methu â lawrlwytho ffeil. Ni chefnogir fformat y ffeil.</translation>
 <translation id="7939485076072265087">Creu cerdyn wedi'i arddullio gydag amlygu</translation>
 <translation id="7942131818088350342">Mae <ph name="PRODUCT_NAME" /> yn hen.</translation>
 <translation id="7944772052836377867">Mae angen i gysoni gadarnhau mai chi sydd yno</translation>
@@ -1521,6 +1526,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="8937772741022875483">Ydych chi am ddileu'ch gweithgarwch Chrome o Digital Wellbeing?</translation>
 <translation id="8942627711005830162">Agor mewn ffenestr arall</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Ni fu modd lawrlwytho'r iaith hon. Rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="8953618380150219653">Chwaraewr 'Gwrando ar y dudalen hon' wedi'i agor ar uchder llawn.</translation>
 <translation id="8955719471735800169">Yn ôl i'r brig</translation>
 <translation id="8964479563882643397">I agor tab Anhysbys newydd, agorwch y ddewislen</translation>
 <translation id="8965591936373831584">ar y gweill</translation>

@@ -607,6 +607,7 @@
 <translation id="2225927550500503913">वर्चुअल कार्ड चालू कर दिया गया है</translation>
 <translation id="2226636330183131181">वाई-फ़ाई नेटवर्क पर <ph name="BEGIN_LINK" />साइन इन<ph name="END_LINK" /> करके देखें</translation>
 <translation id="2228057197024893428">फ़िलहाल, यह पता Chrome में सेव है. Google के सभी प्रॉडक्ट पर इस्तेमाल करने के लिए, इसे अपने Google खाते, <ph name="ACCOUNT" /> में सेव करें.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> को पता चल जाएगा कि आपने <ph name="TOP_LEVEL_URL" /> पर विज़िट किया है.</translation>
 <translation id="2233745931693710080">कॉम्पैक्ट डिस्क</translation>
 <translation id="2239100178324503013">अभी भेजें</translation>
 <translation id="2241693394036365668">फ़ाइल डाउनलोड की गई</translation>
@@ -2093,6 +2094,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> वेबसाइट आपको सूचनाएं भेजना चाहती है</translation>
 <translation id="5430298929874300616">बुकमार्क निकालें</translation>
 <translation id="5443468954631487277">दूसरी तरफ़ सीधा करके रखें</translation>
+<translation id="5447235695608032700"><ph name="SITE" /> को आपकी सेव की गई जानकारी का इस्तेमाल करने की अनुमति दें</translation>
 <translation id="5447765697759493033">इस साइट का अनुवाद नहीं किया जाएगा</translation>
 <translation id="5452270690849572955">यह <ph name="HOST_NAME" /> पेज नहीं पाया जा सकता</translation>
 <translation id="5455374756549232013">खराब नीति टाइमस्टैम्प</translation>
@@ -2769,7 +2771,6 @@
 <translation id="6897140037006041989">उपयोगकर्ता एजेंट</translation>
 <translation id="6898699227549475383">संगठन (O)</translation>
 <translation id="6907458757809079309">फ़िटनेस</translation>
-<translation id="6910240653697687763"><ph name="URL" /> वेबसाइट आपके MIDI डिवाइस का पूरा नियंत्रण पाना चाहती है</translation>
 <translation id="691024665142758461">एकाधिक फ़ाइलें डाउनलोड करें</translation>
 <translation id="6915804003454593391">उपयोगकर्ता:</translation>
 <translation id="6916954549222464607">फ़ाइनेंशियल प्लानिंग और मैनेजमेंट</translation>

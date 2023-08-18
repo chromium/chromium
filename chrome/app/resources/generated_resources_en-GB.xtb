@@ -4498,6 +4498,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4646675363240786305">Ports</translation>
 <translation id="4647090755847581616">&amp;Close Tab</translation>
 <translation id="4647283074445570750">Step <ph name="CURRENT_STEP" /> of <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Colour picker</translation>
 <translation id="4648491805942548247">Insufficient permissions</translation>
 <translation id="4650037136970677721">Memory saved</translation>
 <translation id="4650591383426000695">Disconnect your phone from your <ph name="DEVICE_TYPE" /></translation>
@@ -6058,6 +6059,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5975056890546437204">{COUNT,plural, =0{Open all in &amp;Incognito window}=1{Open in &amp;Incognito window}other{Open all ({COUNT}) in &amp;Incognito window}}</translation>
 <translation id="5975792506968920132">Battery Charge Percentage</translation>
 <translation id="5976160379964388480">Others</translation>
+<translation id="5977976211062815271">On this device</translation>
 <translation id="5978277834170881274">Use basic spell check</translation>
 <translation id="5978493744931296692">Your administrator has disabled other profiles</translation>
 <translation id="5979084224081478209">Check passwords</translation>
@@ -8473,7 +8475,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7978412674231730200">Private key</translation>
 <translation id="7978450511781612192">This will sign you out of your Google accounts. Your bookmarks, history, passwords and more will no longer be synced.</translation>
 <translation id="7980084013673500153">Asset ID: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Preload pages for faster browsing and searching</translation>
 <translation id="7981662863948574132">Show device EID and QR code pop-up</translation>
 <translation id="7981670705071137488">After this, software updates will happen in the background. You can review update preferences in Settings.</translation>
 <translation id="7982083145464587921">Please restart your device to fix this error.</translation>

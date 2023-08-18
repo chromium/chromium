@@ -610,6 +610,7 @@
 <translation id="2225927550500503913">Віртуальну картку ввімкнено</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Вхід<ph name="END_LINK" /> у мережу Wi-Fi</translation>
 <translation id="2228057197024893428">Ця адреса зараз зберігається в Chrome. Збережіть її у своєму обліковому записі Google (<ph name="ACCOUNT" />), щоб використовувати в усіх продуктах Google.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> дізнається, що ви відвідали сайт <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Компакт-диск</translation>
 <translation id="2239100178324503013">Надіслати</translation>
 <translation id="2241693394036365668">Завантажено файл</translation>
@@ -2110,6 +2111,7 @@
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> хоче надсилати вам сповіщення</translation>
 <translation id="5430298929874300616">Видалити закладку</translation>
 <translation id="5443468954631487277">Зворотний порядок лицевою стороною вгору</translation>
+<translation id="5447235695608032700">Дозволити сайту <ph name="SITE" /> використовувати збережену про вас інформацію</translation>
 <translation id="5447765697759493033">Цей сайт не буде перекладено</translation>
 <translation id="5452270690849572955">Сторінку хосту <ph name="HOST_NAME" /> не знайдено</translation>
 <translation id="5455374756549232013">Недійсна мітка часу правила</translation>
@@ -2799,7 +2801,6 @@
             <ph name="LIST_ITEM" />історію пошуку;<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />інформацію, яку ви вводите у формах.<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
-<translation id="6910240653697687763">Сайт <ph name="URL" /> хоче повністю контролювати ваші пристрої MIDI</translation>
 <translation id="691024665142758461">завантажити кілька файлів</translation>
 <translation id="6915804003454593391">Користувач:</translation>
 <translation id="6916954549222464607">Фінансове планування та менеджмент</translation>

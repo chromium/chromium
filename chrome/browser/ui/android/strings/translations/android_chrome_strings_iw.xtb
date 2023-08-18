@@ -1250,6 +1250,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{הורדת קובץ אחד (<ph name="FILES_DOWNLOADED_ONE" />)}one{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}two{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}other{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}}</translation>
 <translation id="7581273696622423628">השתתף בסקר</translation>
 <translation id="7583262514280211622">רשימת הקריאה זמינה כאן</translation>
+<translation id="7587250070160020374">‏בהאזנה לדף ב-Chrome</translation>
 <translation id="7588219262685291874">עיצוב כהה מופעל כשהמכשיר עובר לחיסכון בסוללה</translation>
 <translation id="7594687499944811403">צריך לאפשר ל-<ph name="EMBEDDED_ORIGIN" /> לאמת את זהותך עבור <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">מערכת הפעלה</translation>

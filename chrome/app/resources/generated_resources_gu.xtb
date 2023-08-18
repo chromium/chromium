@@ -1079,6 +1079,7 @@
 <translation id="1854180393107901205">કાસ્ટ કરવાનું રોકો</translation>
 <translation id="1856715684130786728">સ્થાન ઉમેરો...</translation>
 <translation id="1858585891038687145">સૉફ્ટવેર માર્કર્સને ઓળખવા માટે આ પ્રમાણપત્ર પર વિશ્વાસ કરો</translation>
+<translation id="1859294693760125695">હવે રુચિ ધરાવતા નથી</translation>
 <translation id="1859339856433307593">આ એકાઉન્ટ માટેનો પાસવર્ડ પહેલેથી તમારા <ph name="BRAND" /> (<ph name="USER_EMAIL" />) પર સાચવેલો છે</translation>
 <translation id="1861262398884155592">આ ફોલ્ડર ખાલી છે</translation>
 <translation id="1862311223300693744">શું તમે કોઈ વિશિષ્ટ VPN, પ્રૉક્સી, ફાયરવૉલ અથવા NAS સૉફ્ટવેર ઇન્સ્ટૉલ કરેલું છે?</translation>
@@ -2761,6 +2762,7 @@
 <translation id="3226487301970807183">ડાબેથી સંરેખિત બાજુની પૅનલ ટૉગલ કરો</translation>
 <translation id="322708765617468434">સેટઅપ કર્યા પછી તમે હંમેશા અન્ય કોઈપણ વ્યક્તિને ડિવાઇસમાં ઉમેરી શકો છો. દરેક વ્યક્તિ તેમનો અનુભવ મનગમતો બનાવી શકે છે અને ડેટા ખાનગી રાખી શકે છે.</translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
+<translation id="3229412050601871341">ડિવાઇસનો પાસવર્ડ</translation>
 <translation id="3232168089952388105">તમારા ડિવાઇસ વિશેની માહિતી શેર કરીએ?</translation>
 <translation id="3232558119926886907">જમણે સંરેખિત કરો</translation>
 <translation id="3232754137068452469">વેબ ઍપ</translation>
@@ -2819,6 +2821,7 @@
 <translation id="3275778913554317645">વિંડો તરીકે ખોલો</translation>
 <translation id="3277214528693754078">ટેક્સ્ટ કર્સર વડે નૅવિગેટ કરો (કૅરેટ બ્રાઉઝિંગ)</translation>
 <translation id="3277594800340743211">વિશાળ શૅડો</translation>
+<translation id="3277784185056747463">ડિવાઇસનો પાસવર્ડ કે Google એકાઉન્ટનો પાસવર્ડ</translation>
 <translation id="3278001907972365362">તમારા Google એકાઉન્ટ પર ધ્યાન આપવાની જરૂર છે</translation>
 <translation id="3279092821516760512">નજીકમાં હોય ત્યારે પસંદ કરેલા સંપર્કો તમારી સાથે શેર કરી શકે છે. તમે સ્વીકારશો નહીં ત્યાં સુધી ટ્રાન્સફર શરૂ થઈ શકશે નહીં.</translation>
 <translation id="3279230909244266691">આ પ્રક્રિયામાં થોડો સમય લાગી શકે છે. વર્ચ્યુઅલ મશીન શરૂ કરી રહ્યાં છીએ.</translation>
@@ -3275,6 +3278,7 @@
 <translation id="3660234220361471169">અવિશ્વસનીય</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 વર્તમાન પાસવર્ડ મળ્યો}one{{NUM_PASSWORDS} વર્તમાન પાસવર્ડ મળ્યો}other{{NUM_PASSWORDS} વર્તમાન પાસવર્ડ મળ્યા}}</translation>
 <translation id="3664511988987167893">એક્સ્ટેંશન આઇકન</translation>
+<translation id="3665301845536101715">બાજુની પૅનલમાં ખોલો</translation>
 <translation id="3665589677786828986">Chromeને જાણ થઈ છે કે તમારા કેટલાક સેટિંગ બીજા પ્રોગ્રામ દ્વારા દૂષિત કરવામાં આવેલા અને તેમને તેમના મૂળ ડિફૉલ્ટ પર રીસેટ કર્યા છે.</translation>
 <translation id="3665919494326051362">વર્તમાન વર્ઝન <ph name="CURRENT_VERSION" /> છે</translation>
 <translation id="3666196264870170605">Intel વાઇ-ફાઇ NICs ડીબગ ડમ્પ</translation>
@@ -4476,6 +4480,7 @@
 <translation id="4646675363240786305">પોર્ટ</translation>
 <translation id="4647090755847581616">&amp;Close Tab</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" />માંથી <ph name="CURRENT_STEP" /> પગલું</translation>
+<translation id="4647836961514597010">રંગ ચૂંટનાર</translation>
 <translation id="4648491805942548247">અપર્યાપ્ત પરવાનગીઓ</translation>
 <translation id="4650037136970677721">મેમરી સાચવી</translation>
 <translation id="4650591383426000695">તમારા ફોનને તમારા <ph name="DEVICE_TYPE" />થી ડિસ્કનેક્ટ કરો</translation>
@@ -6038,6 +6043,7 @@ USB ડિવાઇસ</translation>
 <translation id="5975056890546437204">{COUNT,plural, =0{તમામ URLને &amp;છૂપી વિન્ડોમાં ખોલો}=1{&amp;છૂપી વિન્ડોમાં ખોલો}one{તમામ ({COUNT}) URLને &amp;છૂપી વિન્ડોમાં ખોલો}other{તમામ ({COUNT}) URLને &amp;છૂપી વિન્ડોમાં ખોલો}}</translation>
 <translation id="5975792506968920132">બેટરી ચાર્જની ટકાવારી</translation>
 <translation id="5976160379964388480">અન્ય લોકો</translation>
+<translation id="5977976211062815271">આ ડિવાઇસ પર</translation>
 <translation id="5978277834170881274">મૂળભૂત જોડણીની તપાસનો ઉપયોગ કરો</translation>
 <translation id="5978493744931296692">તમારા ઍડમિનિસ્ટ્રેટરે અન્ય પ્રોફાઇલ બંધ કરી છે</translation>
 <translation id="5979084224081478209">પાસવર્ડ ચેક કરો</translation>
@@ -7009,6 +7015,7 @@ USB ડિવાઇસ</translation>
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> તરફથી ક્લાયંટ પ્રમાણપત્ર આયાત કરવા માટે કૃપા કરીને <ph name="TOKEN_NAME" /> પર સાઇન ઇન કરો.</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> પર RLZ ટ્રેકિંગને ચાલુ કરો.</translation>
 <translation id="6806089545527108739">મંજૂરી આપશો નહીં પરંતુ પછીથી પૂછશો</translation>
+<translation id="680644983456221885">જોખમકારક સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે રિઅલ-ટાઇમ સક્રિય સંરક્ષણ, જે Googleને મોકલવામાં આવતા તમારા બ્રાઉઝિંગ ડેટા પર આધારિત છે</translation>
 <translation id="6808039367995747522">આગળ વધવા માટે સિક્યુરિટી કી દાખલ કરીને તેને સ્પર્શ કરો</translation>
 <translation id="6808166974213191158">ChromeOS Flex સિસ્ટમની છબીના લેખક</translation>
 <translation id="6808193438228982088">શિયાળ</translation>
@@ -8453,7 +8460,6 @@ USB ડિવાઇસ</translation>
 <translation id="7978412674231730200">ખાનગી કી</translation>
 <translation id="7978450511781612192">આનાથી તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થઈ જશો. ત્યાર પછી તમારાં બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને ઘણું બધું સિંક કરવામાં નહીં આવે.</translation>
 <translation id="7980084013673500153">સંપત્તિ ID: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">ઝડપી બ્રાઉઝિંગ અને શોધ માટે પેજને પહેલેથી લોડ કરો</translation>
 <translation id="7981662863948574132">ડિવાઇસનો EID અને QR કોડ પૉપઅપ બતાવો</translation>
 <translation id="7981670705071137488">આના પછી, સૉફ્ટવેર બૅકગ્રાઉન્ડમાં અપડેટ થશે. તમે સેટિંગમાં પસંદગીઓની અપડેટને રિવ્યૂ કરી શકો છો.</translation>
 <translation id="7982083145464587921">કૃપા કરીને આ ભૂલ સુધારવા માટે તમારા ઉપકરણને પુનઃપ્રારંભ કરો.</translation>
@@ -8648,6 +8654,7 @@ USB ડિવાઇસ</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{એક વીડિયો}one{# વીડિયો}other{# વીડિયો}}</translation>
 <translation id="8143442547342702591">અમાન્ય ઍપ્લિકેશન</translation>
 <translation id="8143609395536282994">તમે તમારો ડેટા કેવી રીતે મેનેજ કરી શકો છો:</translation>
+<translation id="8144429778087524791">'થઈ ગયું' તરીકે માર્ક કરો અને છુપાવો</translation>
 <translation id="8145170459658034418">મેમરી સેવર</translation>
 <translation id="8146177459103116374">જો તમે આ ઉપકરણ પર પહેલાથી નોંધણી કરાવી છે, તો તમે <ph name="LINK2_START" />અસ્તિત્વમાં છે તે વપરાશકર્તા તરીકે સાઇન ઇન<ph name="LINK2_END" /> કરી શકો છો.</translation>
 <translation id="8146287226035613638">તમારી પસંદગીની ભાષાઓ ઉમેરો અને તેમને રેંકિંગ આપો. જ્યારે શક્ય હશે, ત્યારે વેબસાઇટ તમારી પસંદગીની ભાષાઓમાં બતાવશે. આ પસંદગીઓને તમારા બ્રાઉઝર સેટિંગ સાથે સિંક કરવામાં આવે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9138,6 +9145,7 @@ USB ડિવાઇસ</translation>
 <translation id="8557022314818157177">જ્યાં સુધી તમારી ફિંગરપ્રિન્ટ કૅપ્ચર ન થાય, ત્યાં સુધી તમારી સિક્યુરિટી કીનો સ્પર્શ કરતા રહો</translation>
 <translation id="8557180006508471423">તમારા Mac પર સ્થાન સેવાઓમાં "Google Chrome" ચાલુ કરો</translation>
 <translation id="8557856025359704738">આગામી ડાઉનલોડ <ph name="NEXT_DATE_DOWNLOAD" />ના રોજ છે.</translation>
+<translation id="8558281414737757274">Google એકાઉન્ટ પાસવર્ડ</translation>
 <translation id="8559858985063901027">પાસકી</translation>
 <translation id="8559961053328923750">જાહેરાતના કાર્યપ્રદર્શનની માપણી કરવા માટે સાઇટ દ્વારા બ્રાઉઝર મારફતે શેર કરી શકાય તેવા ડેટાની કુલ માત્રાને Chrome મર્યાદિત કરે છે</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{તમામ URLને &amp;નવી વિન્ડોમાં ખોલો}=1{&amp;નવી વિન્ડોમાં ખોલો}one{તમામ ({COUNT}) URLને &amp;નવી વિન્ડોમાં ખોલો}other{તમામ ({COUNT}) URLને &amp;નવી વિન્ડોમાં ખોલો}}</translation>
@@ -9150,6 +9158,7 @@ USB ડિવાઇસ</translation>
 <translation id="8569682776816196752">કોઈ ગંતવ્યો મળ્યાં નથી</translation>
 <translation id="8571213806525832805">છેલ્લા 4 અઠવાડિયા</translation>
 <translation id="8571687764447439720">Kerberos ટિકિટ ઉમેરો</translation>
+<translation id="8572052284359771939">તમે મુલાકાત લો છો તે સાઇટની URL અને પેજ કન્ટેન્ટનો નાનો નમૂનો, ડાઉનલોડ, એક્સ્ટેન્શન પ્રવૃત્તિ અને સિસ્ટમ સંબંધી માહિતી Google Safe Browsingને મોકલે છે એ ચેક કરવા કે તે નુકસાનદાયક છે કે કેમ.</translation>
 <translation id="8573111744706778015">"ươ" મેળવવા માટે "uo7" ટાઇપ કરો</translation>
 <translation id="8574990355410201600"><ph name="HOST" /> પર હંમેશાં અવાજને મંજૂરી આપો</translation>
 <translation id="8575286410928791436">છોડવા માટે <ph name="KEY_EQUIVALENT" /> દબાવી રાખો</translation>

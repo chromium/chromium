@@ -674,6 +674,7 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4634124774493850572">Gunakan kata laluan</translation>
 <translation id="4637420359569396807">Dengan pengukuran iklan, jenis data yang terhad boleh dikongsi antara laman dan apl untuk mengukur prestasi iklan laman dan apl tersebut, seperti masa dalam sehari iklan ditunjukkan kepada anda.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 kata laluan yang terjejas}other{# kata laluan yang terjejas}}</translation>
+<translation id="4645146721047390964">Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda merentas beberapa laman yang berlainan, contohnya, untuk memeribadikan iklan. Ciri pada sesetengah laman mungkin rosak.</translation>
 <translation id="4650364565596261010">Lalai sistem</translation>
 <translation id="4654641641922242357">Pemain “Dengar halaman ini”.</translation>
 <translation id="465657074423018424">Penyemakan Imbas Selamat melindungi anda daripada laman web yang bersifat penipuan. Jika anda mematikan ciri ini, berhati-hati semasa menyemak imbas, terutamanya sebelum memasukkan kata laluan.</translation>
@@ -693,6 +694,7 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4719927025381752090">Tawaran untuk menterjemah</translation>
 <translation id="4720023427747327413">Buka dalam <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Lihat laman web yang paling kerap anda lawati</translation>
+<translation id="4731877163452936634">Kelajuan main balik: <ph name="PLAYBACK_SPEED" />. Klik untuk menukar.</translation>
 <translation id="4732120983431207637">Pengurai Tindanan</translation>
 <translation id="4736934858538408121">Kad maya</translation>
 <translation id="473775607612524610">Kemas kini</translation>
@@ -1250,6 +1252,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="751961395872307827">Tidak dapat menyambung ke tapak</translation>
 <translation id="752220631458524187">Putuskan sambungan apabila anda sudah selesai</translation>
 <translation id="7523960634226602883">Cari dengan kamera anda menggunakan Google Lens</translation>
+<translation id="752731652852882757">Sekat semasa menggunakan Inkognito</translation>
 <translation id="7539698981064401140">Segerakkan tab dan sejarah anda</translation>
 <translation id="7562080006725997899">Mengosongkan data penyemakan imbas</translation>
 <translation id="756809126120519699">Data Chrome dikosongkan</translation>
@@ -1329,6 +1332,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7939485076072265087">Buat kad digayakan dengan serlahan</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> telah lapuk.</translation>
 <translation id="7944772052836377867">Penyegerakan perlu mengesahkan itu anda</translation>
+<translation id="7945822420239537236">Main <ph name="NUMBER_OF_SECONDS" /> saat ke hadapan</translation>
 <translation id="7947953824732555851">Terima dan log masuk</translation>
 <translation id="7957413488482743710">Kad maya menyembunyikan kad sebenar anda untuk melindungi anda daripada kemungkinan penipuan. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang kad maya<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Butang kembali cerapan halaman</translation>
@@ -1337,6 +1341,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7965838025086216108">Anda boleh menggunakan kata laluan yang disimpan pada mana-mana peranti. Kata laluan tersebut disimpan pada Google Password Manager untuk <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Ditambahkan pada senarai bacaan</translation>
 <translation id="7971136598759319605">Aktif 1 hari yang lalu</translation>
+<translation id="7972866381678406344">Main <ph name="NUMBER_OF_SECONDS" /> ke belakang</translation>
 <translation id="7975379999046275268">Pratonton halaman <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="7986497153528221272">Untuk melihat kata laluan, pertama sekali, tetapkan kunci skrin pada peranti anda</translation>
 <translation id="7995059495660416932">Anda akan melihat kandungan apabila tersedia</translation>

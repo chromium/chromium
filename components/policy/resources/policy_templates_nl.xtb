@@ -2798,15 +2798,6 @@ Als je dit beleid niet toepast, is de functie voor voorspellend schrijven op het
 
       Als je het beleid niet toepast of niet instelt, staat DTC uit en worden er geen diagnostische of telemetriegegevens van het apparaat verzameld, verwerkt of gerapporteerd.</translation>
 <translation id="3442589735857147823">Gebruikers toestaan virtuele machines te gebruiken die nodig zijn om Linux-apps te ondersteunen</translation>
-<translation id="3445364060482221648">Als je dit beleid toepast, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie in de Chrome Root Store als bron van openbaar vertrouwen.
-
-Als je dit beleid niet toepast, gebruikt <ph name="PRODUCT_NAME" /> de systeemcertificaatverificatie en de rootcertificaten van het systeem.
-
-Als je dit beleid niet instelt, kunnen de Chrome Root Store of de door het systeem geleverde rootcertificaten worden gebruikt.
-
-Dit beleid wordt verwijderd in <ph name="PRODUCT_OS_NAME" /> en <ph name="PRODUCT_NAME" /> voor <ph name="LINUX_OS_NAME" /> en <ph name="ANDROID_NAME" /> versie 120 wanneer het gebruik van de door het platform geleverde rootcertificaten niet meer wordt ondersteund.
-
-Dit beleid is verwijderd in <ph name="PRODUCT_NAME" /> voor <ph name="MS_WIN_NAME" /> en <ph name="MAC_OS_NAME" /> versie 113 wanneer de ondersteuning voor het gebruik van de door het platform geleverde certificaatverificatie en rootcertificaten werd verwijderd.</translation>
 <translation id="3450649825886735618">Geen Google-webservices gebruiken om spelfouten op te lossen</translation>
 <translation id="3451422488938880786"> Staat toe dat het opnieuw toewijzen van sneltoetsen voor internationale toetsenborden wordt aan-/uitgezet</translation>
 <translation id="3451901387456196887">De gebruiker krijgt in het <ph name="PRODUCT_NAME" />-menu de optie om cast-apparaten te selecteren met een toegangscode of door een QR-code te scannen.</translation>

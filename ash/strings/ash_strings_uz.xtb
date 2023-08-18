@@ -182,6 +182,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="174102739345480129">Marker oʻchiq.</translation>
 <translation id="1743570585616704562">Barmoq izi aniqlanmadi</translation>
 <translation id="1746730358044914197">Matn kiritish usuli administratoringiz tomonidan sozlangan.</translation>
+<translation id="1747336645387973286">bajarish muddati: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Ekran klaviaturasi yoqildi</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> oynasi barcha ish stollariga biriktirildi</translation>
 <translation id="1750088060796401187">Faqat <ph name="MAX_DESK_LIMIT" /> ta ish stolini ochish mumkin. Yangisini ochish uchun birorta ish stolini olib tashlang.</translation>
@@ -242,7 +243,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1989113344093894667">Kontent tasvirga olinmadi</translation>
 <translation id="1990046457226896323">Avtomatik subtitr fayllari yuklab olindi</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> oxirgi yangilanishi haqida batafsil axborot</translation>
-<translation id="1995660704900986789">O‘chirish</translation>
 <translation id="1996162290124031907">Keyingi varaqqa o‘tish</translation>
 <translation id="1998100899771863792">Joriy ish stoli</translation>
 <translation id="2001444736072756133"><ph name="CATEGORY" />, fayllar, ilovalar va boshqalarni qidirish.</translation>
@@ -300,6 +300,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2298170939937364391">Butun ekran rejimidagi lupa yoniq. Uni olib tashlash uchun Ctrl+Qidiruv+M tugmalarini bosing.</translation>
 <translation id="2302092602801625023">Ushbu hisob Family Link orqali boshqariladi</translation>
 <translation id="2303600792989757991">Ko‘rish rejimiga almashtirish</translation>
+<translation id="2305738328104302723">Google vazifalar roʻyxati: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: oxirgi ekran lavhalari, yuklanmalar va mahkamlangan fayllar</translation>
 <translation id="2318576281648121272">Bugun <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , qidiruv natijasi turkumi</translation>
@@ -474,6 +475,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3081696990447829002">Menyuni ochish</translation>
 <translation id="3087734570205094154">Pastga</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> tugmasi. <ph name="STATE_TEXT" /></translation>
+<translation id="3093423061078042895">Mavjud emas</translation>
 <translation id="3095995014811312755">versiya</translation>
 <translation id="309749186376891736">Kursorni surish</translation>
 <translation id="3100274880412651815">Tasvirga olish rejimini yopish</translation>
@@ -482,6 +484,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3113492864356515707">Paneldagi oldingi elementni ajratib koʻrsatish</translation>
 <translation id="3120421559657122717">Qurilma oʻchirilsinmi?</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3125690294288312932">Sinf ishi turi</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Yangilash uchun qayta ishga tushiring</translation>
 <translation id="3139188263101386725">Yangilangan tezkor tugmalardan foydalaning</translation>
@@ -508,6 +511,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="324366796737464147">Shovqinsizlantirish</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> oynasi <ph name="ACTIVE_DESK" /> ish stolidan <ph name="TARGET_DESK" /> ish stoliga koʻchirildi</translation>
 <translation id="3252573918265662711">Sozlash</translation>
+<translation id="3253743281242075461">Sinf ishi turi: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Assistent nimalarga qodir?</translation>
 <translation id="3256109297135787951">Javondagi narsaning ajratib belgilanishini bekor qilish</translation>
 <translation id="3260969790895726815">Nutq qurilmada qayta ishlanadi va ovoz bilan yozish oflayn rejimda ishlaydi, lekin ayrim ovozli buyruqlar ishlamaydi.</translation>
@@ -535,6 +539,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3364721542077212959">Stilus vositalari</translation>
 <translation id="3365977133351922112">Telefon sizdan uzoqda. Telefonni yaqinlashtiring.</translation>
 <translation id="3368922792935385530">Ulangan</translation>
+<translation id="3369111525500416043">Muddati yaqin</translation>
 <translation id="3371140690572404006">USB-C qurilma (o‘ng tomondagi old port)</translation>
 <translation id="3375634426936648815">Ulandi</translation>
 <translation id="3378438761594387761">Oxirgi yuklanmalar va ekran yozuvlarini shu yerdan topasiz</translation>
@@ -989,6 +994,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5208059991603368177">Yoniq</translation>
 <translation id="5216991270656129561">Oʻchiqlik muddati: <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Keyingi desktop: <ph name="NEXT_DESK_NAME" />, faollashtirish uchun Search + Space yoki tezkor tugmalardan: Shift + Search + <ph name="NEXT_DESK_INDEX" /> ishlating.</translation>
+<translation id="5218064144558110424">Bajarilmagan deb belgilash</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
 <translation id="5229343007215035173">Maxfiylik ekranini yoqish/oʻchirish</translation>
 <translation id="5234764350956374838">Yopish</translation>
@@ -998,6 +1004,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> nomli qurilmaga ulandi, batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Saqlangan ish stollari topilmadi</translation>
 <translation id="5260676007519551770">Desk 4</translation>
+<translation id="5268819379131021772">Google vazifalar roʻyxati</translation>
 <translation id="5278086053818066789">ChromeVox funksiyasini yoqish yoki oʻchirish (ekrandagi matnni oʻqish)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ilovasiga diqqat qaratishingiz zarur.</translation>
 <translation id="5283198616748585639">1 daqiqa qoʻshish</translation>
@@ -1048,6 +1055,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5465662442746197494">Yordam kerakmi?</translation>
 <translation id="547979256943495781">Javon oʻngda</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> yoki <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
+<translation id="5482873136202102190">, +</translation>
 <translation id="5491186829646618080">Mikrodastur yangilanshi mavjud</translation>
 <translation id="5503884284981862082">Google Assistentni ochish yoki yopish</translation>
 <translation id="550391772491508736">Translatsiyaga qaytish</translation>
@@ -1143,6 +1151,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5864748620896638071">Batareya: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Tarmoq axboroti yigʻilmoqda</translation>
 <translation id="5867606971598166637">Tizim administratori ekranlarni nazorat qiladi</translation>
+<translation id="5876535466645959772">Tanlangan roʻyxat boʻsh, yangi vazifa kiritish uchun pastga oʻting</translation>
 <translation id="5876666360658629066">Ota-ona kodini kiriting</translation>
 <translation id="5881540930187678962">Phone Hub funksiyasini keyin sozlash</translation>
 <translation id="5881663018261910378">Oʻchiq</translation>
@@ -1174,6 +1183,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="598882571027504733">Yangilanishni o‘rnatish uchun Chromebook qurilmangizni tashqi klavuatura orqali o‘chirib yoqing.</translation>
 <translation id="6012623610530968780">Sahifa: <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Paneldagi keyingi elementni ajratish koʻrsatish</translation>
+<translation id="6015573907265691211">Bajarildi deb belgilash</translation>
 <translation id="6018164090099858612">Translatsiya rejimidan chiqish</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">Chapga aylantirish</translation>
@@ -1316,6 +1326,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6597278316891651699">Kamera pastki chap burchakka joylandi. Tizim platfromasi bilan muammo chiqdi.</translation>
 <translation id="661203523074512333">Himoya: <ph name="SECURITY_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
 <translation id="6612802754306526077">Ekranni yozib olish rejimi tanlandi</translation>
+<translation id="6612889377159412215">ichki vazifa</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> xotira band | jami <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Maxfiylik ekrani yoniq</translation>
 <translation id="6625718907317144388">Xavfsiz koʻrish rejimi yoniqligi uchun <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> va boshqa ilovalar bildirishnomalari yashirildi</translation>
@@ -1359,6 +1370,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6786750046913594791">Jildni yopish</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="679368458793552943">Lupa yoqilganda kattalashtirish</translation>
+<translation id="6794287755901682422">Bu bandda: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6801878137098616817">Yaqinda tahrirlangan</translation>
 <translation id="6802196538183166658">Vaqtni tanlash orqali Tezkor sozlamalarni ochish</translation>
 <translation id="6802687695197837794">Kamera va mikrofon ruxsatiga ega <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> va barcha ilova va saytlarga kirish imkonini beradi</translation>
@@ -1615,6 +1627,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="793716872548410480">Klipbordni ochish uchun <ph name="SHORTCUT_KEY_NAME" /> + V tugmalarini bosing. Nusxalangan oxirgi 5 ta element klipbordga saqlandi.</translation>
 <translation id="7942349550061667556">Qizil</translation>
 <translation id="7944023924886109030">Bugungi barcha tadbirlarni ochish</translation>
+<translation id="7945357288295809525">Maxsus imkoniyatlar sozlamalarini koʻrsatish, “<ph name="ENABLED_FEATURES" />” yoqildi.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ilovasi <ph name="DEVICE_NAME" /> ishlatmoqchi</translation>
 <translation id="7951630946012935453">Klaviaturani xiralashtirish</translation>
 <translation id="7963689218131240420">Bezovta qilinmasin rejimi oʻchiq.</translation>
@@ -1914,6 +1927,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="953431725143473984">Qurilma oʻchirilsinmi?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> uchun joy yetmaydi. Xotiradan joy oching.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> – <ph name="RESULT_COUNT" /> natija chiqdi</translation>
+<translation id="981011780479609956">Muddatsiz</translation>
 <translation id="98120814841227350">Hujjat oxiriga o‘tish</translation>
 <translation id="987589956647469042">Mobil internet yoqildi.</translation>
 <translation id="989374776391122812">Kamera va audio boshqaruvi</translation>

@@ -4496,6 +4496,7 @@
 <translation id="4646675363240786305">పోర్ట్‌లు</translation>
 <translation id="4647090755847581616">ట్యాబ్‌ను &amp;మూసివేయి</translation>
 <translation id="4647283074445570750">దశ <ph name="TOTAL_STEPS" />లో <ph name="CURRENT_STEP" />వది</translation>
+<translation id="4647836961514597010">రంగు ఎంపిక</translation>
 <translation id="4648491805942548247">చాలని అనుమతులు</translation>
 <translation id="4650037136970677721">మెమరీ ఆదా అయ్యింది</translation>
 <translation id="4650591383426000695">మీ <ph name="DEVICE_TYPE" /> నుండి మీ ఫోన్‌ను డిస్‌కనెక్ట్ చేయండి</translation>
@@ -6056,6 +6057,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{అన్నింటినీ &amp;అజ్ఞాత విండోలో తెరువు}=1{&amp;అజ్ఞాత విండోలో తెరువు}other{అన్నింటినీ ({COUNT}) &amp;అజ్ఞాత విండోలో తెరువు}}</translation>
 <translation id="5975792506968920132">బ్యాటరీ ఛార్జ్ శాతం</translation>
 <translation id="5976160379964388480">ఇతర</translation>
+<translation id="5977976211062815271">ఈ పరికరంలో</translation>
 <translation id="5978277834170881274">ప్రాథమిక స్పెల్ చెక్‌ను &amp;ఉపయోగించు</translation>
 <translation id="5978493744931296692">ఇతర ప్రొఫైల్స్‌ని మీ అడ్మినిస్ట్రేటర్ డిజేబుల్ చేశారు</translation>
 <translation id="5979084224081478209">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
@@ -8470,7 +8472,6 @@
 <translation id="7978412674231730200">వ్యక్తిగత కీ</translation>
 <translation id="7978450511781612192">ఇది మిమ్మల్ని మీ Google ఖాతాల నుండి సైన్ అవుట్ చేస్తుంది. మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు మరియు మరిన్ని ఇకపై సింక్ చేయబడవు.</translation>
 <translation id="7980084013673500153">అసెట్ ID: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">బ్రౌజింగ్, సెర్చ్‌లను మరింత వేగవంతం చేయడం కోసం పేజీలను ముందస్తుగా లోడ్ చేస్తుంది</translation>
 <translation id="7981662863948574132">పరికర EID, QR కోడ్ పాప్‌అప్‌ను చూడండి</translation>
 <translation id="7981670705071137488">దీని తర్వాత, బ్యాక్‌గ్రౌండ్‌లో సాఫ్ట్‌వేర్ అప్‌డేట్ అవుతుంది. మీరు సెట్టింగ్‌లలో అప్‌డేట్ ప్రాధాన్యతలను రివ్యూ చేయవచ్చు.</translation>
 <translation id="7982083145464587921">ఈ ఎర్రర్‌ను పరిష్కరించడానికి దయచేసి మీ పరికరాన్ని పునఃప్రారంభించండి.</translation>

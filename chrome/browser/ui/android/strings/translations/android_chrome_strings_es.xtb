@@ -470,6 +470,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="3513704683820682405">Realidad aumentada</translation>
 <translation id="3518985090088779359">Aceptar y continuar</translation>
 <translation id="3522247891732774234">Actualización disponible. Más opciones</translation>
+<translation id="3523426587027570423">Toca para cerrar "Escuchar esta página".</translation>
 <translation id="3524138585025253783">Interfaz para desarrolladores</translation>
 <translation id="3524334353996115845">Permite que <ph name="ORIGIN" /> verifique tu identidad.</translation>
 <translation id="3527085408025491307">Carpeta</translation>
@@ -674,6 +675,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4637420359569396807">Con la medición de anuncios, se pueden compartir tipos de datos limitados entre los sitios y las aplicaciones para medir el rendimiento de sus anuncios, como la hora del día en la que se te mostró un anuncio.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contraseña vulnerada}other{# contraseñas vulneradas}}</translation>
 <translation id="4650364565596261010">Predeterminado del sistema</translation>
+<translation id="4654641641922242357">Reproductor "Escuchar esta página".</translation>
 <translation id="465657074423018424">Navegación segura te protege frente a sitios web engañosos. Si desactivas esta función, debes extremar la precaución al navegar, en especial, antes de escribir contraseñas.</translation>
 <translation id="4662373422909645029">El apodo no puede incluir números</translation>
 <translation id="4663499661119906179">Accede a tus historias y sitios favoritos</translation>
@@ -803,6 +805,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="5227554086496586518">Toca para ver los resultados de búsqueda</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
+<translation id="5234971936051226002">El reproductor "Escuchar esta página" está minimizado.</translation>
 <translation id="5235196193381275927">No se ha podido iniciar la sesión</translation>
 <translation id="5246093389635966745">Editar combinación de teclas de la barra de herramientas</translation>
 <translation id="5271967389191913893">El dispositivo no puede abrir el contenido para descargarlo.</translation>
@@ -1254,6 +1257,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> archivo descargado}other{<ph name="FILES_DOWNLOADED_MANY" /> archivos descargados}}</translation>
 <translation id="7581273696622423628">Responder encuesta</translation>
 <translation id="7583262514280211622">Aquí verás tu lista de lectura</translation>
+<translation id="7587250070160020374">Chrome está reproduciendo</translation>
 <translation id="7588219262685291874">Activar el tema oscuro cuando el dispositivo esté en modo de ahorro de batería</translation>
 <translation id="7594687499944811403">Permite que <ph name="EMBEDDED_ORIGIN" /> verifique tu identidad en <ph name="TOP_ORIGIN" />.</translation>
 <translation id="7596558890252710462">Sistema operativo</translation>
@@ -1321,6 +1325,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7926975587469166629">Nombre de la tarjeta</translation>
 <translation id="7929962904089429003">Abre el menú</translation>
 <translation id="7930998711684428189">Te avisa si tus contraseñas se ven expuestas en una brecha de seguridad de datos.</translation>
+<translation id="7934668619883965330">No se puede descargar el archivo. Formato de archivo no admitido.</translation>
 <translation id="7939485076072265087">Crear tarjeta estilizada con texto resaltado</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está obsoleto.</translation>
 <translation id="7944772052836377867">Verifica tu identidad para usar la sincronización</translation>
@@ -1522,6 +1527,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8937772741022875483">¿Eliminar tu actividad de Chrome de Bienestar digital?</translation>
 <translation id="8942627711005830162">Abrir en otra ventana</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: este idioma no se ha podido descargar. Inténtalo de nuevo más tarde.</translation>
+<translation id="8953618380150219653">El reproductor "Escuchar esta página" está abierto a altura completa.</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8964479563882643397">Para abrir una nueva pestaña de Incógnito, abre el menú</translation>
 <translation id="8965591936373831584">pendiente</translation>

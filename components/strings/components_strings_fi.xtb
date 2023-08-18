@@ -606,6 +606,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2225927550500503913">Virtuaalinen kortti on päällä</translation>
 <translation id="2226636330183131181">Wi-Fi-verkkoon <ph name="BEGIN_LINK" />kirjautuminen<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">Tämä osoite on tällä hetkellä tallennettu Chromeen. Jos haluat käyttää sitä Googlen tuotteissa, tallenna se Google-tilillesi (<ph name="ACCOUNT" />).</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> saa tietää, että kävit täällä: <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">CD-levy</translation>
 <translation id="2239100178324503013">Lähetä nyt</translation>
 <translation id="2241693394036365668">Tiedosto on ladattu</translation>
@@ -2094,6 +2095,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5426179911063097041"><ph name="SITE" /> haluaa lähettää sinulle ilmoituksia</translation>
 <translation id="5430298929874300616">Poista kirjanmerkki</translation>
 <translation id="5443468954631487277">Käänteinen järjestys tulostuspuoli ylöspäin</translation>
+<translation id="5447235695608032700">Salli, että <ph name="SITE" /> voi käyttää sinusta tallentamiaan tietoja</translation>
 <translation id="5447765697759493033">Sivustoa ei käännetä.</translation>
 <translation id="5452270690849572955">Tätä sivuston <ph name="HOST_NAME" /> sivua ei löydy.</translation>
 <translation id="5455374756549232013">Virheellinen käytännön aikaleima</translation>
@@ -2770,7 +2772,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Organisaatio (O)</translation>
 <translation id="6907458757809079309">Kuntoilu</translation>
-<translation id="6910240653697687763"><ph name="URL" /> haluaa MIDI-laitteidesi täyden hallintaoikeuden.</translation>
 <translation id="691024665142758461">ladata useita tiedostoja</translation>
 <translation id="6915804003454593391">Käyttäjä:</translation>
 <translation id="6916954549222464607">Taloussuunnittelu ja varainhoito</translation>

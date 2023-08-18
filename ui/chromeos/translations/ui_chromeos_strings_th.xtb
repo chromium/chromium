@@ -854,6 +854,7 @@
 <translation id="76959938259365003">ล้างข้อมูลในถังขยะไม่สำเร็จ</translation>
 <translation id="770015031906360009">กรีก</translation>
 <translation id="7705251383879779343">คัดลอก <ph name="FILE_NAME" /> แล้ว</translation>
+<translation id="7707941139430559579">ย้ายไฟล์ไม่ได้ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">หากต้องการใช้เครือข่ายนี้ คุณต้องป้อนคีย์การเลิกบล็อกส่วนตัว (PUK) 8 หลักจากผู้ให้บริการ</translation>
 <translation id="7711920809702896782">ข้อมูลรูปภาพ</translation>
 <translation id="7724603315864178912">ตัด</translation>

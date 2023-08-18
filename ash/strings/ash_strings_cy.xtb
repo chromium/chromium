@@ -182,6 +182,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="174102739345480129">Mae'r marciwr wedi'i ddiffodd.</translation>
 <translation id="1743570585616704562">Heb ei adnabod</translation>
 <translation id="1746730358044914197">Mae dulliau mewnbynnu yn cael eu ffurfweddu gan eich gweinyddwr.</translation>
+<translation id="1747336645387973286">i'w gwblhau erbyn <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Mae bysellfwrdd ar y sgrîn wedi'i alluogi</translation>
 <translation id="1749109475624620922">Mae'r ffenestr <ph name="WINDOW_TITLE" /> wedi'i haseinio i bob desg</translation>
 <translation id="1750088060796401187">Dim ond <ph name="MAX_DESK_LIMIT" /> o ddesgiau a ganiateir. Tynnwch ddesg i agor un newydd.</translation>
@@ -242,7 +243,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1989113344093894667">Methu â thynnu sgrinlun o'r cynnwys</translation>
 <translation id="1990046457226896323">Wedi lawrlwytho ffeiliau lleferydd</translation>
 <translation id="1993072747612765854">Dysgu rhagor am y diweddariad <ph name="SYSTEM_APP_NAME" /> diweddaraf</translation>
-<translation id="1995660704900986789">Diffodd</translation>
 <translation id="1996162290124031907">Mynd i'r tab nesaf</translation>
 <translation id="1998100899771863792">Desg bresennol</translation>
 <translation id="2001444736072756133">Chwilio eich <ph name="CATEGORY" />, eich ffeiliau, eich apiau a rhagor.</translation>
@@ -474,6 +474,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3081696990447829002">Ehangu'r ddewislen</translation>
 <translation id="3087734570205094154">Gwaelod</translation>
 <translation id="3090989381251959936">Toglo <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
+<translation id="3093423061078042895">Ar goll</translation>
 <translation id="3095995014811312755">fersiwn</translation>
 <translation id="309749186376891736">Symudwch y cyrchwr</translation>
 <translation id="3100274880412651815">Diystyru'r modd tynnu sgrinlun</translation>
@@ -535,6 +536,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3364721542077212959">Offer Pwyntil</translation>
 <translation id="3365977133351922112">Mae'ch ffôn yn rhy bell i ffwrdd. Dewch â'ch ffôn yn agosach.</translation>
 <translation id="3368922792935385530">Wedi cysylltu</translation>
+<translation id="3369111525500416043">Yn ddyledus yn fuan</translation>
 <translation id="3371140690572404006">Dyfais USB-C (porth de ar y blaen)</translation>
 <translation id="3375634426936648815">Wedi cysylltu</translation>
 <translation id="3378438761594387761">Byddwch yn gweld eich lawrlwythiadau diweddar a'ch sgrinluniau yma</translation>
@@ -989,6 +991,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5208059991603368177">Ymlaen</translation>
 <translation id="5216991270656129561">Wedi'i ddiffodd tan <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Desg Nesaf: <ph name="NEXT_DESK_NAME" />, defnyddiwch Search+Space neu'r llwybr byr bysellfwrdd: Shift+Search+<ph name="NEXT_DESK_INDEX" /> i'w gweithredu.</translation>
+<translation id="5218064144558110424">Marcio fel heb ei chwblhau</translation>
 <translation id="5222676887888702881">Allgofnodi</translation>
 <translation id="5229343007215035173">Troi'r sgrîn preifatrwydd ymlaen/ei ddiffodd</translation>
 <translation id="5234764350956374838">Diystyru</translation>
@@ -1048,6 +1051,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5465662442746197494">Angen help?</translation>
 <translation id="547979256943495781">Silff i'r dde</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> neu <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
+<translation id="5482873136202102190">, +</translation>
 <translation id="5491186829646618080">Mae diweddariadau cadarnwedd ar gael</translation>
 <translation id="5503884284981862082">Agor/cau Google Assistant</translation>
 <translation id="550391772491508736">Parhau â chastio</translation>
@@ -1174,6 +1178,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="598882571027504733">I gael y diweddariad, ailgychwynnwch eich Chromebook gyda'r bysellfwrdd wedi'i atodi.</translation>
 <translation id="6012623610530968780">Tudalen <ph name="SELECTED_PAGE" /> o <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Amlygu'r eitem nesaf ar y silff</translation>
+<translation id="6015573907265691211">Marcio fel wedi'i chwblhau</translation>
 <translation id="6018164090099858612">Wrthi'n gadael y modd adlewyrchu</translation>
 <translation id="6019566113895157499">Llwybrau Byr Bysellau</translation>
 <translation id="602001110135236999">Sgrolio i'r chwith</translation>
@@ -1316,6 +1321,7 @@ Gosodiad newydd</translation>
 <translation id="6597278316891651699">Mae'r camera wedi'i snapio i'r gornel chwith isaf. Gwrthdaro ag arwyneb y system.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />, Rheolir gan eich Gweinyddwr</translation>
 <translation id="6612802754306526077">Dewiswyd y modd recordio sgrîn</translation>
+<translation id="6612889377159412215">is-dasg</translation>
 <translation id="6613765291890844037">Mae storfa <ph name="STORAGE_IN_USE_SIZE" /> yn cael ei defnyddio | <ph name="STORAGE_TOTAL_SIZE" /> mewn cyfanswm</translation>
 <translation id="6614169507485700968">Mae'r sgrîn preifatrwydd ymlaen</translation>
 <translation id="6625718907317144388">Mae hysbysiadau <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ac eraill wedi'u cuddio oherwydd bod amddiffyniad gwylio ymlaen</translation>
@@ -1359,6 +1365,7 @@ Gosodiad newydd</translation>
 <translation id="6786750046913594791">Cau'r ffolder</translation>
 <translation id="6790428901817661496">Chwarae</translation>
 <translation id="679368458793552943">Chwyddo pan fydd y chwyddwydr ymlaen</translation>
+<translation id="6794287755901682422">Mae gan yr eitem hon: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6801878137098616817">Golygwyd yn ddiweddar</translation>
 <translation id="6802196538183166658">Agor Gosodiadau Cyflym trwy ddewis yr amser</translation>
 <translation id="6802687695197837794">Mae hyn yn caniatáu mynediad ar gyfer <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, a phob ap a gwefan gyda chaniatadau camera a meicroffon</translation>
@@ -1615,6 +1622,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="793716872548410480">Pwyswch <ph name="SHORTCUT_KEY_NAME" /> a V i weld eich clipfwrdd. Mae'r 5 eitem ddiwethaf a gopïoch wedi'u cadw i'ch clipfwrdd.</translation>
 <translation id="7942349550061667556">Coch</translation>
 <translation id="7944023924886109030">Gweld yr holl ddigwyddiadau ar gyfer heddiw</translation>
+<translation id="7945357288295809525">Dangos gosodiadau hygyrchedd, '<ph name="ENABLED_FEATURES" />' wedi'i alluogi.</translation>
 <translation id="7947798320695032612">Mae <ph name="APP_NAME" /> am ddefnyddio eich <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Bysellfwrdd pylu</translation>
 <translation id="7963689218131240420">Mae Peidiwch ag Aflonyddu wedi'i ddiffodd.</translation>
@@ -1914,6 +1922,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="953431725143473984">Diffodd y ddyfais?</translation>
 <translation id="954052413789300507">Nid oes digon o le storio ar gyfer <ph name="FILENAME" />. Rhyddhau lle storio.</translation>
 <translation id="974545358917229949">Wrthi'n dangos <ph name="RESULT_COUNT" /> o ganlyniadau ar gyfer <ph name="QUERY" /></translation>
+<translation id="981011780479609956">Dim dyddiad cwblhau</translation>
 <translation id="98120814841227350">Mynd i ddiwedd y ddogfen</translation>
 <translation id="987589956647469042">Mae data symudol wedi'u troi ymlaen</translation>
 <translation id="989374776391122812">Rheolyddion camera a sain</translation>

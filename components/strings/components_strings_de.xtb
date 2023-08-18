@@ -605,6 +605,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2225927550500503913">Virtuelle Karte aktiviert</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Im WLAN anmelden<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">Diese Adresse ist derzeit in Chrome gespeichert. Wenn du sie in allen Google-Produkten verwenden möchtest, speichere sie in deinem Google-Konto (<ph name="ACCOUNT" />).</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> wird darüber informiert, dass du <ph name="TOP_LEVEL_URL" /> besucht hast.</translation>
 <translation id="2233745931693710080">Compact Disc</translation>
 <translation id="2239100178324503013">Jetzt senden</translation>
 <translation id="2241693394036365668">Datei heruntergeladen</translation>
@@ -2089,6 +2090,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5426179911063097041"><ph name="SITE" /> möchte dir Benachrichtigungen senden</translation>
 <translation id="5430298929874300616">Lesezeichen löschen</translation>
 <translation id="5443468954631487277">Umgekehrte Reihenfolge mit der Vorderseite nach oben</translation>
+<translation id="5447235695608032700"><ph name="SITE" /> erlauben, Informationen, die zu deiner Person gespeichert wurden, zu verwenden</translation>
 <translation id="5447765697759493033">Diese Website wird nicht übersetzt</translation>
 <translation id="5452270690849572955">Diese <ph name="HOST_NAME" />-Seite wurde nicht gefunden</translation>
 <translation id="5455374756549232013">Zeitstempel der Richtlinie ist fehlerhaft.</translation>
@@ -2764,7 +2766,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6897140037006041989">User-Agent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6907458757809079309">Fitness</translation>
-<translation id="6910240653697687763"><ph name="URL" /> fordert die vollständige Kontrolle über deine MIDI-Geräte</translation>
 <translation id="691024665142758461">Mehrere Dateien herunterladen</translation>
 <translation id="6915804003454593391">Nutzer: </translation>
 <translation id="6916954549222464607">Finanzplanung und -management</translation>

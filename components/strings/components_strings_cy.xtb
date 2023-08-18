@@ -606,6 +606,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2225927550500503913">Cerdyn rhithwir wedi'i droi ymlaen</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Mewngofnodwch<ph name="END_LINK" /> i'r rhwydwaith WiFi</translation>
 <translation id="2228057197024893428">Mae'r cyfeiriad hwn wedi'i gadw i Chrome ar hyn o bryd. Er mwyn ei ddefnyddio ar draws cynhyrchion Google, cadwch ef yn eich Cyfrif Google, <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669">Bydd <ph name="EMBEDDED_URL" /> yn gwybod eich bod wedi ymweld â <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Cryno Ddisg</translation>
 <translation id="2239100178324503013">Anfon nawr</translation>
 <translation id="2241693394036365668">Mae'r ffeil wedi'i lawrlwytho</translation>
@@ -2093,6 +2094,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5426179911063097041">Mae <ph name="SITE" /> eisiau anfon hysbysiadau atoch</translation>
 <translation id="5430298929874300616">Tynnu'r nod tudalen</translation>
 <translation id="5443468954631487277">Yn y drefn wrthol wyneb i fyny</translation>
+<translation id="5447235695608032700">Caniatáu i <ph name="SITE" /> ddefnyddio gwybodaeth y maent wedi cadw amdanoch chi</translation>
 <translation id="5447765697759493033">Ni fydd y wefan hon yn cael ei chyfieithu</translation>
 <translation id="5452270690849572955">Ni ellir dod o hyd i'r dudalen <ph name="HOST_NAME" /> hon</translation>
 <translation id="5455374756549232013">Stamp amser polisi gwael</translation>
@@ -2769,7 +2771,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6897140037006041989">Asiant Defnyddiwr</translation>
 <translation id="6898699227549475383">Sefydliad (O)</translation>
 <translation id="6907458757809079309">Cadw'n heini</translation>
-<translation id="6910240653697687763">Mae <ph name="URL" /> am gael rheolaeth lawn o'ch dyfeisiau MIDI</translation>
 <translation id="691024665142758461">Lawrlwytho mwy nag un ffeil</translation>
 <translation id="6915804003454593391">Defnyddiwr:</translation>
 <translation id="6916954549222464607">Cynllunio a rheolaeth ariannol</translation>

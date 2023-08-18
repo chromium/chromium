@@ -1091,6 +1091,7 @@
 <translation id="1854180393107901205">توقف فرستادن</translation>
 <translation id="1856715684130786728">افزودن موقعیت مکانی...</translation>
 <translation id="1858585891038687145">برای شناسایی سازندگان نرم‌افزار، به این گواهی اطمینان شود</translation>
+<translation id="1859294693760125695">دیگر علاقه‌ای ندارم</translation>
 <translation id="1859339856433307593">درحال‌حاضر گذرواژه‌ای برای این حساب (<ph name="USER_EMAIL" />) در <ph name="BRAND" /> ذخیره شده است</translation>
 <translation id="1861262398884155592">این پوشه خالی است</translation>
 <translation id="1862311223300693744">‏آیا نرم‌افزار VPN، پراکسی، دیوار آتش، یا NAS خاصی نصب کرده‌اید؟</translation>
@@ -2775,6 +2776,7 @@
 <translation id="3226487301970807183">پنهان/نمایان کردن پانل کناری ترازشده به‌چپ</translation>
 <translation id="322708765617468434">هروقت بخواهید می‌توانید فرد دیگری را بعداز راه‌اندازی به دستگاه اضافه کنید. هر فرد می‌تواند تجربه‌اش را شخصی‌سازی کند و داده‌ها را خصوصی نگه دارد.</translation>
 <translation id="3227137524299004712">میکروفن</translation>
+<translation id="3229412050601871341">گذرواژه دستگاه</translation>
 <translation id="3232168089952388105">اطلاعات دستگاهتان هم‌رسانی شود؟</translation>
 <translation id="3232558119926886907">تراز به راست</translation>
 <translation id="3232754137068452469">برنامه وب</translation>
@@ -2833,6 +2835,7 @@
 <translation id="3275778913554317645">باز کردن به‌عنوان پنجره</translation>
 <translation id="3277214528693754078">پیمایش با نشانگر نوشتار (مرور با هشتک)</translation>
 <translation id="3277594800340743211">سایه بزرگ</translation>
+<translation id="3277784185056747463">‏گذرواژه دستگاه یا گذرواژه «حساب Google»</translation>
 <translation id="3278001907972365362">‏حساب(های) Google شما به توجه نیاز دارد</translation>
 <translation id="3279092821516760512">وقتی مخاطبین انتخابی نزدیک شما باشند می‌توانند با شما هم‌رسانی کنند. تا درخواست را نپذیرید، انتقال شروع نخواهد شد.</translation>
 <translation id="3279230909244266691">این فرایند ممکن است چند دقیقه طول بکشد. درحال شروع دستگاه مجازی.</translation>
@@ -3289,6 +3292,7 @@
 <translation id="3660234220361471169">غیر قابل اطمینان</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{یک گذرواژه موجود پیدا شد}one{{NUM_PASSWORDS} گذرواژه موجود پیدا شد}other{{NUM_PASSWORDS} گذرواژه موجود پیدا شد}}</translation>
 <translation id="3664511988987167893">نماد افزونه</translation>
+<translation id="3665301845536101715">باز کردن در پانل کناری</translation>
 <translation id="3665589677786828986">‏Chrome تشخیص داد که برنامه دیگری برخی از تنظیمات شما را خراب کرده است و این تنظیمات را به پیش‌فرض‌های اولیه آن‌ها بازنشانی کرد.</translation>
 <translation id="3665919494326051362">نسخه کنونی: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">‏رونوشت اشکال‌زدایی کنترل‌کننده‌های رابط شبکه Intel Wi-Fi</translation>
@@ -4491,6 +4495,7 @@
 <translation id="4646675363240786305">درگاه‌ها</translation>
 <translation id="4647090755847581616">&amp;بستن برگه </translation>
 <translation id="4647283074445570750">مرحله <ph name="CURRENT_STEP" /> از <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">انتخابگر رنگ</translation>
 <translation id="4648491805942548247">مجوزها کافی نیستند</translation>
 <translation id="4650037136970677721">حافظه ذخیره شد</translation>
 <translation id="4650591383426000695">اتصال تلفنتان را از <ph name="DEVICE_TYPE" /> قطع کنید</translation>
@@ -6051,6 +6056,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{باز کردن همه در «پنجره ناشناس»}=1{باز کردن در «پنجره ناشناس»}one{باز کردن همه ({COUNT}) در «پنجره ناشناس»}other{باز کردن همه ({COUNT}) در «پنجره ناشناس»}}</translation>
 <translation id="5975792506968920132">درصد شارژ باتری</translation>
 <translation id="5976160379964388480">موارد دیگر</translation>
+<translation id="5977976211062815271">در این دستگاه</translation>
 <translation id="5978277834170881274">&amp;استفاده از غلط‌گیر املای پایه</translation>
 <translation id="5978493744931296692">سرپرستتان نمایه‌های دیگر را غیرفعال کرده است</translation>
 <translation id="5979084224081478209">بررسی گذرواژه‌ها</translation>
@@ -7022,6 +7028,7 @@
 <translation id="6805647936811177813">لطفاً به سیستم <ph name="TOKEN_NAME" /> وارد شوید تا بتوانید مجوز سرویس گیرنده را از <ph name="HOST_NAME" /> وارد کنید.</translation>
 <translation id="680572642341004180">‏‫فعال کردن ردیابی RLZ در <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">اجازه داده نشود اما بعداً سؤال شود</translation>
+<translation id="680644983456221885">‏محافظت بی‌وقفه و پیش‌نگر دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک که براساس داده‌های مرور ارسالی به Google است</translation>
 <translation id="6808039367995747522">برای ادامه، کلید امنیتی را وارد کنید و لمس کنید</translation>
 <translation id="6808166974213191158">‏ایجادکننده تصویر سیستم ChromeOS Flex</translation>
 <translation id="6808193438228982088">روباه</translation>
@@ -8466,7 +8473,6 @@
 <translation id="7978412674231730200">کلید خصوصی</translation>
 <translation id="7978450511781612192">‏با این کار از سیستم حساب Google خود خارج می‌شوید. نشانک‌ها، سابقه، گذرواژه‌ها و سایر موارد دیگر همگام‌سازی نمی‌شوند.</translation>
 <translation id="7980084013673500153">شناسه دارایی: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">پیش‌بارگیری صفحه‌ها برای مرور و جستجوی سریع‌تر</translation>
 <translation id="7981662863948574132">‏نمایش بالاپر رمزینه پاسخ‌سریع و «سند شناسه جاسازی‌شده» (EID) دستگاه</translation>
 <translation id="7981670705071137488">بعداز این، به‌روزرسانی‌های نرم‌افزار در پس‌زمینه انجام می‌شود. می‌توانید اولویت‌های به‌روزرسانی را در «تنظیمات» مرور کنید.</translation>
 <translation id="7982083145464587921">لطفاً برای رفع این خطا دستگاه خود را مجدداً راه‌اندازی کنید.</translation>
@@ -8666,6 +8672,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{یک ویدیو}one{# ویدیو}other{# ویدیو}}</translation>
 <translation id="8143442547342702591">برنامه نامعتبر است</translation>
 <translation id="8143609395536282994">چگونه می‌توانید داده‌هایتان را مدیریت کنید:</translation>
+<translation id="8144429778087524791">علامت‌گذاری به‌عنوان انجام‌شده و پنهان کردن</translation>
 <translation id="8145170459658034418">بهینه‌سازی حافظه</translation>
 <translation id="8146177459103116374">اگر قبلاً در این دستگاه ثبت‌نام کردید، می‌توانید <ph name="LINK2_START" />به‌عنوان یک کاربر موجود، وارد شوید<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">زبان‌های برگزیده‌تان را اضافه و رتبه‌بندی کنید. درصورت امکان، وب‌سایت‌ها به زبان‌های برگزیده‌تان نشان داده می‌شوند. این اولویت‌ها با تنظیمات مرورگرتان همگام‌سازی می‌شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9156,6 +9163,7 @@
 <translation id="8557022314818157177">کلید امنیتی را تازمانی‌که اثرانگشت ثبت شود، لمس کنید</translation>
 <translation id="8557180006508471423">‏روشن کردن «Google Chrome» در خدمات مکان در Mac</translation>
 <translation id="8557856025359704738">بارگیری بعدی در تاریخ <ph name="NEXT_DATE_DOWNLOAD" /> انجام می‌شود.</translation>
+<translation id="8558281414737757274">‏گذرواژه «حساب Google»</translation>
 <translation id="8559858985063901027">گذرکلیدها</translation>
 <translation id="8559961053328923750">‏Chrome مجموع داده‌هایی را که سایت‌ها می‌توانند ازطریق مرورگر برای سنجش عملکرد آگهی هم‌رسانی کنند محدود می‌کند</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{باز کردن همه در پنجره جدید}=1{باز کردن در پنجره جدید}one{باز کردن همه ({COUNT}) در پنجره جدید}other{باز کردن همه ({COUNT}) در پنجره جدید}}</translation>
@@ -9168,6 +9176,7 @@
 <translation id="8569682776816196752">مقصدی یافت نشد</translation>
 <translation id="8571213806525832805">۴ هفته گذشته</translation>
 <translation id="8571687764447439720">‏افزودن بلیت Kerberos</translation>
+<translation id="8572052284359771939">‏نشانی‌های وب سایت‌هایی که بازدید می‌کنید و نمونه کوچکی از محتوای صفحه، بارگیری‌ها، فعالیت افزونه‌ها، و اطلاعات سیستم را برای «مرور ایمن Google» ارسال می‌کند تا بررسی شود که آن‌ها ایمن هستند یا نه.</translation>
 <translation id="8573111744706778015">‏برای دریافت «ươ»، ‏«uo7» را تایپ کنید</translation>
 <translation id="8574990355410201600">همیشه در <ph name="HOST" /> به صدا اجازه داده شود</translation>
 <translation id="8575286410928791436">برای خارج شدن، <ph name="KEY_EQUIVALENT" /> را نگه دارید</translation>

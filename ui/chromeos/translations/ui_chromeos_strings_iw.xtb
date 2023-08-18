@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">בחיפוש אחר רשתות סלולריות</translation>
 <translation id="1293556467332435079">קבצים</translation>
 <translation id="1297922636971898492">‏Google Drive אינו זמין כעת. ההעלאה תופעל מחדש באופן אוטומטי לאחר ש-Google Drive יחזור לפעול.</translation>
+<translation id="1306130176943817227">לא ניתן למחוק את הפריט כי הוא בשימוש.</translation>
 <translation id="1307931752636661898">‏לא ניתן להציג קובצי Linux</translation>
 <translation id="1313405956111467313">‏תצורה אוטומטית של שרת proxy</translation>
 <translation id="134645005685694099">אין במכשיר מספיק מקום אחסון כדי לאפשר סנכרון קבצים. קבצים חדשים לא יסונכרנו יותר באופן אוטומטי.</translation>
@@ -537,6 +538,7 @@
 <translation id="5218183485292899140">צרפתית שוויצרית</translation>
 <translation id="5234764350956374838">סגירה</translation>
 <translation id="5253070652067921974">נוצר על ידי</translation>
+<translation id="5254207638927440400">לא ניתן להעביר את הקובץ כי הוא בשימוש.</translation>
 <translation id="5257456363153333584">שפירית</translation>
 <translation id="5262311848634918433">‏<ph name="MARKUP_1" />גישה לקבצים מכל מקום, גם ללא חיבור לאינטרנט.<ph name="MARKUP_2" />
     קבצים ב-Google Drive מעודכנים וזמינים בכל מכשיר.<ph name="MARKUP_3" />

@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">Мобайл сүлжээг хайж байна</translation>
 <translation id="1293556467332435079">Файлууд</translation>
 <translation id="1297922636971898492">Google Drive одоогоор боломжгүй байна. Google Drive ажиллаж эхлэхэд байршуулалт автоматиар эхэлнэ.</translation>
+<translation id="1306130176943817227">Устгах боломжгүй. Зүйлийг ашиглаж байна.</translation>
 <translation id="1307931752636661898">Linux-н файлуудыг харах боломжгүй байна</translation>
 <translation id="1313405956111467313">Автомат прокси тохиргоо</translation>
 <translation id="134645005685694099">Таны төхөөрөмжид синк хийхийг асаалттай байлгахад хадгалах сангийн хангалттай зай байхгүй байна. Шинэ файлуудыг цаашид автоматаар синк хийхгүй.</translation>
@@ -538,6 +539,7 @@
 <translation id="5218183485292899140">Swiss French</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
 <translation id="5253070652067921974">Үүсгэсэн</translation>
+<translation id="5254207638927440400">Файлыг зөөх боломжгүй. Файлыг ашиглаж байна.</translation>
 <translation id="5257456363153333584">Соно</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Офлайн байсан үедээ ч гэсэн файлдаа хүссэн газраасаа хандана уу.<ph name="MARKUP_2" />
     Google Драйв дахь файл нь шинэ, мөн дурын төхөөрөмжөөс боломжтой.<ph name="MARKUP_3" />

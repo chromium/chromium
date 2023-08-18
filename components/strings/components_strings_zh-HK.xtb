@@ -606,7 +606,7 @@
 <translation id="2225927550500503913">虛擬卡已啟用</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />登入<ph name="END_LINK" /> Wi-Fi 網絡</translation>
 <translation id="2228057197024893428">此地址目前儲存在 Chrome 中。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
-<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> 會知道你曾造訪 <ph name="TOP_LEVEL_URL" />。</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> 將得知你曾瀏覽 <ph name="TOP_LEVEL_URL" />。</translation>
 <translation id="2233745931693710080">光碟</translation>
 <translation id="2239100178324503013">立即傳送</translation>
 <translation id="2241693394036365668">已下載檔案</translation>
@@ -2093,7 +2093,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> 要求傳送通知給您</translation>
 <translation id="5430298929874300616">移除書籤</translation>
 <translation id="5443468954631487277">相反順序 (正面朝上)</translation>
-<translation id="5447235695608032700">允許 <ph name="SITE" /> 使用與你相關的既有資訊</translation>
+<translation id="5447235695608032700">允許 <ph name="SITE" /> 使用與你相關的既有資料</translation>
 <translation id="5447765697759493033">系統不會翻譯此網站</translation>
 <translation id="5452270690849572955">找不到此 <ph name="HOST_NAME" /> 網頁</translation>
 <translation id="5455374756549232013">政策時間戳記有誤</translation>
@@ -2289,6 +2289,7 @@
 <translation id="5873297634595728366">柴油車</translation>
 <translation id="5877831137320480913">美容和健身</translation>
 <translation id="5879989559903563723">在訪客模式下無法使用</translation>
+<translation id="5883861433316751031">要控制及重設 MIDI 裝置的程式嗎？</translation>
 <translation id="5884465125445718607">Chinese #6 信封</translation>
 <translation id="5887400589839399685">已儲存的付款卡</translation>
 <translation id="5887687176710214216">上次瀏覽日期：昨天</translation>
@@ -2770,7 +2771,6 @@
 <translation id="6897140037006041989">使用者代理程式</translation>
 <translation id="6898699227549475383">機構 (O)</translation>
 <translation id="6907458757809079309">健身</translation>
-<translation id="6910240653697687763"><ph name="URL" /> 要求全權控制 MIDI 裝置</translation>
 <translation id="691024665142758461">下載多個檔案</translation>
 <translation id="6915804003454593391">使用者：</translation>
 <translation id="6916954549222464607">財務策劃和管理</translation>
@@ -3333,6 +3333,7 @@
 <translation id="8038817883578389970">賽車</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8041940743680923270">使用全域預設值 (要求確認)</translation>
+<translation id="8042577181291637092">要使用 MIDI 裝置嗎？</translation>
 <translation id="8046360364391076336">工業物料和設備</translation>
 <translation id="8052898407431791827">已複製到剪貼簿</translation>
 <translation id="8055534648776115597">職業和持續教育</translation>
@@ -3626,6 +3627,7 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> 的值不符合大小要求。</translation>
 <translation id="867224526087042813">簽名</translation>
 <translation id="8672264262457010862">工商業</translation>
+<translation id="8673776281896298303">控制及重設 MIDI 裝置的程式 (SysEx)</translation>
 <translation id="8676424191133491403">不延遲</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />，答案：<ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">無法載入 <ph name="PAGE" /> 的網頁，原因如下：</translation>

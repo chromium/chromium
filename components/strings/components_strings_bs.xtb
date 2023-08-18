@@ -2094,7 +2094,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5426179911063097041">Web lokacija <ph name="SITE" /> vam želi slati obavještenja</translation>
 <translation id="5430298929874300616">Uklonite oznaku</translation>
 <translation id="5443468954631487277">Obrnuti redoslijed s odštampanom stranom prema gore</translation>
-<translation id="5447235695608032700">Dopustite da web-lokacija <ph name="SITE" /> upotrebljava podatke koje je spremila o vama</translation>
+<translation id="5447235695608032700">Dozvolite web lokaciji <ph name="SITE" /> da koristi informacije koje je sačuvala o vama</translation>
 <translation id="5447765697759493033">Ova web lokacija se neće prevoditi</translation>
 <translation id="5452270690849572955">Nije moguće pronaći stranicu <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Neispravna vremenska oznaka pravila</translation>
@@ -2290,6 +2290,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5873297634595728366">Dizelska vozila</translation>
 <translation id="5877831137320480913">Ljepota i fitnes</translation>
 <translation id="5879989559903563723">Nije dozvoljeno u Načinu rada za gosta</translation>
+<translation id="5883861433316751031">Želite li kontrolirati i reprogramirati MIDI uređaje?</translation>
 <translation id="5884465125445718607">Koverta Chinese #6</translation>
 <translation id="5887400589839399685">Kartica je sačuvana</translation>
 <translation id="5887687176710214216">Posljednji put je posjećeno jučer</translation>
@@ -2771,7 +2772,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6897140037006041989">Korisnički agent</translation>
 <translation id="6898699227549475383">Organizacija (O)</translation>
 <translation id="6907458757809079309">Fitnes</translation>
-<translation id="6910240653697687763">Web lokacija <ph name="URL" /> želi u potpunosti kontrolirati vaše MIDI uređaje</translation>
 <translation id="691024665142758461">Preuzeti više fajlova</translation>
 <translation id="6915804003454593391">Korisnik:</translation>
 <translation id="6916954549222464607">Finansijsko planiranje i upravljanje</translation>
@@ -3334,6 +3334,7 @@ Dodatni detalji:
 <translation id="8038817883578389970">Auto utrke</translation>
 <translation id="8041089156583427627">Pošaljite povratne informacije</translation>
 <translation id="8041940743680923270">Koristi opću zadanu postavku (pitaj)</translation>
+<translation id="8042577181291637092">Želite li upotrebljavati MIDI uređaje?</translation>
 <translation id="8046360364391076336">Industrijski materijali i oprema</translation>
 <translation id="8052898407431791827">Kopirano u međumemoriju</translation>
 <translation id="8055534648776115597">Stručno i kontinuirano obrazovanje</translation>
@@ -3627,6 +3628,7 @@ Dodatni detalji:
 <translation id="8671519637524426245">Vrijednost <ph name="SECURE_DNS_SALT" /> ne ispunjava zahtjeve veličine.</translation>
 <translation id="867224526087042813">Potpis</translation>
 <translation id="8672264262457010862">Poslovanje i industrija</translation>
+<translation id="8673776281896298303">Upravljanje i reprogramiranje MIDI uređaja (SysEx)</translation>
 <translation id="8676424191133491403">Bez odgode</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, odgovor, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Web stranica na <ph name="PAGE" /> nije učitana zbog sljedećeg:</translation>

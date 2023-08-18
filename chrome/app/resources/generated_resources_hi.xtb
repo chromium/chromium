@@ -1094,6 +1094,7 @@
 <translation id="1854180393107901205">कास्ट करना रोकें</translation>
 <translation id="1856715684130786728">स्थान जोड़ें...</translation>
 <translation id="1858585891038687145">सॉफ़्टवेयर निर्माताओं की पहचान करने के लिए इस प्रमाणपत्र पर विश्वास करें</translation>
+<translation id="1859294693760125695">अब कोई दिलचस्पी नहीं है</translation>
 <translation id="1859339856433307593">इस खाते का पासवर्ड, पहले से ही <ph name="BRAND" /> (<ph name="USER_EMAIL" />) में सेव है</translation>
 <translation id="1861262398884155592">यह फ़ोल्डर खाली है</translation>
 <translation id="1862311223300693744">क्या आपने कोई खास वीपीएन, प्रॉक्सी, फ़ायरवॉल, या एनएएस सॉफ़्टवेयर
@@ -2779,6 +2780,7 @@
 <translation id="3226487301970807183">बाईं ओर अलाइन साइड पैनल को टॉगल करें</translation>
 <translation id="322708765617468434">सेटअप पूरा होने के बाद, डिवाइस में किसी भी व्यक्ति को कभी भी जोड़ा जा सकता है. हर व्यक्ति अपने अनुभव को पसंद के हिसाब से बना सकता है और डेटा को निजी रख सकता है.</translation>
 <translation id="3227137524299004712">माइक्रोफ़ोन</translation>
+<translation id="3229412050601871341">डिवाइस का पासवर्ड</translation>
 <translation id="3232168089952388105">क्या आपको अपने डिवाइस की जानकारी शेयर करनी है?</translation>
 <translation id="3232558119926886907">दाईं ओर अलाइन करें</translation>
 <translation id="3232754137068452469">वेब ऐप्लिकेशन</translation>
@@ -2837,6 +2839,7 @@
 <translation id="3275778913554317645">विंडो के रूप में खोलें</translation>
 <translation id="3277214528693754078">टेक्स्ट कर्सर की मदद से नेविगेट करें (कैरेट ब्राउज़िंग)</translation>
 <translation id="3277594800340743211">बड़ा शैडो</translation>
+<translation id="3277784185056747463">डिवाइस का पासवर्ड या Google खाते का पासवर्ड</translation>
 <translation id="3278001907972365362">आपके Google खाता (खातों) पर ध्यान देना होगा</translation>
 <translation id="3279092821516760512">चुने गए संपर्क, आस-पास होने पर आपके साथ शेयर कर सकते हैं. आपके स्वीकार करने तक ट्रांसफ़र शुरू नहीं होगा.</translation>
 <translation id="3279230909244266691">इस प्रोसेस में कुछ मिनट लग सकते हैं. वर्चुअल मशीन को शुरू किया जा रहा है.</translation>
@@ -3293,6 +3296,7 @@
 <translation id="3660234220361471169">अविश्वसनीय</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 मौजूदा पासवर्ड मिला}one{{NUM_PASSWORDS} मौजूदा पासवर्ड मिला}other{{NUM_PASSWORDS} मौजूदा पासवर्ड मिले}}</translation>
 <translation id="3664511988987167893">एक्सटेंशन आइकॉन</translation>
+<translation id="3665301845536101715">साइड पैनल में खोलें</translation>
 <translation id="3665589677786828986">Chrome को पता चला है कि आपकी कुछ सेटिंग किसी दूसरे प्रोग्राम के द्वारा दूषित कर दी गई हैं और उन्हें उनके मूल डिफ़ॉल्ट पर रीसेट कर दिया गया है.</translation>
 <translation id="3665919494326051362">मौजूदा वर्शन <ph name="CURRENT_VERSION" /> है</translation>
 <translation id="3666196264870170605">Intel के वाई-फ़ाई एनआईसी का डीबग डंप</translation>
@@ -4494,6 +4498,7 @@
 <translation id="4646675363240786305">पोर्ट</translation>
 <translation id="4647090755847581616">&amp;टैब बंद करें</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" /> में से <ph name="CURRENT_STEP" /> चरण</translation>
+<translation id="4647836961514597010">रंग पिकर</translation>
 <translation id="4648491805942548247">अपर्याप्त अनुमतियां</translation>
 <translation id="4650037136970677721">मेमोरी सेव की गई</translation>
 <translation id="4650591383426000695">अपने फ़ोन को <ph name="DEVICE_TYPE" /> से डिसकनेक्ट करें</translation>
@@ -6054,6 +6059,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{सभी यूआरएल &amp;गुप्त विंडो में खोलें}=1{यूआरएल को &amp;गुप्त विंडो में खोलें}one{सभी ({COUNT}) यूआरएल को &amp;गुप्त विंडो में खोलें}other{सभी ({COUNT}) यूआरएल &amp;गुप्त विंडो में खोलें}}</translation>
 <translation id="5975792506968920132">बैटरी चार्ज का प्रतिशत</translation>
 <translation id="5976160379964388480">अन्य</translation>
+<translation id="5977976211062815271">इस डिवाइस पर</translation>
 <translation id="5978277834170881274">&amp;बुनियादी 'स्पेलिंग जाँच' का इस्तेमाल करें</translation>
 <translation id="5978493744931296692">आपके एडमिन ने अन्य प्रोफ़ाइल बंद कर दी हैं</translation>
 <translation id="5979084224081478209">पासवर्ड जांचें</translation>
@@ -7025,6 +7031,7 @@
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> से क्लाइंट प्रमाणपत्र लेकर आने के लिए, कृपया <ph name="TOKEN_NAME" /> में साइन इन करें.</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> पर RLZ ट्रैकिंग चालू करें.</translation>
 <translation id="6806089545527108739">अनुमति न दें, लेकिन बाद में पूछें</translation>
+<translation id="680644983456221885">Google को भेजे जाने वाले आपके ब्राउज़िंग डेटा के हिसाब से, नुकसान पहुंचाने वाली साइटों, डाउनलोड, और एक्सटेंशन से रीयल-टाइम में सुरक्षा मिलती है</translation>
 <translation id="6808039367995747522">जारी रखने के लिए, अपनी सुरक्षा कुंजी डालें और छुएं</translation>
 <translation id="6808166974213191158">ChromeOS Flex का सिस्टम इमेज राइटर</translation>
 <translation id="6808193438228982088">लोमड़ी</translation>
@@ -8468,7 +8475,6 @@
 <translation id="7978412674231730200">निजी कुंजी</translation>
 <translation id="7978450511781612192">इससे आपको अपने Google खातों से साइन आउट कर दिया जाएगा. आपके बुकमार्क, इतिहास, पासवर्ड वगैरह अब सिंक नहीं किए जाएंगे.</translation>
 <translation id="7980084013673500153">एसेट आईडी: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">ज़्यादा तेज़ी से ब्राउज़ करने और खोजने के लिए पेज पहले से लोड करें</translation>
 <translation id="7981662863948574132">डिवाइस का ईआईडी और क्यूआर कोड पॉप-अप दिखाएं</translation>
 <translation id="7981670705071137488">इसके बाद, आपके डिवाइस के सॉफ़्टवेयर, बैकग्राउंड में अपडेट होंगे. सेटिंग में जाकर, अपडेट से जुड़ी प्राथमिकताओं की समीक्षा की जा सकती है.</translation>
 <translation id="7982083145464587921">इस गड़बड़ी को ठीक करने के लिए कृपया अपना डिवाइस फिर से प्रारंभ करें.</translation>
@@ -8668,6 +8674,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{एक वीडियो}one{# वीडियो}other{# वीडियो}}</translation>
 <translation id="8143442547342702591">अमान्य ऐप्लिकेशन</translation>
 <translation id="8143609395536282994">अपना डेटा कैसे मैनेज करें:</translation>
+<translation id="8144429778087524791">'हो गया' के तौर पर मार्क करें और छिपाएं</translation>
 <translation id="8145170459658034418">मेमोरी बचाने वाली सेटिंग</translation>
 <translation id="8146177459103116374">अगर आप इस डिवाइस पर पहले से रजिस्टर हैं, तो आप <ph name="LINK2_START" />मौजूदा उपयोगकर्ता के रूप में साइन इन<ph name="LINK2_END" /> कर सकते हैं.</translation>
 <translation id="8146287226035613638">अपनी पसंदीदा भाषाओं को जोड़ें और उन्हें मनमुताबिक क्रम में लगाएं. जब संभव होगा, वेबसाइटें आपकी पसंदीदा भाषाओं में दिखेंगी. इन प्राथमिकताओं को आपके ब्राउज़र की सेटिंग के साथ सिंक किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9158,6 +9165,7 @@
 <translation id="8557022314818157177">अपनी सुरक्षा कुंजी को तब तक छूते रहें, जब तक फ़िंगरप्रिंट कैप्चर न हाे जाए</translation>
 <translation id="8557180006508471423">अपने Mac पर, जगह की जानकारी में "Google Chrome" चालू करें</translation>
 <translation id="8557856025359704738">अगली बार <ph name="NEXT_DATE_DOWNLOAD" /> को डाउनलोड होंगी.</translation>
+<translation id="8558281414737757274">Google खाते का पासवर्ड</translation>
 <translation id="8559858985063901027">पासवर्ड</translation>
 <translation id="8559961053328923750">Chrome, विज्ञापन की परफ़ॉर्मेंस को मापने के लिए, ब्राउज़र की मदद से शेयर किए जा सकने वाले कुल डेटा को सीमित करता है</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{सभी यूआरएल को &amp;नई विंडो में खोलें}=1{यूआरएल को &amp;नई विंडो में खोलें}one{दिया गया ({COUNT}) यूआरएल &amp;नई विंडो में खोलें}other{सभी ({COUNT}) यूआरएल को &amp;नई विंडो में खोलें}}</translation>
@@ -9170,6 +9178,7 @@
 <translation id="8569682776816196752">कोई गंतव्य नहीं मिला</translation>
 <translation id="8571213806525832805">पिछले चार हफ़्ते</translation>
 <translation id="8571687764447439720">Kerberos टिकट जोड़ें</translation>
+<translation id="8572052284359771939">आपने जिन साइटों पर विज़िट किया है उनके यूआरएल और पेज पर मौजूद कॉन्टेंट का नमूना, डाउनलोड, एक्सटेंशन की गतिविधि, और सिस्टम की जानकारी 'Google सुरक्षित ब्राउज़िंग' को भेजी जाती है, ताकि यह पता चल सके कि ये चीज़ें नुकसान पहुंचाने वाली हैं या नहीं.</translation>
 <translation id="8573111744706778015">"ươ" पाने के लिए "uo7" टाइप करें</translation>
 <translation id="8574990355410201600"><ph name="HOST" /> पर आवाज़ हमेशा चालू रखें</translation>
 <translation id="8575286410928791436">बाहर निकलने के लिए <ph name="KEY_EQUIVALENT" /> दबाए रखें</translation>

@@ -470,7 +470,7 @@ Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se k
 <translation id="3513704683820682405">Proširena realnost</translation>
 <translation id="3518985090088779359">Prihvati i nastavi</translation>
 <translation id="3522247891732774234">Dostupno je ažuriranje. Više opcija</translation>
-<translation id="3523426587027570423">Dodirnite da biste zatvorili player Poslušajte ovu stranicu.</translation>
+<translation id="3523426587027570423">Zatvaranje "Poslušajte ovu stranicu" dodirom.</translation>
 <translation id="3524138585025253783">Korisnički interfejs za programere</translation>
 <translation id="3524334353996115845">Dozvolite da <ph name="ORIGIN" /> potvrdi vaš identitet</translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -674,8 +674,9 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4634124774493850572">Koristi lozinku</translation>
 <translation id="4637420359569396807">Uz mjerenje oglasa, ograničene vrste podataka se mogu dijeliti između web lokacija i aplikacija radi mjerenja performansi njihovih oglasa, kao što je doba dana kada vam je oglas prikazan.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ugrožena lozinka}one{# ugrožena lozinka}few{# ugrožene lozinke}other{# ugroženih lozinki}}</translation>
+<translation id="4645146721047390964">Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati vaše kolačiće za uvid u vašu aktivnost pregledavanja na različitim web-lokacijama, primjerice radi prilagođavanja oglasa. Značajke na nekim web-lokacijama mogu prestati funkcionirati.</translation>
 <translation id="4650364565596261010">Sistemski zadano</translation>
-<translation id="4654641641922242357">Player Poslušajte ovu stranicu.</translation>
+<translation id="4654641641922242357">Plejer "Poslušajte ovu stranicu".</translation>
 <translation id="465657074423018424">Sigurno pregledanje vas štiti od obmanjujućih web lokacija. Ako ga isključite, budite posebno oprezni prilikom pregledanja, naročito prije unošenja lozinki.</translation>
 <translation id="4662373422909645029">Nadimak ne može imati brojeve</translation>
 <translation id="4663499661119906179">Pogledajte najpopularnije web lokacije i priče prilagođene vama</translation>
@@ -693,6 +694,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4719927025381752090">Ponudi prijevod</translation>
 <translation id="4720023427747327413">Otvori u aplikaciji <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Pogledajte najpopularnije web lokacije</translation>
+<translation id="4731877163452936634">Brzina reprodukcije: <ph name="PLAYBACK_SPEED" /> Kliknite za promjenu.</translation>
 <translation id="4732120983431207637">Rastvarač grupe</translation>
 <translation id="4736934858538408121">Virtuelna kartica</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
@@ -805,7 +807,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5227554086496586518">Dodirnite da vidite rezultate pretraživanja</translation>
 <translation id="5233638681132016545">Nova kartica</translation>
-<translation id="5234971936051226002">Player Poslušajte ovu stranicu je minimiziran.</translation>
+<translation id="5234971936051226002">Plejer "Poslušajte ovu stranicu je minimiziran".</translation>
 <translation id="5235196193381275927">Došlo je do problema prilikom prijave</translation>
 <translation id="5246093389635966745">Uređivanje prečice alatne trake</translation>
 <translation id="5271967389191913893">Uređaj ne može otvoriti sadržaj za preuzimanje.</translation>
@@ -1250,6 +1252,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="751961395872307827">Greška prilikom povezivanja s web lokacijom</translation>
 <translation id="752220631458524187">Prekinite vezu kada završite</translation>
 <translation id="7523960634226602883">Pretražujte kamerom pomoću Google Objektiva</translation>
+<translation id="752731652852882757">Blokiraj tijekom upotrebe u anonimnom načinu</translation>
 <translation id="7539698981064401140">Sinhronizirajte kartice i historiju</translation>
 <translation id="7562080006725997899">Brisanje podataka pregledanja</translation>
 <translation id="756809126120519699">Chromeovi podaci su obrisani</translation>
@@ -1325,10 +1328,11 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7926975587469166629">Nadimak kartice</translation>
 <translation id="7929962904089429003">Otvorite meni</translation>
 <translation id="7930998711684428189">Upozorava vas ako su lozinke izložene prilikom narušavanja podataka.</translation>
-<translation id="7934668619883965330">Nije moguće preuzeti datoteku. Format datoteke nije podržan.</translation>
+<translation id="7934668619883965330">Nije moguće preuzeti fajl. Format fajla nije podržan.</translation>
 <translation id="7939485076072265087">Kreiranje stilizirane kartice s istaknutim stavkama</translation>
 <translation id="7942131818088350342">Proizvod <ph name="PRODUCT_NAME" /> je zastario.</translation>
 <translation id="7944772052836377867">Sinhronizacija mora potvrditi da ste to vi</translation>
+<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> s unaprijed</translation>
 <translation id="7947953824732555851">Prihvati i prijavi me</translation>
 <translation id="7957413488482743710">Virtuelna kartica sakriva stvarnu karticu radi zaštite od potencijalne prevare. <ph name="BEGIN_LINK1" />Saznajte više o virtuelnim karticama<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Dugme za nazad na uvide u stranicu</translation>
@@ -1337,6 +1341,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7965838025086216108">Sačuvane lozinke možete koristiti na bilo kojem uređaju. Pohranjuju se u Googleovom Upravitelju lozinki za račun <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Dodano u listu za čitanje</translation>
 <translation id="7971136598759319605">Aktivan prije 1 dan</translation>
+<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> s unatrag</translation>
 <translation id="7975379999046275268">Pregledaj stranicu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7986497153528221272">Da pogledate lozinke, najprije postavite zaključavanje ekrana na uređaju</translation>
 <translation id="7995059495660416932">Vidjet ćete sadržaj kada postane dostupan</translation>
@@ -1527,7 +1532,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8937772741022875483">Ukloniti aktivnosti Chromea iz Digitalnog blagostanja?</translation>
 <translation id="8942627711005830162">Otvori u drugom prozoru</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Preuzimanje ovog jezika nije uspjelo. Pokušajte ponovo kasnije.</translation>
-<translation id="8953618380150219653">Player Poslušajte ovu stranicu otvoren je u punoj visini.</translation>
+<translation id="8953618380150219653">Plejer "Poslušajte ovu stranicu" je otvoren u punoj visini.</translation>
 <translation id="8955719471735800169">Nazad na vrh</translation>
 <translation id="8964479563882643397">Da otvorite novu anonimnu karticu, otvorite meni</translation>
 <translation id="8965591936373831584">na čekanju</translation>

@@ -183,6 +183,7 @@
 <translation id="174102739345480129">أداة التحديد غير مفعَّلة.</translation>
 <translation id="1743570585616704562">لم يتم التعرف عليها</translation>
 <translation id="1746730358044914197">يتم إعداد طرق الإدخال بواسطة المشرف.</translation>
+<translation id="1747336645387973286">‏تاريخ إنجاز المهمة ‎<ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">تم تفعيل لوحة المفاتيح على الشاشة</translation>
 <translation id="1749109475624620922">تم تخصيص النافذة <ph name="WINDOW_TITLE" /> لجميع أسطح المكتب.</translation>
 <translation id="1750088060796401187">لا يُسمح باستخدام سوى <ph name="MAX_DESK_LIMIT" /> سطح مكتب. يجب إزالة أحد أسطح المكتب لفتح سطح مكتب جديد.</translation>
@@ -243,7 +244,6 @@
 <translation id="1989113344093894667">لا يمكن تصوير المحتوى</translation>
 <translation id="1990046457226896323">تم تنزيل ملفات ميزة "النسخ النصي التلقائي".</translation>
 <translation id="1993072747612765854">مزيد من المعلومات حول آخر تحديث لتطبيق <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">إطفاء</translation>
 <translation id="1996162290124031907">الانتقال إلى علامة التبويب التالية</translation>
 <translation id="1998100899771863792">سطح المكتب الحالي</translation>
 <translation id="2001444736072756133">يمكنك البحث في <ph name="CATEGORY" /> والملفات والتطبيقات وغير ذلك.</translation>
@@ -475,6 +475,7 @@
 <translation id="3081696990447829002">توسيع القائمة</translation>
 <translation id="3087734570205094154">أسفل</translation>
 <translation id="3090989381251959936">تبديل <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
+<translation id="3093423061078042895">متأخّرة</translation>
 <translation id="3095995014811312755">الإصدار</translation>
 <translation id="309749186376891736">نقل المؤشر</translation>
 <translation id="3100274880412651815">إغلاق وضع تصوير الشاشة</translation>
@@ -536,6 +537,7 @@
 <translation id="3364721542077212959">أدوات قلم الشاشة</translation>
 <translation id="3365977133351922112">‏هاتفك بعيد جدًا. ضَع هاتفك في مكان قريب من جهاز Chromebook.</translation>
 <translation id="3368922792935385530">متصل</translation>
+<translation id="3369111525500416043">مطلوب تسليمها قريبًا</translation>
 <translation id="3371140690572404006">‏جهاز USB-C (المنفذ الأمامي الأيمن)</translation>
 <translation id="3375634426936648815">متصلة</translation>
 <translation id="3378438761594387761">ستظهر هنا أحدث عمليات التنزيل ولقطات الشاشة.</translation>
@@ -991,6 +993,7 @@
 <translation id="5208059991603368177">مُفعَّل</translation>
 <translation id="5216991270656129561">إيقاف الميزة حتى <ph name="TIME" /></translation>
 <translation id="5217646019792206018">‏سطح المكتب التالي: "<ph name="NEXT_DESK_NAME" />"، يمكنك الضغط على مفتاح البحث + مفتاح المسافة أو على اختصار لوحة المفاتيح: Shift + مفتاح البحث + <ph name="NEXT_DESK_INDEX" /> للتفعيل.</translation>
+<translation id="5218064144558110424">وضع علامة عدم الاكتمال</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
 <translation id="5229343007215035173">تفعيل/إيقاف شاشة الخصوصية</translation>
 <translation id="5234764350956374838">تجاهل</translation>
@@ -1050,6 +1053,7 @@
 <translation id="5465662442746197494">هل تريد المساعدة؟</translation>
 <translation id="547979256943495781">الرف على يسار الشاشة</translation>
 <translation id="5482205457807971887">‏‫‎<ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> أو ‎<ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
+<translation id="5482873136202102190">، +</translation>
 <translation id="5491186829646618080">تتوفّر تحديثات للبرامج الثابتة</translation>
 <translation id="5503884284981862082">‏فتح/إغلاق "مساعد Google"</translation>
 <translation id="550391772491508736">استئناف البث</translation>
@@ -1176,6 +1180,7 @@
 <translation id="598882571027504733">‏للحصول على التحديث، يُرجى إعادة تشغيل جهاز Chromebook مع توصيل لوحة المفاتيح.</translation>
 <translation id="6012623610530968780">صفحة <ph name="SELECTED_PAGE" /> من <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">تمييز العنصر التالي على الرف</translation>
+<translation id="6015573907265691211">وضع علامة الاكتمال</translation>
 <translation id="6018164090099858612">جارٍ الخروج من وضع المرآة</translation>
 <translation id="6019566113895157499">اختصارات لوحة المفاتيح</translation>
 <translation id="602001110135236999">التمرير لليسار</translation>
@@ -1318,6 +1323,7 @@
 <translation id="6597278316891651699">تم توجيه الكاميرا إلى الزاوية السفلية اليسرى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="661203523074512333">حالة الأمان <ph name="SECURITY_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
 <translation id="6612802754306526077">تم اختيار وضع تسجيل الشاشة.</translation>
+<translation id="6612889377159412215">مهمة فرعية</translation>
 <translation id="6613765291890844037">مساحة التخزين المستخدَمة: <ph name="STORAGE_IN_USE_SIZE" /> | إجمالي مساحة التخزين: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">تم تفعيل شاشة الخصوصية.</translation>
 <translation id="6625718907317144388">‏تم حجب إشعارات التطبيقين <ph name="APP_1_TITLE" /> و<ph name="APP_2_TITLE" /> وغيرها من الإشعارات بسبب تفعيل ميزة Viewing Protection.</translation>
@@ -1361,6 +1367,7 @@
 <translation id="6786750046913594791">إغلاق المجلد</translation>
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="679368458793552943">التكبير عند يكون المكبِّر مفعّلاً</translation>
+<translation id="6794287755901682422">تحتوي هذه المهمة على التفاصيل التالية: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6801878137098616817">تم تعديله مؤخرًا.</translation>
 <translation id="6802196538183166658">فتح "الإعدادات السريعة" عن طريق اختيار الوقت</translation>
 <translation id="6802687695197837794">يتيح هذا الإجراء السماح لكل من "<ph name="APP1_NAME" />" و"<ph name="APP2_NAME" />" وجميع التطبيقات والمواقع الإلكترونية بالوصول إلى الكاميرا والميكروفون.</translation>
@@ -1617,6 +1624,7 @@
 <translation id="793716872548410480">‏يُرجى الضغط على <ph name="SHORTCUT_KEY_NAME" /> + V للاطّلاع على الحافظة. تم حفظ آخر 5 عناصر نسختها إلى الحافظة.</translation>
 <translation id="7942349550061667556">أحمر</translation>
 <translation id="7944023924886109030">عرض جميع الأحداث لهذا اليوم</translation>
+<translation id="7945357288295809525">عرض إعدادات تسهيل الاستخدام، الميزة المفعَّلة حاليًا: <ph name="ENABLED_FEATURES" /></translation>
 <translation id="7947798320695032612">‫"<ph name="APP_NAME" />" بحاجة إلى استخدام <ph name="DEVICE_NAME" />.</translation>
 <translation id="7951630946012935453">تعتيم لوحة المفاتيح</translation>
 <translation id="7963689218131240420">تم إيقاف وضع "عدم الإزعاج".</translation>
@@ -1916,6 +1924,7 @@
 <translation id="953431725143473984">هل تريد إطفاء الجهاز؟</translation>
 <translation id="954052413789300507">لا تتوفّر مساحة كافية لتنزيل الملف <ph name="FILENAME" />. عليك إخلاء بعض المساحة.</translation>
 <translation id="974545358917229949">عرض <ph name="RESULT_COUNT" /> نتيجة عن <ph name="QUERY" /></translation>
+<translation id="981011780479609956">بلا تاريخ تسليم</translation>
 <translation id="98120814841227350">الانتقال إلى نهاية المستند</translation>
 <translation id="987589956647469042">بيانات الجوّال مفعَّلة.</translation>
 <translation id="989374776391122812">عناصر التحكّم في الكاميرا والصوت</translation>

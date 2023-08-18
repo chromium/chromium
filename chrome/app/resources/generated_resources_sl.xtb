@@ -4501,6 +4501,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4646675363240786305">Vrata</translation>
 <translation id="4647090755847581616">Zap&amp;ri zavihek</translation>
 <translation id="4647283074445570750"><ph name="CURRENT_STEP" />. korak od <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Izbirnik barve</translation>
 <translation id="4648491805942548247">Nezadostna dovoljenja</translation>
 <translation id="4650037136970677721">Prihranjeno pomnilnika</translation>
 <translation id="4650591383426000695">Prekinitev povezave telefona z napravo <ph name="DEVICE_TYPE" /></translation>
@@ -6063,6 +6064,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5975056890546437204">{COUNT,plural, =0{Odpiranje vseh v &amp;anonimnem oknu}=1{Odpiranje v &amp;anonimnem oknu}one{Odpiranje vseh ({COUNT}) v &amp;anonimnem oknu}two{Odpiranje vseh ({COUNT}) v &amp;anonimnem oknu}few{Odpiranje vseh ({COUNT}) v &amp;anonimnem oknu}other{Odpiranje vseh ({COUNT}) v &amp;anonimnem oknu}}</translation>
 <translation id="5975792506968920132">Napolnjenost akumulatorja</translation>
 <translation id="5976160379964388480">Drugo</translation>
+<translation id="5977976211062815271">V tej napravi</translation>
 <translation id="5978277834170881274">&amp;Uporaba osnovnega preverjanja črkovanja</translation>
 <translation id="5978493744931296692">Skrbnik je onemogočil druge profile.</translation>
 <translation id="5979084224081478209">Preveri gesla</translation>
@@ -8484,7 +8486,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7978412674231730200">Zasebni ključ</translation>
 <translation id="7978450511781612192">S tem boste odjavljeni iz Google Računov. Zaznamki, zgodovina, gesla in drugi podatki ne bodo več sinhronizirani.</translation>
 <translation id="7980084013673500153">ID sredstva: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Vnaprejšnje nalaganje strani zaradi hitrejšega brskanja in iskanja</translation>
 <translation id="7981662863948574132">Prikaz pojavnega okna s številko EID in kodo QR</translation>
 <translation id="7981670705071137488">Po tem bodo posodobitve programske opreme izvedene v ozadju. Nastavitve posodabljanja si lahko ogledate v nastavitvah.</translation>
 <translation id="7982083145464587921">Če želite odpraviti to napako, znova zaženite napravo.</translation>

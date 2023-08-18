@@ -1094,6 +1094,7 @@
 <translation id="1854180393107901205">কাস্ট করা বন্ধ করুন</translation>
 <translation id="1856715684130786728">লোকেশন যোগ করুন...</translation>
 <translation id="1858585891038687145">সফ্টওয়্যার প্রস্তুতকারকদের শনাক্তকরণের জন্য এই সার্টিফিকেটটিকে বিশ্বাস করুন</translation>
+<translation id="1859294693760125695">আর আগ্রহী নই</translation>
 <translation id="1859339856433307593">এই অ্যাকাউন্টের জন্য পাসওয়ার্ড আপনার <ph name="BRAND" />-এ (<ph name="USER_EMAIL" />) আগে থেকেই সেভ করা আছে</translation>
 <translation id="1861262398884155592">ফোল্ডারটি খালি</translation>
 <translation id="1862311223300693744">আপনি কি কোনও বিশেষ ভিপিএন, প্রক্সি, ফায়ারওয়াল বা NAS সফ্টওয়্যার
@@ -2779,6 +2780,7 @@
 <translation id="3226487301970807183">বাঁদিক বরাবর অ্যালাইন থাকা সাইড প্যানেল টগল করুন</translation>
 <translation id="322708765617468434">সেট-আপ করার পরে আপনি যেকোনও সময় অন্য ব্যক্তিকে যোগ করতে পারবেন। প্রত্যেক ব্যক্তি নিজের অ্যাকাউন্ট পছন্দমতো সেট-আপ করে ডেটা ব্যক্তিগত রাখতে পারবেন।</translation>
 <translation id="3227137524299004712">মাইক্রোফোন</translation>
+<translation id="3229412050601871341">ডিভাইসের পাসওয়ার্ড</translation>
 <translation id="3232168089952388105">আপনার ডিভাইস সম্পর্কে তথ্য শেয়ার করতে চান?</translation>
 <translation id="3232558119926886907">ডানদিকে সারিবদ্ধ করুন</translation>
 <translation id="3232754137068452469">ওয়েব অ্যাপ</translation>
@@ -2837,6 +2839,7 @@
 <translation id="3275778913554317645">উইন্ডো হিসাবে খুলুন</translation>
 <translation id="3277214528693754078">টেক্সট কার্সরের সাহায্যে নেভিগেট করা (ক্যারেট ব্রাউজিং)</translation>
 <translation id="3277594800340743211">বড় শ্যাডো</translation>
+<translation id="3277784185056747463">ডিভাইসের পাসওয়ার্ড বা Google অ্যাকাউন্টের পাসওয়ার্ড</translation>
 <translation id="3278001907972365362">আপনার Google অ্যাকাউন্টের(গুলির) প্রতি নজর দেওয়া দরকার</translation>
 <translation id="3279092821516760512">পরিচিতি তালিকার অন্তর্গত বাছাই করা পরিচিতিগুলি আশেপাশে থাকলে তবেই তারা আপনার সাথে শেয়ার করতে পারবে। আপনি সম্মতি না দেওয়া পর্যন্ত ট্রান্সফার চালু করা যাবে না।</translation>
 <translation id="3279230909244266691">এতে কয়েক মিনিট সময় লাগতে পারে। ভার্চুয়াল মেশিন শুরু করা হচ্ছে।</translation>
@@ -3293,6 +3296,7 @@
 <translation id="3660234220361471169">অবিশ্বস্থ</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{আগে থাকা ১টি পাসওয়ার্ড পাওয়া গেছে}one{আগে থাকা {NUM_PASSWORDS}টি পাসওয়ার্ড পাওয়া গেছে}other{আগে থাকা {NUM_PASSWORDS}টি পাসওয়ার্ড পাওয়া গেছে}}</translation>
 <translation id="3664511988987167893">এক্সটেনশনের আইকন</translation>
+<translation id="3665301845536101715">সাইড প্যানেলে খুলুন</translation>
 <translation id="3665589677786828986">Chrome শনাক্ত করেছে যে অন্য কোনো প্রোগ্রাম আপনার কিছু সেটিংয়ের ক্ষতি করেছে এবং সেগুলিকে তাদের মূল ডিফল্টে রিসেট করেছে।</translation>
 <translation id="3665919494326051362">বর্তমান ভার্সন হল <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel ওয়াই ফাই NICs-এর জন্য ডিবাগ সংক্রান্ত ডাম্প</translation>
@@ -4495,6 +4499,7 @@
 <translation id="4646675363240786305">পোর্ট</translation>
 <translation id="4647090755847581616">&amp;Close Tab</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" />টির মধ্যে <ph name="CURRENT_STEP" /> নম্বর ধাপ</translation>
+<translation id="4647836961514597010">রঙ চয়নকারী</translation>
 <translation id="4648491805942548247">অপর্যাপ্ত অনুমতিগুলি</translation>
 <translation id="4650037136970677721">মেমরি সেভ করা হয়েছে</translation>
 <translation id="4650591383426000695"><ph name="DEVICE_TYPE" /> থেকে আপনার ফোন ডিসকানেক্ট করুন</translation>
@@ -6057,6 +6062,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{সব ইউআরএল ছদ্মবেশী উইন্ডোতে খুলুন}=1{ছদ্মবেশী উইন্ডোতে খুলুন}one{সব ইউআরএল ({COUNT}টি) ছদ্মবেশী উইন্ডোতে খুলুন}other{সব ইউআরএল ({COUNT}টি) ছদ্মবেশী উইন্ডোতে খুলুন}}</translation>
 <translation id="5975792506968920132">ব্যাটারি চার্জের শতাংশ মান</translation>
 <translation id="5976160379964388480">অন্যান্য</translation>
+<translation id="5977976211062815271">এই ডিভাইসে</translation>
 <translation id="5978277834170881274">&amp;প্রাথমিক বানান পরীক্ষা ব্যবহার করুন</translation>
 <translation id="5978493744931296692">আপনার অ্যাডমিনিস্ট্রেটর অন্যান্য প্রোফাইল বন্ধ করে দিয়েছেন</translation>
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
@@ -7029,6 +7035,7 @@
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> থেকে ক্লায়েন্ট সার্টিফিকেট আমদানি করতে দয়া করে <ph name="TOKEN_NAME" />-এ প্রবেশ করুন৷</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> এ RLZ নজর রাখা সক্ষম করুন৷</translation>
 <translation id="6806089545527108739">অনুমতি দেবেন না কিন্তু পরে জিজ্ঞাসা করুন</translation>
+<translation id="680644983456221885">Google-কে পাঠানো আপনার ব্রাউজ করা ডেটার উপর ভিত্তি করে বিপজ্জনক সাইট, ডাউনলোড এবং এক্সটেনশন থেকে রিয়েল-টাইমে সুরক্ষা পাওয়া যায়</translation>
 <translation id="6808039367995747522">চালিয়ে যেতে, নিরাপত্তা কী ইনসার্ট করে সেটিকে টাচ করুন</translation>
 <translation id="6808166974213191158">ChromeOS Flex সিস্টেম ছবি রাইটার</translation>
 <translation id="6808193438228982088">শিয়াল</translation>
@@ -8473,7 +8480,6 @@
 <translation id="7978412674231730200">ব্যক্তিগত কী</translation>
 <translation id="7978450511781612192">এটি আপনাকে আপনার Google অ্যাকাউন্ট থেকে সাইন-আউট করিয়ে দেবে। আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং আরও অনেক কিছু আর সিঙ্ক করা হবে না।</translation>
 <translation id="7980084013673500153">সম্পত্তি আইডি: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">আরও দ্রুত ব্রাউজ করা এবং খোঁজার জন্য পৃষ্ঠা আগে লোড করুন</translation>
 <translation id="7981662863948574132">ডিভাইস EID ও QR কোডের পপ-আপ দেখুন</translation>
 <translation id="7981670705071137488">এরপরে, ব্যাকগ্রাউন্ডে সফ্টওয়্যার আপডেট হবে। আপনি সেটিংস থেকে আপডেট সংক্রান্ত পছন্দ রিভিউ করতে পারবেন।</translation>
 <translation id="7982083145464587921">এই ত্রুটি সংশোধন করতে দয়া করে আপনার ডিভাইসটি আবার চালু করুন৷</translation>
@@ -8673,6 +8679,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{একটি ভিডিও}one{#টি ভিডিও}other{#টি ভিডিও}}</translation>
 <translation id="8143442547342702591">অ্যাপটি সঠিক নয়</translation>
 <translation id="8143609395536282994">আপনি কীভাবে আপনার ডেটা ম্যানেজ করতে পারেন:</translation>
+<translation id="8144429778087524791">হয়ে গেছে হিসেবে চিহ্নিত করুন ও লুকান</translation>
 <translation id="8145170459658034418">মেমরি সেভার</translation>
 <translation id="8146177459103116374">আপনি যদি এই ডিভাইসে ইতিমধ্যেই রেজিস্টার করে থাকেন, তাহলে আপনি <ph name="LINK2_START" />একজন বর্তমান ব্যবহারকারী হিসাবে সাইন-ইন করতে পারেন<ph name="LINK2_END" />৷</translation>
 <translation id="8146287226035613638">আপনার পছন্দের ভাষা যোগ এবং র‍্যাঙ্ক করুন। সম্ভব হলে, ওয়েবসাইট আপনার পছন্দের ভাষায় দেখা যাবে। আপনার ব্রাউজার সেটিংসের সাথে এইসব পছন্দ সিঙ্ক করা আছে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9163,6 +9170,7 @@
 <translation id="8557022314818157177">আপনার আঙ্গুলের ছাপ ক্যাপচার না করা পর্যন্ত 'নিরাপত্তা কী'-তে টাচ করতে থাকুন</translation>
 <translation id="8557180006508471423">আপনার Mac-এর অবস্থান ভিত্তিক পরিষেবায় "Google Chrome" চালু করুন</translation>
 <translation id="8557856025359704738">পরবর্তী ডাউনলোড <ph name="NEXT_DATE_DOWNLOAD" />-এ উপলভ্য হবে।</translation>
+<translation id="8558281414737757274">Google অ্যাকাউন্টের পাসওয়ার্ড</translation>
 <translation id="8559858985063901027">পাসকী</translation>
 <translation id="8559961053328923750">Chrome বিজ্ঞাপনের পারফর্ম্যান্স পরিমাপ করার জন্য ব্রাউজারের মাধ্যমে শেয়ার করতে পারে এমন ডেটার পরিমাণ সীমাবদ্ধ করে</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{সবকটি &amp;নতুন উইন্ডোতে খুলুন}=1{&amp;নতুন উইন্ডোতে খুলুন}one{সবকটি ({COUNT}টি) &amp;নতুন উইন্ডোতে খুলুন}other{সবকটি ({COUNT}টি) &amp;নতুন উইন্ডোতে খুলুন}}</translation>
@@ -9175,6 +9183,7 @@
 <translation id="8569682776816196752">কোনো গন্তব্যস্থল পাওয়া যায়নি</translation>
 <translation id="8571213806525832805">গত ৪ সপ্তাহ</translation>
 <translation id="8571687764447439720">Kerberos টিকিট যোগ করুন</translation>
+<translation id="8572052284359771939">আপনার দেখা সাইটের URL ও পৃষ্ঠার কন্টেন্টের ছোট স্যাম্পেল, ডাউনলোড, এক্সটেনশন সম্পর্কিত অ্যাক্টিভিটি ও সিস্টেমের বিষয়ে তথ্য ক্ষতিকর কিনা তা চেক করে দেখতে Google Safe Browsing-এ পাঠানো হয়।</translation>
 <translation id="8573111744706778015">"ươ" পেতে "uo7" টাইপ করুন</translation>
 <translation id="8574990355410201600"><ph name="HOST" /> এ সবসময় সাউন্ড চালু রাখুন</translation>
 <translation id="8575286410928791436">ছেড়ে যাওয়ার জন্য <ph name="KEY_EQUIVALENT" /> ধরে থাকুন</translation>

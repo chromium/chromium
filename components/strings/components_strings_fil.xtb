@@ -2309,6 +2309,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5873297634595728366">Mga Sasakyang Gumagamit ng Diesel</translation>
 <translation id="5877831137320480913">Pagpapaganda at fitness</translation>
 <translation id="5879989559903563723">Hindi pinapayagan sa Guest mode</translation>
+<translation id="5883861433316751031">Kontrolin at i-repogram ang mga MIDI device?</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">Na-save ang card</translation>
 <translation id="5887687176710214216">Huling binisita kahapon</translation>
@@ -2801,7 +2802,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
             <ph name="LIST_ITEM" />History ng paghahanap<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Impormasyong inilagay sa mga form<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
-<translation id="6910240653697687763">Gusto ng <ph name="URL" /> na magkaroon ng buong kontrol sa iyong mga MIDI device</translation>
 <translation id="691024665142758461">Mag-download ng maraming file</translation>
 <translation id="6915804003454593391">User:</translation>
 <translation id="6916954549222464607">Pagpaplano at pamamahala sa pananalapi</translation>
@@ -3368,6 +3368,7 @@ Mga karagdagang detalye:
 <translation id="8038817883578389970">Karera ng sasakyan</translation>
 <translation id="8041089156583427627">Magpadala ng Feedback</translation>
 <translation id="8041940743680923270">Gamitin ang pangkalahatang default (Tanungin)</translation>
+<translation id="8042577181291637092">Gumamit ng mga MIDI device?</translation>
 <translation id="8046360364391076336">Mga Materyales at Kagamitang Pang-industriya</translation>
 <translation id="8052898407431791827">Kinopya sa clipboard</translation>
 <translation id="8055534648776115597">Bokasyonal at ipinagpatuloy na edukasyon</translation>
@@ -3663,6 +3664,7 @@ Mga karagdagang detalye:
 <translation id="8671519637524426245">Hindi natutugunan ng value ng <ph name="SECURE_DNS_SALT" /> ang mga requirement sa laki.</translation>
 <translation id="867224526087042813">Lagda</translation>
 <translation id="8672264262457010862">Negosyo at pang-industriya</translation>
+<translation id="8673776281896298303">Kontrolin at i-reprogram ang iyong mga MIDI device (SysEx)</translation>
 <translation id="8676424191133491403">Walang pagkaantala</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, sagot, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Hindi ma-load ang webpage sa <ph name="PAGE" /> dahil:</translation>

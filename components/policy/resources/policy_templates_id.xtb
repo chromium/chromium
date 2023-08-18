@@ -2839,26 +2839,6 @@ Jika disetel ke Nonaktif, fitur penulisan prediktif tidak akan diizinkan di keyb
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, DTC akan dinonaktifkan. DTC tidak akan dapat mengumpulkan, memproses, atau melaporkan data telemetri dan diagnostik dari perangkat.</translation>
 <translation id="3442589735857147823">Izinkan pengguna menggunakan mesin virtual yang diperlukan untuk mendukung aplikasi Linux</translation>
-<translation id="3445364060482221648">Jika kebijakan ini disetel ke aktif, <ph name="PRODUCT_NAME" />
-akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat bawaan
-dengan Chrome Root Store sebagai sumber tepercaya publik.
-
-Jika kebijakan ini disetel ke nonaktif, <ph name="PRODUCT_NAME" />
-akan menggunakan pemverifikasi sertifikat sistem dan root certificate sistem.
-
-Jika kebijakan ini tidak disetel, Chrome Root Store atau root yang disediakan sistem
-dapat digunakan.
-
-Kebijakan ini akan dihapus dari
-<ph name="PRODUCT_OS_NAME" />
-dan <ph name="PRODUCT_NAME" />
-untuk <ph name="LINUX_OS_NAME" /> dan
-<ph name="ANDROID_NAME" /> versi 120,
-jika dukungan untuk menggunakan root yang disediakan platform akan dihapus.
-
-Kebijakan ini dihapus di <ph name="PRODUCT_NAME" />
-untuk <ph name="MS_WIN_NAME" /> dan <ph name="MAC_OS_NAME" /> versi 113
-dan saat ini terjadi, dukungan untuk penggunaan pemverifikasi sertifikat dan root yang disediakan platform akan dihapus.</translation>
 <translation id="3450649825886735618">Jangan gunakan layanan web Google untuk membantu mengatasi kesalahan ejaan</translation>
 <translation id="3451422488938880786"> Dapat mengaktifkan/menonaktifkan pemetaan ulang tombol pintasan internasional</translation>
 <translation id="3451901387456196887">Pengguna akan diberi opsi di menu <ph name="PRODUCT_NAME" /> untuk memilih perangkat transmisi dengan menggunakan kode akses atau dengan memindai kode QR.</translation>

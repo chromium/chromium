@@ -470,6 +470,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="3513704683820682405">Lisätty todellisuus</translation>
 <translation id="3518985090088779359">Hyväksy ja jatka</translation>
 <translation id="3522247891732774234">Päivitys on saatavilla. Näytä lisäasetukset.</translation>
+<translation id="3523426587027570423">Sulje Kuuntele tämä sivu ‑soitin napauttamalla.</translation>
 <translation id="3524138585025253783">Kehittäjän UI</translation>
 <translation id="3524334353996115845">Salli, että <ph name="ORIGIN" /> todentaa henkilöllisyytesi</translation>
 <translation id="3527085408025491307">Kansio</translation>
@@ -674,6 +675,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4637420359569396807">Mainosten mittaamisen yhteydessä sivustoille ja sovelluksille voidaan jakaa rajoitetusti tietyntyyppistä dataa (esim. kellonaika, jolloin mainos näkyi sinulle) mainostulosten mittaamiseksi.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 vaarantunut salasana}other{# vaarantunutta salasanaa}}</translation>
 <translation id="4650364565596261010">Järjestelmän oletusarvo</translation>
+<translation id="4654641641922242357">Kuuntele tämä sivu ‑soitin.</translation>
 <translation id="465657074423018424">Selaussuoja suojaa sinua harhaanjohtavilta sivustoilta. Jos laitat sen pois päältä, ole erityisen varovainen selatessasi, etenkin ennen salasanojen lisäämistä.</translation>
 <translation id="4662373422909645029">Ei saa sisältää numeroita</translation>
 <translation id="4663499661119906179">Katso suositut sivustosi ja sinulle valitut tarinat</translation>
@@ -803,6 +805,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
 <translation id="5227554086496586518">Katso hakutulokset napauttamalla</translation>
 <translation id="5233638681132016545">Uusi välilehti</translation>
+<translation id="5234971936051226002">Kuuntele tämä sivu ‐soitin pienennetty.</translation>
 <translation id="5235196193381275927">Jotain meni pieleen sisäänkirjautumisen aikana</translation>
 <translation id="5246093389635966745">Muokkaa työkalupalkin pikakuvaketta</translation>
 <translation id="5271967389191913893">Laite ei voi avata ladattavaa sisältöä.</translation>
@@ -1254,6 +1257,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> tiedosto ladattu}other{<ph name="FILES_DOWNLOADED_MANY" /> tiedostoa ladattu}}</translation>
 <translation id="7581273696622423628">Vastaa kyselyyn</translation>
 <translation id="7583262514280211622">Näet lukulistasi täällä</translation>
+<translation id="7587250070160020374">Chrome toistaa nyt tätä sivua:</translation>
 <translation id="7588219262685291874">Ota tumma teema käyttöön, kun laitteen virransäästö on käytössä</translation>
 <translation id="7594687499944811403">Salli, että <ph name="EMBEDDED_ORIGIN" /> todentaa henkilöllisyytesi: <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Käyttöjärjestelmä</translation>
@@ -1321,6 +1325,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7926975587469166629">Kortin lyhytnimi</translation>
 <translation id="7929962904089429003">Avaa valikko</translation>
 <translation id="7930998711684428189">Varoittaa, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>
+<translation id="7934668619883965330">Tiedostoa ei voida ladata. Tiedostomuotoa ei tueta.</translation>
 <translation id="7939485076072265087">Luo tyylitelty kortti korostetusta kohdasta</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> on vanhentunut.</translation>
 <translation id="7944772052836377867">Synkronoinnin on vahvistettava henkilöllisyytesi</translation>
@@ -1522,6 +1527,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8937772741022875483">Poistetaanko Chrome-toimintasi Digitaalisesta hyvinvoinnista?</translation>
 <translation id="8942627711005830162">Avaa uudessa ikkunassa</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Kieltä ei voitu ladata. Yritä myöhemmin uudelleen.</translation>
+<translation id="8953618380150219653">Kuuntele tämä sivu ‑soitin avattu kokonaan.</translation>
 <translation id="8955719471735800169">Sivun alkuun</translation>
 <translation id="8964479563882643397">Avaa valikko, niin voit avata uuden incognito-välilehden</translation>
 <translation id="8965591936373831584">odottaa</translation>

@@ -4548,6 +4548,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4646675363240786305">Pordid</translation>
 <translation id="4647090755847581616">&amp;Sule vaheleht</translation>
 <translation id="4647283074445570750">Toiming <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Värvivalija</translation>
 <translation id="4648491805942548247">Ebapiisav luba</translation>
 <translation id="4650037136970677721">Mälu salvestatud</translation>
 <translation id="4650591383426000695">Katkestage telefoni ja seadme <ph name="DEVICE_TYPE" /> ühendus</translation>
@@ -6125,6 +6126,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5975056890546437204">{COUNT,plural, =0{Ava kõik &amp;inkognito aknas}=1{Ava &amp;inkognito aknas}other{Ava kõik ({COUNT}) &amp;inkognito aknas}}</translation>
 <translation id="5975792506968920132">Aku laetuse protsent</translation>
 <translation id="5976160379964388480">Muud</translation>
+<translation id="5977976211062815271">Selles seadmes</translation>
 <translation id="5978277834170881274">&amp;Kasuta lihtsat õigekirjakontrolli</translation>
 <translation id="5978493744931296692">Teie administraator on muud profiilid keelanud</translation>
 <translation id="5979084224081478209">Kontrolli paroole</translation>
@@ -8566,7 +8568,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7978412674231730200">Privaatvõti</translation>
 <translation id="7978450511781612192">See logib teid teie Google'i kontodelt välja. Teie järjehoidjaid, ajalugu, paroole ja muud ei sünkroonita enam.</translation>
 <translation id="7980084013673500153">Vara ID: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Eellaaditakse lehti kiiremaks sirvimiseks ja otsimiseks</translation>
 <translation id="7981662863948574132">Kuva seadme EID või QR-koodiga hüpikaken</translation>
 <translation id="7981670705071137488">Pärast seda toimub tarkvara värskendamine taustal. Värskendatud eelistusi saate vaadata seadetes.</translation>
 <translation id="7982083145464587921">Selle vea parandamiseks taaskäivitage seade.</translation>

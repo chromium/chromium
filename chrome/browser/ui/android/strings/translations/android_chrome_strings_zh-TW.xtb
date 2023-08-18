@@ -673,6 +673,7 @@
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4637420359569396807">透過廣告評估，網站和應用程式間可分享特定類型的資料，以評估廣告成效，例如在一天中向使用者放送廣告的時段。</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 組密碼外洩}other{# 組密碼外洩}}</translation>
+<translation id="4645146721047390964">在無痕模式中，網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法正常運作。</translation>
 <translation id="4650364565596261010">系統預設</translation>
 <translation id="4654641641922242357">「朗讀這頁內容」播放器。</translation>
 <translation id="465657074423018424">「安全瀏覽」功能可協助你防範詐騙網站。如果停用這項功能，在瀏覽網站時請提高警覺，尤其在輸入密碼前請特別留意。</translation>
@@ -692,6 +693,7 @@
 <translation id="4719927025381752090">提供翻譯</translation>
 <translation id="4720023427747327413">在 <ph name="PRODUCT_NAME" /> 中開啟</translation>
 <translation id="47217992755561375">查看你常用的網站</translation>
+<translation id="4731877163452936634">播放速度：<ph name="PLAYBACK_SPEED" />。按一下即可變更。</translation>
 <translation id="4732120983431207637">堆疊回溯器</translation>
 <translation id="4736934858538408121">虛擬卡片</translation>
 <translation id="473775607612524610">更新</translation>
@@ -1249,6 +1251,7 @@
 <translation id="751961395872307827">無法連線至網站</translation>
 <translation id="752220631458524187">請在完成後拔除傳輸線</translation>
 <translation id="7523960634226602883">使用 Google 智慧鏡頭透過相機進行搜尋</translation>
+<translation id="752731652852882757">使用無痕模式時封鎖</translation>
 <translation id="7539698981064401140">同步分頁和歷史記錄</translation>
 <translation id="7562080006725997899">正在清除瀏覽資料</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
@@ -1328,6 +1331,7 @@
 <translation id="7939485076072265087">建立精選內容的風格資訊卡</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 版本過舊。</translation>
 <translation id="7944772052836377867">同步功能需要驗證你的身分</translation>
+<translation id="7945822420239537236">快轉 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
 <translation id="7947953824732555851">接受並登入</translation>
 <translation id="7957413488482743710">虛擬卡片可隱藏真正的卡片，協助防範潛在詐欺活動。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡片<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">網頁洞察資訊頁面的返回按鈕</translation>
@@ -1336,6 +1340,7 @@
 <translation id="7965838025086216108">你可以在任何裝置上使用儲存的密碼，系統會將密碼儲存至 <ph name="ACCOUNT" /> 的 Google 密碼管理工具。</translation>
 <translation id="7968014550143838305">已加入閱讀清單</translation>
 <translation id="7971136598759319605">上次使用時間：1 天前</translation>
+<translation id="7972866381678406344">倒轉 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
 <translation id="7975379999046275268">預覽網頁 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7986497153528221272">如要查看密碼，請先在裝置上設定螢幕鎖定功能</translation>
 <translation id="7995059495660416932">目前沒有內容，請耐心等候</translation>

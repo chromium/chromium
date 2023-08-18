@@ -2309,6 +2309,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5873297634595728366">Dieselkjøretøy</translation>
 <translation id="5877831137320480913">Skjønnhet og trening</translation>
 <translation id="5879989559903563723">Ikke tillatt i gjestemodus</translation>
+<translation id="5883861433316751031">Vil du la nettstedet kontrollere og omprogrammere MIDI-enhetene dine?</translation>
 <translation id="5884465125445718607">Kinesisk konvolutt nr. 6</translation>
 <translation id="5887400589839399685">Kortet er lagret</translation>
 <translation id="5887687176710214216">Sist besøkt i går</translation>
@@ -2801,7 +2802,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
             <ph name="LIST_ITEM" />Søkelogg<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Informasjon du har lagt inn i skjemaer<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
-<translation id="6910240653697687763"><ph name="URL" /> ber om full kontroll over MIDI-enhetene dine</translation>
 <translation id="691024665142758461">Last ned flere filer.</translation>
 <translation id="6915804003454593391">Bruker:</translation>
 <translation id="6916954549222464607">Økonomiplanlegging og -administrasjon</translation>
@@ -3367,6 +3367,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8038817883578389970">Motorsport</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>
 <translation id="8041940743680923270">Bruk global standardinnstilling (Spør)</translation>
+<translation id="8042577181291637092">Vil du la nettstedet bruke MIDI-enhetene dine?</translation>
 <translation id="8046360364391076336">Industrimaterialer og -utstyr</translation>
 <translation id="8052898407431791827">Kopiert til utklippstavlen</translation>
 <translation id="8055534648776115597">Yrkesopplæring og videreutdanning</translation>
@@ -3662,6 +3663,7 @@ Mer informasjon:
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" />-verdien oppfyller ikke størrelseskravene.</translation>
 <translation id="867224526087042813">Signatur</translation>
 <translation id="8672264262457010862">Forretning og industri</translation>
+<translation id="8673776281896298303">kontrollere og omprogrammere MIDI-enhetene dine (SysEx)</translation>
 <translation id="8676424191133491403">Uten forsinkelse</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, svar, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Nettsiden på <ph name="PAGE" /> kunne ikke lastes inn fordi</translation>

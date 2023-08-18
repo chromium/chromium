@@ -606,6 +606,7 @@
 <translation id="2225927550500503913">Виртуалдык карта күйгүзүлдү</translation>
 <translation id="2226636330183131181">WiFi тармагына <ph name="BEGIN_LINK" />кирүү<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">Учурда бул дарек Chrome'го сакталды. Аны Google кызматтарында колдонуу үчүн Google аккаунтуңузга (<ph name="ACCOUNT" />) сактаңыз.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> сайтына <ph name="TOP_LEVEL_URL" /> барагын ачканыңыз жөнүндө маалымат жөнөтүлөт.</translation>
 <translation id="2233745931693710080">Компакт диск</translation>
 <translation id="2239100178324503013">Азыр жөнөтүү</translation>
 <translation id="2241693394036365668">Файл жүктөлүп алынды</translation>
@@ -2092,6 +2093,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> сизге билдирмелерди жөнөткөнү жатат</translation>
 <translation id="5430298929874300616">Кыстарманы алып салуу</translation>
 <translation id="5443468954631487277">Тескери иретте алдыңкы бетин өйдө каратып</translation>
+<translation id="5447235695608032700"><ph name="SITE" /> сайтына анда сакталган маалыматыңызды колдонууга уруксат берүү</translation>
 <translation id="5447765697759493033">Бул сайт которулбайт</translation>
 <translation id="5452270690849572955">Бул <ph name="HOST_NAME" /> барагын табуу мүмкүн эмес</translation>
 <translation id="5455374756549232013">Начар саясаттын убакыт белгиси</translation>
@@ -2768,7 +2770,6 @@
 <translation id="6897140037006041989">Колдонуучунун агенти</translation>
 <translation id="6898699227549475383">Уюм (У)</translation>
 <translation id="6907458757809079309">Дене-бойду чыңдоо</translation>
-<translation id="6910240653697687763"><ph name="URL" /> MIDI түзмөктөрүңүздү толугу менен көзөмөлдөгөнү жатат</translation>
 <translation id="691024665142758461">Бир нече файл жүктөп алуу</translation>
 <translation id="6915804003454593391">Колдонуучу:</translation>
 <translation id="6916954549222464607">Каржылык пландаштыруу жана башкаруу</translation>

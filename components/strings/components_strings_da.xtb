@@ -610,6 +610,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2225927550500503913">Virtuelt kort er aktiveret</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Login<ph name="END_LINK" /> på Wi-Fi-netværket</translation>
 <translation id="2228057197024893428">Denne adresse gemmes i øjeblikket i Chrome. Hvis du vil bruge den i Google-produkter, skal du gemme den på din Google-konto, <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> vil vide, at du har besøgt <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Cd</translation>
 <translation id="2239100178324503013">Send nu</translation>
 <translation id="2241693394036365668">En fil downloades</translation>
@@ -2110,6 +2111,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5426179911063097041"><ph name="SITE" /> vil gerne sende notifikationer til dig</translation>
 <translation id="5430298929874300616">Fjern bogmærke</translation>
 <translation id="5443468954631487277">Omvendt rækkefølge med forside opad</translation>
+<translation id="5447235695608032700">Tillad, at <ph name="SITE" /> bruger oplysninger om dig, som websitet har gemt</translation>
 <translation id="5447765697759493033">Dette website kan ikke oversættes</translation>
 <translation id="5452270690849572955">Denne side fra <ph name="HOST_NAME" /> blev ikke fundet</translation>
 <translation id="5455374756549232013">Forkert tidsstempel for politik</translation>
@@ -2799,7 +2801,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
             <ph name="LIST_ITEM" />Søgehistorik<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Oplysninger, der er angivet i formularer<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
-<translation id="6910240653697687763"><ph name="URL" /> anmoder om fuld kontrol over dine MIDI-enheder</translation>
 <translation id="691024665142758461">Download flere filer</translation>
 <translation id="6915804003454593391">Bruger:</translation>
 <translation id="6916954549222464607">Finansiel planlægning og styring</translation>

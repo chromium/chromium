@@ -4484,6 +4484,7 @@
 <translation id="4646675363240786305">Порты</translation>
 <translation id="4647090755847581616">&amp;Закрыть вкладку</translation>
 <translation id="4647283074445570750">Шаг <ph name="CURRENT_STEP" /> из <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Палитра цветов</translation>
 <translation id="4648491805942548247">Недостаточно прав</translation>
 <translation id="4650037136970677721">Освобождены ресурсы памяти</translation>
 <translation id="4650591383426000695">Телефон будет отключен от устройства <ph name="DEVICE_TYPE" /></translation>
@@ -6044,6 +6045,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{Открыть все URL в окне в режиме &amp;инкогнито}=1{Открыть URL в окне в режиме &amp;инкогнито}one{Открыть все URL ({COUNT}) в окне в режиме &amp;инкогнито}few{Открыть все URL ({COUNT}) в окне в режиме &amp;инкогнито}many{Открыть все URL ({COUNT}) в окне в режиме &amp;инкогнито}other{Открыть все URL ({COUNT}) в окне в режиме &amp;инкогнито}}</translation>
 <translation id="5975792506968920132">Процент зарядки батареи</translation>
 <translation id="5976160379964388480">Другое</translation>
+<translation id="5977976211062815271">На этом устройстве</translation>
 <translation id="5978277834170881274">&amp;Использовать базовую проверку правописания</translation>
 <translation id="5978493744931296692">Администратор отключил возможность использовать другие профили</translation>
 <translation id="5979084224081478209">Проверить пароли</translation>
@@ -8464,7 +8466,6 @@
 <translation id="7978412674231730200">Закрытый ключ</translation>
 <translation id="7978450511781612192">Вы выйдете из аккаунта Google. Закладки, история, пароли и другие параметры перестанут синхронизироваться с ним.</translation>
 <translation id="7980084013673500153">Идентификатор объекта: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Разрешить предзагрузку страниц для повышения скорости работы браузера и поиска</translation>
 <translation id="7981662863948574132">Показать всплывающее окно с кодом EID и QR-кодом</translation>
 <translation id="7981670705071137488">Теперь обновления будут устанавливаться в фоновом режиме. Проверить их параметры можно в настройках.</translation>
 <translation id="7982083145464587921">Для устранения ошибки перезагрузите устройство.</translation>

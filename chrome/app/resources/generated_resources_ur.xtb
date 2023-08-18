@@ -4484,6 +4484,7 @@
 <translation id="4646675363240786305">پورٹس</translation>
 <translation id="4647090755847581616">ٹیب &amp;بند کریں</translation>
 <translation id="4647283074445570750">مرحلہ <ph name="TOTAL_STEPS" /> میں سے <ph name="CURRENT_STEP" /></translation>
+<translation id="4647836961514597010">رنگ منتخب کنندہ</translation>
 <translation id="4648491805942548247">ناکافی اجازتیں</translation>
 <translation id="4650037136970677721">میموری محفوظ ہو گئی</translation>
 <translation id="4650591383426000695">اپنے فون کو <ph name="DEVICE_TYPE" /> سے غیر منسلک کریں</translation>
@@ -6043,6 +6044,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{سبھی کو &amp;پوشیدگی ونڈو میں کھولیں}=1{&amp;پوشیدگی ونڈو میں کھولیں}other{سبھی ({COUNT}) کو &amp;پوشیدگی ونڈو میں کھولیں}}</translation>
 <translation id="5975792506968920132">بیٹری چارج کا فیصد</translation>
 <translation id="5976160379964388480">دیگر</translation>
+<translation id="5977976211062815271">اس آلے پر</translation>
 <translation id="5978277834170881274">املا کی بنیادی جانچ کا &amp;استعمال کریں</translation>
 <translation id="5978493744931296692">آپ کے منتظم نے دیگر پروفائلز کو غیر فعال کر دیا ہے</translation>
 <translation id="5979084224081478209">پاس ورڈز چیک کریں</translation>
@@ -8457,7 +8459,6 @@
 <translation id="7978412674231730200">نجی کلید</translation>
 <translation id="7978450511781612192">اس سے آپ اپنے اکاؤنٹ سے سائن آؤٹ ہو جائیں گے۔ آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور بھی بہت کـچھ کی اب مطابقت پذیری نہیں کی جائے گی۔</translation>
 <translation id="7980084013673500153">‏اثاثہ ID: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">زیادہ تیز براؤزنگ اور تلاش کرنے کے لیے صفحات پہلے سے لوڈ کر لیں</translation>
 <translation id="7981662863948574132">‏آلے کی EID اور QR کوڈ کا پاپ اپ دکھائیں</translation>
 <translation id="7981670705071137488">اس کے بعد، پس منظر میں سافٹ ویئر اپ ڈیٹ ہو جائے گا۔ آپ ترتیبات میں اپ ڈیٹ کی ترجیحات کا جائزہ لے سکتے ہیں۔</translation>
 <translation id="7982083145464587921">اس خرابی کو ٹھیک کرنے کیلئے براہ کرم اپنے آلہ کو دوبارہ شروع کریں۔</translation>

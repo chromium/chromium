@@ -470,6 +470,7 @@
 <translation id="3513704683820682405">ઑગ્મેન્ટેડ રિયાલિટી</translation>
 <translation id="3518985090088779359">સ્વીકારો અને ચાલુ રાખો</translation>
 <translation id="3522247891732774234">અપડેટ ઉપલબ્ધ છે. વધુ વિકલ્પો</translation>
+<translation id="3523426587027570423">"આ પેજને સાંભળો" પ્લેયરને બંધ કરવા માટે ટૅપ કરો.</translation>
 <translation id="3524138585025253783">ડેવલપર UI</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" />ને ચકાસણી કરવા દો કે આ તમે જ છો</translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>
@@ -674,6 +675,7 @@
 <translation id="4637420359569396807">જાહેરાતની માપણીના સેટિંગ વડે, વિવિધ સાઇટ અને ઍપ પર બતાવવામાં આવતી જાહેરાતોનું પર્ફોર્મન્સ માપવા માટે તેમની વચ્ચે મર્યાદિત ડેટા શેર કરવામાં આવી શકે છે, જેમ કે દિવસ દરમિયાન તમને કયા સમયે કોઈ જાહેરાત બતાવવામાં આવી.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{ચેડાં કરાયેલો 1 પાસવર્ડ}one{ચેડાં કરાયેલો # પાસવર્ડ}other{ચેડાં કરાયેલા # પાસવર્ડ}}</translation>
 <translation id="4650364565596261010">સિસ્ટમ ડિફૉલ્ટ</translation>
+<translation id="4654641641922242357">"આ પેજને સાંભળો" પ્લેયર.</translation>
 <translation id="465657074423018424">Safe Browsing તમારું છેતરામણી વેબસાઇટથી રક્ષણ કરે છે. જો તમે તેને બંધ કરો, તો બ્રાઉઝ કરતી વખતે વધુ સાવધાન રહેજો, ખાસ કરીને પાસવર્ડ દાખલ કરતા પહેલાં.</translation>
 <translation id="4662373422909645029">ઉપનામમાં સંખ્યા ન હોઈ શકે</translation>
 <translation id="4663499661119906179">તમારા માટે શ્રેષ્ઠ હોય તેવી સાઇટ અને સ્ટોરી જુઓ</translation>
@@ -803,6 +805,7 @@
 <translation id="5222676887888702881">સાઇન આઉટ</translation>
 <translation id="5227554086496586518">શોધ પરિણામો જોવા માટે ટૅપ કરો</translation>
 <translation id="5233638681132016545">નવું ટૅબ</translation>
+<translation id="5234971936051226002">"આ પેજને સાંભળો" પ્લેયરને નાનું કર્યું.</translation>
 <translation id="5235196193381275927">સાઇન ઇન કરતી વખતે કંઈક ખોટું થયું</translation>
 <translation id="5246093389635966745">ટૂલબારના શૉર્ટકટમાં ફેરફાર કરો</translation>
 <translation id="5271967389191913893">ડિવાઇસ, ડાઉનલોડ કરવાની કન્ટેન્ટ ખોલી શકતું નથી.</translation>
@@ -1254,6 +1257,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ફાઇલ ડાઉનલોડ કરી}one{<ph name="FILES_DOWNLOADED_MANY" /> ફાઇલ ડાઉનલોડ કરી}other{<ph name="FILES_DOWNLOADED_MANY" /> ફાઇલ ડાઉનલોડ કરી}}</translation>
 <translation id="7581273696622423628">સર્વેક્ષણમાં ભાગ લો</translation>
 <translation id="7583262514280211622">તમને તમારી વાંચન સૂચિ અહીં મળશે</translation>
+<translation id="7587250070160020374">Chrome પરનું પેજ હમણાં સંભળાવવામાં આવી રહ્યું છે</translation>
 <translation id="7588219262685291874">જ્યારે તમારા ડિવાઇસનું બૅટરી સેવર ચાલુ હોય ત્યારે ઘેરી થીમ ચાલુ કરો</translation>
 <translation id="7594687499944811403"><ph name="TOP_ORIGIN" /> માટે, <ph name="EMBEDDED_ORIGIN" />ને ચકાસણી કરવા દો કે આ તમે જ છો</translation>
 <translation id="7596558890252710462">ઓપરેટિંગ સિસ્ટમ</translation>
@@ -1321,6 +1325,7 @@
 <translation id="7926975587469166629">કાર્ડનું ઉપનામ</translation>
 <translation id="7929962904089429003">મેનૂ ખોલો</translation>
 <translation id="7930998711684428189">જો ડેટા ઉલ્લંઘનોમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે.</translation>
+<translation id="7934668619883965330">ફાઇલ ડાઉનલોડ કરી શકતા નથી. ફાઇલનું ફૉર્મેટ સપોર્ટેડ નથી.</translation>
 <translation id="7939485076072265087">હાઇલાઇટ કરીને સ્ટાઇલિશ કાર્ડ બનાવો</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> જૂનું થઈ ગયું છે.</translation>
 <translation id="7944772052836377867">સિંકને તમારી ઓળખની ચકાસણી કરવાની જરૂર પડે છે</translation>
@@ -1522,6 +1527,7 @@
 <translation id="8937772741022875483">તમારી Chromeની પ્રવૃત્તિને ડિજિટલ લાઇફસ્ટાઇલમાંથી કાઢી નાખીએ?</translation>
 <translation id="8942627711005830162">અન્ય વિંડોમાં ખોલો</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - આ ભાષા ડાઉનલોડ કરી શકાઈ નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
+<translation id="8953618380150219653">"આ પેજને સાંભળો" પ્લેયર સંપૂર્ણ સ્ક્રીન પર ખૂલ્યું છે.</translation>
 <translation id="8955719471735800169">સૌથી ઉપર પાછા જાઓ</translation>
 <translation id="8964479563882643397">કોઈ નવી છૂપી ટૅબ ખોલવા માટે, મેનૂ ખોલો</translation>
 <translation id="8965591936373831584">બાકી</translation>

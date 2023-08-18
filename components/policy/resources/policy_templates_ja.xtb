@@ -2683,13 +2683,6 @@ Android アプリの場合はパッケージ名（<ph name="DEFAULT_HANDLERS_FOR
 
       このポリシーを無効に設定するか未設定のままにした場合、DTC は無効になり、デバイスでテレメトリーおよび診断のデータの収集、処理、レポート作成を行うことはできません。</translation>
 <translation id="3442589735857147823">Linux アプリのサポートに必要な仮想マシンの使用をユーザーに許可する</translation>
-<translation id="3445364060482221648">このポリシーを有効に設定した場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。その際、Chrome Root Store がパブリック トラストのソースとして使用されます。
-
-このポリシーを無効に設定した場合、<ph name="PRODUCT_NAME" /> はシステムの証明書確認機能とシステムのルート証明書を使用します。
-
-このポリシーを未設定のままにした場合、Chrome Root Store またはシステムの提供するルートが使用される可能性があります。
-
-このポリシーは <ph name="LINUX_OS_NAME" /> および <ph name="ANDROID_NAME" /> 向け <ph name="PRODUCT_OS_NAME" />、<ph name="PRODUCT_NAME" /> バージョン 120 で削除される予定です（プラットフォームから提供されるルートのサポートが終了するため）。このポリシーは <ph name="MS_WIN_NAME" /> および <ph name="MAC_OS_NAME" /> 向け <ph name="PRODUCT_NAME" /> バージョン 113 で削除されました（プラットフォームから提供される証明書確認機能とルートのサポートが終了したため）。</translation>
 <translation id="3450649825886735618">スペルミスの解決に Google のウェブサービスを一切使用しない</translation>
 <translation id="3451422488938880786"> 国際ショートカット キーの再マッピングを有効または無効にします</translation>
 <translation id="3451901387456196887"><ph name="PRODUCT_NAME" /> メニューに、アクセスコードを使用するか QR コードをスキャンしてキャスト デバイスを選択するオプションがユーザーに表示されます。</translation>

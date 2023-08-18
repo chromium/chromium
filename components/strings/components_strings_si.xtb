@@ -610,6 +610,7 @@
 <translation id="2225927550500503913">අතථ්‍ය කාඩ්පත සක්‍රීය කළා</translation>
 <translation id="2226636330183131181">WiFi ජාලයට <ph name="BEGIN_LINK" />පුරනය වීම<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">මෙම ලිපිනය දැනට Chrome වෙත සුරැකෙයි. එය Google නිෂ්පාදන පුරා භාවිතා කිරීමට, එය ඔබේ Google ගිණුම, <ph name="ACCOUNT" /> තුළ සුරකින්න.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> ඔබ <ph name="TOP_LEVEL_URL" /> වෙත පැමිණි බව දැන ගනු ඇත.</translation>
 <translation id="2233745931693710080">සංයුක්ත තැටිය</translation>
 <translation id="2239100178324503013">දැන් යවන්න</translation>
 <translation id="2241693394036365668">ගොනුව බාගෙන ඇත</translation>
@@ -2110,6 +2111,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> හට ඔබට දැනුම්දීම් එවීමට අවශ්‍යයි</translation>
 <translation id="5430298929874300616">පිටු සලකුණ ඉවත් කරන්න</translation>
 <translation id="5443468954631487277">ප්‍රතිවර්තන පිළිවෙළ මුහුණු ඉහළට</translation>
+<translation id="5447235695608032700"><ph name="SITE" /> හට ඔවුන් ඔබ ගැන සුරකින ලද තතු භාවිතා කිරීමට ඉඩ දෙන්න</translation>
 <translation id="5447765697759493033">මෙම අඩවිය පරිවර්තනය නොවනු ඇත</translation>
 <translation id="5452270690849572955"><ph name="HOST_NAME" /> පිටුව සොයා ගත නොහැකිය</translation>
 <translation id="5455374756549232013">දූශිත ප්‍රතිපත්ති කාල මුද්‍රා</translation>
@@ -2799,7 +2801,6 @@
             <ph name="LIST_ITEM" />සෙවුම් ඉතිහාසය<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />පෝරමවල ඇතුළත් කළ තොරතුරු<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
-<translation id="6910240653697687763"><ph name="URL" /> හට ඔබේ MIDI උපාංගවල සම්පූර්ණ පාලනය ලබා ගැනීමට අවශ්‍යයි</translation>
 <translation id="691024665142758461">ගොනු කිහිපයක් බාගන්න</translation>
 <translation id="6915804003454593391">පරිශීලක</translation>
 <translation id="6916954549222464607">මූල්‍ය සැලසුම්කරණය සහ කළමනාකරණය</translation>

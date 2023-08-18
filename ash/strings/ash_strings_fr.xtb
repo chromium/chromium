@@ -182,6 +182,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="174102739345480129">Le repère est désactivé.</translation>
 <translation id="1743570585616704562">Non reconnu</translation>
 <translation id="1746730358044914197">Les modes de saisie sont configurés par votre administrateur.</translation>
+<translation id="1747336645387973286">date limite : <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Clavier à l'écran activé</translation>
 <translation id="1749109475624620922">La fenêtre <ph name="WINDOW_TITLE" /> est associée à tous les bureaux</translation>
 <translation id="1750088060796401187">Seuls <ph name="MAX_DESK_LIMIT" /> bureaux sont autorisés. Supprimez un bureau pour en ajouter un.</translation>
@@ -242,7 +243,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1989113344093894667">Impossible de capturer des contenus</translation>
 <translation id="1990046457226896323">Fichiers vocaux téléchargés</translation>
 <translation id="1993072747612765854">En savoir plus sur la dernière mise à jour <ph name="SYSTEM_APP_NAME" /></translation>
-<translation id="1995660704900986789">Éteindre</translation>
 <translation id="1996162290124031907">Accéder à l'onglet suivant</translation>
 <translation id="1998100899771863792">Bureau actuel</translation>
 <translation id="2001444736072756133">Recherchez vos <ph name="CATEGORY" />, fichiers, applis, etc.</translation>
@@ -474,6 +474,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3081696990447829002">Développer le menu</translation>
 <translation id="3087734570205094154">En bas</translation>
 <translation id="3090989381251959936">Activer/Désactiver <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
+<translation id="3093423061078042895">Manquante</translation>
 <translation id="3095995014811312755">version</translation>
 <translation id="309749186376891736">Curseur de déplacement</translation>
 <translation id="3100274880412651815">Ignorer le mode de capture</translation>
@@ -535,6 +536,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3364721542077212959">Outils de stylet</translation>
 <translation id="3365977133351922112">Votre téléphone est trop loin. Rapprochez-le.</translation>
 <translation id="3368922792935385530">Connecté</translation>
+<translation id="3369111525500416043">À rendre bientôt</translation>
 <translation id="3371140690572404006">Appareil USB de type C (port situé sur la droite de l'appareil, à l'avant)</translation>
 <translation id="3375634426936648815">Connecté</translation>
 <translation id="3378438761594387761">Vos téléchargements récents et vos captures d'écran s'afficheront ici</translation>
@@ -988,6 +990,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5208059991603368177">Activé</translation>
 <translation id="5216991270656129561">Désactivé jusqu'à <ph name="TIME" /></translation>
 <translation id="5217646019792206018">Bureau suivant : <ph name="NEXT_DESK_NAME" />, appuyez sur Recherche+Espace ou sur le raccourci clavier Maj+Recherche+<ph name="NEXT_DESK_INDEX" /> pour l'activer.</translation>
+<translation id="5218064144558110424">Marquer comme non terminée</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5229343007215035173">Activer/Désactiver l'Écran Confidentialité</translation>
 <translation id="5234764350956374838">Ignorer</translation>
@@ -1047,6 +1050,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5465662442746197494">Besoin d'aide ?</translation>
 <translation id="547979256943495781">Étagère à droite</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> ou <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
+<translation id="5482873136202102190">, +</translation>
 <translation id="5491186829646618080">Mises à jour du micrologiciel disponibles</translation>
 <translation id="5503884284981862082">Ouvrir/Fermer l'Assistant Google</translation>
 <translation id="550391772491508736">Reprendre la diffusion</translation>
@@ -1173,6 +1177,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="598882571027504733">Pour télécharger la mise à jour, redémarrez votre Chromebook avec le clavier branché.</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> sur <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Sélectionner l'élément suivant sur l'étagère</translation>
+<translation id="6015573907265691211">Marquer comme terminée</translation>
 <translation id="6018164090099858612">Sortie du mode Miroir…</translation>
 <translation id="6019566113895157499">Raccourcis clavier</translation>
 <translation id="602001110135236999">Vers la gauche</translation>
@@ -1315,6 +1320,7 @@ Nouvelle installation</translation>
 <translation id="6597278316891651699">Appareil photo aligné sur l'angle inférieur gauche. Conflit avec la surface du système.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="6612802754306526077">Mode d'enregistreur d'écran sélectionné</translation>
+<translation id="6612889377159412215">tâche secondaire</translation>
 <translation id="6613765291890844037">Espace de stockage : <ph name="STORAGE_IN_USE_SIZE" /> utilisés | <ph name="STORAGE_TOTAL_SIZE" /> au total</translation>
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>
 <translation id="6625718907317144388">Les notifications <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> et d'autres applications sont masquées, car la protection anti-regard est activée</translation>
@@ -1358,6 +1364,7 @@ Nouvelle installation</translation>
 <translation id="6786750046913594791">Fermer le dossier</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="679368458793552943">Faire un zoom avant lorsque la loupe est activée</translation>
+<translation id="6794287755901682422">Cet élément comporte : <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6801878137098616817">Modifié récemment</translation>
 <translation id="6802196538183166658">Ouvrir les Réglages rapides en sélectionnant l'heure</translation>
 <translation id="6802687695197837794">L'accès est accordé à <ph name="APP1_NAME" /> et <ph name="APP2_NAME" />, ainsi qu'à l'ensemble des sites Web et applis ayant l'autorisation d'accéder à l'appareil photo et au micro</translation>
@@ -1614,6 +1621,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="793716872548410480">Appuyez sur <ph name="SHORTCUT_KEY_NAME" />+V pour afficher le presse-papiers. Les cinq derniers éléments que vous avez copiés y sont enregistrés.</translation>
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7944023924886109030">Afficher tous les événements d'aujourd'hui</translation>
+<translation id="7945357288295809525">Afficher les paramètres d'accessibilité, "<ph name="ENABLED_FEATURES" />" activé(e).</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> souhaite utiliser votre <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Réduire la luminosité du clavier</translation>
 <translation id="7963689218131240420">Ne pas déranger désactivé.</translation>
@@ -1912,6 +1920,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="953431725143473984">Éteindre l'appareil ?</translation>
 <translation id="954052413789300507">Espace insuffisant pour <ph name="FILENAME" />. Libérez de l'espace.</translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
+<translation id="981011780479609956">Aucune date limite</translation>
 <translation id="98120814841227350">Accéder à la fin du document</translation>
 <translation id="987589956647469042">Les données mobiles sont activées</translation>
 <translation id="989374776391122812">Commandes audio et de la caméra</translation>

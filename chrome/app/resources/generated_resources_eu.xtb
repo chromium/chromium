@@ -4482,6 +4482,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4646675363240786305">Atakak</translation>
 <translation id="4647090755847581616">&amp;Itxi fitxa</translation>
 <translation id="4647283074445570750"><ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /> urratsa</translation>
+<translation id="4647836961514597010">Kolore-hautatzailea</translation>
 <translation id="4648491805942548247">Ez dago behar adina baimen</translation>
 <translation id="4650037136970677721">Aurreztutako memoria</translation>
 <translation id="4650591383426000695">Deskonektatu telefonoa <ph name="DEVICE_TYPE" /> gailutik</translation>
@@ -6039,6 +6040,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5975056890546437204">{COUNT,plural, =0{Ireki guztiak &amp;ezkutuko moduko leiho batean}=1{Ireki &amp;ezkutuko moduko leiho batean}other{Ireki guztiak ({COUNT}) &amp;ezkutuko moduko leiho batean}}</translation>
 <translation id="5975792506968920132">Bateriaren karga-ehunekoa</translation>
 <translation id="5976160379964388480">Gehiago</translation>
+<translation id="5977976211062815271">Gailu honetakoak</translation>
 <translation id="5978277834170881274">&amp;Erabili oinarrizko ortografia-zuzentzailea</translation>
 <translation id="5978493744931296692">Administratzaileak beste profilak desgaitu ditu</translation>
 <translation id="5979084224081478209">Egiaztatu pasahitzak</translation>
@@ -8452,7 +8454,6 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7978412674231730200">Gako pribatua</translation>
 <translation id="7978450511781612192">Zure Google-ko kontuetako saioa amaituko da. Aurrerantzean, ez dira sinkronizatuko laster-markak, historia, pasahitzak eta beste.</translation>
 <translation id="7980084013673500153">Erreproduzigaiaren identifikatzailea: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Aurrekargatu orriak azkarrago arakatzeko eta bilatzeko</translation>
 <translation id="7981662863948574132">Erakutsi gailuaren EID zenbakiaren eta QR kodearen leiho gainerakorra</translation>
 <translation id="7981670705071137488">Aurrerantzean, softwarea atzeko planoan eguneratuko da. Ezarpenak atalean berrikus ditzakezu softwarea eguneratzeko aukeraren inguruko hobespenak.</translation>
 <translation id="7982083145464587921">Errorea konpontzeko, berrabiarazi gailua.</translation>

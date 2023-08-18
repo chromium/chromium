@@ -470,6 +470,7 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="3513704683820682405">Uhalisia Ulioboreshwa</translation>
 <translation id="3518985090088779359">Kubali na uendelee</translation>
 <translation id="3522247891732774234">Kuna toleo jipya. Chaguo zaidi</translation>
+<translation id="3523426587027570423">Gusa ili ufunge kichezaji cha "Sikiliza ukurasa huu".</translation>
 <translation id="3524138585025253783">Kiolesura cha Msanidi Programu</translation>
 <translation id="3524334353996115845">Ruhusu <ph name="ORIGIN" /> ithibitishe kwamba ni wewe</translation>
 <translation id="3527085408025491307">Folda</translation>
@@ -674,6 +675,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4637420359569396807">Kwa kutumia vipimo vya matangazo, aina chache za data zinaweza kushirikiwa kati ya tovuti na programu ili kupima utendaji wa matangazo yake, kama vile muda katika siku ulipoonyeshwa tangazo.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Nenosiri moja limeathiriwa}other{Manenosiri # yameathiriwa}}</translation>
 <translation id="4650364565596261010">Mipangilio chaguomsingi ya mfumo</translation>
+<translation id="4654641641922242357">Kichezaji cha "Sikiliza ukurasa huu".</translation>
 <translation id="465657074423018424">Kipengele cha Kuvinjari Salama hukulinda dhidi ya tovuti zinazopotosha. Ukikizima, kuwa makini zaidi unapovinjari hasa kabla ya kuweka manenosiri.</translation>
 <translation id="4662373422909645029">Jina la kuwakilisha halipaswi kuwa na nambari</translation>
 <translation id="4663499661119906179">Angalia tovuti na habari maarufu unazopendekezewa</translation>
@@ -803,6 +805,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5222676887888702881">Ondoka</translation>
 <translation id="5227554086496586518">Gusa ili uone matokeo ya utafutaji</translation>
 <translation id="5233638681132016545">Kichupo kipya</translation>
+<translation id="5234971936051226002">Kichezaji cha "Sikiliza ukurasa huu" kimepunguzwa.</translation>
 <translation id="5235196193381275927">Hitilafu fulani imetokea wakati wa kuingia katika akaunti</translation>
 <translation id="5246093389635966745">Badilisha njia ya mkato ya upau wa vidhibiti</translation>
 <translation id="5271967389191913893">Kifaa hakiwezi kufungua maudhui yanayopaswa kupakuliwa.</translation>
@@ -1254,6 +1257,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="757855969265046257">{FILES,plural, =1{Umepakua faili <ph name="FILES_DOWNLOADED_ONE" />}other{Umepakua faili <ph name="FILES_DOWNLOADED_MANY" />}}</translation>
 <translation id="7581273696622423628">Shiriki katika utafiti</translation>
 <translation id="7583262514280211622">Utapata orodha yako ya kusoma hapa</translation>
+<translation id="7587250070160020374">Chrome sasa inacheza</translation>
 <translation id="7588219262685291874">Washa mandhari meusi wakati Kiokoa Betri cha kifaa kimewashwa</translation>
 <translation id="7594687499944811403">Ruhusu <ph name="EMBEDDED_ORIGIN" /> ithibitishe kwamba ni wewe kwa ajili ya <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Mfumo wa uendeshaji</translation>
@@ -1321,6 +1325,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7926975587469166629">Jina la kuwakilisha kadi</translation>
 <translation id="7929962904089429003">Fungua menyu</translation>
 <translation id="7930998711684428189">Hukuonya iwapo manenosiri yamefichuliwa katika tukio la ufichuzi haramu wa data.</translation>
+<translation id="7934668619883965330">Haiwezi kupakua faili. Aina ya faili haitumiki.</translation>
 <translation id="7939485076072265087">Unda kadi ya maandishi yaliyoangaziwa iliyowekwa mitindo</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> imepitwa na wakati.</translation>
 <translation id="7944772052836377867">Kipengele cha kusawazisha kinahitaji kuthibitisha kwamba ni wewe</translation>
@@ -1522,6 +1527,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8937772741022875483">Ungependa kuondoa Shughuli zako za Chrome kwenye mpango wa Nidhamu Dijitali?</translation>
 <translation id="8942627711005830162">Fungua katika dirisha jingine</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Imeshindwa kupakua lugha hii. Jaribu tena baadaye.</translation>
+<translation id="8953618380150219653">Kichezaji cha "Sikiliza ukurasa huu" kimefunguliwa katika skrini nzima.</translation>
 <translation id="8955719471735800169">Rudi juu</translation>
 <translation id="8964479563882643397">Ili ufungue kichupo kipya fiche, fungua menyu</translation>
 <translation id="8965591936373831584">inasubiri</translation>

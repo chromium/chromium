@@ -4494,6 +4494,7 @@
 <translation id="4646675363240786305">יציאות</translation>
 <translation id="4647090755847581616">&amp;סגירת כרטיסייה</translation>
 <translation id="4647283074445570750">שלב <ph name="CURRENT_STEP" /> מתוך <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">בוחר צבעים</translation>
 <translation id="4648491805942548247">הרשאות לא מספיקות</translation>
 <translation id="4650037136970677721">הזיכרון נשמר</translation>
 <translation id="4650591383426000695">יש לנתק את הטלפון מה-<ph name="DEVICE_TYPE" /></translation>
@@ -6054,6 +6055,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{פתיחת כל הכתובות בחלון &amp;אנונימי}=1{פתיחה בחלון &amp;אנונימי}one{פתיחת כל הכתובות ({COUNT}) בחלון &amp;אנונימי}two{פתיחת כל הכתובות ({COUNT}) בחלון &amp;אנונימי}other{פתיחת כל הכתובות ({COUNT}) בחלון &amp;אנונימי}}</translation>
 <translation id="5975792506968920132">אחוז טעינת הסוללה</translation>
 <translation id="5976160379964388480">אחרים</translation>
+<translation id="5977976211062815271">במכשיר הזה</translation>
 <translation id="5978277834170881274">&amp;שימוש בבדיקת איות בסיסית</translation>
 <translation id="5978493744931296692">האדמין שלך השבית את השימוש בפרופילים אחרים</translation>
 <translation id="5979084224081478209">בדיקת הסיסמאות</translation>
@@ -8470,7 +8472,6 @@
 <translation id="7978412674231730200">מפתח פרטי</translation>
 <translation id="7978450511781612192">‏הפעולה הזאת תוציא אותך מחשבונות Google שלך. הסימניות, ההיסטוריה, הסיסמאות ופרטים אחרים יפסיקו לעבור סנכרון.</translation>
 <translation id="7980084013673500153">מזהה נכס: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">טעינה מראש של דפים כדי לאפשר גלישה וחיפוש מהירים יותר</translation>
 <translation id="7981662863948574132">‏הצגת החלון הקופץ של מספר ה-EID וקוד ה-QR של המכשיר</translation>
 <translation id="7981670705071137488">בסיום ההורדה, עדכוני תוכנה יתבצעו ברקע. אפשר לנהל את ההעדפות לגבי עדכונים בהגדרות.</translation>
 <translation id="7982083145464587921">כדאי לאתחל את המכשיר כדי לתקן את השגיאה.</translation>

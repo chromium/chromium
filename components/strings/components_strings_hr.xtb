@@ -2289,6 +2289,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5873297634595728366">Dizelska vozila</translation>
 <translation id="5877831137320480913">Ljepota i fitness</translation>
 <translation id="5879989559903563723">Nije dopušteno u načinu rada za goste</translation>
+<translation id="5883861433316751031">Želite li kontrolirati i reprogramirati MIDI uređaje?</translation>
 <translation id="5884465125445718607">Kineska omotnica br. 6</translation>
 <translation id="5887400589839399685">Kartica je spremljena</translation>
 <translation id="5887687176710214216">Posljednji posjet bio je jučer</translation>
@@ -2770,7 +2771,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6897140037006041989">Korisnički agent</translation>
 <translation id="6898699227549475383">Organizacija (O)</translation>
 <translation id="6907458757809079309">Fitness</translation>
-<translation id="6910240653697687763"><ph name="URL" /> želi dobiti potpuni nadzor nad vašim MIDI uređajima</translation>
 <translation id="691024665142758461">preuzeti više datoteka</translation>
 <translation id="6915804003454593391">Korisnik:</translation>
 <translation id="6916954549222464607">Usluge planiranja i upravljanja financijama</translation>
@@ -3333,6 +3333,7 @@ Dodatne pojedinosti:
 <translation id="8038817883578389970">Automobilske utrke</translation>
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>
 <translation id="8041940743680923270">Upotrijebi globalnu zadanu vrijednost (pitaj)</translation>
+<translation id="8042577181291637092">Želite li upotrebljavati MIDI uređaje?</translation>
 <translation id="8046360364391076336">Industrijski materijali i oprema</translation>
 <translation id="8052898407431791827">Kopirano u međuspremnik</translation>
 <translation id="8055534648776115597">Strukovno i cjeloživotno obrazovanje</translation>
@@ -3627,6 +3628,7 @@ Dodatne pojedinosti:
 <translation id="8671519637524426245">Vrijednost <ph name="SECURE_DNS_SALT" /> ne zadovoljava zahtjeve za veličinu.</translation>
 <translation id="867224526087042813">Potpis</translation>
 <translation id="8672264262457010862">Poslovanje i industrija</translation>
+<translation id="8673776281896298303">Upravljanje i reprogramiranje MIDI uređaja (SysEx)</translation>
 <translation id="8676424191133491403">Bez odgode</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, odgovor, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Web-stranica na <ph name="PAGE" /> ne može se učitati zbog sljedećih razloga:</translation>

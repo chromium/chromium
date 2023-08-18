@@ -1923,6 +1923,7 @@
 <translation id="2480868415629598489">Τροποποίηση των δεδομένων που αντιγράφετε και επικολλάτε</translation>
 <translation id="2482878487686419369">Ειδοποιήσεις</translation>
 <translation id="2482895651873876648">Η καρτέλα μεταφέρθηκε στην ομάδα <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Ορισμός μηχανής αναζήτησης στις ρυθμίσεις προγράμματος περιήγησης Chrome</translation>
 <translation id="2484743711056182585">Κατάργηση επιχορήγησης</translation>
 <translation id="2484909293434545162">Εάν ένας ιστότοπος χρησιμοποιεί cookie, θα εμφανίζονται εδώ</translation>
 <translation id="2484959914739448251">Για να διαγράψετε τα δεδομένα περιήγησης από όλες τις συγχρονισμένες συσκευές σας και τον Λογαριασμό σας Google, <ph name="BEGIN_LINK" />εισαγάγετε τη φράση πρόσβασής σας<ph name="END_LINK" />.</translation>
@@ -2079,6 +2080,7 @@
 <translation id="2612676031748830579">Αριθμός κάρτας</translation>
 <translation id="2613210758071148851">Να μην επιτρέπεται καμία επέκταση στον ιστότοπο <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306">Το <ph name="ORIGIN" /> θα έχει δυνατότητα επεξεργασίας του <ph name="FILENAME" />.</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{Άνοιγμα και επεξεργασία <ph name="FILE1" /> σε αυτήν την επέκταση}other{Άνοιγμα και επεξεργασία <ph name="FILE1" />, ... σε αυτήν την εφαρμογή}}</translation>
 <translation id="2616366145935564096">Διαβάστε και αλλάξτε τα δεδομένα σας στο <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Ρύθμιση λειτουργίας Κοινοποίηση κοντά</translation>
 <translation id="261953424982546039">Chrome &amp;Labs…</translation>
@@ -4490,6 +4492,7 @@
 <translation id="4585793705637313973">Επεξεργασία σελίδας</translation>
 <translation id="4586275095964870617">Δεν ήταν δυνατό το άνοιγμα του <ph name="URL" />σε εναλλακτικό πρόγραμμα περιήγησης. Επικοινωνήστε με τον διαχειριστή του συστήματός σας.</translation>
 <translation id="4587589328781138893">Ιστότοποι</translation>
+<translation id="4588749726511456218">Επιτάχυνση κύλισης <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Επιτυχής εγγραφή των αρχείων καταγραφής στον κατάλογο Λήψεις.</translation>
 <translation id="459204634473266369">Δεν υπάρχουν αποθηκευμένες συσκευές στον λογαριασμό <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">Η περιήγηση και η αναζήτηση γίνονται πιο γρήγορα.</translation>
@@ -4558,6 +4561,7 @@
 <translation id="4646675363240786305">Θύρες</translation>
 <translation id="4647090755847581616">&amp;Κλείσιμο καρτέλας</translation>
 <translation id="4647283074445570750">Βήμα <ph name="CURRENT_STEP" /> από <ph name="TOTAL_STEPS" /></translation>
+<translation id="4647836961514597010">Επιλογέας χρώματος</translation>
 <translation id="4648491805942548247">Ανεπαρκείς άδειες</translation>
 <translation id="4650037136970677721">Η ανάμνηση αποθηκεύτηκε</translation>
 <translation id="4650591383426000695">Αποσυνδέστε το τηλέφωνό σας από τη συσκευή <ph name="DEVICE_TYPE" />.</translation>
@@ -6136,6 +6140,7 @@
 <translation id="5975056890546437204">{COUNT,plural, =0{Άνοιγμα όλων σε παράθυρο για &amp;ανώνυμη περιήγηση}=1{Άνοιγμα σε παράθυρο για &amp;ανώνυμη περιήγηση}other{Άνοιγμα όλων ({COUNT}) σε παράθυρο για &amp;ανώνυμη περιήγηση}}</translation>
 <translation id="5975792506968920132">Ποσοστό φόρτισης μπαταρίας</translation>
 <translation id="5976160379964388480">Άλλα</translation>
+<translation id="5977976211062815271">Σε αυτήν τη συσκευή</translation>
 <translation id="5978277834170881274">&amp;Χρήση βασικού ορθογραφικού ελέγχου</translation>
 <translation id="5978493744931296692">Ο διαχειριστής σας έχει απενεργοποιήσει άλλα προφίλ</translation>
 <translation id="5979084224081478209">Έλεγχος κωδικών πρόσβασης</translation>
@@ -6326,6 +6331,7 @@
 <translation id="6130692320435119637">Προσθήκη Wi-Fi</translation>
 <translation id="6130887916931372608">Πλήκτρο πληκτρολογίου</translation>
 <translation id="6132714462430777655">Παράβλεψη εγγραφής σχολείου;</translation>
+<translation id="6134428719487602109">Καταργήστε όλους τους λογαριασμούς χρηστών και επαναφέρετε το Chromebook για να γίνει σαν καινούριο.</translation>
 <translation id="6135823405800500595">Βεβαιωθείτε ότι το τηλέφωνό σας βρίσκεται κοντά, είναι ξεκλειδωμένο και είναι ενεργό το Bluetooth και το Wi-Fi</translation>
 <translation id="6135826623269483856">Δεν επιτρέπεται η διαχείριση παραθύρων σε όλες τις οθόνες σας</translation>
 <translation id="6136114942382973861">Κλείσιμο γραμμής λήψεων</translation>
@@ -8577,7 +8583,6 @@
 <translation id="7978412674231730200">Ιδιωτικό κλειδί</translation>
 <translation id="7978450511781612192">Με αυτήν την ενέργεια, θα αποσυνδεθείτε από τους Λογαριασμούς σας Google. Οι σελιδοδείκτες, το ιστορικό, οι κωδικοί πρόσβασης και άλλες ρυθμίσεις δεν θα συγχρονίζονται πλέον.</translation>
 <translation id="7980084013673500153">Αναγνωριστικό στοιχείου: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Προφόρτωση ιστοσελίδων για ταχύτερη περιήγηση και αναζήτηση</translation>
 <translation id="7981662863948574132">Εμφάνιση αναδυόμενου παραθύρου αριθμού EID συσκευής και κωδικού QR</translation>
 <translation id="7981670705071137488">Μετά από αυτό, οι ενημερώσεις λογισμικού θα συμβαίνουν στο παρασκήνιο. Μπορείτε να ελέγξετε τις προτιμήσεις ενημερώσεων στις Ρυθμίσεις.</translation>
 <translation id="7982083145464587921">Επανεκκινήστε τη συσκευή σας για να επιδιορθώσετε αυτό το σφάλμα.</translation>

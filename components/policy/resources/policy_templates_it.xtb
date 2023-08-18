@@ -566,6 +566,10 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Le estensioni esterne e la relativa installazione sono illustrate all'indirizzo https://developer.chrome.com/apps/external_extensions.
       </translation>
 <translation id="1484190167468437592">Disattiva l'audio in formato mono</translation>
+<translation id="1484580923123963615">Lista consentita che controlla i report sulla telemetria dei siti web per gli utenti affiliati. I tipi di dati di telemetria segnalati sono controllati dal criterio <ph name="REPORT_WEBSITE_TELEMETRY_POLICY_NAME" />.
+
+La configurazione del criterio consente di controllare i report sulla telemetria dei siti web per gli URL nella lista consentita. Se il criterio non viene configurato, la telemetria dei siti web non verrà segnalata.
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Per questo criterio sono consentiti solo gli schemi di URL HTTP e HTTPS.</translation>
 <translation id="1486021504508098388">Segnala informazioni sulla retroilluminazione</translation>
 <translation id="1487722536912664411">Consenti agli utenti di utilizzare <ph name="PRODUCT_NAME" /></translation>
 <translation id="1487916040416013623">La configurazione del criterio consente di specificare i server consentiti per l'autenticazione integrata. L'autenticazione integrata viene attivata soltanto quando <ph name="PRODUCT_NAME" /> riceve una richiesta di autenticazione da un proxy o da un server presente nell'elenco dei server consentiti.
@@ -2461,6 +2465,10 @@ Se viene impostato su Disabled, la promozione di valutazione dell'App Store non 
       Se il criterio viene impostato su Disattivato, questi software possono inserire tale codice nei processi di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3182503302060513467">Nella pagina Nuova scheda verrà mostrata la comunicazione dell'area centrale, se è disponibile</translation>
 <translation id="3184161739683646075">Controlla la modalità di DNS over HTTPS</translation>
+<translation id="3184309751910415763">Lista consentita che controlla i report sull'attività dei siti web per gli utenti affiliati.
+
+La configurazione del criterio consente di controllare i report sugli eventi degli URL dei siti web aperti e chiusi per gli URL nella lista consentita. Se il criterio non viene configurato, non verranno segnalati gli eventi relativi ai siti web.
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Per questo criterio sono consentiti solo gli schemi di URL HTTP e HTTPS.</translation>
 <translation id="3184638144755436350">Chrome bloccherà le navigazioni verso protocolli esterni all'interno di iframe con sandbox. Visita la pagina https://chromestatus.com/features/5680742077038592.
 
       Quando il valore è True, Chrome può bloccare queste navigazioni.
@@ -2790,26 +2798,6 @@ Se viene disattivato, la funzionalità di scrittura predittiva sulla tastiera fi
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, viene disattivato il controller DTC e non sarà possibile raccogliere, elaborare o segnalare dati telemetrici e diagnostici del dispositivo.</translation>
 <translation id="3442589735857147823">Consenti agli utenti di usare le macchine virtuali necessarie per supportare le app Linux</translation>
-<translation id="3445364060482221648">Se questo criterio viene attivato, <ph name="PRODUCT_NAME" />
-eseguirà la verifica dei certificati dei server mediante lo strumento di verifica
-dei certificati integrato con Chrome Root Store usato come fonte di attendibilità pubblica.
-
-Se questo criterio viene disattivato, <ph name="PRODUCT_NAME" />
-userà lo strumento di verifica dei certificati di sistema e i certificati radice di sistema.
-
-Se questo criterio non viene configurato, potrebbero essere utilizzati
-Chrome Root Store o i certificati radice forniti dal sistema.
-
-È prevista la rimozione di questo criterio in
-<ph name="PRODUCT_OS_NAME" />
-e <ph name="PRODUCT_NAME" />
-per <ph name="LINUX_OS_NAME" /> e
-<ph name="ANDROID_NAME" /> versione 120,
-in concomitanza con la rimozione del supporto per l'utilizzo dei certificati radice forniti dalla piattaforma.
-
-Questo criterio è stato rimosso in <ph name="PRODUCT_NAME" />
-per <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" /> versione 113,
-in concomitanza con la rimozione del supporto per l'utilizzo dello strumento di verifica dei certificati e dei certificati radice forniti dalla piattaforma.</translation>
 <translation id="3450649825886735618">Non usare servizi web di Google per correggere gli errori ortografici</translation>
 <translation id="3451422488938880786"> Consente l'attivazione o la disattivazione delle nuove mappature delle scorciatoie da tastiera internazionali</translation>
 <translation id="3451901387456196887">L'utente avrà la possibilità di selezionare dispositivi di trasmissione nel menu di <ph name="PRODUCT_NAME" /> usando un codice di accesso o scansionando un codice QR.</translation>
@@ -3051,6 +3039,10 @@ Se il criterio viene disattivato o se non viene configurato, i dispositivi regis
 
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> utilizza un nome di libreria predefinito.</translation>
 <translation id="3650122925429054129">Disattiva l'evidenziazione del cursore nella schermata di accesso</translation>
+<translation id="365093517647222762">Segnala i dati di telemetria dei siti web per gli URL consentiti specificati dal criterio <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> per gli utenti affiliati.
+
+La configurazione del criterio consente di controllare i report sulla telemetria dei siti web per i tipi di dati di telemetria specificati.
+Se il criterio non viene configurato, i dati di telemetria dei siti web non verranno segnalati.</translation>
 <translation id="3652670852519271837">Consenti ai siti di richiedere all'utente l'accesso di lettura di file e directory tramite l'API file system</translation>
 <translation id="3653237928288822292">Icona del provider di ricerca predefinito</translation>
 <translation id="3654906736796256792">Consenti l'esecuzione della sandbox dell'audio</translation>
@@ -4535,6 +4527,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="4996068111491152684">Non verranno usate le credenziali di accesso di <ph name="PRODUCT_OS_NAME" /> per l'autenticazione della rete.</translation>
 <translation id="4996086761250834365">Consenti analisi del prodotto di <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="4996161752665479028">Attiva SSH in Terminal System App</translation>
+<translation id="499654521603185442">Report sulla telemetria dei siti web</translation>
 <translation id="4997074784107449343">L'opzione Stampa come immagine non viene impostata per impostazione predefinita per le anteprime di stampa dei documenti PDF quando disponibile.</translation>
 <translation id="500149597848135831">Attiva tutte le varianti</translation>
 <translation id="5017369989680827157">Se il criterio è impostato su True o se non viene configurato, gli utenti possono controllare la compilazione automatica per gli indirizzi nella UI.
@@ -6099,6 +6092,7 @@ Per <ph name="PRODUCT_NAME" />, questo criterio viene applicato soltanto se la m
 
 Per maggiori informazioni sulle tecnologie precedenti, visita la pagina all'indirizzo https://chromestatus.com/features.</translation>
 <translation id="640827304541402854">Viene disattivato l'attraversamento firewall da host di accesso remoto</translation>
+<translation id="6410847321564585975">Lista consentita dei report sulle attività dei siti web</translation>
 <translation id="6412352702230183710">Consenti solo host di messaggi nativi a livello di sistema</translation>
 <translation id="6416506846917150119">Disattiva la scrittura predittiva sulla tastiera fisica durante la digitazione da parte degli utenti</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
@@ -6254,6 +6248,9 @@ Il salvaschermo dell'utente mostra le immagini a cui fa riferimento il criterio 
       Se il criterio non viene configurato non viene applicata una lunghezza massima.</translation>
 <translation id="6546185795045702747">Consenti ai siti web di controllare se l'utente ha salvato dei metodi di pagamento</translation>
 <translation id="6553143066970470539">Percentuale di luminosità dello schermo</translation>
+<translation id="6554236101741861403">Frequenza di raccolta dei dati di telemetria dei siti web sui dispositivi registrati per gli utenti affiliati. Il valore minimo consentito è 5 minuti.
+
+Se il criterio non viene configurato, viene applicata la frequenza predefinita di 15 minuti.</translation>
 <translation id="6555557921186817432">Programma un riavvio automatico dopo l'applicazione di un aggiornamento del numero <ph name="PRODUCT_OS_NAME" />.
 
       Se il criterio viene impostato su vero, viene programmato un riavvio automatico dopo l'applicazione di un aggiornamento di <ph name="PRODUCT_OS_NAME" /> e il riavvio è necessario per completare il processo di aggiornamento. Il riavvio è programmato immediatamente, ma può essere ritardato sul dispositivo fino a 24 ore, se questo è attualmente in uso.
@@ -7936,6 +7933,7 @@ Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name
 <translation id="8020222525161221827">Attiva l'API Desk per il controllo di ChromeOS da terze parti</translation>
 <translation id="802147957407376460">Ruota lo schermo di 0°</translation>
 <translation id="8021777486638359878">Considera l'utente inattivo durante la riproduzione di audio</translation>
+<translation id="8022597231371051452">Lista consentita dei report sulla telemetria dei siti web</translation>
 <translation id="8022909529579794519">Questa impostazione consente di configurare il browser <ph name="LACROS_NAME" /> da utilizzare.
 
 Se il criterio viene impostato su <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />, l'utente può decidere quale browser <ph name="LACROS_NAME" /> caricare: il programma binario della partizione <ph name="LACROS_ROOTFS_NAME" /> o <ph name="LACROS_STATEFUL_NAME" />.
@@ -8710,6 +8708,7 @@ Se il criterio non viene configurato, alla prima esecuzione non vengono importat
 <translation id="8728854710675158426">Hash non sicuri in handshake TLS attivi</translation>
 <translation id="8734543507835977857">Avvia i ritardi di gestione dell'alimentazione e i limiti di durata delle sessioni all'inizio della sessione</translation>
 <translation id="8736538322216687231">Imponi livello minimo della Modalità con restrizioni di YouTube</translation>
+<translation id="873800217865395140">Frequenza di raccolta della telemetria dei siti web in millisecondi.</translation>
 <translation id="874149307422233209">Questo criterio consente agli amministratori di controllare il modo in cui Google tratta i dati utente inviati alla Ricerca tramite le funzionalità di <ph name="PRODUCT_OS_NAME" />.
 Se il criterio viene attivato, l'utente potrà usare la casella di ricerca di Avvio app di <ph name="PRODUCT_OS_NAME" /> e la casella di indirizzo del browser <ph name="PRODUCT_NAME" /> in <ph name="PRODUCT_OS_NAME" />, in modo che la cronologia delle ricerche dell'utente non venga collegata alla sua identità.
 Se il criterio non viene configurato o se viene disattivato, i dati dell'utente di queste ricerche vengono collegati alla sua identità.</translation>

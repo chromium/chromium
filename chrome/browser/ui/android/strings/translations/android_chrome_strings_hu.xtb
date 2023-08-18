@@ -470,6 +470,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="3513704683820682405">Kiterjesztett valóság</translation>
 <translation id="3518985090088779359">Elfogadás és tovább</translation>
 <translation id="3522247891732774234">Frissítés áll rendelkezésre. További lehetőségek</translation>
+<translation id="3523426587027570423">Koppintson az „Oldal meghallgatása” lejátszó bezárásához.</translation>
 <translation id="3524138585025253783">Fejlesztői kezelőfelület</translation>
 <translation id="3524334353996115845">A(z) <ph name="ORIGIN" /> segítségével igazolja személyazonosságát</translation>
 <translation id="3527085408025491307">Mappa</translation>
@@ -674,6 +675,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4637420359569396807">A hirdetésméréssel korlátozott adattípusok oszthatók meg az alkalmazások és a webhelyek között a hirdetéseik teljesítményének mérése érdekében (ilyen adat például az a napszak, amikor egy adott hirdetés megjelent Önnek).</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 jelszó, amelyhez illetéktelenül hozzáfértek}other{# jelszó, amelyhez illetéktelenül hozzáfértek}}</translation>
 <translation id="4650364565596261010">Alapértelmezett</translation>
+<translation id="4654641641922242357">Az „Oldal meghallgatása” lejátszó</translation>
 <translation id="465657074423018424">A Biztonságos Böngészés védelmet nyújt a megtévesztő webhelyekkel szemben. Ha kikapcsolja, legyen kivételesen óvatos böngészéskor – különösen a jelszavak megadása előtt.</translation>
 <translation id="4662373422909645029">A névben nem lehet szám</translation>
 <translation id="4663499661119906179">A legkedveltebb webhelyei és a legfrissebb hírek megtekintése</translation>
@@ -803,6 +805,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5222676887888702881">Kijelentkezés</translation>
 <translation id="5227554086496586518">Koppintson a keresési találatok megtekintéséhez</translation>
 <translation id="5233638681132016545">Új lap</translation>
+<translation id="5234971936051226002">Az „Oldal meghallgatása” lejátszó kis méretre van állítva.</translation>
 <translation id="5235196193381275927">A bejelentkezés közben hiba történt</translation>
 <translation id="5246093389635966745">Eszköztár gyorsparancsainak szerkesztése</translation>
 <translation id="5271967389191913893">Az eszköz nem tudja megnyitni a letölteni kívánt tartalmat.</translation>
@@ -1254,6 +1257,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fájl letöltve}other{<ph name="FILES_DOWNLOADED_MANY" /> fájl letöltve}}</translation>
 <translation id="7581273696622423628">Kérdőív kitöltése</translation>
 <translation id="7583262514280211622">Itt láthatja majd az olvasólistáját</translation>
+<translation id="7587250070160020374">A Chrome itt játszik le tartalmat:</translation>
 <translation id="7588219262685291874">Sötét téma bekapcsolása, amikor az eszköz Akkumulátorkímélő módja be van kapcsolva</translation>
 <translation id="7594687499944811403">A(z) <ph name="EMBEDDED_ORIGIN" /> segítségével igazolja személyazonosságát a következőnél: <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operációs rendszer</translation>
@@ -1321,6 +1325,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7926975587469166629">Egyéni kártyanév</translation>
 <translation id="7929962904089429003">A menü megnyitása</translation>
 <translation id="7930998711684428189">Figyelmezteti Önt, ha a jelszavak adatvédelmi incidens során nyilvánosságra kerülnek</translation>
+<translation id="7934668619883965330">A fájl nem tölthető le. A fájlformátum nem támogatott.</translation>
 <translation id="7939485076072265087">Stilizált kártya létrehozása kiemeléssel</translation>
 <translation id="7942131818088350342">A(z) <ph name="PRODUCT_NAME" /> elavult.</translation>
 <translation id="7944772052836377867">A szinkronizálás ellenőrizni szeretné az Ön személyazonosságát</translation>
@@ -1522,6 +1527,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8937772741022875483">Eltávolítja Chrome-beli tevékenységét a digitális jóllét funkcióból?</translation>
 <translation id="8942627711005830162">Megnyitás másik ablakban</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Ezt a nyelvet nem lehetett letölteni. Próbálja újra később.</translation>
+<translation id="8953618380150219653">Az „Oldal meghallgatása” lejátszó teljes magasságban van megnyitva.</translation>
 <translation id="8955719471735800169">Vissza az oldal tetejére</translation>
 <translation id="8964479563882643397">Új inkognitó lap megnyitásához nyissa meg a menüt</translation>
 <translation id="8965591936373831584">függőben</translation>

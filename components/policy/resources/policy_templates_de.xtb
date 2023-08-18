@@ -2794,21 +2794,6 @@ Ist die Richtlinie deaktiviert, sind keine Wortvorschläge bei Nutzung der physi
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird DTC ausgeschaltet und kann keine Telemetrie- und Diagnosedaten von dem Gerät erheben, verarbeiten oder melden.</translation>
 <translation id="3442589735857147823">Zulassen, dass Nutzer virtuelle Maschinen verwenden, die für Linux-Apps benötigt werden</translation>
-<translation id="3445364060482221648">Wenn diese Richtlinie aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate mithilfe der integrierten Zertifikatsprüfung und dem Chrome Root Store als vertrauenswürdige Quelle.
-
-Falls diese Richtlinie deaktiviert ist, verwendet <ph name="PRODUCT_NAME" /> die Systemzertifikatsprüfung und die Root-Zertifikate des Systems.
-
-Wenn diese Richtlinie nicht konfiguriert ist, werden der Chrome Root Store oder die systemeigenen Root-Zertifikate verwendet.
-
-Diese Richtlinie wird voraussichtlich in Version 120 von <ph name="PRODUCT_OS_NAME" />
-und <ph name="PRODUCT_NAME" />
-für <ph name="LINUX_OS_NAME" /> und
-<ph name="ANDROID_NAME" /> entfernt,
-wenn auch die Verwendung der von der Plattform bereitgestellten Root-Zertifikate nicht mehr unterstützt wird.
-
-Diese Richtlinie wurde in Version 113 von <ph name="PRODUCT_NAME" />
-für <ph name="MS_WIN_NAME" /> und <ph name="MAC_OS_NAME" /> entfernt,
-als die Unterstützung für die Zertifikatsprüfung und Root-Zertifikate entfernt wurde, die von der Plattform bereitgestellt werden.</translation>
 <translation id="3450649825886735618">Rechtschreibfehler nicht mithilfe von Google-Webdiensten korrigieren</translation>
 <translation id="3451422488938880786"> Ermöglicht das Aktivieren/Deaktivieren der Neuzuordnung von internationalen Tastenkürzeln</translation>
 <translation id="3451901387456196887">Nutzer erhalten im <ph name="PRODUCT_NAME" />-Menü die Option, Übertragungsgeräte mithilfe eines Zugriffscodes oder durch Scannen eines QR-Codes auszuwählen.</translation>
