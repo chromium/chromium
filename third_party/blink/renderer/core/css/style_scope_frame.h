@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_SCOPE_FRAME_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/resolver/match_flags.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -45,7 +46,25 @@ struct CORE_EXPORT StyleScopeActivation {
   unsigned proximity = 0;
 };
 
-using StyleScopeActivations = HeapVector<StyleScopeActivation>;
+struct CORE_EXPORT StyleScopeActivations
+    : public GarbageCollected<StyleScopeActivations> {
+ public:
+  void Trace(blink::Visitor*) const;
+
+  HeapVector<StyleScopeActivation> vector;
+
+  // Even if `vector` is empty, `match_flags` can be set. For example:
+  //
+  //  @scope (p:hover) {
+  //    :scope { ... }
+  //  }
+  //
+  // When matching :scope against 'p', even if 'p' is not currently hovered,
+  // (and therefore won't produce a StyleScopeActivation in the vector),
+  // `match_flags` will contain kAffectedByHover. This allows us to propagate
+  // the flags when matching :scope, also when the selector does not match.
+  MatchFlags match_flags = 0;
+};
 
 // Stores the current @scope activations for a given subject element.
 //

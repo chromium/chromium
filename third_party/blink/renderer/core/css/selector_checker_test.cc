@@ -10,8 +10,10 @@
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -658,6 +660,112 @@ TEST_P(MatchFlagsShadowTest, Host) {
 
   SCOPED_TRACE(param.selector);
   EXPECT_EQ(Bits(param.expected), Bits(result.flags));
+}
+
+class MatchFlagsScopeTest : public PageTestBase {
+ public:
+  void SetUp() override {
+    PageTestBase::SetUp();
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style id=style>
+      </style>
+      <div id=outer>
+        <div id=inner></div>
+      </div>
+    )HTML");
+    UpdateAllLifecyclePhasesForTest();
+  }
+
+  void SetStyle(String text) {
+    Element* style = GetDocument().getElementById(AtomicString("style"));
+    DCHECK(style);
+    style->setTextContent(text);
+    UpdateAllLifecyclePhasesForTest();
+  }
+
+  Element& Outer() const {
+    return *GetDocument().getElementById(AtomicString("outer"));
+  }
+  Element& Inner() const {
+    return *GetDocument().getElementById(AtomicString("inner"));
+  }
+
+  bool AffectedByHover(Element& element) {
+    return element.ComputedStyleRef().AffectedByHover();
+  }
+};
+
+TEST_F(MatchFlagsScopeTest, NoHover) {
+  SetStyle(R"HTML(
+    @scope (#inner) to (.unknown) {
+      :scope { --x:1; }
+    }
+    @scope (#outer) to (.unknown) {
+      :scope #inner { --x:1; }
+    }
+  )HTML");
+  EXPECT_FALSE(AffectedByHover(Outer()));
+  EXPECT_FALSE(AffectedByHover(Inner()));
+}
+
+TEST_F(MatchFlagsScopeTest, HoverSubject) {
+  SetStyle(R"HTML(
+    @scope (#outer) {
+      :scope #inner:hover { --x:1; }
+    }
+  )HTML");
+  EXPECT_FALSE(AffectedByHover(Outer()));
+  EXPECT_TRUE(AffectedByHover(Inner()));
+}
+
+TEST_F(MatchFlagsScopeTest, HoverNonSubject) {
+  SetStyle(R"HTML(
+    @scope (#outer) {
+      :scope:hover #inner { --x:1; }
+    }
+  )HTML");
+  EXPECT_FALSE(AffectedByHover(Outer()));
+  EXPECT_FALSE(AffectedByHover(Inner()));
+}
+
+TEST_F(MatchFlagsScopeTest, ScopeSubject) {
+  SetStyle(R"HTML(
+    @scope (#inner:hover) {
+      :scope { --x:1; }
+    }
+  )HTML");
+  EXPECT_FALSE(AffectedByHover(Outer()));
+  EXPECT_TRUE(AffectedByHover(Inner()));
+}
+
+TEST_F(MatchFlagsScopeTest, ScopeNonSubject) {
+  SetStyle(R"HTML(
+    @scope (#outer:hover) {
+      :scope #inner { --x:1; }
+    }
+  )HTML");
+  EXPECT_FALSE(AffectedByHover(Outer()));
+  EXPECT_FALSE(AffectedByHover(Inner()));
+}
+
+TEST_F(MatchFlagsScopeTest, ScopeLimit) {
+  SetStyle(R"HTML(
+    @scope (#inner) to (#inner:hover) {
+      :scope { --x:1; }
+    }
+  )HTML");
+  EXPECT_FALSE(AffectedByHover(Outer()));
+  EXPECT_TRUE(AffectedByHover(Inner()));
+}
+
+TEST_F(MatchFlagsScopeTest, ScopeLimitNonSubject) {
+  SetStyle(R"HTML(
+    @scope (#middle) to (#middle:hover) {
+      :scope #inner { --x:1; }
+    }
+  )HTML");
+  EXPECT_FALSE(AffectedByHover(Outer()));
+  EXPECT_FALSE(AffectedByHover(Inner()));
 }
 
 class EasySelectorCheckerTest : public PageTestBase {

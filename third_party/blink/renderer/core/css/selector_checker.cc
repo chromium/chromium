@@ -552,11 +552,21 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       if (context.style_scope) {
         const StyleScopeActivations& activations =
             EnsureActivations(context, *context.style_scope);
-        if (activations.empty()) {
+        if (ImpactsSubject(context)) {
+          // For e.g. @scope (:hover) { :scope { ...} },
+          // the StyleScopeActivations may have stored MatchFlags that we
+          // need to propagate. However, this is only needed if :scope
+          // appears in the subject position, since MatchFlags are only
+          // used for subject invalidation. Non-subject flags are set on
+          // Elements directly (e.g. SetChildrenOrSiblingsAffectedByHover)
+          result.flags |= activations.match_flags;
+        }
+        if (activations.vector.empty()) {
           return kSelectorFailsCompletely;
         }
-        for (const StyleScopeActivation& activation : activations) {
+        for (const StyleScopeActivation& activation : activations.vector) {
           next_context.match_visited = context.match_visited;
+          next_context.impact = context.impact;
           next_context.style_scope = nullptr;
           next_context.scope = activation.root;
           if (MatchSelector(next_context, result) == kSelectorMatches) {
@@ -2355,11 +2365,14 @@ namespace {
 
 // CalculateActivations will not produce any activations unless there is
 // an outer activation (i.e. an activation of the outer StyleScope). If there
-// is no outer StyleScope, we use this DefaultActivation as the outer
-// activation. The scope provided to DefaultActivation is typically
+// is no outer StyleScope, we use this DefaultActivations as the outer
+// activation. The scope provided to DefaultActivations is typically
 // a ShadowTree.
-StyleScopeActivation DefaultActivation(const ContainerNode* scope) {
-  return StyleScopeActivation{scope, std::numeric_limits<unsigned>::max()};
+StyleScopeActivations& DefaultActivations(const ContainerNode* scope) {
+  auto* activations = MakeGarbageCollected<StyleScopeActivations>();
+  activations->vector = HeapVector<StyleScopeActivation>(
+      1, StyleScopeActivation{scope, std::numeric_limits<unsigned>::max()});
+  return *activations;
 }
 
 // The activation ceiling is the highest ancestor element that can
@@ -2402,8 +2415,7 @@ const StyleScopeActivations& SelectorChecker::EnsureActivations(
   // of the *parent element*.
   const StyleScopeActivations* outer_activations =
       style_scope.Parent() ? &EnsureActivations(context, *style_scope.Parent())
-                           : MakeGarbageCollected<StyleScopeActivations>(
-                                 1, DefaultActivation(context.scope));
+                           : &DefaultActivations(context.scope);
   // The `match_visited` flag may have been set to false e.g. due to a link
   // having been encountered (see DisallowMatchVisited), but scope activations
   // are calculated lazily when :scope is first seen in a compound selector,
@@ -2459,12 +2471,12 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
 
   auto* activations = MakeGarbageCollected<StyleScopeActivations>();
 
-  if (!outer_activations.empty()) {
+  if (!outer_activations.vector.empty()) {
     const StyleScopeActivations* parent_activations = nullptr;
 
     // Remain within the outer scope. I.e. don't look at elements above the
     // highest outer activation.
-    if (&element != ActivationCeiling(outer_activations.front())) {
+    if (&element != ActivationCeiling(outer_activations.vector.front())) {
       if (Element* parent = element.ParentOrShadowHostElement()) {
         // When calculating the activations on the parent element, we pass
         // the parent StyleScopeFrame (if we have it) to be able to use the
@@ -2484,27 +2496,32 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
     // The activations of the parent element are still active for this element,
     // unless this element is a scoping limit.
     if (parent_activations) {
-      for (const StyleScopeActivation& activation : *parent_activations) {
+      activations->match_flags = parent_activations->match_flags;
+
+      for (const StyleScopeActivation& activation :
+           parent_activations->vector) {
         if (!ElementIsScopingLimit(style_scope, activation, element,
-                                   match_visited)) {
-          activations->push_back(
+                                   match_visited, activations->match_flags)) {
+          activations->vector.push_back(
               StyleScopeActivation{activation.root, activation.proximity + 1});
         }
       }
     }
 
     // Check if we need to add a new activation for this element.
-    for (const StyleScopeActivation& outer_activation : outer_activations) {
+    for (const StyleScopeActivation& outer_activation :
+         outer_activations.vector) {
       if (style_scope.From()
               ? MatchesWithScope(element, *style_scope.From(),
-                                 outer_activation.root, match_visited)
+                                 outer_activation.root, match_visited,
+                                 activations->match_flags)
               : style_scope.HasImplicitRoot(&element)) {
         StyleScopeActivation activation{&element, 0};
         // It's possible for a newly created activation to be immediately
         // limited (e.g. @scope (.x) to (.x)).
         if (!ElementIsScopingLimit(style_scope, activation, element,
-                                   match_visited)) {
-          activations->push_back(activation);
+                                   match_visited, activations->match_flags)) {
+          activations->vector.push_back(activation);
         }
         break;
       }
@@ -2523,7 +2540,8 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
 bool SelectorChecker::MatchesWithScope(Element& element,
                                        const CSSSelector& selector_list,
                                        const ContainerNode* scope,
-                                       bool match_visited) const {
+                                       bool match_visited,
+                                       MatchFlags& match_flags) const {
   SelectorCheckingContext context(&element);
   context.scope = scope;
   context.match_visited = match_visited;
@@ -2536,9 +2554,11 @@ bool SelectorChecker::MatchesWithScope(Element& element,
   context.impact = Impact::kBoth;
   for (context.selector = &selector_list; context.selector;
        context.selector = CSSSelectorList::Next(*context.selector)) {
-    SelectorChecker::MatchResult ignore_result;
-    if (MatchSelector(context, ignore_result) ==
-        SelectorChecker::kSelectorMatches) {
+    MatchResult match_result;
+    bool match = MatchSelector(context, match_result) ==
+                 SelectorChecker::kSelectorMatches;
+    match_flags |= match_result.flags;
+    if (match) {
       return true;
     }
   }
@@ -2549,12 +2569,13 @@ bool SelectorChecker::ElementIsScopingLimit(
     const StyleScope& style_scope,
     const StyleScopeActivation& activation,
     Element& element,
-    bool match_visited) const {
+    bool match_visited,
+    MatchFlags& match_flags) const {
   if (!style_scope.To()) {
     return false;
   }
   return MatchesWithScope(element, *style_scope.To(), activation.root.Get(),
-                          match_visited);
+                          match_visited, match_flags);
 }
 
 }  // namespace blink
