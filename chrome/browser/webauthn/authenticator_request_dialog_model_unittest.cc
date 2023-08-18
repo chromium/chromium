@@ -210,26 +210,37 @@ std::unique_ptr<device::cablev2::Pairing> GetPairingFromQR() {
 }
 
 const device::PublicKeyCredentialUserEntity kUser1({1, 2, 3, 4},
-                                                   "link",
+                                                   "A",
                                                    absl::nullopt);
 const device::PublicKeyCredentialUserEntity kUser2({5, 6, 7, 8},
-                                                   "zelda",
+                                                   "B",
                                                    absl::nullopt);
 const device::PublicKeyCredentialUserEntity kPhoneUser1({9, 0, 1, 2},
-                                                        "purah",
+                                                        "C",
                                                         absl::nullopt);
 const device::PublicKeyCredentialUserEntity kPhoneUser2({3, 4, 5, 6},
-                                                        "impa",
+                                                        "D",
                                                         absl::nullopt);
 
 const device::DiscoverableCredentialMetadata
     kCred1(device::AuthenticatorType::kOther, "rp.com", {0}, kUser1);
+const device::DiscoverableCredentialMetadata kCred1FromICloudKeychain(
+    device::AuthenticatorType::kICloudKeychain,
+    "rp.com",
+    {1},
+    kUser1);
 const device::DiscoverableCredentialMetadata
     kCred2(device::AuthenticatorType::kOther, "rp.com", {1}, kUser2);
 const device::DiscoverableCredentialMetadata
     kPhoneCred1(device::AuthenticatorType::kPhone, "rp.com", {2}, kPhoneUser1);
 const device::DiscoverableCredentialMetadata
     kPhoneCred2(device::AuthenticatorType::kPhone, "rp.com", {3}, kPhoneUser2);
+
+AuthenticatorRequestDialogModel::Mechanism::CredentialInfo CredentialInfoFrom(
+    const device::DiscoverableCredentialMetadata& metadata) {
+  return AuthenticatorRequestDialogModel::Mechanism::CredentialInfo(
+      metadata.source, metadata.user.id);
+}
 
 }  // namespace
 
@@ -255,8 +266,10 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto internal = AuthenticatorTransport::kInternal;
   const auto cable = AuthenticatorTransport::kHybrid;
   const auto aoa = AuthenticatorTransport::kAndroidAccessory;
-  const auto phone = device::AuthenticatorType::kPhone;
-  const auto other = device::AuthenticatorType::kOther;
+  const auto cred1 = CredentialInfoFrom(kCred1);
+  const auto cred2 = CredentialInfoFrom(kCred2);
+  const auto phonecred1 = CredentialInfoFrom(kPhoneCred1);
+  const auto phonecred2 = CredentialInfoFrom(kPhoneCred2);
   const auto v1 = TransportAvailabilityParam::kHasCableV1Extension;
   const auto v2 = TransportAvailabilityParam::kHasCableV2Extension;
   const auto has_winapi =
@@ -612,7 +625,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {one_phone_cred, two_cred},
        {psync("a")},
-       {c(other), c(phone), c(other), add},
+       {c(cred1), c(cred2), c(phonecred1), add},
        mss},
       // Internal credentials + qr code.
       {L,
@@ -620,7 +633,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {two_cred},
        {psync("a")},
-       {c(other), c(other), add},
+       {c(cred1), c(cred2), add},
        mss},
       // qr code with ble disabled shows usb option.
       {L, ga, {usb, cable}, {ble_off}, {}, {add, t(usb)}, mss},
@@ -632,7 +645,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, internal},
        {two_cred},
        {psync("a")},
-       {c(other), c(other), t(usb)},
+       {c(cred1), c(cred2), t(usb)},
        mss},
       // Phone credentials only.
       {L,
@@ -640,7 +653,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {two_phone_cred},
        {psync("a")},
-       {c(phone), c(phone), add},
+       {c(phonecred1), c(phonecred2), add},
        mss},
       // Single internal credential.
       {L,
@@ -648,7 +661,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {one_cred},
        {psync("a")},
-       {c(other), add},
+       {c(cred1), add},
        hero},
       // Single phone credential.
       {L,
@@ -656,7 +669,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {one_phone_cred},
        {psync("a")},
-       {c(phone), add},
+       {c(phonecred1), add},
        hero},
 
 #if BUILDFLAG(IS_MAC)
@@ -691,7 +704,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {one_phone_cred, two_cred, has_winapi, only_hybrid_or_internal},
        {psync("a")},
-       {c(other), c(phone), c(other), add},
+       {c(cred1), c(cred2), c(phonecred1), add},
        mss},
       // Mix of phone, internal credentials, and USB/NFC.
       // This should offer dispatching to the Windows API for USB/NFC.
@@ -700,7 +713,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {one_phone_cred, two_cred, has_winapi},
        {psync("a")},
-       {c(other), c(phone), c(other), winapi, add},
+       {c(cred1), c(cred2), c(phonecred1), winapi, add},
        mss},
       // Phone credentials and unknown Windows Hello credential status.
       // This should offer dispatching to the Windows API for Windows Hello.
@@ -709,7 +722,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {two_phone_cred, has_winapi, maybe_plat, only_hybrid_or_internal},
        {psync("a")},
-       {c(phone), c(phone), winapi, add},
+       {c(phonecred1), c(phonecred2), winapi, add},
        mss},
   };
 
@@ -721,7 +734,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {one_phone_cred, two_cred, has_winapi, only_hybrid_or_internal},
        {psync("a")},
-       {c(other), c(phone), c(other), winapi},
+       {c(cred1), c(cred2), c(phonecred1), winapi},
        mss},
       // Internal credentials only.
       // This should not offer dispatching directly to the Windows API.
@@ -730,7 +743,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {},
        {two_cred, has_winapi, only_internal},
        {},
-       {c(other), c(other)},
+       {c(cred1), c(cred2)},
        mss},
   };
 #undef L
@@ -1746,6 +1759,48 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   EXPECT_EQ(model.current_step(), Step::kCableActivate);
 }
 
+class MultiplePlatformAuthenticatorsTest
+    : public AuthenticatorRequestDialogModelTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnNewPasskeyUI};
+};
+
+TEST_F(MultiplePlatformAuthenticatorsTest, DeduplicateAccounts) {
+  using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
+  const struct {
+    std::vector<device::DiscoverableCredentialMetadata> recognized_credentials;
+    absl::optional<Mechanism::Type> type_of_priority_mechanism;
+  } kTests[] = {
+      {{kCred1, kCred2, kPhoneCred1}, absl::nullopt},
+      {{kCred1, kCred2}, absl::nullopt},
+      {{kCred1, kCred1FromICloudKeychain},
+       Mechanism::Credential(CredentialInfoFrom(kCred1FromICloudKeychain))},
+      {{kCred1FromICloudKeychain, kCred1},
+       Mechanism::Credential(CredentialInfoFrom(kCred1FromICloudKeychain))},
+  };
+
+  for (const auto& test : kTests) {
+    TransportAvailabilityInfo transports_info;
+    transports_info.request_type = device::FidoRequestType::kGetAssertion;
+    transports_info.available_transports = {AuthenticatorTransport::kInternal};
+    transports_info.recognized_credentials = test.recognized_credentials;
+
+    AuthenticatorRequestDialogModel model(main_rfh());
+    model.set_allow_icloud_keychain(true);
+    model.StartFlow(std::move(transports_info),
+                    /*is_conditional_mediation=*/false);
+    ASSERT_EQ(model.priority_mechanism_index_.has_value(),
+              test.type_of_priority_mechanism.has_value());
+    if (!test.type_of_priority_mechanism.has_value()) {
+      continue;
+    }
+
+    EXPECT_EQ(*test.type_of_priority_mechanism,
+              model.mechanisms_[*model.priority_mechanism_index_].type);
+  }
+}
+
 class ListPasskeysFromSyncTest : public AuthenticatorRequestDialogModelTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -1858,21 +1913,19 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
       kLocalAuthenticatorId, AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kWinNative));
 
-  // The second entry will be `kPhoneCred1`.
+  // The second entry will be `kCred2`.
   const AuthenticatorRequestDialogModel::Mechanism& mech2 =
       model.mechanisms()[1];
-  EXPECT_EQ(mech2.name, base::UTF8ToUTF16(*kPhoneUser1.name));
-  EXPECT_EQ(mech2.short_name, base::UTF8ToUTF16(*kPhoneUser1.name));
-  EXPECT_EQ(mech2.description,
-            l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
-                                       u"Phone from sync"));
-  EXPECT_EQ(mech2.icon, kSmartphoneIcon);
+  EXPECT_EQ(mech2.name, base::UTF8ToUTF16(*kUser2.name));
+  EXPECT_EQ(mech2.short_name, base::UTF8ToUTF16(*kUser2.name));
+  EXPECT_EQ(mech2.description, u"Use device sign-in");
+  EXPECT_EQ(mech2.icon, vector_icons::kPasskeyIcon);
   mech2.callback.Run();
   result = account_preselected_callback.WaitForResult();
-  EXPECT_EQ(result.id, kPhoneCred1.cred_id);
+  EXPECT_EQ(result.id, kCred2.cred_id);
   EXPECT_THAT(result.transports,
-              testing::ElementsAre(device::FidoTransportProtocol::kHybrid));
-  EXPECT_TRUE(contact_phone_callback.WaitForResult());
+              testing::ElementsAre(device::FidoTransportProtocol::kInternal));
+  EXPECT_EQ(request_callback.WaitForResult(), kLocalAuthenticatorId);
 
   // Reset the model as if the user had cancelled out of the operation.
   model.StartOver();
@@ -1880,17 +1933,19 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
       kLocalAuthenticatorId, AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kWinNative));
 
-  // The third entry should correspond to `kCred2`.
+  // The third entry should correspond to `kPhoneCred1`.
   const AuthenticatorRequestDialogModel::Mechanism& mech3 =
       model.mechanisms()[2];
-  EXPECT_EQ(mech3.name, base::UTF8ToUTF16(*kUser2.name));
-  EXPECT_EQ(mech3.short_name, base::UTF8ToUTF16(*kUser2.name));
-  EXPECT_EQ(mech3.description, u"Use device sign-in");
-  EXPECT_EQ(mech3.icon, vector_icons::kPasskeyIcon);
+  EXPECT_EQ(mech3.name, base::UTF8ToUTF16(*kPhoneUser1.name));
+  EXPECT_EQ(mech3.short_name, base::UTF8ToUTF16(*kPhoneUser1.name));
+  EXPECT_EQ(mech3.description,
+            l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
+                                       u"Phone from sync"));
+  EXPECT_EQ(mech3.icon, kSmartphoneIcon);
   mech3.callback.Run();
   result = account_preselected_callback.WaitForResult();
-  EXPECT_EQ(result.id, kCred2.cred_id);
+  EXPECT_EQ(result.id, kPhoneCred1.cred_id);
   EXPECT_THAT(result.transports,
-              testing::ElementsAre(device::FidoTransportProtocol::kInternal));
-  EXPECT_EQ(request_callback.WaitForResult(), kLocalAuthenticatorId);
+              testing::ElementsAre(device::FidoTransportProtocol::kHybrid));
+  EXPECT_TRUE(contact_phone_callback.WaitForResult());
 }

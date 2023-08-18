@@ -196,8 +196,17 @@ class AuthenticatorRequestDialogModel {
   // to the specific credential to an authenticator that can fulfill it.
   struct Mechanism {
     // These types describe the type of Mechanism.
-    using Credential =
-        base::StrongAlias<class CredentialTag, device::AuthenticatorType>;
+    struct CredentialInfo {
+      CredentialInfo(device::AuthenticatorType source_in,
+                     std::vector<uint8_t> user_id_in);
+      CredentialInfo(const CredentialInfo&);
+      ~CredentialInfo();
+      bool operator==(const CredentialInfo&) const;
+
+      const device::AuthenticatorType source;
+      const std::vector<uint8_t> user_id;
+    };
+    using Credential = base::StrongAlias<class CredentialTag, CredentialInfo>;
     using Transport =
         base::StrongAlias<class TransportTag, AuthenticatorTransport>;
     using WindowsAPI = base::StrongAlias<class WindowsAPITag, absl::monostate>;
@@ -641,6 +650,9 @@ class AuthenticatorRequestDialogModel {
   base::WeakPtr<AuthenticatorRequestDialogModel> GetWeakPtr();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MultiplePlatformAuthenticatorsTest,
+                           DeduplicateAccounts);
+
   // Contains the state that will be reset when calling StartOver(). StartOver()
   // might be called at an arbitrary point of execution.
   struct EphemeralState {

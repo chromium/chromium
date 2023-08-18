@@ -244,6 +244,22 @@ int GetHybridButtonLabel(bool has_security_key, bool specific_phones_listed) {
   }
 }
 
+// SourcePriority determines which credential will be used when doing a modal()
+// get and multiple platform authenticators have credentials, all with the same
+// user ID.
+int SourcePriority(device::AuthenticatorType source) {
+  switch (source) {
+    case device::AuthenticatorType::kEnclave:
+      return 3;
+    case device::AuthenticatorType::kICloudKeychain:
+      return 2;
+    case device::AuthenticatorType::kTouchID:
+      return 1;
+    default:
+      return 0;
+  }
+}
+
 }  // namespace
 
 AuthenticatorRequestDialogModel::EphemeralState::EphemeralState() = default;
@@ -267,6 +283,17 @@ AuthenticatorRequestDialogModel::Mechanism::Mechanism(
       callback(std::move(in_callback)) {}
 AuthenticatorRequestDialogModel::Mechanism::~Mechanism() = default;
 AuthenticatorRequestDialogModel::Mechanism::Mechanism(Mechanism&&) = default;
+
+AuthenticatorRequestDialogModel::Mechanism::CredentialInfo::CredentialInfo(
+    device::AuthenticatorType source_in,
+    std::vector<uint8_t> user_id_in)
+    : source(source_in), user_id(std::move(user_id_in)) {}
+AuthenticatorRequestDialogModel::Mechanism::CredentialInfo::CredentialInfo(
+    const CredentialInfo&) = default;
+AuthenticatorRequestDialogModel::Mechanism::CredentialInfo::~CredentialInfo() =
+    default;
+bool AuthenticatorRequestDialogModel::Mechanism::CredentialInfo::operator==(
+    const CredentialInfo&) const = default;
 
 void AuthenticatorRequestDialogModel::ResetEphemeralState() {
   ephemeral_state_ = {};
@@ -1464,7 +1491,8 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
       }
       std::u16string name = base::UTF8ToUTF16(cred.user.name.value_or(""));
       auto& mechanism = mechanisms_.emplace_back(
-          AuthenticatorRequestDialogModel::Mechanism::Credential(cred.source),
+          AuthenticatorRequestDialogModel::Mechanism::Credential(
+              {cred.source, cred.user.id}),
           name, name, GetCredentialIcon(cred.source),
           base::BindRepeating(
               &AuthenticatorRequestDialogModel::OnAccountPreselected,
@@ -1653,18 +1681,32 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
     if (mechanisms_.size() == 1) {
       return 0;
     }
-    // The index of the last mechanism of type `Credential`.
-    absl::optional<size_t> cred_index;
-    size_t cred_count = 0;
+    // The index and info of the credential that the UI should default to.
+    absl::optional<std::pair<size_t, const Mechanism::CredentialInfo*>>
+        best_cred;
+    bool multiple_distinct_creds = false;
+
     for (size_t i = 0; i < mechanisms_.size(); ++i) {
-      if (absl::holds_alternative<Mechanism::Credential>(mechanisms_[i].type)) {
-        cred_index = i;
-        ++cred_count;
+      const auto& type = mechanisms_[i].type;
+      if (absl::holds_alternative<Mechanism::Credential>(type)) {
+        const Mechanism::CredentialInfo* cred_info =
+            &absl::get<Mechanism::Credential>(type).value();
+
+        if (!best_cred.has_value()) {
+          best_cred = std::make_pair(i, cred_info);
+        } else if (best_cred->second->user_id == cred_info->user_id) {
+          if (SourcePriority(cred_info->source) >
+              SourcePriority(best_cred->second->source)) {
+            best_cred = std::make_pair(i, cred_info);
+          }
+        } else {
+          multiple_distinct_creds = true;
+        }
       }
     }
-    // If there is a single recognized passkey, go to that.
-    if (cred_count == 1) {
-      return cred_index;
+    // If there one of the passkey is a valid default, go to that.
+    if (!multiple_distinct_creds && best_cred.has_value()) {
+      return best_cred->first;
     }
     // TODO(crbug.com/1459273): implement skipping to the relevant authenticator
     // for certain Windows requests.

@@ -117,11 +117,11 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMPasskeysOnly) {
   EXPECT_CALL(dialog_model, GetPrioritySyncedPhoneName)
       .WillRepeatedly(testing::Return(kPhoneName));
   mechanisms.emplace_back(
-      Mechanism::Credential(device::AuthenticatorType::kPhone), kPasskeyName1,
-      kPasskeyName1, kPasskeyPhoneIcon, base::DoNothing());
+      Mechanism::Credential({device::AuthenticatorType::kPhone, {0}}),
+      kPasskeyName1, kPasskeyName1, kPasskeyPhoneIcon, base::DoNothing());
   mechanisms.emplace_back(
-      Mechanism::Credential(device::AuthenticatorType::kPhone), kPasskeyName2,
-      kPasskeyName2, kPasskeyPhoneIcon, base::DoNothing());
+      Mechanism::Credential({device::AuthenticatorType::kPhone, {1}}),
+      kPasskeyName2, kPasskeyName2, kPasskeyPhoneIcon, base::DoNothing());
   mechanisms.emplace_back(
       Mechanism::Transport(AuthenticatorTransport::kUsbHumanInterfaceDevice),
       u"security key", u"usb", kPasskeyAoaIcon, base::DoNothing());
@@ -142,11 +142,11 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMAndLocalPasskeys) {
   EXPECT_CALL(dialog_model, GetPrioritySyncedPhoneName)
       .WillRepeatedly(testing::Return(kPhoneName));
   mechanisms.emplace_back(
-      Mechanism::Credential(device::AuthenticatorType::kPhone), kPasskeyName1,
-      kPasskeyName1, kPasskeyPhoneIcon, base::DoNothing());
+      Mechanism::Credential({device::AuthenticatorType::kPhone, {0}}),
+      kPasskeyName1, kPasskeyName1, kPasskeyPhoneIcon, base::DoNothing());
   mechanisms.emplace_back(
-      Mechanism::Credential(device::AuthenticatorType::kTouchID), kPasskeyName2,
-      kPasskeyName2, kPasskeyAoaIcon, base::DoNothing());
+      Mechanism::Credential({device::AuthenticatorType::kTouchID, {1}}),
+      kPasskeyName2, kPasskeyName2, kPasskeyAoaIcon, base::DoNothing());
   mechanisms.emplace_back(
       Mechanism::Transport(AuthenticatorTransport::kUsbHumanInterfaceDevice),
       u"security key", u"usb", kPasskeyAoaIcon, base::DoNothing());
