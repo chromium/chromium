@@ -25,6 +25,7 @@ namespace {
 CGFloat kAccountSectionHeaderHeightPointSize = 22.17;
 CGFloat kSyncDataTypeSectionHeaderHeightPointSize = 60.;
 CGFloat kAdvancedSettingsSectionHeaderHeightPointSize = 26.;
+CGFloat kSignOutSectionHeaderHeightPointSize = 26.;
 
 // Table view customized footer heights.
 CGFloat kAccountSectionFooterHeightPointSize = 16.;
@@ -190,8 +191,13 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
         return kSyncDataTypeSectionHeaderHeightPointSize;
       case AdvancedSettingsSectionIdentifier:
         return kAdvancedSettingsSectionHeaderHeightPointSize;
-      case SyncErrorsSectionIdentifier:
       case SignOutSectionIdentifier:
+        if (![self.tableViewModel hasSectionForSectionIdentifier:
+                                      AdvancedSettingsSectionIdentifier]) {
+          return kSignOutSectionHeaderHeightPointSize;
+        }
+        break;
+      case SyncErrorsSectionIdentifier:
         break;
     }
   }
