@@ -129,6 +129,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.ActionInSuggest.UsageByType.{Type}"
+    enum="BooleanUsage" expires_after="2024-02-20">
+  <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    For action of type &quot;{Type}&quot;, captures whether the user interacted
+    with this action to complete the interaction with the omnibox.
+
+    The histogram is captured only if the action &quot;{Type}&quot; was
+    presented to the user when the interaction with the omnibox completed. The
+    sum of &quot;Used&quot; and &quot;Not Used&quot; indicates the sum of all
+    impressions of a given action.
+
+    Action in Suggest are the Omnibox Action chips attached to a search
+    suggestion.
+  </summary>
+  <token key="Type">
+    <variant name="Call"/>
+    <variant name="Directions"/>
+    <variant name="Reviews"/>
+  </token>
+</histogram>
+
 <histogram name="Omnibox.ActionInSuggest.{ShownOrUsed}"
     enum="ActionInSuggestType" expires_after="2024-02-20">
   <owner>ender@google.com</owner>

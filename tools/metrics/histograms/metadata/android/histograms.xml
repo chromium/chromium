@@ -2176,6 +2176,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.OmniboxAction.Used" enum="BooleanUsage"
+    expires_after="2024-02-20">
+  <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Tracks the usage of Omnibox actions displayed in the Omnibox when the user
+    completed interaction with the Omnibox, if at least one action was shown to
+    the user at that time.
+
+    Value &quot;Used&quot; indicates that at least one OmniboxAction was shown
+    to the user and it was used. Conversely, value &quot;Not Used&quot;
+    signifies that although actions were displayed, none were employed.
+
+    The histogram is not recorded if no actions were visible.
+
+    The histogram is recorded once per Omnibox interaction, where at least one
+    Omnibox Action was shown to the user at the time the user completed
+    interaction with the Omnibox.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.OmniboxAction.Valid" enum="BooleanValid"
+    expires_after="2024-02-20">
+  <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Tracks the validity of Omnibox actions displayed in the Omnibox when the
+    user completed interaction with the Omnibox, if at least one action was
+    shown to the user at that time.
+
+    Omnibox Actions can appear at any point, but the histogram only captures the
+    ultimate state, disregarding any preceding events.
+
+    An OmniboxAction is &quot;Valid&quot; if both Java and Native objects exist
+    and are linked. &quot;Not Valid&quot; indicates a broken relationship, often
+    due to Native AutocompleteResult becoming invalid.
+
+    The histogram should ideally show values close to 100% validity.
+
+    The histogram captures one value for every Omnibox Action displayed in the
+    Suggestions list when the user completes the interaction with the Omnibox.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.RefineActionUsage" enum="RefineActionUsage"
     expires_after="2023-12-24">
   <owner>ender@chromium.org</owner>

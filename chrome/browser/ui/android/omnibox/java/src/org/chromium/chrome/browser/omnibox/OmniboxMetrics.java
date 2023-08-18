@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.TimingMetric;
@@ -30,14 +31,24 @@ public class OmniboxMetrics {
      * Duration between the request for suggestions and the time the first (synchronous) reply is
      * converted to the UI model.
      */
+    @VisibleForTesting
     public static final String HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST =
             "Android.Omnibox.SuggestionList.RequestToUiModel.First";
     /**
      * Duration between the request for suggestions and the time the last (asynchronous) reply is
      * converted to the UI model.
      */
+    @VisibleForTesting
     public static final String HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST =
             "Android.Omnibox.SuggestionList.RequestToUiModel.Last";
+
+    /** Android.Omnibox.OmniboxAction.* histograms */
+    @VisibleForTesting
+    public static final String HISTOGRAM_OMNIBOX_ACTION_USED = "Android.Omnibox.OmniboxAction.Used";
+
+    @VisibleForTesting
+    public static final String HISTOGRAM_OMNIBOX_ACTION_VALID =
+            "Android.Omnibox.OmniboxAction.Valid";
 
     @IntDef({RefineActionUsage.NOT_USED, RefineActionUsage.SEARCH_WITH_ZERO_PREFIX,
             RefineActionUsage.SEARCH_WITH_PREFIX, RefineActionUsage.SEARCH_WITH_BOTH,
@@ -240,6 +251,28 @@ public class OmniboxMetrics {
             @ActionInSuggestIntentResult int intentResult) {
         RecordHistogram.recordEnumeratedHistogram("Android.Omnibox.ActionInSuggest.IntentResult",
                 intentResult, ActionInSuggestIntentResult.COUNT);
+    }
+
+    /**
+     * Record whether an OmniboxAction was still valid when the user finished the interaction with
+     * the Omnibox.
+     *
+     * Recorded once for every action currently offered to the user at the time when the user
+     * completed the interaction with the Omnibox.
+     */
+    public static void recordOmniboxActionIsValid(boolean isValid) {
+        RecordHistogram.recordBooleanHistogram(HISTOGRAM_OMNIBOX_ACTION_VALID, isValid);
+    }
+
+    /**
+     * Record whether any OmniboxAction was used by the User to complete interaction with the
+     * Omnibox.
+     *
+     * Recorded once for *every interaction with the Omnibox* where OmniboxActions were shown to the
+     * user at the final stage of interaction.
+     */
+    public static void recordOmniboxActionIsUsed(boolean wasUsed) {
+        RecordHistogram.recordBooleanHistogram(HISTOGRAM_OMNIBOX_ACTION_USED, wasUsed);
     }
 
     /**

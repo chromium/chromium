@@ -115,7 +115,6 @@ public class OmniboxActionsTest {
         if (mTargetActivity != null) {
             ApplicationTestUtils.finishActivity(mTargetActivity);
         }
-        verifyNoMoreInteractions(mOmniboxActionJni);
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, null);
         mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, null);
     }
@@ -185,6 +184,7 @@ public class OmniboxActionsTest {
                     InstrumentationRegistry.getInstrumentation(), HistoryActivity.class);
             Assert.assertNotNull("Could not find the history activity", mTargetActivity);
         }
+        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -202,6 +202,7 @@ public class OmniboxActionsTest {
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
                         ActionInfo.ActionType.DIRECTIONS_VALUE, /*position=*/2, /*executed=*/false);
+        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -220,6 +221,7 @@ public class OmniboxActionsTest {
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
                         ActionInfo.ActionType.DIRECTIONS_VALUE, /*position=*/2, /*executed=*/false);
+        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -241,5 +243,6 @@ public class OmniboxActionsTest {
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
                         ActionInfo.ActionType.REVIEWS_VALUE, /*position=*/1, /*executed=*/true);
+        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 }

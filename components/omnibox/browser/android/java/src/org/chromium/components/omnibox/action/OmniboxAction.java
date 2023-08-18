@@ -60,17 +60,23 @@ public abstract class OmniboxAction {
     }
 
     @CalledByNative
-    private void destroy() {
+    @VisibleForTesting
+    public void destroy() {
         mNativeInstance = 0;
     }
 
     /**
      * Report information about pedal being shown.
+     *
+     * @return true if information was recorded.
      */
-    public void recordActionShown(int position, boolean executed) {
+    public boolean recordActionShown(int position, boolean executed) {
         if (mNativeInstance != 0L) {
             OmniboxActionJni.get().recordActionShown(mNativeInstance, position, executed);
+            return true;
         }
+
+        return false;
     }
 
     /**
