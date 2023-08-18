@@ -125,6 +125,11 @@ void CardUnmaskPromptViews::GotVerificationResult(
 
       // Remove all child views. Since this is a permanent error we do not
       // intend to return to a previous state.
+      // `RemoveAllChildViews()` destroys the views owned by the `overlay_`.
+      // Prevent dangling pointers by setting pointers to the overlay's children
+      // to null.
+      overlay_label_ = nullptr;
+      progress_throbber_ = nullptr;
       overlay_->RemoveAllChildViews();
 
       // Create and add the error icon.
