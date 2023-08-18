@@ -1,14 +1,13 @@
 caption: Allow Safe Browsing Proxied Real Time Checks
 default: true
-# TODO(crbug.com/1441654): [Also TODO(thefrog)] Rephrase "anonymously"
-# depending on final wording decisions.
 desc: |-
   This controls whether Safe Browsing's standard protection mode is allowed to
-  send partial hashes of the URL to Google through a proxy via Oblivious HTTP
-  in order to determine whether the URL is safe to visit.
+  send partial hashes of URLs to Google through a proxy via Oblivious HTTP
+  in order to determine whether they are safe to visit.
 
   The proxy allows browsers to upload partial hashes of URLs to Google
-  anonymously. It also allows browsers to upload with higher frequency for
+  without them being linked to the user's IP address. The policy also allows
+  browsers to upload the partial hashes of URLs with higher frequency for
   better Safe Browsing protection quality.
 
   This policy will be ignored if Safe Browsing is disabled or set to enhanced
@@ -18,7 +17,8 @@ desc: |-
   higher-protection proxied lookups.
 
   Setting the policy to Disabled disallows the higher-protection proxied
-  lookups. URLs will be uploaded to Google directly with much lower frequency.
+  lookups. Partial hashes of URLs will be uploaded to Google directly with much
+  lower frequency, which will degrade protection.
 example_value: true
 features:
   dynamic_refresh: true
