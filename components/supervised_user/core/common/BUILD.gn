@@ -27,6 +27,7 @@ static_library("common") {
     "//components/signin/public/identity_manager",
     "//components/url_matcher:url_matcher",
     "//extensions/buildflags",
+    "//ui/base",
     "//url",
   ]
 

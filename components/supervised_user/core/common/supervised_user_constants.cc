@@ -4,9 +4,14 @@
 
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
+#include "base/notreached.h"
 #include "components/supervised_user/core/common/pref_names.h"
 
 namespace supervised_user {
+
+const int kHistogramFilteringBehaviorSpacing = 100;
+const int kSupervisedUserURLFilteringResultHistogramMax = 800;
+
 namespace {
 
 GURL KidsManagementBaseURL() {
@@ -18,7 +23,30 @@ const char kGetFamilyMembersURL[] = "families/mine/members?alt=json";
 const char kPermissionRequestsURL[] = "people/me/permissionRequests";
 const char kClassifyURLRequestURL[] = "people/me:classifyUrl";
 
+const int kHistogramPageTransitionMaxKnownValue =
+    static_cast<int>(ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+const int kHistogramPageTransitionFallbackValue =
+    kHistogramFilteringBehaviorSpacing - 1;
+
 }  // namespace
+
+static_assert(kHistogramPageTransitionMaxKnownValue <
+                  kHistogramPageTransitionFallbackValue,
+              "HistogramPageTransition MaxKnownValue must be < FallbackValue");
+static_assert(FILTERING_BEHAVIOR_MAX * kHistogramFilteringBehaviorSpacing +
+                      kHistogramPageTransitionFallbackValue <
+                  kSupervisedUserURLFilteringResultHistogramMax,
+              "Invalid kSupervisedUserURLFilteringResultHistogramMax value");
+
+int GetHistogramValueForTransitionType(ui::PageTransition transition_type) {
+  int value =
+      static_cast<int>(ui::PageTransitionStripQualifier(transition_type));
+  if (0 <= value && value <= kHistogramPageTransitionMaxKnownValue) {
+    return value;
+  }
+  NOTREACHED();
+  return kHistogramPageTransitionFallbackValue;
+}
 
 const char kAuthorizationHeader[] = "Bearer";
 const char kCameraMicDisabled[] = "CameraMicDisabled";
@@ -77,5 +105,8 @@ GURL KidsManagementClassifyURLRequestURL() {
 
 const char kFamilyLinkUserLogSegmentHistogramName[] =
     "FamilyLinkUser.LogSegment";
+
+const char kSupervisedUserURLFilteringResultHistogramName[] =
+    "ManagedUsers.FilteringResult";
 
 }  // namespace supervised_user
