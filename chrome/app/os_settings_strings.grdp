@@ -3180,7 +3180,7 @@ Press an assigned switch or key to remove assignment.
     Use touchpad and keyboard to right-click
   </message>
   <message name="IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_DISABLED" desc="In the touchpad settings subpage, the dropdown list item for the disabled option.">
-    disabled
+    Disabled
   </message>
   <message name="IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_SEARCH" desc="In the touchpad settings subpage, the dropdown list item for the Search + Click option.">
     search + click
@@ -3268,7 +3268,7 @@ Press an assigned switch or key to remove assignment.
     launcher + up arrow
   </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_OPTION_DISABLED" desc="In the keyboard settings subpage, the dropdown list item for the disabled option.">
-    disabled
+    Disabled
   </message>
 
   <!-- Printing Page (OS Settings)-->
@@ -5420,7 +5420,7 @@ Press an assigned switch or key to remove assignment.
     launcher
   </message>
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_DISABLED" desc="In keyboard remap keys subpage, the dropdown list item for a disabled key.">
-    disabled
+    Disabled
   </message>
   <message name="IDS_SETTINGS_PER_DEVICE_CONNECTED_A11Y_LABEL" desc="The message announced to screen readers when a device is connected.">
     <ph name="DEVICE_NAME">$1<ex>Internal Keyboard</ex></ph> has been connected
