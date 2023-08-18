@@ -7047,7 +7047,7 @@ ax::mojom::blink::Role AXObject::AriaRoleStringToRoleEnum(const String& value) {
   static const ARIARoleMap* role_map = CreateARIARoleMap();
 
   Vector<String> role_vector;
-  value.Split(' ', role_vector);
+  value.SimplifyWhiteSpace().Split(' ', role_vector);
   ax::mojom::blink::Role role = ax::mojom::blink::Role::kUnknown;
   for (const auto& child : role_vector) {
     auto it = role_map->find(child);
