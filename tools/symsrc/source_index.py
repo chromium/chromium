@@ -46,17 +46,6 @@ NOTE: Expected to run under a native win32 python, NOT cygwin.  All paths are
 dealt with as win32 paths, since we have to interact with the Microsoft tools.
 """
 
-from __future__ import print_function
-
-try:
-  # Python 3.x
-  from urllib.parse import urlparse
-  # Replace the Python 2 unicode function with str when running Python 3.
-  unicode = str
-except ImportError:
-  # Python 2.x
-  from urlparse import urlparse
-
 import optparse
 import os
 import re
@@ -67,6 +56,7 @@ import time
 import win32api
 
 from collections import namedtuple
+from urllib.parse import urlparse
 
 # Map that associates Git repository URLs with the URL that should be used to
 # retrieve individual files from this repo. Entries in this map should have the
@@ -122,7 +112,7 @@ RevisionInfo = namedtuple('RevisionInfo',
 
 def GetCasedFilePath(filename):
   """Return the correctly cased path for a given filename"""
-  return win32api.GetLongPathName(win32api.GetShortPathName(unicode(filename)))
+  return win32api.GetLongPathName(win32api.GetShortPathName(str(filename)))
 
 
 def FindSrcSrvFile(filename, toolchain_dir):
@@ -153,6 +143,7 @@ def RunCommand(*cmd, **kwargs):
   kwargs.setdefault('stdout', subprocess.PIPE)
   kwargs.setdefault('stderr', subprocess.PIPE)
   kwargs.setdefault('universal_newlines', True)
+  kwargs.setdefault('encoding', 'utf-8')
   raise_on_failure = kwargs.pop('raise_on_failure', True)
 
   proc = subprocess.Popen(cmd, **kwargs)
@@ -458,7 +449,11 @@ def DirectoryIsPartOfPublicGitRepository(local_dir):
   return False
 
 
-def UpdatePDB(pdb_filename, verbose=True, build_dir=None, toolchain_dir=None,
+def UpdatePDB(pdb_filename,
+              verbose=True,
+              build_dir=None,
+              toolchain_dir=None,
+              exclusion_dirs=None,
               follow_junctions=False):
   """Update a pdb file with source information."""
   dir_exclusion_list = { }
@@ -581,6 +576,12 @@ def main():
   parser.add_option('--toolchain-dir', help='The directory containing the VS '
       'toolchain that has been used for this build. All the files present in '
       'this directory (or one of its subdirectories) will be skipped.')
+  parser.add_option(
+      '--exclusion-dirs',
+      help='A semicolon separated list of '
+      'directories containing files that should be excluded from looking up '
+      'source control information. Note that the build-dir and toolchain-dir '
+      'are automatically excluded.')
   parser.add_option('--follow-junctions', action='store_true',help='Indicates '
       'if the junctions should be followed while doing the indexing.',
       default=False)
@@ -594,7 +595,7 @@ def main():
 
   for pdb in args:
     UpdatePDB(pdb, options.verbose, options.build_dir, options.toolchain_dir,
-        options.follow_junctions)
+              options.exclusion_dirs, options.follow_junctions)
 
   return 0
 
