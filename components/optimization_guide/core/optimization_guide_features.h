@@ -34,6 +34,7 @@ BASE_DECLARE_FEATURE(kPageEntitiesPageContentAnnotations);
 BASE_DECLARE_FEATURE(kPageEntitiesModelBypassFilters);
 BASE_DECLARE_FEATURE(kPageEntitiesModelResetOnShutdown);
 BASE_DECLARE_FEATURE(kPageVisibilityPageContentAnnotations);
+BASE_DECLARE_FEATURE(kTextEmbeddingPageContentAnnotations);
 BASE_DECLARE_FEATURE(kPageTextExtraction);
 BASE_DECLARE_FEATURE(kPushNotifications);
 BASE_DECLARE_FEATURE(kOptimizationGuideMetadataValidation);
@@ -51,6 +52,7 @@ BASE_DECLARE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata);
 BASE_DECLARE_FEATURE(kModelStoreUseRelativePath);
 BASE_DECLARE_FEATURE(kOptimizationGuidePersonalizedFetching);
 BASE_DECLARE_FEATURE(kOptimizationGuideHintsURLKeyedCacheDropFragments);
+BASE_DECLARE_FEATURE(kQueryInMemoryTextEmbeddings);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -271,6 +273,10 @@ bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale);
 // for a user using |locale| as their browser language.
 bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale);
 
+// Returns whether the text embedding model should be executed on page content
+// for a user using |locale| as their browser language.
+bool ShouldExecuteTextEmbeddingModelOnPageContent(const std::string& locale);
+
 // Returns whether page metadata should be retrieved from the remote
 // Optimization Guide service.
 bool RemotePageMetadataEnabled();
@@ -340,6 +346,9 @@ bool ShouldPersistSalientImageMetadata();
 
 // Whether to drop fragments for the URL-keyed hint cache key.
 bool ShouldDropFragmentsForURLKeyedHintCacheKey();
+
+// Returns whether to query text embeddings coming from history service.
+bool ShouldQueryEmbeddings();
 
 }  // namespace features
 }  // namespace optimization_guide

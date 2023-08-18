@@ -43,6 +43,18 @@ void TestPageContentAnnotator::Annotate(BatchAnnotationCallback callback,
     }
   }
 
+  if (annotation_type == AnnotationType::kTextEmbedding) {
+    for (const std::string& input : inputs) {
+      auto it = text_embeddings_for_input_.find(input);
+      absl::optional<std::vector<float>> output;
+      if (it != text_embeddings_for_input_.end()) {
+        output = it->second;
+      }
+      results.emplace_back(
+          BatchAnnotationResult::CreateTextEmbeddingResult(input, output));
+    }
+  }
+
   std::move(callback).Run(results);
 }
 
@@ -74,6 +86,14 @@ void TestPageContentAnnotator::UseVisibilityScores(
     const base::flat_map<std::string, double>& visibility_scores_for_input) {
   visibility_scores_model_info_ = model_info;
   visibility_scores_for_input_ = visibility_scores_for_input;
+}
+
+void TestPageContentAnnotator::UseTextEmbeddings(
+    const absl::optional<ModelInfo>& model_info,
+    const base::flat_map<std::string, std::vector<float>>&
+        text_embeddings_for_input) {
+  text_embeddings_model_info_ = model_info;
+  text_embeddings_for_input_ = text_embeddings_for_input;
 }
 
 bool TestPageContentAnnotator::ModelRequestedForType(

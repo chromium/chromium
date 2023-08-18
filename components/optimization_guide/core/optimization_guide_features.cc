@@ -141,6 +141,10 @@ BASE_FEATURE(kPageEntitiesPageContentAnnotations,
 BASE_FEATURE(kPageVisibilityPageContentAnnotations,
              "PageVisibilityPageContentAnnotations",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables the text embedding model to be annotated on every page load.
+BASE_FEATURE(kTextEmbeddingPageContentAnnotations,
+             "TextEmbeddingPageContentAnnotations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature flag does not allow for the entities model to load the name and
 // prefix filters.
@@ -242,6 +246,11 @@ BASE_FEATURE(kOptimizationGuidePersonalizedFetching,
 // Whether to resolve all URLs (minus fragments) to the same URL.
 BASE_FEATURE(kOptimizationGuideHintsURLKeyedCacheDropFragments,
              "OptimizationGuideHintsURLKeyedCacheDropFragments",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables text embeddings to annotated on every page visit and later queried.
+BASE_FEATURE(kQueryInMemoryTextEmbeddings,
+             "QueryInMemoryTextEmbeddings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The default value here is a bit of a guess.
@@ -620,6 +629,13 @@ bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale) {
                                      /*default_value=*/"en");
 }
 
+bool ShouldExecuteTextEmbeddingModelOnPageContent(const std::string& locale) {
+  return (base::FeatureList::IsEnabled(kTextEmbeddingPageContentAnnotations) ||
+          TextEmbeddingBatchAnnotationsEnabled()) &&
+         IsSupportedLocaleForFeature(locale,
+                                     kTextEmbeddingPageContentAnnotations);
+}
+
 bool RemotePageMetadataEnabled() {
   return base::FeatureList::IsEnabled(kRemotePageMetadata);
 }
@@ -768,6 +784,10 @@ bool ShouldPersistSalientImageMetadata() {
 bool ShouldDropFragmentsForURLKeyedHintCacheKey() {
   return base::FeatureList::IsEnabled(
       kOptimizationGuideHintsURLKeyedCacheDropFragments);
+}
+
+bool ShouldQueryEmbeddings() {
+  return (base::FeatureList::IsEnabled(kQueryInMemoryTextEmbeddings));
 }
 
 }  // namespace features

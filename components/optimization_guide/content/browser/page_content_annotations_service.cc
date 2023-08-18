@@ -168,6 +168,10 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     zero_suggest_cache_service_observation_.Observe(
         zero_suggest_cache_service_);
   }
+  if (features::ShouldQueryEmbeddings()) {
+    text_embeddings_for_visits_ =
+        std::make_unique<InMemoryTextEmbeddingManager>();
+  }
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   model_manager_ = std::make_unique<PageContentAnnotationsModelManager>(
       optimization_guide_model_provider);
@@ -184,6 +188,12 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     model_manager_->RequestAndNotifyWhenModelAvailable(
         AnnotationType::kPageEntities, base::DoNothing());
     annotation_types_to_execute_.push_back(AnnotationType::kPageEntities);
+  }
+  if (features::ShouldExecuteTextEmbeddingModelOnPageContent(
+          application_locale)) {
+    model_manager_->RequestAndNotifyWhenModelAvailable(
+        AnnotationType::kTextEmbedding, base::DoNothing());
+    annotation_types_to_execute_.push_back(AnnotationType::kTextEmbedding);
   }
 #endif
 
@@ -294,25 +304,36 @@ void PageContentAnnotationsService::AnnotateVisitBatch() {
       merged_annotation_outputs = std::make_unique<
           std::vector<absl::optional<history::VisitContentModelAnnotations>>>();
   merged_annotation_outputs->reserve(inputs.size());
+
+  std::unique_ptr<std::vector<absl::optional<std::vector<float>>>>
+      merged_embedding_outputs =
+          std::make_unique<std::vector<absl::optional<std::vector<float>>>>();
+  merged_embedding_outputs->reserve(inputs.size());
+
   for (size_t i = 0; i < inputs.size(); i++) {
     merged_annotation_outputs->push_back(absl::nullopt);
+    merged_embedding_outputs->push_back(absl::nullopt);
   }
 
   std::vector<absl::optional<history::VisitContentModelAnnotations>>*
       merged_annotation_outputs_ptr = merged_annotation_outputs.get();
 
+  std::vector<absl::optional<std::vector<float>>>*
+      merged_embedding_outputs_ptr = merged_embedding_outputs.get();
+
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
       annotation_types_to_execute_.size(),
       base::BindOnce(&PageContentAnnotationsService::OnBatchVisitsAnnotated,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(merged_annotation_outputs)));
+                     std::move(merged_annotation_outputs),
+                     std::move(merged_embedding_outputs)));
 
   for (AnnotationType type : annotation_types_to_execute_) {
     annotator_->Annotate(
         base::BindOnce(
             &PageContentAnnotationsService::OnAnnotationBatchComplete,
             weak_ptr_factory_.GetWeakPtr(), type, merged_annotation_outputs_ptr,
-            barrier_closure),
+            merged_embedding_outputs_ptr, barrier_closure),
         inputs, type);
   }
 }
@@ -321,6 +342,7 @@ void PageContentAnnotationsService::OnAnnotationBatchComplete(
     AnnotationType type,
     std::vector<absl::optional<history::VisitContentModelAnnotations>>*
         merge_to_output,
+    std::vector<absl::optional<std::vector<float>>>* merge_embeddings_to_output,
     base::OnceClosure signal_merge_complete_callback,
     const std::vector<BatchAnnotationResult>& batch_result) {
   DCHECK_EQ(merge_to_output->size(), batch_result.size());
@@ -353,6 +375,9 @@ void PageContentAnnotationsService::OnAnnotationBatchComplete(
         history::VisitContentModelAnnotations::MergeCategoryIntoVector(
             category, &current_annotations.entities);
       }
+    } else if (type == AnnotationType::kTextEmbedding) {
+      DCHECK(result.embeddings());
+      merge_embeddings_to_output->at(i) = *result.embeddings();
     }
 
     history::VisitContentModelAnnotations previous_annotations =
@@ -371,10 +396,21 @@ void PageContentAnnotationsService::OnAnnotationBatchComplete(
 void PageContentAnnotationsService::OnBatchVisitsAnnotated(
     std::unique_ptr<
         std::vector<absl::optional<history::VisitContentModelAnnotations>>>
-        merged_annotation_outputs) {
+        merged_annotation_outputs,
+    std::unique_ptr<std::vector<absl::optional<std::vector<float>>>>
+        merged_embedding_outputs) {
   DCHECK_EQ(merged_annotation_outputs->size(),
             current_visit_annotation_batch_.size());
+  DCHECK_EQ(merged_embedding_outputs->size(),
+            current_visit_annotation_batch_.size());
   for (size_t i = 0; i < merged_annotation_outputs->size(); i++) {
+    if (features::ShouldQueryEmbeddings()) {
+      text_embeddings_for_visits_->AddEmbeddingForVisit(
+          current_visit_annotation_batch_[i].url,
+          current_visit_annotation_batch_[i].text_to_annotate.value(),
+          current_visit_annotation_batch_[i].nav_entry_timestamp,
+          merged_embedding_outputs->at(i));
+    }
     OnPageContentAnnotated(current_visit_annotation_batch_[i],
                            merged_annotation_outputs->at(i));
   }
@@ -656,6 +692,34 @@ void PageContentAnnotationsService::OnURLQueried(
       annotation_type);
 }
 
+void PageContentAnnotationsService::QueryEmbeddings(
+    base::OnceCallback<void(history::QueryResults&)> callback_to_history_page,
+    const std::string& query) {
+  std::vector<std::string> query_input = {query};
+  // Generate an embedding for the query using the same BatchAnnotate API
+  // used to generate embeddings for page visits.
+  BatchAnnotate(base::BindOnce(&PageContentAnnotationsService::OnQueryEmbedded,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               std::move(callback_to_history_page)),
+                query_input, AnnotationType::kTextEmbedding);
+}
+
+void PageContentAnnotationsService::OnQueryEmbedded(
+    base::OnceCallback<void(history::QueryResults&)> callback_to_history_page,
+    const std::vector<BatchAnnotationResult>& result) {
+  DCHECK_EQ(result.size(), 1U);
+  // Find closest embeddings with result.embeddings()
+  history::QueryResults results;
+  if (result[0].embeddings().has_value()) {
+    results = text_embeddings_for_visits_
+                  ->InMemoryTextEmbeddingManager::QueryEmbeddings(
+                      result[0].embeddings().value());
+  } else {
+    LOG(ERROR) << "Invalid embedding, cannot execute QueryEmbeddings";
+  }
+  std::move(callback_to_history_page).Run(results);
+}
+
 void PageContentAnnotationsService::GetMetadataForEntityId(
     const std::string& entity_id,
     EntityMetadataRetrievedCallback callback) {
@@ -697,6 +761,7 @@ void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
   // By default, annotate the title.
   HistoryVisit history_visit(visit_row.visit_id);
   history_visit.text_to_annotate = base::UTF16ToUTF8(url_row.title());
+  history_visit.url = url_row.url();
   if (local_navigation_id) {
     history_visit.navigation_id = local_navigation_id.value();
   }
