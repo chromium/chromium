@@ -38,7 +38,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -190,7 +189,6 @@ public class LocationBarLayoutTest {
     @Test
     @SmallTest
     public void testSetUrlBarFocus() {
-        final LocationBarLayout locationBar = getLocationBar();
         LocationBarMediator locationBarMediator = getLocationBarMediator();
 
         Assert.assertEquals(
@@ -268,7 +266,6 @@ public class LocationBarLayoutTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky - https://crbug.com/1470061")
     public void testEnforceMinimumUrlBarWidth() {
         setUrlBarTextAndFocus("");
 
@@ -276,6 +273,7 @@ public class LocationBarLayoutTest {
             View urlBar = getUrlBar();
             LocationBarLayout locationBar = getLocationBar();
 
+            int originalWidth = locationBar.getMeasuredWidth();
             int constrainedWidth = ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart()
                     + locationBar.getResources().getDimensionPixelSize(
                             R.dimen.location_bar_min_url_width);
@@ -287,9 +285,7 @@ public class LocationBarLayoutTest {
             Assert.assertEquals(locationBar.findViewById(R.id.url_action_container).getVisibility(),
                     View.INVISIBLE);
 
-            locationBar.measure(
-                    MeasureSpec.makeMeasureSpec(
-                            constrainedWidth + urlContainerMarginEnd, MeasureSpec.EXACTLY),
+            locationBar.measure(MeasureSpec.makeMeasureSpec(originalWidth, MeasureSpec.EXACTLY),
                     MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
             Assert.assertEquals(locationBar.findViewById(R.id.url_action_container).getVisibility(),
                     View.VISIBLE);
