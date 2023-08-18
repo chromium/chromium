@@ -4,6 +4,7 @@
 import("//build/config/sanitizers/sanitizers.gni")
 import("//gpu/vulkan/features.gni")
 import("//skia/features.gni")
+import("//ui/gl/features.gni")
 
 import("//cc/cc.gni")
 
@@ -675,6 +676,12 @@ cc_test_static_library("test_support") {
   }
   if (!is_android) {
     data_deps = [ "//third_party/mesa_headers" ]
+  }
+  if (skia_use_dawn) {
+    deps += [
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
+    ]
   }
 }
 

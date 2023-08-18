@@ -32,6 +32,12 @@
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
+#include "skia/buildflags.h"
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "third_party/dawn/include/dawn/dawn_proc.h"
+#include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
+#endif
 
 using gpu::gles2::GLES2Interface;
 
@@ -58,7 +64,11 @@ LayerTreePixelTest::LayerTreePixelTest(viz::RendererType renderer_type)
       raster_type_(GetDefaultRasterType(renderer_type)),
       pixel_comparator_(
           std::make_unique<AlphaDiscardingExactPixelComparator>()),
-      pending_texture_mailbox_callbacks_(0) {}
+      pending_texture_mailbox_callbacks_(0) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  dawnProcSetProcs(&dawn::native::GetProcs());
+#endif
+}
 
 LayerTreePixelTest::~LayerTreePixelTest() = default;
 
