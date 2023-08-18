@@ -34,7 +34,8 @@ class ZstdSourceStream : public FilterSourceStream {
       : FilterSourceStream(SourceStream::TYPE_ZSTD, std::move(upstream)),
         dictionary_(std::move(dictionary)),
         dictionary_size_(dictionary_size) {
-    dctx_.reset(ZSTD_createDCtx());
+    ZSTD_customMem custom_mem = {&customMalloc, &customFree, this};
+    dctx_.reset(ZSTD_createDCtx_advanced(custom_mem));
     CHECK(dctx_);
     // Following RFC 8878 recommendation (see section 3.1.1.1.2 Window
     // Descriptor) of using a maximum 8MB memory buffer to decompress frames
@@ -69,9 +70,40 @@ class ZstdSourceStream : public FilterSourceStream {
             static_cast<int>((consumed_bytes_ * 100) / produced_bytes_));
       }
     }
+
+    UMA_HISTOGRAM_MEMORY_KB("Net.ZstdFilter.MaxMemoryUsage",
+                            (max_allocated_ / 1024));
   }
 
  private:
+  static void* customMalloc(void* opaque, size_t size) {
+    return reinterpret_cast<ZstdSourceStream*>(opaque)->customMalloc(size);
+  }
+
+  void* customMalloc(size_t size) {
+    void* address = malloc(size);
+    CHECK(address);
+    malloc_sizes_.insert(std::make_pair(address, size));
+    total_allocated_ += size;
+    if (total_allocated_ > max_allocated_) {
+      max_allocated_ = total_allocated_;
+    }
+    return address;
+  }
+
+  static void customFree(void* opaque, void* address) {
+    return reinterpret_cast<ZstdSourceStream*>(opaque)->customFree(address);
+  }
+
+  void customFree(void* address) {
+    free(address);
+    auto it = malloc_sizes_.find(address);
+    CHECK(it != malloc_sizes_.end());
+    const size_t size = it->second;
+    total_allocated_ -= size;
+    malloc_sizes_.erase(it);
+  }
+
   // SourceStream implementation
   std::string GetTypeAsString() const override { return kZstd; }
 
@@ -121,6 +153,10 @@ class ZstdSourceStream : public FilterSourceStream {
       return output.pos;
     }
   }
+
+  size_t total_allocated_ = 0;
+  size_t max_allocated_ = 0;
+  std::unordered_map<void*, size_t> malloc_sizes_;
 
   const scoped_refptr<IOBuffer> dictionary_;
   const size_t dictionary_size_;

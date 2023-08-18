@@ -5831,6 +5831,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.ZstdFilter.MaxMemoryUsage" units="KB"
+    expires_after="2023-11-17">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The maximum memory allocation by the zstd library to decode a
+    Zstd-compressed response stream from the network. Recorded once per layer of
+    Zstd compression (usually once per zstd-compressed response), at the end of
+    decoding.
+  </summary>
+</histogram>
+
 <histogram name="Net.ZstdFilter.Status" enum="ZstdFilterDecodingStatus"
     expires_after="2024-06-26">
   <owner>nidhijaju@chromium.org</owner>
