@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace content {
@@ -39,6 +40,12 @@ void CookieControlsBubbleCoordinator::ShowBubble(
                      base::Unretained(this)));
   bubble_view_ = bubble_view.get();
   bubble_view_->View::AddObserver(this);
+
+  auto* icon_view =
+      browser_view->toolbar_button_provider()->GetPageActionIconView(
+          PageActionIconType::kCookieControls);
+  CHECK(icon_view);
+  bubble_view_->SetHighlightedButton(icon_view);
 
   view_controller_ = std::make_unique<CookieControlsBubbleViewController>(
       bubble_view_, controller, web_contents);
