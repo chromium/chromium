@@ -505,7 +505,8 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
 
   // Show section only when the extension requests host permissions.
   auto* permissions_manager = PermissionsManager::Get(profile_);
-  if (permissions_manager->ExtensionRequestsHostPermissions(*extension)) {
+  if (permissions_manager->ExtensionRequestsHostPermissionsOrActiveTab(
+          *extension)) {
     content::WebContents* web_contents = GetActiveWebContents();
     const GURL& url = web_contents->GetLastCommittedURL();
     // We store the origin to make sure it's the same when executing page access

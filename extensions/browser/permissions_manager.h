@@ -180,8 +180,9 @@ class PermissionsManager : public KeyedService {
   ExtensionSiteAccess GetSiteAccess(const Extension& extension,
                                     const GURL& url) const;
 
-  // Returns whether the extension requests host permissions.
-  bool ExtensionRequestsHostPermissions(const Extension& extension) const;
+  // Returns whether the extension requests host permissions or activeTab.
+  bool ExtensionRequestsHostPermissionsOrActiveTab(
+      const Extension& extension) const;
 
   // Returns true if the associated extension can be affected by
   // runtime host permissions.
