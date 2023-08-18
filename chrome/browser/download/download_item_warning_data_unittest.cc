@@ -140,3 +140,15 @@ TEST_F(DownloadItemWarningDataTest, GetEvents_ExceedEventMaxLength) {
                                /*expected_latency=*/20 * 5000,
                                /*expected_is_terminal_action=*/false));
 }
+
+TEST_F(DownloadItemWarningDataTest, IsEncryptedArchive) {
+  EXPECT_FALSE(DownloadItemWarningData::IsEncryptedArchive(&download_));
+  DownloadItemWarningData::SetIsEncryptedArchive(&download_, true);
+  EXPECT_TRUE(DownloadItemWarningData::IsEncryptedArchive(&download_));
+}
+
+TEST_F(DownloadItemWarningDataTest, HasIncorrectPassword) {
+  EXPECT_FALSE(DownloadItemWarningData::HasIncorrectPassword(&download_));
+  DownloadItemWarningData::SetHasIncorrectPassword(&download_, true);
+  EXPECT_TRUE(DownloadItemWarningData::HasIncorrectPassword(&download_));
+}
