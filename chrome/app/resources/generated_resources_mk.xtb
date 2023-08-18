@@ -1096,6 +1096,7 @@
 <translation id="1854180393107901205">Запри со емитување</translation>
 <translation id="1856715684130786728">Додај локација...</translation>
 <translation id="1858585891038687145">Имајте доверба во сертификатов за идентификување на производителите на софтвер</translation>
+<translation id="1859294693760125695">Веќе не ме интересира</translation>
 <translation id="1859339856433307593">Веќе е зачувана лозинка за сметкава во вашиот <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Папкава е празна</translation>
 <translation id="1862311223300693744">Дали имате инсталирано посебна VPN, прокси, заштитен ѕид или
@@ -3294,6 +3295,7 @@
 <translation id="3660234220361471169">Недоверливи</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Најдена е 1 постојна лозинка}one{Најдени се {NUM_PASSWORDS} постојна лозинка}other{Најдени се {NUM_PASSWORDS} постојни лозинки}}</translation>
 <translation id="3664511988987167893">Икона за екстензијата</translation>
+<translation id="3665301845536101715">Отвори во страничната табла</translation>
 <translation id="3665589677786828986">Chrome откри дека некои од поставките на прелистувачот ги оштетила друга програма и ги ресетирала на првичните стандардни вредности.</translation>
 <translation id="3665919494326051362">Тековната верзија е <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Меморија за отстранување грешки на NICs на Wi-Fi на Intel</translation>
@@ -8662,6 +8664,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{видео}one{# видео}other{# видеа}}</translation>
 <translation id="8143442547342702591">Неважечка апликација</translation>
 <translation id="8143609395536282994">Како може да управувате со вашите податоци:</translation>
+<translation id="8144429778087524791">Означи како завршено и скриј</translation>
 <translation id="8145170459658034418">Штедач на меморија</translation>
 <translation id="8146177459103116374">Доколку веќе се регистриравте на овој уред, може да се <ph name="LINK2_START" />пријавите како постоечки корисник<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Додавајте и рангирајте ги омилените јазици. Кога е можно, веб-сајтовите ќе се прикажуваат на вашиот претпочитан јазик. Поставкиве се синхронизираат со поставките за прелистувачот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>

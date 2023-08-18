@@ -94,6 +94,7 @@
 <translation id="174937106936716857">एकूण फाईल संख्या</translation>
 <translation id="1755345808328621801">ही फाइल Windows सॉफ्टवेअर वापरणार्‍या PC साठी डिझाइन केली आहे. ही तुमच्या ChromeOS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. कृपया त्या जागी वापरण्यासाठी अनुरूप अ‍ॅप मिळवण्याकरिता Chrome वेब स्टोअर मध्ये शोधा.</translation>
 <translation id="1757915090001272240">रूंद लॅटिन</translation>
+<translation id="1761091787730831947"><ph name="VM_NAME" /> सह शेअर करा</translation>
 <translation id="1773212559869067373">ऑथेंटिकेशन प्रमाणपत्र स्थानिक पातळीवर नाकारले</translation>
 <translation id="1775381402323441512">व्हिडिओ माहिती</translation>
 <translation id="180035236176489073">या फाइल ॲक्सेस करण्‍यासाठी तुम्ही ऑनलाइन असणे आवश्यक आहे.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Linux सह अ‍ॅप इंस्टॉल करा</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, तपशील</translation>
 <translation id="2724954091494693138">F-कीबोर्डसह तुर्की</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" /> शेअरिंग व्यवस्थापित करा</translation>
 <translation id="2732839045120506979">व्हिएतनामी VNI</translation>
 <translation id="2735623501230989521">Parallels Desktop ला <ph name="FOLDER_NAME" /> फोल्डरमधील फाइल ॲक्सेस करण्याची परवानगी द्या</translation>
 <translation id="2764206540577097904">तुम्ही तुमचे पूर्ण वैयक्तिक Google Workspace स्टोरेज वापरले आहे.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> आयटम सिंक करण्‍याची तयारी करत आहे...</translation>
 <translation id="3522708245912499433">पोर्तुगीज</translation>
+<translation id="3523225005467146490"><ph name="VM_NAME" /> सह १ फोल्डर शेअर केले</translation>
 <translation id="3524311639100184459">सावधान: या फाइल तात्पुरत्या आहेत आणि डिस्कवरील जागा मोकळी करण्यासाठी त्या आपोआप हटवल्या जाऊ शकतात.  <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3548125359243647069">बऱ्याच वेळा चुकीचा पिन एंटर करण्यात आला.</translation>
@@ -664,6 +667,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6164412158936057769">फुलपाखरे</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6170470584681422115">सँडविच</translation>
+<translation id="6181912134988520389"><ph name="VM_NAME" /> ला तुमच्या Google Drive मधील फाइल अ‍ॅक्सेस करण्याची परवानगी द्या. बदल तुमच्या इतर डिव्हाइसवर सिंक होतील.</translation>
 <translation id="6187719147498869044">हंगेरियन</translation>
 <translation id="6198252989419008588">पिन बदला</translation>
 <translation id="6199801702437275229">स्थान माहितीसाठी प्रतीक्षा करत आहे...</translation>
@@ -767,6 +771,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6989942356279143254">स्वीडिश</translation>
 <translation id="6990081529015358884">तुमची जागा समाप्त झाली आहे</translation>
 <translation id="6993826899923627728">हे आयटम तुमच्या ट्रॅश मध्ये आहेत</translation>
+<translation id="6996593023542748157"><ph name="VM_NAME" /> सह फोल्डर शेअर करा</translation>
 <translation id="7008426324576352165">अपलोड पूर्ण करण्यासाठी तुमच्या संस्थेला आणखी स्टोरेजची आवश्यकता आहे.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> फाइल हलवणे अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे ब्लॉक केले आहे</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -952,6 +957,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8335837413233998004">बेलारुशियन</translation>
 <translation id="8336153091935557858">काल <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">समान नावाची एखादी फाइल किंवा डिरेक्टरी आधीपासूनच अस्तित्वात आहे.</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" /> ला <ph name="FOLDER_NAME" /> फोल्डरमधील फाइल ॲक्सेस करण्याची परवानगी द्या</translation>
 <translation id="8372369524088641025">खराब WEP की</translation>
 <translation id="8372852072747894550">ग्रीक</translation>
 <translation id="8386903983509584791">स्कॅन पूर्ण झाले</translation>
@@ -961,6 +967,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> नेटवर्क, कनेक्ट करत आहे</translation>
 <translation id="8425213833346101688">बदल करा</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
+<translation id="8429998526804961548"><ph name="VM_NAME" /> सह <ph name="NUMBER_OF_ITEMS" /> फोल्डर शेअर केली</translation>
 <translation id="8431909052837336408">सिम पिन बदला</translation>
 <translation id="8437209419043462667">यूएस</translation>
 <translation id="8452135315243592079">गहाळ सिम कार्ड</translation>

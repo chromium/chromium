@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Heildarfjöldi skráa</translation>
 <translation id="1755345808328621801">Þessi skrá er hönnuð fyrir tölvu með Windows-hugbúnaði. Hún er ekki samhæf tækinu þínu sem keyrir ChromeOS. Leitaðu að hentugu forriti í stað þessa í vefverslun Chrome.</translation>
 <translation id="1757915090001272240">Breitt latneskt</translation>
+<translation id="1761091787730831947">Deila með <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Auðkenningarvottorði var hafnað staðbundið</translation>
 <translation id="1775381402323441512">Upplýsingar um myndskeið</translation>
 <translation id="180035236176489073">Þú verður að vera á netinu til að geta opnað þessar skrár.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Setja upp forrit með Linux</translation>
 <translation id="2719020180254996569">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, upplýsingar</translation>
 <translation id="2724954091494693138">Tyrkneska með F-lyklaborði</translation>
+<translation id="2732288874651063549">Stjórna deilingu með <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Víetnamska VNI</translation>
 <translation id="2735623501230989521">Veita Parallels Desktop aðgang að skrám í möppunni <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Þú hefur fyllt Google Workspace einstaklingsgeymsluna þína.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, upplýsingar</translation>
 <translation id="3511705761158917664">Undirbýr samstillingu <ph name="NUMBER_OF_ITEMS" /> atriða...</translation>
 <translation id="3522708245912499433">Portúgalskt</translation>
+<translation id="3523225005467146490">1 möppu deilt með <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Varúð: Þessar skrár eru til bráðabirgða og þeim kann að vera eytt sjálfkrafa til að losa um diskpláss.  <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mappa</translation>
 <translation id="3548125359243647069">Rangt PIN-númer var slegið inn of oft.</translation>
@@ -663,6 +666,7 @@
 <translation id="6164412158936057769">Fiðrildi</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6170470584681422115">Samloka</translation>
+<translation id="6181912134988520389">Veittu <ph name="VM_NAME" /> aðgang að skrám á Google Drive. Breytingar samstillast við önnur tæki.</translation>
 <translation id="6187719147498869044">Ungverska</translation>
 <translation id="6198252989419008588">Breyta PIN-númeri</translation>
 <translation id="6199801702437275229">Beðið eftir rýmisupplýsingum...</translation>
@@ -766,6 +770,7 @@
 <translation id="6989942356279143254">Sænska</translation>
 <translation id="6990081529015358884">Plássið er uppurið</translation>
 <translation id="6993826899923627728">Þessi atriði eru í ruslinu</translation>
+<translation id="6996593023542748157">Deila möppu með <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Fyrirtækið þitt þarf meira geymslurými til að ljúka við upphleðsluna.</translation>
 <translation id="7009985720488544166">Regla stjórnanda kemur í veg fyrir að hægt sé að flytja <ph name="COUNT" /> skrár</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -951,6 +956,7 @@
 <translation id="8335837413233998004">Hvítrússneska</translation>
 <translation id="8336153091935557858">Í gær <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Skrá eða mappa með sama heiti er þegar til.</translation>
+<translation id="83651606385705612">Veittu <ph name="VM_NAME" /> aðgang að skrám í möppunni „<ph name="FOLDER_NAME" />“</translation>
 <translation id="8372369524088641025">Rangur WEP-lykill</translation>
 <translation id="8372852072747894550">Gríska</translation>
 <translation id="8386903983509584791">Skönnun lokið</translation>
@@ -960,6 +966,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-net, tengist</translation>
 <translation id="8425213833346101688">Breyta</translation>
 <translation id="8428213095426709021">Stillingar</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> möppum deilt með <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Breyta PIN-númeri SIM-korts</translation>
 <translation id="8437209419043462667">Bandarískt</translation>
 <translation id="8452135315243592079">SIM-kort vantar</translation>

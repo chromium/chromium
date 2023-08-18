@@ -1095,6 +1095,7 @@
 <translation id="1854180393107901205">அனுப்புவதை நிறுத்து</translation>
 <translation id="1856715684130786728">இடத்தைச் சேர்...</translation>
 <translation id="1858585891038687145">மென்பொருள் தயாரிப்பாளர்களை அடையாளங்காண, இந்தச் சான்றிதழை நம்பு</translation>
+<translation id="1859294693760125695">ஆர்வம் இல்லை</translation>
 <translation id="1859339856433307593">இந்தக் கணக்கிற்கான கடவுச்சொல் உங்கள் <ph name="BRAND" /> இல் (<ph name="USER_EMAIL" />) ஏற்கெனவே சேமிக்கப்பட்டுள்ளது</translation>
 <translation id="1861262398884155592">இந்த ஃபோல்டரில் எதுவுமில்லை</translation>
 <translation id="1862311223300693744">பிரத்தியேக VPN, ப்ராக்ஸி, ஃபயர்வால், NAS மென்பொருள் போன்றவற்றை
@@ -3293,6 +3294,7 @@
 <translation id="3660234220361471169">நம்பகமில்லாதது</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{ஒரு கடவுச்சொல் ஏற்கெனவே உள்ளது}other{{NUM_PASSWORDS} கடவுச்சொற்கள் ஏற்கெனவே உள்ளன}}</translation>
 <translation id="3664511988987167893">நீட்டிப்பு ஐகான்</translation>
+<translation id="3665301845536101715">பக்கவாட்டு பேனலில் திற</translation>
 <translation id="3665589677786828986">மற்றொரு நிரலால் உங்கள் அமைப்புகளில் சில சிதைந்துள்ளதை Chrome கண்டறிந்ததுடன், அவற்றை அசல் இயல்புநிலைகளுக்கு மீட்டமைக்கிறது.</translation>
 <translation id="3665919494326051362">தற்போதைய பதிப்பு: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel WiFi NICகளின் பிழைதிருத்த ஃபைல்கள்</translation>
@@ -8662,6 +8664,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{ஒரு வீடியோவை}other{# வீடியோக்களை}}</translation>
 <translation id="8143442547342702591">தவறான ஆப்ஸ்</translation>
 <translation id="8143609395536282994">உங்கள் தரவை நீங்கள் எப்படி நிர்வகிக்கலாம்?</translation>
+<translation id="8144429778087524791">முடிந்ததாகக் குறித்து மறை</translation>
 <translation id="8145170459658034418">நினைவகச் சேமிப்பான்</translation>
 <translation id="8146177459103116374">இந்த சாதனத்தில் ஏற்கனவே பதிவுசெய்திருந்தால், <ph name="LINK2_START" />நடப்புப் பயனராக உள்நுழையலாம்<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">விருப்பமான மொழிகளைச் சேர்த்து வரிசைப்படுத்தலாம். இணையதளங்கள் அந்த மொழிகளில் காட்டப்படும் (கிடைக்கும்பட்சத்தில்). இந்த விருப்பத்தேர்வுகள் உங்கள் உலாவி அமைப்புகளுடன் ஒத்திசைக்கப்படும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>

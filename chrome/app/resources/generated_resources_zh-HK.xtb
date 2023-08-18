@@ -1095,7 +1095,7 @@
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1856715684130786728">新增位置…</translation>
 <translation id="1858585891038687145">信任這個用於識別軟件製造商的憑證</translation>
-<translation id="1859294693760125695">已不感興趣</translation>
+<translation id="1859294693760125695">不再感興趣</translation>
 <translation id="1859339856433307593">此帳戶的密碼已儲存在「<ph name="BRAND" />」中 (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">此資料夾中沒有內容</translation>
 <translation id="1862311223300693744">您有安裝任何特殊的 VPN、Proxy、防火牆或 NAS 軟件
@@ -3294,7 +3294,7 @@
 <translation id="3660234220361471169">不受信任</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{找到 1 個現有密碼}other{找到 {NUM_PASSWORDS} 個現有密碼}}</translation>
 <translation id="3664511988987167893">擴充程式圖示</translation>
-<translation id="3665301845536101715">在側邊面板中開啟</translation>
+<translation id="3665301845536101715">在側面板中開啟</translation>
 <translation id="3665589677786828986">Chrome 偵測到另一個程式破壞了部分設定，並且將這些設定重設為原始預設值。</translation>
 <translation id="3665919494326051362">目前的版本是 <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC 偵錯傾印</translation>
@@ -8656,7 +8656,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{1 部影片}other{# 部影片}}</translation>
 <translation id="8143442547342702591">無效的應用程式</translation>
 <translation id="8143609395536282994">您可透過哪些方式管理資料：</translation>
-<translation id="8144429778087524791">標示為完成並隱藏</translation>
+<translation id="8144429778087524791">標示為已完成並隱藏</translation>
 <translation id="8145170459658034418">記憶體節省模式</translation>
 <translation id="8146177459103116374">如果您已在這部裝置上註冊，您可以<ph name="LINK2_START" />用現有的使用者身分登入<ph name="LINK2_END" />。</translation>
 <translation id="8146287226035613638">新增偏好語言及指定各語言的優先次序。網站會按情況以您偏好的語言顯示內容。這些偏好設定會與您的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>

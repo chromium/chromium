@@ -1096,6 +1096,7 @@
 <translation id="1854180393107901205">कास्ट करना रोकें</translation>
 <translation id="1856715684130786728">स्थान जोड़ें...</translation>
 <translation id="1858585891038687145">सॉफ़्टवेयर निर्माताओं की पहचान करने के लिए इस प्रमाणपत्र पर विश्वास करें</translation>
+<translation id="1859294693760125695">अब कोई दिलचस्पी नहीं है</translation>
 <translation id="1859339856433307593">इस खाते का पासवर्ड, पहले से ही <ph name="BRAND" /> (<ph name="USER_EMAIL" />) में सेव है</translation>
 <translation id="1861262398884155592">यह फ़ोल्डर खाली है</translation>
 <translation id="1862311223300693744">क्या आपने कोई खास वीपीएन, प्रॉक्सी, फ़ायरवॉल, या एनएएस सॉफ़्टवेयर
@@ -3294,6 +3295,7 @@
 <translation id="3660234220361471169">अविश्वसनीय</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 मौजूदा पासवर्ड मिला}one{{NUM_PASSWORDS} मौजूदा पासवर्ड मिला}other{{NUM_PASSWORDS} मौजूदा पासवर्ड मिले}}</translation>
 <translation id="3664511988987167893">एक्सटेंशन आइकॉन</translation>
+<translation id="3665301845536101715">साइड पैनल में खोलें</translation>
 <translation id="3665589677786828986">Chrome को पता चला है कि आपकी कुछ सेटिंग किसी दूसरे प्रोग्राम के द्वारा दूषित कर दी गई हैं और उन्हें उनके मूल डिफ़ॉल्ट पर रीसेट कर दिया गया है.</translation>
 <translation id="3665919494326051362">मौजूदा वर्शन <ph name="CURRENT_VERSION" /> है</translation>
 <translation id="3666196264870170605">Intel के वाई-फ़ाई एनआईसी का डीबग डंप</translation>
@@ -8661,6 +8663,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{एक वीडियो}one{# वीडियो}other{# वीडियो}}</translation>
 <translation id="8143442547342702591">अमान्य ऐप्लिकेशन</translation>
 <translation id="8143609395536282994">अपना डेटा कैसे मैनेज करें:</translation>
+<translation id="8144429778087524791">'हो गया' के तौर पर मार्क करें और छिपाएं</translation>
 <translation id="8145170459658034418">मेमोरी बचाने वाली सेटिंग</translation>
 <translation id="8146177459103116374">अगर आप इस डिवाइस पर पहले से रजिस्टर हैं, तो आप <ph name="LINK2_START" />मौजूदा उपयोगकर्ता के रूप में साइन इन<ph name="LINK2_END" /> कर सकते हैं.</translation>
 <translation id="8146287226035613638">अपनी पसंदीदा भाषाओं को जोड़ें और उन्हें मनमुताबिक क्रम में लगाएं. जब संभव होगा, वेबसाइटें आपकी पसंदीदा भाषाओं में दिखेंगी. इन प्राथमिकताओं को आपके ब्राउज़र की सेटिंग के साथ सिंक किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
