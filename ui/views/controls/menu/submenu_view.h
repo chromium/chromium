@@ -25,12 +25,9 @@ struct OwnedWindowAnchor;
 
 namespace views {
 
+class MenuControllerTest;
 class MenuItemView;
 class MenuScrollViewContainer;
-
-namespace test {
-class MenuControllerTest;
-}  // namespace test
 
 // SubmenuView is the parent of all menu items.
 //
@@ -200,7 +197,7 @@ class VIEWS_EXPORT SubmenuView : public View,
   void ChildPreferredSizeChanged(View* child) override;
 
  private:
-  friend class test::MenuControllerTest;
+  friend class MenuControllerTest;
 
   void SchedulePaintForDropIndicator(MenuItemView* item,
                                      MenuDelegate::DropPosition position);

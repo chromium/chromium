@@ -85,7 +85,7 @@
 #include "base/win/windows_version.h"
 #endif
 
-namespace views::test {
+namespace views {
 namespace {
 
 using ::ui::mojom::DragOperation;
@@ -324,7 +324,8 @@ class MenuControllerTest : public ViewsTestBase,
         base::i18n::SetRTLForTesting(true);
     }
 
-    auto test_views_delegate = std::make_unique<ReleaseRefTestViewsDelegate>();
+    auto test_views_delegate =
+        std::make_unique<test::ReleaseRefTestViewsDelegate>();
     test_views_delegate_ = test_views_delegate.get();
     // ViewsTestBase takes ownership, destroying during Teardown.
     set_views_delegate(std::move(test_views_delegate));
@@ -698,7 +699,7 @@ class MenuControllerTest : public ViewsTestBase,
   GestureTestWidget* owner() { return owner_.get(); }
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
   MenuItemView* menu_item() { return menu_item_.get(); }
-  TestMenuDelegate* menu_delegate() { return menu_delegate_.get(); }
+  test::TestMenuDelegate* menu_delegate() { return menu_delegate_.get(); }
   TestMenuControllerDelegate* menu_controller_delegate() {
     return menu_controller_delegate_.get();
   }
@@ -814,7 +815,7 @@ class MenuControllerTest : public ViewsTestBase,
   }
 
   void SetupMenuItem() {
-    menu_delegate_ = std::make_unique<TestMenuDelegate>();
+    menu_delegate_ = std::make_unique<test::TestMenuDelegate>();
     menu_item_ = std::make_unique<MenuItemView>(menu_delegate_.get());
     menu_item_->AppendMenuItem(1, u"One");
     menu_item_->AppendMenuItem(2, u"Two");
@@ -835,14 +836,14 @@ class MenuControllerTest : public ViewsTestBase,
   }
 
   // Not owned.
-  raw_ptr<ReleaseRefTestViewsDelegate, DanglingUntriaged> test_views_delegate_ =
-      nullptr;
+  raw_ptr<test::ReleaseRefTestViewsDelegate, DanglingUntriaged>
+      test_views_delegate_ = nullptr;
 
   std::unique_ptr<GestureTestWidget> owner_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   std::unique_ptr<MenuItemView> menu_item_;
   std::unique_ptr<TestMenuControllerDelegate> menu_controller_delegate_;
-  std::unique_ptr<TestMenuDelegate> menu_delegate_;
+  std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
   raw_ptr<MenuController, DanglingUntriaged> menu_controller_ = nullptr;
 };
 
@@ -1583,7 +1584,8 @@ TEST_F(MenuControllerTest, AsynchronousPerformDrop) {
   std::move(drop_cb).Run(target_event, output_drag_op,
                          /*drag_image_layer_owner=*/nullptr);
 
-  auto* menu_delegate = static_cast<TestMenuDelegate*>(target->GetDelegate());
+  auto* menu_delegate =
+      static_cast<test::TestMenuDelegate*>(target->GetDelegate());
   TestMenuControllerDelegate* controller_delegate = menu_controller_delegate();
   EXPECT_TRUE(menu_delegate->is_drop_performed());
   EXPECT_FALSE(IsShowing());
@@ -1650,7 +1652,8 @@ TEST_F(MenuControllerTest, AsycDropCallback) {
                                    ui::DragDropTypes::DRAG_MOVE);
   auto drop_cb = controller->GetDropCallback(source, target_event);
 
-  auto* menu_delegate = static_cast<TestMenuDelegate*>(target->GetDelegate());
+  auto* menu_delegate =
+      static_cast<test::TestMenuDelegate*>(target->GetDelegate());
   TestMenuControllerDelegate* controller_delegate = menu_controller_delegate();
   EXPECT_FALSE(menu_delegate->is_drop_performed());
   EXPECT_FALSE(IsShowing());
@@ -2508,7 +2511,7 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
   SetPendingStateItem(sub_menu_item);
 
   // Nest a context menu.
-  auto nested_menu_delegate_1 = std::make_unique<TestMenuDelegate>();
+  auto nested_menu_delegate_1 = std::make_unique<test::TestMenuDelegate>();
   auto nested_menu_item_1 =
       std::make_unique<MenuItemView>(nested_menu_delegate_1.get());
   nested_menu_item_1->set_controller(controller);
@@ -2558,7 +2561,7 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
   EXPECT_EQ(menu_delegate()->show_context_menu_source(), sub_menu_item);
 
   // Nest a context menu.
-  auto nested_menu_delegate_2 = std::make_unique<TestMenuDelegate>();
+  auto nested_menu_delegate_2 = std::make_unique<test::TestMenuDelegate>();
   auto nested_menu_item_2 =
       std::make_unique<MenuItemView>(nested_menu_delegate_2.get());
   nested_menu_item_2->set_controller(controller);
@@ -3082,7 +3085,7 @@ TEST_F(MenuControllerTest, AccessibilityDoDefaultCallsAccept) {
 // Test that the kSelectedChildrenChanged event is emitted on
 // the root menu item when the selected menu item changes.
 TEST_F(MenuControllerTest, AccessibilityEmitsSelectChildrenChanged) {
-  AXEventCounter ax_counter(views::AXEventManager::Get());
+  test::AXEventCounter ax_counter(views::AXEventManager::Get());
   menu_controller()->Run(owner(), nullptr, menu_item(), gfx::Rect(),
                          MenuAnchorPosition::kTopLeft, false, false);
 
@@ -3288,4 +3291,4 @@ TEST_F(MenuControllerTest, ChildMenuOpenDirectionStateUpdatesCorrectly) {
             GetChildMenuOpenDirectionAtDepth(10));
 }
 
-}  // namespace views::test
+}  // namespace views

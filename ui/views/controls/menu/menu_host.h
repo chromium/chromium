@@ -18,6 +18,7 @@
 
 namespace views {
 
+class MenuControllerTest;
 class SubmenuView;
 class View;
 class Widget;
@@ -28,10 +29,6 @@ namespace internal {
 class PreMenuEventDispatchHandler;
 #endif  // defined(USE_AURA)
 }  // namespace internal
-
-namespace test {
-class MenuControllerTest;
-}  // namespace test
 
 // SubmenuView uses a MenuHost to house the SubmenuView.
 //
@@ -92,7 +89,7 @@ class MenuHost : public Widget, public WidgetObserver {
   void ReleaseMenuHostCapture();
 
  private:
-  friend class test::MenuControllerTest;
+  friend class MenuControllerTest;
 
   // Widget:
   internal::RootView* CreateRootView() override;

@@ -49,6 +49,7 @@ struct OwnedWindowAnchor;
 namespace views {
 
 class Button;
+class MenuControllerTest;
 class MenuHostRootView;
 class MenuItemView;
 class MenuPreTargetHandler;
@@ -63,7 +64,6 @@ class MenuRunnerImpl;
 }  // namespace internal
 
 namespace test {
-class MenuControllerTest;
 class MenuControllerTestApi;
 class MenuControllerUITest;
 }  // namespace test
@@ -295,12 +295,12 @@ class VIEWS_EXPORT MenuController
 
  private:
   friend class internal::MenuRunnerImpl;
-  friend class test::MenuControllerTest;
-  friend class test::MenuControllerTestApi;
-  friend class test::MenuControllerUITest;
+  friend class MenuControllerTest;
   friend class MenuHostRootView;
   friend class MenuItemView;
   friend class SubmenuView;
+  friend class test::MenuControllerTestApi;
+  friend class test::MenuControllerUITest;
 
   struct MenuPart;
 

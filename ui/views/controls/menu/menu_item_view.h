@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -42,13 +43,9 @@ namespace internal {
 class MenuRunnerImpl;
 }
 
-namespace test {
-class MenuControllerTest;
-class MenuControllerTest_RepostEventToEmptyMenuItem_Test;
-}  // namespace test
-
 class ImageView;
 class MenuController;
+class MenuControllerTest;
 class MenuDelegate;
 class Separator;
 class SubmenuView;
@@ -437,10 +434,9 @@ class VIEWS_EXPORT MenuItemView : public View {
  private:
   friend class MenuController;
   friend class internal::MenuRunnerImpl;
-  friend class test::MenuControllerTest;
-  // TODO(pkasting): Use FRIEND_TEST_ALL_PREFIXES instead
-  friend class test::MenuControllerTest_RepostEventToEmptyMenuItem_Test;
+  friend class MenuControllerTest;
   friend class TestMenuItemView;
+  FRIEND_TEST_ALL_PREFIXES(MenuControllerTest, RepostEventToEmptyMenuItem);
 
   enum class PaintMode { kNormal, kForDrag };
 
