@@ -536,6 +536,12 @@
       "android-cronet-mainline-clang-arm64-rel": {
         "_default": "_default"
       },
+      "android-cronet-mainline-clang-x86-dbg": {
+        "_default": "_default"
+      },
+      "android-cronet-mainline-clang-x86-rel": {
+        "_default": "_default"
+      },
       "android-cronet-marshmallow-arm64-perf-rel": {
         "_default": "_default"
       },

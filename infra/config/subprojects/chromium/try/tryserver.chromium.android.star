@@ -288,6 +288,18 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-cronet-mainline-clang-x86-dbg",
+    mirrors = ["ci/android-cronet-mainline-clang-x86-dbg"],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-mainline-clang-x86-rel",
+    mirrors = ["ci/android-cronet-mainline-clang-x86-rel"],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-cronet-x64-rel",
     mirrors = ["ci/android-cronet-x64-rel"],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
