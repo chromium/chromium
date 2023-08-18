@@ -135,6 +135,8 @@ void ManagedCellularPrefHandler::AddESimMetadata(
     const policy_util::SmdxActivationCode& activation_code,
     bool sync_stub_networks) {
   DCHECK(ash::features::IsSmdsSupportEuiccUploadEnabled());
+  DCHECK(!name.empty());
+  DCHECK(!activation_code.value().empty());
 
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet";

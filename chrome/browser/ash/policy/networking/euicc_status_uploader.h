@@ -53,6 +53,11 @@ class EuiccStatusUploader : public ash::NetworkPolicyObserver,
                       PrefService* local_state,
                       IsDeviceActiveCallback is_device_managed_callback);
 
+  // TODO(b/281904820): Remove once the SM-DS Support feature is fully launched.
+  //
+  // WARNING: This format is deprecated as part of the SM-DS Support feature and
+  // is being replaced with |kLastUploadedEuiccStatusPref|.
+  //
   // A local state preference that stores the last uploaded Euicc status in such
   // format:
   // {
@@ -63,7 +68,23 @@ class EuiccStatusUploader : public ash::NetworkPolicyObserver,
   //    ]
   // }
   //
+  static const char kLastUploadedEuiccStatusPrefLegacy[];
+
+  // A local state preference that stores the last uploaded Euicc status in the
+  // following format:
+  // {
+  //    euicc_count: integer
+  //    esim_profiles: [
+  //      iccid : string,
+  //      network_name : string,
+  //      smdp_activation_code : string,
+  //      smds_activation_code : string,
+  //    ]
+  // }
+  // Please note that the |smdp_activation_code| and |smds_activation_code|
+  // fields are mutually exclusive.
   static const char kLastUploadedEuiccStatusPref[];
+
   // A local state boolean preference which determines whether we should set
   // UploadEuiccInfoRequest.clear_profile_list to true. This is set to true when
   // clear EUICC remote command was run on the client.
