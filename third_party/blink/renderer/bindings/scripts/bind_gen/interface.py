@@ -3729,13 +3729,15 @@ bindings::V8SetReturnValue(
 # ----------------------------------------------------------------------------
 
 
-# This generates the following functions:
-# NamedPropsObjIndexedGetterCallback
-# NamedPropsObjIndexedSetterCallback
-# NamedPropsObjIndexedDeleterCallback
-# NamedPropsObjIndexedDefinerCallback
-# NamedPropsObjIndexedDescriptorCallback
 def make_named_props_obj_indexed_callback(cg_context, callback_type):
+    """
+    This generates the following functions:
+    NamedPropsObjIndexedGetterCallback
+    NamedPropsObjIndexedSetterCallback
+    NamedPropsObjIndexedDeleterCallback
+    NamedPropsObjIndexedDefinerCallback
+    NamedPropsObjIndexedDescriptorCallback
+    """
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(callback_type, str)
     arg_decls = ["uint32_t index"]
@@ -3762,10 +3764,10 @@ def make_named_props_obj_indexed_callback(cg_context, callback_type):
                 callback_info_type))
     arg_names.append("info")
 
-    function_name = "NamedPropsObjIndexed" + callback_type + "Callback"
+    function_name = "NamedPropsObjIndexed{}Callback".format(callback_type)
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
-        "NamedPropertiesObject_IndexedProperty" + callback_type)
+        "NamedPropertiesObject_IndexedProperty{}".format(callback_type))
 
     # All args are forwarded, except that the first arg is converted to a
     # string and renamed to `property_name`.
