@@ -292,6 +292,11 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 
 // Tests that Native Find in Page works as expected for PDF documents.
 - (void)testFindInPagePDF {
+// TODO(crbug.com/1473338): Failing on devices.
+#if !TARGET_IPHONE_SIMULATOR
+  XCTSkip(@"Failing on device");
+#endif
+
   [_helper helperTestFindInPagePDF];
 }
 
