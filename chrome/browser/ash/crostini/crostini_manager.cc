@@ -1344,7 +1344,9 @@ void CrostiniManager::OnCheckVmLaunchAllowed(
   // otherwise a (possibly incorrect) default value is read.
   if (!response) {
     // Didn't get a reply - assume that VM launch is allowed.
-    LOG(ERROR) << "Failed to determine if VM launch is allowed";
+    if (base::SysInfo::IsRunningOnChromeOS()) {
+      LOG(ERROR) << "Failed to determine if VM launch is allowed";
+    }
   } else {
     is_vm_launch_allowed_ = response->allowed();
     LOG_IF(WARNING, !is_vm_launch_allowed_)

@@ -10,6 +10,7 @@
 #include "base/containers/flat_tree.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
@@ -69,8 +70,10 @@ GuestOsSessionTracker::~GuestOsSessionTracker() {
 void GuestOsSessionTracker::OnListVms(
     absl::optional<vm_tools::concierge::ListVmsResponse> response) {
   if (!response) {
-    LOG(ERROR)
-        << "Failed to list VMs, assuming there aren't any already running";
+    if (base::SysInfo::IsRunningOnChromeOS()) {
+      LOG(ERROR)
+          << "Failed to list VMs, assuming there aren't any already running";
+    }
     return;
   }
   for (const auto& vm : response->vms()) {
