@@ -340,6 +340,10 @@ std::string StrError(int errnum);
 
 std::vector<std::string> StrSplitAsCSV(absl::string_view text);
 
+#ifdef OS_WIN
+std::wstring Utf8ToWide(const absl::string_view input);
+#endif
+
 inline Status OkStatus() {
   return Status();
 }

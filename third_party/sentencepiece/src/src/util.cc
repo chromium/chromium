@@ -252,28 +252,20 @@ std::vector<std::string> StrSplitAsCSV(absl::string_view text) {
 
   return result;
 }
-}  // namespace util
 
 #ifdef OS_WIN
-namespace win32 {
 std::wstring Utf8ToWide(absl::string_view input) {
   int output_length = ::MultiByteToWideChar(
       CP_UTF8, 0, input.data(), static_cast<int>(input.size()), nullptr, 0);
-  output_length = output_length <= 0 ? 0 : output_length - 1;
   if (output_length == 0) {
     return L"";
   }
-  std::unique_ptr<wchar_t[]> input_wide(new wchar_t[output_length + 1]);
-  std::fill(input_wide.get(), input_wide.get() + output_length + 1, L'\0');
+  std::wstring output(output_length, 0);
   const int result = ::MultiByteToWideChar(CP_UTF8, 0, input.data(),
                                            static_cast<int>(input.size()),
-                                           input_wide.get(), output_length + 1);
-  std::wstring output;
-  if (result > 0) {
-    output.assign(input_wide.get());
-  }
-  return output;
+                                           output.data(), output.size());
+  return result == output_length ? output : L"";
 }
-}  // namespace win32
 #endif
+}  // namespace util
 }  // namespace sentencepiece

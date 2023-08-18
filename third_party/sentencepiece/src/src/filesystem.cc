@@ -19,9 +19,9 @@
 #include "util.h"
 
 #if defined(OS_WIN) && defined(UNICODE) && defined(_UNICODE)
-#define WPATH(path) (::sentencepiece::win32::Utf8ToWide(path).c_str())
+#define WPATH(path) (::sentencepiece::util::Utf8ToWide(path).c_str())
 #else
-#define WPATH(path) (path)
+#define WPATH(path) (path.data())
 #endif
 
 namespace sentencepiece {
@@ -32,7 +32,7 @@ class PosixReadableFile : public ReadableFile {
   PosixReadableFile(absl::string_view filename, bool is_binary = false)
       : is_(filename.empty()
                 ? &std::cin
-                : new std::ifstream(WPATH(filename.data()),
+                : new std::ifstream(WPATH(filename),
                                     is_binary ? std::ios::binary | std::ios::in
                                               : std::ios::in)) {
     if (!*is_)
@@ -70,7 +70,7 @@ class PosixWritableFile : public WritableFile {
   PosixWritableFile(absl::string_view filename, bool is_binary = false)
       : os_(filename.empty()
                 ? &std::cout
-                : new std::ofstream(WPATH(filename.data()),
+                : new std::ofstream(WPATH(filename),
                                     is_binary ? std::ios::binary | std::ios::out
                                               : std::ios::out)) {
     if (!*os_)

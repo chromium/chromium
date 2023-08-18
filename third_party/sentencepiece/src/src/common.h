@@ -52,12 +52,6 @@ typedef uint64_t uint64;
 
 static constexpr uint32 kUnicodeError = 0xFFFD;
 
-#if defined(OS_WIN) && defined(UNICODE) && defined(_UNICODE)
-#define WPATH(path) (::sentencepiece::win32::Utf8ToWide(path).c_str())
-#else
-#define WPATH(path) (path)
-#endif
-
 template <typename T, size_t N>
 char (&ArraySizeHelper(T (&array)[N]))[N];
 
@@ -79,11 +73,6 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
 #endif
 
 namespace sentencepiece {
-#ifdef OS_WIN
-namespace win32 {
-std::wstring Utf8ToWide(const absl::string_view input);
-}  // namespace win32
-#endif
 
 #ifdef IS_BIG_ENDIAN
 namespace util {

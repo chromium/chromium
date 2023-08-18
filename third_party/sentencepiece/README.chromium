@@ -31,6 +31,7 @@ just absl.
 needed for chromium.
 * 0004-Remove-util-Status.patch - Swaps out the custom util::Status for
 absl::Status.
+* 0005-Fix-utf8towide.patch - Fixes file loading on Windows.
 
 In addition the python, third_party/absl, and third_party/protobuf-lite
 directories were removed to avoid adding a bunch of unused code which could
