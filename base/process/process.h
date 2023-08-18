@@ -266,9 +266,7 @@ class BASE_EXPORT Process {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_APPLE)
-  // Sets the `task_role_t` of the current task (the calling process) to
-  // TASK_DEFAULT_APPLICATION, if the MacSetDefaultTaskRole feature is
-  // enabled.
+  // Sets the priority of the current process to its default value.
   static void SetCurrentTaskDefaultRole();
 #endif  // BUILDFLAG(IS_MAC)
 
