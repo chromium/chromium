@@ -30,5 +30,38 @@ TEST_F(EditorConsentStoreTest, SettingConsentStatusShouldUpdateUserPrefs) {
   EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kApproved);
 }
 
+TEST_F(EditorConsentStoreTest,
+       ReceivingDeclineResponseWillLeadToConsentDecline) {
+  TestingProfile profile_;
+  EditorConsentStore store(profile_.GetPrefs());
+
+  store.ProcessConsentAction(ConsentAction::kDeclined);
+
+  EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kDeclined);
+}
+
+TEST_F(EditorConsentStoreTest,
+       ReceivingApprovalResponseAfterDismissalWillLeadToConsentApproval) {
+  TestingProfile profile_;
+  EditorConsentStore store(profile_.GetPrefs());
+
+  store.ProcessConsentAction(ConsentAction::kDismissed);
+  store.ProcessConsentAction(ConsentAction::kApproved);
+
+  EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kApproved);
+}
+
+TEST_F(EditorConsentStoreTest,
+       ManyConsentWindowDismissalsWillLeadToImplicitConsentDecline) {
+  TestingProfile profile_;
+  EditorConsentStore store(profile_.GetPrefs());
+
+  store.ProcessConsentAction(ConsentAction::kDismissed);
+  store.ProcessConsentAction(ConsentAction::kDismissed);
+  store.ProcessConsentAction(ConsentAction::kDismissed);
+
+  EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kImplicitlyDeclined);
+}
+
 }  // namespace
 }  // namespace ash::input_method

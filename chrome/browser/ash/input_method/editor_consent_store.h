@@ -29,6 +29,15 @@ enum class ConsentStatus : int {
   kUnset,
 };
 
+enum class ConsentAction : int {
+  // User explicitly hits "Yes/Agree" button.
+  kApproved,
+  // User misses the consent window.
+  kDismissed,
+  // User explicitly hits "No/Disagree" button.
+  kDeclined
+};
+
 // Manages consent status read/write from and to the user prefs.
 // Each user has a separate consent status bound with their pref
 // store.
@@ -40,10 +49,17 @@ class EditorConsentStore {
   ~EditorConsentStore();
 
   ConsentStatus GetConsentStatus() const;
-  
+
   void SetConsentStatus(ConsentStatus consent_status);
 
+  // Updates the consent status based on user consent action.
+  void ProcessConsentAction(ConsentAction consent_action);
+
  private:
+  int GetConsentWindowDismissCount();
+
+  void IncrementConsentWindowDismissCount();
+
   const raw_ptr<PrefService> pref_service_;
 };
 
