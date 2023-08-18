@@ -17,7 +17,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/fusebox/fusebox.pb.h"
 #include "chrome/browser/ash/fusebox/fusebox_moniker.h"
-#include "chrome/browser/ash/fusebox/fusebox_staging.pb.h"
 #include "chrome/browser/ash/system_web_apps/apps/files_internals_debug_json_provider.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/file_system_context.h"

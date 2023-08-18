@@ -10,7 +10,3 @@ proto_library("fusebox_proto") {
   sources = [ "//third_party/cros_system_api/dbus/fusebox/fusebox.proto" ]
   proto_out_dir = "chrome/browser/ash/fusebox"
 }
-
-proto_library("fusebox_staging_proto") {
-  sources = [ "fusebox_staging.proto" ]
-}
