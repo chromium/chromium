@@ -1024,6 +1024,11 @@
     'drive_resource_metadata': {
       'filepath': 'drive.*resource_metadata'
     },
+    'eche': {
+      'filepath': 'ash/system/eche/|' \
+                  'ash/webui/eche_app_ui/|' \
+                  'chrome/browser/ash/eche_app/'
+    },
     'eme': {
       'filepath': 'chrome/renderer/media/.*key_system|' \
                   'chrome/browser/media/.*(cdm|encrypted)|' \
@@ -2697,6 +2702,10 @@
     'download_bubble': ['xinghuilu+watch@chromium.org'],
     'downloads_ui': ['dtrainor+watch@chromium.org'],
     'drive_resource_metadata': ['hashimoto+watch@chromium.org'],
+    'eche': ['ajayramamurthy+watch-eche@google.com',
+             'crisrael+watch-eche@google.com',
+             'jonmann+watch-eche@chromium.org',
+             'pushi+watch-eche@google.com'],
     'eme': ['eme-reviews@chromium.org'],
     'enterprise_connectors': ['dpr-eng@google.com'],
     'enterprise_reporting_private': ['anthonyvd+watch@chormium.org'],
@@ -2932,8 +2941,8 @@
     'permissions_policy': ['loonybear@chromium.org',
                            'iclelland+watch@chromium.org',
                            'jmedley+watch@chromium.org'],
-    'phonehub': ['crisrael+watch-phonehub@google.com',
-                 'ajayramamurthy+watch-phonehub@google.com',
+    'phonehub': ['ajayramamurthy+watch-phonehub@google.com',
+                 'crisrael+watch-phonehub@google.com',
                  'hansberry+watch-phonehub@chromium.org',
                  'jonmann+watch-phonehub@chromium.org',
                  'joeantonetti+watch-phonehub@google.com',
