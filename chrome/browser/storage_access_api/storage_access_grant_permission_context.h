@@ -52,8 +52,11 @@ enum class RequestOutcome {
   kDeniedByCookieSettings = 11,
   // The requesting origin is same-site with the embedding origin.
   kAllowedBySameSite = 12,
+  // The request was aborted by the browser (e.g. because the RenderFrameHost
+  // was deleted).
+  kDeniedAborted = 13,
 
-  kMaxValue = kAllowedBySameSite,
+  kMaxValue = kDeniedAborted,
 };
 
 class StorageAccessGrantPermissionContext

@@ -396,7 +396,8 @@ enum class RequestStorageResult {
   APPROVED_PRIMARY_FRAME = 10,
   REJECTED_CREDENTIALLESS_IFRAME = 11,
   APPROVED_NEW_OR_EXISTING_GRANT = 12,
-  kMaxValue = APPROVED_NEW_OR_EXISTING_GRANT,
+  REJECTED_FENCED_FRAME = 13,
+  kMaxValue = REJECTED_FENCED_FRAME,
 };
 void FireRequestStorageAccessHistogram(RequestStorageResult result) {
   base::UmaHistogramEnumeration("API.StorageAccess.RequestStorageAccess2",
@@ -6496,10 +6497,11 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
             : "requestStorageAccess: Refused to execute request. The document "
               "is sandboxed, and the 'allow-storage-access-by-user-activation' "
               "keyword is not set."));
-    if (!dom_window_->GetFrame()->IsInFencedFrameTree()) {
-      FireRequestStorageAccessHistogram(
-          RequestStorageResult::REJECTED_SANDBOXED);
-    }
+
+    FireRequestStorageAccessHistogram(
+        dom_window_->GetFrame()->IsInFencedFrameTree()
+            ? RequestStorageResult::REJECTED_FENCED_FRAME
+            : RequestStorageResult::REJECTED_SANDBOXED);
 
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,

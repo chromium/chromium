@@ -85,6 +85,7 @@ bool IsImplicitOutcome(RequestOutcome outcome) {
     case RequestOutcome::kGrantedByFirstPartySet:
     case RequestOutcome::kReusedImplicitGrant:
     case RequestOutcome::kReusedPreviousDecision:
+    case RequestOutcome::kDeniedAborted:
       return true;
     case RequestOutcome::kDeniedByUser:
     case RequestOutcome::kGrantedByUser:
@@ -109,6 +110,7 @@ bool ShouldDisplayOutcomeInOmnibox(RequestOutcome outcome) {
     case RequestOutcome::kGrantedByFirstPartySet:
     case RequestOutcome::kReusedImplicitGrant:
     case RequestOutcome::kDeniedByPrerequisites:
+    case RequestOutcome::kDeniedAborted:
       return false;
   }
 }
@@ -162,6 +164,7 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     case RequestOutcome::kAllowedByCookieSettings:
     case RequestOutcome::kDeniedByCookieSettings:
     case RequestOutcome::kAllowedBySameSite:
+    case RequestOutcome::kDeniedAborted:
       NOTREACHED_NORETURN();
     case RequestOutcome::kGrantedByUser:
     case RequestOutcome::kDeniedByUser:
@@ -362,6 +365,7 @@ void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
   if (!rfh) {
     // After async steps, the RenderFrameHost is not guaranteed to still be
     // alive.
+    RecordOutcomeSample(RequestOutcome::kDeniedAborted);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
@@ -440,6 +444,7 @@ void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
   if (!rfh) {
     // After async steps, the RenderFrameHost is not guaranteed to still be
     // alive.
+    RecordOutcomeSample(RequestOutcome::kDeniedAborted);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
