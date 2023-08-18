@@ -120,9 +120,13 @@ class FfxEmulator(AbstractContextManager):
                 if i > 0:
                     logging.warning(
                         'Emulator failed to start.')
+                configs = ['emu.start.timeout=90']
+                if self._everlasting():
+                    configs.append('emu.instance_dir=' \
+                                   '/home/chrome-bot/.fuchsia_emulator/')
                 run_ffx_command(cmd=emu_command,
                                 timeout=100,
-                                configs=['emu.start.timeout=90'])
+                                configs=configs)
                 break
             except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
                 run_ffx_command(cmd=('emu', 'stop'))
