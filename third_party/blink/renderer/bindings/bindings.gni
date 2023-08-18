@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+declare_args() {
+  # Enable V8 to produce hints regarding which functions to compile eagerly.
+  produce_v8_compile_hints = !is_android
+}
+
 # The database file produced by
 # "//third_party/blink/renderer/bindings:web_idl_database".
 web_idl_database_filepath =
@@ -178,11 +183,6 @@ blink_core_sources_bindings =
                     "core/v8/world_safe_v8_reference.h",
                   ],
                   "abspath")
-
-declare_args() {
-  # Enable V8 to produce hints regarding which functions to compile eagerly.
-  produce_v8_compile_hints = !is_android
-}
 
 # Source files to be part of
 # "//third_party/blink/renderer/modules:modules".
