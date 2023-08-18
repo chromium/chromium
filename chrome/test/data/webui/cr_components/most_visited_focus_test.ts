@@ -58,7 +58,7 @@ suite('CrComponentsMostVisitedFocusTest', () => {
   test('right focuses on addShortcut', async () => {
     await addTiles(1);
     const tile = queryTiles()[0]!;
-    tile.focus();
+    tile.querySelector('a')!.focus();
     keydown(tile, 'ArrowRight');
     assertFocus(mostVisited.$.addShortcut);
   });
@@ -74,9 +74,9 @@ suite('CrComponentsMostVisitedFocusTest', () => {
   test('right focuses next tile', async () => {
     await addTiles(2);
     const tiles = queryTiles();
-    tiles[0]!.focus();
+    tiles[0]!.querySelector('a')!.focus();
     keydown(tiles[0]!, 'ArrowRight');
-    assertFocus(tiles[1]!);
+    assertFocus(tiles[1]!.querySelector('a')!);
   });
 
   test('right focuses on next tile when menu button focused', async () => {
@@ -84,13 +84,13 @@ suite('CrComponentsMostVisitedFocusTest', () => {
     const tiles = queryTiles();
     tiles[0]!.querySelector('cr-icon-button')!.focus();
     keydown(tiles[0]!, 'ArrowRight');
-    assertFocus(tiles[1]!);
+    assertFocus(tiles[1]!.querySelector('a')!);
   });
 
   test('down focuses on addShortcut', async () => {
     await addTiles(1);
     const tile = queryTiles()[0]!;
-    tile.focus();
+    tile.querySelector('a')!.focus();
     keydown(tile, 'ArrowDown');
     assertFocus(mostVisited.$.addShortcut);
   });
@@ -98,32 +98,32 @@ suite('CrComponentsMostVisitedFocusTest', () => {
   test('down focuses next tile', async () => {
     await addTiles(2);
     const tiles = queryTiles();
-    tiles[0]!.focus();
+    tiles[0]!.querySelector('a')!.focus();
     keydown(tiles[0]!, 'ArrowDown');
-    assertFocus(tiles[1]!);
+    assertFocus(tiles[1]!.querySelector('a')!);
   });
 
   test('up focuses on previous tile from addShortcut', async () => {
     await addTiles(1);
     mostVisited.$.addShortcut.focus();
     keydown(mostVisited.$.addShortcut, 'ArrowUp');
-    assertFocus(queryTiles()[0]!);
+    assertFocus(queryTiles()[0]!.querySelector('a')!);
   });
 
   test('up focuses on previous tile', async () => {
     await addTiles(2);
     const tiles = queryTiles();
-    tiles[1]!.focus();
+    tiles[1]!.querySelector('a')!.focus();
     keydown(tiles[1]!, 'ArrowUp');
-    assertFocus(tiles[0]!);
+    assertFocus(tiles[0]!.querySelector('a')!);
   });
 
   test('up/left does not change focus when on first tile', async () => {
     await addTiles(1);
     const tile = queryTiles()[0]!;
-    tile.focus();
+    tile.querySelector('a')!.focus();
     keydown(tile, 'ArrowUp');
-    assertFocus(tile);
+    assertFocus(tile.querySelector('a')!);
     keydown(tile, 'ArrowLeft');
   });
 
