@@ -121,12 +121,6 @@ public abstract class UrlBar extends AutocompleteEditText {
     // this (and it the value will only be recalculated after the text has been changed).
     private boolean mDidEllipsizeTextHint;
 
-    /** A cached point for getting this view's location in the window. */
-    private final int[] mCachedLocation = new int[2];
-
-    /** The location of this view on the last ACTION_DOWN event. */
-    private float mDownEventViewTop;
-
     /**
      * The character index in the displayed text where the origin ends. This is required to
      * ensure that the end of the origin is not scrolled out of view for long hostnames.
@@ -439,8 +433,6 @@ public abstract class UrlBar extends AutocompleteEditText {
         // interpreted as a drag selection.
 
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            getLocationInWindow(mCachedLocation);
-            mDownEventViewTop = mCachedLocation[1];
             mSuppressingTouchMoveEventsForThisTouch = !mFocused;
         }
 
@@ -474,24 +466,6 @@ public abstract class UrlBar extends AutocompleteEditText {
             Log.w(TAG, "Ignoring IndexOutOfBoundsException in UrlBar#onTouchEvent.", e);
             return true;
         }
-    }
-
-    @Override
-    public boolean performLongClick() {
-        if (!shouldPerformLongClick()) return false;
-
-        releaseSuppressedTouchDownEvent();
-        return super.performLongClick();
-    }
-
-    /**
-     * @return Whether or not a long click should be performed.
-     */
-    private boolean shouldPerformLongClick() {
-        getLocationInWindow(mCachedLocation);
-
-        // If the view moved between the last down event, block the long-press.
-        return mDownEventViewTop == mCachedLocation[1];
     }
 
     private void releaseSuppressedTouchDownEvent() {
