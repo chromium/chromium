@@ -12,6 +12,7 @@
   cursor: default;
   font-family: monospace;
   font-size: 12px;
+  --standard-border: 1px solid black;
 }
 
 .internals-button {
@@ -23,6 +24,17 @@
 
 .flex {
   flex: 1;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: "Roboto", sans-serif;
+  display: flex;
+  flex-direction: row;
 }
 
 header {
@@ -54,10 +66,27 @@ header {
   margin-right: 12px;
 }
 
+#controls-panel {
+  padding: 40px;
+}
+
+.control {
+  margin: 5px;
+  padding: 20px;
+  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2),
+              0 3px 10px 0 rgba(0, 0, 0, 0.2),
+              4px 4px 6px 0 rgba(0, 0, 0, 0.5)
+}
+
 .control-title {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 5px;
+}
+
+#actions {
+  display: flex;
+  flex-direction: row;
 }
 
 /** CSS for logs panel */

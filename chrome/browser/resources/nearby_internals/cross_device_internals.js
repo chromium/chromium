@@ -7,6 +7,8 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './shared_style.css.js';
 import './np_list_object.js';
 import './logging_tab.js';
+import '//resources/cr_elements/md_select.css.js';
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -32,6 +34,17 @@ Polymer({
     npDiscoveredDevicesList_: {
       type: Array,
       value: [],
+    },
+
+    /** @private {!Array<!String>} */
+    featuresList: {
+      type: Array,
+      value: [
+        'Nearby Presence',
+        'Nearby Share',
+        'Nearby Connections',
+        'Fast Pair',
+      ],
     },
   },
 

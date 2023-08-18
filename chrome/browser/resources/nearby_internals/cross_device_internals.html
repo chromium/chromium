@@ -17,6 +17,17 @@
 
         <div id="actions">
           <div class="select-div">
+            <label id="ActionGroupLabel">Feature: </label>
+            <select aria-labelledby="ActionGroupLabel" name="ActionGroup"
+                id="actionGroup" class="md-select"
+                on-change="updateActionsSelect">
+              <template is="dom-repeat" items="[[featuresList]]">
+                <option
+                    value="[[item]]">
+                  [[item]]
+                </option>
+              </template>
+            </select>
           </div>
         </div>
       </div>
