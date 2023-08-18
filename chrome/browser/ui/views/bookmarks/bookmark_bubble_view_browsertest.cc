@@ -154,8 +154,16 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewBrowserTest,
   ShowAndVerifyUi();
 }
 
+// TODO(crbug.com/1473858): Flaky on Windows and Chrome OS.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InvokeUi_bookmark_details_on_trackable_product \
+  DISABLED_InvokeUi_bookmark_details_on_trackable_product
+#else
+#define MAYBE_InvokeUi_bookmark_details_on_trackable_product \
+  InvokeUi_bookmark_details_on_trackable_product
+#endif
 IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewBrowserTest,
-                       InvokeUi_bookmark_details_on_trackable_product) {
+                       MAYBE_InvokeUi_bookmark_details_on_trackable_product) {
   ShowAndVerifyUi();
 }
 
