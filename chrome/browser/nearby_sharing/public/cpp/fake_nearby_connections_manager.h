@@ -129,8 +129,8 @@ class FakeNearbyConnectionsManager
   void HandleStartAdvertisingCallback(ConnectionsStatus status);
   void HandleStopAdvertisingCallback(ConnectionsStatus status);
 
-  raw_ptr<IncomingConnectionListener, ExperimentalAsh> advertising_listener_ =
-      nullptr;
+  raw_ptr<IncomingConnectionListener, DanglingUntriaged | ExperimentalAsh>
+      advertising_listener_ = nullptr;
   raw_ptr<DiscoveryListener, ExperimentalAsh> discovery_listener_ = nullptr;
   base::WeakPtr<BandwidthUpgradeListener> bandwidth_upgrade_listener_;
   bool is_shutdown_ = false;

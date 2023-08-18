@@ -76,10 +76,11 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
     return CreateMultiUserProfile(test_account_id1_);
   }
 
-  raw_ptr<TestingProfile, ExperimentalAsh> second_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> second_profile_;
 
   // |fake_user_manager_| is owned by |user_manager_enabler_|
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 

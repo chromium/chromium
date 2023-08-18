@@ -100,7 +100,7 @@ class AboutHandlerTest : public testing::Test {
   TestingProfile profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<TestAboutHandler> handler_;
-  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh>
+  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
       fake_update_engine_client_;
   std::unique_ptr<base::SimpleTestClock> clock_;
 };

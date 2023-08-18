@@ -51,8 +51,8 @@ class NearbyShareProfileInfoProviderImplTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment;
   TestingProfileManager profile_manager_;
-  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> user_manager_ =
-      nullptr;
+  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_ = nullptr;
   user_manager::ScopedUserManager enabler_;
   AccountId account_id_;
 };

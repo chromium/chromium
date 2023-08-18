@@ -123,7 +123,8 @@ class BluetoothServerSocketTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<FakeServerSocket, ExperimentalAsh> fake_server_socket_ = nullptr;
+  raw_ptr<FakeServerSocket, DanglingUntriaged | ExperimentalAsh>
+      fake_server_socket_ = nullptr;
 
   std::unique_ptr<BluetoothServerSocket> bluetooth_server_socket_;
 

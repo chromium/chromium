@@ -245,7 +245,7 @@ class FakeFastInitiationScannerFactory : public FastInitiationScanner::Factory {
  private:
   void OnScannerDestroyed() { ++scanner_destroyed_count_; }
 
-  raw_ptr<FakeFastInitiationScanner, ExperimentalAsh>
+  raw_ptr<FakeFastInitiationScanner, DanglingUntriaged | ExperimentalAsh>
       last_fake_fast_initiation_scanner_ = nullptr;
   size_t scanner_created_count_ = 0u;
   size_t scanner_destroyed_count_ = 0u;
@@ -1518,10 +1518,12 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  raw_ptr<FakeNearbyConnectionsManager, ExperimentalAsh>
+  raw_ptr<FakeNearbyConnectionsManager, DanglingUntriaged | ExperimentalAsh>
       fake_nearby_connections_manager_ = nullptr;
-  raw_ptr<FakePowerClient, ExperimentalAsh> power_client_ = nullptr;
-  raw_ptr<FakeWifiNetworkConfigurationHandler, ExperimentalAsh>
+  raw_ptr<FakePowerClient, DanglingUntriaged | ExperimentalAsh> power_client_ =
+      nullptr;
+  raw_ptr<FakeWifiNetworkConfigurationHandler,
+          DanglingUntriaged | ExperimentalAsh>
       wifi_network_handler_ = nullptr;
   FakeNearbyShareLocalDeviceDataManager::Factory
       local_device_data_manager_factory_;
@@ -1540,7 +1542,8 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   bool is_bluetooth_powered_ = true;
   device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
       hardware_support_state_;
-  raw_ptr<device::BluetoothAdapter::Observer, ExperimentalAsh>
+  raw_ptr<device::BluetoothAdapter::Observer,
+          DanglingUntriaged | ExperimentalAsh>
       adapter_observer_ = nullptr;
   scoped_refptr<NiceMock<MockBluetoothAdapterWithIntervals>>
       mock_bluetooth_adapter_;
@@ -1692,7 +1695,7 @@ class TestObserver : public NearbySharingService::Observer {
   bool devices_detected_called_ = false;
   bool devices_not_detected_called_ = false;
   bool scanning_stopped_called_ = false;
-  raw_ptr<NearbySharingService, ExperimentalAsh> service_;
+  raw_ptr<NearbySharingService, DanglingUntriaged | ExperimentalAsh> service_;
 };
 
 TEST_P(NearbySharingServiceImplTest, DisableNearbyShutdownConnections) {

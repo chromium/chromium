@@ -53,7 +53,8 @@ class TestSyncService : public syncer::TestSyncService {
   }
 
  private:
-  raw_ptr<syncer::SyncServiceObserver, ExperimentalAsh> observer_ = nullptr;
+  raw_ptr<syncer::SyncServiceObserver, DanglingUntriaged | ExperimentalAsh>
+      observer_ = nullptr;
 };
 
 std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
@@ -116,7 +117,8 @@ class ExternalPrefLoaderTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<TestSyncService, ExperimentalAsh> sync_service_ = nullptr;
+  raw_ptr<TestSyncService, DanglingUntriaged | ExperimentalAsh> sync_service_ =
+      nullptr;
 };
 
 // TODO(lazyboy): Add a test to cover

@@ -101,7 +101,8 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   FakeNearbyShareLocalDeviceDataManager test_local_device_data_;
   std::unique_ptr<NearbyShareSettings> settings_;
-  raw_ptr<MockSettingsOpener, ExperimentalAsh> settings_opener_;
+  raw_ptr<MockSettingsOpener, DanglingUntriaged | ExperimentalAsh>
+      settings_opener_;
   MockNearbyShareController controller_;
   NearbyShareDelegateImpl delegate_;
   bool high_visibility_on_ = false;

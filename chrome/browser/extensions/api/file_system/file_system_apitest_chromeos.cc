@@ -189,7 +189,7 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
   base::ScopedTempDir drivefs_root_;
   base::FilePath drivefs_mount_point_;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
-  raw_ptr<drive::DriveIntegrationService, ExperimentalAsh>
+  raw_ptr<drive::DriveIntegrationService, DanglingUntriaged | ExperimentalAsh>
       integration_service_ = nullptr;
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;
@@ -245,7 +245,8 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   // Creates a testing file system in a testing directory.

@@ -27,7 +27,7 @@ class NearbyShareProfileInfoProviderImpl
   absl::optional<std::string> GetProfileUserName() const override;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_PROFILE_INFO_PROVIDER_IMPL_H_

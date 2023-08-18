@@ -105,7 +105,8 @@ class MultiDeviceSection
   raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<eche_app::EcheAppManager, ExperimentalAsh> eche_app_manager_;
-  raw_ptr<content::WebUIDataSource, ExperimentalAsh> html_source_;
+  raw_ptr<content::WebUIDataSource, DanglingUntriaged | ExperimentalAsh>
+      html_source_;
 };
 
 }  // namespace settings

@@ -155,9 +155,11 @@ class AshAttestationServiceImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   TestingProfile test_profile_;
-  raw_ptr<ash::attestation::MockTpmChallengeKeySubtle, ExperimentalAsh>
+  raw_ptr<ash::attestation::MockTpmChallengeKeySubtle,
+          DanglingUntriaged | ExperimentalAsh>
       mock_challenge_key_subtle_;
-  raw_ptr<ash::attestation::MockTpmChallengeKey, ExperimentalAsh>
+  raw_ptr<ash::attestation::MockTpmChallengeKey,
+          DanglingUntriaged | ExperimentalAsh>
       mock_challenge_key_;
   std::set<enterprise_connectors::DTCPolicyLevel> levels_;
 };

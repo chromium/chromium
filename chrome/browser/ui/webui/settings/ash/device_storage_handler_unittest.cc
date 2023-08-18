@@ -230,7 +230,7 @@ class StorageHandlerTest : public testing::Test {
     ASSERT_EQ(expected_size, stat.st_size);
   }
 
-  raw_ptr<StorageHandler, ExperimentalAsh> handler_;
+  raw_ptr<StorageHandler, DanglingUntriaged | ExperimentalAsh> handler_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -244,7 +244,8 @@ class StorageHandlerTest : public testing::Test {
   std::unique_ptr<DriveOfflineSizeTestAPI> drive_offline_size_test_api_;
   std::unique_ptr<CrostiniSizeTestAPI> crostini_size_test_api_;
   std::unique_ptr<OtherUsersSizeTestAPI> other_users_size_test_api_;
-  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_primary_;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
+      new_window_delegate_primary_;
 
  private:
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;

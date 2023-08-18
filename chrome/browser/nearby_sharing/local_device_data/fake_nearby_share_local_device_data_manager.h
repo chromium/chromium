@@ -58,9 +58,9 @@ class FakeNearbyShareLocalDeviceDataManager
    private:
     std::vector<FakeNearbyShareLocalDeviceDataManager*> instances_;
     raw_ptr<PrefService, ExperimentalAsh> latest_pref_service_ = nullptr;
-    raw_ptr<NearbyShareClientFactory, ExperimentalAsh>
+    raw_ptr<NearbyShareClientFactory, DanglingUntriaged | ExperimentalAsh>
         latest_http_client_factory_ = nullptr;
-    raw_ptr<NearbyShareProfileInfoProvider, ExperimentalAsh>
+    raw_ptr<NearbyShareProfileInfoProvider, DanglingUntriaged | ExperimentalAsh>
         latest_profile_info_provider_ = nullptr;
   };
 

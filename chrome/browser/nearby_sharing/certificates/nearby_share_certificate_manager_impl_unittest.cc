@@ -460,7 +460,9 @@ class NearbyShareCertificateManagerImplTest
     }
   }
 
-  raw_ptr<FakeNearbyShareCertificateStorage, ExperimentalAsh> cert_store_;
+  raw_ptr<FakeNearbyShareCertificateStorage,
+          DanglingUntriaged | ExperimentalAsh>
+      cert_store_;
   raw_ptr<ash::nearby::FakeNearbyScheduler, DanglingUntriaged | ExperimentalAsh>
       private_cert_exp_scheduler_;
   raw_ptr<ash::nearby::FakeNearbyScheduler, DanglingUntriaged | ExperimentalAsh>

@@ -277,7 +277,8 @@ class NearbyNotificationManagerTestBase : public testing::Test {
   std::unique_ptr<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<NearbyNotificationManager> manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  raw_ptr<MockSettingsOpener, ExperimentalAsh> settings_opener_;
+  raw_ptr<MockSettingsOpener, DanglingUntriaged | ExperimentalAsh>
+      settings_opener_;
   bool is_self_share_enabled_ = false;
 };
 

@@ -45,7 +45,7 @@ class OsSettingsFeaturesUtilTest : public testing::Test {
 
  private:
   // Owned by |scoped_user_manager_|.
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh>
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
       fake_chrome_user_manager_ = nullptr;
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;

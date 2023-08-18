@@ -123,7 +123,9 @@ class MultiProfileDownloadNotifierTest : public BrowserWithTestWindowTest {
   }
 
   testing::NiceMock<MockNotifierClient> client_;
-  raw_ptr<testing::NiceMock<MockDownloadManager>, ExperimentalAsh> manager_;
+  raw_ptr<testing::NiceMock<MockDownloadManager>,
+          DanglingUntriaged | ExperimentalAsh>
+      manager_;
   testing::NiceMock<download::MockDownloadItem> item_;
   std::unique_ptr<MultiProfileDownloadNotifier> notifier_;
 };

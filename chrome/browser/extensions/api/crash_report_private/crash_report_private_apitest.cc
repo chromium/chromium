@@ -92,7 +92,7 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
   const absl::optional<MockCrashEndpoint::Report>& last_report() {
     return crash_endpoint_->last_report();
   }
-  raw_ptr<const Extension, ExperimentalAsh> extension_;
+  raw_ptr<const Extension, DanglingUntriaged | ExperimentalAsh> extension_;
   std::unique_ptr<MockCrashEndpoint> crash_endpoint_;
   std::unique_ptr<ScopedMockChromeJsErrorReportProcessor> processor_;
 };

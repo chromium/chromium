@@ -48,7 +48,7 @@ class InstalledVersionUpdaterTest : public ::testing::Test {
   BuildState build_state_;
 
  private:
-  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh>
+  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
       fake_update_engine_client_;  // Not owned.
 };
 

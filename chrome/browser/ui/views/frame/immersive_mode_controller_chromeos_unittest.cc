@@ -101,7 +101,8 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
 
  private:
   // Not owned.
-  raw_ptr<ImmersiveModeController, ExperimentalAsh> controller_;
+  raw_ptr<ImmersiveModeController, DanglingUntriaged | ExperimentalAsh>
+      controller_;
 
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock_;
 };

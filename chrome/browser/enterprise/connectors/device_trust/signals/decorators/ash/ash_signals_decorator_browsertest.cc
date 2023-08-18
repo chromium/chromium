@@ -126,7 +126,9 @@ class AshSignalsDecoratorBrowserTest
 
   std::unique_ptr<TestingProfile> testing_profile_;
   TestingPrefServiceSimple prefs_;
-  raw_ptr<policy::BrowserPolicyConnectorAsh, ExperimentalAsh> connector_;
+  raw_ptr<policy::BrowserPolicyConnectorAsh,
+          DanglingUntriaged | ExperimentalAsh>
+      connector_;
 
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };

@@ -316,7 +316,8 @@ class NearbyShareClientImplTest : public testing::Test,
       list_public_certificate_response_from_notifier_;
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
-  raw_ptr<FakeNearbyShareApiCallFlow, ExperimentalAsh> api_call_flow_;
+  raw_ptr<FakeNearbyShareApiCallFlow, DanglingUntriaged | ExperimentalAsh>
+      api_call_flow_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   NearbyShareHttpNotifier notifier_;
   std::unique_ptr<NearbyShareClient> client_;

@@ -139,7 +139,8 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   bool IsOnEnrollmentScreen();
 
   // Keeps the controller for this view.
-  raw_ptr<Controller, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<Controller, DanglingUntriaged | ExperimentalAsh> controller_ =
+      nullptr;
 
   bool show_on_init_ = false;
 

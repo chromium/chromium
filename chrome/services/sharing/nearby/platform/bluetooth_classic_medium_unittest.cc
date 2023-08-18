@@ -118,12 +118,12 @@ class BluetoothClassicMediumTest : public testing::Test {
   std::unique_ptr<BluetoothClassicMedium> bluetooth_classic_medium_;
   BluetoothClassicMedium::DiscoveryCallback discovery_callback_;
 
-  raw_ptr<api::BluetoothDevice, ExperimentalAsh> last_device_discovered_ =
-      nullptr;
-  raw_ptr<api::BluetoothDevice, ExperimentalAsh> last_device_name_changed_ =
-      nullptr;
-  raw_ptr<api::BluetoothDevice, ExperimentalAsh> expected_last_device_lost_ =
-      nullptr;
+  raw_ptr<api::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
+      last_device_discovered_ = nullptr;
+  raw_ptr<api::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
+      last_device_name_changed_ = nullptr;
+  raw_ptr<api::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
+      expected_last_device_lost_ = nullptr;
 
   base::OnceClosure on_device_discovered_callback_;
   base::OnceClosure on_device_name_changed_callback_;

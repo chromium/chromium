@@ -63,7 +63,8 @@ class WifiLanSocketTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   mojo::ScopedDataPipeProducerHandle receive_stream_;
   mojo::ScopedDataPipeConsumerHandle send_stream_;
-  raw_ptr<ash::nearby::FakeTcpConnectedSocket, ExperimentalAsh>
+  raw_ptr<ash::nearby::FakeTcpConnectedSocket,
+          DanglingUntriaged | ExperimentalAsh>
       fake_tcp_connected_socket_;
   mojo::SelfOwnedReceiverRef<network::mojom::TCPConnectedSocket>
       tcp_connected_socket_self_owned_receiver_ref_;

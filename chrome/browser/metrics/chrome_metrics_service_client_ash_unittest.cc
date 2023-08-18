@@ -355,13 +355,15 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::vector<ukm::SourceId> source_ids_;
-  raw_ptr<ChromeMetricsServiceClient, ExperimentalAsh>
+  raw_ptr<ChromeMetricsServiceClient, DanglingUntriaged | ExperimentalAsh>
       chrome_metrics_service_client_;
 
   MockSyncService sync_service_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
-  raw_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient, ExperimentalAsh>
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
+      testing_profile_ = nullptr;
+  raw_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient,
+          DanglingUntriaged | ExperimentalAsh>
       fake_multidevice_setup_client_;
   std::unique_ptr<FakeMultiDeviceSetupClientImplFactory>
       fake_multidevice_setup_client_impl_factory_;

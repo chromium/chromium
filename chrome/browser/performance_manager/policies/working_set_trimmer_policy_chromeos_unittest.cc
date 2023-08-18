@@ -368,8 +368,9 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  raw_ptr<MockWorkingSetTrimmerPolicyChromeOS, ExperimentalAsh> policy_ =
-      nullptr;  // Not owned.
+  raw_ptr<MockWorkingSetTrimmerPolicyChromeOS,
+          DanglingUntriaged | ExperimentalAsh>
+      policy_ = nullptr;  // Not owned.
   std::unique_ptr<mechanism::MockWorkingSetTrimmerChromeOS> trimmer_;
 };
 

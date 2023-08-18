@@ -73,10 +73,10 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
 
   scoped_refptr<const Extension> extension_;
   // fake_user_manager_ is owned by user_manager_enabler_.
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
-      nullptr;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_ = nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
-  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> prefs_ = nullptr;
 };
 
 class EPKPChallengeMachineKeyTest : public EPKPChallengeKeyTestBase {

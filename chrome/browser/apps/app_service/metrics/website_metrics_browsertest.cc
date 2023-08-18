@@ -339,7 +339,7 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
 
  protected:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<AppPlatformMetricsService, ExperimentalAsh>
+  raw_ptr<AppPlatformMetricsService, DanglingUntriaged | ExperimentalAsh>
       app_platform_metrics_service_ = nullptr;
 #else
   raw_ptr<WebsiteMetricsServiceLacros> website_metrics_service_ = nullptr;

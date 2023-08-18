@@ -238,7 +238,8 @@ class ArcAppsPublisherTest : public testing::Test {
   ArcAppTest arc_test_;
   std::unique_ptr<TestingProfile> profile_;
   apps::AppServiceTest app_service_test_;
-  raw_ptr<arc::ArcIntentHelperBridge, ExperimentalAsh> intent_helper_;
+  raw_ptr<arc::ArcIntentHelperBridge, DanglingUntriaged | ExperimentalAsh>
+      intent_helper_;
   std::unique_ptr<arc::FakeFileSystemInstance> file_system_instance_;
   std::unique_ptr<arc::ArcFileSystemBridge> arc_file_system_bridge_;
 };

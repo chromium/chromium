@@ -971,7 +971,8 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   RelaunchNotificationControllerPlatformImpl impl_;
   ash::AshTestHelper ash_test_helper_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<display::test::ActionLogger> logger_;
   raw_ptr<display::NativeDisplayDelegate, ExperimentalAsh>

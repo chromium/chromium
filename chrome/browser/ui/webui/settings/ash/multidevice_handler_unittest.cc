@@ -156,8 +156,8 @@ class ScopedLacrosOnlyHandle {
     crosapi::browser_util::ClearLacrosAvailabilityCacheForTest();
   }
 
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
-      nullptr;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
@@ -981,7 +981,8 @@ class MultideviceHandlerTest : public testing::Test {
   std::unique_ptr<eche_app::FakeAppsAccessManager> fake_apps_access_manager_;
   std::unique_ptr<phonehub::FakeCameraRollManager> fake_camera_roll_manager_;
   phonehub::FakeBrowserTabsModelProvider fake_browser_tabs_model_provider_;
-  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_primary_;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
+      new_window_delegate_primary_;
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
 
   multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice

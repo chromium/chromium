@@ -123,7 +123,7 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
  private:
   GURL gurl_;
   std::u16string title_;
-  raw_ptr<content::WebUI, ExperimentalAsh> webui_ = nullptr;
+  raw_ptr<content::WebUI, DanglingUntriaged | ExperimentalAsh> webui_ = nullptr;
   ui::ModalType modal_type_;
   gfx::NativeWindow dialog_window_ = gfx::NativeWindow();
 };

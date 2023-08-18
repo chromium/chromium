@@ -68,7 +68,8 @@ class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
 
   ash::KioskAppManager* manager() const { return ash::KioskAppManager::Get(); }
 
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   ash::ScopedCrosSettingsTestHelper settings_helper_;

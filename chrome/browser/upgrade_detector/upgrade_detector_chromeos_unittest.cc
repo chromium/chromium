@@ -207,7 +207,7 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
   std::unique_ptr<base::Environment> env_;
   absl::optional<std::string> original_tz_;
 
-  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh>
+  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
       fake_update_engine_client_;  // Not owned.
 };
 

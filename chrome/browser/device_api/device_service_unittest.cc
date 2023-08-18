@@ -154,7 +154,8 @@ class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceTest {
   }
 
  private:
-  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 
@@ -205,7 +206,8 @@ class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceTest {
   ash::WebKioskAppManager* app_manager() const { return app_manager_.get(); }
 
  private:
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   std::unique_ptr<ash::WebKioskAppManager> app_manager_;
   base::test::ScopedCommandLine command_line_;

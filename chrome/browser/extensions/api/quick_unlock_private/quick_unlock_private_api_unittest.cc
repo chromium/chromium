@@ -652,7 +652,8 @@ class QuickUnlockPrivateUnitTest
   }
 
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable,
+          DanglingUntriaged | ExperimentalAsh>
       test_pref_service_;
 
  private:

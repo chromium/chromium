@@ -184,7 +184,8 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 #endif
 
@@ -401,7 +402,8 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 #endif
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -494,7 +496,8 @@ class ChromeLabsAshFeatureTest : public ChromeLabsFeatureTest {
   }
 
  private:
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 
