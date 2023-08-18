@@ -162,11 +162,13 @@ bool StorageService::IsInitializationFinished() const {
 void StorageService::MaybeFinishInitialization() {
   if (!IsInitializationFinished())
     return;
-  model_manager_->Initialize();
-  std::move(init_callback_)
-      .Run(*segment_info_database_initialized_ &&
-           *signal_database_initialized_ &&
-           *signal_storage_config_initialized_);
+  bool init_success = *segment_info_database_initialized_ &&
+                      *signal_database_initialized_ &&
+                      *signal_storage_config_initialized_;
+  if (init_success) {
+    model_manager_->Initialize();
+  }
+  std::move(init_callback_).Run(init_success);
 }
 
 int StorageService::GetServiceStatus() const {
