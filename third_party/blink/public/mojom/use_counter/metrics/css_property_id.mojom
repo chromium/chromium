@@ -822,6 +822,7 @@ enum CSSSampleId {
     kTransitionBehavior = 766,
     kTextAutospace = 767,
     kNavigationTrigger = 768,
+    kDynamicRangeLimit = 769,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

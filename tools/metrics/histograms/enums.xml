@@ -70307,6 +70307,7 @@ Called by update_use_counter_css.py.-->
   <int value="766" label="transition-behavior"/>
   <int value="767" label="text-autospace"/>
   <int value="768" label="navigation-trigger"/>
+  <int value="769" label="dynamic-range-limit"/>
 </enum>
 
 <enum name="MappedEditingCommands">

@@ -172,6 +172,7 @@ All changes to this list should go through Blink's feature review process: http:
     direction
     display
     dominant-baseline
+    dynamic-range-limit
     empty-cells
     fill
     fill-opacity

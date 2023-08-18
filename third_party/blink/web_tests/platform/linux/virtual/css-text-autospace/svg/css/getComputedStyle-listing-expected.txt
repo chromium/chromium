@@ -159,6 +159,7 @@ d: none
 direction: ltr
 display: inline
 dominant-baseline: auto
+dynamic-range-limit: high
 empty-cells: show
 fill: rgb(0, 128, 0)
 fill-opacity: 1

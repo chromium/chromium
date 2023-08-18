@@ -3112,6 +3112,22 @@ const CSSValue* DominantBaseline::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.DominantBaseline());
 }
 
+const CSSValue* DynamicRangeLimit::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeIdent<
+      CSSValueID::kStandard, CSSValueID::kHigh, CSSValueID::kConstrainedHigh>(
+      range);
+}
+
+const CSSValue* DynamicRangeLimit::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.DynamicRangeLimit());
+}
+
 const CSSValue* EmptyCells::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

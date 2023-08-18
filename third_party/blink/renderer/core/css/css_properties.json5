@@ -3101,6 +3101,17 @@
       converter: "ConvertImageOrientation",
     },
     {
+      name: "dynamic-range-limit",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      runtime_flag: "CSSDynamicRangeLimit",
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["standard", "high", "constrained-high"],
+      typedom_types: ["Keyword"],
+      default_value: "high",
+    },
+    {
       name: "initial-letter",
       converter: "ConvertInitialLetter",
       default_value: "StyleInitialLetter()",

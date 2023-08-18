@@ -1616,6 +1616,7 @@
     // ([video]-dynamic-range) media feature
     "standard",
     "high",
+    "constrained-high",
 
     // Layered @import rule
     "layer",
