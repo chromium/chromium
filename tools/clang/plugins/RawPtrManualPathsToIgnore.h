@@ -103,6 +103,9 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
                                       // to",
                                       // public/renderer?",
 
+    // Moved from //third_party/blink/renderer/platform/image-decoders/
+    "components/image_decoders/",
+
     // Contains sysroot dirs like debian_bullseye_amd64-sysroot/ that are not
     // part of the repository.
     "build/linux/",
