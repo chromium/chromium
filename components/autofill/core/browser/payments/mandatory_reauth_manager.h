@@ -18,6 +18,19 @@ class AutofillClient;
 
 namespace payments {
 
+enum class MandatoryReauthAuthenticationMethod {
+  kUnknown = 0,
+  kUnsupportedMethod = 1,
+  // Biometric auth is supported on this device, but this does not strictly
+  // mean that user is doing biometric auth since user can always fall back to
+  // use password.
+  kBiometric = 2,
+  // This screen lock category excludes biometric above. It normally refers to
+  // passcode/PIN/device code.
+  kScreenLock = 3,
+  kMaxValue = kScreenLock,
+};
+
 class MandatoryReauthManager {
  public:
   explicit MandatoryReauthManager(AutofillClient* client);
@@ -94,6 +107,10 @@ class MandatoryReauthManager {
 
   // Triggered when the user closes the opt-in prompt.
   virtual void OnUserClosedOptInPrompt();
+
+  // Return the authentication method to be used on this device. Used for metric
+  // logging.
+  virtual MandatoryReauthAuthenticationMethod GetAuthenticationMethod();
 
   scoped_refptr<device_reauth::DeviceAuthenticator>
   GetDeviceAuthenticatorForTesting() {

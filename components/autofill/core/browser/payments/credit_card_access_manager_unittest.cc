@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -637,9 +638,11 @@ TEST_F(CreditCardAccessManagerTest, ServerCardGetDeletionConfirmationText) {
 // off.
 // - bool mandatory_reauth_response_is_success: Whether the response from the
 // mandatory re-auth is a success or failure.
+// - bool authentication_method_is_biometric: Whether the authentication method
+// is biometric. If false, it's using screen lock.
 class CreditCardAccessManagerMandatoryReauthTest
     : public CreditCardAccessManagerTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
  public:
   CreditCardAccessManagerMandatoryReauthTest() = default;
   ~CreditCardAccessManagerMandatoryReauthTest() override = default;
@@ -661,12 +664,23 @@ class CreditCardAccessManagerMandatoryReauthTest
     return std::get<2>(GetParam());
   }
 
+  bool isBiometric() const { return std::get<3>(GetParam()); }
+
   void SetUpDeviceAuthenticatorResponseMock() {
+    if (isBiometric()) {
+      ON_CALL(mandatory_reauth_manager(), GetAuthenticationMethod)
+          .WillByDefault(testing::Return(
+              payments::MandatoryReauthAuthenticationMethod::kBiometric));
+    } else {
+      ON_CALL(mandatory_reauth_manager(), GetAuthenticationMethod)
+          .WillByDefault(testing::Return(
+              payments::MandatoryReauthAuthenticationMethod::kScreenLock));
+    }
+
     // We should only expect an AuthenticateWithMessage() call if the feature
     // flag is on and the pref is enabled.
     if (FeatureFlagIsOn() && PrefIsEnabled()) {
-      ON_CALL(*static_cast<payments::MockMandatoryReauthManager*>(
-                  autofill_client_.GetOrCreatePaymentsMandatoryReauthManager()),
+      ON_CALL(mandatory_reauth_manager(),
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
               AuthenticateWithMessage)
 #elif BUILDFLAG(IS_ANDROID)
@@ -679,19 +693,22 @@ class CreditCardAccessManagerMandatoryReauthTest
                 std::move(callback).Run(mandatory_reauth_response_is_success);
               })));
     } else {
-      EXPECT_CALL(
-          *static_cast<payments::MockMandatoryReauthManager*>(
-              autofill_client_.GetOrCreatePaymentsMandatoryReauthManager()),
+      EXPECT_CALL(mandatory_reauth_manager(),
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-          AuthenticateWithMessage)
+                  AuthenticateWithMessage)
 #elif BUILDFLAG(IS_ANDROID)
-          Authenticate)
+                  Authenticate)
 #endif
           .Times(0);
     }
   }
 
  private:
+  payments::MockMandatoryReauthManager& mandatory_reauth_manager() {
+    return *static_cast<payments::MockMandatoryReauthManager*>(
+        autofill_client_.GetOrCreatePaymentsMandatoryReauthManager());
+  }
+
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -699,6 +716,7 @@ class CreditCardAccessManagerMandatoryReauthTest
 // Mandatory Re-Auth feature.
 TEST_P(CreditCardAccessManagerMandatoryReauthTest,
        MandatoryReauth_FetchLocalCard) {
+  base::HistogramTester histogram_tester;
   CreateLocalCard(kTestGUID, kTestNumber);
   CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
 
@@ -719,12 +737,30 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
     EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
     EXPECT_EQ(kTestNumber16, accessor_->number());
   }
+  std::string histogram_name =
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.LocalCard";
+  histogram_name += isBiometric() ? ".Biometric" : ".ScreenLock";
+  if (FeatureFlagIsOn() && PrefIsEnabled()) {
+    histogram_tester.ExpectBucketCount(
+        histogram_name,
+        autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted,
+        1);
+    histogram_tester.ExpectBucketCount(
+        histogram_name,
+        MandatoryReauthResponseIsSuccess()
+            ? autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                  kFlowSucceeded
+            : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                  kFlowFailed,
+        1);
+  }
 }
 
 // Tests that retrieving virtual cards works correctly in the context of the
 // Mandatory Re-Auth feature.
 TEST_P(CreditCardAccessManagerMandatoryReauthTest,
        MandatoryReauth_FetchVirtualCard) {
+  base::HistogramTester histogram_tester;
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
@@ -761,11 +797,29 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
     EXPECT_EQ(accessor_->expiry_month(), base::UTF8ToUTF16(test::NextMonth()));
     EXPECT_EQ(accessor_->expiry_year(), base::UTF8ToUTF16(test::NextYear()));
   }
+  std::string histogram_name =
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.VirtualCard";
+  histogram_name += isBiometric() ? ".Biometric" : ".ScreenLock";
+  if (FeatureFlagIsOn() && PrefIsEnabled()) {
+    histogram_tester.ExpectBucketCount(
+        histogram_name,
+        autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted,
+        1);
+    histogram_tester.ExpectBucketCount(
+        histogram_name,
+        MandatoryReauthResponseIsSuccess()
+            ? autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                  kFlowSucceeded
+            : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                  kFlowFailed,
+        1);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(,
                          CreditCardAccessManagerMandatoryReauthTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)

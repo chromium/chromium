@@ -85,6 +85,13 @@ chromium-metrics-reviews@google.com.
                feature"/>
 </variants>
 
+<variants name="Autofill.MandatoryReauth.AuthenticationMethod">
+  <variant name="Biometric" summary="biometric auth"/>
+  <variant name="ScreenLock" summary="screen lock"/>
+  <variant name="UnknownMethod" summary="an unknown auth type"/>
+  <variant name="Unsupported" summary="an unsupported auth type"/>
+</variants>
+
 <variants name="Autofill.MandatoryReauth.ChangingStatus">
   <variant name="OptIn" summary="Feature is trying to be opted in"/>
   <variant name="OptOut" summary="Feature is trying to be opted out"/>
@@ -122,7 +129,10 @@ chromium-metrics-reviews@google.com.
   <variant name="Reshows" summary="re-show"/>
 </variants>
 
+<!-- TODO(crbug.com/1472892): Rename PaymentsRpcCardType since we add LocalCard here. -->
+
 <variants name="Autofill.PaymentsRpcCardType">
+  <variant name="LocalCard" summary="local card"/>
   <variant name="ServerCard" summary="server card"/>
   <variant name="UnknownCard" summary="unknown card type"/>
   <variant name="VirtualCard" summary="virtual card"/>
@@ -3375,6 +3385,26 @@ chromium-metrics-reviews@google.com.
     Tracks whether the visible page language was translated or not upon form
     submission.
   </summary>
+</histogram>
+
+<histogram
+    name="Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.{CardType}.{AuthenticationMethod}"
+    enum="MandatoryReauthAuthEvent" expires_after="2024-04-01">
+  <owner>sujiezhu@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the users mandatory reauth result during the checkout flow for
+    opted-in users breakdown by each card type and each authentication method.
+    Whenever a reauth opted-in user starts, succeeds or fails the mandatory
+    reauth flow during a payments autofill form fill, we will log the
+    MandatoryReauthAuthEvent to this histogram. This is logged in order to get
+    the reauth usages and corresponding success rate for each breakdown. This
+    subhistogram pertains to {CardType}s that used {AuthenticationMethod} during
+    the checkout flow.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+  <token key="AuthenticationMethod"
+      variants="Autofill.MandatoryReauth.AuthenticationMethod"/>
 </histogram>
 
 <histogram

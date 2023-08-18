@@ -41,6 +41,10 @@ class MockMandatoryReauthManager : public MandatoryReauthManager {
       ((const std::u16string& message),
        (device_reauth::DeviceAuthenticator::AuthenticateCallback callback)),
       (override));
+  MOCK_METHOD(MandatoryReauthAuthenticationMethod,
+              GetAuthenticationMethod,
+              (),
+              (override));
 };
 
 }  // namespace autofill::payments

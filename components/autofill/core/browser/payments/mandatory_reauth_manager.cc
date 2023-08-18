@@ -306,6 +306,23 @@ void MandatoryReauthManager::OnUserClosedOptInPrompt() {
       ->IncrementPaymentMethodsMandatoryReauthPromoShownCounter();
 }
 
+MandatoryReauthAuthenticationMethod
+MandatoryReauthManager::GetAuthenticationMethod() {
+  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator =
+      client_->GetDeviceAuthenticator();
+  if (!device_authenticator) {
+    return MandatoryReauthAuthenticationMethod::kUnknown;
+  }
+  // Order matters here.
+  if (device_authenticator->CanAuthenticateWithBiometrics()) {
+    return MandatoryReauthAuthenticationMethod::kBiometric;
+  }
+  if (device_authenticator->CanAuthenticateWithBiometricOrScreenLock()) {
+    return MandatoryReauthAuthenticationMethod::kScreenLock;
+  }
+  return MandatoryReauthAuthenticationMethod::kUnsupportedMethod;
+}
+
 bool MandatoryReauthManager::LastFilledCardMatchesSubmittedCard(
     FormDataImporter::CardGuid guid_of_last_filled_card,
     const CreditCard& card_extracted_from_form) {

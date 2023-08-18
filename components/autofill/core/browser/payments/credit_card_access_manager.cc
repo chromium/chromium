@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
@@ -1454,14 +1455,21 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
   CreditCard::RecordType record_type = card->record_type();
   CHECK(record_type == CreditCard::LOCAL_CARD ||
         record_type == CreditCard::VIRTUAL_CARD);
+  payments::MandatoryReauthAuthenticationMethod authentication_method =
+      client_->GetOrCreatePaymentsMandatoryReauthManager()
+          ->GetAuthenticationMethod();
 
+  autofill_metrics::LogMandatoryReauthCheckoutFlowUsageEvent(
+      record_type, authentication_method,
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
   // TODO(crbug.com/1427216): Add the iOS branching logic as well.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   client_->GetOrCreatePaymentsMandatoryReauthManager()->AuthenticateWithMessage(
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH),
       base::BindOnce(
           &CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling,
-          weak_ptr_factory_.GetWeakPtr(), accessor, card, cvc));
+          weak_ptr_factory_.GetWeakPtr(), accessor, authentication_method, card,
+          cvc));
 #elif BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/1427216): Convert this to
   // MandatoryReauthManager::AuthenticateWithMessage() with the correct message
@@ -1472,7 +1480,8 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
           : device_reauth::DeviceAuthRequester::kVirtualCardAutofill,
       base::BindOnce(
           &CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling,
-          weak_ptr_factory_.GetWeakPtr(), accessor, card, cvc));
+          weak_ptr_factory_.GetWeakPtr(), accessor, authentication_method, card,
+          cvc));
 #else
   NOTREACHED_NORETURN();
 #endif
@@ -1480,9 +1489,17 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
 
 void CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling(
     base::WeakPtr<Accessor> accessor,
+    payments::MandatoryReauthAuthenticationMethod authentication_method,
     const CreditCard* card,
     const std::u16string& cvc,
     bool successful_auth) {
+  autofill_metrics::LogMandatoryReauthCheckoutFlowUsageEvent(
+      card->record_type(), authentication_method,
+      successful_auth
+          ? autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                kFlowSucceeded
+          : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                kFlowFailed);
   accessor->OnCreditCardFetched(successful_auth
                                     ? CreditCardFetchResult::kSuccess
                                     : CreditCardFetchResult::kTransientError,
