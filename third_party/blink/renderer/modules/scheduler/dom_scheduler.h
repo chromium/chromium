@@ -168,13 +168,6 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
       absl::variant<AbortSignal*, InheritOption> signal_option,
       absl::variant<AtomicString, InheritOption> priority_option);
 
-  // Gets the task signal associated with a task, creating a composite task
-  // signal from the scheduling state if needed. The signal this returns is what
-  // gets used for scheduling the task, and it's what gets propagated for
-  // yield() inheritance.
-  DOMTaskSignal* GetTaskSignalFromSchedulingState(ScriptState*,
-                                                  const SchedulingState&);
-
   // Gets the task queue used to schedule tasks or continuations with the given
   // signal and type, creating it if needed.
   DOMTaskQueue* GetTaskQueue(DOMTaskSignal*, WebSchedulingQueueType);

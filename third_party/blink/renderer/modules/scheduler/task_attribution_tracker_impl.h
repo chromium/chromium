@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+class AbortSignal;
 class DOMTaskSignal;
 class ScriptWrappableTaskState;
 }  // namespace blink
@@ -47,8 +48,14 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   std::unique_ptr<TaskScope> CreateTaskScope(
       ScriptState* script_state,
       absl::optional<TaskAttributionId> parent_task_id,
+      TaskScopeType type) override;
+
+  std::unique_ptr<TaskScope> CreateTaskScope(
+      ScriptState* script_state,
+      absl::optional<TaskAttributionId> parent_task_id,
       TaskScopeType type,
-      DOMTaskSignal* task_signal = nullptr) override;
+      AbortSignal* abort_source,
+      DOMTaskSignal* priority_source) override;
 
   // The vector size limits the amount of tasks we keep track of. Setting this
   // value too small can result in calls to `IsAncestor` returning an `Unknown`

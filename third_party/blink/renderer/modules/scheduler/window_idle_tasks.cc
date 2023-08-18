@@ -60,7 +60,7 @@ class V8IdleTask : public IdleTask {
           tracker->CreateTaskScope(script_state, parent_task_id_,
                                    scheduler::TaskAttributionTracker::
                                        TaskScopeType::kRequestIdleCallback,
-                                   signal);
+                                   /*abort_source=*/nullptr, signal);
     }
     callback_->InvokeAndReportException(nullptr, deadline);
   }
