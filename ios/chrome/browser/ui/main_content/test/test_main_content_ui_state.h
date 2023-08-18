@@ -13,6 +13,7 @@
 
 // Redefine broadcast properties as readwrite.
 @property(nonatomic, assign) CGFloat yContentOffset;
+@property(nonatomic, assign, getter=isScrolling) BOOL scrolling;
 @property(nonatomic, assign, getter=isDragging) BOOL dragging;
 
 @end

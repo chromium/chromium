@@ -18,6 +18,7 @@
 @property(nonatomic, strong) ChromeBroadcaster* broadcaster;
 // The broadcasted UI state observed by this object.
 @property(nonatomic, readonly) CGFloat yOffset;
+@property(nonatomic, readonly, getter=isScrolling) BOOL scrolling;
 @property(nonatomic, readonly, getter=isDragging) BOOL dragging;
 
 @end
