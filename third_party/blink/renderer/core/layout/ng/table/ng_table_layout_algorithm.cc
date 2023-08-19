@@ -75,7 +75,13 @@ NGConstraintSpace CreateCaptionConstraintSpace(
   builder.SetPercentageResolutionSize(available_size);
   builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
 
-  if (block_offset) {
+  // If a block-offset is specified, it means that table captions are laid out
+  // as part of normal table child layout (rather than in initial table
+  // block-size calculation). That is normally only necessary if block
+  // fragmentation is enabled, but may also occur if block fragmentation *was*
+  // enabled for previous fragments, but is disabled for this fragment, because
+  // of overflow clipping.
+  if (block_offset && table_constraint_space.HasBlockFragmentation()) {
     SetupSpaceBuilderForFragmentation(table_constraint_space, caption,
                                       *block_offset, &builder,
                                       /* is_new_fc */ true, false);
@@ -128,12 +134,14 @@ NGBoxStrut ComputeCaptionMargins(
 }
 
 void ComputeCaptionFragments(
-    const NGConstraintSpace& table_constraint_space,
+    const NGBoxFragmentBuilder& table_builder,
     const ComputedStyle& table_style,
     const NGTableGroupedChildren& grouped_children,
-    const LayoutUnit table_inline_size,
     HeapVector<NGTableLayoutAlgorithm::CaptionResult>* captions,
     LayoutUnit& captions_block_size) {
+  const NGConstraintSpace& table_constraint_space =
+      table_builder.ConstraintSpace();
+  const LayoutUnit table_inline_size = table_builder.InlineSize();
   const LogicalSize available_size = {table_inline_size, kIndefiniteSize};
   for (NGBlockNode caption : grouped_children.captions) {
     NGBoxStrut margins = ComputeCaptionMargins(table_constraint_space, caption,
@@ -151,8 +159,9 @@ void ComputeCaptionFragments(
     // per table node (and e.g. store the table data in the break tokens).
     absl::optional<NGDisableSideEffectsScope> disable_side_effects;
     if ((!captions && !caption.GetLayoutBox()->NeedsLayout()) ||
-        table_constraint_space.HasBlockFragmentation())
+        InvolvedInBlockFragmentation(table_builder)) {
       disable_side_effects.emplace();
+    }
 
     NGTableLayoutAlgorithm::CaptionResult caption_result =
         LayoutCaption(table_constraint_space, table_style, table_inline_size,
@@ -567,8 +576,7 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
 LayoutUnit NGTableLayoutAlgorithm::ComputeCaptionBlockSize() {
   NGTableGroupedChildren grouped_children(Node());
   LayoutUnit captions_block_size;
-  ComputeCaptionFragments(ConstraintSpace(), Node().Style(), grouped_children,
-                          container_builder_.InlineSize(),
+  ComputeCaptionFragments(container_builder_, Node().Style(), grouped_children,
                           /* captions */ nullptr, captions_block_size);
   return captions_block_size;
 }
@@ -633,9 +641,8 @@ const NGLayoutResult* NGTableLayoutAlgorithm::Layout() {
   // block-size given to the table-grid.
   HeapVector<CaptionResult> captions;
   LayoutUnit captions_block_size;
-  ComputeCaptionFragments(ConstraintSpace(), Style(), grouped_children,
-                          container_builder_.InlineSize(), &captions,
-                          captions_block_size);
+  ComputeCaptionFragments(container_builder_, Style(), grouped_children,
+                          &captions, captions_block_size);
 
   NGTableTypes::Rows rows;
   NGTableTypes::CellBlockConstraints cell_block_constraints;
@@ -995,7 +1002,8 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
   // size. We can re-use these results now, unless we're in block fragmentation.
   // In that case we need to lay them out again now, so that they fragment and
   // resume properly.
-  const bool relayout_captions = ConstraintSpace().HasBlockFragmentation();
+  const bool relayout_captions =
+      InvolvedInBlockFragmentation(container_builder_);
 
   // Add all the top captions.
   if (!relayout_captions) {
