@@ -492,6 +492,10 @@ absl::optional<gfx::HDRMetadata> ImageDecoder::GetHDRMetadata() const {
   return absl::nullopt;
 }
 
+gfx::Size ImageDecoder::FrameSizeAtIndex(wtf_size_t) const {
+  return Size();
+}
+
 cc::ImageHeaderMetadata ImageDecoder::MakeMetadataForDecodeAcceleration()
     const {
   DCHECK(IsDecodedSizeAvailable());

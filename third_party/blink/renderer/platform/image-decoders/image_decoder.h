@@ -310,7 +310,7 @@ class PLATFORM_EXPORT ImageDecoder {
   // sizes. This does NOT differ from Size() for GIF or WebP, since
   // decoding GIF or WebP composites any smaller frames against previous
   // frames to create full-size frames.
-  virtual gfx::Size FrameSizeAtIndex(wtf_size_t) const { return Size(); }
+  virtual gfx::Size FrameSizeAtIndex(wtf_size_t) const;
 
   // Returns whether the size is legal (i.e. not going to result in
   // overflow elsewhere).  If not, marks decoding as failed.
