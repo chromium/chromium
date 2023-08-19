@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<title>OffscreenCanvas transferToImageBitmap on worker thread: green and blue squares on white background.</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+</style>
+<script id="myWorker" type="text/worker">
+self.onmessage = function(msg) {
+  const dst_canvas = msg.data;
+  const ibrc = dst_canvas.getContext('bitmaprenderer');
+
+  const src_canvas = new OffscreenCanvas(100, 100);
+  var gl = src_canvas.getContext('webgl');
+  gl.clearColor(0.0, 0.0, 1.0, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  ibrc.transferFromImageBitmap(src_canvas.transferToImageBitmap());
+
+  self.postMessage('done');
+};
+</script>
+<script>
+var g_swapsBeforeAck = 15;
+
+function makeWorker(script) {
+   var blob = new Blob([script]);
+   return new Worker(URL.createObjectURL(blob));
+}
+
+function main()
+{
+  var worker = makeWorker(document.getElementById("myWorker").textContent);
+  worker.onmessage = waitForFinish;
+  const canvas = document.getElementById('canvas').transferControlToOffscreen();
+  worker.postMessage(canvas, [canvas]);
+}
+
+function waitForFinish()
+{
+  if (g_swapsBeforeAck == 0) {
+    domAutomationController.send("SUCCESS");
+  } else {
+    g_swapsBeforeAck--;
+    document.getElementById('container').style.zIndex = g_swapsBeforeAck + 1;
+    window.requestAnimationFrame(waitForFinish);
+  }
+}
+</script>
+</head>
+<body onload="main()">
+<div id="container" class="nomargin">
+<canvas id="canvas" width="100" height="100" class="nomargin"></canvas>
+</div>
+</body>
+</html>

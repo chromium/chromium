@@ -432,7 +432,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
   gfx::Size surface_size(width(), height());
   const bool can_use_gpu =
       SharedGpuContext::IsGpuCompositingEnabled() &&
-      (IsWebGL() || IsWebGPU() ||
+      (IsWebGL() || IsWebGPU() || IsImageBitmapRenderingContext() ||
        (IsRenderingContext2D() &&
         RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&
         !(context_->CreationAttributes().will_read_frequently ==

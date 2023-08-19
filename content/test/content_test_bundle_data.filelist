@@ -5814,6 +5814,7 @@ data/gpu/pixel_media_recorder_from_video_element.html
 data/gpu/pixel_offscreenCanvas_2d_commit_main.html
 data/gpu/pixel_offscreenCanvas_2d_commit_worker.html
 data/gpu/pixel_offscreenCanvas_2d_resize_on_worker.html
+data/gpu/pixel_offscreenCanvas_ibrc_worker.html
 data/gpu/pixel_offscreenCanvas_transferToImageBitmap_main.html
 data/gpu/pixel_offscreenCanvas_transferToImageBitmap_worker.html
 data/gpu/pixel_offscreenCanvas_transfer_after_style_resize.html
