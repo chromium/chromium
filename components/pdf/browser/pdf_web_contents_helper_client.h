@@ -10,6 +10,10 @@ class RenderFrameHost;
 class WebContents;
 }
 
+namespace gfx {
+class SelectionBound;
+}
+
 namespace pdf {
 
 class PDFWebContentsHelperClient {
@@ -30,6 +34,10 @@ class PDFWebContentsHelperClient {
   // Sets whether the PDF plugin can handle file saving internally.
   virtual void SetPluginCanSave(content::RenderFrameHost* render_frame_host,
                                 bool can_save) = 0;
+
+  // Lets the client observe scroll events. Only used for testing.
+  virtual void OnDidScroll(const gfx::SelectionBound& start,
+                           const gfx::SelectionBound& end) {}
 };
 
 }  // namespace pdf

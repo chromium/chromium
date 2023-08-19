@@ -157,6 +157,7 @@ void PDFWebContentsHelper::DidScroll() {
 
   touch_selection_controller_client_manager_->UpdateClientSelectionBounds(
       start, end, this, this);
+  client_->OnDidScroll(start, end);
 }
 
 void PDFWebContentsHelper::RenderWidgetHostDestroyed(
