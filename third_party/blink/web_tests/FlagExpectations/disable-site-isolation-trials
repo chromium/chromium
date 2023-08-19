@@ -131,7 +131,6 @@ crbug.com/626703 external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-expor
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/wasm-js-cycle.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker-import.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker.tentative.html [ Timeout ]
-crbug.com/626703 external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/webmessaging/broadcastchannel/opaque-origin.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Timeout ]
 crbug.com/626703 external/wpt/speculation-rules/prerender/restrictions.html [ Failure Timeout ]
