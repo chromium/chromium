@@ -373,7 +373,6 @@ public class DownloadFragment2 extends BaseSwipeBackFragment
                 status.setText(progress.getPercentage() + "%");
                 holder.setText(R.id.tv_size, Formatter.formatFileSize(context, info.getBytesReceived()) + " / " + Formatter.formatFileSize(context, info.getBytesTotalSize()));
             }
-            status.setText(progress.getPercentage() + "%");
             downloadBtn.setVisibility(View.VISIBLE);
             downloadBtn.setImageResource(R.drawable.download_item_pause_icon_style2);
         } else if (item.isComplete()) {
@@ -383,7 +382,11 @@ public class DownloadFragment2 extends BaseSwipeBackFragment
             downloadBtn.setVisibility(View.GONE);
         } else { // if (mission.isPaused())
             progressBar.setVisibility(View.VISIBLE);
-            progressBar.setProgress(progress.getPercentage(), false);
+            if (progress.isIndeterminate()) {
+                progressBar.setProgress(100, false);
+            } else {
+                progressBar.setProgress(progress.getPercentage(), false);
+            }
             status.setText("已暂停");
             downloadBtn.setVisibility(View.VISIBLE);
             downloadBtn.setImageResource(R.drawable.download_item_resume_icon_style2);

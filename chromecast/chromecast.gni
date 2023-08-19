@@ -168,8 +168,7 @@ cast_locales = locales_without_pseudolocales
 if (is_android) {
   # Subtract out additional Android locales
   cast_locales -= extended_locales
-}
-if (!(is_ios || is_chromeos)) {
+} else if (!(is_ios || is_chromeos)) {
   # Subtract out the additional desktop locales
   cast_locales -= [
     "af",

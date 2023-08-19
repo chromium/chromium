@@ -18,6 +18,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Keep
 public class PageInfo {
@@ -104,7 +105,15 @@ public class PageInfo {
         if (version >= 2) {
             info.mUserAgent = is.readUTF();
         }
-        info.url = is.readUTF();
+        if (version >= 3) {
+            // 读取大字符串
+            int len = is.readInt();
+            byte[] urlBytes = new byte[len];
+            is.readFully(urlBytes);
+            info.url = new String(urlBytes, StandardCharsets.UTF_8);
+        } else {
+            info.url = is.readUTF();
+        }
         info.title = is.readUTF();
         return info;
     }
@@ -192,7 +201,14 @@ public class PageInfo {
     }
 
     public String getTitle() {
-        return title == null ? getUrl() : title;
+        if (title == null) {
+            String url = getUrl();
+            if (url != null && url.length() > 100) {
+                return url.substring(0, 100);
+            }
+            return url;
+        }
+        return title;
     }
 
     public void setTitle(String title) {
@@ -231,7 +247,7 @@ public class PageInfo {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             DataOutputStream os = new DataOutputStream(stream);
 
-            int version = 2;
+            int version = 3;
             os.writeInt(version);
             os.writeInt(pageId);
             os.writeInt(tabId);
@@ -240,7 +256,13 @@ public class PageInfo {
             os.writeInt(themeColor);
             os.writeInt(originalIndex);
             os.writeUTF(mUserAgent == null ? "" : mUserAgent);
-            os.writeUTF(url == null ? "" : url);
+
+            // 写入大字符串
+            String urlStr = url == null ? "" : url;
+            byte[] urlBytes = urlStr.getBytes(StandardCharsets.UTF_8);
+            os.writeInt(urlBytes.length);
+            os.write(urlBytes);
+
             os.writeUTF(title == null ? "" : title);
             os.close();
 

@@ -154,7 +154,7 @@ public class BottomController {
 
             @Override
             public void onTitleUpdated(Tab tab) {
-                loadingTitle.setText(tab.getTitle());
+                setLoadingTitle(tab.getTitle());
             }
 
             @Override
@@ -189,7 +189,7 @@ public class BottomController {
                 ArkLogger.d(TAG, "onLoadStarted tab=" + tab.getId());
                 KeyboardUtils.hideSoftInputKeyboard(
                         tab.getWindowAndroid().getActivity().get().getWindow().getDecorView());
-                loadingTitle.setText(tab.getUrl().toString());
+                setLoadingTitle(tab.getUrl().toString());
                 updateLoadingState(tab.isLoading());
                 updateStarButton(tab);
             }
@@ -202,9 +202,9 @@ public class BottomController {
             @Override
             public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
                 if (TextUtils.isEmpty(tab.getTitle())) {
-                    loadingTitle.setText(tab.getUrl().toString());
+                    setLoadingTitle(tab.getUrl().toString());
                 } else {
-                    loadingTitle.setText(tab.getTitle());
+                    setLoadingTitle(tab.getTitle());
                 }
                 updateLoadingState(false);
             }
@@ -217,7 +217,7 @@ public class BottomController {
             @Override
             public void onContentChanged(Tab tab) {
                 Log.e(TAG, "onContentChanged");
-                loadingTitle.setText(tab.getTitle());
+                setLoadingTitle(tab.getTitle());
                 updateStarButton(tab);
                 updateLoadingState(tab.isLoading());
             }
@@ -231,7 +231,7 @@ public class BottomController {
 
             @Override
             public void onUpdateUrl(Tab tab, GURL url) {
-                loadingTitle.setText(url.getSpec());
+                setLoadingTitle(url.getSpec());
                 updateStarButton(tab);
             }
 
@@ -298,7 +298,7 @@ public class BottomController {
             mTab = page;
         }
         mIsIncognito = page.isIncognito();
-        loadingTitle.setText(page.getTitle());
+        setLoadingTitle(page.getTitle());
         updateLoadingState(page.isLoading());
         updateStarButton(page);
     }
@@ -359,6 +359,14 @@ public class BottomController {
         loadingCancel.setColorFilter(tint);
         int textColor = useLight ? Color.WHITE : mContext.getResources().getColor(R.color.google_black_400);
         loadingTitle.setTextColor(textColor);
+    }
+
+    private void setLoadingTitle(String title) {
+        // 限制网页标题长度
+        if (title != null && title.length() > 100) {
+            title = title.substring(0, 100);
+        }
+        loadingTitle.setText(title);
     }
 
 

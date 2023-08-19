@@ -307,6 +307,17 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
         updateSelectPage(page);
         if (createWeb) {
+            if (page.getPageInfo().getUrl().startsWith("data:")) {
+                ArkLogger.e(TAG, "selectPage loadUrl");
+                LoadUrlParams params = new LoadUrlParams(page.getPageInfo().getUrl());
+                params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
+
+                @TabLoadStatus int result = arkWeb.loadUrlInternal(params);
+                for (TabObserver observer : mObservers) {
+                    observer.onLoadUrl(this, params, result);
+                }
+                return;
+            }
             ThreadPool.execute(() -> {
                 TabState tabState = ArkTabDao.restorePageState(page.getId());
                 ThreadPool.postOnUIThread(() -> {

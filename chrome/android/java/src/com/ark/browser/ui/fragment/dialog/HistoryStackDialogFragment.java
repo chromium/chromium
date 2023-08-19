@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
+import com.ark.browser.event.BundleEvent;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
@@ -317,8 +318,8 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
 
             @Override
             public void onAnimationEnd(Animator animation) {
-//                ChromeActivity.fromContext(context).getLauncherFragment().getLauncherManager().goToBrowser(false);
                 getRootView().setVisibility(View.GONE);
+                BundleEvent.with(BundleEvent.ACTION_GO_TO_BROWSER).post();
             }
         });
         dismiss();

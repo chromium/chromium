@@ -162,13 +162,118 @@ extended_locales = [
 # Due to this, the only way a user could see Welsh strings - assuming they were
 # built - would be to manually switch their "Chrome language" in Chrome's
 # language settings to Welsh, so Welsh usage would probably be very low.
-_non_android_locales = [ "cy" ]
+_non_android_locales = [
+  "af",
+  "am",
+  "ar",
+  "as",
+  "az",
+  "be",
+  "bg",
+  "bn",
+  "bs",
+  "ca",
+  "cs",
+  "cy",
+  "da",
+  "de",
+  "el",
+  "es",
+  "es-419",  # "es-MX" in iOS (Mexico vs Latin America) "es-US" on Android
+  "et",
+  "eu",
+  "fa",
+  "fi",
+  "fil",  # "tl" in .xml but "fil" in TC and .pak
+  "fr",
+  "fr-CA",
+  "gl",
+  "gu",
+  "he",  # "iw" in .xml and TC but "he" in .pak
+  "hi",
+  "hr",
+  "hu",
+  "hy",
+  "id",  # "in" in .xml but "id" in TC and .pak
+  "is",
+  "it",
+  "ja",
+  "ka",
+  "kk",
+  "km",
+  "kn",
+  "ko",
+  "ky",
+  "lo",
+  "lt",
+  "lv",
+  "mk",
+  "ml",
+  "mn",
+  "mr",
+  "ms",
+  "my",
+  "nb",  # "no" in TC but "nb" in .xml and .pak
+  "ne",
+  "nl",
+  "or",
+  "pa",
+  "pl",
+  "pt-BR",  # just "pt" in iOS
+  "pt-PT",
+  "ro",
+  "ru",
+  "si",
+  "sk",
+  "sl",
+  "sq",
+  "sr",
+  "sr-Latn",  # -b+sr+Latn in .xml
+  "sv",
+  "sw",
+  "ta",
+  "te",
+  "th",
+  "tr",
+  "uk",
+  "ur",
+  "uz",
+  "vi",
+  "zu",
+]
 
 # Setup |platform_pak_locales| for each platform.
 platform_pak_locales = all_chrome_locales
 if (is_android) {
   platform_pak_locales -= _non_android_locales
-  extended_locales -= _non_android_locales
+  extended_locales -= [
+    "as",
+    "az",
+    "be",
+    "bs",
+    "cy",
+    "eu",
+    "fr-CA",
+    "gl",
+    "hy",
+    "is",
+    "ka",
+    "kk",
+    "km",
+    "ky",
+    "lo",
+    "mk",
+    "mn",
+    "my",
+    "ne",
+    "or",
+    "pa",
+    "si",
+    "sq",
+    "sr-Latn",
+    "uz",
+    "zu",
+  ]
 } else {
   platform_pak_locales -= extended_locales
 }
@@ -217,21 +322,22 @@ if (is_android) {
   #  - remove en-US
   #  - swap: (he, id, en-419, fil) -> (iw, in, es-rUS, tl)
   #  - sr-rLatn -> -b+sr+Latn
-  android_bundle_locales_as_resources -= [
-    "en-rUS",
-    "es-r419",
-    "fil",
-    "he",
-    "id",
-    "sr-rLatn",
-  ]
-  android_bundle_locales_as_resources += [
-    "b+sr+Latn",
-    "es-rUS",
-    "in",
-    "iw",
-    "tl",
-  ]
+  android_bundle_locales_as_resources -= ["en-rUS"]
+#  android_bundle_locales_as_resources -= [
+#    "en-rUS",
+#    "es-r419",
+#    "fil",
+#    "he",
+#    "id",
+#    "sr-rLatn",
+#  ]
+#  android_bundle_locales_as_resources += [
+#    "b+sr+Latn",
+#    "es-rUS",
+#    "in",
+#    "iw",
+#    "tl",
+#  ]
 }
 
 locales_without_pseudolocales = platform_pak_locales - pseudolocales
