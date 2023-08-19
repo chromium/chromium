@@ -1590,7 +1590,7 @@ std::unique_ptr<Tile> TileManager::CreateTile(const Tile::CreateInfo& info,
   DCHECK(tile_task_manager_);
   std::unique_ptr<Tile> tile(
       new Tile(this, info, layer_id, source_frame_number, flags));
-  DCHECK(tiles_.find(tile->id()) == tiles_.end());
+  DCHECK(!base::Contains(tiles_, tile->id()));
 
   tiles_[tile->id()] = tile.get();
   return tile;

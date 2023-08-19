@@ -21,8 +21,7 @@ UIResourceId UIResourceManager::CreateUIResource(UIResourceClient* client) {
   DCHECK(client);
 
   UIResourceId next_id = next_ui_resource_id_++;
-  DCHECK(ui_resource_client_map_.find(next_id) ==
-         ui_resource_client_map_.end());
+  DCHECK(!base::Contains(ui_resource_client_map_, next_id));
 
   bool resource_lost = false;
   UIResourceRequest request(UIResourceRequest::UI_RESOURCE_CREATE, next_id,

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "cc/trees/layer_tree_frame_sink.h"
@@ -254,10 +255,10 @@ void TextureLayerImpl::RegisterSharedBitmapId(
   // If a TextureLayer leaves and rejoins a tree without the TextureLayerImpl
   // being destroyed, then it will re-request registration of ids that are still
   // registered on the impl side, so we can just ignore these requests.
-  if (registered_bitmaps_.find(id) == registered_bitmaps_.end()) {
-    // If this is a pending layer, these will be moved to the active layer when
-    // we PushPropertiesTo(). Otherwise, we don't need to notify these to the
-    // LayerTreeFrameSink until we're going to use them, so defer it until
+  if (!base::Contains(registered_bitmaps_, id)) {
+    // If this is a pending layer, these will be moved to the active layer
+    // when we PushPropertiesTo(). Otherwise, we don't need to notify these to
+    // the LayerTreeFrameSink until we're going to use them, so defer it until
     // AppendQuads().
     to_register_bitmaps_[id] = std::move(bitmap);
   }
@@ -267,8 +268,9 @@ void TextureLayerImpl::RegisterSharedBitmapId(
 void TextureLayerImpl::UnregisterSharedBitmapId(viz::SharedBitmapId id) {
   if (IsActive()) {
     LayerTreeFrameSink* sink = layer_tree_impl()->layer_tree_frame_sink();
-    if (sink && registered_bitmaps_.find(id) != registered_bitmaps_.end())
+    if (sink && base::Contains(registered_bitmaps_, id)) {
       sink->DidDeleteSharedBitmap(id);
+    }
     to_register_bitmaps_.erase(id);
     registered_bitmaps_.erase(id);
   } else {

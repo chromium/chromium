@@ -1023,7 +1023,7 @@ TEST_F(TileManagerTilePriorityQueueTest, DebugNameAppearsInMemoryDump) {
   host_impl()->resource_pool()->OnMemoryDump(dump_args, &memory_dump);
   bool found_debug_name = false;
   for (const auto& allocator_map_pair : memory_dump.allocator_dumps()) {
-    if (allocator_map_pair.first.find("debug-name") != std::string::npos) {
+    if (base::Contains(allocator_map_pair.first, "debug-name")) {
       found_debug_name = true;
       break;
     }
@@ -1217,10 +1217,11 @@ TEST_F(TileManagerTilePriorityQueueTest,
     const TilePriority& pending_priority = prioritized_tile.priority();
     EXPECT_NE(std::numeric_limits<float>::infinity(),
               pending_priority.distance_to_visible);
-    if (all_pending_child_tiles.find(tile) != all_pending_child_tiles.end())
+    if (base::Contains(all_pending_child_tiles, tile)) {
       EXPECT_EQ(TilePriority::EVENTUALLY, pending_priority.priority_bin);
-    else
+    } else {
       EXPECT_EQ(TilePriority::NOW, pending_priority.priority_bin);
+    }
     new_content_tiles.insert(tile);
     ++tile_count;
     queue->Pop();

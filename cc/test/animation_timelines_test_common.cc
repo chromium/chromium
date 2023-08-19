@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_events.h"
@@ -196,7 +197,7 @@ void TestHostClient::RegisterElementId(ElementId element_id,
   ElementIdToTestLayer& layers_in_tree = list_type == ElementListType::ACTIVE
                                              ? layers_in_active_tree_
                                              : layers_in_pending_tree_;
-  DCHECK(layers_in_tree.find(element_id) == layers_in_tree.end());
+  DCHECK(!base::Contains(layers_in_tree, element_id));
   layers_in_tree[element_id] = TestLayer::Create();
 }
 

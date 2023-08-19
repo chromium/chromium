@@ -197,7 +197,7 @@ bool StagingBufferPool::OnMemoryDump(
 
 void StagingBufferPool::AddStagingBuffer(const StagingBuffer* staging_buffer,
                                          viz::SharedImageFormat format) {
-  DCHECK(buffers_.find(staging_buffer) == buffers_.end());
+  DCHECK(!base::Contains(buffers_, staging_buffer));
   buffers_.insert(staging_buffer);
   int buffer_usage_in_bytes = format.EstimatedSizeInBytes(staging_buffer->size);
   staging_buffer_usage_in_bytes_ += buffer_usage_in_bytes;
@@ -205,7 +205,7 @@ void StagingBufferPool::AddStagingBuffer(const StagingBuffer* staging_buffer,
 
 void StagingBufferPool::RemoveStagingBuffer(
     const StagingBuffer* staging_buffer) {
-  DCHECK(buffers_.find(staging_buffer) != buffers_.end());
+  DCHECK(base::Contains(buffers_, staging_buffer));
   buffers_.erase(staging_buffer);
   int buffer_usage_in_bytes =
       staging_buffer->format.EstimatedSizeInBytes(staging_buffer->size);

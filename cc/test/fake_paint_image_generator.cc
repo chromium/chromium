@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
+
 namespace cc {
 
 FakePaintImageGenerator::FakePaintImageGenerator(
@@ -54,10 +56,11 @@ bool FakePaintImageGenerator::GetPixels(SkPixmap dst_pixmap,
     image_pixmap_ = SkPixmap(dst_info, image_backing_memory_.data(),
                              dst_info.minRowBytes());
   }
-  if (frames_decoded_count_.find(frame_index) == frames_decoded_count_.end())
+  if (!base::Contains(frames_decoded_count_, frame_index)) {
     frames_decoded_count_[frame_index] = 1;
-  else
+  } else {
     frames_decoded_count_[frame_index]++;
+  }
   CHECK(image_pixmap_.scalePixels(
       dst_pixmap, {SkFilterMode::kLinear, SkMipmapMode::kNearest}));
   decode_infos_.push_back(dst_info);
@@ -91,10 +94,11 @@ bool FakePaintImageGenerator::GetYUVAPlanes(
     memcpy(pixmaps.plane(i).writable_addr(), src_plane_memory, plane_sizes[i]);
     src_plane_memory += plane_sizes[i];
   }
-  if (frames_decoded_count_.find(frame_index) == frames_decoded_count_.end())
+  if (!base::Contains(frames_decoded_count_, frame_index)) {
     frames_decoded_count_[frame_index] = 1;
-  else
+  } else {
     frames_decoded_count_[frame_index]++;
+  }
   return true;
 }
 

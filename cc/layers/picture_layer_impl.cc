@@ -2068,7 +2068,7 @@ PictureLayerImpl::InvalidateRegionForImages(
 void PictureLayerImpl::SetPaintWorkletRecord(
     scoped_refptr<const PaintWorkletInput> input,
     PaintRecord record) {
-  DCHECK(paint_worklet_records_.find(input) != paint_worklet_records_.end());
+  DCHECK(base::Contains(paint_worklet_records_, input));
   paint_worklet_records_[input].second = std::move(record);
 }
 

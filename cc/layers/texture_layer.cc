@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -255,17 +256,16 @@ void TextureLayer::PushPropertiesTo(
 SharedBitmapIdRegistration TextureLayer::RegisterSharedBitmapId(
     const viz::SharedBitmapId& id,
     scoped_refptr<CrossThreadSharedBitmap> bitmap) {
-  DCHECK(to_register_bitmaps_.Read(*this).find(id) ==
-         to_register_bitmaps_.Read(*this).end());
-  DCHECK(registered_bitmaps_.Read(*this).find(id) ==
-         registered_bitmaps_.Read(*this).end());
+  DCHECK(!base::Contains(to_register_bitmaps_.Read(*this), id));
+  DCHECK(!base::Contains(registered_bitmaps_.Read(*this), id));
   to_register_bitmaps_.Write(*this)[id] = std::move(bitmap);
   base::Erase(to_unregister_bitmap_ids_.Write(*this), id);
-  // This does not SetNeedsCommit() to be as lazy as possible. Notifying a
-  // SharedBitmapId is not needed until it is used, and using it will require
-  // a commit, so we can wait for that commit before forwarding the
-  // notification instead of forcing it to happen as a side effect of this
-  // method.
+
+  // This does not SetNeedsCommit() to be as lazy as possible.
+  // Notifying a SharedBitmapId is not needed until it is used,
+  // and using it will require a commit, so we can wait for that commit
+  // before forwarding the notification instead of forcing it to happen
+  // as a side effect of this method.
   SetNeedsPushProperties();
   return SharedBitmapIdRegistration(weak_ptr_factory_.GetMutableWeakPtr(), id);
 }

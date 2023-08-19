@@ -12,6 +12,7 @@
 #include <set>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -82,7 +83,7 @@ Tile* PictureLayerTiling::CreateTile(const Tile::CreateInfo& info) {
   const int i = info.tiling_i_index;
   const int j = info.tiling_j_index;
   TileMapKey key(i, j);
-  DCHECK(tiles_.find(key) == tiles_.end());
+  DCHECK(!base::Contains(tiles_, key));
 
   if (!raster_source_->IntersectsRect(info.enclosing_layer_rect, *client_))
     return nullptr;

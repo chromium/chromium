@@ -281,7 +281,7 @@ void ResourcePool::OnResourceReleased(size_t unique_id,
   // while it was still in use by the ResourcePool client. That would prevent
   // the client from being able to use the ResourceId on the InUsePoolResource,
   // which would be problematic!
-  DCHECK(in_use_resources_.find(unique_id) == in_use_resources_.end());
+  DCHECK(!base::Contains(in_use_resources_, unique_id));
 
   // TODO(danakj): Should busy_resources be a map?
   auto busy_it =

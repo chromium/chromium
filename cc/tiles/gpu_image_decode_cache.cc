@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
@@ -2376,10 +2377,10 @@ bool GpuImageDecodeCache::NeedsDarkModeFilter(const DrawImage& draw_image,
   }
 
   // Dark mode filter is already generated and cached.
-  if (image_data->decode.dark_mode_color_filter_cache.find(
-          draw_image.src_rect()) !=
-      image_data->decode.dark_mode_color_filter_cache.end())
+  if (base::Contains(image_data->decode.dark_mode_color_filter_cache,
+                     draw_image.src_rect())) {
     return false;
+  }
 
   return true;
 }
