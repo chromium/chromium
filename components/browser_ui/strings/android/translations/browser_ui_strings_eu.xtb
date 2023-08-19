@@ -301,7 +301,7 @@
 <translation id="6447842834002726250">Cookieak</translation>
 <translation id="6467852467360539617">Garbitu datuak eta berrezarri baimenak</translation>
 <translation id="6527303717912515753">Partekatu</translation>
-<translation id="6545864417968258051">Bluetooth bidezko gailuen bilaketa</translation>
+<translation id="6545864417968258051">Bluetooth bidezko bilaketa</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" /> blokeatu egin dira}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" /> blokeatu egin dira}}</translation>
 <translation id="6554732001434021288">Duela <ph name="NUM_DAYS" /> egun bisitatu zenuen azkenengoz</translation>
 <translation id="6561560012278703671">Erabili mezularitza isilagoa (jakinarazpenak blokeatzen ditu arretarik galaraz ez diezazuten)</translation>
