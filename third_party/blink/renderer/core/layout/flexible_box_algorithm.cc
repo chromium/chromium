@@ -103,7 +103,6 @@ FlexItem::FlexItem(const FlexLayoutAlgorithm* algorithm,
       baseline_group_(baseline_group),
       depends_on_min_max_sizes_(depends_on_min_max_sizes),
       frozen_(false),
-      needs_relayout_for_stretch_(false),
       ng_input_node_(/* LayoutBox* */ nullptr) {
   DCHECK_GE(min_max_main_sizes.max_size, LayoutUnit())
       << "Use LayoutUnit::Max() for no max size";
@@ -862,7 +861,6 @@ void FlexLayoutAlgorithm::AlignChildren() {
       ItemPosition position = flex_item.Alignment();
       if (position == ItemPosition::kStretch) {
         flex_item.ComputeStretchedSize();
-        flex_item.needs_relayout_for_stretch_ = true;
       }
       LayoutUnit available_space = flex_item.AvailableAlignmentSpace();
       if (!is_webkit_box &&

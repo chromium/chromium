@@ -172,11 +172,6 @@ class FlexItem {
   const bool depends_on_min_max_sizes_;
   bool frozen_;
 
-  // Legacy partially relies on FlexLayoutAlgorithm::AlignChildren to determine
-  // if the child is eligible for stretching (specifically, checking for auto
-  // margins). FlexLayoutAlgorithm uses this flag to report back to legacy.
-  bool needs_relayout_for_stretch_;
-
   // The above fields are used by the flex algorithm. The following fields, by
   // contrast, are just convenient storage.
   NGBlockNode ng_input_node_;
