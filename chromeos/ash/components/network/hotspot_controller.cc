@@ -31,6 +31,9 @@ HotspotController::~HotspotController() {
   if (technology_state_controller_) {
     technology_state_controller_->set_hotspot_operation_delegate(nullptr);
   }
+  if (hotspot_state_handler_ && hotspot_state_handler_->HasObserver(this)) {
+    hotspot_state_handler_->RemoveObserver(this);
+  }
 }
 
 void HotspotController::Init(
@@ -41,6 +44,7 @@ void HotspotController::Init(
   hotspot_capabilities_provider_ = hotspot_capabilities_provider;
   hotspot_feature_usage_metrics_ = hotspot_feature_usage_metrics;
   hotspot_state_handler_ = hotspot_state_handler;
+  hotspot_state_handler_->AddObserver(this);
   technology_state_controller_ = technology_state_controller;
   technology_state_controller_->set_hotspot_operation_delegate(this);
 }
@@ -161,7 +165,7 @@ void HotspotController::OnPrepareEnableHotspotCompleted(bool prepare_success,
   }
   NET_LOG(EVENT) << "Prepare enable hotspot completed, success: "
                  << prepare_success << ", wifi turned off " << wifi_turned_off;
-  current_enable_request_->wifi_turned_off = wifi_turned_off;
+  wifi_turned_off_ = wifi_turned_off;
   if (!prepare_success) {
     CompleteEnableRequest(
         hotspot_config::mojom::HotspotControlResult::kDisableWifiFailed);
@@ -225,12 +229,9 @@ void HotspotController::CompleteEnableRequest(
   HotspotMetricsHelper::RecordSetTetheringEnabledResult(
       /*enabled=*/true, result);
 
-  NET_LOG(EVENT)
-      << "Complete SetTetheringEnabled request, enabled: true, result: "
-      << result;
+  NET_LOG(EVENT) << "Complete enable tethering request, result: " << result;
 
-  if (current_enable_request_->wifi_turned_off &&
-      result != HotspotControlResult::kSuccess &&
+  if (wifi_turned_off_ && result != HotspotControlResult::kSuccess &&
       !current_enable_request_->abort) {
     // Turn Wifi back on if failed to enable hotspot.
     technology_state_controller_->SetTechnologiesEnabled(
@@ -239,7 +240,7 @@ void HotspotController::CompleteEnableRequest(
   }
 
   if (result == HotspotControlResult::kSuccess) {
-    NotifyHotspotTurnedOn(current_enable_request_->wifi_turned_off);
+    NotifyHotspotTurnedOn(wifi_turned_off_);
   }
   std::move(current_enable_request_->callback).Run(result);
   current_enable_request_.reset();
@@ -253,9 +254,9 @@ void HotspotController::CompleteDisableRequest(
   HotspotMetricsHelper::RecordSetTetheringEnabledResult(
       /*enabled=*/false, result);
 
-  NET_LOG(EVENT)
-      << "Complete SetTetheringEnabled request, enabled: false, result: "
-      << result;
+  NET_LOG(EVENT) << "Complete disable tethering request, result: " << result
+                 << ", disable reason: "
+                 << current_disable_request_->disable_reason.value();
 
   if (result == HotspotControlResult::kSuccess) {
     NotifyHotspotTurnedOff(current_disable_request_->disable_reason.value());
@@ -304,6 +305,36 @@ void HotspotController::OnPrepareEnableWifiCompleted(
     return;
   }
   std::move(callback).Run(/*prepare_success=*/false);
+}
+
+void HotspotController::OnHotspotStatusChanged() {
+  if (!wifi_turned_off_) {
+    return;
+  }
+
+  hotspot_config::mojom::HotspotState hotspot_state =
+      hotspot_state_handler_->GetHotspotState();
+  if (hotspot_state != hotspot_config::mojom::HotspotState::kDisabled) {
+    return;
+  }
+
+  absl::optional<hotspot_config::mojom::DisableReason> disable_reason =
+      hotspot_state_handler_->GetDisableReason();
+  if (disable_reason &&
+      *disable_reason == hotspot_config::mojom::DisableReason::kRestart) {
+    // No need to turn WiFi back on since the hotspot will restart immediately.
+    return;
+  }
+
+  if (disable_reason) {
+    NET_LOG(EVENT)
+        << "Turning Wifi back on because hotspot is turned off due to "
+        << *disable_reason;
+  }
+  technology_state_controller_->SetTechnologiesEnabled(
+      NetworkTypePattern::WiFi(), /*enabled=*/true,
+      network_handler::ErrorCallback());
+  wifi_turned_off_ = false;
 }
 
 void HotspotController::OnDisableHotspotCompleteForRestart(
