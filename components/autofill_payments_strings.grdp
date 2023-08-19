@@ -347,7 +347,10 @@
       Enter your security code for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROGRESS_DIALOG_TITLE" desc="Title for the progress dialog that occurs during specific card unmasking flows, for example VCN unmasking. It is shown after the user selects a card, and will be dismissed once we receive a server response that denotes we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
-      Verifying...
+      Verifying payment method
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_DIALOG_TITLE" desc="Title for the confirmation dialog that occurs upon a successful card unmask.">
+      Payment method verified
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_TITLE" desc="Title for the credit card unmasking progress dialog, also used as the title of challenge option selection dialog when only one challenge option available." formatter_data="android_java">
       Verify it's you
@@ -460,7 +463,7 @@
     Cancel
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_MESSAGE" desc="Message displayed after tapping a Virtual Card, and the response from the bank indicates that no further verification is required.">
-    Your card is confirmed
+    Verified
   </message>
   <message name="IDS_AUTOFILL_FIDO_AUTHENTICATION_PROMPT_TITLE" desc="Title for FIDO authentication progress dialog">
       Verifying...

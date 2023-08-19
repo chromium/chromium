@@ -17,7 +17,9 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 
 namespace autofill {
 
@@ -37,19 +39,38 @@ AutofillProgressDialogViews::AutofillProgressDialogViews(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+          views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
 
-  progress_throbber_ = AddChildView(std::make_unique<views::Throbber>());
+  auto* throbber_container =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  progress_throbber_ =
+      throbber_container->AddChildView(std::make_unique<views::Throbber>());
 
   label_ = AddChildView(std::make_unique<views::Label>(
       controller_->GetLoadingMessage(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY));
   label_->SetMultiLine(true);
   label_->SetEnabledColorId(ui::kColorThrobber);
+  // Set the maximum width of the label view so it will not compress the
+  // throbber view.
+  label_->SetMaximumWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
+                          progress_throbber_->GetPreferredSize().width() -
+                          ChromeLayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL) -
+                          margins().width());
+
+  // Center-align the throbber vertically with the first line of the label.
+  progress_throbber_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets().set_top((label_->GetLineHeight() -
+                             progress_throbber_->GetPreferredSize().height()) /
+                            2));
 }
 
 AutofillProgressDialogViews::~AutofillProgressDialogViews() {
@@ -84,6 +105,9 @@ void AutofillProgressDialogViews::Dismiss(bool show_confirmation_before_closing,
     progress_throbber_->Stop();
     label_->SetText(controller_->GetConfirmationMessage());
     progress_throbber_->SetChecked(true);
+    GetBubbleFrameView()->SetTitleView(
+        CreateTitleView(controller_->GetConfirmationTitle(),
+                        TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AutofillProgressDialogViews::CloseWidget,
@@ -109,7 +133,7 @@ void AutofillProgressDialogViews::InvalidateControllerForCallbacks() {
 }
 
 std::u16string AutofillProgressDialogViews::GetWindowTitle() const {
-  return controller_->GetTitle();
+  return controller_->GetLoadingTitle();
 }
 
 void AutofillProgressDialogViews::CloseWidget() {

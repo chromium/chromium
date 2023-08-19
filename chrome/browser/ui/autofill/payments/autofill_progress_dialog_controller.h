@@ -27,12 +27,16 @@ class AutofillProgressDialogController {
   virtual void OnDismissed(bool is_canceled_by_user) = 0;
 
   // Title and button label.
-  virtual const std::u16string GetTitle() = 0;
-  virtual const std::u16string GetCancelButtonLabel() = 0;
+  // GetLoadingTitle() is used when card unmasking is in progress, while
+  // GetConfirmationTitle() is used for the confirmation dialog that occurs upon
+  // a successful card unmask.
+  virtual std::u16string GetLoadingTitle() const = 0;
+  virtual std::u16string GetConfirmationTitle() const = 0;
+  virtual std::u16string GetCancelButtonLabel() const = 0;
 
   // Text displayed below the progress bar.
-  virtual const std::u16string GetLoadingMessage() = 0;
-  virtual const std::u16string GetConfirmationMessage() = 0;
+  virtual std::u16string GetLoadingMessage() const = 0;
+  virtual std::u16string GetConfirmationMessage() const = 0;
 
   virtual content::WebContents* GetWebContents() = 0;
 
